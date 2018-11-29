@@ -1,5 +1,7 @@
 # Kui Shell
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 Kui Shell offers a new development experience for building
 cloud-native applications. By combining the power of familiar CLIs
 with visualizations in high-impact areas, the Shell enables you to
