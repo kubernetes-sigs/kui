@@ -5,6 +5,6 @@ ROOTDIR="${SCRIPTDIR}/../../"
 cd "$SCRIPTDIR"
 
 rm -rf incubator-openwhisk-utilities
-git clone git@github.com:apache/incubator-openwhisk-utilities.git
+git clone https://github.com/apache/incubator-openwhisk-utilities.git
 
 ./incubator-openwhisk-utilities/scancode/scanCode.py --config kui.cfg "$ROOTDIR"
