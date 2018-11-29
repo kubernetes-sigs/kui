@@ -10,7 +10,6 @@ const localWskProps = () => {
     } catch (err) {
       if (err.code === 'ENOENT') {
         // this probably is OK, it probably means that the user set everything via env vars
-        // see https://github.ibm.com/composer/cloudshell/issues/145
         wskprops = {}
       } else {
         throw err

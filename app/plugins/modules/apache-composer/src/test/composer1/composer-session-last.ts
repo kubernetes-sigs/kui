@@ -115,7 +115,6 @@ describe('session get --last and --last-failed', function (this: ISuite) {
     .then(ui.expectStruct({ error: { yyy: 444 } }))
     .catch(common.oops(this)))
 
-  // disabled until sherpa resolves https://github.ibm.com/wdp-dist/sherpa/issues/729
   if (!process.env.SHERPA_BUG_SESSION_LIST) {
     it(`should show ${seqName1} with session get --last ${seqName1}`, () => this.app.client.waitUntil(() => {
       return cli.do(`session get --last ${seqName1}`, this.app)

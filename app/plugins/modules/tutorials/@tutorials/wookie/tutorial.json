@@ -55,7 +55,7 @@
             "extras": {
                 "learnMore": {
                     "title": "Learn More",
-                    "doc": "For the full list of available combinators, consult the [combinator reference guide](https://github.ibm.com/composer/documentation/blob/master/COMBINATORS.md)."
+                    "doc": "For the full list of available combinators, consult the [combinator reference guide](https://github.com/apache/incubator-openwhisk-composer/blob/master/docs/COMBINATORS.md)."
                 },
                 "table": {
                     "title": "Selected Combinators",

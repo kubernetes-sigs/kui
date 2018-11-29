@@ -1,6 +1,0 @@
-apiVersion: openwhisk.ibm.com/v1
-kind: Trigger
-metadata:
-  name: myfunctiontrigger
-  annotations:
-    electron-shell.org/description: Cloud Function trigger

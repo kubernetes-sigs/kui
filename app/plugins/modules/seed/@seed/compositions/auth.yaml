@@ -1,8 +1,0 @@
-apiVersion: openwhisk.ibm.com/v1
-kind: Composition
-metadata:
-  name: composition-auth-demoy
-  annotations:
-    electron-shell.org/description: An if-then-else composition that mimics an authentication flow
-spec:
-  compositionURI: https://raw.github.ibm.com/composer/composer/master/samples/demo.js
