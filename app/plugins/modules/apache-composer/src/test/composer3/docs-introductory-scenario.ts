@@ -590,7 +590,6 @@ describe('Intro demo scenario', function (this: ISuite) {
   }
 
   // session get --last try
-  // disabled until sherpa resolves https://github.ibm.com/wdp-dist/sherpa/issues/729
 // if (!process.env.SHERPA_BUG_729) {
 //     // expect 1 done sessions, and that the done list contain appName3
 //     const { appName: appName3, expectedStructb: expectedStruct3b } = inputs[2]

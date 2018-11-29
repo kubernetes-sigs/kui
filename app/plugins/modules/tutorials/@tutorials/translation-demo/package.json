@@ -1,6 +1,6 @@
 {
   "name": "translation-demo",
-  "description":"Translates text using the try combinator",
+  "description": "Translates text using the try combinator",
   "disabled": true,
   "level": "Advanced",
   "kind": "composition",

@@ -24,7 +24,5 @@
       }
     }
   },
-  "dependencies": {
-    "modk": "git+ssh://git@github.ibm.com:nickm/modk.git"
-  }
+  "dependencies": {}
 }

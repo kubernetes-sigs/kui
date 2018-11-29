@@ -27,7 +27,6 @@
     ]
   },
   "devDependencies": {
-    "@wdpdist/client": "git+ssh://git@github.ibm.com/composer/client",
     "electron": "^3.0.10",
     "expand-home-dir": "0.0.3",
     "mocha": "^5.2.0",

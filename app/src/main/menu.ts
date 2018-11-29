@@ -119,7 +119,7 @@ export const install = (app, Menu, createWindow) => {
       { type: 'separator' },
       {
         label: 'Report Issue...',
-        click () { require('electron').shell.openExternal('https://github.ibm.com/composer/cloudshell/issues/new') }
+        click () { require('electron').shell.openExternal('https://github.com/IBM/kui/issues/new') }
       }
     ]
 

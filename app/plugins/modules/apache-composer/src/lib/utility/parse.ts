@@ -59,7 +59,6 @@ export const deployAction = (home: string) => actionFQN => new Promise((resolve,
       })
     }
 
-    // we need this, but disabled due to https://github.ibm.com/composer/cloud-shell-cli/issues/48
     // console.error(`Warning: action source near ${path.join(home, actionName)} cannot be found`)
 
     resolve()

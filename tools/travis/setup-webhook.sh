@@ -28,5 +28,4 @@ cd "$SCRIPTDIR"
 ../../kui.js action update cleanBucket ./cleanBucket.js --kind nodejs:8 -p secrets @"$ROOTDIR/dist/publishers/s3/secrets-cos.json"
 
 # for now, we need a thin web action veneer
-# see https://github.ibm.com/wdp-dist/sherpa/issues/797
 ../../kui.js let cloudshell-done-web.json = ./done-web.js
