@@ -1,0 +1,28 @@
+{
+  "name": "webpack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack-pre": "(cd ../../app/plugins/modules/wskflow && ./bin/prune-for-browser.sh) && (cd ../../app && npm run webpack-pre) && (cd ../../app/plugins/modules/editor && ./bin/prune-for-browser.sh)",
+    "webpack-post": "(cd ../../app/plugins/modules/wskflow && ./bin/restore-after-prune.sh) && (cd ../../app/plugins/modules/editor && ./bin/restore-after-prune.sh)",
+    "webpack": "rm -f ./build/*.js.br; npm run webpack-pre && webpack-cli --mode development; npm run webpack-post",
+    "webpack-stats": "npm run webpack-pre && webpack --json > /tmp/stats.json; npm run webpack-post",
+    "http": "if [ ! -d keys ]; then mkdir keys && openssl genrsa -out keys/ssl.key 2048 && openssl req -new -key keys/ssl.key -x509 -days 999 -out keys/ssl.cert; fi; http-server --cors --brotli --ssl --cert keys/ssl.cert --key keys/ssl.key",
+    "webpack-cli-heap": "cp node_modules/.bin/webpack-cli node_modules/.bin/webpack-cli.orig && awk 'FNR==1 {print $0, \"--max-old-space-size=8192\"} FNR > 1 { print $0 }' node_modules/.bin/webpack-cli.orig > node_modules/.bin/webpack-cli",
+    "postinstall": "npm run webpack-cli-heap"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "brotli-webpack-plugin": "^1.0.0",
+    "ibm-cos-sdk": "^1.3.2",
+    "needle": "^2.2.4",
+    "terser-webpack-plugin": "^1.1.0",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-visualizer-plugin": "^0.1.11"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "openwhisk",
+  "version": "0.1.0",
+  "description": "IBM Cloud shell plugin for OpenWhisk",
+  "main": "plugin/plugin.js",
+  "scripts": {
+    "postinstall": "../../../../node_modules/.bin/tsc",
+    "pretest": "../../../../node_modules/.bin/tsc",
+    "compilenowatch": "../../../../node_modules/.bin/tsc",
+    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+  },
+  "keywords": [
+    "openwhisk",
+    "kubernetes"
+  ],
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "openwhisk": "git://github.com/starpit/openwhisk-client-js.git#add_client_timeout4"
+  },
+  "devDependencies": {
+    "@types/swagger-schema-official": "^2.0.14"
+  }
+}

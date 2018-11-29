@@ -1,0 +1,21 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Composition
+metadata:
+  name: twc-flu-main
+  labels:
+    projectName: twc-flu
+  annotations:
+    electron-shell.org/description: Query the CDC Flu database, partition the data, and populate a Cloudant database
+spec:
+  package: twc-flu
+  name: main
+  compositionURI: >-
+    https://raw.github.ibm.com/composer/cloudshell/master/app/plugins/modules/seed/%40seed/applications/twc-flu/composition.js
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Package
+metadata:
+  name: twc-flu
+  labels:
+    projectName: twc-flu

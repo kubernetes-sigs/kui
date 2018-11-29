@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <link rel='stylesheet' href='../../css/table.css'>
+    <link rel='stylesheet' href='/content/css/ui.css'>
+
+    <style>
+      * {
+         box-sizing: border-box;
+      }
+      body {
+         margin: 0;
+         display: flex;
+         flex-direction: column;
+         justify-content: flex-end;
+      }
+      .stripe {
+         display: flex;
+         font-family: Lato, sans-serif;
+         background: #2B2B2B;
+         color: #C6C6C8;
+         height: 5em;
+      }
+      .option-group {
+         display: flex;
+         border: none;
+         padding: 0
+      }
+      .option-group-label {
+         font-weight: 900;
+      }
+
+      input[type="radio"] {
+	opacity: 0;
+	width: 0;
+      height: 0;
+      margin: 0;
+      }
+
+      input[type="radio"]:active ~ label {
+      opacity: 1;
+      }
+
+      input[type="radio"]:checked ~ label {
+      opacity: 1;
+      border: 1px solid $font-color;
+      }
+
+      label {
+	border: 1px solid rgba(255,255,255,.15);
+	box-sizing: border-box;
+	display: block;
+	height: 100%;
+	width: 100%;
+	padding: 10px 10px 30px 10px;
+	cursor: pointer;
+	opacity: .5;
+        transition: all .5s ease-in-out;
+      }
+      label:hover, label:focus, label:active {
+         border-color: rgba(255,255,255,.5);
+      }
+    </style>
+  </head>
+  <body>
+    <form class='stripe'>
+      <div class='option-group'>
+        <legend class='option-group-label'>Coloring</legend>
+        <div class='option'>
+          <input type='radio' class='option' checked id='color-by_pass-fail'>
+          <label for='color-by_pass-fail'>
+            Pass/Fail
+          </label>
+        </div>
+        <div class='option'>
+          <input type='radio' class='option' id='color-by_duration'>
+          <label for='color-by_duration'>
+            Duration
+          </label>
+        </div>
+      </div>
+    </form>
+  </body>
+</html>

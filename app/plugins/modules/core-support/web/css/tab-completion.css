@@ -1,0 +1,68 @@
+.tab-completion-temporary {
+    display: inline-block;
+    background: var(--color-field-01);
+    flex-direction: column;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,.1);
+    width: 24em;
+    font-size: 0.75rem;
+    position: relative;
+}
+
+.tab-completion-temporary:after {
+	bottom: 100%;
+	left: 1ex;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-color: rgba(136, 183, 213, 0);
+	border-bottom-color: rgba(85,150,230,.2); /* matches selected color, with a bit more alpha */
+	border-width: 1ex;
+	margin-left: -1ex;
+}
+
+.tab-completion-temporary .scrollable {
+    max-height: calc(10 * 1.75em);
+    overflow-y: auto;
+}
+
+.tab-completion-temporary .scrollable > div {
+    font-weight: 600;
+    overflow: hidden;
+    padding: 1em 1.5em 1em 1em;
+    text-decoration: none;
+    text-overflow: ellipsis;
+
+    color: var(--color-carbon-components-h3);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.tab-completion-temporary .scrollable > div > .tab-completion-temporary-fill {
+    /* the clickable should fill available horizontal space in a completion row */
+    flex: 1;
+}
+
+.tab-completion-temporary .clickable {
+    border-bottom: 1px solid transparent;
+    text-decoration: none;
+    transition: 250ms;
+}
+
+/* selection */
+.tab-completion-temporary .scrollable > div.selected, .tab-completion-temporary .scrollable > div:hover {
+    background-color: rgba(85,150,230,.1);
+}
+.tab-completion-temporary:hover .scrollable > div.selected:not(:hover) .clickable {
+    border-bottom-color: transparent;
+    color: inherit;
+}
+.tab-completion-temporary .scrollable > div.selected .clickable, .tab-completion-temporary .scrollable > div:hover .clickable {
+    color: var(--color-text-01);
+}
+.tab-completion-temporary .scrollable > div:hover .clickable, .tab-completion-temporary .scrollable > div.selected .clickable {
+    border-bottom-color: var(--color-text-01);
+}

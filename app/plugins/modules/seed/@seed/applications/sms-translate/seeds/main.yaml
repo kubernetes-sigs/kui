@@ -1,0 +1,65 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Composition
+metadata:
+  name: sms-translate
+  annotations:
+    electron-shell.org/description: Translate from English to Shakespeare English, otherwise translate to English
+spec:
+  package: sms-translate
+  name: main
+  compositionURI: https://raw.github.ibm.com/composer/cloudshell/master/app/plugins/modules/seed/%40seed/applications/sms-translate/composition.js
+#  runtime: nodejs:6
+#  annotations:
+#      - name: web-export
+#        value: true
+#      - name: conductor
+#        value: true
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Package
+metadata:
+  name: sms-translate
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: en2shakespeare
+spec:
+  package: sms-translate
+  codeURI: https://raw.githubusercontent.com/lluan444/use-cases/master/sms-traslate/index.js
+  runtime: nodejs:6
+  main: en2shakespeare
+  parameters:
+  - name: api_key
+    valueFrom:
+      secretKeyRef:
+        name: en2shakespeare-secret
+        key: api_key
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: sendsms
+spec:
+  package: sms-translate
+  codeURI: https://raw.githubusercontent.com/lluan444/use-cases/master/sms-traslate/twilio.zip
+  runtime: nodejs:6
+  parameters:
+  - name: ssid
+    valueFrom:
+      secretKeyRef:
+        name: sendsms-secret
+        key: ssid
+  - name: token
+    valueFrom:
+      secretKeyRef:
+        name: sendsms-secret
+        key: token
+  - name: from
+    valueFrom:
+      secretKeyRef:
+        name: sendsms-secret
+        key: from

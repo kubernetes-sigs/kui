@@ -1,0 +1,51 @@
+::selection {
+    /*
+     * hack to avoid these messages from showing up in the terminal: Couldn't set selectedTextBackgroundColor from default ()
+     * see: https://github.com/electron/electron/issues/4420
+     */
+    background: rgba(70, 188, 223, 0.5);
+}
+body {
+    font-family: var(--font-sans-serif);
+    background: var(--color-stripe-01);
+    color: hsla(240, 2%, 90%, 1);
+}
+.title {
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
+    cursor: initial;
+    font-weight: 300;
+}
+.title:hover {
+    cursor: pointer;
+}
+.title, .description, .versions, .copyright {
+    -webkit-app-region: no-drag;
+    user-select: initial; /* allow users to select version */
+}
+.description {
+    margin: 2em;
+    text-align: justify;
+    font-weight: 300;
+}
+.logo {
+    width: 250px;
+    margin: 1em;
+}
+#app-icon {
+    height: 250px;
+    animation:spin 800ms ease-in-out 1;
+    transition: all .8s ease-in-out;
+}
+#app-icon:hover {
+    transform: rotate(360deg);
+    filter: hue-rotate(-40deg);
+}
+/* spin animation */
+/*@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }*/
+@keyframes spin { 0% { transform: rotate(0deg); filter: hue-rotate(-40deg); }
+                  100% { transform:rotate(360deg); filter: hue-rotate(0deg); }
+                }
+@keyframes spinny { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

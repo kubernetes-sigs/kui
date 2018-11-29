@@ -1,0 +1,24 @@
+{
+  "author": {
+    "name": "Kerry Chang"
+  },
+  "dependencies": {
+    "extract-zip": "^1.6.7",
+    "fs-extra": "^7.0.1",
+    "needle": "^2.2.4",
+    "node-docker-api": "^1.1.22",
+    "promise-retry": "^1.1.1",
+    "tmp": "0.0.33"
+  },
+  "description": "A Kui plugin that lets users run and debug actions locally in a docker container",
+  "license": "Apache-2.0",
+  "main": "plugin.js",
+  "name": "openwhisk-debug",
+  "scripts": {
+    "postinstall": "../../../../node_modules/.bin/tsc",
+    "pretest": "../../../../node_modules/.bin/tsc",
+    "compilenowatch": "../../../../node_modules/.bin/tsc",
+    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+  },
+  "version": "0.1.0"
+}

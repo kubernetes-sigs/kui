@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        font-family: 'Lato', sans-serif;
+    }
+    h1 {
+        font-weight: 300;
+        font-size: 3em;
+    }
+    h3 {
+        margin: 0;
+        font-weight: 300;
+    }
+    pre {
+        margin: 0;
+    }
+    .two-col, .col {
+        display: flex;
+    }
+    .col {
+        flex-direction: column;
+    }
+    .left.col img {
+        margin: 4em;
+        width: 16em;
+        height: 16em;
+    }
+    pre code.hljs {
+        padding: 1em 2em;
+    }
+    .hljs-attr.secret {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 105%;
+        opacity: 1;
+    }
+    .hljs-attr {
+        opacity: 0.6;
+    }
+    img {
+        animation:spin 300ms linear 3;
+    }
+    img:hover {
+        transform: rotate(360deg);
+    }
+    /* spin animation */
+    @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+    @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+    @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700|Roboto:300,400,900|Lato:300,400,900" rel="stylesheet">
+
+    <script>
+    const callApi = func => new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.onload = () => resolve(JSON.parse(xhr.responseText))
+        xhr.open('POST', 'https://openwhisk.ng.bluemix.net:443/api/v1/web/nickm_wskng_test' + func + '.json')
+        xhr.setRequestHeader('Content-Type', 'application/json')
+        xhr.send(JSON.stringify({}))
+    })
+    </script>
+  </head>
+
+  <body>
+    <div class='two-col'>
+      <div class='left col'>
+        <img src='icon.svg'>
+      </div>
+
+      <div class='right col'>
+        <h1>Welcome to OpenWhisk</h1>
+
+        <div>
+          <h3>Input</h3>
+          <pre>
+            <code class='json'>
+{}
+            </code>
+          </pre>
+        </div>
+
+        <div>
+          <h3>Output</h3>
+          <pre>
+            <code class='json' id='demo'></code>
+          </pre>
+        </div>
+      </div>
+
+    <script>
+    callApi('/api/demo').then(response => {
+        const dom = document.getElementById('demo')
+        dom.innerText = JSON.stringify(response, undefined, 4)
+    })
+    </script>
+    </div>
+  </body>
+</html>

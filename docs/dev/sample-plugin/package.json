@@ -1,0 +1,21 @@
+{
+  "name": "example-plugin",
+  "version": "1.0.0",
+  "description": "A sample plugin for the Shell",
+  "main": "plugin.js",
+  "scripts": {
+    "test": "cd ../tests && npm run test"
+  },
+  "keywords": [
+    "OpenWhisk",
+    "shell",
+    "sample",
+    "example",
+    "plugin"
+  ],
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
+  "devDependencies": {},
+  "dependencies": {
+  }
+}

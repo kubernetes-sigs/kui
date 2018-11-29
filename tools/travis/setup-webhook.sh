@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+#
+# Copyright 2018 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+ROOTDIR="${SCRIPTDIR}/../../"
+cd "$SCRIPTDIR"
+
+# composition
+../../kui.js app update cloudshell-done ./done.js
+
+# actions
+../../kui.js action update swapIntoPlace ./swapIntoPlace.js --kind nodejs:8 -p secrets @"$ROOTDIR/dist/publishers/s3/secrets-cos.json"
+../../kui.js action update cleanBucket ./cleanBucket.js --kind nodejs:8 -p secrets @"$ROOTDIR/dist/publishers/s3/secrets-cos.json"
+
+# for now, we need a thin web action veneer
+# see https://github.ibm.com/wdp-dist/sherpa/issues/797
+../../kui.js let cloudshell-done-web.json = ./done-web.js

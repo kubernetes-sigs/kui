@@ -1,0 +1,78 @@
+/*
+  Five-color theme from a single blue hue.
+*/
+.monaco-editor {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #eaeef3;
+}
+
+.monaco-editor {
+  color: #00193a;
+}
+
+.monaco-editor .line-numbers {
+    color: var(--color-brand-01);
+}
+
+.monaco-editor .mtk6,
+.monaco-editor .keyword,
+.monaco-editor .selector-tag,
+.monaco-editor .title,
+.monaco-editor .section,
+.monaco-editor .doctag,
+.monaco-editor .name,
+.monaco-editor .strong {
+    font-weight: bold;
+    color: inherit;
+}
+
+.monaco-editor .mtk22 {
+    /* map keys */
+    color: var(--color-brand-03);
+}
+
+.monaco-editor .mtk5 {
+    /* map values */
+    color: inherit;
+}
+
+.monaco-editor .mti20,
+.monaco-editor .comment {
+  color: #738191;
+}
+
+.monaco-editor .mtk20,
+.monaco-editor .mtk7,
+.monaco-editor .string,
+.monaco-editor .title,
+.monaco-editor .section,
+.monaco-editor .built_in,
+.monaco-editor .literal,
+.monaco-editor .type,
+.monaco-editor .addition,
+.monaco-editor .tag,
+.monaco-editor .quote,
+.monaco-editor .name,
+.monaco-editor .selector-id,
+.monaco-editor .selector-class {
+  color: #0048ab;
+}
+
+.monaco-editor .meta,
+.monaco-editor .subst,
+.monaco-editor .symbol,
+.monaco-editor .regexp,
+.monaco-editor .attribute,
+.monaco-editor .deletion,
+.monaco-editor .variable,
+.monaco-editor .template-variable,
+.monaco-editor .link,
+.monaco-editor .bullet {
+  color: #4c81c9;
+}
+
+.monaco-editor .emphasis {
+  font-style: italic;
+}

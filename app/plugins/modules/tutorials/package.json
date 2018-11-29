@@ -1,0 +1,24 @@
+{
+  "name": "tutorials",
+  "version": "0.1.0",
+  "description": "IBM Cloud shell plugin for tutorials",
+  "main": "plugin/plugin.js",
+  "scripts": {
+    "preinstall": "rm -rf node_modules/jquery",
+    "postinstall": "../../../../node_modules/.bin/tsc; rm -rf node_modules/jquery/src && rm -f node_modules/jquery/external/sizzle/dist/sizzle.js && rm -f node_modules/jquery/dist/core.js && mv -f node_modules/jquery/dist/jquery.min.js node_modules/jquery/dist/jquery.js && rm -f node_modules/jquery/dist/jquery.slim* && mv -f node_modules/jquery/dist/jquery.min.map node_modules/jquery/dist/jquery.map",
+    "pretest": "../../../../node_modules/.bin/tsc",
+    "compilenowatch": "../../../../node_modules/.bin/tsc",
+    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+  },
+  "keywords": [
+    "openwhisk",
+    "composer",
+    "tutorials"
+  ],
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "marked": "^0.5.2"
+  }
+}

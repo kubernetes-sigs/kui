@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+#shift
+
+if [ -n "$USE_VAGRANT" ]; then
+   cd $WHISKDIR/tools/vagrant
+   CMD="./openwhisk/bin/wskadmin $@"
+   vagrant ssh -c "$CMD"
+
+else
+   $WHISKDIR/bin/wskadmin $@
+fi

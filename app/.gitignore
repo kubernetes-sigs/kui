@@ -1,0 +1,8 @@
+# npm5 bugs https://github.com/npm/npm/issues/17929
+# resulting in @openwhisk/composer not being installed in the right place
+# sometimes, `@openwhisk/composer` appears at the top level `app/plugins/node_modules/@openwhisk/composer`,
+# and other times it appears in `app/plugins/node_modules/wskng-composer-plugins/node_modules/@openwhisk/composer`
+#package-lock.json
+#plugins/package-lock.json
+
+build

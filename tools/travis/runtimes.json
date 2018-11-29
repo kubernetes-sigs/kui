@@ -1,0 +1,69 @@
+{
+    "runtimes": {
+        "nodejs": [
+            {
+                "kind": "nodejs",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejsaction",
+                    "tag": "latest"
+                },
+                "deprecated": true
+            },
+            {
+                "kind": "nodejs:6",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejs6action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "stemCells": [{
+                    "count": 2,
+                    "memory": "256 MB"
+                }]
+            }
+        ],
+        "python": [
+            {
+                "kind": "python",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejs6action",
+                    "tag": "latest"
+                },
+                "deprecated": false
+            }
+        ],
+        "swift": [
+            {
+                "kind": "swift",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejs6action",
+                    "tag": "latest"
+                },
+                "deprecated": true
+            }
+        ],
+        "java": [
+            {
+                "kind": "java",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "java8action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "jarfile",
+                    "attachmentType": "application/java-archive"
+                },
+                "requireMain": true
+            }
+        ]
+    },
+    "blackboxes": []
+}

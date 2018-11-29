@@ -1,0 +1,186 @@
+/* tabs */
+.tab-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* inner scrolling */
+}
+tab {
+    flex: 1;
+    display: none;
+    overflow: hidden; /* inner scrolling */
+}
+tab.visible {
+    display: flex;
+}
+
+body.not-electron .application-name {
+    display: flex;
+}
+body.not-electron > .page > .header {
+    flex-basis: 0;
+    padding: 0;
+}
+
+body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
+    display: none;
+}
+.left-tab-stripe {
+    flex-basis: 78px; /* this seems to align things well with macOS */
+    min-width: 0;
+    padding: 1.5em 0 1em;
+    background: var(--color-stripe-01);
+    display: flex;
+    flex-direction: column;
+    -webkit-app-region: drag;
+}
+body.os-darwin .left-tab-stripe {
+    padding-top: 2em;
+}
+
+.left-tab-stripe-buttons {
+    flex: 1;
+}
+
+/*.left-tab-stripe-button {
+    width: 3.25em;
+    height: 3.25em;
+    margin: 2em 0;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid transparent;
+    transition: all 300ms ease-in-out;
+    border-radius: 3px / 6px;
+    padding: 0.25ex;
+    color: var(--color-text-01);
+}*/
+.left-tab-stripe-button {
+    counter-increment: tab-index;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 1em 0;
+    color: var(--color-text-01);
+    transition: color 600ms ease-in-out;
+}
+.new-tab-button.left-tab-stripe-button:hover i {
+    color: rgba(255,255,255,0.5) !important;
+}
+.new-tab-button.left-tab-stripe-button i {
+    filter: none;
+    color: rgba(255,255,255,0.1) !important;
+}
+.new-tab-button.left-tab-stripe-button:after {
+    content: ''
+}
+.left-tab-stripe-button i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: blur(1px) grayscale(0.5) brightness(0.75);
+    font-size: 2.75em;
+    transition: filter 600ms ease-in-out, color 600ms ease-in-out;
+    /* border-radius: 3px / 6px;
+    border: 9px solid transparent; */
+}
+.left-tab-stripe-button:nth-child(1) i {
+    color: var(--color-tab-01);
+}
+.left-tab-stripe-button:nth-child(2) i {
+    color: var(--color-tab-02);
+}
+.left-tab-stripe-button:nth-child(3) i {
+    color: var(--color-tab-03);
+}
+.left-tab-stripe-button:nth-child(4) i {
+    color: var(--color-tab-04);
+}
+.left-tab-stripe-button:nth-child(5) i {
+    color: var(--color-tab-05);
+}
+.left-tab-stripe-button:nth-child(6) i {
+    color: var(--color-tab-06);
+}
+.left-tab-stripe-button:nth-child(7) i {
+    color: var(--color-tab-07);
+}
+.left-tab-stripe-button:nth-child(8) i {
+    color: var(--color-tab-08);
+}
+.left-tab-stripe-button:after {
+    content: counter(tab-index);
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: 0.6875em;
+    transition: font-size 150ms ease-in-out;
+}
+.left-tab-stripe-button.left-tab-stripe-button-selected:after {
+    font-size: 0.875em;
+}
+.left-tab-stripe-button-selected i {
+    filter: grayscale(0.5);
+}
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected):hover i {
+    filter: none;
+}
+.left-tab-stripe-button-selected {
+    color: var(--color-text-01)
+}
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected):hover {
+    color: var(--color-text-01);
+    cursor: pointer;
+}
+.left-tab-stripe-button-selected .left-tab-stripe-button-label {
+    opacity: 0;
+}
+.left-tab-stripe-button-label {
+    color: var(--color-text-02);
+    font-size: 0.6875em;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 1ex;
+}
+
+.sidecar-header, .sidecar-bottom-stripe {
+    -webkit-app-region: drag;
+}
+sidecar .sidecar-header-name-content {
+    -webkit-app-region: unset;
+}
+
+.horizontal-landing-zone {
+    flex-basis: 1.5rem;
+    -webkit-app-region: drag;
+}
+body.subwindow .repl .horizontal-landing-zone {
+    flex-basis: 3rem;
+}
+                                                                
+.repl {
+    padding-top: 0;
+}
+.repl-block:first-child {
+    padding-top: 0;
+}
+.repl-block {
+    margin: 0em 1em 0 1.8125em;
+}
+
+#help-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#help-button i {
+    font-size: 2em;
+    color: var(--color-text-02);
+    transition: color 300ms ease-in-out;
+}
+#help-button:hover i {
+    cursor: pointer;
+    color: var(--color-brand-02);
+}

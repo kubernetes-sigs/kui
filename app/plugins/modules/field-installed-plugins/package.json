@@ -1,0 +1,16 @@
+{
+  "name": "plugin",
+  "version": "1.0.0",
+  "description": "Support for field installation of plugins",
+  "main": "plugin/plugin.js",
+  "scripts": {
+    "postinstall": "../../../../node_modules/.bin/tsc",
+    "pretest": "../../../../node_modules/.bin/tsc",
+    "compilenowatch": "../../../../node_modules/.bin/tsc",
+    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {}
+}

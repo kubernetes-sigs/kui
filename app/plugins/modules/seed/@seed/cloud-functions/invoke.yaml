@@ -1,0 +1,20 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: myfunction
+  annotations:
+    electron-shell.org/description: Create a Cloud Function and then **invoke it**
+spec:
+  codeURI: https://raw.githubusercontent.com/apache/incubator-openwhisk-catalog/master/packages/utils/echo.js
+  runtime: nodejs:6
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Invocation
+metadata:
+  name: myfunctionact
+spec:
+  function: myfunction
+  parameters:
+  - name: hello
+    value: blue

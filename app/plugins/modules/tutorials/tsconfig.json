@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2016",
+    "rootDir": "src",
+    "outDir": "plugin",
+    "sourceMap": true,
+    "declaration": true,
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "plugin",
+    "**/*.d.ts",                                                                                              
+    "**/flycheck*.ts",
+    "node_modules",
+    "dist"
+  ]
+}

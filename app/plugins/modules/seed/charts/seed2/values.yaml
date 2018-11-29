@@ -1,0 +1,32 @@
+name: seed
+ts: 000000
+docker:
+  images:
+  - shortname: wsk-controller
+    fullImageName: registry.ng.bluemix.net/seed/wsk-controller
+    tag: 0.5.1
+    command: ./wsk-controller
+ # - shortname: apic-controller
+ #   fullImageName: registry.ng.bluemix.net/seed/apic-controller
+ #   tag: latest
+ #   command: ./apic-controller
+  - shortname: ibm-cloud-services
+    fullImageName: registry.ng.bluemix.net/seed/ibm-cloud-services
+    tag: latest
+#    tag: 0.2.1
+    command: ./ibm-cloud-services
+  - shortname: mljob-controller
+    fullImageName: registry.ng.bluemix.net/seed/mljob-controller
+    tag: latest
+    command: ./manager  
+  - shortname: streams-controller
+    fullImageName: registry.ng.bluemix.net/seed/streams-controller
+    tag: latest
+    command: "./manager"
+  - shortname: wmldeploy-controller
+    fullImageName: registry.ng.bluemix.net/seed/wmldeploy-controller
+    tag: latest
+    command: "./manager"
+    pullPolicy: Always
+  logLevel: 5
+  imagePullSecretName: seed-registry

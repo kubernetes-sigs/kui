@@ -1,0 +1,19 @@
+{
+  "name": "editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "plugin.js",
+  "scripts": {
+    "postinstall": "../../../../node_modules/.bin/tsc",
+    "postinstall-yo": "rm -rf node_modules/monaco-editor/esm",
+    "pretest": "../../../../node_modules/.bin/tsc",
+    "compilenowatch": "../../../../node_modules/.bin/tsc",
+    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "monaco-editor": "^0.14.3"
+  }
+}

@@ -1,0 +1,2472 @@
+* {
+    box-sizing: border-box;
+}
+::selection {
+    background: var(--color-selection-background);
+    color: var(--color-selection-color);
+}
+html, body, .page, .main, .repl, sidecar {
+    height: 100%;
+    max-height: 100%;
+    overflow-x: hidden;
+}
+body {
+    margin: 0;
+    overflow: hidden;
+}
+.page {
+    display: flex;
+    flex-direction: column;
+}
+body a.plain-anchor {
+    color: inherit;
+    text-decoration: none;
+    transition: none;
+}
+body a {
+    transition: color 150ms ease-in-out;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body a:hover:not(.plain-anchor) {
+    cursor: pointer;
+}
+
+/* HEADER */
+body .page > .header {
+    /* only allow mouse dragging on top-most header */
+    -webkit-app-region: drag;
+}
+.header {
+    flex-basis: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 1.1875em;
+    font-weight: 300;
+    font-size: 1rem;
+    -webkit-font-smoothing: antialiased;  /* chrome */
+    -moz-osx-font-smoothing: grayscale;   /* firefox */
+    font-smoothing: antialiased;
+}
+.header .deemphasize {
+    font-size: 55%;
+    letter-spacing: 1px;
+    display: none;
+}
+.header-left-bits, .header-right-bits {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.header-left-bits {
+    flex: 1;
+}
+.header-top-bits {
+    display: flex;
+    flex: 1;
+}
+.header .clickable, .header .clickable:hover {
+    text-decoration: none;
+    transition: none;
+}
+.header .clickable {
+    /* this just gives a little room for hovers, so that users don't have
+   to mouse precisely over the hover text */
+    padding: 0.75ex 0;
+}
+.application-icon {
+    transition: transform .8s ease-in-out, opacity 0s linear;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.application-icon {
+    animation: spin 500ms linear 1;
+}
+body.still-loading .application-icon {
+    animation: spin 2.5s alternate infinite;
+}
+.application-icon:hover {
+    opacity: 1;
+    transform: rotate(450deg);
+    filter: hue-rotate(-20deg) brightness(0.925);
+    cursor: pointer;
+}
+body:not(.not-electron) .application-icon {
+    display: none;
+}
+.application-icon {
+    width: 3.75em;
+    height: 3.75em;
+    margin: 0 auto;
+    margin-bottom: 1em;
+    -webkit-app-region: no-drag;
+    transition: all 650ms ease-in-out;
+    opacity: 0.75;
+}
+.header .application-name {
+    font-size: 1.125rem;
+    font-weight: 400;
+}
+.header .application-name .bx--logo__text--bold {
+    font-weight: 600;
+}
+.header .application-name .bx--global-header__title--current-page {
+    font-weight: 400;
+}
+header .header-nav-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.header .header-nav-list li {
+    font-weight: 400;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin: 0 1em;
+    -webkit-app-region: no-drag;
+}
+.header-nav-list li input {
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    text-transform: inherit;
+    font-weight: inherit;
+    padding: 0;
+}
+
+/* MAIN */
+.main {
+    display: flex;
+    flex: 1;
+}
+
+/* REPL */
+body.still-loading .repl {
+    opacity: 0;
+}
+.repl {
+    font-size: 0.925em;
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding-top: 1rem;
+    flex: 4;
+    transition: flex 300ms ease-in-out, opacity 300ms ease-in-out;
+    background: var(--color-ui-01);
+}
+.repl-inner {
+    overflow-y: auto;
+    flex:1;
+}
+.repl.sidecar-visible .repl-block {
+    background: transparent;
+}
+.repl-block {
+    padding: 0.5em 0;
+    display: flex;
+    flex-direction: column;
+}
+body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl .repl-block {
+    border-color: transparent;
+    box-shadow: none;
+}
+.repl, .repl input {
+    font-family: var(--font-monospace);
+}
+.result-vertical .repl-result, .repl-result > .oops, .repl-result .ok {
+    font-size: 0.925em;
+}
+.result-as-table .result-table, .result-as-table.result-table {
+    display: table;
+    border-spacing: 0;
+    border-collapse: collapse;
+    border: 1px solid;
+    margin-top: 0.75em;
+}
+.result-as-fixed-tables .result-table, .result-as-fixed-tables.result-table {
+    table-layout: fixed;
+    width: 100%;
+}
+.result-as-multi-table .result-table-outer-wrapper {
+    /* repl multi-table */
+    display: table-row;
+}
+.scrollable[data-table-max-rows="4"], .scrollable-auto[data-table-max-rows="4"] {
+    max-height: calc(4 * 3em + 2px);
+}
+.scrollable[data-table-max-rows="5"], .scrollable-auto[data-table-max-rows="5"] {
+    max-height: calc(5 * 3em + 2px);
+}
+.scrollable[data-table-max-rows="6"], .scrollable-auto[data-table-max-rows="6"] {
+    max-height: calc(6 * 3em + 2px);
+}
+.scrollable[data-table-max-rows="7"], .scrollable-auto[data-table-max-rows="7"] {
+    max-height: calc(7 * 3em + 2px);
+}
+.scrollable[data-table-max-rows="8"], .scrollable-auto[data-table-max-rows="8"] {
+    max-height: calc(8 * 3em + 2px);
+}
+.scrollable[data-table-max-rows="9"], .scrollable-auto[data-table-max-rows="9"] {
+    max-height: calc(9 * 3em + 2px);
+}
+.scrollable[data-table-max-rows="10"], .scrollable-auto[data-table-max-rows="10"] {
+    max-height: calc(10 * 3em + 2px);
+}
+.result-as-multi-table .result-table-outer {
+    /* repl multi-table */
+    display: table-cell;
+}
+.result-as-fixed-tables.result-as-table .result-table-outer {
+    /* if these are fixed tables, then they will occupy the full width of
+       the container, so we don't need a margin-right */
+    margin-right: 0;
+}
+.result-as-table .result-table-outer .result-table {
+    margin-top: 0;
+}  
+.result-as-table .result-table-title-outer {
+    display: flex;
+    align-items: flex-end;
+    color: var(--color-brand-01);
+    letter-spacing: 1px;
+    font-weight: 500;
+    padding: 1em 0.375rem 0.375em;
+    padding-left: 0;
+}
+.result-as-table .result-table-title-outer i {
+}
+.result-as-table .result-table-title {
+    flex: 1;
+    text-transform: uppercase;
+}
+.result-as-table .result-table .header-cell, .result-as-table.result-table .header-cell {
+    font-weight: bold !important;
+}
+.result-as-table .result-table .header-row .header-cell , .result-as-table.result-table .header-row .header-cell {
+    background-color: var(--color-ui-06);
+    border-bottom: 1px solid var(--color-content-divider);
+}
+.result-as-table-full-width .result-table {
+    border: none;
+}
+.result-as-table .repl-result {
+    /* repl table */
+    display: table;
+    overflow-x: auto;
+}
+.result-as-table.result-as-multi-table.result-as-multi-table-flex-wrap .repl-result {
+    display: flex;
+    align-items: flex-start;
+}
+.result-as-table-full-width .result-table, .result-as-table-full-width .log-lines {
+    width: 100%;
+}
+.repl-result {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.repl.sidecar-visible p {
+    white-space: normal;
+}
+.repl.sidecar-visible .result-as-table .result-table, body.sidecar-is-minimized .result-as-table .result-table {
+    /* repl table when sidecar is visible */
+    table-layout: fixed;
+    box-shadow: none;
+    width: 100%;
+}
+.repl .result-as-multi-table .result-table {
+    /* repl multi-table */
+    width: 100%;
+}
+.repl-prompt {
+    color: var(--color-text-02);
+    margin-right: 0.375em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+}
+.repl-prompt .repl-selection {
+    font-size: 80%;
+    opacity: 0.6;
+}
+.repl-prompt .repl-selection.has-selection-true {
+    margin-left: 1ex;
+}
+.repl-context {
+    display: none;
+    font-size: 0.75em;
+    margin-right: 0.1875em;
+}
+repl .repl-prompt-righty {
+    color: var(--color-brand-01);
+    font-size: 1.125em;
+}
+
+/* repl right-hand decorations */
+.repl-prompt-right-elements {
+    display: flex;
+    align-items: center;
+    margin-left: 1em;
+    flex: 0;
+    white-space: nowrap;
+}
+.repl-prompt-right-elements .repl-prompt-right-element-icon {
+    margin-left: 1ex;
+    color: var(--color-ui-05);
+    font-size: 1.25em;
+    transition: all 300ms ease-in-out;
+}
+.repl-prompt-right-elements .repl-prompt-right-element-icon:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+.repl-block.valid-response .repl-prompt-right-elements .repl-prompt-right-element-icon {
+    color: var(--color-ok);
+}
+.repl-block.error .repl-prompt-right-elements .repl-prompt-right-element-icon {
+    color: var(--color-error);
+}
+repl.sidecar-visible .repl-prompt-right-elements, .repl-active .repl-prompt-right-elements {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-prompt-lefty, body/*.sidecar-full-screen*/ repl .repl-prompt-lefty {
+    display: none;
+}
+body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.sidecar-full-screen*/ repl .repl-selection {
+    /* collapse the context and selection when the sidecar is visible */
+    width: 0;
+    min-width: 0;
+    opacity: 0 !important;
+    margin: 0 !important;
+}
+.repl input {
+    font-weight: 500; /* make it a bit more substantial; IBM Plex Mono 400 is too light */
+    color: var(--color-text-01);
+    background: transparent;
+    font-size: 0.925em;
+    border: none;
+    flex: 1;
+    caret-color: var(--color-support-01);
+}
+.repl input:focus {
+    outline: none;
+}
+.repl-block.valid-response .ok-for-list {
+    margin-top: 0.75em;
+}
+.repl-block.valid-response .ok, .green-text, .dragover .ok-text-on-dragover {
+    opacity: 1 !important;
+}
+.repl-block.valid-response .oops, sidecar.rule-enabled-false .sidecar-header-icon, .repl-block.error .oops, .clickable.oops, .oops .oops-text-on-oops, .red-text {
+    opacity: 1 !important;
+    white-space: pre-wrap;
+}
+.header .clickable.oops {
+    font-weight: 900;
+}
+.repl-block.valid-response .ok, .repl-block.valid-response > .oops {
+    padding-top: 0.5em;
+    font-size: 0.925em;
+}
+.repl-block.valid-response .oops {
+    /* oops output often times doesn't word wrap nicely on its own, e.g. help/usage; issue #396 */
+    word-break: break-all;
+}
+.repl-input {
+    align-items: center;
+}
+.repl-input, .repl-output {
+    display: flex
+}
+.repl-output.result-vertical {
+    flex-direction: column
+}
+.repl-block .whitespace {
+    white-space: pre-wrap;
+}
+.repl-block.processing .repl-output, .repl-block.valid-response .repl-output {
+    display: flex;
+    align-items: flex-start;
+}
+.sidecar-visible .repl-block.processing .repl-output, .sidecar-visible .repl-block.valid-response .repl-output {
+    align-items: stretch;
+}
+.repl-block.processing .repl-output .repl-result {
+    animation: spin 750ms linear infinite;
+}
+.repl-block.processing .repl-output .repl-result:after {
+    content: '|';
+}
+.repl-result pre {
+    /* invocation results */
+    margin: 0;
+}
+.repl-result code {
+    /* more invocation results */
+    /* here, we override the highlight.js theme, when rendering in the repl */
+    background: transparent;
+    color: black;
+}
+.fifty-fifty:first-child {
+    max-width: calc(50% - 3em);
+    margin-right: 3em;
+}
+.fifty-fifty:last-child {
+    max-width: 50%;
+}
+.sidecar-visible .repl-block .fifty-fifty, tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
+    max-width: unset;
+    margin-right: unset;
+}
+.sidecar-visible .result-table .entity {
+    /* in either one-column mode, or if the sidecar is visible, have list entries occupy a full row */
+    padding-right: 0;
+}
+.entity-rule-status {
+    width: 7em;
+}
+.sidecar-visible .repl-result.one-column .package-prefix {
+    max-width: 35%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.result-table .entity {
+    display: table-row-group;
+}
+.result-table .entity:not(.log-line) .entity-attributes:not(.header-row):hover {
+    cursor: pointer;
+}
+.entity-attributes {
+    display: table-row;
+    height: 3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* row selection */
+.row-selection-context.selected-row .selected-entity {
+    font-size: 1.25em;
+    color: var(--color-brand-03);
+    animation: selected-pulse 300ms 3;
+    transition: all 150ms ease-in-out;
+}
+.row-selection-context:not(.selected-row) .selected-entity {
+    color: var(--color-ui-05);
+    font-weight: 300;
+    opacity: 0.5;
+}
+
+.entity:first-child .entity-attributes > span {
+    border-top: none;
+}
+.entity-attributes > span {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0 0.375rem;
+    border-top: 1px solid var(--color-ui-04);
+}
+.entity .entity-kind {
+    min-width: 7em;
+}
+.repl.sidecar-visible .entity .entity-kind {
+    width: 8em;
+}
+.entity .entity-narrow {
+    min-width: 5em;
+}
+.repl.sidecar-visible .entity .entity-narrow {
+    width: 5em;
+}
+.repl.sidecar-visible .repl-result .entity-name-group .entity-name {
+    /* notes: 1) block display needed for max-width; 2) max-width cannot
+       be a property of entity-name-group, as it is a table-cell, and max-width
+       is undefined for table-cell; some browsers seem to support max-width on
+       table-cell, but not all */
+    display: block;
+    max-width: 18em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.result-table .entity-name-group {
+    padding-left: 0.75em;
+/*    min-width: 18em;
+    max-width: 34em;*/
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.result-table .entity-name-group-narrow {
+    max-width: 16em;
+}
+.result-table .entity-name-group-extra-narrow {
+    max-width: 10em;
+}
+.repl.sidecar-visible .result-table .entity-name-group-extra-narrow {
+    width: 9em;
+}
+.header-cell {
+    text-align: left; /* th defaults to text-align: center */
+}
+.entity-name-group:not(.header-cell) .entity-name, .result-as-table .bold {
+    font-weight: 500;
+}
+.repl-result .entity.activations .entity-name {
+    margin-left: 2em;
+    order: 2;
+    font-size: 80%;
+    opacity: 0.6;
+    flex: 1;
+}
+.repl-result .activationId {
+    font-weight: 500;
+}
+
+/* two special session activation list decorations */
+.repl-block .repl-result .status {
+    padding-top: 0;
+    padding-left: 1em;
+    order: 5;
+}
+.repl-result .entity.session.activations .entity-name {
+}
+
+.repl-result .activation-duration {
+    width: 3em;
+    text-align: right;
+}
+
+/* grid cells in activation list view */
+.repl-result .entity.activations {
+    margin: 0.25ex;
+}
+.repl-result .activation-viz-plugin {
+    /* activation grid in activation list vie */
+    flex: initial;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 2em;
+}
+.repl-result .activation-viz-plugin .grid {
+    /* activation grid in activation list vie */
+    padding: 0 1ex 0 0;
+}
+.repl-result .activation-viz-plugin .grid .grid-cell {
+    /* activation grid in activation list vie */
+    border: 1px solid rgba(100,100,100,0.35);
+}
+.repl-result .activation-result {
+    /* activation result in activation list view */
+    order: 3;
+    margin-left: 2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    transition: all 150ms ease-in-out;
+    background: transparent;
+}
+.repl-result .activation-start-time {
+    order: 4;
+    padding-left: 1em;
+}
+.timestamp-same-day {
+    /* keep the width, but make it hidden */
+    opacity: 0;
+}
+.sidecar-visible .repl-result.one-column .activation-result, .sidecar-visible .repl-result.one-column .activation-start-time, .sidecar-visible .entity-rule-definition {
+    /* hide activation result and start time  in activation list view, when sidecar is open */
+    opacity: 0;
+    flex: 0 0 0%;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+}
+
+
+.repl .list-label {
+    font-size: 70%;
+    opacity: 0.6;
+    margin-right: 1ex;
+}
+.repl-result-prefix, badge {
+    font-weight: 400;
+    transition: all 150ms ease-in-out;
+    font-size: 0.75rem;
+    border-radius: 0.9375rem;
+    margin: 0.1875rem;
+    padding: 0 0.625rem;
+    height: 1.25rem;
+    line-height: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+}
+badge {
+    transition: all 450ms ease-in-out;
+}
+sidecar .sidecar-header badge.version {
+    /* badge for action version */
+    font-size: 0.75em;
+}
+badge.clickable:hover {
+    text-decoration: none;
+}
+
+.entity.activations.is-sequence-true .repl-result-prefix {
+    min-width: 5.5em;
+}
+.entity .repl-result-prefix {
+    height: auto;
+    font-size: 0.875em;
+    font-weight: 300;
+    background: transparent;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 2em;
+    min-width: 6em;
+    text-align: right;
+    border-radius: 0;
+}
+.entity .repl-result-prefix, .entity .border-right {
+    border-right: 2px solid;
+}
+.package-prefix {
+    font-size: 0.75em;
+    opacity: 0.6;
+}
+
+/* sidecar */
+sidecar {
+    flex: 0 0 0%;
+    min-width: 0;
+    transition: all 300ms ease-in-out;
+    box-shadow: 0 0 1ex var(--color-ui-02);
+    font-weight: 300;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    background:var(--color-ui-02);
+}
+sidecar.visible {
+    flex: 6;
+    z-index: 1; /* float above the repl */
+    transition-duration: 600ms; /* a bit slower coming out */
+    border-left: 1px solid;
+    border-left-color: var(--color-ui-04);
+}
+.sidecar-full-screen sidecar.visible:not(.minimized) {
+    border-left-color: var(--color-ui-05);
+    border-left-style: dotted;
+    box-shadow: none;
+}
+.sidecar-full-screen .repl.sidecar-visible {
+    flex: 0 0 0;
+    min-width: 0;
+}
+
+/* sidecar bottom stripe */
+.sidecar-bottom-stripe {
+    padding: 0 1em;
+    flex-basis: 3rem;
+    min-height: 3rem; /* important for screenshot, which tries to maximally squish the sidecar height */
+    display: flex;
+    align-items: center;
+    z-index: 5;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;  /* chrome */
+    -moz-osx-font-smoothing: grayscale;   /* firefox */
+    font-smoothing: antialiased;
+}
+sidecar .sidecar-bottom-stripe > div {
+    font-size: 0.875em;
+}
+sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits, sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
+    /* button container in sidecar bottom stripe */
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
+    /* back button container in sidecar bottom stripe */
+    flex: 0 0 0%;
+    min-width: 0;
+}
+sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
+    flex: initial;
+    margin-right: 1em;
+}
+sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-close {
+    text-align: right;
+}
+sidecar .sidecar-bottom-stripe-close-icon {
+    letter-spacing: -1ex;
+    opacity: 0.6;
+    transition: all 150ms ease-in-out;
+}
+body.os-win32 sidecar .sidecar-bottom-stripe-close-icon {
+    /* dunno why windows is weird here */
+    letter-spacing: 0px;
+}
+sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-maximize {
+    display: flex;
+
+    /* so that the "hidden" maximize button (see opacity:0,width:0 just below)
+       doesn't occlude the close button */
+    /*overflow: hidden;*/
+}
+.maximize-button-label, .unmaximize-button-label {
+    transition: opacity 300ms ease-in-out;
+    display: inline-block;
+}
+.sidecar-full-screen sidecar .sidecar-bottom-stripe-maximize .maximize-button-label, tab:not(.sidecar-full-screen) sidecar .sidecar-bottom-stripe-maximize .unmaximize-button-label {
+    transition: opacity 0ms ease-in-out;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-as-button) {
+    /* for bottom mode-switching buttons, capitalize the text; for actual buttons, keep the capitalization as it was given */
+    text-transform: capitalize;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button {
+    padding: 1ex 0.4375rem; /* rem important to avoid oddities when font zooming */
+    border-bottom: 2px solid transparent; /* will change color on hover */
+    transition: all 150ms ease-in-out;
+}
+sidecar .sidecar-header .limits {
+    /* don't show limits in header for now */
+    display: none;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover, .sidecar-bottom-stripe .sidecar-bottom-stripe-button.hover {
+    cursor: pointer;
+    opacity: 1;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active).force-no-hover:hover, .sidecar-bottom-stripe .sidecar-bottom-stripe-button.force-no-hover.hover {
+    /* e.g. the screenshot plugin wants to disallow tooltips on the
+   "capture screenshot" button while capturing a screenshot! */
+    color: inherit !important;
+    transition: none !important;
+}
+.sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon, .sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon, .sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
+    /* on hover, squeeze the >> a bit closer together */
+    letter-spacing: -1.25ex;
+}
+body.os-win32 sidecar .sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon, body.os-win32 sidecar .sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon, body.os-win32 sidecar .sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
+    letter-spacing: -1px; /* windows is different here */
+}
+sidecar .sidecar-bottom-stripe-back-bits, .sidecar-bottom-stripe .fill-container {
+    /* back button in sidecar bottom stripe */
+    border-right: 1px dotted hsla(240, 2%, 90%, 0.5);
+    padding-right: 1em;
+}
+sidecar .sidecar-bottom-stripe-back-bits > div {
+    transition: all 150ms ease-in-out;
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+}
+sidecar .sidecar-bottom-stripe-back-bits > div:hover {
+    opacity: 1;
+}
+sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:not(.has-back-button) {
+    display: none;
+}
+sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
+    font-size: 0.875em;
+}
+sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button .sidecar-bottom-stripe-back-inner-bits {
+    margin-left: 0.75ex;
+}
+
+/* custom content */
+body.no-sidecar-header .sidecar-header, sidecar.no-sidecar-header .sidecar-header, sidecar.custom-content .sidecar-content, sidecar:not(.custom-content) .custom-content, sidecar.custom-content .sidecar-header-secondary-content .limits, sidecar:not(.custom-content) .custom-header-content, sidecar.custom-content .sidecar-header-secondary-content .action-content {
+    /* custom content rules */
+    display: none;
+}
+sidecar .custom-content {
+    display: flex;
+    flex: 1;
+    min-height: 0; /* without this, in firefox wskflow pushes the bottom stripe off the bottom of the viewport */
+}
+sidecar .sidecar-header {
+    display: flex;
+    border-bottom: 1px solid;
+    flex-basis: 9rem;
+    min-height: 9rem; /* see shell issue #712 */
+}
+sidecar .sidecar-header .header-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    /* this is needed, as we rotate the "sidecar-header-icon", which confuses chrome in terms of width occupancy;
+       see sidecar .sidecar-header-icon-wrapper; the 4em parts must match! */
+    width: calc(100% - 4em);
+}
+sidecar .header-right-bits {
+    white-space: nowrap;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 1em;
+}
+.sidecar-header .kind {
+    font-variant: small-caps;
+    flex: 1;
+    margin-top: 1ex;
+}
+.sidecar-header .action-content .kind {
+    font-size: 0.875rem;
+    font-variant: normal;
+    font-weight: 300;
+    font-family: inherit;
+    margin: 0;
+}
+.header-right-bits .action-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+}
+.sidecar-header .activation-duration, .sidecar-header .kind {
+    font-weight: bold;
+    font-size: 2.5em;
+}
+sidecar .sidecar-header-text {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+sidecar .sidecar-header-icon {
+    font-size: 2em;
+    height: 4.5rem;
+    width: 4.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+}
+sidecar .sidecar-header-icon-wrapper {
+    width: 4em; /* see the sidecar .sidecar-header .header-main-content calc(100% - 4em); the 4em parts must match! */
+}
+sidecar .header-left-bits {
+    align-items: stretch;
+}
+sidecar .sidecar-header-icon {
+    transform: rotate(-90deg);
+    transform-origin: center;
+    width: 100%;
+    height: 100%;
+    font-size: 0.925rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
+}
+sidecar .sidecar-header-name {
+    flex: 1;
+    font-weight: 400;
+    font-size: 2.75em;
+    display: flex;
+    align-items: center;
+    margin: 1rem 0 0;
+}
+sidecar .sidecar-header .entity-name-line {
+    display: flex;
+    align-items: center;
+}
+sidecar.entity-has-badges .sidecar-header .header-right-bits .action-content {
+    display: flex;
+}
+sidecar .sidecar-header .badges {
+    margin-left: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin: 1rem 0 0 1rem;
+}
+sidecar .sidecar-header badge {
+    /* badges next to the entity name */
+    transition: all 150ms ease-in-out;
+}
+sidecar .sidecar-header badge.clickable:hover {
+    filter: brightness(1.1);
+}
+sidecar .sidecar-header-name-content {
+    overflow: hidden;
+}
+sidecar .sidecar-header-name-content .entity-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    /* these two rules help us to simulate left-ellision */
+    direction: rtl;
+    text-align: left;
+}
+sidecar .sidecar-header-name-content > span {
+    display: block;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+sidecar .sidecar-header-name .package-prefix {
+    font-size: 1rem;
+    max-width: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 1;
+}
+sidecar.entity-is-activations .sidecar-header-name .activation-id {
+    font-family: var(--font-monospace);
+    font-size: 75%;
+    color: var(--color-text-02);
+    font-size: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 150ms ease-in-out;
+}
+sidecar.entity-is-activations .sidecar-header-name .package-prefix {
+    /* don't display package name for activations? hmm */
+    display: none;
+}
+sidecar.entity-is-activations .sidecar-header-name  .sidecar-header-name-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+sidecar .sidecar-header-secondary-content {
+    font-size: 0.875rem;
+    color: var(--color-text-02);
+    margin: 0 1em 0.75em 0;
+}
+sidecar .sidecar-header-secondary-content .kind-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+sidecar .sidecar-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+sidecar .sidecar-content > div, sidecar .sidecar-content .activation-content > pre > code, sidecar .custom-content pre > code, sidecar .custom-content .padding-content {
+    display: block;
+    padding: 1.5em 1em;
+}
+sidecar .sidecar-content .hook-for-third-party-content.no-content {
+    display: none;
+}
+sidecar .sidecar-content .activation-content  {
+    padding: 0;
+}
+sidecar .sidecar-content .activation-content, sidecar .sidecar-content .hook-for-third-party-content  {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.entity-web-export-url:not(.has-url) {
+    display: none;
+}
+sidecar .activation-status {
+    color: white;
+    font-size: 2.5rem;
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0.5ex;
+}
+sidecar pre {
+    /* no margin for action source code */
+    margin: 0;
+}
+sidecar:not(.entity-is-actions):not(.entity-is-apps):not(.entity-is-compositions) .action-content {
+    display: none;
+}
+sidecar:not(.entity-is-activations) .activation-content {
+    display: none;
+}
+sidecar.no-activation-timing-data .sidecar-header-secondary-content {
+    /* no timing information for activations */
+    display: none;
+}
+sidecar:not(.entity-is-packages) .package-content {
+    display: none;
+}
+sidecar.entity-is-packages:not(entity-is-package-binding) .package-binding-signifier {
+    display: none;
+}
+sidecar:not(.entity-is-rules) .rule-content {
+    display: none;
+}
+sidecar:not(.entity-is-triggers) .trigger-content {
+    display: none;
+}
+sidecar.entity-is-actions:not(.entity-is-sequence) .action-source, sidecar .activation-result, code.hljs, .code-highlighting pre {
+    font-family: var(--font-monospace);
+    font-weight: 400;
+    font-size: 90%;
+    white-space: pre-wrap;
+    background: transparent;
+}
+.package-content-count {
+    font-weight: bold;
+}
+
+.rule-components {
+    display: flex;
+    justify-content: center;
+}
+sidecar:not(.entity-is-sequence) .sequence-components {
+    display: none;
+}
+.sequence-components {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.sequence-component {
+    border: 3px solid;
+    margin: 1em;
+    height: 5em;
+    width: 5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    position: relative;
+    transition: all 150ms ease-in-out;
+}
+.sequence-component:before {
+    content: " ";
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border: 3px solid rgba(0,0,0,0.075);
+}
+.sequence-component:hover:before {
+    border-color: rgba(0,0,0,0.2);
+}
+.sequence-component.trigger-node {
+    border-radius: 0
+}
+.sequence-component.trigger-node:before {
+    border-radius: 0;
+}
+.sequence-component:hover {
+    cursor: pointer;
+    height: 11.25em; /* 25% larger */
+    width: 20em;     /* 25% larger */
+}
+.sequence-component-inner .emphasize {
+    font-size: 1.4375rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.sequence-component-inner .deemphasize {
+    opacity: 1;
+    margin: 1ex;
+}
+.sequence-component {
+    height: 9em;
+    width: 16em;
+}
+.sequence-component:not(:last-child):after {
+    /* edge */
+    content: '';
+    border: 1px solid #333;
+    outline: 1px solid #999;
+    position: absolute;
+    height: 2em;
+    top: calc(100% + 4px);
+    left: 50%;
+}
+.horizontal-canvas .sequence-component:not(:last-child):after {
+    height: 0px;
+    width: calc(2em - 2px);
+    top: 50%;
+    left: calc(100% + 3px);
+}
+.sequence-component .sequence-component-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /*white-space: nowrap;*/
+    font-variant: small-caps;
+    font-weight: 400;
+    word-break: break-all;
+}
+
+/* sidecar cost */
+sidecar.no-limits-data .activation-estimated-cost-container {
+    display: none;
+}
+
+/* generic */
+.text-center {
+    text-align: center;
+}
+pre, code {
+    font-family: var(--font-monospace);
+}
+code.fancy-code {
+    background: var(--color-ui-01);
+    border: 1px solid var(--color-ui-04);
+}
+.no-wrap {
+    white-space: nowrap;
+}
+.hide {
+    display: none;
+}
+.flex-layout {
+    display: flex;
+    align-items: center;
+}
+.normal-text {
+    font-weight: 400;
+    opacity: 1;
+    font-size: 1em;
+}
+.larger-text {
+    font-size: 1.5em;
+}
+.even-smaller-text {
+    font-size: 0.75em;
+}
+.smaller-text {
+    font-size: 0.875em;
+}
+.sub-text {
+    color: var(--color-text-02);
+}
+.lighter-text {
+    font-weight: 300;
+}
+.even-lighter-text {
+    color: var(--color-text-02);
+    font-weight: 300;
+}
+.nowrap {
+    white-space: nowrap;
+}
+.slightly-deemphasize {
+    font-weight: 300;
+    color: var(--color-text-02);
+}
+.deemphasize {
+    font-weight: 300;
+    font-size: 0.75em;
+    opacity: 0.6;
+    vertical-align: middle;
+}
+.deemphasize.deemphasize-partial {
+    font-weight: 400;
+    opacity: 1;
+}
+.pre-wrap {
+    white-space: pre-wrap;
+}
+.monospace, pre.monospace {
+    font-family: var(--font-monospace);
+}
+.sans-serif {
+    font-family: var(--font-sans-serif);
+}
+.semi-bold {
+    font-weight: 500;
+}
+.sans-serif.semi-bold {
+    font-weight: 600;
+}
+.min-width-6em {
+    min-width: 6em !important;
+    display: block;
+}
+.min-width-8em {
+    min-width: 8em !important;
+    display: block;
+}
+.min-width-10em {
+    min-width: 10em !important;
+    display: block;
+}
+.min-width-date-like {
+    min-width: 15em !important;
+    display: block;
+}
+.max-width-id-like {
+    max-width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.not-too-wide {
+    display: block; /* spans don't respond */
+    max-width: 35em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.pretty-narrow {
+    /* please note: used in tandem with not-too-wide */
+    width: 7em;
+}
+.very-narrow {
+    /* please note: used in tandem with not-too-wide */
+    width: 6em;
+}
+.icon-width {
+    /* intended for fontawesome table cells */
+    width: 2em;
+}
+.double-icon-width {
+    /* intended for fontawesome table cells */
+    width: 4em;
+}
+.normal-size {
+    color: var(--color-text-01);
+    font-size: inherit;
+    font-weight: inherit;
+}
+.small-bottom-pad {
+    margin-bottom: 1ex;
+    display: inline-flex;
+}
+.tiny-top-pad {
+    margin-top: 0.125em;
+}
+.small-top-pad {
+    margin-top: 1ex;
+}
+.top-pad {
+    margin-top: 1em;
+}
+.big-top-pad:not(:first-child) > div {
+    padding-top: 0.75em;
+}
+.result-as-multi-table-flex-wrap .big-top-pad > div {
+    padding-top: 0;
+}
+.repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
+    padding-right: 2em;
+}
+sidecar .result-as-table .big-top-pad:first-child {
+    margin-top: 0;
+}
+.small-left-pad {
+    margin-left: 1ex;
+}
+.left-pad {
+    margin-left: 1em;
+}
+.small-right-pad {
+    margin-right: 1ex;
+}
+.right-pad {
+    margin-right: 1em;
+}
+.emphasize {
+    font-size: 1.5rem;
+    font-weight: 900;
+}
+.count-with-label[data-is-plural=false] .label-plural, .count-with-label[data-is-plural=true] .label-singular {
+    display: none;
+}
+.clickable, .clickable-block {
+    transition: color 150ms ease-in-out, text-decoration-color 150ms ease-in-out;
+}
+.clickable-blatant {
+    text-decoration: underline;
+    text-decoration-color: rgba(0,0,0,0.15);
+}
+.clickable:hover, .entity-name-group:not(.header-cell) .entity.actions:hover .entity-name {
+    cursor: pointer;
+    text-decoration: underline;
+}
+.clickable-block {
+    transition: border-color 150ms ease-in-out;
+    cursor: pointer;
+}
+.clickable-block:hover {
+    border-color: var(--color-ui-05) !important;
+}
+.graphical-clickable {
+    transition: all 150ms ease-in-out;
+}
+.graphical-clickable:hover {
+    cursor: pointer;
+}
+.template {
+    display: none;
+}
+.toggle-visibility-on-hover .visible-on-hover {
+    transition: opacity 500ms ease-in-out;
+    font-size: 70%;
+    font-weight: 900;
+    opacity: 0;
+}
+.toggle-visibility-on-hover:hover .visible-on-hover {
+    opacity: 0.5;
+}
+.hideable {
+    transition: all 150ms ease-in-out;
+}
+.hidden {
+    opacity: 0;
+    height: 0;
+    flex: 0 0 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+.not-displayed {
+    display: none !important;
+}
+.scrollable.scrollable-auto {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.scrollable {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.scrollable-x {
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+.code-highlighting.scrollable {
+    /* sidecar custom entity container */
+    flex: 1;
+}
+/* Track */
+.scrollable::-webkit-scrollbar-track, .scrollable-x::-webkit-scrollbar-track, .scrollable-auto::-webkit-scrollbar-track { box-shadow: inset 0 0 8px var(--color-scrollbar-track); border-radius: 10px; border-radius: 10px; }
+/* Handle */
+.scrollable::-webkit-scrollbar-thumb, .scrollable-x::-webkit-scrollbar-thumb, .scrollable-auto::-webkit-scrollbar-thumb { border-radius: 10px; background: var(--color-scrollbar-thumb); box-shadow: inset 0 0 2px var(--color-brand-01); }
+.scrollable::-webkit-scrollbar, .scrollable-auto::-webkit-scrollbar { width: 8px; }
+.scrollable-x::-webkit-scrollbar { height: 8px; }
+
+/* highlight.js tweaks */
+.hljs {
+    padding: 0;
+}
+.hljs-number, .hljs-literal {
+    color: var(--color-brand-03);
+}
+
+/* help */
+.help-options {
+    display: table;
+}
+.help-option {
+    display: table-row;
+    transition: all 150ms ease-in-out;
+}
+.help-option > div {
+    display: table-cell;
+    padding: 0.5ex 1ex;
+    white-space: normal;
+}
+.help-option-left-column {
+    font-weight: bold; /* make the command name bold */
+    text-align: right;
+    transition: all 150ms ease-in-out;
+    border-left: 3px solid transparent;
+    width: 10em
+}
+.help-option-interior-node-designation {
+    /* any designation that this command is a "context-changing" command, as opposed to a leaf-node command that actually does something */
+    font-weight: normal;
+    opacity: 0.6;
+}
+.help-option .help-option-synonyms-column {
+    padding-right: 1.5em;
+    width: 10em;
+    transition: all 150ms ease-in-out;
+}
+.sidecar-visible .help-option .help-option-synonyms-column {
+    /* with the sidecar visible, there isn't room for the synonyms column */
+    width: 0;
+}
+.sidecar-visible .help-option .help-option-synonym {
+    color: transparent;
+    width: 0;
+    padding: 0;
+}
+.help-option .help-option-synonym {
+    transition: all 150ms ease-in-out;
+}
+.help-option-synonyms-list {
+    display: flex;
+    align-items: center;
+    font-size: 80%;
+    opacity: 0.6; /* fira mono has no 300 font-weight specimen */
+}
+.help-option-synonym:not(:last-child) {
+    padding-right: 1ex;
+}
+.help-option-synonym:not(:last-child):after {
+    content: ','
+}
+
+/* activation logs */
+.log-lines {
+    border: 1px solid var(--color-ui-04);
+}
+.log-lines {
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+}
+.log-lines-message-for-activations {
+    font-size: 1rem;
+    padding-bottom: 1em;
+}
+.log-lines .log-line {
+    /* every row in the log table */
+    display: table-row;
+    height: 3em;
+}
+.log-lines .log-line .log-field {
+    /* every field in the log table */
+    display: table-cell;
+    padding: 0 0.375rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    opacity: 1; /* see issue #132 */
+    border-top: 1px solid var(--color-ui-04);
+}
+.log-lines .log-line .log-field.log-message {
+    vertical-align: middle;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+sidecar .activation-result .log-line .log-field code {
+    font-size: 1em;
+    margin: 0.375em 0.375em 0 0;
+    padding: 1em;
+    background: var(--color-ui-01);
+    border: 1px solid var(--color-ui-04);
+    box-shadow: 0 0 2px var(--color-ui-04);
+}
+sidecar .activation-result .log-line .log-field > div > div:first-child code {
+    margin-top: 0;
+}
+.repl:not(.sidecar-visible) .log-lines .log-line .log-field:last-child > span {
+    padding-left: 2em;
+}
+.log-lines .log-line .log-field.activationId {
+    font-weight: 500;
+}
+.log-lines .log-line .log-field.activationId:not(.full-width) {
+    max-width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.repl.sidecar-visible .log-lines .log-line .log-field.activationId:not(.full-width) {
+    /* further squish the activation id when the sidecar is visible */
+    max-width: 8em;
+}
+.repl.sidecar-visible .log-lines .log-line .log-line-bar-field, .repl.sidecar-visible .log-lines .log-line .log-field.start-time-field, .repl.sidecar-visible .log-lines .log-line .hide-with-sidecar, .repl.sidecar-visible .entity-attributes .hide-with-sidecar {
+    /* hide bar chart when the sidecar is visible */
+    max-width: 0;
+    padding: 0;
+    /*opacity: 0 !important;*/  /* see https://github.com/ibm-functions/shell/issues/278 */
+    width: 0;
+    border: none;
+    display: none;
+}
+.log-lines .log-line .log-field-right-align {
+    text-align: right;
+}
+.log-lines .log-field.log-field-right-align.duration-field {
+    width: 8em;
+}
+.log-lines .log-line .log-line-bar-field {
+    position: relative;
+    width: 50%;
+    max-width: 20em;
+}
+.repl .log-lines .log-line .log-line-bar-field {
+    /* add a left-right border to the timeline bars, but only for the repl side, not the sidecar Trace view */
+    border: 1px solid var(--color-ui-04);
+}
+.log-lines .log-field.entity-name {
+    max-width: 20em;
+}
+.log-lines .log-line .log-line-bar {
+    top: 25%;
+    min-width: 2px;
+    height: 1.25em;
+    position: absolute;
+    transition: all 180ms ease-in-out;
+}
+.log-lines .log-line:hover .log-line-bar {
+    z-index: 10; /* tooltip layering */
+}
+.log-lines .log-line .log-line-bar:hover {
+    filter: brightness(1.2) !important;
+}
+.log-lines .log-line.log-line-root .log-line-bar {
+    border: 1px solid;
+}
+.log-lines .log-line .log-field.log-date {
+    /* the date part of log lines */
+    vertical-align: middle;
+    color: var(--color-text-02);
+    font-size: 0.875em;
+    width: 15em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    white-space: pre-wrap;
+}
+.log-lines .log-line .log-message {
+    /* the message part of log lines */
+    white-space: pre-wrap;
+}
+sidecar .log-lines .log-line:nth-child(2n) .log-field {
+    background: var(--color-ui-03);
+}
+/*body.subwindow sidecar .activation-result .log-line .log-field code {
+    background: var(--color-ui-02);
+}*/
+body.subwindow sidecar .log-lines .log-line:nth-child(2n+1) .log-field {
+    background: var(--color-ui-02);
+}    
+body.subwindow .activation-result {
+    background: var(--color-ui-02);
+}
+
+/* legend for activation/trace list */
+.legend-list, .legend-trace {
+    text-align: right;
+    font-family: var(--font-sans-serif);
+}
+.legend-list {    
+    padding-bottom: 0.75em;
+    transition: height 300ms ease-in-out, width 300ms ease-in-out;
+}
+.repl.sidecar-visible .legend-list {
+    /* don't show legend when the sidecar is open. see issue #138 */
+    opacity: 0;
+    height: 0;
+    width: 0;
+}
+.legend-trace {
+    padding-bottom: 0.75em;
+}
+.legend-stripe, .legend-entry {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.legend-stripe {
+    font-size: 0.75em;
+}
+.legend-icon {
+    display: inline-block;
+    width: 11em;
+    height: 0.875em;
+}
+.legend-entry {
+    flex-direction: column;
+    align-items: flex-end;
+}
+.legend-entry:not(:last-child) {
+    margin-right: 2em;
+}
+.legend-trace[data-hover-type='execution-time'] .legend-entry[data-legend-type='execution-time'] {
+    opacity: 1;
+}
+.legend-trace[data-hover-type='container-initialization'] .legend-entry[data-legend-type='container-initialization'] {
+    opacity: 1;
+}
+.legend-trace[data-hover-type='queueing-delays'] .legend-entry[data-legend-type='queueing-delays'] {
+    opacity: 1;
+}
+.legend-trace[data-hover-type='failures'] .legend-entry[data-legend-type='failures'] {
+    opacity: 1;
+}
+.legend-trace[data-hover-type] .legend-entry {
+    /* legend entries that don't match the current hover type get more opaque */
+    opacity: 0.3;
+}
+.legend-entry {
+    transition: all 600ms ease-in-out;
+}
+.legend-list:hover .legend-entry, .legend-trace:hover .legend-entry{
+    opacity: 1;
+}
+.log-line-bar[data-balloon]:after {
+    width: auto;
+}
+
+
+/* notification area */
+#notification-area {
+    display: flex;
+    align-items: center;
+}
+#notification-area > div {
+    margin-left: 0.5ex;
+}
+#notification-area a:not(:hover) {
+    color: inherit;
+}
+
+/* spin animation */
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+
+
+body.subwindow .repl-block {
+    background-color: transparent;
+}
+/*body.subwindow .repl-inner {
+    margin-top: 2em;
+}*/
+
+/* we use titleBarStyle:hidden/hiddenInset on mac; this makes room for the window close/min/max buttons */
+body.os-darwin:not(.fullscreen) .header {
+    padding-left: 5em;
+}
+
+body.sidecar-is-minimized .application-icon {
+    /* scoot the icon to be flush right when the sidecar is minimized, so
+   that the icon will be horizontally centered on the vertical stripe
+   that represents the minimized sidecar */
+    right: 0;
+}
+body.subwindow.still-loading .application-icon {
+    transition: all 150ms ease-in-out;
+    transition-delay: 1750ms;
+}
+body.subwindow .header {
+    margin: 0;
+}
+body.subwindow .header .header-left-bits .deemphasize {
+    display: none;
+}
+body.subwindow .header .header-right-bits li.header-hide-when-narrow {
+    display: none;
+}
+body.subwindow .header .header-right-bits {
+    font-size: 2.5vw;
+}
+body.subwindow .header .header-right-bits .toggle-visibility-on-hover {
+    height: initial;
+}
+body.subwindow .header .header-right-bits .toggle-visibility-on-hover .visible-on-hover {
+    display: none;
+}
+body.subwindow .sidecar-full-screen sidecar/*.custom-content*/ .sidecar-header-icon-wrapper, sidecar.no-icon .sidecar-header-icon-wrapper {
+    width: 1em;
+}
+body.subwindow .sidecar-full-screen sidecar:not(.minimized)/*.custom-content*/ .sidecar-header-icon-wrapper .sidecar-header-icon, sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
+    display: none;
+}
+.subwindow sidecar .sidecar-header .header-right-bits .activation-viz-plugin.grid-header-key table {
+    border-spacing: 0;
+}
+body.subwindow sidecar.entity-is-actions:not(.entity-is-sequence) .action-source, sidecar .activation-result {
+    padding: inherit;
+}
+sidecar .activation-result {
+    padding: 0;
+}
+body.subwindow .sidecar-full-screen sidecar .sidecar-header .entity-name-line {
+    flex-wrap: wrap;
+}
+body.subwindow .sidecar-full-screen sidecar .sidecar-header .header-right-bits {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+body.subwindow .sidecar-full-screen sidecar .sidecar-header .action-content #version {
+    min-height: 20px;
+}
+
+/*
+ if we want to hide the close button in the sidecar bottom stripe when in sidecar-full-screen mode
+body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stripe .sidecar-bottom-stripe-close {
+    display: none;
+}*/
+
+/* used by bottom-stripe to flush-right buttons */
+.fill-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+.fill-container.flush-right {
+    justify-content: flex-end;
+}
+.graphical-icon {
+    /* font awesome icons in the bottom stripe */
+    font-size: 1.25rem;
+    min-width: 1em;
+    display: flex;
+    justify-content: flex-start;
+
+    /* these two rules are an attempt to push the tooltips just above the bottom stripe */
+    height: 2rem;
+    align-items: center;
+
+    transition: opacity 150ms ease-in-out;
+}
+.graphical-icon.disabled {
+    opacity: 0.3;
+}
+.graphical-icon.disabled:hover {
+    opacity: 0.3 !important;
+    color: inherit !important;
+    cursor: default !important;
+}
+.graphical-icon[data-balloon]:after, .graphical-icon[data-balloon]:before {
+    text-transform: none;
+    transition-delay: 750ms;
+}
+
+/* pulse animation for repl.partial */
+input.repl-partial {
+    animation: alert-pulse 500ms 2;
+    animation-direction: alternate
+}
+@keyframes alert-pulse {
+  0% {
+      color: inherit;
+  }
+  100% {
+      color: rgb(227, 26, 28);
+      transform: scale(1.02);
+  }
+}
+@keyframes selected-pulse {
+  0% {
+      color: inherit;
+  }
+  100% {
+      color: var(--color-brand-03);
+  }
+}
+@keyframes big-pulse {
+  0% {
+  }
+  50% {
+      filter: hue-rotate(-45deg);
+  }
+  100% {
+      filter: hue-rotate(45deg);
+      transform: scale(1.25);
+  }
+}
+
+.pulse {
+    animation: pulse 1000ms 1;
+}
+.repeating-pulse {
+    animation: pulse 1000ms infinite alternate-reverse;
+}
+@keyframes pulse {
+  0% {
+      opacity: 0.25;
+  }
+  100% {
+      opacity: 1;
+  }
+}
+
+/* restart needed warning */
+body:not(.oops-total-catastrophe) #restart-needed-warning {
+    display: none;
+    opacity: 0;
+}
+#restart-needed-warning {
+    transition: all 300ms ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+#restart-needed-warning .restart-needed-warning-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 3rem;
+    padding: 2em;
+}
+body.oops-total-catastrophe #restart-needed-warning {
+    opacity: 0.95;
+}
+
+/* tooltips */
+.force-no-hover [data-balloon]:before, .force-no-hover [data-balloon]:after {
+    /* e.g. the screenshot plugin wants to disallow tooltips on the
+   "capture screenshot" button while capturing a screenshot! */
+    display: none;
+}
+[data-balloon]:hover {
+    cursor: pointer;
+    opacity: 1 !important;
+}
+[data-balloon]:after {
+    width: 13em;
+    white-space: normal !important;
+    text-align: center;
+}
+.main [data-balloon]:after {
+    font-size: 0.875rem !important;
+}
+[data-balloon][data-balloon-break]::before, [data-balloon][data-balloon-break]::after {
+    /* you can add &#10; (\u000a if innerText) to data-balloon attrs to force a line break; make sure to add data-balloon-break attr, too */
+    white-space: pre-wrap !important;
+}
+
+/* qtip rules */
+#qtip {
+    transition: opacity 150ms ease-in-out;
+    transition-delay: 100ms;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    z-index: 10;
+    position: absolute;
+    pointer-events: none;
+
+    /* see shell issue #906 */
+    top: 0;
+    left: 0;
+}
+#qtipArrow {
+    position: relative;
+    left: 3px;
+    top: 1px;
+    color: #2E4053
+}
+#qtipContent {
+    background-color: #2E4053;
+    color: white; 
+    font-size: 0.75em;
+    padding: 1ex;
+    /*display: flex;
+    flex-wrap: wrap;*/
+    margin: 0px;
+    margin-right: 1ex; /* don't get all squished up against the right-end edge of the window */
+    max-width: 40ex;
+    word-wrap: break-word;
+}
+#qtip.visible {
+    opacity: 0.975;
+}
+#qtip.qtip-pre #qtipContent {
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+    display: initial !important; /* override display: flex */
+}
+
+/* help widget */
+.help-widget {
+    padding-left: 0.5ex;
+    font-size: 0.875em;
+}
+
+.go-away-able {
+    transition: opacity 450ms ease-in-out;
+}
+.go-away {
+    opacity: 0
+}
+.go-away-able .go-away-button {
+    transition: all 150ms ease-in-out;
+}
+.go-away-able .go-away-button:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
+}
+
+
+.list-paginator {
+    display: flex;
+    justify-content: flex-end;
+    font-family: var(--font-sans-serif);
+    color: var(--color-text-02);
+    background: var(--color-ui-01);
+    border: 1px solid var(--color-ui-04);
+    border-top: none;
+    height: 3em;
+}
+.list-paginator .list-paginator-left-buttons {
+    display: flex;
+    align-items: center;
+    padding: .5rem 1rem;
+    flex: 1;
+    letter-spacing: 1px;
+}
+.list-paginator .list-paginator-left-buttons > span {
+    /* a list paginator left button */
+    transition: all 150ms ease-in-out;
+}
+.list-paginator .list-paginator-left-buttons > span:hover {
+    opacity: 1;
+}
+.list-paginator .list-paginator-left-buttons > span:not(:first-child) {
+    /* a list paginator left button, except for the first one */
+    margin-left: 1em;
+}
+.list-paginator .list-paginator-right-buttons {
+    display: flex;
+    font-weight: 400;
+    font-size: 0.875em;
+}
+.list-paginator .list-paginator-description {
+    display: flex;
+    align-items: center;
+    padding: .5rem 1rem;
+}
+.list-paginator .list-paginator-button {
+    border-left: 1px solid var(--color-ui-04);
+    transition: all 250ms;
+    width: 2.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25em;
+    color: var(--color-ui-05);
+}
+.list-paginator .list-paginator-button.list-paginator-button-disabled {
+    color: var(--color-ui-04);
+}
+.list-paginator .list-paginator-button:not(.list-paginator-button-disabled):hover {
+    color: var(--color-brand-01);
+    cursor: pointer;
+}
+
+.wrap-normal {
+    /* i want this element to line wrap normally */
+    white-space: normal;
+}
+
+/* sidecar minimize to stripe */
+sidecar.minimized {
+    flex: 0 0 2em;
+    align-items: stretch;
+    opacity: 0.9;
+}
+sidecar.minimized header.sidecar-header {
+    flex: 1;
+    background: var(--color-stripe-02);
+    border: none;
+}
+sidecar.minimized .header-left-bits {
+    overflow: visible;
+}
+sidecar.minimized .sidecar-header-icon-wrapper {
+    width: auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin: -2em 0;
+}
+sidecar.minimized .sidecar-header-icon {
+    width: initial;
+    height: 2rem;
+    flex: 1;
+    transform-origin: 0% 0%;
+    justify-content: flex-start;
+}
+sidecar.minimized header.sidecar-header .sidecar-header-secondary-content, sidecar.minimized header.sidecar-header .sidecar-header-right-bits,
+sidecar.minimized .sidecar-header-name, sidecar.minimized .custom-content, sidecar.minimized .sidecar-content,
+sidecar.minimized .sidecar-bottom-stripe-left-bits, sidecar.minimized .header-right-bits {
+    display: none;
+    flex: 0;
+    opacity: 0;
+    margin: 0;
+    width: 0;
+    height: 0;
+}
+sidecar.minimized .sidecar-bottom-stripe {
+    align-items: flex-end;
+    padding: 0 0.375rem;
+    box-shadow: none;
+}
+sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
+    /*flex: 0;*/
+    display: none;
+}
+sidecar.minimized .sidecar-bottom-stripe-button.sidecar-bottom-stripe-close {
+    padding: 1ex 0;
+    margin: 0;
+    text-align: center;
+}
+.sidecar-bottom-stripe-button-as-button {
+    font-weight: bold;
+}
+sidecar.minimized .graphical-icon {
+    justify-content: center;
+    transform: scaleX(-1);
+    mix-blend-mode: difference;
+}
+sidecar.minimized [data-balloon]:before, sidecar.minimized [data-balloon]:after {
+    opacity: 0;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.fade-in {
+    animation: fadein 1s ease-in-out;
+}
+
+/* grabbable elements */
+.grabbable {
+    cursor: -webkit-grab;
+}
+.grabbable:active {
+    cursor: -webkit-grabbing;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+/* usage */
+.usage-error-wrapper .hideable {
+    margin: 1em 0;
+    border: 1px solid var(--color-ui-04);
+    padding: 1em 2em;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    background: var(--color-ui-02);
+    color: initial;
+}
+sidecar .usage-error-wrapper .hideable {
+    background: var(--color-ui-03);
+}
+.usage-error-wrapper h2, .usage-error-wrapper h4 {
+    font-weight: 300;
+    font-size: 1.125em;
+    color: var(--color-brand-01);
+    font-family: var(--font-sans-serif);
+}
+.usage-error-wrapper h2 {
+    text-transform: capitalize;
+    margin: 0 0 0.375em;
+}
+.usage-error-wrapper h4 {
+    margin: 1.33em 0 0.375em;
+}
+.bx--breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 1.5em;
+    font-family: var(--font-sans-serif);
+    margin-bottom: calc(0.875em);
+    margin-top: 0; /* override h1 defaults */
+}
+.bx--breadcrumb-item {
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    color: var(--color-brand-01);
+}
+.bx--breadcrumb-item--slash {
+    margin-left: 1rem;
+    color: var(--color-text-02);
+}
+.bx--breadcrumb--no-trailing-slash .bx--breadcrumb-item:last-child .bx--breadcrumb-item--slash {
+    display: none;
+}
+.bx--breadcrumb .bx--link:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+.bx--breadcrumb .bx--link:hover, .bx--breadcrumb .bx--link:focus {
+    outline: none;
+    color: var(--color-band-01);
+    border-bottom: 1px solid var(--color-brand-01);
+}
+.bx--breadcrumb .bx--link, .bx--breadcrumb .bx--no-link {
+    border-bottom: none;
+    white-space: nowrap;
+    font-weight: 300;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: 250ms;
+}
+.bx--breadcrumb .bx--link {
+    opacity: 0.8;
+}
+.bx--breadcrumb .bx--no-link:not(.bx--link) {
+    font-weight: 400;
+}
+
+/* markdown */
+.page-content {
+    flex: 1;
+    color: var(--color-stripe-01);
+}
+.page-content p {
+    font-weight: 400;
+    line-height: 1.5em;
+    padding: 0 0 1rem;
+}
+.page-content h1 {
+    font-size: 3.375rem;
+    font-weight: 300;
+    letter-spacing: 0;
+    line-height: 1.25;
+    margin: -1.15rem 0 0 -3px;
+    padding: 0;
+    transition: .25s cubic-bezier(.5,0,.1,1);
+}
+.page-content h2, .page-h2 {
+    font-size: 1.75rem;
+    font-weight: 300;
+    margin-top: 6rem;
+    padding: 1rem 0 3rem;
+    position: relative;
+    line-height: 1.25;
+}
+.page-content h2::before, .page-h2::before {
+    background-color: var(--color-carbon-components-h3);
+    content: "";
+    display: block;
+    height: .3rem;
+    left: 0;
+    position: absolute;
+    top: -.5rem;
+    width: 5rem;
+}
+.page-content h3:first-child, .page-content h2:first-child, .page-content hr + h3 {
+    padding-top: 0;
+}
+.page-content h3, .page-h3 {
+    color: var(--color-carbon-components-h3);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    padding: 4rem 0 1rem;
+    line-height: 1.25em;
+}
+.page-content ol, .page-content ul {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin: 1rem 0 1rem 1.5rem;
+    margin-top: 1rem;
+}
+.page-content li {
+    font-weight: 400;
+    padding-left: .25rem;
+    list-style-type: disc;
+}
+
+.icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.icon-container .deemphasize {
+    white-space: nowrap;
+    font-size: 0.5em;
+    margin-top: 0.5ex;
+}
+
+body {
+    font-family: var(--font-sans-serif);
+    background: var(--color-ui-01);
+    color: var(--color-text-01);
+}
+
+body a {
+    color: var(--color-brand-01);
+}
+body a:hover:not(.plain-anchor) {
+    color: var(--color-support-04);
+}
+
+.header {
+    background: var(--color-stripe-01);
+    color: var(--color-ui-01);
+}
+.header .application-name .bx--global-header__title--current-page {
+    color: var(--color-support-04);
+}
+
+.repl-block.valid-response .ok, .green-text, .dragover .ok-text-on-dragover {
+    color: var(--color-support-02);
+}
+
+badge {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+badge.green-background {
+    background: var(--color-support-02);
+    color: var(--color-ui-01);
+}
+badge.yellow-background, button.yellow-background {
+    background: var(--color-support-03);
+    color: var(--color-text-01);
+}
+badge.red-background {
+    background: var(--color-support-01);
+    color: var(--color-ui-01);
+}
+badge.gray-background {
+    background: var(--color-ui-05);
+    color: var(--color-ui-02);
+}
+
+.oops.oops-as-html {
+    color: unset !important;
+}
+.repl-block.valid-response .oops, sidecar.rule-enabled-false .sidecar-header-icon, .repl-block.error .oops, .clickable.oops, .oops .oops-text-on-oops, .red-text {
+    color: var(--color-support-01);
+}
+.yellow-text {
+    color: var(--color-support-03-darker);
+}
+
+sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoration="application error"] {
+    color: rgba(227, 26, 28, 0.8);
+}
+
+.repl-block.processing .repl-input input {
+    color: hsla(194, 71%, 40%, 1);
+}
+
+.repl-result-prefix, badge {
+    background-color: hsl(203, 43%, 15%);
+    color: rgba(255,255,255,0.8);
+    font-family: var(--font-sans-serif);
+}
+
+.result-table .entity:nth-child(2n + 1) td, .result-table .entity:nth-child(2n + 1) .entity-attributes {
+    /* table row striping */
+    background:var(--color-ui-02);
+}
+body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) td, body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
+    /* table row striping in sidecar (when not full screen) */
+    background:var(--color-ui-03);
+}
+
+sidecar .sidecar-header {
+    border-bottom-color: var(--color-content-divider);
+    background: var(--color-ui-01);
+}
+
+sidecar .sidecar-header badge {
+    background-color: var(--color-tag-beta-fill);
+    color: var(--color-tag-beta-text);
+}
+
+sidecar .sidecar-header badge.version {
+    /* badge for action version */
+    background-color: var(--color-tag-ibm-fill);
+    color: var(--color-tag-ibm-text);
+}
+
+badge.clickable:hover {
+    background: hsl(203, 43%, 25%);
+    text-decoration: none;
+    /*var(--color-ui-01);*/
+}
+
+.result-as-table .result-table, .result-as-table.result-table {
+    border-color: var(--color-ui-04);
+    background: transparent;
+    /* box-shadow: 0 0 1px var(--color-ui-04); */
+}
+
+.entity.actions.app .repl-result-prefix {
+    color: hsla(275, 41%, 32%, 1);
+}
+.entity.activations.is-sequence-true .repl-result-prefix {
+    color: hsla(12, 45%, 45%, 1);
+}
+.entity .repl-result-prefix, .entity .border-right {
+    color: var(--color-text-01);
+    border-right-color: var(--color-ui-04);
+}
+.entity.actions.sequence .repl-result-prefix {
+    color: hsla(265, 87%, 26%, 1);
+}
+.entity.packages .repl-result-prefix {
+    color: hsla(275, 21%, 22%, 1)
+}
+
+/* sidecar bottom stripe */
+.sidecar-bottom-stripe {
+    color: hsla(240, 2%, 90%, 1);
+    background: var(--color-stripe-02);
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.25);
+}
+
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button.sidecar-bottom-stripe-button-active {
+    border-bottom-color: var(--color-brand-02);
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover, .sidecar-bottom-stripe .sidecar-bottom-stripe-button.hover, .sidecar-bottom-stripe-button-as-button.selected {
+    color: var(--color-brand-02);
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button:not(.sidecar-bottom-stripe-button-active):hover, .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button.selected {
+    color: var(--color-support-03);
+    color: #e31a1c;
+}
+
+sidecar .header-right-bits {
+}
+
+sidecar .sidecar-header-icon {
+    color: var(--color-brand-02);
+}
+
+sidecar .sidecar-header-name .package-prefix {
+    color: var(--color-text-02);
+}
+
+.sequence-component {
+    background-color: var(--color-ui-05);
+    border-color: rgba(255,255,255,0.3);
+}
+
+.header .clickable:hover {
+    color: var(--color-support-04);
+}
+.clickable:hover, .entity.actions:hover .entity-name-group:not(.header-cell) .entity-name {
+    color: var(--color-brand-01);
+}
+
+.graphical-clickable:hover {
+    filter: brightness(1.25);
+}
+
+.help-option:hover {
+    color: #3E6550;
+}
+
+.help-option:hover .help-option-left-column {
+    border-left-color: rgba(62, 101, 80, 0.2);
+}
+
+.log-lines .log-line .log-line-bar.is-waitTime, .legend-icon.is-waitTime {
+    background: var(--color-ui-05);
+}
+.log-lines .log-line .log-line-bar.is-initTime.is-success-true, .legend-icon.is-initTime {
+    /*background: var(--color-support-04);*/
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--color-support-02),
+      var(--color-support-02) 2px,
+      #bee195 2px,
+      #bee195 4px
+    );
+    filter: grayscale(0.25) saturate(0.75);
+}
+.log-lines .log-line .log-line-bar.is-initTime.is-success-false{
+    /*background: var(--color-support-04);*/
+    background: repeating-linear-gradient(
+      to right,
+      var(--color-support-01),
+      var(--color-support-01) 4px,
+      white 4px,
+      white 8px
+    );
+}
+
+.log-lines .log-line .log-line-bar.is-success-true, .legend-icon.is-runTime {
+    background: var(--color-support-02);
+}
+.log-lines .log-line .log-line-bar.is-success-false, .legend-icon.is-success-false {
+    background: var(--color-support-01);
+}
+.log-lines .log-line.log-line-root .log-line-bar {
+    background: #f3f3f3;
+    border-color: rgba(0,0,0,0.5);
+}
+.log-lines .log-line .log-line-bar.log-line-bar-conductor {
+    background: #666;
+}
+.log-lines .log-line .log-message {
+    border-left-color: var(--color-text-01);
+}
+.log-lines-message-for-activations {
+    font-family: var(--font-sans-serif);
+}
+.log-lines .log-line.logged-to-stderr .log-message {
+    /* special display for messages of error log lines */
+    color: hsla(12, 78%, 25%, 1);
+    /*border-color: hsl(12, 78%, 45%);*/
+}
+
+body.subwindow .repl-block {
+    background-color: transparent;
+}
+body.subwindow sidecar {
+    background: var(--color-ui-01);
+}
+
+#restart-needed-warning {
+    background-color: var(--color-stripe-01);
+    /*var(--color-ui-01);*/
+}
+
+.page [data-balloon]:after {
+    font-family: var(--font-sans-serif);
+}
+
+/* directory listing coloring */
+.dir-listing-is-directory {
+    color: var(--color-brand-01);
+}
+.dir-listing-is-executable {
+    color: var(--color-support-01);
+}
+.dir-listing-is-link {
+    color: var(--color-brand-03);
+}
+
+.bx--link {
+    font-weight: 600;
+    color: var(--color-brand-01);
+    text-decoration: underline;
+    transition: 250ms;
+}
+.bx--link:hover {
+    color: var(--color-hover-primary-text);
+}

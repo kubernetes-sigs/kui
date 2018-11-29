@@ -1,0 +1,50 @@
+{
+  "fullscreen": true,
+  "profile": "Welcome",
+  "level": "Beginner",
+  "time": "5 minutes",
+  "skills": ["Command Structure", "Tutorials"],
+  "steps": [
+    {
+      "heading": "Developing with Composer",
+      "content": "The Composition Service offers a new programming model for building cloud-native applications by **composing cloud functions and services**. This guide introduces you to the developer experience.\n\nWhen programming compositions, the tooling runs entirely on your laptop. As you execute commands, you will have access to your local filesystem and your favorite terminal and text editor. To help with understanding complex data, the tool offers a suite of **visualizations**.",
+      "renderingHints": "fifty-fifty",
+      "extras": {
+        "learnMore": {
+          "doc": "All of the CRUD, and many of the view commands, are accessible **directly from your favorite terminal**. You can gracefully flip between the terminal and these visualizations, without having to switch to your browser, log in, wait for pages to load, and so on."
+        },
+        "nextSteps": [
+          { "command": "auth", "display": "authentication", "doc": "To create and invoke, you will need to be authenticated", "when": "no-auth" },
+          { "command": "coding basics", "doc": "An **interactive tutorial** that shows how to code, deploy, and invoke" },
+          { "command": "tutorials", "doc": "Choose from the **full list of tutorials**" },
+          { "command": "combinators", "doc": "A **reference guide** to Composer programming" },
+          { "command": "composer help", "doc": "Explore the Composition Service **CLI commands**", "when": "auth" },
+          { "command": "wsk help", "doc": "Explore the **Cloud Function** commands", "hidden": true }
+        ],
+
+        "showcase": [
+          { "title": "Preview",
+            "command": "preview @demos/looper.js",
+            "description": "Validate a composition's structure while you edit its source code",
+            "image": "https://ibm.box.com/shared/static/xantjhxwwm0zmp31kckh8s0fe07gawew.png" },
+
+          { "title": "Activation Grid",
+            "command": "grid",
+            "description": "View recent activations to identify errors or slow executions",
+            "image": "https://ibm.box.com/shared/static/kzgsbdeou04twohdlbzp20fsdqhzb334.gif" },
+
+          { "title": "Activation Trace",
+            "command": "activation logs",
+            "description": "A trace of the execution of a composition",
+            "image": "https://ibm.box.com/shared/static/1gga6iqforftnn3zdnz3dyj4875cp539.png" },
+
+          { "title": "Activation Statistics",
+            "command": "summary",
+            "groupWith": "L => L[L.length - 1]",
+            "description": "A statistical summary of recent executions",
+            "image": "https://ibm.box.com/shared/static/zisacj7inozq2pamjun3suf8qxi6dvd2.png" }
+        ]
+      }
+    }
+  ]
+}

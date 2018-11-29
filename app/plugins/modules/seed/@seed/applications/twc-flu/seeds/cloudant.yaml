@@ -1,0 +1,63 @@
+apiVersion: cloudservice.seed.ibm.com/v1
+kind: Service
+metadata:
+  name: cloudantnosqldb
+  prettyName: Cloudant NoSQL Database
+  labels:
+    projectName: twc-flu
+spec:
+  service: cloudantNoSQLDB
+  plan: Lite
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Package
+metadata:
+  name: cloudantnosqldbcredentials
+  labels:
+    projectName: twc-flu
+spec:
+  bind: /whisk.system/utils
+  parameters:
+    - name: auth
+      valueFrom:
+        secretKeyRef:
+          name: binding-cloudantnosqldb
+          key: binding
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Package
+metadata:
+  name: cloudant
+  labels:
+    projectName: twc-flu
+spec:
+  package: cloudant
+  service: cloudantnosqldb
+  bind: /whisk.system/cloudant
+  parameters:
+    - name: secrets
+      valueFrom:
+        secretKeyRef:
+          name: binding-cloudantnosqldb
+          key: binding
+          spread: true
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Invocation
+metadata:
+  name: dbmanager
+  labels:
+    projectName: twc-flu
+spec:
+  function: cloudant/create-database
+  parameters:
+    - name: dbname
+      value: twc-flu
+  finalizer:
+    function: cloudant/delete-database
+    parameters:
+      - name: dbname
+        value: twc-flu

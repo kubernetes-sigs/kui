@@ -1,0 +1,29 @@
+{
+  "name": "@shell/wskflow",
+  "version": "0.0.1",
+  "description": "Visualizations for Composer apps",
+  "main": "plugin/plugin.js",
+  "scripts": {
+    "preinstall": "rm -rf node_modules/d3 node_modules/jquery",
+    "postinstall": "../../../../node_modules/.bin/tsc && rm -rf node_modules/jquery/src && rm -f node_modules/jquery/external/sizzle/dist/sizzle.js && rm -f node_modules/jquery/dist/core.js && mv -f node_modules/jquery/dist/jquery.min.js node_modules/jquery/dist/jquery.js && rm -f node_modules/jquery/dist/jquery.slim* && mv -f node_modules/jquery/dist/jquery.min.map node_modules/jquery/dist/jquery.map && rm -rf node_modules/d3/src && mv node_modules/d3/d3.min.js node_modules/d3/d3.js && rm -f node_modules/elkjs/lib/elk-worker.js node_modules/elkjs/lib/elk.bundled.js",
+    "pretest": "../../../../node_modules/.bin/tsc",
+    "compilenowatch": "../../../../node_modules/.bin/tsc",
+    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+  },
+  "keywords": [
+    "OpenWhisk",
+    "Apache Composer",
+    "flow",
+    "wskflow"
+  ],
+  "author": "Kerry Chang",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "chokidar": "^2.0.4",
+    "d3": "^3.5.17",
+    "elkjs": "0.3.0",
+    "es6-promise-pool": "^2.5.0",
+    "jquery": "^3.3.1"
+  },
+  "devDependencies": {}
+}

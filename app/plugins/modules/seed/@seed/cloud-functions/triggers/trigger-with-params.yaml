@@ -1,0 +1,12 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Trigger
+metadata:
+  name: myfunctiontrigger
+  annotations:
+    electron-shell.org/description: Cloud Function trigger with a parameter binding
+spec:
+  name: myfunctiontrigger-with-params
+  parameters:
+    - name: object
+      value:
+        subparam1: Hello3

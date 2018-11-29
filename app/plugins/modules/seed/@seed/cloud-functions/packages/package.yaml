@@ -1,0 +1,11 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Package
+metadata:
+  name: mypackage
+  annotations:
+    electron-shell.org/description: Cloud Function package
+spec:
+  parameters:
+    - name: object
+      value:
+        subparam1: Hello3

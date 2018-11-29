@@ -1,0 +1,53 @@
+language: node_js
+node_js: 8
+sudo: false
+dist: trusty
+
+env:
+  matrix:
+    - LAYERS=core1 IDX=1
+    - LAYERS=core2 IDX=2
+    - LAYERS=openwhisk1 IDX=3
+    - LAYERS=openwhisk2 IDX=4
+    - LAYERS=openwhisk3 IDX=5
+    - LAYERS=openwhisk4 IDX=6
+    - LAYERS=grid IDX=7
+    - LAYERS=composer1 IDX=8
+    - LAYERS=composer2 IDX=9
+    - LAYERS=composer3 IDX=10
+    - LAYERS=HEADLESS IDX=11
+    - LAYERS=k8s IDX=12
+    - LAYERS=LINT
+
+  global:
+    - PATH=bin:$PATH
+    - NUM_OPENWHISK_AUTH_LAYERS=12 # number of layers that need an OpenWhisk auth key
+    - MAX_TRAVIS_CONCURRENCY=4 # max number of concurrent top-level jobs we've configured
+    - NO_MAC_DMG_INSTALLER=true # we can't build macOS DMG files in travis :(
+    - SHERPA_BUG_SESSION_FLOW=true
+    - SHERPA_BUG_ANNOTATIONS=true
+    - SHERPA_BUG_COMPOSITION_LIST=true
+    - SHERPA_BUG_729=true
+    - SHERPA_BUG_SESSION_LIST=true
+    - SHERPA_BUG_409=true
+    - SHERPA_FOR_TEST=https://sherpa-stage.wdpdist.com   # purposefully not SHERPA, so we test default env
+    - DISPLAY=:99
+    - WINDOW_WIDTH=1400                   # ! important ! so that clicks don't fail due to elements being off-viewport
+    - WINDOW_HEIGHT=1050                  # ! ibid !
+    - KEY_FROM_LAYER=true                 # use one api key per test layer?
+    - TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/builds/Kui-linux-x64/Kui" # test against a specific dist build
+    - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
+
+install: ./tools/travis/test/install.sh
+script: ./tools/travis/test/script.sh
+
+after_success:
+  - ./tools/travis/publishers/cos.sh
+
+notifications:
+  webhooks:
+    - https://openwhisk.ng.bluemix.net/api/v1/web/nickm_production/default/cloudshell-done-web.json
+  email:
+    - nickm@us.ibm.com
+    - mengting.yan1@ibm.com
+  slack: watsondataplatform:9aFO9Dv1PIq1YenObXn9dGqK

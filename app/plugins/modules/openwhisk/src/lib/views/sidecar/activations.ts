@@ -1,0 +1,201 @@
+/*
+ * Copyright 2017-18 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+declare var hljs
+
+import * as Debug from 'debug'
+const debug = Debug('plugins/openwhisk/views/sidecar/activation')
+
+import * as prettyPrintDuration from 'pretty-ms'
+
+import * as repl from '../../../../../../../build/core/repl'
+
+import { element, removeAllDomChildren } from '../../../../../../../build/webapp/util/dom'
+import { linkify, getSidecar, renderField, showCustom } from '../../../../../../../build/webapp/views/sidecar'
+import { prettyPrintTime } from '../../../../../../../build/webapp/util/time'
+import { IShowOptions, DefaultShowOptions } from '../../../../../../../build/webapp/views/show-options'
+
+import { isActivationId } from '../../models/activation'
+import { render as renderActivationTable } from '../cli/activations/list'
+
+export default (entity, options: IShowOptions) => {
+  debug('showing activation')
+
+  const sidecar = getSidecar()
+  const nameDom = sidecar.querySelector('.sidecar-header-name-content')
+  sidecar.querySelector('.sidecar-content .activation-content').className = 'activation-content'
+
+  // success indicator
+  sidecar.classList.add(`activation-success-${entity.response.success}`)
+  /* const statusDom = sidecar.querySelector('.activation-status')
+     statusDom.setAttribute('data-extra-decoration', entity.response.status)
+     statusDom.title = statusDom.getAttribute('data-title-base').replace(/{status}/, entity.response.status) */
+
+  // limits
+  const entityLimitsAnnotation = entity.annotations.find(kv => kv.key === 'limits')
+  if (!entityLimitsAnnotation || entity.noCost) {
+    // noCost means we should not display any cost info
+    sidecar.classList.add('no-limits-data')
+  }
+
+  // start time
+  const startDom = sidecar.querySelector('.activation-start')
+  removeAllDomChildren(startDom)
+  if (!entity.start) {
+    sidecar.classList.add('no-activation-timing-data')
+  } else {
+    startDom.appendChild(prettyPrintTime(entity.start))
+  }
+
+  // duration
+  if (entity.end) {
+    // the guard helps with: rule activations don't have an end time
+    const duration = entity.end - entity.start
+    element('.activation-duration', sidecar).innerText = prettyPrintDuration(duration)
+
+    if (entityLimitsAnnotation) {
+      // if we have BOTH a duration and limits data, then also show estimated cost
+      const roughCostEstimate = ((entityLimitsAnnotation.value.memory / 1024) * (Math.ceil(duration / 100) / 10) * 0.000017 * 1000000).toFixed(2)
+      element('.activation-estimated-cost', sidecar).innerText = roughCostEstimate
+    }
+  }
+
+  // the entity.namespace and entity.name of activation records don't include the package name :/
+  const pathAnnotation = entity.annotations && entity.annotations.find(kv => kv.key === 'path')
+  const entityNameWithPackageAndNamespace = (pathAnnotation && pathAnnotation.value) || `${entity.namespace}/${entity.name}`
+  const pathComponents = pathAnnotation && entityNameWithPackageAndNamespace.split('/')
+  const entityPackageName = pathComponents ? pathComponents.length === 2 ? '' : pathComponents[1] : '' // either ns/package/action or ns/action
+
+  // make the nameDom clickable, traversing to the action
+  element('.package-prefix', nameDom).innerText = entityPackageName
+  const entityName = element('.entity-name', nameDom)
+  entityName.innerText = entity.name
+  entityName.className = `${entityName.className} clickable`
+  entityName.onclick = entity.onclick || (async () => {
+    repl.pexec(`wsk action get "/${entityNameWithPackageAndNamespace}"`)
+  })
+
+  // add the activation id to the header
+  const activationDom = element('.sidecar-header-name .activation-id', sidecar)
+  activationDom.innerText = entity.activationId
+
+  // view mode
+  const show = (options && options.show) || // cli-specified mode
+    (entity.modes && entity.modes.find(_ => _.defaultMode)) || // model-specified default mode
+    'result' // fail-safe default mode
+
+  if (show === 'result' || show.mode === 'result') {
+    debug('showing result')
+    const activationResult = element('.activation-result', sidecar)
+    removeAllDomChildren(activationResult)
+
+    try {
+      activationResult['scrollIntoViewIfNeeded']()
+    } catch (err) {
+      // ok: might not be implemented in all browsers
+    }
+
+    if (entity.response.result) {
+      const result = entity.response.result
+      if (result.error && result.error.stack) {
+        // special case for error stacks, we can do better than beautify, here
+        result.error.rawStack = result.error.stack
+        result.error.stack = result.error.rawStack
+          .split(/\n/)
+          .slice(1, -1) // slice off the first and last line; the first line is a repeat of result.error.message; the last is internal openwhisk
+          .map(line => line.substring(line.indexOf('at ') + 3)
+               .replace(/eval at <anonymous> \(\/nodejsAction\/runner.js:\d+:\d+\), /, '')
+               .replace(/<anonymous>/, entity.name))
+      }
+
+      if (entity.contentTypeProjection) {
+        // we were asked ot project out one specific field
+        const projection = result[entity.contentTypeProjection]
+
+        if (projection.nodeName) {
+          // then its already a DOM
+          activationResult.appendChild(projection)
+        } else {
+          activationResult.innerText = projection
+          if (entity.contentType) {
+            // caller gave us a content type. attempt to decorate
+            const contentType = `language-${entity.contentType}`
+            activationResult.classList.add(contentType)
+            activationResult.classList.remove(activationResult.getAttribute('data-content-type')) // remove previous
+            activationResult.setAttribute('data-content-type', contentType)
+            activationResult.classList.remove('json')
+            if (activationResult.innerText.length < 20 * 1024) {
+              setTimeout(() => {
+                hljs.highlightBlock(activationResult)
+                linkify(activationResult)
+              }, 0)
+            }
+          }
+        }
+      } else {
+        const data = JSON.stringify(result, undefined, 4)
+        if (data.length < 20 * 1024) {
+          const beautify = require('js-beautify').js_beautify
+
+          // colorify
+          const contentType = 'language-json'
+          activationResult.classList.add(contentType)
+          activationResult.classList.remove(activationResult.getAttribute('data-content-type')) // remove previous
+          activationResult.setAttribute('data-content-type', contentType)
+          activationResult.innerText = beautify(data)
+          // apply the syntax highlighter to the code
+          setTimeout(() => {
+            hljs.highlightBlock(activationResult)
+            linkify(activationResult)
+          }, 0)
+        } else {
+          // too big! too slow for the fancy stuff
+          activationResult.innerText = data
+        }
+      }
+    } else {
+      activationResult.innerText = 'Nothing to show' // FIXME
+    }
+  } else if (show === 'logs' &&
+             entity[show] &&
+             Array.isArray(entity[show]) &&
+             entity[show].length > 0 &&
+             isActivationId(entity[show][0])) {
+    // special rendering of sequence "logs", which is really an array of activationIds
+    renderActivationTable({
+      entity,
+      activationIds: entity[show],
+      container: sidecar.querySelector('.activation-result')
+    })
+  } else if (typeof show === 'string') {
+    // render a given field of the entity
+    renderField(sidecar.querySelector('.activation-result'), entity, show)
+  } else {
+    // render a custom mode
+    console.error('rendering custom activation mode', show)
+    if (show.customContent) {
+      sidecar.classList.add('custom-content')
+    }
+    if (show.direct) {
+      const view = show.direct(entity)
+      if (view.then) {
+        view.then(showCustom)
+      }
+    } else {
+      console.error('Unsupported operation')
+    }
+  }
+}

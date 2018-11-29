@@ -1,0 +1,9 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: myfunction1
+  annotations:
+    electron-shell.org/description: Cloud Function that increments the input value
+spec:
+  codeURI: https://raw.githubusercontent.com/pdettori/wsksamples/master/node/handle_counter.js
+  runtime: nodejs:6

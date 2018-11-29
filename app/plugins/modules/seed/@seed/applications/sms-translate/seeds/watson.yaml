@@ -1,0 +1,93 @@
+apiVersion: cloudservice.seed.ibm.com/v1
+kind: Service
+metadata:
+  name: mytranslator
+spec:
+  service: language_translator
+  plan: lite
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Package
+metadata:
+  name: watson-language
+spec:
+  bind: language-translator-v3
+  service: mytranslator
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Package
+metadata:
+  name: language-translator-v3
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: translate
+spec:
+  package: language-translator-v3
+  codeURI: https://raw.githubusercontent.com/watson-developer-cloud/openwhisk-sdk/master/packages/language-translator-v3/actions/translate.js
+  runtime: nodejs:8
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: identify
+spec:
+  package: language-translator-v3
+  codeURI: https://raw.githubusercontent.com/watson-developer-cloud/openwhisk-sdk/master/packages/language-translator-v3/actions/identify.js
+  runtime: nodejs:8
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: list-identifiable-languages
+spec:
+  package: language-translator-v3
+  codeURI: https://raw.githubusercontent.com/watson-developer-cloud/openwhisk-sdk/master/packages/language-translator-v3/actions/list-identifiable-languages.js
+  runtime: nodejs:8
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: create-model
+spec:
+  package: language-translator-v3
+  codeURI: https://raw.githubusercontent.com/watson-developer-cloud/openwhisk-sdk/master/packages/language-translator-v3/actions/create-model.js
+  runtime: nodejs:8
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: delete-model
+spec:
+  package: language-translator-v3
+  codeURI: https://raw.githubusercontent.com/watson-developer-cloud/openwhisk-sdk/master/packages/language-translator-v3/actions/delete-model.js
+  runtime: nodejs:8
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: get-model
+spec:
+  package: language-translator-v3
+  codeURI: https://raw.githubusercontent.com/watson-developer-cloud/openwhisk-sdk/master/packages/language-translator-v3/actions/get-model.js
+  runtime: nodejs:8
+
+---
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: list-models
+spec:
+  package: language-translator-v3
+  codeURI: https://raw.githubusercontent.com/watson-developer-cloud/openwhisk-sdk/master/packages/language-translator-v3/actions/list-models.js
+  runtime: nodejs:8
+

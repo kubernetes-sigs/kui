@@ -1,0 +1,12 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Function
+metadata:
+  name: myfunction3
+  annotations:
+    electron-shell.org/description: Cloud Function that echoes its input, variant 3
+spec:
+  codeURI: https://raw.githubusercontent.com/apache/incubator-openwhisk-catalog/master/packages/utils/echo.js
+  runtime: nodejs:6
+  parameters:
+    - name: object
+      value: { "subparam1": "Hello3" }

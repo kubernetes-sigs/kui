@@ -1,0 +1,9 @@
+apiVersion: openwhisk.ibm.com/v1
+kind: Composition
+metadata:
+  name: composition-hello
+  annotations:
+    electron-shell.org/description: A hello world composition
+spec:
+  composition: |
+    module.exports = require('@ibm-functions/composer').sequence(args => ({msg: `hello ${args.name}!`}))

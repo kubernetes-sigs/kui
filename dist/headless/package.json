@@ -1,0 +1,14 @@
+{
+  "name": "headless",
+  "version": "1.0.0",
+  "description": "Files for creating a Shell distributable headless binary",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "minifier": "^0.8.1"
+  }
+}

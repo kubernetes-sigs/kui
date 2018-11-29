@@ -1,0 +1,7 @@
+name: seed
+home: https://github.ibm.com/seed/seed
+version: 0.0.1
+description: installs seed custom resource definition controllers
+maintainers:
+  - name: Paolo Dettori
+    email: dettori@us.ibm.com

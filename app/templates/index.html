@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>${productTitle}</title>
+
+    <!-- syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/mono-blue.min.css" rel="stylesheet" type="text/css">
+
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,600" rel="stylesheet" type="text/css">
+
+    <link href="${cssHome}not-electron.css" rel="stylesheet" type="text/css" >
+    <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" >
+    <link href="${cssHome}left-tab-stripe.css" rel="stylesheet" type="text/css" >
+    <link href="${cssHome}themes/${cssTheme}" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+    <link rel="shortcut icon" href="${imageHome}${favicon}">
+
+    <!-- opengraph properties -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${ogUrl}"/>
+    <meta property="og:site_name" content="${ogSiteName}"/>
+    <meta property="og:title" content="${ogTitle}"/>
+    <meta property="og:description" content="${ogDescription}"/>
+    <meta property="og:image" content="${ogImage}"/>
+
+    <!-- twitter card properties -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="${ogUrl}"/>
+    <meta name="twitter:description" content="${ogDescription}"/>
+    <meta name="twitter:image" content="${ogImage}"/>
+    <meta name="twitter:label1" value="${ogLabel1}" />
+    <meta name="twitter:data1" value="${ogData1}" />
+    <meta name="twitter:label2" value="${ogLabel2}" />
+    <meta name="twitter:data2" value="${ogData2}" />
+  </head>
+
+  <body class='still-loading ${bodyCss}'><div class="page">
+    <main class="main">
+      <div class='left-tab-stripe'>
+        <div class="application-icon" id="about-button"></div>
+
+        <div style='opacity: 0; height: 0; width: 0'>
+          <div class='clickable' id="openwhisk-api-host" title="Your API host. Click to change to another host."></div>
+          <div class='clickable' id="openwhisk-namespace" title="Your currently selected namespace. Click to list your other namespaces."></div>
+        </div>
+
+        <div class='left-tab-stripe-buttons'>
+          <div class='left-tab-stripe-button left-tab-stripe-button-selected' data-tab-button-index='1'>
+            <i class='fas fa-square repl-prompt-right-element-icon deemphasize'></i>
+            <div class='left-tab-stripe-button-label'>&nbsp;</div>
+          </div>
+        </div>
+        <div class='left-tab-stripe-button new-tab-button' id='new-tab-button'>
+          <i class='fas fa-plus-square repl-prompt-right-element-icon deemphasize'></i>
+        </div>
+        <div id='help-button'>
+          <i class='fas fa-question-circle'></i>
+        </div>
+      </div>
+
+      <div class='tab-container'>
+      <tab data-tab-index="1" class='visible'>
+      <repl class="repl" id="main-repl">
+        <div class="horizontal-landing-zone"></div>
+	<div class="repl-inner zoomable">
+	  <div class="repl-block repl-initial" data-base-class="repl-block" data-input-count="0">
+	    <div class="repl-input">
+	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context clickable'>/wsk/actions</span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'><i class="fas fa-angle-right"></i></span></div>
+	      <input type="text"
+                     autofocus
+                     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                     xxx_no_placeholder="enter your command" autocomplete="off">
+              <span class='repl-prompt-right-elements'>
+                <span class='repl-prompt-timestamp deemphasize'></span>
+                <i class='fas fa-square repl-prompt-right-element-icon deemphasize'></i>
+              </span>
+	    </div>
+	    <div class="repl-output">
+	      <div class="repl-result"></div>
+	    </div>
+	  </div>
+	</div>
+      </repl>
+
+      <sidecar id='sidecar'>
+	<header class='sidecar-header'>
+          <div class='sidecar-header-icon-wrapper'><div class='sidecar-header-icon'></div></div>
+          <div class='header-main-content'>
+            <div class='header-top-bits'>
+	      <div class='header-left-bits'>
+	        <div class='sidecar-header-text'>
+	          <div class='sidecar-header-name' data-base-class='sidecar-header-name'>
+		    <!--<span class='activation-content'>of</span>-->
+		    <span class='sidecar-header-name-content' data-base-class='sidecar-header-name-content'>
+		      <span class='activation-content activation-id'></span>
+                      <span class='package-prefix'></span>
+                      <span class='entity-name-line'>
+                        <span class='entity-name'></span>
+                      </span>
+                    </span>
+	          </div>
+	        </div> <!-- sidecar-header-text -->
+	      </div> <!-- header-left-bits -->
+	      <div class='header-right-bits'>
+	        <!--<span class='activation-content activation-status' data-title-base='Activation status: {status}'></span>-->
+                <div class='action-content'>
+                  <span class='badges'>
+                    <span id='version'></span>
+                  </span>
+                  <a class='entity-web-export-url' target='_blank'>&#x1F310;</a>
+                </div>
+	        <div class='activation-content'>
+                  <strong class='activation-duration'></strong>
+	          <div class='activation-estimated-cost-container'>~$<span class='activation-estimated-cost'></span> per million</div>
+                </div>
+                <div class='custom-header-content'></div>
+	      </div> <!-- header-right-bits -->
+            </div> <!-- header-top-bits -->
+            <div class='sidecar-header-secondary-content'>
+	      <div class='action-content'>
+                <span class='kind'></span>
+	        <!--<div class='kind-content'>This is a <span class='kind'></span> action</div>-->
+                <!--<a class='entity-web-export-url' target='_blank'>View in Browser</a>-->
+                <!--<span id='version'></span>-->
+	      </div>
+	      <div class='activation-content'>
+	        <div class='kind-content'>
+		  This call started <strong class='activation-start'></strong>
+	        </div>
+	      </div>
+	      <div class='package-content'>
+	        <div class='kind-content'>This is a package
+		  <!-- binding signifier -->
+		  <span class='package-binding-signifier'>binding of
+		    <span class='package-binding-of'></span>
+		  </span>
+		  with
+		  <span class='count-with-label package-action-count'>
+		    <span class='package-content-count'></span>
+		    <span class='label-plural'>actions</span><span class='label-singular'>action</span>, and
+		  </span>
+		  <span class='count-with-label package-feed-count'>
+		    <span class='package-content-count'></span> 
+		    <span class='label-plural'>feeds</span><span class='label-singular'>feed</span>
+		  </span> 
+	        </div>
+	      </div>
+	      <div class='rule-content'>
+	        <div class='kind-content'>This is a rule</div>
+	      </div>
+	      <div class='trigger-content'>
+	        <div class='kind-content'><!--This is a trigger-->
+                  <span class='feed-content'></span>
+                </div>
+	      </div>
+              <div class='custom-header-content'></div>
+	    </div> <!-- secondary content -->
+          </div> <!-- main content -->
+	</header>
+        <div class='custom-content zoomable'></div>
+	<div class='sidecar-content zoomable'>
+          <div class='hook-for-third-party-content no-content'></div>
+	  <div class='action-content'>
+	    <pre><code class='action-source'></code></pre>
+	    <div class='sequence-components' data-base-class='sequence-components'></div>
+	  </div>
+	  <div class='activation-content'>
+	    <pre><code class='activation-result json'></code></pre>
+	  </div>
+	  <div class='rule-content'>
+	    <div class='rule-components small-node-count-canvas horizontal-canvas'></div>
+	  </div>
+	  <div class='package-content'>
+	    <ul class='package-action-list repl-result result-table'></ul>
+	    <ul class='package-feed-list repl-result result-table'></ul>
+	    <pre><code class='package-source'></code></pre>
+	  </div>
+	  <div class='trigger-content'>
+	    <pre><code class='trigger-source'></code></pre>
+          </div>
+	</div>
+
+        <!-- sidecar bottom stripe -->
+        <div class='sidecar-bottom-stripe zoomable'>
+          <div class='sidecar-bottom-stripe-left-bits'>
+            <div class='sidecar-bottom-stripe-back-bits sidecar-bottom-stripe-button-container sidecar-bottom-stripe-button'>
+              <div class='sidecar-bottom-stripe-button'>
+                <div class='graphical-icon'><i class='fas fa-angle-double-left'></i></div>
+                <div class='sidecar-bottom-stripe-back-inner-bits'></div>
+              </div>
+            </div> <!-- back button -->
+            <div class='sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container'></div> <!-- mode switch buttons -->
+          </div>
+          <div class='sidecar-screenshot-button sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize screenshot-button'> <!-- screenshot button -->
+            <div class='graphical-icon'
+                 data-balloon='Capture Screenshot' data-balloon-length="medium" data-balloon-pos="up">
+              <i class='fas fa-camera'></i>
+            </div>
+          </div>
+          <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize toggle-sidecar-maximization-button'> <!-- maximize button -->
+            <span class='maximize-button-label'><div class='graphical-icon' data-balloon='Expand to full width' data-balloon-length="medium" data-balloon-pos="up-right"><i class='far fa-window-maximize'></i></div></span>
+            <span class='unmaximize-button-label'><div class='graphical-icon' data-balloon='Restore split screen' data-balloon-length="medium" data-balloon-pos="up-right"><i class='fas fa-columns'></i></div></span>
+          </div>
+          <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button'> <!-- close button -->
+            <div class='graphical-icon'
+                 data-balloon="Expose the command line" data-balloon-length="long" data-balloon-pos="up-right">
+              <i class='fas fa-angle-double-right'></i>
+            </div>
+          </div>
+        </div>
+
+      </sidecar>
+      </tab>
+      </div> <!-- tab-container -->
+    </main>
+
+    <div id='restart-needed-warning'>
+      <div class='restart-needed-warning-content'>
+        The Shell has been updated. Please quit and restart to pick up the changes.
+      </div>
+    </div>
+    </body>
+
+    <!-- syntax highlighting -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/swift.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+
+    <script src="${jsHome}${main}"></script>
+</html>
