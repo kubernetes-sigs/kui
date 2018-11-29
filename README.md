@@ -7,7 +7,9 @@ manipulate complex JSON and YAML data models, integrate disparate
 tooling, and provides quick access to aggregate views of operational
 data.
 
-- [Install](docs/installation.md) the developer tool
+- [Install a prebuilt version](docs/installation.md)
+- [Try it Live](https://hello.kui-shell.org/)
+- Or, fork && clone && npm install
 
 ## This is a CLI, with Visualizations on the Side
 
