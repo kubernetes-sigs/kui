@@ -2,7 +2,7 @@
   "name": "kui-shell",
   "version": "2.0.0",
   "description": "An Electron-based shell for cloud-native development",
-  "homepage": "https://github.com/ibm-functions/shell",
+  "homepage": "https://github.com/IBM/kui#readme",
   "main": "build/main/main.js",
   "scripts": {
     "start": "electron .",
@@ -13,11 +13,16 @@
     "compile": "if [ -d ../dist ]; then cd ../dist/bin && ./compile.js; fi",
     "test": "cd ../tests && npm run test"
   },
-  "repository": "https://github.com/ibm-functions/shell",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "OpenWhisk",
     "CLI",
     "UI",
+    "kubernetes",
+    "visualization",
     "serverless"
   ],
   "author": {
@@ -26,7 +31,7 @@
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ibm-functions/shell/issues/new"
+    "url": "https://github.com/IBM/kui/issues/new"
   },
   "devDependencies": {
     "electron": "^3.0.10",

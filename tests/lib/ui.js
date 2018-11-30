@@ -144,7 +144,8 @@ exports.cli = {
   waitForRepl: (app, prefs = {}) => app.client.waitForExist(selectors.CURRENT_PROMPT, timeout)
     .then(() => app.client.waitUntil(async () => {
       const apihost = await app.client.getHTML(selectors.APIHOST, false)
-      return apihost.toLowerCase().replace(/^https:\/\//, '') === (prefs.API_HOST || constants.API_HOST).toLowerCase().replace(/^https:\/\//, '')
+      return prefs.noAuthOk ||
+        apihost.toLowerCase().replace(/^https:\/\//, '') === (prefs.API_HOST || constants.API_HOST).toLowerCase().replace(/^https:\/\//, '')
     }))
     .then(() => {
       if (!prefs || !prefs.noAuthOk) {
@@ -162,9 +163,9 @@ exports.cli = {
     .then(() => app),
 
   /**
-     * look at the repl-context and repl-selection after a cli.do (which is the `res` part)
-     *   getHTML lets us inspect the contents of potentially invisible elements
-     */
+   * look at the repl-context and repl-selection after a cli.do (which is the `res` part)
+   *   getHTML lets us inspect the contents of potentially invisible elements
+   */
   expectContext: (expectedContext, expectedSelection) => res => exports.cli.expectOKWithCustom({ passthrough: true })(res)
     .then(N => Promise.all([res.app.client.getHTML(`${selectors.PROMPT_BLOCK_N(N + 1)} .repl-context`),
       res.app.client.getHTML(`${selectors.PROMPT_BLOCK_N(N + 1)} .repl-selection`)])

@@ -30,7 +30,7 @@ exports.rp = opts => {
  *   fuzz lets us blank out certain portions of the world
  *
  */
-exports.before = (ctx, { fuzz, noApp = false } = {}) => {
+exports.before = (ctx, { fuzz, noApp = false, noOpenWhisk = false } = {}) => {
   ctx.retries(10)
 
   return function () {
@@ -81,9 +81,13 @@ exports.before = (ctx, { fuzz, noApp = false } = {}) => {
         .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
     }
 
-    // clean openwhisk assets from previous runs, then start the app
-    return Promise.all([ wsk.cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), wsk.cleanAll(true, process.env.AUTH2) ])
-      .then(start)
+    if (!noOpenWhisk) {
+      // clean openwhisk assets from previous runs, then start the app
+      return Promise.all([ wsk.cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), wsk.cleanAll(true, process.env.AUTH2) ])
+        .then(start)
+    } else {
+      return start()
+    }
   }
 }
 
