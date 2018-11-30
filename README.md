@@ -12,8 +12,16 @@ tooling, and provides quick access to aggregate views of operational
 data.
 
 - [Install a prebuilt version](docs/installation.md)
-- [Try it Live](https://hello.kui-shell.org/)
-- Or, fork && clone && npm install
+- [Try it Live](https://hello.kui-shell.org/) (this is a webpack build of Kui, simply hosted in an S3 bucket)
+- Clone and contribute! `git clone git@github.com:IBM/kui.git && cd kui && npm install`
+
+## The Kui Experience
+
+[![Kui screenshot](app/content/images/kubectl-examples.jpg)](https://youtu.be/jcV0csyzGdY)
+
+Click the image to see [Kui in
+motion](https://youtu.be/jcV0csyzGdY). For more of the backstory of
+Kui, read on!
 
 ## This is a CLI, with Visualizations on the Side
 
@@ -36,97 +44,27 @@ can issue this command from your favorite terminal:
 kubectl kui get pods --ui
 ```
 
-If you are serverless developer using
-[OpenWhisk](https://github.com/apache/incubator-openwhisk), you can
-get a quick summary of your recent function invocations with a simple
-command:
+From there, you can click on one of the rows to drill down to the
+details of one of the pods. In the above screenshot, you can see this
+shown in the `get pods details-v1-6865b9b99d-rjjvp` window. You could
+also have opened this view directly from your terminal, via: 
 
 ```
-kubectl kui grid
+kubectl kui get pod details-v1-6865b9b99d-rjjvp --ui
 ```
 
-If you are using [Apache
-Composer](https://github.com/apache/incubator-openwhisk-composer/) to
-compose your services together, you can get quick access to a
-visualizatin of your compositions:
+Without the `--ui` option, Kui will display the output in your
+terminal directly; you will observe that the output is mostly
+identical to that of `kubectl`, except with some syntax
+coloration. With Kui, you have the power to navigate between these
+modes in a graceful and flexible manner.
 
-```
-kubectl kui preview /path/to/my/composition.js
-```
+Kui also has support for Apache OpenWhisk and Apache Composer.  In all
+three cases, from Kubernetes, to serverless, to serverless
+composition, the story is the same: you can gracefully transition into
+the world of visualizations without altering your normal productive
+workflows.
 
-In all three cases, the story is the same: you can gracefully
-transition into the world of visualizations without altering your
-normal productive workflows.
-
-- [Examples that work well without graphics](#cli-examples)
-- [Examples that provide visualizations](#visualizations)
-
-## CLI Examples (those that work well without graphics)<a name='cli-examples'></a>
-
-Some commands work well in textual mode, without any need for
-graphical assistance:
-
-|Command                               | Output                        |
-|:-------------------------------------|:------------------------------|
-|`kui app create hello @demos/hello.js`|![ok: updated composition hello](https://ibm.box.com/shared/static/6mz8xvdw3wbldh7o111cuu7gnh1kwss4.png)|
-|`kui app list`                        |![hello            composition](https://ibm.box.com/shared/static/w8m0jigs07bv59a7pl3lf3phwj27orwj.png)|
-|`kui app async hello`                 |![ok: invoked hello with id ...](https://ibm.box.com/shared/static/b646dsiqylqv4b9wom6tj8xquitdkf27.png)|
-|`kui session list`                    |![session list output](https://ibm.box.com/shared/static/hym083s3zt6oe1byyapxu0ap5xzhom37.png)|
-
-## Examples that provide visualizations<a name='visualizations'></a>
-
-Other commands will provide you with a graphical view by default (in
-most cases, you can specify `--cli` if you really want to stay in text
-mode). You can launch multiple of these graphical windows, and keep
-them open to help you with other tasks. Opening a new "windowed"
-command takes only a second or so.
-
-<a name="preview"></a><a name="grid"></a>
-
---------------------------------------------
-### Visualizing a composition
-
-```bash
-$ kui preview @demos/looper.js
-```
-![visualization of composition](https://ibm.box.com/shared/static/xantjhxwwm0zmp31kckh8s0fe07gawew.png)
-
---------------------------------------------
-### A grid view of recent activations
-
-```bash
-$ kui grid
-```
-![grid view](https://ibm.box.com/shared/static/kzgsbdeou04twohdlbzp20fsdqhzb334.gif)
-
---------------------------------------------
-### For Compositions, a trace visualization
-
-```bash
-$ kui activation logs eda8a..
-```
-![trace view](https://ibm.box.com/shared/static/1gga6iqforftnn3zdnz3dyj4875cp539.png)
-
---------------------------------------------
-### For Cloud Functions, a log viewer
-
-```bash
-$ kui activation logs c5dba..
-```
-![logs view](https://ibm.box.com/shared/static/21668bkuw4925y35tydx7btjq2hor5mn.png)
-
---------------------------------------------
-### A statistical view of recent invocations
-
-```bash
-$ kui table
-```
-![table view](https://ibm.box.com/shared/static/zisacj7inozq2pamjun3suf8qxi6dvd2.png)
-
---------------------------------------------
-### A temporal view of recent invocations
-
-```bash
-$ kui grid --timeline
-```
-![timeline view](https://ibm.box.com/shared/static/3iuczlken4geeknqkrt0pbrvk2sjlag0.png)
+- [More Kubernetes Examples](docs/readme/examples/kubernetes.md)
+- [More Apache OpenWhisk Examples](docs/readme/examples/openwhisk.md)
+- [More Apache Composer Examples](docs/readme/examples/composer.md)
