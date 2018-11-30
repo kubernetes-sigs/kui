@@ -27,7 +27,6 @@
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 // const killFailure404 = 'Cannot find live session'
 
-
 import { ISuite } from '../../../../../../../tests/lib/common'
 describe('killing and purging composer invocations', function (this: ISuite) {
   // no more kill and purge with composer v2

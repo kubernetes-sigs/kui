@@ -157,9 +157,9 @@ const fsm = {
 const EMPTY = Promise.resolve({ value: [] }) // mimic an empty return value from client.elements
 const graph = {
   /**
-     * Invariant: graph has a given number of task and total nodes
-     *
-     */
+   * Invariant: graph has a given number of task and total nodes
+   *
+   */
   hasNodes: ({ tasks: expectedTasks = 0, total: expectedTotal = 0, deployed: expectedDeployed = 0, values: expectedValues = 0 }) => app => {
     const { client } = app
     // here we intentionally use just expectedX, because undefined and 0 are treated the same
@@ -195,7 +195,7 @@ const composer = {
       .then(N => app.client.getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`))
       .then(toMap)
   },
- getSessions: (app, nDone, { cmd = 'session list', expect = [] }) => {
+  getSessions: (app, nDone, { cmd = 'session list', expect = [] }) => {
     return cli.do(cmd, app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(N => {
@@ -402,7 +402,7 @@ describe('Intro demo scenario', function (this: ISuite) {
       // visit code tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
       .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
-      //.then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName2).replace(/\s+/g, '')))
+      // .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName2).replace(/\s+/g, '')))
 
       .catch(common.oops(this)))
   }

@@ -16,7 +16,7 @@
     "test": "tests"
   },
   "scripts": {
-    "lint": "npx standard && npx tslint -c app/tslint.json 'app/src/**/*.ts' 'app/plugins/modules/*/src/**/*.ts'",
+    "lint": "npx tslint -c app/tslint.json 'app/src/**/*.ts' 'app/plugins/modules/*/src/**/*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "export CLOUDSHELL_INSTALL_UI=true; (cd tests && ./bin/corral.sh && npm install) && cd app && npm install"
   },
@@ -42,28 +42,6 @@
     "url": "https://github.com/IBM/kui/issues"
   },
   "homepage": "https://github.com/IBM/kui#readme",
-  "standard": {
-    "env": [
-      "es6",
-      "node",
-      "mocha"
-    ],
-    "ignore": [
-      "app/build",
-      "dist/headless/app",
-      "dist/electron/app",
-      "app/plugins/modules/*/plugin",
-      "app/plugins/modules/*/plugin",
-      "tests/tests/passes/core*",
-      "tests/tests/passes/grid",
-      "tests/tests/passes/k8s",
-      "tests/tests/passes/openwhisk*",
-      "**/composer/@demos",
-      "dist/builds",
-      "dist/electron/plugins",
-      "**/tests/data"
-    ]
-  },
   "devDependencies": {
     "css-loader": "^1.0.1",
     "file-loader": "^2.0.0",
@@ -77,7 +55,6 @@
     "@types/node": "^10.12.10",
     "@types/webdriverio": "^4.13.0",
     "fs-extra": "^7.0.1",
-    "standard": "^12.0.1",
     "tslint": "^5.11.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.1.6"

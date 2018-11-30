@@ -37,8 +37,7 @@ const {
   verifyTheBasicStuff
 } = require('../../../tests/lib/composer-viz-util')
 
-
-describe('app create and sessions', function (this: ISuite){
+describe('app create and sessions', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 

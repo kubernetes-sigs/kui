@@ -1,6 +1,6 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/utility/compile')
-import { extractActionsFromAst } from './ast'
+import { extractActionsFromAst, isValidAst } from './ast'
 import { currentSelection } from '../../../../../../build/webapp/views/sidecar'
 import UsageError from '../../../../../../build/core/usage-error'
 import { create } from './usage'
@@ -10,40 +10,37 @@ import { inBrowser } from '../../../../../../build/core/capabilities'
 import * as path from 'path'
 import { parseName, deployAction } from './parse'
 import { findFile } from '../../../../../../build/core/find-file'
-import { isValidAst } from './ast'
 import * as fs from 'fs'
 import * as expandHomeDir from 'expand-home-dir'
 import * as messages from './messages'
 
 // help compositions find our openwhisk-composer module
 if (!inBrowser()) {
-  debug('path',path.join(__dirname, '../../../node_modules') )
+  debug('path',path.join(__dirname, '../../../node_modules'))
   require('app-module-path').addPath(path.join(__dirname, '../../../node_modules'))
   require('app-module-path').addPath(path.join(__dirname, '../../../../node_modules'))
 }
 
-export const sourceToComposition = ({inputFile, name = '', recursive = false}) => new Promise(async (resolve, reject) =>  {
+export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
   return validateSourceFile(inputFile) // check inputfile extension and existence
     .then(sourceCode => validateSourceCode(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input
     .then(compiledAST => {
-        const composition = astToComposition(compiledAST, name)
-        if (recursive) {
+      const composition = astToComposition(compiledAST, name)
+      if (recursive) {
           // we were asked to (try to) deploy the actions referenced by the AST
-          const localSourcePath = findFile(expandHomeDir(inputFile))
-          const actions = extractActionsFromAst(composition.ast)  // extract the action name from ast
-          debug('extracted actions from ast', actions)
-          return Promise.all(actions.map(deployAction(path.join(localSourcePath, '..')))) // deploy the referenced actions
+        const localSourcePath = findFile(expandHomeDir(inputFile))
+        const actions = extractActionsFromAst(composition.ast)  // extract the action name from ast
+        debug('extracted actions from ast', actions)
+        return Promise.all(actions.map(deployAction(path.join(localSourcePath, '..')))) // deploy the referenced actions
             .then(() => resolve(composition))
             .catch(error => reject(error))
-        } else {
-          return resolve(composition)
-        }
+      } else {
+        return resolve(composition)
+      }
     })
     .catch(err => reject(err))
 })
 
-
-// TODO: app create 1. check file extension
 const validateSourceFile = (inputFile) => new Promise((resolve, reject) => {
   debug('validate', inputFile)
   const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
@@ -59,8 +56,7 @@ const validateSourceFile = (inputFile) => new Promise((resolve, reject) => {
   if (!inBrowser()) {
     debug('readFile in headless mode or for electron')
     fs.readFile(localCodePath, (err, data) => {
-      if (err) { reject(err) }
-      else { resolve(data.toString()) }
+      if (err) { reject(err) } else { resolve(data.toString()) }
     })
   } else {
     debug('readFile for webpack')
@@ -74,7 +70,6 @@ const validateSourceFile = (inputFile) => new Promise((resolve, reject) => {
     }
   }
 })
-
 
 export const validateSourceCode = (inputFile, originalCode?) => {
   const localSourcePath = findFile(expandHomeDir(inputFile))
@@ -95,7 +90,7 @@ export const validateSourceCode = (inputFile, originalCode?) => {
     try {
       // temporarily override (restored in the finally block)
       console.log = msg => { logMessage += msg + '\n' }
-      console.error = function() {
+      console.error = function () {
         err(...arguments)
         for (let idx = 0; idx < arguments.length; idx++) {
           errorMessage += arguments[idx].toString() + ' '
@@ -106,7 +101,7 @@ export const validateSourceCode = (inputFile, originalCode?) => {
         let error = new Error(errorMessage)
         error['statusCode'] = 'ENOPARSE'
         error['ast'] = errorMessage
-        //error[code] = originalCode
+        // error[code] = originalCode
         throw error
       }
       compiledAST = require(localSourcePath)
@@ -122,16 +117,16 @@ export const validateSourceCode = (inputFile, originalCode?) => {
 
     } finally {
         // restore our temporary overrides
-       console.log = log
-       console.error = err
-       process.exit = exit
+      console.log = log
+      console.error = err
+      process.exit = exit
 
-       if (logMessage) {
-           console.log(logMessage)
-       }
-       if (errorMessage) {
-           console.error(errorMessage)
-       }
+      if (logMessage) {
+        console.log(logMessage)
+      }
+      if (errorMessage) {
+        console.error(errorMessage)
+      }
     }
 
     debug('compiledAST', typeof compiledAST, compiledAST)
@@ -145,7 +140,6 @@ export const validateSourceCode = (inputFile, originalCode?) => {
     throw sourceErrHandler(error, originalCode, filename)
   }
 }
-
 
 // give style freedom for users to write composition source
 const allowSourceVariation = (compiledAST, logMessage, errorMessage) => {
@@ -228,7 +222,7 @@ export const compileSource = (localSourcePath, originalCode?) => {
     try {
       // temporarily override (restored in the finally block)
       console.log = msg => { logMessage += msg + '\n' }
-      console.error = function() {
+      console.error = function () {
         err(...arguments)
         for (let idx = 0; idx < arguments.length; idx++) {
           errorMessage += arguments[idx].toString() + ' '
@@ -239,7 +233,7 @@ export const compileSource = (localSourcePath, originalCode?) => {
         let error = new Error(errorMessage)
         error['statusCode'] = 'ENOPARSE'
         error['ast'] = errorMessage
-        //error[code] = originalCode
+        // error[code] = originalCode
         throw error
       }
       compiledResult = require(localSourcePath)
@@ -256,16 +250,16 @@ export const compileSource = (localSourcePath, originalCode?) => {
 
     } finally {
         // restore our temporary overrides
-       console.log = log
-       console.error = err
-       process.exit = exit
+      console.log = log
+      console.error = err
+      process.exit = exit
 
-       if (logMessage) {
-           console.log(logMessage)
-       }
-       if (errorMessage) {
-           console.error(errorMessage)
-       }
+      if (logMessage) {
+        console.log(logMessage)
+      }
+      if (errorMessage) {
+        console.error(errorMessage)
+      }
     }
 
     debug('compiledResult', typeof compiledResult, compiledResult)
@@ -279,7 +273,6 @@ export const compileSource = (localSourcePath, originalCode?) => {
     return sourceErrHandler(error, originalCode, filename)
   }
 }
-
 
 export const implicitInputFile = (inputFile, name) => {
   if (!inputFile) { // the user didn't provide an input file, maybe we can infer one from the current selection
@@ -302,28 +295,6 @@ export const implicitInputFile = (inputFile, name) => {
   }
   return { inputFile, name }
 }
-
-
-// load original code
-const loadOriginalCode = (localCodePath) => new Promise((resolve, reject) =>  {
-  if (!inBrowser()) {
-    debug('readFile in headless mode or for electron')
-    fs.readFile(localCodePath, (err, data) => {
-      if (err) { reject(err) }
-      else { resolve(data.toString()) }
-    })
-  } else {
-    debug('readFile for webpack')
-    try {
-      resolve(require('../../../../../app/plugins/modules' + localCodePath.replace(/^\/?app\/plugins\/modules/, ''))) // TODO: what path???
-    } catch (err) {
-      console.error(err)
-      const error = new Error('The specified file does not exist')
-      error['code'] = 404
-      reject(error)
-    }
-  }
-})
 
 /*
  * parse source file to composition using Composer library
