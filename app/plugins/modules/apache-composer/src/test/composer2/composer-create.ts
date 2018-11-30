@@ -15,7 +15,6 @@
  */
 
 import { ISuite } from '../../../../../../../tests/lib/common'
-import * as fs from 'fs'
 import * as path from 'path'
 import * as assert from 'assert'
 const ROOT = process.env.TEST_ROOT
@@ -28,9 +27,7 @@ const actionName1 = 'foo1'
 const actionName2 = 'foo2'
 const actionName3 = 'foo3'
 const seqName1 = 'seq1'
-const seqName2 = 'seq2'
 const packageName1 = 'ppp1'
-const srcDir = './data/composer/composer-source' // inputs for create-from-source
 
 const {
   verifyNodeExists,
@@ -96,13 +93,8 @@ describe('app create and sessions', function (this: ISuite) {
     .then(sidecar.expectShowing(name))
     .catch(common.oops(this)))
 
-  /** app config */
-  const getConfig = cmd => it(`should show app configuration via "${cmd}"`, () => cli.do(cmd, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'Composer version' }))
-    .catch(common.oops(this)))
-
   /** sessions */
-  /* const doGetSessions = (cmd, nLive, nDone) => {
+  const doGetSessions = (cmd, nLive, nDone) => {
     const once = iter => cli.do(cmd, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(N => this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="live"]`)
@@ -148,9 +140,9 @@ describe('app create and sessions', function (this: ISuite) {
           })))
 
     return once(0).catch(common.oops(this))
-  } */
+  }
 
-  /* const getSessions = (cmd, nLive, nDone) => it(`should list sessions via "${cmd}" nLive=${nLive} nDone=${nDone}`, () => doGetSessions(cmd, nLive, nDone)) */
+  const getSessions = (cmd, nLive, nDone) => it(`should list sessions via "${cmd}" nLive=${nLive} nDone=${nDone}`, () => doGetSessions(cmd, nLive, nDone))
 
   //
   // start of test suite
@@ -213,14 +205,13 @@ describe('app create and sessions', function (this: ISuite) {
     .then(verifyNodeExists('report-empty', true)) // expect to be deployed
     .catch(common.oops(this)))
 
-  /* getSessions('sessions list', 0, 0) // no sessions, yet
-    getSessions('session list --skip 0', 0, 0) // no sessions, yet (intentional variant sessions->session)
-    getSessions('session list --skip 0', 0, 0) // no sessions, yet
-    getSessions('sessions list', 0, 0) // no sessions, yet (intentional variant session->sessions)
-    getSessions('sess list', 0, 0) // no sessions, yet
-    getSessions('ses list', 0, 0) // no sessions, yet */
-
-  getConfig('app config')
+  getSessions('sessions list', 0, 0) // no sessions, yet
+  // diable pagination tests
+  /* getSessions('session list --skip 0', 0, 0) // no sessions, yet (intentional variant sessions->session)
+  getSessions('session list --skip 0', 0, 0) // no sessions, yet */
+  getSessions('sessions list', 0, 0) // no sessions, yet (intentional variant session->sessions)
+  getSessions('sess list', 0, 0) // no sessions, yet
+  getSessions('ses list', 0, 0) // no sessions, yet */
 
   // get some regular action, so we can test switching back to the composer action
   getAction(actionName1)
@@ -250,9 +241,6 @@ describe('app create and sessions', function (this: ISuite) {
     .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON('visualization')}`))
     .catch(common.oops(this)))
 
-  // mix it up!
-  getConfig('app props')
-
   // get some regular action, so we can test switching back to the composer action
   getAction(actionName1)
 
@@ -260,47 +248,31 @@ describe('app create and sessions', function (this: ISuite) {
     .then(cli.expectError(497)) // 497 insufficient required parameters
     .catch(common.oops(this)))
 
-  // mix it up!
-  getConfig('wsk app config')
+  invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 })
+  getSessions('session list', 0, 1) // 1 "done" session
+  invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 }, false, 'invoke') // invoke via "invoke" rather than "app invoke"
+  getSessions('sessions list', 0, 2) // 2 "done" session
+  // disable pagination tests
+  /* getSessions('sessions list --skip 1', 0, 0) // expect empty, if we skip 1 (since we expect 1 in total)
+  getSessions('sess list', 0, 1)    //  1 "done" session */
 
   invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 })
-  // invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 }, false, 'invoke') // invoke via "invoke" rather than "app invoke"
-  /* getSessions('session list', 0, 1) // 1 "done" session
-    getSessions('sessions list --skip 1', 0, 0) // expect empty, if we skip 1 (since we expect 1 in total)
-    getSessions('sess list', 0, 1)    //  1 "done" session */
+
+  getSessions('sessions list', 0, 3) // 3 "done" sessions
+  getSessions('ses list', 0, 3)        // 3 "done" sessions (testing aliases here)*/
+
+  // disable pagination tests
+  /* getSessions('session list --skip 1', 0, 1) // expect 1, if we skip 1 (since we expect 2 in total)
+  getSessions('sessions list --skip 2', 0, 0) // expect 0, if we skip 2 (since we expect 2 in total)
+  getSessions('sessions list --limit 0', 0, 0) // expect 0, if we limit 0 (since we expect 2 in total)
+  getSessions('sessions list --limit 1', 0, 1) // expect 1, if we limit 1 (since we expect 2 in total)
+  getSessions('sessions list --limit 2', 0, 2) // expect 2, if we limit 2 (since we expect 2 in total) */
+  getSessions('sess list', 0, 3) //  3 "done" session
 
   invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 })
-  /* getSessions('sessions list', 0, 2) // 2 "done" sessions
-    getSessions('ses list', 0, 2)        // 2 "done" sessions (testing aliases here)
-    getSessions('session list --skip 1', 0, 1) // expect 1, if we skip 1 (since we expect 2 in total)
-    getSessions('sessions list --skip 2', 0, 0) // expect 0, if we skip 2 (since we expect 2 in total) */
-  // getSessions('sessions --limit 0', 0, 0) // expect 0, if we limit 0 (since we expect 2 in total)
-  // getSessions('sessions --limit 1', 0, 1) // expect 1, if we limit 1 (since we expect 2 in total)
-  // getSessions('sessions --limit 2', 0, 2) // expect 2, if we limit 2 (since we expect 2 in total)
-  /* getSessions('sess list', 0, 2) //  2 "done" session */
+  getSessions('session list', 0, 4) // 4 "done" sessions
+  // disable pagination tests
+  /* getSessions('sessions list --skip 1', 0, 2) // expect 2, if we skip 1 (since we expect 3 in total)
+  getSessions('sessions list --limit 2', 0, 2) // expect 2, if we limit 2 (since we expect 3 in total) */
 
-  invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 })
-  /* getSessions('session list', 0, 3) // 3 "done" sessions
-    getSessions('sessions list --skip 1', 0, 2) // expect 2, if we skip 1 (since we expect 3 in total) */
-  // getSessions('sessions --limit 2', 0, 2) // expect 2, if we limit 2 (since we expect 3 in total)
-
-  // mix it up!
-  getConfig('app properties')
-  getConfig('wsk app properties')
-  getConfig('wsk app props')
-
-  // create from source
-  fs.readdirSync(srcDir).forEach((file, idx) => {
-    const name = `${seqName2}-${idx}`
-
-    // echo.js is used by require-relative.js, it isn't a composition on its own
-    if (file.endsWith('.js') && file !== 'echo.js') {
-      it(`should create a composer sequence from source ${file}`, () => cli.do(`app create ${name} ${path.join(srcDir, file)}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(name))
-        // .then(sidecar.expectBadge(badges.composerLib))
-        .catch(common.oops(this)))
-    }
-  })
 })

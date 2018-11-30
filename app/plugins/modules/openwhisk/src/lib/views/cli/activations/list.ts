@@ -509,7 +509,7 @@ const _render = args => {
         }
 
         // paginator description text
-        description.innerText = `${skip + 1}\u2013${skip + activationIds.length} of ${count.toLocaleString()} items`
+        description.innerText = `${skip + 1}\u2013${skip + activationIds.length} items`
 
         // pagination click handlers
         const goto = skip => () => repl.qexec(`wsk activation list ${mapToOptions(parsedOptions, { skip })}`)
