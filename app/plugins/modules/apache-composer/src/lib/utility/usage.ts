@@ -150,11 +150,19 @@ export const session_get = command => ({
     related: related[command]
 })
 
-export const session_list = {
-  docs: 'List the last completed composition invocations',
-  example: 'session list --last',
-  required: [{ name: '--last', booleanOK: true, docs: 'show the last session'}],
-  parents: ['composer', { command: 'composer session' }]
+/**
+ * Usage message for session list
+ *
+ */
+export const session_list =  {
+  title: 'List Recent Sessions',
+  header: 'Returns a list of recent composition activations (a.k.a. "sessions").',
+  example: 'session list',
+  optional: [{ name: '--name', docs: 'filter to show only a given named composition' },
+    { name: '--limit', docs: 'show at most N sessions' },
+    { name: '--skip', docs: 'skip over the most recent N sessions' }],
+  parents: ['composer', { command: 'composer session' }],
+  related: ['grid', 'summary']
 }
 /**
  * Usage string for app preview

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 module.exports = composer.sequence(require('./echo')(1),
                                    require('./echo')(2))

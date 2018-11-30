@@ -1,4 +1,4 @@
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 /** swap the first field into the second */
 const swap = (f1, f2) => obj => {

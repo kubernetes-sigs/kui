@@ -1,4 +1,4 @@
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 /** since the result has an 'error' field, an error is triggered */
 const fail = () => ({ error: 'intentional failure' })

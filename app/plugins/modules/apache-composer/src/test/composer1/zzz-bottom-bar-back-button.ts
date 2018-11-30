@@ -63,10 +63,15 @@ describe('Bottom bar back button functionality', function (this: ISuite) {
 
   const node1 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .node.action[data-deployed="deployed"]:nth-of-type(3)`
   const node2 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .node.action[data-deployed="deployed"]:nth-of-type(4)`
+
+  const getActionName = (path) => {
+    return path.substring(path.lastIndexOf('/') + 1)
+  }
+
   it('should click on the first node', () => {
     return this.app.client.waitForVisible(node1)
       .then(() => this.app.client.getAttribute(node1, 'data-name'))
-      .then(path => path.substring(path.lastIndexOf('/') + 1))
+      .then(path => getActionName(path))
       .then(actionName => this.app.client.click(node1)
         .then(() => this.app)
         .then(sidecar.expectOpen)
@@ -80,7 +85,7 @@ describe('Bottom bar back button functionality', function (this: ISuite) {
   it('should click on the second node', () => {
     return this.app.client.waitForVisible(node2)
       .then(() => this.app.client.getAttribute(node2, 'data-name'))
-      .then(path => path.substring(path.lastIndexOf('/') + 1))
+      .then(path => getActionName(path))
       .then(actionName => this.app.client.click(node2)
         .then(() => this.app)
         .then(sidecar.expectOpen)

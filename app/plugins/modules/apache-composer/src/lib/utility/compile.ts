@@ -4,8 +4,8 @@ import { extractActionsFromAst } from './ast'
 import { currentSelection } from '../../../../../../build/webapp/views/sidecar'
 import UsageError from '../../../../../../build/core/usage-error'
 import { create } from './usage'
-import * as fqn from '@ibm-functions/composer/fqn'
-import * as Composer from '@ibm-functions/composer'
+import * as fqn from 'openwhisk-composer/fqn'
+import * as Composer from 'openwhisk-composer'
 import { inBrowser } from '../../../../../../build/core/capabilities'
 import * as path from 'path'
 import { parseName, deployAction } from './parse'
@@ -15,7 +15,7 @@ import * as fs from 'fs'
 import * as expandHomeDir from 'expand-home-dir'
 import * as messages from './messages'
 
-// help compositions find our @ibm-functions/composer module
+// help compositions find our openwhisk-composer module
 if (!inBrowser()) {
   debug('path',path.join(__dirname, '../../../node_modules') )
   require('app-module-path').addPath(path.join(__dirname, '../../../node_modules'))
@@ -196,7 +196,7 @@ const sourceErrHandler = (error, originalCode, filename) => {
               : (!junkMatch ? error.stack
                   : error.stack.substring(0, junkMatch.index).replace(/\s+.*compile([^\n])*/g, '\n').replace(/(evalmachine.<anonymous>)/g, filename).replace(/\s+at createScript([^\n])*/g, '\n').trim())
   const message = _message
-    .replace(/\s+\(.*plugins\/modules\/apache-composer\/node_modules\/@ibm-functions\/composer\/composer\.js:[^\s]*/, '')
+    .replace(/\s+\(.*plugins\/modules\/apache-composer\/node_modules\/openwhisk-composer\/composer\.js:[^\s]*/, '')
     .replace(/\s+at ContextifyScript[^\n]*/g, '')
 
   // for parse error, error message is shown in the ast (JSON) tab, and user code in the source (code) tab

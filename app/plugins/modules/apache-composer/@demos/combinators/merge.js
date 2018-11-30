@@ -1,4 +1,4 @@
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 /**
  * MERGE is equivalent to RETAIN, except that

@@ -1,4 +1,4 @@
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 function hello ({ name = 'world' }) {
   return { msg: `hello ${name}!` }

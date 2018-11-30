@@ -1,4 +1,4 @@
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 /**
  * This code executes three tasks in parallel. The input is

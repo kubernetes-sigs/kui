@@ -173,12 +173,18 @@ export default async (commandTree, prequire) => {
 
   /* command handler for app list */
   commandTree.listen(`/wsk/app/list`, ({ command }) => {
-    return repl.qfexec(command.replace('app', 'action'), undefined, undefined, { showHeader: true })
-      .then(table => {
-        debug('multi-row table view of action list', table)
-        if(!table[0]) return table
-        let actions = table[0].slice(1) // table is an array of array, the first element is row-header, the others are actual actions
-        return view.formatCompositionList(actions.filter(astUtil.isAnApp), table[0][0])
+    return repl.qfexec(command.replace('app', 'action'))
+      .then(actions => {
+        debug('app list -> action list', actions)
+        let apps = actions.filter(astUtil.isAnApp)
+        apps.forEach(app => {
+            app.type = 'composition'
+            app.prettyType = 'composition'
+            app.prettyKind = 'composition'
+            app.onclick = () => repl.pexec(`app get "/${app.namespace}/${app.name}"`)
+            return app
+        })
+        return apps
       })
   }, {usage: app_list('list')})
 
@@ -207,9 +213,9 @@ export default async (commandTree, prequire) => {
   // testing a development branch
   let pckage
   try {
-    pckage = require('../../../../../node_modules/@ibm-functions/composer/package.json')
+    pckage = require('../../../../../node_modules/openwhisk-composer/package.json')
   } catch (err) {
-    pckage = require('../../../node_modules/@ibm-functions/composer/package.json')
+    pckage = require('../../../node_modules/openwhisk-composer/package.json')
   }
 
   const propertySynonyms = ['wsk/app', 'composer']

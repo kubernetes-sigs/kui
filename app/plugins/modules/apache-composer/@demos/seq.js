@@ -1,4 +1,4 @@
-const { seq: Seq } = require('@ibm-functions/composer')
+const { seq: Seq } = require('openwhisk-composer')
 
 /**
  * This code forms a three-element sequence. As with UNIX pipes,

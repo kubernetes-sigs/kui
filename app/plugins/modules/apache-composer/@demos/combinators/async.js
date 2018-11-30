@@ -1,5 +1,5 @@
-const composer = require('@ibm-functions/composer')
-const cloudant = require('@ibm-functions/composer/plugins/cloudant')
+const composer = require('openwhisk-composer')
+const cloudant = require('openwhisk-composer/plugins/cloudant')
 
 /** the database to use */
 const db = 'testDB'

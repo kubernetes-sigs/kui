@@ -1,6 +1,6 @@
 'use strict'
 
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 const slackConfig = {
     token: process.env['SLACK_TOKEN'],

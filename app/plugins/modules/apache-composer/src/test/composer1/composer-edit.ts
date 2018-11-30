@@ -55,7 +55,7 @@ describe('edit compositions', function (this: ISuite) {
   }
 
 
-  
+
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it(`should open the editor to a new composition and expect error handling`, () => cli.do('compose comp3', this.app)
@@ -63,10 +63,10 @@ describe('edit compositions', function (this: ISuite) {
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('comp3'))
     .then(() => setValue(this.app.client,
-      '\nmodule.exports = require("@ibm-functions/composer").sequence(notfound1, notfound2)'))
+      '\nmodule.exports = require("openwhisk-composer").sequence(notfound1, notfound2)'))
     .then(() => this.app.client.waitForExist('.editor.parse-error-decoration'))
     .then(() => setValue(this.app.client,
-      'module.exports = require("@ibm-functions/composer").sequence(x=>x, y=>y)'))
+      'module.exports = require("openwhisk-composer").sequence(x=>x, y=>y)'))
     .then(() => this.app.client.waitForExist('.editor.parse-error-decoration', 2000, true))
     .catch(common.oops(this)))
 

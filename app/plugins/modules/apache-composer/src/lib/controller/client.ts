@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/client')
-import * as Conductor from '@ibm-functions/composer/conductor'
+import * as Conductor from 'openwhisk-composer/conductor'
 
 const options = {
   ignore_certs: process.env.IGNORE_CERTS && process.env.IGNORE_CERTS !== 'false' && process.env.IGNORE_CERTS !== '0'

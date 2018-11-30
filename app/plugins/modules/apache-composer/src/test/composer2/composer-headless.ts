@@ -193,8 +193,8 @@ const validation = {
           .then(expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'annotations', 'duration','end', 'logs', 'name', 'namespace','response', 'start', 'subject'] }))
           .catch(common.oops(this))
 
-        cli.do(`session list --last`)
-          .then(expect.json({ expectedOutput: undefined, expectedKeys: ['sessionId', 'name', 'status', 'duration']}))
+        cli.do(`session list`)
+          .then(expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'type']}))
           .catch(common.oops(this))
       })
       .catch(common.oops(this)))

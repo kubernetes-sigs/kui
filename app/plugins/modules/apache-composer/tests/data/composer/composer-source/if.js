@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { sequence:Seq, if:If } = require('@ibm-functions/composer')
+const { sequence:Seq, if:If } = require('openwhisk-composer')
 
 module.exports = If("isTrue",
                     Seq("seq1", "seq2", "seq3"),
