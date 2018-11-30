@@ -16,7 +16,7 @@
 
 'use strict'
 
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 const prefix = 'travis2slack'
 

@@ -1,4 +1,4 @@
-const { sequence: Seq, let: Let } = require('@ibm-functions/composer')
+const { sequence: Seq, let: Let } = require('openwhisk-composer')
 
 const state = { secret: 42 }
 

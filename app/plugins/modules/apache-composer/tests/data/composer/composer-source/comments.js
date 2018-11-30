@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 /*
 composer.if("isTrue", composer.sequence("seq1", "seq2", "seq3"), composer.sequence("seq4", "seq5"));

@@ -6,7 +6,7 @@
  *
  */
 
-const composer = require('@ibm-functions/composer');
+const composer = require('openwhisk-composer');
 const composer_utils = require('./composer_utils');
 
 // Actions

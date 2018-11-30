@@ -68,7 +68,7 @@ describe('app preview should actively watching an external file', function (this
 
   it('should write composer.sequence("a", "b") to a temp file', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(tempFileName, `module.exports = require('@ibm-functions/composer').sequence("a", "b")`, (err) => {
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "b")`, (err) => {
         if (err) { reject(err) } else { resolve(true) }
       })
     })
@@ -82,7 +82,7 @@ describe('app preview should actively watching an external file', function (this
 
   it('should update the temp file to composer.sequence("a", "c")asdfasdf', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(tempFileName, `module.exports = require('@ibm-functions/composer').sequence("a", "c")asdfasdf`, (err) => {
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "c")asdfasdf`, (err) => {
         if (err) { reject(err) } else { resolve(true) }
       })
     })
@@ -93,7 +93,7 @@ describe('app preview should actively watching an external file', function (this
 
   it('should update the temp file to composer.sequence("a", "c")', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(tempFileName, `module.exports = require('@ibm-functions/composer').sequence("a", "c")`, (err) => {
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "c")`, (err) => {
         if (err) { reject(err) } else { resolve(true) }
       })
     })
@@ -113,7 +113,7 @@ describe('app preview should actively watching an external file', function (this
   // update file again, and verify that preview updates too
   it('should update the temp file to composer.sequence("a", "b")', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(tempFileName, `module.exports = require('@ibm-functions/composer').sequence("a", "b")`, (err) => {
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "b")`, (err) => {
         if (err) { reject(err) } else { resolve(true) }
       })
     })
@@ -161,7 +161,7 @@ describe('create a if composition, invoke, verify session flow is shown correctl
      .then(sidecar.expectShowing(appName))
      .then(app => this.app.client.waitForExist('#wskflowSVG', 5000))
      .then(() => this.app)
-     //.then(verifyNodeStatusExists('p=>({path:true})', 'success')) // TODO: it doesn;t work maybe bug in sessdion flow
+     .then(verifyNodeStatusExists('p=>({path:true})', 'success'))
      .then(verifyNodeStatusExists('p=>({path:false})', 'not-run'))
      .catch(common.oops(this)))
 
@@ -177,7 +177,7 @@ describe('create a if composition, invoke, verify session flow is shown correctl
     .then(() => this.app.client.waitForExist('#wskflowSVG', 5000))
     .then(() => this.app)
     .then(verifyNodeStatusExists('p=>({path:true})', 'not-run'))
-    // .then(verifyNodeStatusExists('p=>({path:false})', 'success')) // TODO: it doesn't work maybe bug in sessdion flow
+    .then(verifyNodeStatusExists('p=>({path:false})', 'success'))
     .catch(common.oops(this)))
 })
 
@@ -197,7 +197,7 @@ describe('drilldown to action from wskflow', function (this: ISuite) {
     .catch(common.oops(this)))
 
   it(`should click on the authenticate node and go to the action`, () => this.app.client.click('#wskflowSVG .node[data-name="/_/authenticate"]')
-    .then(() => this.app.client.waitUntil(() => {
+    .then(() => this.app.client.waitUntil(async () => {
       return this.app.client.getText(ui.selectors.SIDECAR_TITLE)
         .then(text => text === 'authenticate')
     }))
@@ -231,7 +231,7 @@ describe('test if pressing a node, dragging and releasing triggers the clicking 
     .then(sidecar.expectShowing(appName))
     .then(app => this.app.client.waitForExist('#wskflowSVG', 5000))
     .then(() => this.app)
-    //.then(verifyNodeStatusExists('Exit', 'success')) TODO: not working, bug in session flow
+    .then(verifyNodeStatusExists('Exit', 'success'))
     .catch(common.oops(this)))
 
   it(`should press, drag and release exist node and still stay at session flow`, () => this.app.client.moveToObject('#Exit')
@@ -242,9 +242,8 @@ describe('test if pressing a node, dragging and releasing triggers the clicking 
     .then(text => assert.strictEqual(text, 'SESSION'))
     .catch(common.oops(this)))
 
-  //TODO: not working
-  // it(`should click on the exit node and go to the activation`, () => this.app.client.click('#Exit')
-  //   .then(() => this.app.client.getText('.sidecar-header-icon'))
-  //   .then(text => assert.strictEqual(text, 'ACTIVATION'))
-  //   .catch(common.oops(this)))
+  it(`should click on the exit node and go to the activation`, () => this.app.client.click('#Exit')
+    .then(() => this.app.client.getText('.sidecar-header-icon'))
+    .then(text => assert.strictEqual(text, 'ACTIVATION'))
+    .catch(common.oops(this)))
 })

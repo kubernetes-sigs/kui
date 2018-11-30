@@ -2,7 +2,7 @@
 
 const prefix  = 'travis2slack'
 
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 
 module.exports = composer.sequence(
   `/whisk.system/utils/echo`,

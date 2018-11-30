@@ -89,22 +89,6 @@ export const visualizeComposition = async (response, execOptions) => {
   }
 }
 
-export const formatCompositionList = (apps, header) => {
-  apps.forEach(app => {
-      app.type = 'composition'
-      app.prettyType = 'composition'
-      app.prettyKind = 'composition'
-      app.onclick = () => repl.pexec(`app get "/${app.namespace}/${app.name}"`)
-      return app
-  })
-
-  debug('header', header)
-  header.title = "compositions"
-  header.type = "compositions"
-  const view =  [[header].concat(apps)]   // concat the header row with the compositions rows to formulate the list view
-  return view
-}
-
 // TODO format a list view?
 export const formatSessionList = (result) => {
   return { sessionId: result.activationId, name: result.name, status: result.response.status, duration: result.duration}

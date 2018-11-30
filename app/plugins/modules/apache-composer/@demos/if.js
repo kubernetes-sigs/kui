@@ -1,4 +1,4 @@
-const { if: If } = require('@ibm-functions/composer')
+const { if: If } = require('openwhisk-composer')
 
 /**
  * Creates an if-then-else composition. The input is passed to the

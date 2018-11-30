@@ -1,5 +1,5 @@
-const composer = require('@ibm-functions/composer')
-const http = require('@ibm-functions/composer/plugins/http')
+const composer = require('openwhisk-composer')
+const http = require('openwhisk-composer/plugins/http')
 
 /** the CDC flu data endpoint */
 const url = 'https://www.cdc.gov/flu/weekly/flureport.xml'

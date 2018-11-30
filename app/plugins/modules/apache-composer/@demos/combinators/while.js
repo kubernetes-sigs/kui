@@ -1,4 +1,4 @@
-const { while: While } = require('@ibm-functions/composer')
+const { while: While } = require('openwhisk-composer')
 
 /**
  * This code uses two inline functions to implement

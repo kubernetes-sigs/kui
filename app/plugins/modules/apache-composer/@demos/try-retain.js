@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { sequence: Seq, try: Try, retain: Retain } = require('@ibm-functions/composer')
+const { sequence: Seq, try: Try, retain: Retain } = require('openwhisk-composer')
 
 /**
  *

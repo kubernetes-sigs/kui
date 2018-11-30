@@ -1,4 +1,4 @@
-const { try: Try } = require('@ibm-functions/composer')
+const { try: Try } = require('openwhisk-composer')
 
 /**
  * This code illustrates a try/catch pattern. Previously

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const composer = require('@ibm-functions/composer')
+const composer = require('openwhisk-composer')
 const path = require('path')
 
 function foo() {
