@@ -14,7 +14,8 @@ if [ "$LAYERS" != "LINT" ]; then
 
     if [ "$LAYERS" == "k8s" ]; then
         # install kubectl
-        ./tools/travis/installers/kubectl.sh &
+        # ./tools/travis/installers/kubectl.sh &
+        ./tools/travis/installers/kubeadm-dind/start-cluster.sh &
     fi
 
     # install the openwhisk runtime
