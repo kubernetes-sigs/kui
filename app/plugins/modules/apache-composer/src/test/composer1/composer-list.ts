@@ -98,15 +98,13 @@ describe('Use the app list command to list the invokeable compositions', functio
     // .then(sidecar.expectBadge(badges.fsm))
     .catch(common.oops(this)))
 
-  if (!process.env.SHERPA_BUG_COMPOSITION_LIST) {
-    it(`should list ppp/${seqName2} via wsk app list`, () => cli.do(`app list`, this.app)
-      .then(cli.expectOKWithCustom({ selector: `.entity[data-name="${seqName2}"][data-package-name="ppp"]`,
-        expect: `ppp/\n${seqName2}\ncomposition`
-      }))
-      .then(selector => this.app.client.click(`${selector} .entity-name.clickable`))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName2, undefined, undefined, 'ppp'))
-      .catch(common.oops(this)))
-  }
+  it(`should list ppp/${seqName2} via wsk app list`, () => cli.do(`app list`, this.app)
+    .then(cli.expectOKWithCustom({ selector: `.entity[data-name="${seqName2}"][data-package-name="ppp"]`,
+      expect: `ppp/\n${seqName2}\ncomposition`
+    }))
+    .then(selector => this.app.client.click(`${selector} .entity-name.clickable`))
+    .then(() => this.app)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(seqName2, undefined, undefined, 'ppp'))
+    .catch(common.oops(this)))
 })

@@ -90,7 +90,7 @@ describe('edit compositions', function (this: ISuite) {
     .catch(common.oops(this)))
 
   // do this in a loop, to make sure we don't have any event listener leaks
-  // SHERPA ANNOTATIONS
+  // Disable the test for now since we don't have soure annotation in composition
   // if (false) {
   //   it(`should edit the app with source`, () => cli.do('edit comp2', this.app)
   //     .then(cli.expectOK)

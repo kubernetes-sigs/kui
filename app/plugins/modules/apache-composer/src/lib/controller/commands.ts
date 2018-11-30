@@ -25,6 +25,7 @@ import * as view from '../view/entity-view'
 import * as compileUtil from '../utility/compile'
 import * as astUtil from '../utility/ast'
 import UsageError from '../../../../../../build/core/usage-error'
+const sessionSyns = ['sessions', 'sess', 'ses', 'session']
 
 // TODO: clean up synonym
 
@@ -112,16 +113,25 @@ export default async (commandTree, prequire) => {
 
   /* command handler for session get */
   commandTree.listen(`/wsk/session/get`, ({ command, parsedOptions }) => {
-    if (parsedOptions.last) { // user didn't specify last = name
+    if (parsedOptions.last || parsedOptions['last-failed']) {
       return repl.qfexec('activation list --limit 200')
         .then(activations => {
-          debug('session get --last')
           return activations.find(activation => {
-            if (activation.annotations && activation.annotations.find(({ key, value }) => key === 'conductor' && value)) {
-              if (typeof parsedOptions.last === 'string') {
-                if (activation.name === parsedOptions.last) return activation
-              } else {
-                return activation
+            if (activation.annotations && activation.annotations.find(({ key, value }) => key === 'conductor' && value)) { // find session
+              if (parsedOptions['last-failed']) { // handle 'session get --last-failed'
+                if (activation.statusCode !== 0) {
+                  if (typeof parsedOptions['last-failed'] === 'string') { // handle 'session get --last-failed [appName]'
+                    if (activation.name === parsedOptions['last-failed']) return activation
+                  } else {
+                    return activation // handle 'session get --last'
+                  }
+                }
+              } else {  // handle 'session get --last'
+                if (typeof parsedOptions.last === 'string') {
+                  if (activation.name === parsedOptions.last) return activation // handle 'session get --last [appName]'
+                } else {
+                  return activation // handle 'session get --last'
+                }
               }
             }
           })
@@ -184,21 +194,42 @@ export default async (commandTree, prequire) => {
   }, { usage: appList('list') })
 
   /* command handler for session list*/
-  commandTree.listen(`/wsk/session/list`, ({ command, parsedOptions }) => {
-    return repl.qfexec(command.replace('session', 'activation'))
-        .then(activations => {
-          debug('session list -> activation list -> got activations:', activations)
-          // filter with sessions
-          return activations.filter(activation => {
-            debug('processing activation', activation)
-            if (activation && activation.annotations && activation.annotations.find(({ key, value }) => key === 'conductor' && value)) {
-              debug('filtering activations: found a session', activation)
-              return activation
+  sessionSyns.forEach(noun => {
+    commandTree.listen(`/wsk/${noun}/list`, ({ argvNoOptions, parsedOptions }) => {
+      let nameOption: string = parsedOptions.name
+      let nameSpecify: string = argvNoOptions.indexOf('list') === argvNoOptions.length - 2 ? argvNoOptions[argvNoOptions.length - 1] : ''
+
+      if (nameOption && nameSpecify && nameOption !== nameSpecify) {
+        debug('inconsistent name:', nameSpecify, nameSpecify)
+        throw new UsageError('Error: You provided two different session name')
+      }
+
+      const name = nameOption || nameSpecify || ' '
+
+      return repl.qfexec(`activation list ${name} --limit 200`)
+          .then(activations => {  // filter activations to find session
+            debug('session list -> activation list -> got activations:', activations)
+            let limit: number = 10  // default value
+            let skip: number = 0  // default value
+            if (parsedOptions.limit !== undefined) limit = parsedOptions.limit  // parsedOptions.limit(or skip) could be 0, so we check it with undefined here
+            if (parsedOptions.skip !== undefined) skip = parsedOptions.skip
+
+            if (!Number.isInteger(limit) || !Number.isInteger(skip) || limit < 0 || skip < 0) {
+              debug('wrong limit and skip:', limit, skip)
+              throw new UsageError('Error: --limit and --skip must be followed by non-negative integer value')
             }
+
+            return activations.filter(activation => {
+              if (activation && activation.annotations && activation.annotations.find(({ key, value }) => key === 'conductor' && value)) {
+                debug('found a session from activations', activation)
+                activation.sessionId = activation.activationId // indicate the entity is session
+                return activation
+              }
+            }).slice(skip, limit + skip)
           })
-        })
-        .catch(err => err)
-  }, { usage: sessionList })
+          .catch(err => err)
+    }, { usage: sessionList })
+  })
 
   /* command handler for propertis*/
   // the package.json might be in `app/plugins`, or in

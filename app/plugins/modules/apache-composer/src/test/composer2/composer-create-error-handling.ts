@@ -66,36 +66,36 @@ describe('app create error handling', function (this: ISuite) {
 
 /* --dry-run options disabled */
 
-//   const dryRunOk = 'data/composer/composer-source/if.js'
-//   const badDir = 'data/composer/composer-source-expect-errors'
-//   const dryRunBad = [ { input: `${badDir}/error1.js`, err: `SLACK_TOKEN required in environment.` },
-//     { input: `${badDir}/nofsm.js`, err: `Error: Unable to compile your composition` },
-//     { input: `${badDir}/t2s.js`, err: `ReferenceError: slackConfig is not defined` },
-//     { input: `${badDir}/if-bad.js`, err: `if-bad.js:4
-//   /* cond */ 'authenticate',,  /* double comma, expect parse error */
-//                             ^
-//
-// // SyntaxError: Unexpected token ,` }]
-//
-//   it(`should dry-run check ${dryRunOk} with -n`, () => cli.do(`app create ${dryRunOk} -n`, this.app)
-//     .then(cli.expectOKWithCustom({ expect: 'Your code compiles without error' }))
-//     .catch(common.oops(this)))
-//   it(`should dry-run check ${dryRunOk} with --dry-run`, () => cli.do(`app create ${dryRunOk} --dry-run`, this.app)
-//     .then(cli.expectOKWithCustom({ expect: 'Your code compiles without error' }))
-//     .catch(common.oops(this)))
-//   dryRunBad.forEach(({ input, err }) => {
-//     it(`should dry-run check with expected error ${input} --dry-run`, () => cli.do(`app create ${input} --dry-run`, this.app)
-//       .then(cli.expectError('ENOPARSE', err))
-//       .catch(common.oops(this)))
-//   })
-//
-//   //check file not found error handling
-//   it(`should fail properly with ENOENT`, () => cli.do(`app create goober.js -n`, this.app)
-//     .then(cli.expectError('ENOENT'))
-//     .catch(common.oops(this)))
-//   it(`should fail properly with ENOENT`, () => cli.do(`app create goober.js --dry-run`, this.app)
-//     .then(cli.expectError('ENOENT'))
-//     .catch(common.oops(this)))
+ //  const dryRunOk = 'data/composer/composer-source/if.js'
+ //  const badDir = 'data/composer/composer-source-expect-errors'
+ //  const dryRunBad = [ { input: `${badDir}/error1.js`, err: `SLACK_TOKEN required in environment.` },
+ //    { input: `${badDir}/nofsm.js`, err: `Error: Unable to compile your composition` },
+ //    { input: `${badDir}/t2s.js`, err: `ReferenceError: slackConfig is not defined` },
+ //    { input: `${badDir}/if-bad.js`, err: `if-bad.js:4
+ //    /* cond */ 'authenticate',,  /* double comma, expect parse error */
+ //                            ^
+ //
+ // SyntaxError: Unexpected token ,` }]
+
+/* it(`should dry-run check ${dryRunOk} with -n`, () => cli.do(`app create ${dryRunOk} -n`, this.app)
+    .then(cli.expectOKWithCustom({ expect: 'Your code compiles without error' }))
+    .catch(common.oops(this)))
+  it(`should dry-run check ${dryRunOk} with --dry-run`, () => cli.do(`app create ${dryRunOk} --dry-run`, this.app)
+    .then(cli.expectOKWithCustom({ expect: 'Your code compiles without error' }))
+    .catch(common.oops(this)))
+  dryRunBad.forEach(({ input, err }) => {
+    it(`should dry-run check with expected error ${input} --dry-run`, () => cli.do(`app create ${input} --dry-run`, this.app)
+      .then(cli.expectError('ENOPARSE', err))
+      .catch(common.oops(this)))
+  })
+
+   // check file not found error handling
+  it(`should fail properly with ENOENT`, () => cli.do(`app create goober.js -n`, this.app)
+    .then(cli.expectError('ENOENT'))
+    .catch(common.oops(this)))
+  it(`should fail properly with ENOENT`, () => cli.do(`app create goober.js --dry-run`, this.app)
+  .then(cli.expectError('ENOENT'))
+  .catch(common.oops(this))) */
 
   it(`should fail properly with ENOENT`, () => cli.do(`app create goober goober.js`, this.app)
     .then(cli.expectError('ENOENT'))
