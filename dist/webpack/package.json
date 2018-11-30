@@ -9,7 +9,7 @@
     "webpack-post": "(cd ../../app/plugins/modules/wskflow && ./bin/restore-after-prune.sh) && (cd ../../app/plugins/modules/editor && ./bin/restore-after-prune.sh)",
     "webpack": "rm -f ./build/*.js.br; npm run webpack-pre && webpack-cli --mode development; npm run webpack-post",
     "webpack-stats": "npm run webpack-pre && webpack --json > /tmp/stats.json; npm run webpack-post",
-    "http": "if [ ! -d keys ]; then mkdir keys && openssl genrsa -out keys/ssl.key 2048 && openssl req -new -key keys/ssl.key -x509 -days 999 -out keys/ssl.cert; fi; http-server --cors --brotli --ssl --cert keys/ssl.cert --key keys/ssl.key",
+    "http": "if [ ! -d .keys ]; then mkdir .keys && openssl genrsa -out .keys/ssl.key 2048 && openssl req -new -key .keys/ssl.key -x509 -days 999 -out .keys/ssl.crt; fi; echo 'Now visit this url:'; echo 'https://localhost:8080/app/build/index-webpack-local.html'; (cd ../../ && http-server --cors --brotli --ssl --cert dist/webpack/.keys/ssl.crt --key dist/webpack/.keys/ssl.key --silent)",
     "webpack-cli-heap": "cp node_modules/.bin/webpack-cli node_modules/.bin/webpack-cli.orig && awk 'FNR==1 {print $0, \"--max-old-space-size=8192\"} FNR > 1 { print $0 }' node_modules/.bin/webpack-cli.orig > node_modules/.bin/webpack-cli",
     "postinstall": "npm run webpack-cli-heap"
   },
@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "http-server": "git://github.com/starpit/http-server.git#fix_445",
     "brotli-webpack-plugin": "^1.0.0",
     "ibm-cos-sdk": "^1.3.2",
     "needle": "^2.2.4",

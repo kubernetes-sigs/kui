@@ -3,6 +3,6 @@
   "main": "main.bundle.js",
   "bodyCss": "not-electron",
   "cssHome": "../content/css/",
-  "imageHome": "../content/icons/ico/",
-  "jsHome": ""
+  "imageHome": "../content/",
+  "jsHome": "../../dist/webpack/build/"
 }
