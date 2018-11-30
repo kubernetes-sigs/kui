@@ -1,30 +1,33 @@
 # webpack builds
 
-This directory will help you to create and publish a webpack
-distribution. The intention is for creating a hosted version of Kui,
-for use within any reasonably compliant browser.
+This directory will help you to create and publish a
+[webpack](https://webpack.js.org/) distribution. The intention is for
+creating a hosted version of Kui, for use within any reasonably
+compliant browser.
 
 ## Building for webpack
 
-This command will generate the webpack bundles. 
+This command will generate the webpack bundles.
 
 ```bash
 npm run webpack
 ```
 
-When it is done, you should see `*.br` files generated in the enclosed
-`build/` directory. These are the javascript bundles, compressed using
-the [brotli](https://en.wikipedia.org/wiki/Brotli) encoding. Brotli
+When it is done (which may take 2-3 minutes), you should see a
+collection of `*.br` files generated in the enclosed `build/`
+directory. These are the webpack bundles, compressed using the
+[brotli](https://en.wikipedia.org/wiki/Brotli) encoding. Brotli
 provides fast decompression combined with higher compression ratios
 than most other approaches out there.
 
 ## Serving Locally
 
 To test the webpack builds, you may choose to run a local web
-server. The only requirements on this server are: CORS and Brotli
+server. The only requirements on this server are CORS and Brotli
 support (the latter is mostly a pass-through as far as the server is
-concerned). You can use the `http-server` npm for these purposes, by
-issuing:
+concerned). You can use the
+[http-server](https://www.npmjs.com/package/http-server) npm for these
+purposes, by issuing:
 
 ```bash
 npm run http
@@ -40,7 +43,7 @@ To change the build settings for a local build, consult
 [webpack-local.json](../../app/config/envs/webpack-local.json).
 
 
-## Server from S3
+## Serving from S3
 
 You may also serve Kui directly (in a serverless fashion) from an S3
 bucket.  The `publish.sh` script included in this directory will
@@ -50,9 +53,10 @@ help with the publication step, but this SDK only requires the
 published S3 API. You should have your S3 secrets either in an
 environment variable `COS_SECRETS`, or stashed in a file (which is
 gitignored) `../publishers/s3/secrets-cos.json`. You will see a
-template for the expected schema of this file, in that same directory.
+[template](../publishers/s3/secrets-cos-template.json) for the
+expected schema of this file, in that same directory.
 
-## Configuring an S3 deployment
+### Configuring an S3 deployment
 
 To change the build settings for an S3 deployment, consult
 [webpack.json](../../app/config/envs/webpack.json).
