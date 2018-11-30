@@ -19,13 +19,12 @@ const debug = Debug('plugins/apache-composer/cmds')
 
 import * as client from './client'
 import * as repl from '../../../../../../build/core/repl'
-import { create, invoke, async, app_get, session_get, app_delete, app_list, session_list, properties }  from '../utility/usage'
+import { create, invoke, async, appGet, sessionGet, appDelete, appList, sessionList, properties } from '../utility/usage'
 import * as parseUtil from '../utility/parse'
 import * as view from '../view/entity-view'
 import * as compileUtil from '../utility/compile'
 import * as astUtil from '../utility/ast'
 import UsageError from '../../../../../../build/core/usage-error'
-
 
 // TODO: clean up synonym
 
@@ -48,12 +47,11 @@ export default async (commandTree, prequire) => {
       }
     }
 
-    return compileUtil.sourceToComposition({inputFile, name, recursive: parsedOptions.r || parsedOptions.recursive})
-    // return compileUtil.parseSource(argvNoOptions, 'create', parsedOptions.r || parsedOptions.recursive)
+    return compileUtil.sourceToComposition({ inputFile, name, recursive: parsedOptions.r || parsedOptions.recursive })
       .then(source => client.deploy({ composition: source, overwrite: false })
         .then(view.formatCompositionEntity(execOptions)))
       .catch(err => { throw err })
-  }, {usage: create('create')})
+  }, { usage: create('create') })
 
   /* command handler for app update */
   commandTree.listen(`/wsk/app/update`, async ({ argvNoOptions, execOptions, parsedOptions }) => {
@@ -74,45 +72,42 @@ export default async (commandTree, prequire) => {
     return compileUtil.sourceToComposition({ inputFile, name, recursive: parsedOptions.r || parsedOptions.recursive })
       .then(composition => client.deploy({ composition, overwrite: true })
         .then(view.formatCompositionEntity(execOptions)))
-  }, {usage: create('update')})
+  }, { usage: create('update') })
 
   /* command handler for app invoke */
   commandTree.listen(`/wsk/app/invoke`, ({ command, parsedOptions: options }) => {
-    //command = command.replace(/--blocking|--result|-br|-b|-r/g, '').replace('app', 'action')
     return repl.qfexec(command.replace('app', 'action'))
       .then(result => view.formatCompositionResult(result, options))
-  }, {usage: invoke})
-
+  }, { usage: invoke })
 
   /* command handler for app async */
-  commandTree.listen(`/wsk/app/async`, ({command }) => {
+  commandTree.listen(`/wsk/app/async`, ({ command }) => {
     return repl.qfexec(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
-  }, {usage: async})
+  }, { usage: async })
 
   /* command handler for app delete */
   commandTree.listen(`/wsk/app/delete`, ({ command }) => {
     return repl.qfexec(command.replace('app', 'action'))
       .then(result => view.formatDeleteResult(result))
-  }, { usage: app_delete})
+  }, { usage: appDelete })
 
   /* command handler for app get */
   commandTree.listen(`/wsk/app/get`, ({ argvNoOptions, execOptions, parsedOptions }) =>
     repl.qexec(`wsk action get "${parseUtil.parseName(argvNoOptions, 'get')}"`, undefined, undefined,
       Object.assign({}, execOptions, { override: true, originalOptions: parsedOptions }))
-  , { usage: app_get('get') })
-
+  , { usage: appGet('get') })
 
     // override wsk action get
   const actionGet = (await (commandTree.find('/wsk/action/get'))).$
 
   wsk.synonyms('actions').forEach(syn => {
-   commandTree.listen(`/wsk/${syn}/get`, (opts) => {
-     if (!actionGet) {
-       return Promise.reject(new Error())
-     }
-     debug('rendering action get')
-     return actionGet(opts).then(async response => view.visualizeComposition(response, opts.execOptions))
-   })
+    commandTree.listen(`/wsk/${syn}/get`, (opts) => {
+      if (!actionGet) {
+        return Promise.reject(new Error())
+      }
+      debug('rendering action get')
+      return actionGet(opts).then(async response => view.visualizeComposition(response, opts.execOptions))
+    })
   })
 
   /* command handler for session get */
@@ -122,8 +117,8 @@ export default async (commandTree, prequire) => {
         .then(activations => {
           debug('session get --last')
           return activations.find(activation => {
-            if(activation.annotations && activation.annotations.find(({key, value}) => key === 'conductor' && value)) {
-              if(typeof parsedOptions.last === 'string'){
+            if (activation.annotations && activation.annotations.find(({ key, value }) => key === 'conductor' && value)) {
+              if (typeof parsedOptions.last === 'string') {
                 if (activation.name === parsedOptions.last) return activation
               } else {
                 return activation
@@ -134,42 +129,42 @@ export default async (commandTree, prequire) => {
           return repl.qfexec(`session get ${activation.activationId}`)
         }).catch(err => err)
     } else {
-        return repl.qfexec(command.replace('session', 'activation'))
+      return repl.qfexec(command.replace('session', 'activation'))
     }
   }
-  , {usage: session_get('get')})
+  , { usage: sessionGet('get') })
 
   commandTree.listen(`/wsk/session/result`, ({ command }) => {
     return repl.qfexec(command.replace('session result', 'activation get'))
       .then(result => result.response.result)
   }
-  , {usage: session_get('result')})
+  , { usage: sessionGet('result') })
 
   // override wsk activation get
   const activationGet = (await (commandTree.find('/wsk/activation/get'))).$
   wsk.synonyms('activations').forEach(syn => {
-      commandTree.listen(`/wsk/${syn}/get`, (opts) => {
-          if (!activationGet) {
-              return Promise.reject()
-          }
-          const last = opts.parsedOptions.last
+    commandTree.listen(`/wsk/${syn}/get`, (opts) => {
+      if (!activationGet) {
+        return Promise.reject()
+      }
+      const last = opts.parsedOptions.last
 
-          if (last) {
-            return repl.qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
+      if (last) {
+        return repl.qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
               .then(activations => {
                 if (activations.length === 0) {
                   throw new Error('No such activation found')
                 } else {
                   return repl.qexec(`wsk activation get ${activations[0].activationId}`)
                 }
-            })
-          }
+              })
+      }
 
-          return activationGet(opts)
+      return activationGet(opts)
               .then(response => view.formatSessionGet(response))
               .catch(err => { throw err })
-      })
     })
+  })
 
   /* command handler for app list */
   commandTree.listen(`/wsk/app/list`, ({ command }) => {
@@ -178,33 +173,32 @@ export default async (commandTree, prequire) => {
         debug('app list -> action list', actions)
         let apps = actions.filter(astUtil.isAnApp)
         apps.forEach(app => {
-            app.type = 'composition'
-            app.prettyType = 'composition'
-            app.prettyKind = 'composition'
-            app.onclick = () => repl.pexec(`app get "/${app.namespace}/${app.name}"`)
-            return app
+          app.type = 'composition'
+          app.prettyType = 'composition'
+          app.prettyKind = 'composition'
+          app.onclick = () => repl.pexec(`app get "/${app.namespace}/${app.name}"`)
+          return app
         })
         return apps
       })
-  }, {usage: app_list('list')})
-
+  }, { usage: appList('list') })
 
   /* command handler for session list*/
-    commandTree.listen(`/wsk/session/list`, ({ command, parsedOptions }) => {
-      return repl.qfexec(command.replace('session', 'activation'))
+  commandTree.listen(`/wsk/session/list`, ({ command, parsedOptions }) => {
+    return repl.qfexec(command.replace('session', 'activation'))
         .then(activations => {
           debug('session list -> activation list -> got activations:', activations)
           // filter with sessions
           return activations.filter(activation => {
-            debug('processing activation', activation )
-            if (activation && activation.annotations && activation.annotations.find(({key, value}) => key === 'conductor' && value)) {
-                debug('filtering activations: found a session', activation)
-                return activation
+            debug('processing activation', activation)
+            if (activation && activation.annotations && activation.annotations.find(({ key, value }) => key === 'conductor' && value)) {
+              debug('filtering activations: found a session', activation)
+              return activation
             }
           })
         })
         .catch(err => err)
-    }, {usage: session_list})
+  }, { usage: sessionList })
 
   /* command handler for propertis*/
   // the package.json might be in `app/plugins`, or in
@@ -220,14 +214,14 @@ export default async (commandTree, prequire) => {
 
   const propertySynonyms = ['wsk/app', 'composer']
   propertySynonyms.forEach(tree => {
-    const cmd = commandTree.listen(`/${tree}/properties`, () => {return `Composer version ${pckage.version}`}, { usage: properties('properties'), noAuthOk: true })
+    const cmd = commandTree.listen(`/${tree}/properties`, () => { return `Composer version ${pckage.version}` }, { usage: properties('properties'), noAuthOk: true })
 
     // synonyms of app properties
-    commandTree.synonym(`/${tree}/props`, () => {return `Composer version ${pckage.version}`}, cmd, { usage: properties('props'), noAuthOk: true })
-    commandTree.synonym(`/${tree}/config`, () => {return `Composer version ${pckage.version}`}, cmd, { usage: properties('config'), noAuthOk: true })
+    commandTree.synonym(`/${tree}/props`, () => { return `Composer version ${pckage.version}` }, cmd, { usage: properties('props'), noAuthOk: true })
+    commandTree.synonym(`/${tree}/config`, () => { return `Composer version ${pckage.version}` }, cmd, { usage: properties('config'), noAuthOk: true })
   })
 
-  //TODO
+  // TODO
   // app lang
   // const opts = { noAuthOk: true }
   // const aliases = ['js', 'nodejs', 'nodejs:default', 'json']

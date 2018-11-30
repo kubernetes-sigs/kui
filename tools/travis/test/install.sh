@@ -35,7 +35,7 @@ if [ "$LAYERS" != "LINT" ]; then
     else
         npm install && (cd dist/headless && ./build.sh; cd ../builds && tar jxf "Kui-headless.tar.bz2")
     fi
-    
+
     wait
     if [ $? != 0 ]; then
         exit $?
@@ -47,8 +47,10 @@ if [ "$LAYERS" != "LINT" ]; then
     # corral the tests that plugins might offer
     echo "Test corral"
     (cd tests && ./bin/corral.sh)
+
+else
+    npm install
 fi
 
 # we will return to code coverage later:
 # if [ "$LAYERS" != "LINT" ]; then (cd tests && npm run _instrument); fi
-

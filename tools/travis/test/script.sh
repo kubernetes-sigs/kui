@@ -7,8 +7,7 @@ export KEY=`node -e 'console.log(parseInt(process.env.IDX) + process.env.NUM_OPE
 echo "Using KEY=$KEY"
 
 if [ "$LAYERS" == "LINT" ]; then
-    # npm run lint
-    ./tools/scancode/scancode.sh
+    npm run lint && ./tools/scancode/scancode.sh
 
 elif [ "$LAYERS" != "HEADLESS" ]; then
     (cd tests && ./bin/runLocal.sh $LAYERS)

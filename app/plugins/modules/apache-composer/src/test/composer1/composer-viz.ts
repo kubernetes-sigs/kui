@@ -113,7 +113,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   //   .catch(common.oops(this)))
 
   /** test: ibid, but alternate placement of --fsm on command line */
-  //TODO
+  // TODO
   // it(`show raw FSM from FSM file ${fsm.path}, alterate option placement`, () => cli.do(`app viz ${fsm.path} --fsm`, this.app)
   //   .then(cli.expectOK)
   //   .then(sidecar.expectOpen)

@@ -26,7 +26,6 @@ const sidecar = ui.sidecar
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const seqName1 = 'seq1'
 
-
 describe('kill composer invocation', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))

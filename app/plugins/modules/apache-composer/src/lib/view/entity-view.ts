@@ -4,31 +4,31 @@ import * as repl from '../../../../../../build/core/repl'
 import { isHeadless } from '../../../../../../build/core/capabilities'
 import * as util from '../utility/ast'
 const defaultMode = 'visualization'
-//import * as wskFlowUtil from '../../../../wskflow/plugin/lib/util'
+// import * as wskFlowUtil from '../../../../wskflow/plugin/lib/util'
 /**
  * Format the given activation record for display as a session
  *
  */
 export const formatSessionResponse = activation => {
-    activation.prettyType = 'sessions'
+  activation.prettyType = 'sessions'
 
     // entity onclick handler
-    activation.onclick = () => repl.pexec(`app get "/${path}"`)
+  activation.onclick = () => repl.pexec(`app get "/${path}"`)
 
     // add our visualization view mode
-    if (!activation.modes) activation.modes = []
-    activation.modes.find(({mode}) => mode === 'logs').label = 'trace'
+  if (!activation.modes) activation.modes = []
+  activation.modes.find(({ mode }) => mode === 'logs').label = 'trace'
 
-    const path = activation.annotations.find(({key}) => key === 'path').value
+  const path = activation.annotations.find(({ key }) => key === 'path').value
 
-    activation.modes.push({
-        mode: defaultMode,
-        label: 'Session Flow',
-        direct: entity => repl.pexec(`session flow ${activation.activationId}`)
-    })
+  activation.modes.push({
+    mode: defaultMode,
+    label: 'Session Flow',
+    direct: entity => repl.pexec(`session flow ${activation.activationId}`)
+  })
 
-    debug('session response', activation)
-    return activation
+  debug('session response', activation)
+  return activation
 }
 
 export const formatCompositionEntity = execOptions => response => {
@@ -47,12 +47,12 @@ export const formatDeleteResult = response => {
 
 export const formatSessionGet = response => {
   debug('session get response', response)
-  if (response && response.annotations && response.annotations.find(({key, value}) => key === 'conductor' && value)) {
-      debug('activation is session')
-      return formatSessionResponse(response)
+  if (response && response.annotations && response.annotations.find(({ key, value }) => key === 'conductor' && value)) {
+    debug('activation is session')
+    return formatSessionResponse(response)
   } else {
-      debug('activation is not session')
-      return response
+    debug('activation is not session')
+    return response
   }
 }
 
@@ -91,5 +91,5 @@ export const visualizeComposition = async (response, execOptions) => {
 
 // TODO format a list view?
 export const formatSessionList = (result) => {
-  return { sessionId: result.activationId, name: result.name, status: result.response.status, duration: result.duration}
+  return { sessionId: result.activationId, name: result.name, status: result.response.status, duration: result.duration }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-//const sampleInputs = require('../../composer/lib/sample-inputs')
+// const sampleInputs = require('../../composer/lib/sample-inputs')
 
 /** a srcFile.js input */
 const srcJs = { name: 'src.js', docs: 'generate a preview of a Composer source file', file: true }
@@ -41,7 +41,7 @@ export const preview = command => ({
     { name: '--functions', alias: '-f', boolean: true, docs: 'show all functions directly in the view' },
     { name: '--env', alias: '-e', docs: 'Assign a value to an environment variable', narg: 2 },
     { name: '--show-code', alias: '-c', boolean: true, docs: 'Show code and preview side-by-side' }],
-  //sampleInputs: sampleInputs(command),
+  // sampleInputs: sampleInputs(command),
   parents: ['composer', { command: 'composer app' }],
   related: ['app create']
 })

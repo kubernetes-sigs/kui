@@ -2,9 +2,9 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/utility/ast')
 /* Does the given action represent a composer app? */
 export const isAnApp = action => {
-    debug('filtering action', action)
-    const anno = action && action.annotations && action.annotations.find(({key}) => key === 'conductor')
-    return anno && anno.value
+  debug('filtering action', action)
+  const anno = action && action.annotations && action.annotations.find(({ key }) => key === 'conductor')
+  return anno && anno.value
 }
 
 /**
@@ -51,7 +51,6 @@ export const astAnnotation = entity => {
  *
  */
 export const hasAst = entity => entity && !!astAnnotation(entity)
-
 
 /**
  * Is the given struct a valid AST?
