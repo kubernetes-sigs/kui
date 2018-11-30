@@ -195,7 +195,7 @@ const composer = {
       .then(N => app.client.getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`))
       .then(toMap)
   },
- getSessions: (app, nDone, { cmd = 'session list', expect = [] }) => {
+  getSessions: (app, nDone, { cmd = 'session list', expect = [] }) => {
     return cli.do(cmd, app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(N => {
@@ -223,7 +223,7 @@ const composer = {
 
         return N // allow further composition using N, the command index
       })
-  }
+ }
 }
 
 describe('Intro demo scenario', function (this: ISuite) {
@@ -321,16 +321,16 @@ describe('Intro demo scenario', function (this: ISuite) {
   // expectNoSessions()
 
   // invoke hello again, and expect the session list to show just it
-  /* if (!process.env.SHERPA_BUG_SESSION_LIST) {
+  {
     const { appName: appName1 } = inputs[0]
 
     it('should invoke hello and show one more session than before', () => invokeHello()
       .then(activationId => ui.waitForSession(this.app, activationId, { name: appName1 }))
       .catch(common.oops(this)))
-  }*/
+  }
 
   // session result
-/*  if (!process.env.SHERPA_BUG_SESSION_LIST) {
+  {
     const { appName: appName1, expectedStructa: expectedStruct1 } = inputs[0]
 
     it(`should display result in repl with session result`, () => invokeHello()
@@ -340,7 +340,7 @@ describe('Intro demo scenario', function (this: ISuite) {
       .then(selector => this.app.client.getText(selector))
       .then(ui.expectStruct(expectedStruct1))
       .catch(common.oops(this)))
-  } */
+  }
 
   // app preview hello.js
   {
@@ -367,7 +367,7 @@ describe('Intro demo scenario', function (this: ISuite) {
   }
 
   // session get
-/*  if (!process.env.SHERPA_BUG_SESSION_LIST) {
+  {
     const { appName: appName1, expectedStructa: expectedStruct1 } = inputs[0]
 
     it(`should display result in sidecar with session get`, () => invokeHello()
@@ -381,7 +381,7 @@ describe('Intro demo scenario', function (this: ISuite) {
           .then(ui.expectStruct(expectedStruct1))
       }))
       .catch(common.oops(this)))
-  } */
+  }
 
   // app preview if.js
   {
@@ -394,7 +394,7 @@ describe('Intro demo scenario', function (this: ISuite) {
       // .then(sidecar.expectBadge(badges.composerLib))
       .then(graph.hasNodes({ tasks: 3, total: 6, deployed: 0 }))
 
-      // visit fsm tab
+      // visit ast tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
       .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
       .then(ui.expectStruct(fsm[appName2]))
@@ -402,7 +402,7 @@ describe('Intro demo scenario', function (this: ISuite) {
       // visit code tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
       .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
-      //.then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName2).replace(/\s+/g, '')))
+      .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName2).replace(/\s+/g, '')))
 
       .catch(common.oops(this)))
   }
@@ -466,8 +466,8 @@ describe('Intro demo scenario', function (this: ISuite) {
       .catch(common.oops(this)))
   }
 
-  // session list
-/*  if (!process.env.SHERPA_BUG_SESSION_LIST) {
+  // diable session list --limit tests
+ /* {
     // expect 3 done sessions, and that the done list contain appName2
     const { appName: appName1 } = inputs[0]
     const { appName: appName2 } = inputs[1]
@@ -480,28 +480,30 @@ describe('Intro demo scenario', function (this: ISuite) {
     })
   } */
 
+  // diable session list with name filter tests
   // session list with name filter
-/*  if (!process.env.SHERPA_BUG_SESSION_LIST) {
+  /* {
     // expect 1 done sessions, and that the done list contain appName1
     const { appName: appName1 } = inputs[0]
     const cmd = `session list ${appName1}`
     const expected = [ appName1 ] // appName1 had better be in the list
     const nDone = 1
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer.getSessions(this.app, nDone, { cmd, expected })
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected })
         .catch(common.oops(this))
     })
-  }
+  } */
 
+  // diable session list with name filter tests
   // session list with name filter (variant)
-  if (!process.env.SHERPA_BUG_SESSION_LIST) {
+  /* {
     // expect 1 done sessions, and that the done list contain appName1
     const { appName: appName2 } = inputs[1]
     const cmd = `session list --name ${appName2}`
     const expected = [ appName2 ] // appName2 had better be in the list
     const nDone = 2
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer.getSessions(this.app, nDone, { cmd, expected })
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected })
         .catch(common.oops(this))
     })
   } */
@@ -517,7 +519,7 @@ describe('Intro demo scenario', function (this: ISuite) {
       // .then(sidecar.expectBadge(badges.composerLib))
       .then(graph.hasNodes({ tasks: 2, total: 4, deployed: 0 }))
 
-      // visit fsm tab
+      // visit ast tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
       .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
       .then(ui.expectStruct(fsm[appName3]))
@@ -590,23 +592,23 @@ describe('Intro demo scenario', function (this: ISuite) {
   }
 
   // session get --last try
-// if (!process.env.SHERPA_BUG_729) {
-//     // expect 1 done sessions, and that the done list contain appName3
-//     const { appName: appName3, expectedStructb: expectedStruct3b } = inputs[2]
-//     const cmd = 'session get --last try'
-//     it(cmd, () => cli.do(cmd, this.app)
-//       .then(cli.expectOK)
-//       .then(sidecar.expectOpen)
-//       .then(sidecar.expectShowing(appName3))
-//       .then(app => app.client.waitUntil(() => {
-//         return app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-//           .then(ui.expectStruct(expectedStruct3b))
-//       }))
-//       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="visualization"]'))
-//       .then(() => this.app)
-//       .then(graph.hasNodes({ tasks: 2, total: 4 })) /*, deployed: 2 */
-//       .catch(common.oops(this)))
-//   }
+  {
+    // expect 1 done sessions, and that the done list contain appName3
+    const { appName: appName3, expectedStructb: expectedStruct3b } = inputs[2]
+    const cmd = 'session get --last try'
+    it(cmd, () => cli.do(cmd, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName3))
+      .then(app => app.client.waitUntil(() => {
+        return app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+          .then(ui.expectStruct(expectedStruct3b))
+      }))
+      .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="visualization"]'))
+      .then(() => this.app)
+      .then(graph.hasNodes({ tasks: 2, total: 4 })) /*, deployed: 2 */
+      .catch(common.oops(this)))
+  }
 
   // app create retain.js
   {
