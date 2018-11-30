@@ -550,7 +550,7 @@ const commandNotFound = async (argv, partialMatches?, execOptions?) => {
     // and look for partial matches
     eventBus.emit('/command/resolved', {
       // ANONYMIZE: namespace: namespace.current(),
-      error: commandNotFoundMessage,
+      error: `${commandNotFoundMessage}: ${argv.join(' ')}`,
       command: argv[0]
     })
   }

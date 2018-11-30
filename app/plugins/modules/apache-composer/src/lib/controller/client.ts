@@ -18,6 +18,10 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/client')
 import * as Conductor from '@ibm-functions/composer/conductor'
 
+const options = {
+  ignore_certs: process.env.IGNORE_CERTS && process.env.IGNORE_CERTS !== 'false' && process.env.IGNORE_CERTS !== '0'
+}
+
 /**
   * Deploy the given composition to Apache OpenWhisk
   *
@@ -29,7 +33,7 @@ import * as Conductor from '@ibm-functions/composer/conductor'
 export const deploy = ({ composition, overwrite }) => {
   // deploys the JSON-encoded composition
   debug('deploying composition', composition)
-  return Conductor().compositions.deploy(composition, overwrite)
+  return Conductor(options).compositions.deploy(composition, overwrite)
     .then(entity => {
       // delploy returns [{...}]
       return Object.assign(entity[0], { name: entity[0].id, verb: 'update', type: 'composition' })

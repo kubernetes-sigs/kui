@@ -70,14 +70,17 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .catch(common.oops(this)))
 
   /** test: @demos/seq.js file */
-  it(`show visualization from javascript source ${demoSeq.path}`, () => cli.do(`app viz ${demoSeq.path}`, this.app)
-    .then(verifyTheBasicStuff(demoSeq.file, 'composerLib'))
-    .then(verifyNodeExists('date', true))
-    .then(verifyNodeExists('echo', true))
-    .then(verifyEdgeExists('Entry', 'date'))
-    .then(verifyOutgoingEdgeExists('date'))
-    .then(verifyEdgeExists('echo', 'Exit'))
-    .catch(common.oops(this)))
+  if (!process.env.LOCAL_OPENWHISK) {
+    // no openwhisk catalog in local openwhisk travis
+    it(`show visualization from javascript source ${demoSeq.path}`, () => cli.do(`app viz ${demoSeq.path}`, this.app)
+       .then(verifyTheBasicStuff(demoSeq.file, 'composerLib'))
+       .then(verifyNodeExists('date', true))
+       .then(verifyNodeExists('echo', true))
+       .then(verifyEdgeExists('Entry', 'date'))
+       .then(verifyOutgoingEdgeExists('date'))
+       .then(verifyEdgeExists('echo', 'Exit'))
+       .catch(common.oops(this)))
+  }
 
   /** test: load an FSM */
   const syns = ['preview', 'app viz', 'app preview', 'wsk app viz', 'wsk app preview']

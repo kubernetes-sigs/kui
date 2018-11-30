@@ -1,3 +1,19 @@
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+ROOTDIR="$SCRIPTDIR/../.."
+
+if [ -z "$WHISKDIR" ]; then
+    WHISKDIR="$ROOTDIR/openwhisk"
+fi
+
+if [ ! -d "$WHISKDIR" ]; then
+    echo "Please set $WHISKDIR"
+    exit 1
+fi
+
+export WHISKDIR
+echo "Found WHISKDIR=$WHISKDIR"
+
+
 #
 # get an openwhisk key
 #
@@ -8,25 +24,22 @@ function allocateHelper {
     PREFIX=$1
     SUFFIX=$2
 
+    USER="${TEST_ORG}_user"
     SPACE="${PREFIX}${SUFFIX}"
-
-    # create cf space
-    if [ ! -f "$AUTHDIR/auth_$i$SUFFIX" ]; then
-        echo "Creating namespace"
-        bx cf create-space "$SPACE"
-    fi
+    NAMESPACE="${TEST_ORG}_${SPACE}"
 
     # fetch openwhisk keys for the new space
     echo "Getting auth key for namespace $SPACE"
-    rm -f "$AUTHDIR/auth_$i$SUFFIX" && \
-        bx target --cf-api "$IBMCLOUD_API_ENDPOINT" -o "$TEST_ORG" -s "$SPACE" && \
-        (bx wsk list | grep -v "Unable to authenticate")
+    AUTH=`"$WHISKDIR/bin/wskadmin" user create "${USER}" -ns "${NAMESPACE}"`
 
     if [ $? != 0 ]; then
-        echo "OpenWhisk creds not ready, yet. Retrying..."
-        sleep 1
-        allocateHelper $@
+        echo "Failed to allocate OpenWhisk creds"
+        "$WHISKDIR/bin/wskadmin" user create "${USER}" -ns "${NAMESPACE}"
+        exit 1
     fi
+
+    cp ~/.wskprops-template ~/.wskprops
+    echo "AUTH=$AUTH" >> ~/.wskprops
 }
 function allocate {
     mod=$((KEY % $NUM_OPENWHISK_AUTH_LAYERS))
