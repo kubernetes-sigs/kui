@@ -163,6 +163,7 @@ const readFromLocalWskProps = (wsk, auth?: string, subject?: string) => wsk.apiH
       if (err.code === 'ENOENT') {
         // the .wskprops file does not yet exist. manufacture
         // an in-memory form of the data we currently have
+        debug('using blank wskprops')
         resolve({
           APIHOST: apiHost,
           AUTH: auth || ''
@@ -174,8 +175,9 @@ const readFromLocalWskProps = (wsk, auth?: string, subject?: string) => wsk.apiH
       // we successfuly read the .wskprops file into an
       // in-memory struct; now update that struct
       wskprops.APIHOST = apiHost // in case this has also changed, via `host set`
-      wskprops.AUTH = auth || wskprops.AUTH
+      if (auth) wskprops.AUTH = auth
       if (subject) wskprops.SUBJECT = subject
+      console.error(`updating existing wksprops ${JSON.stringify(wskprops)}`)
       resolve(wskprops)
     }
   })
@@ -368,8 +370,8 @@ const hostSet = (wsk) => ({ argvNoOptions, parsedOptions: options }) => {
 
     host = new Promise((resolve, reject) => {
       const ping = idx => {
-        debug('ping', idx)
         const host = variants[idx]
+        debug('ping', idx, host)
 
         debug('trying local', host)
 
@@ -387,7 +389,8 @@ const hostSet = (wsk) => ({ argvNoOptions, parsedOptions: options }) => {
 
         needle('get', `${host}/ping`, {}, {
           rejectUnauthorized: false,
-          timeout: 500
+          timeout: 500,
+          open_timeout: 500
         }).then(response => {
           if (response.statusCode >= 400) {
             tryNext()
@@ -396,6 +399,11 @@ const hostSet = (wsk) => ({ argvNoOptions, parsedOptions: options }) => {
             isLocal = true
             resolve(host)
           }
+        }).catch(err => {
+          // for what it's worth, err.code === ECONNRESET is a good
+          // indicator that the given host is not online
+          debug('giving up on this host, trying the next', err.code, err)
+          tryNext()
         })
       }
       ping(0)
@@ -422,9 +430,12 @@ const hostSet = (wsk) => ({ argvNoOptions, parsedOptions: options }) => {
                                         // use `wsk auth add` to register the key for this host
                                         return repl.qfexec(`wsk auth add ${specifiedKey}`)
                                       } else if (auths.length === 0) {
-                                        if (isLocal) {
+                                        if (isLocal && !process.env.LOCAL_OPENWHISK) {
                                           // fixed key for local openwhisk
-                                          return repl.qfexec('wsk auth add 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP')
+                                          // when in travis (LOCAL_OPENWHISK), then we aren't using the
+                                          // default key, hence the extra if guard
+                                          const key = '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
+                                          return repl.qfexec('wsk auth add ${key}')
                                         }
                                         // no keys, yet. enter a special mode requesting further assistance
                                         namespace.setNoNamespace(false)

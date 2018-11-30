@@ -50,8 +50,8 @@ describe('host tests', function (this: ISuite) {
   const { apihostIsLocal } = openwhisk
   const apihost = apihostIsLocal ? 'local' : openwhisk.apihost
   it(`should restore host to original setting: ${apihost}`, () => cli.do(`wsk host set ${apihost}`, this.app)
-    .then(cli.expectOK)
-    .then(() => cli.do('wsk host get', this.app))
-    .then(cli.expectOKWithCustom({ expect: openwhisk.apihost }))
-    .catch(common.oops(this)))
+     .then(cli.expectOK)
+     .then(() => cli.do('wsk host get', this.app))
+     .then(cli.expectOKWithCustom({ expect: openwhisk.apihost }))
+     .catch(common.oops(this)))
 })

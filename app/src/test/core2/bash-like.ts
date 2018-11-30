@@ -47,9 +47,11 @@ describe('shell commands', function (this: ISuite) {
      .then(cli.expectError(500, header('ibmcloud')))
     .catch(common.oops(this)))
 
-  it('should give ok for known outer command', () => cli.do(`ibmcloud target`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  if (!process.env.LOCAL_OPENWHISK) {
+    it('should give ok for known outer command', () => cli.do(`ibmcloud target`, this.app)
+       .then(cli.expectOK)
+       .catch(common.oops(this)))
+  }
 
   it('should answer which ls with /bin/ls', () => cli.do(`which ls`, this.app)
     .then(cli.expectOKWithCustom({ expect: '/bin/ls' }))
