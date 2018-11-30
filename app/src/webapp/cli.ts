@@ -666,7 +666,7 @@ export const prompt = (msg: string, block: Element, nextBlock: Element, options,
 export const init = async (prefs = {}) => {
   debug('init')
 
-  listen(getInitialPrompt());
+  listen(getInitialPrompt())
 
   // if you want to have the current directory displayed with the initial prompt
   // getCurrentBlock().querySelector('.repl-context').innerText = process.cwd() === process.env.HOME ? '~' : basename(process.cwd());

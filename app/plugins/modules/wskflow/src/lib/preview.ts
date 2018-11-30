@@ -34,7 +34,6 @@ import { showCustom, showEntity } from '../../../../../build/webapp/views/sideca
 import * as badges from '../../../apache-composer/plugin/lib/utility/badges'
 import * as messages from '../../../apache-composer/plugin/lib/utility/messages'  // TODO: import from plugin js file
 import { optionsToString, handleError } from '../../../../../build/core/utility'
-import { wskflow } from './util'
 import * as compileUtil from '../../../apache-composer/plugin/lib/utility/compile'
 
 const viewName = 'preview' // for back button and sidecar header labels
@@ -108,8 +107,8 @@ const registration: PluginRegistration = (commandTree, prequire) => {
     if (extension === 'json' || extension === 'ast') {
       debug('input is composer AST', extension)
       try {
-        //fsmPromise = compileUtil.parseSource(['app', 'preview', path.basename(input), input], 'preview', false)
-        fsmPromise = compileUtil.sourceToComposition({inputFile: input, name: path.basename(input)})
+        // fsmPromise = compileUtil.parseSource(['app', 'preview', path.basename(input), input], 'preview', false)
+        fsmPromise = compileUtil.sourceToComposition({ inputFile: input, name: path.basename(input) })
         type = badges.ast
       } catch (err) {
         reject(messages.invalidFSM)
@@ -117,7 +116,7 @@ const registration: PluginRegistration = (commandTree, prequire) => {
     } else if (extension === 'js' || extension === 'py') {
       debug('input is composer library client', extension)
       try {
-        fsmPromise = compileUtil.sourceToComposition({inputFile: input, name: path.basename(input)})
+        fsmPromise = compileUtil.sourceToComposition({ inputFile: input, name: path.basename(input) })
         extraModes.push(Object.assign({}, wskflowUtil.codeViewMode, { defaultMode: mode === 'source' }))
         debug('composition parsed from input', fsmPromise)
       } catch (err) {
@@ -148,7 +147,7 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       }
 
       const visualize = require('./visualize').default
-      const { view, controller } = await wskflow(visualize, viewName, { ast, input, name, viewOptions, container: execOptions.container, packageName: undefined, namespace: undefined })
+      const { view, controller } = await wskflowUtil.wskflow(visualize, viewName, { ast, input, name, viewOptions, container: execOptions.container, packageName: undefined, namespace: undefined })
       extraModes = extraModes.concat(wskflowUtil.zoomToFitButtons(controller))
 
       const entity = {

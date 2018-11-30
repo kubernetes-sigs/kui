@@ -99,7 +99,7 @@ export const decorateAsApp = async ({ action, viewName = 'composition', commandP
       viewOptions.noHeader = true
     }
 
-    //const visualize = require('./visualize').default
+    // const visualize = require('./visualize').default
     const visualize = require('./visualize').default
     const { view, controller } = await wskflow(visualize, viewName, Object.assign({}, action, { viewOptions }))
 
@@ -127,7 +127,7 @@ export const decorateAsApp = async ({ action, viewName = 'composition', commandP
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
- export const wskflow = async (visualize, viewName, { ast, input, name, packageName, namespace, viewOptions, container }) => {
+export const wskflow = async (visualize, viewName, { ast, input, name, packageName, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = await repl.qexec('wsk rule list')

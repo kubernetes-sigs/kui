@@ -27,7 +27,6 @@ const ui = require(join(ROOT, 'lib/ui'))
 const cli = ui.cli
 const sidecar = ui.sidecar
 
-
 /** set the monaco editor text */
 const setValue = (client, text) => {
   return client.execute(text => {
@@ -53,8 +52,6 @@ describe('edit compositions', function (this: ISuite) {
           })
       })
   }
-
-
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 

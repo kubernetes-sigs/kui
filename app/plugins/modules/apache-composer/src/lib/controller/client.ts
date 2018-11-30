@@ -23,13 +23,13 @@ const options = {
 }
 
 /**
-  * Deploy the given composition to Apache OpenWhisk
-  *
-  * @param composition the output of
-  * e.g. composer.sequence(a,b).compile(), but with a name field
-  * added.
-  *
-  */
+ * Deploy the given composition to Apache OpenWhisk
+ *
+ * @param composition the output of
+ * e.g. composer.sequence(a,b).compile(), but with a name field
+ * added.
+ *
+ */
 export const deploy = ({ composition, overwrite }) => {
   // deploys the JSON-encoded composition
   debug('deploying composition', composition)

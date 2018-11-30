@@ -21,7 +21,6 @@ const ui = require(join(ROOT, 'lib/ui'))
 const cli = ui.cli
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 
-
 /**
  * Here starts the test
  *

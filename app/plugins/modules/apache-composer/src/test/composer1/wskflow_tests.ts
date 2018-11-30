@@ -246,4 +246,5 @@ describe('test if pressing a node, dragging and releasing triggers the clicking 
     .then(() => this.app.client.getText('.sidecar-header-icon'))
     .then(text => assert.strictEqual(text, 'ACTIVATION'))
     .catch(common.oops(this)))
+
 })

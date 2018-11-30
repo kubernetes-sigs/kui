@@ -59,8 +59,8 @@ const expect = {
     const lines = actualOutput.split('\n')
     assert.strictEqual(lines[0].replace(/\s+/g, ' ').trim(), 'name type')
 
-    var foundMatch = false
-    for (var num = 1; num < lines.length; num++) {
+    let foundMatch = false
+    for (let num = 1; num < lines.length; num++) {
       const appRow = lines[num].replace(/\s+/g, ' ').trim()
       if (packageName !== '') {
         if (appRow === `${packageName}/${name} composition`) {
@@ -81,7 +81,7 @@ const expect = {
     const lines = actualOutput.split('\n')
     assert.strictEqual(lines[0].replace(/\s+/g, ' ').trim(), 'sessionId app start status')
 
-    for (var num = 1; num < lines.length; num++) {
+    for (let num = 1; num < lines.length; num++) {
       const sessionRow = lines[num].replace(/\s+/g, ' ').trim()
       const entry = sessionRow.split(' ')
       if (entry[0] === sessionId) {
@@ -92,21 +92,21 @@ const expect = {
     return actualOutput
   },
 
-  json: ({ expectedOutput, expectedKeys}) => ({ code: actualCode, output: actualOutput }) => {
+  json: ({ expectedOutput, expectedKeys }) => ({ code: actualCode, output: actualOutput }) => {
     assert.strictEqual(actualCode, 0)
     actualOutput = JSON.parse(actualOutput)
 
     if (expectedKeys) {
       debug('expected', expectedKeys)
       debug('actual', actualOutput)
-      for (var key in actualOutput) {
+      for (let key in actualOutput) {
         debug(`checking if ${key} is in expectedKeys`)
         assert(expectedKeys.includes(key))
       }
       debug('expected keys have all keys in acutal output')
-      for (var i in expectedKeys) {
-        debug(`checking if ${expectedKeys[i]} is in actualOutput`)
-        assert(actualOutput[expectedKeys[i]] !== 'undefined')
+      for (let key in expectedKeys) {
+        debug(`checking if ${expectedKeys[key]} is in actualOutput`)
+        assert(actualOutput[expectedKeys[key]] !== 'undefined')
       }
       debug('actual ouputs have all expected keys')
     }
@@ -156,7 +156,6 @@ const validation = {
       .catch(common.oops(this)))
   },
 
-
   // every app invoke commands are converted to blocking invocation and only displays the response result
   invoke: ({ name, params = '', output, packageName = '', namespace = '' }) => {
     if (packageName !== '') name = `${packageName}/${name}`
@@ -194,7 +193,7 @@ const validation = {
           .catch(common.oops(this))
 
         cli.do(`session list`)
-          .then(expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'type']}))
+          .then(expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'type'] }))
           .catch(common.oops(this))
       })
       .catch(common.oops(this)))
@@ -209,7 +208,7 @@ const validation = {
 
     // TODO: validate conductor in annotations
     it(`validate app get ${name}`, () => cli.do(`app get ${name}`)
-      .then(expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys}))
+      .then(expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys }))
       .catch(common.oops(this)))
   },
 

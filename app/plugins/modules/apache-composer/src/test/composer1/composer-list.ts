@@ -26,7 +26,6 @@ const sidecar = ui.sidecar
 const seqName1 = 'seq1'
 const seqName2 = 'seq2'
 
-
 describe('Use the app list command to list the invokeable compositions', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))

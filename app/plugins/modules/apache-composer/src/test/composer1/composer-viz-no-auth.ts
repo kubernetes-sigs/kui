@@ -35,7 +35,6 @@ const fuzz = { fuzz: { rules: ['noAuth'],
   prefs: { noAuthOk: true,
     API_HOST: 'openwhisk.ng.bluemix.net' } } }
 
-
 /**
  * Here starts the test
  *
