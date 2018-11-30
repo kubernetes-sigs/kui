@@ -20,15 +20,15 @@ import { cli, selectors } from '../../../../../../../tests/lib/ui'
 import { wipe, waitTillNone } from '../../../../../../../tests/lib/k8s/wipe'
 
 describe('k8s create pod', function (this: ISuite) {
-  before(common.before(this))
+  before(common.before(this, { noOpenWhisk: true }))
   after(common.after(this))
 
   it('should wipe k8s', () => {
-    wipe(this)
+    return wipe(this)
   })
 
   it('should have an active repl', () => {
-    return cli.waitForRepl(this.app)
+    return cli.waitForRepl(this.app, { noAuthOk: true }) // no openwhisk auth ok!
   })
 
   it('should create sample pod from URL', () => {

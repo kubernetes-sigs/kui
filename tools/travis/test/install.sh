@@ -13,15 +13,20 @@ if [ "$LAYERS" != "LINT" ]; then
     ./tools/travis/installers/ibmcloud.sh &
 
     if [ "$LAYERS" == "k8s" ]; then
-        # install kubectl
-        ./tools/travis/installers/kubectl.sh &
+        # install kubectl: no longer needed, as we are getting it from kubeadm-dind
+        # ./tools/travis/installers/kubectl.sh &
+
+        # set up a local cluster, using kubeadm-dind
+        ./tools/travis/installers/kubeadm-dind/start-cluster.sh &
+    else
+        # install the openwhisk runtime
+        ./tools/travis/installers/openwhisk.sh &
     fi
 
-    # install the openwhisk runtime
-    ./tools/travis/installers/openwhisk.sh &
-
-    echo "APIHOST=$API_HOST" > ~/.wskprops     # dist/compile.sh needs something here
-    echo "AUTH=nope" >>  ~/.wskprops           # ibid (see the call to initOW in openwhisk-core.js)
+    # dist/compile.sh needs something here
+    # (see the call to initOW in openwhisk-core.js)
+    echo "APIHOST=$API_HOST" > ~/.wskprops
+    echo "AUTH=nope" >>  ~/.wskprops
 
     # npm install
     # and create a dist build to test against

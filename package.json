@@ -23,15 +23,25 @@
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/starpit/shell.git"
+    "url": "git+https://github.com/IBM/kui.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "OpenWhisk",
+    "CLI",
+    "UI",
+    "kubernetes",
+    "visualization",
+    "serverless"
+  ],
+  "author": {
+    "name": "Nick Mitchell",
+    "email": "nickm@us.ibm.com"
+  },
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/starpit/shell/issues"
+    "url": "https://github.com/IBM/kui/issues"
   },
-  "homepage": "https://github.com/starpit/shell#readme",
+  "homepage": "https://github.com/IBM/kui#readme",
   "standard": {
     "env": [
       "es6",

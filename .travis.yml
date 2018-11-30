@@ -1,3 +1,7 @@
+# necessary for kubeadm-dind
+group: edge
+dist: xenial
+
 language: node_js
 node_js: 8
 dist: trusty
@@ -19,6 +23,9 @@ env:
     - LAYERS=LINT
 
   global:
+    - TRAVIS_KUBE_VERSION=1.12 # kubeadm-dind
+    - TEST_ORG=testorg
+    - TEST_SPACE=testspace
     - LOCAL_OPENWHISK=true # allows e.g. openwhisk/src/test/openwhisk1/headless to avoid trying to host set <not-local>
     - IGNORE_CERTS=true # apache-composer needs this, because it doesn't obey INSECURE_SSL in wskprops
     - API_HOST="" # delete any global definitions, as we will be using a local openwhisk
