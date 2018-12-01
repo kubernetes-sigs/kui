@@ -26,7 +26,7 @@ import * as repl from '../../../../../../build/core/repl'
 import { findFile } from '../../../../../../build/core/find-file'
 import { formatMultiListResult } from '../../../../../../build/webapp/views/table'
 
-const promiseEach = async function (arr, status, idx: number) {
+const execInSequence = async function (arr, status, idx: number) {
   const item = arr[idx]
 
   try {
@@ -66,7 +66,7 @@ const promiseEach = async function (arr, status, idx: number) {
   }
 
   if (idx < arr.length - 1) {
-    return promiseEach(arr, status, idx + 1)
+    return execInSequence(arr, status, idx + 1)
   }
 }
 
@@ -103,7 +103,9 @@ const doRun = ({ argv }) => new Promise((resolve, reject) => {
           css: 'yellow-background even-smaller-text'
         }))
 
-        const table = lines
+        const linesAfterVariableInjection = lines.map(injectVariables)
+
+        const table = linesAfterVariableInjection
           .map((line, idx) => ({
             name: line,
             type: 'run',
@@ -121,7 +123,7 @@ const doRun = ({ argv }) => new Promise((resolve, reject) => {
             }]
           }))
 
-        promiseEach(lines.map(injectVariables), status, 0)
+        execInSequence(linesAfterVariableInjection, status, 0)
 
         const headerRow = [{
           name: 'COMMAND',

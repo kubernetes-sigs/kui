@@ -344,12 +344,10 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
 
   } else {
     const filepath = findFile(file)
-    debug('status by filepath', file, filepath)
-
     const isURL = file.match(/^http[s]?:\/\//)
     const isDir = isURL ? false : await isDirectory(filepath)
-    // debug('isURL', isURL);
-    // debug('isDir', isDir);
+
+    debug('status by filepath', file, filepath, isURL, isDir)
 
     if (isDir) {
       // this is a directory of yamls
