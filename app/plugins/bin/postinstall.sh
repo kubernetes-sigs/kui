@@ -2,9 +2,17 @@
 
 echo "Setting up modules $CLOUDSHELL_INSTALL_UI"
 
-(cd modules/k8s && npm install)
-(cd modules/openwhisk && npm install)
-(cd modules/grid && npm install)
+function failfast {
+    (cd $1 && npm install)
+
+    if [ $? != 0 ]; then
+        exit $?
+    fi
+}
+
+failfast modules/k8s
+failfast modules/openwhisk
+failfast modules/grid
 
 for i in modules/*; do
     if [ "$i" != "modules/k8s" ] && [ "$i" != "modules/openwhisk" ] && [ "$i" != "modules/grid" ] && [ -f $i/package.json ] && [ ! -f $i/.from_npm ] && { [ ! -f $i/.ui ] || [ -n "$CLOUDSHELL_INSTALL_UI" ]; }; then
@@ -14,11 +22,18 @@ for i in modules/*; do
         echo "Skipping $i"
     fi
 done
-wait
 
-if [ -d node_modules/@shell ]; then
-    for i in node_modules/@shell/*; do
-        if [ "$i" == "node_modules/@shell/*" ]; then
+wait
+if [ $? != 0 ]; then
+    exit $?
+fi
+
+# this is not currently used, but we may revisit it, when we use
+# plugins/package.json to install modules; hence the exit 0, for now
+exit 0
+if [ -d node_modules/@kui ]; then
+    for i in node_modules/@kui/*; do
+        if [ "$i" == "node_modules/@kui/*" ]; then
             break
         fi
 
