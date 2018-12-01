@@ -47,7 +47,7 @@ export const maybeAsDate = str => {
  *
  */
 export const isDirectory = (filepath: string): Promise<boolean> => new Promise<boolean>(async (resolve, reject) => {
-  if (inBrowser) {
+  if (inBrowser()) {
     resolve(false)
   } else {
     // why the dynamic import? being browser friendly here
