@@ -7,7 +7,8 @@ interface ISuite extends Suite {
 }
 
 interface IBeforeOptions {
-  noApp?: boolean
+  noApp?: boolean,
+  noOpenWhisk?: boolean
 }
 
 declare function before (ctx: Suite, options?: IBeforeOptions): HookFunction

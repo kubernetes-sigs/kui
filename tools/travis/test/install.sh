@@ -37,6 +37,9 @@ if [ "$LAYERS" != "LINT" ]; then
     fi
     
     wait
+    if [ $? != 0 ]; then
+        exit $?
+    fi
 
     # start Xvfb
     Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 -ac >& /dev/null &      # start virtual framebuffer process
@@ -46,5 +49,6 @@ if [ "$LAYERS" != "LINT" ]; then
     (cd tests && ./bin/corral.sh)
 fi
 
+# we will return to code coverage later:
 # if [ "$LAYERS" != "LINT" ]; then (cd tests && npm run _instrument); fi
 
