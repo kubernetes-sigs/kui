@@ -106,10 +106,10 @@ const filterOutNonActionActivations = filter => activations => {
  * reasonable, as the "tasks" in an action is [action]
  *
  */
-const extractTasks = app => {
-  const composer = require('../../../composer/lib/composer')
+const extractTasks = async app => {
+  const composer = await import('../../../apache-composer/plugin/lib/utility/ast')
   const { namespace, name, fsm } = app
-  return [ `/${namespace}/${name}` ].concat(!fsm ? [] : composer.extractActionsFromFSM(fsm))
+  return [ `/${namespace}/${name}` ].concat(!fsm ? [] : composer.extractActionsFromAst(fsm))
 }
 
 /**

@@ -12,10 +12,11 @@ function failfast {
 
 failfast modules/k8s
 failfast modules/openwhisk
+failfast modules/apache-composer
 failfast modules/grid
 
 for i in modules/*; do
-    if [ "$i" != "modules/k8s" ] && [ "$i" != "modules/openwhisk" ] && [ "$i" != "modules/grid" ] && [ -f $i/package.json ] && [ ! -f $i/.from_npm ] && { [ ! -f $i/.ui ] || [ -n "$CLOUDSHELL_INSTALL_UI" ]; }; then
+    if [ "$i" != "modules/k8s" ] && [ "$i" != "modules/openwhisk" ] && [ "$i" != "modules/apache-composer" ] && [ "$i" != "modules/grid" ] && [ -f $i/package.json ] && [ ! -f $i/.from_npm ] && { [ ! -f $i/.ui ] || [ -n "$CLOUDSHELL_INSTALL_UI" ]; }; then
         echo "Setting up $i"
         (cd $i && npm install) &
     else
