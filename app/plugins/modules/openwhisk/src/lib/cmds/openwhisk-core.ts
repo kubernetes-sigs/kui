@@ -147,17 +147,17 @@ let self = {}
 
 const initOW = () => {
   if (!apiHost || !auth) {
-    console.error('skipping initOW', apiHost, auth)
-    return
+    console.error('faking out openwhisk config for now')
   }
 
   const owConfig = {
-    apihost: apiHost,
-    api_key: auth,
+    apihost: apiHost || 'unknown',
+    api_key: auth || 'unknown',
     apigw_token,
     apigw_space_guid,
     ignore_certs: ignoreCerts(apiHost)
   }
+
   debug('initOW', owConfig)
   ow = self['ow'] = openwhisk(owConfig)
   ow.api = ow.routes
@@ -534,7 +534,7 @@ const addPrettyType = (entityType, verb, entityName) => entity => {
 
   if (specials[entityType] && specials[entityType][verb]) {
     try {
-      const res = specials[entityType][verb]()
+      const res = specials[entityType][verb]({ name: entity.name, namespace: entity.namespace })
       entity.modes = res && res.modes && res.modes(entity)
     } catch (e) {
       console.error(e)
@@ -814,7 +814,7 @@ specials.actions = {
   get: standardViewModes(actionSpecificModes),
   update: BlankSpecial, // updated below
   create: standardViewModes(actionSpecificModes, (options, argv, verb, execOptions) => {
-    if (!options) return
+    if (!options || !argv) return
 
     if (!options.action) options.action = {}
     if (!options.action.exec) options.action.exec = {}
@@ -1478,16 +1478,6 @@ const makeInit = (commandTree) => async () => {
 
   // for each entity type
   /* const apiMaster = */ commandTree.subtree(`/wsk`, { usage: usage.wsk })
-
-  if (!ow) {
-    // the openwhisk npm is not yet initialized; let's install
-    // some basic command handlers
-    debug('no openwhisk')
-    commandTree.listen('/wsk/action/get', () => Promise.resolve(false))
-    commandTree.listen('/wsk/activation/get', () => Promise.resolve(false))
-    commandTree.listen('/wsk/action/invoke', () => Promise.resolve(false))
-    return self
-  }
 
   for (let api in ow) {
     const clazz = ow[api].constructor
