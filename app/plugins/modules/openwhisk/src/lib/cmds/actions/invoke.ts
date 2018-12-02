@@ -25,7 +25,7 @@
  *
  */
 
-const debug = require('debug')('openwhisk/invoke')
+const debug = require('debug')('plugins/openwhisk/cmds/actions/invoke')
 
 import repl = require('../../../../../../../build/core/repl')
 import { actions } from '../openwhisk-usage'
