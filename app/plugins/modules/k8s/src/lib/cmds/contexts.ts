@@ -82,7 +82,6 @@ export default (commandTree, prequire) => {
   commandTree.listen('/k8s/contexts',
                        listContexts,
     { usage: usage.contexts('contexts'),
-      needsUI: true,
       width: 1024,
       height: 600,
       noAuthOk: [ 'openwhisk' ] })
