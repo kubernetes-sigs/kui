@@ -57,17 +57,6 @@
           },
 
           {
-            "title": "Service Integration",
-            "columns": [ "Combinator", "Description" ],
-            "rows": [
-              [ "cloudant.get", "Fetch a document from cloudant; also supports `insert` and `upsert`." ],
-              [ { "value": "http.get(url)", "command": "preview -c @demos/combinators/http.js" },
-                "Invoke a remote API with the GET method; the `http` package supports the standard suite of methods." ],
-              [ "s3.get", "Fetch data from an endpoint that supports the S3 storage API the `s3` package also supports `put`." ]
-            ]
-          },
-
-          {
             "title": "Advanced Scenarios",
             "columns": [ "Combinator", "Description" ],
             "rows": [
@@ -76,9 +65,7 @@
               [ { "value": "literal({k:v})", "command": "preview -c @demos/combinators/literal.js" },
                 "Similar to `let`, except return the bindings rather than injecting them." ],
               [ { "value": "mask(a,b,c)", "command": "preview -c @demos/combinators/mask.js" },
-                "Invoke a sequence, redacting the parameter bindings of the nearest enclosing `let`." ],
-              [ { "value": "sleep(ms)", "command": "preview -c @demos/combinators/sleep.js" },
-                "Park the composition for the given number of milliseconds, then yield the input value. This combinator could be useful to implement certain polling scenarios." ]
+                "Invoke a sequence, redacting the parameter bindings of the nearest enclosing `let`." ]
             ]
           },
 

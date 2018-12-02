@@ -1,11 +1,10 @@
 const composer = require('openwhisk-composer')
-const cloudant = require('openwhisk-composer/plugins/cloudant')
 
 /** the database to use */
-const db = 'testDB'
+const dbname = 'testDB'
 
 /** the insert key  to use */
-const key = 'testKey'
+const id = 'testId'
 
 /** a mock format function */
 const formatDocument = document => ({ timestamp: new Date(), document })
@@ -19,11 +18,6 @@ const formatDocument = document => ({ timestamp: new Date(), document })
  */
 module.exports = composer.async(
   formatDocument,
-  cloudant.insert({ db, key }))
-
-/**
- * Notes: data can flow flexibly, either from
- * static values (such as db and key) or from
- * invocation parameters (as is the case with
- * the document to insert.
- */
+  doc => ({ dbname, id, doc }),
+  '/whisk.system/cloudant/write'
+)
