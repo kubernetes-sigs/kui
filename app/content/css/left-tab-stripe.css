@@ -133,7 +133,8 @@ body.os-darwin .left-tab-stripe {
     cursor: pointer;
 }
 .left-tab-stripe-button-selected .left-tab-stripe-button-label {
-    opacity: 0;
+    /* reduce the visibility of the tab label, for the visible tab */
+    opacity: 0.7;
 }
 .left-tab-stripe-button-label {
     color: var(--color-text-02);
@@ -143,6 +144,11 @@ body.os-darwin .left-tab-stripe {
     white-space: nowrap;
     overflow: hidden;
     padding: 0 1ex;
+
+    /* this is an attempt to get the text ellipsis to ellide at the front
+   rather than the end; we should be treat this as an experiment, and
+   back it out if it causes problems @starpit 20181204 */
+    direction: rtl;
 }
 
 .sidecar-header, .sidecar-bottom-stripe {

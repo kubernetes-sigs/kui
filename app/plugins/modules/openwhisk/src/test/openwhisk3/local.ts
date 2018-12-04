@@ -61,7 +61,7 @@ describe('local plugin', function (this: ISuite) {
       .catch(common.oops(this)))
   }
 
-  it('should switch to logs mode and observe our log entry', () => cli.do('logs', this.app)
+  it('should switch to logs mode and observe our log entry', () => cli.do('wsk activation logs', this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('foo'))

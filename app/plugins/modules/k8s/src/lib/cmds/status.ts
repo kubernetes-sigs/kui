@@ -143,6 +143,7 @@ const getStatusForKnownContexts = (execOptions, parsedOptions) => async (context
     const ccName = await currentContext
     contexts = (await allContexts()).filter(({ name }) => name === ccName)
     if (contexts.length === 0) {
+      debug('Odd, no contexts found', await allContexts(), (await allContexts()).filter(({ name }) => name === ccName))
       throw new Error('No contexts found')
     }
   }

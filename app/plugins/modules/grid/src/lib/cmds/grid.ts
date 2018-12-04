@@ -262,9 +262,9 @@ const drawGrid = (options: IOptions, header: IHeader, uuid: string, redraw = fal
 const smartZoom = numCells => {
   if (numCells > 1000) {
     return -2
-  } else if (numCells <= 36) {
-    return 2
   } else if (numCells <= 100) {
+    return 2
+  } else if (numCells <= 200) {
     return 1
   } else {
     return 0
