@@ -49,7 +49,7 @@ describe('Invoke asynchronously and await', function (this: ISuite) {
     .then(sidecar.expectShowing(actionName)))
 
   // make sure we can do in-context activation commands
-  it('should show activation logs', () => cli.do(`logs`, this.app)
+  it('should show activation logs', () => cli.do(`wsk activation logs`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName)))

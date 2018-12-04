@@ -187,7 +187,7 @@ describe('Headless mode', function (this: ISuite) {
       const activationId = match[1]
 
       return new Promise((resolve, reject) => {
-        const fetch = () => cli.do(`activation logs ${activationId} --cli`)
+        const fetch = () => cli.do(`wsk activation logs ${activationId} --cli`)
           .then(response => {
             if (response.code === 404 - 256) {
               // retry on 404, because the activation might not yet be available

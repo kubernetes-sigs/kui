@@ -4,7 +4,7 @@
 process.argv.shift()
 
 process.argv.push(`--command-context=["k8s"]`)
-process.env.DEFAULT_TO_UI = true
+// process.env.DEFAULT_TO_UI = true
 process.env.KUI_HEADLESS = true
 
 require('../build/main/main')

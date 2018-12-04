@@ -251,6 +251,7 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
   const result = await repl.qexec(`action invoke "${FQN}"`, undefined, undefined, {
     parameters
   })
+  debug('result', result)
 
   if (result.response && !result.response.success) {
     debug('oops', result)
@@ -266,7 +267,7 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
   if (execOptions.raw) {
     // caller asked for the raw output
     debug('returning raw output', result)
-    return result.response.result.items || Buffer.from(result.response.result.result, 'base64').toString()
+    return result.response.result.items || Buffer.from(result.response.result.result, 'base64').toString().replace(/\n$/, '')
   } else if (output === 'json') {
     //
     // yay, we should already have good JSON; display this in the sidecar
@@ -291,7 +292,7 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
     }
   } else {
     // otherwise, the output will be { result: <base64> }
-    const decodedResult = new Buffer(result.response.result.result, 'base64').toString()
+    const decodedResult = new Buffer(result.response.result.result, 'base64').toString().replace(/\n$/, '')
 
     const tryThis = formatters[command] && formatters[command][verb]
     if (tryThis) {
@@ -299,7 +300,7 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
     }
 
     if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
-      table(decodedResult, '', command, verb, entityType, entity, options)
+      return table(decodedResult, '', command, verb, command === 'helm' ? '' : entityType, entity, options)
     } else {
       //
       // generic handling of other output formats, for now
@@ -768,6 +769,25 @@ const hasExe = async (exe: string): Promise<boolean> => {
 }
 
 /**
+ * Delegate 'k8s <verb>' to 'kubectl verb'
+ *
+ */
+const dispatchViaDelegationTo = delegate => opts => {
+  if (opts.argv[0] === 'k8s') {
+    opts.argv[0] = 'kubectl'
+    opts.argvNoOptions[0] = 'kubectl'
+    opts.command = opts.command.replace(/^(\s*)(k8s)(\s*)/, '$1kubectl$2')
+  } else {
+    opts.argv.splice(0, 0, 'kubectl')
+    opts.argvNoOptions.splice(0, 0, 'kubectl')
+    opts.command = `kubectl ${opts.command}`
+  }
+
+  debug('delegating invoke', opts.argv[0], opts.command)
+  return delegate(opts)
+}
+
+/**
  * Register the commands
  *
  */
@@ -785,4 +805,22 @@ export default async (commandTree, prequire) => {
 
   await commandTree.listen('/k8s/kubectl', impl.kubectl, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
   await commandTree.listen('/k8s/helm', impl.helm, { usage: usage('helm'), noAuthOk: [ 'openwhisk' ] })
+
+  //
+  // register some of the common verbs so that the kubectl plugin works more gracefully:
+  // e.g. kubectl kui get pods
+  //
+  const shorthands = [
+    'create',
+    'get',
+    'delete',
+    'describe',
+    'explain',
+    'logs'
+  ]
+  await Promise.all(shorthands.map(verb => {
+    return commandTree.listen(`/k8s/${verb}`,
+                              dispatchViaDelegationTo(impl.kubectl),
+                              { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
+  }))
 }

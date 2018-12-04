@@ -561,23 +561,23 @@ export const prompt = (msg: string, block: Element, nextBlock: Element, options,
   debug('prompt', options)
 
   const selection = block.querySelector('.repl-selection') as HTMLElement
-  const prompt = getPrompt(block)
+  const promptDom = getPrompt(block)
   const resultDom = block.querySelector('.repl-result')
 
   const currentSelection = selection.innerText
-  const currentType = prompt.getAttribute('type')
-  const currentInput = prompt.value
-  const currentPlaceholder = prompt.getAttribute('placeholder')
+  const currentType = promptDom.getAttribute('type')
+  const currentInput = promptDom.value
+  const currentPlaceholder = promptDom.getAttribute('placeholder')
 
   // reactivate the current prompt
-  listen(prompt)
+  listen(promptDom)
   block.className = `${block.getAttribute('data-base-class')} repl-active`
 
   selection.innerText = '' // no selection for prompts (for now?)
-  prompt.readOnly = false
-  prompt.value = ''
+  promptDom.readOnly = false
+  promptDom.value = ''
 
-  prompt.setAttribute('placeholder', options.placeholder || `Enter your ${msg}`)
+  promptDom.setAttribute('placeholder', options.placeholder || `Enter your ${msg}`)
 
   // paste handlers
   if (options.onpaste === 'capture') {
@@ -590,7 +590,7 @@ export const prompt = (msg: string, block: Element, nextBlock: Element, options,
     textarea.style.top = '-1000px'
     document.body.appendChild(textarea)
     textarea.focus()
-    prompt.onpaste = () => true
+    promptDom.onpaste = () => true
     const currentGlobalHandler = document.body.onpaste
     document.body.onpaste = () => true
 
@@ -612,23 +612,23 @@ export const prompt = (msg: string, block: Element, nextBlock: Element, options,
       return false
     }
   } else if (typeof options.paste === 'function') {
-    prompt.onpaste = options.onpaste
+    promptDom.onpaste = options.onpaste
   }
 
   if (options.type) {
-    prompt.setAttribute('type', options.type)
+    promptDom.setAttribute('type', options.type)
   }
 
   const restorePrompt = (err?) => {
     setStatus(block, 'valid-response')
     selection.innerText = currentSelection
-    prompt.value = currentInput
-    prompt.setAttribute('type', currentType)
+    promptDom.value = currentInput
+    promptDom.setAttribute('type', currentType)
 
     if (currentPlaceholder) {
-      prompt.setAttribute('placeholder', currentPlaceholder)
+      promptDom.setAttribute('placeholder', currentPlaceholder)
     } else {
-      prompt.removeAttribute('placeholder')
+      promptDom.removeAttribute('placeholder')
     }
 
     if (err) {
@@ -638,8 +638,8 @@ export const prompt = (msg: string, block: Element, nextBlock: Element, options,
 
   block['completion'] = value => {
     block.className = `${block.getAttribute('data-base-class')} processing`
-    unlisten(prompt)
-    prompt.readOnly = true
+    unlisten(promptDom)
+    promptDom.readOnly = true
     const completer = completion(Object.assign({}, options, { field: value }))
 
     if (completer.reprompt) {

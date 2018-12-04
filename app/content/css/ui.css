@@ -671,7 +671,7 @@ sidecar.visible {
     border-left: 1px solid;
     border-left-color: var(--color-ui-04);
 }
-.sidecar-full-screen sidecar.visible:not(.minimized) {
+body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
     border-left-color: var(--color-ui-05);
     border-left-style: dotted;
     box-shadow: none;
