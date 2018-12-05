@@ -390,7 +390,7 @@ debug('stdoutIsFIFO', stdoutIsFIFO, noColor)
  *
  */
 const prettyJSON = (msg, logger = log) => {
-  const serialized = JSON.stringify(msg, undefined, 2)
+  const serialized = JSON.stringify(msg, undefined, 2) // Warning: Don't pass the JSON structure 'msg' directly to json-colorizer! json-colorizer doesn't give us a pretty format and only colorizes the JSON structure.
 
   if (rawOutput || noColor) {
     debug('prettyJSON raw')
@@ -399,8 +399,6 @@ const prettyJSON = (msg, logger = log) => {
     debug('prettyJSON using json-colorizer')
     const colorize = require('json-colorizer')
     return logger(colorize(serialized))
-    // note:               ^^^ we could have passed `msg` here
-    // but json-colorizer doesn't seem to do pretty-printing, just colorization
   }
 }
 

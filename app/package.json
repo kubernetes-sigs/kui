@@ -49,7 +49,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "expand-home-dir": "0.0.3",
     "js-beautify": "1.8.8",
-    "json-colorizer": "^2.1.0",
+    "json-colorizer": "^2.1.1",
     "marked": "^0.5.2",
     "mkdirp-promise": "^5.0.1",
     "opn": "^5.4.0",
