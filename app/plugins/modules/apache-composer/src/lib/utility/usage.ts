@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import * as path from 'path'
 import { actions, activations, skipAndLimit } from '../../../../openwhisk/plugin/lib/cmds/openwhisk-usage'
-// import * as sampleInputs from './sample-inputs'
+import { sampleInputs } from './sample-inputs'
 
 const activationsUsage = {
   get: activations('').available.find(({ command }) => command === 'get')
@@ -52,7 +51,7 @@ export const create = command => ({
         { name: '--log-input', boolean: true, advanced: true, docs: 'log initial input' },
         { name: '--log-inline', boolean: true, advanced: true, docs: 'log inline function output' },
         { name: '--log-all', boolean: true, advanced: true, docs: 'log initial input and inline function out    ]), */
-    // sampleInputs: sampleInputs(sampleName => `app ${command} -r ${sampleName}`), TODO
+  sampleInputs: sampleInputs(sampleName => `app ${command} -r ${sampleName}`),
   parents: ['composer', { command: 'composer app' }],
   related: ['app get', 'app invoke', 'app list']
 })
@@ -164,29 +163,6 @@ export const sessionList = {
   parents: ['composer', { command: 'composer session' }],
   related: ['grid', 'summary']
 }
-/**
- * Usage string for app preview
- *
- */
-export const preview = command => ({
-  command,
-  strict: command,
-  title: 'Preview composition',
-  header: 'Visualize a composition, without deploying it.',
-  example: `${command} <sourceFile>`,
-  detailedExample: {
-    command: `${command} @demos/hello.js`,
-    docs: 'preview a built-in hello world demo'
-  },
-  oneof: [{ name: 'src.js', docs: 'generate a preview of a Composer source file', file: true },
-            { name: 'src.json', docs: 'ibid, but for a pre-compiled composition', file: true }],
-  optional: [{ name: '--fsm', boolean: true, docs: 'validate and show raw FSM' },
-               { name: '--functions', alias: '-f', boolean: true, docs: 'show all functions directly in the view' },
-               { name: '--env', alias: '-e', docs: 'Assign a value to an environment variable', narg: 2 }],
-    // sampleInputs: sampleInputs(command), TODO
-  parents: ['composer', { command: 'composer app' }],
-  related: ['app create']
-})
 
 /**
  * Usage message for app delete

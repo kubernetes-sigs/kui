@@ -33,13 +33,17 @@ export const composer = {
 export const app = {
   title: 'CRUD Operations',
   header: 'These commands will help you create and invoke Composer applications.',
-  example: 'wsk app <command>',
+  example: 'wsk app <command> or app <command>',
   commandPrefix: 'wsk app',
-  available: [{ command: 'create', docs: 'create a new composition' },
+  available: [{ command: 'create', docs: 'create and deploy a new composition' },
+    { command: 'update', docs: 'update and deploy a new composition' },
     { command: 'get', docs: 'get the details of a given composition' },
-    { command: 'invoke', docs: 'invoke a given composition' },
+    { command: 'invoke', docs: 'invoke a given app and wait for its completion' },
+    { command: 'async', docs: 'invoke a given app asynchronously, and return a session id' },
     { command: 'preview', docs: 'visualize a composition, without deploying it' },
-    { command: 'list', docs: 'list all compositions' }],
+    { command: 'list', docs: 'list all compositions' },
+    { command: 'delete', docs: 'delete a compositions' },
+    { command: 'config', docs: 'Print out the details of your composer configuration' }],
   parents: ['composer'],
   related: ['composer session']
 }

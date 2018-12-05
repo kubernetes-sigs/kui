@@ -37,7 +37,7 @@ export const preview = command => ({
     docs: 'preview a built-in hello world demo'
   },
   oneof: [ srcJs, srcJson ],
-  optional: [{ name: '--fsm', boolean: true, docs: 'validate and show raw FSM' },
+  optional: [{ name: '--ast', boolean: true, docs: 'validate and show raw AST' },
     { name: '--functions', alias: '-f', boolean: true, docs: 'show all functions directly in the view' },
     { name: '--env', alias: '-e', docs: 'Assign a value to an environment variable', narg: 2 },
     { name: '--show-code', alias: '-c', boolean: true, docs: 'Show code and preview side-by-side' }],

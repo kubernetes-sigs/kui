@@ -102,25 +102,23 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(cli.expectError(497)) // 497 insufficient required parameters
     .catch(common.oops(this)))
 
-  /** test: load an FSM, but show the raw fsm */
-  // TODO
-  // it(`show raw FSM from FSM file ${fsm.path}`, () => cli.do(`app viz --fsm ${fsm.path}`, this.app)
-  //   .then(cli.expectOK)
-  //   .then(sidecar.expectOpen)
-  //   .then(sidecar.expectShowing(fsm.file))
-  //   .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-  //   .then(ui.expectStruct(fsmStruct))
-  //   .catch(common.oops(this)))
+  /** test: load an AST, but show the raw AST */
+  it(`show raw AST from AST file ${fsm.path}`, () => cli.do(`app viz --ast ${fsm.path}`, this.app)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(fsm.file))
+    .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    .then(ui.expectStruct(fsmStruct))
+    .catch(common.oops(this)))
 
   /** test: ibid, but alternate placement of --fsm on command line */
-  // TODO
-  // it(`show raw FSM from FSM file ${fsm.path}, alterate option placement`, () => cli.do(`app viz ${fsm.path} --fsm`, this.app)
-  //   .then(cli.expectOK)
-  //   .then(sidecar.expectOpen)
-  //   .then(sidecar.expectShowing(fsm.file))
-  //   .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-  //   .then(ui.expectStruct(fsmStruct))
-  //   .catch(common.oops(this)))
+  it(`show raw AST from AST file ${fsm.path}, alterate option placement`, () => cli.do(`app viz ${fsm.path} --ast`, this.app)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(fsm.file))
+    .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    .then(ui.expectStruct(fsmStruct))
+    .catch(common.oops(this)))
 
   /** tests: we have a bunch of variants of a simple input js file; here we iterate over the variants */
   baseComposerInputs.forEach(input => {
