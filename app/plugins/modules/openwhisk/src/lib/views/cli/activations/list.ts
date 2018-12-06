@@ -512,7 +512,9 @@ const _render = args => {
         description.innerText = `${skip + 1}\u2013${skip + activationIds.length} items`
 
         // pagination click handlers
-        const goto = skip => () => repl.qexec(`wsk activation list ${mapToOptions(parsedOptions, { skip })}`)
+        const goto = skip => () => {
+          let listCommand = activations.every(activation => activation.sessionId !== undefined) ? 'session list' : 'wsk activation list'
+          return repl.qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
           .then(activationIds => {
             if (activationIds.length === 0) {
               // we're at the end! disable the next button
@@ -532,7 +534,7 @@ const _render = args => {
                 parsedOptions })
             }
           })
-
+        }
         if (skip === 0) {
           // disable the back button when we're on the first page
           prev.classList.add('list-paginator-button-disabled')

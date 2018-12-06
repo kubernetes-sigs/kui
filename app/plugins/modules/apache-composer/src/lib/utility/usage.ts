@@ -159,8 +159,9 @@ export const sessionList = {
   header: 'Returns a list of recent composition activations (a.k.a. "sessions").',
   example: 'session list',
   optional: [{ name: '--name', docs: 'filter to show only a given named composition' },
-    { name: '--limit', docs: 'show at most N sessions' },
-    { name: '--skip', docs: 'skip over the most recent N sessions' }],
+    { name: '--limit', docs: 'show at most N sessions in recent 20 activations' },
+    { name: '--skip', docs: 'skip over the most recent N sessions' },
+    { name: '--scan-limit', docs: 'show at most N sessions in all activations' }],
   parents: ['composer', { command: 'composer session' }],
   related: ['grid', 'summary']
 }
