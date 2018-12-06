@@ -16,6 +16,9 @@
     "test": "tests"
   },
   "scripts": {
+    "major": "npm version major && npx auto-changelog",
+    "minor": "npm version minor && npx auto-changelog",
+    "patch": "npm version patch && npx auto-changelog",
     "lint": "npx tslint -c app/tslint.json 'app/src/**/*.ts' 'app/plugins/modules/*/src/**/*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "export CLOUDSHELL_INSTALL_UI=true; (cd tests && ./bin/corral.sh && npm install) && cd app && npm install"
@@ -43,20 +46,21 @@
   },
   "homepage": "https://github.com/IBM/kui#readme",
   "devDependencies": {
+    "@types/debug": "^0.0.31",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.12",
+    "@types/webdriverio": "^4.13.0",
+    "auto-changelog": "^1.10.2",
     "css-loader": "^1.0.1",
     "file-loader": "^2.0.0",
+    "fs-extra": "^7.0.1",
     "http-server": "^0.11.1",
     "ignore-loader": "^0.1.2",
     "raw-loader": "^0.5.1",
     "shebang-loader": "0.0.1",
     "style-loader": "^0.23.1",
-    "@types/debug": "^0.0.31",
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.10",
-    "@types/webdriverio": "^4.13.0",
-    "fs-extra": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.1.6"
+    "typescript": "^3.2.1"
   }
 }
