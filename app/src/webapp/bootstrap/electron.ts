@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('webapp/bootstrap/electron')
+const myDebug = require('debug')('webapp/bootstrap/electron')
 
 if (process.cwd() === '/') {
   // ugh, on macos, dock- and finder-launched apps have a cwd of /
@@ -27,7 +27,7 @@ if (process.cwd() === '/') {
 
 let repl
 if (process.env.TEST_ROOT) {
-  debug('lifting repl to global for tests')
+  myDebug('lifting repl to global for tests')
   repl = require('./core/repl')
 }
 
