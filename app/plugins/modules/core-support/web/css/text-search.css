@@ -6,7 +6,7 @@ body.search-bar-is-visible .header .application-icon {
 }
 
 #search-bar {
-    top: 40px;
+    bottom: 0px;
     width: 100%;
     opacity: 0;
     transition: all 150ms ease-in-out;

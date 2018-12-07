@@ -309,7 +309,10 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     font-size: 0.75em;
     margin-right: 0.1875em;
 }
-repl .repl-prompt-righty {
+repl .repl-block.using-custom-prompt .repl-prompt-righty > i {
+    display: none;
+}
+repl .repl-prompt-righty > i {
     color: var(--color-brand-01);
     font-size: 1.125em;
 }
@@ -354,7 +357,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     opacity: 0 !important;
     margin: 0 !important;
 }
-.repl input {
+.repl input, .repl-input-like {
     font-weight: 500; /* make it a bit more substantial; IBM Plex Mono 400 is too light */
     color: var(--color-text-01);
     background: transparent;
@@ -1759,17 +1762,21 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
 }
 
 /* pulse animation for repl.partial */
-input.repl-partial {
-    animation: alert-pulse 500ms 2;
+input.repl-partial, .alert-pulse {
+    animation: alert-pulse 500ms 1;
     animation-direction: alternate
 }
 @keyframes alert-pulse {
   0% {
       color: inherit;
   }
-  100% {
+  50% {
+      font-weight: bold;
       color: rgb(227, 26, 28);
       transform: scale(1.02);
+  }
+  100% {
+      color: inherit;
   }
 }
 @keyframes selected-pulse {

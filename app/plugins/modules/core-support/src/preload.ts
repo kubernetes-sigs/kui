@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-18 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import zoom from './lib/cmds/zoom'
 import newTab from './lib/new-tab'
 import textSearch from './lib/text-search'
 import tabCompletion from './lib/tab-completion'
+import reverseISearch from './lib/cmds/history/reverse-i-search'
 
 import { PluginRequire, PreloadRegistration } from '../../../../build/models/plugin'
 
@@ -31,6 +32,7 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
     help(commandTree, prequire, options),
     zoom(commandTree, prequire),
     newTab(commandTree, prequire),
+    reverseISearch(),
     textSearch(),
     tabCompletion()
   ])

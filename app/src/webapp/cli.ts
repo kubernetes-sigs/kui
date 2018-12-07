@@ -259,6 +259,12 @@ export const getInitialPrompt = () => {
 export const getCurrentPrompt = (noFakes = false) => {
   return getPrompt(getCurrentBlock(), noFakes)
 }
+export const getPromptLeft = (block: Element) => {
+  return block.querySelector('.repl-prompt-righty')
+}
+export const getCurrentPromptLeft = () => {
+  return getPromptLeft(getCurrentBlock())
+}
 
 /**
  * Remove any .repl-temporary structures from the given dom
@@ -273,6 +279,8 @@ export const removeAnyTemps = (block: Element) => {
       temp.parentNode.removeChild(temp)
     }
   }
+
+  block.classList.remove('using-custom-prompt')
 
   return block
 }

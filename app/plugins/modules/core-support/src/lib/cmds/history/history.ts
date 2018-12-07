@@ -94,7 +94,10 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   const filterIdx = Nargs === 2 ? historyIdx + 2 : !firstArgLooksLikeN ? historyIdx + 1 : -1
   const filterStr = filterIdx > 0 && argv[filterIdx]
   const filter = filterStr ? line => !line.raw.startsWith('history') && line.raw.indexOf(filterStr) >= 0 : () => true // ignore history commands if a filterStr is specified
-  const recent = historyModel.lines.slice(historyModel.getCursor() - N - 1, historyModel.getCursor() + 1)
+
+  const startIdx = Math.max(0, historyModel.getCursor() - N - 1)
+  const endIdx = historyModel.getCursor() + 1
+  const recent = historyModel.lines.slice(startIdx, endIdx)
 
   debug('argv', argv)
   debug('Nargs', Nargs)
@@ -123,7 +126,7 @@ const showHistory = ({ argv, parsedOptions: options }) => {
     return Object.assign({}, line, {
       beforeAttributes: [ {
         key: 'N',
-        value: `${historyModel.getCursor() - (N - idx + 1)}`,
+        value: `${startIdx + idx}`,
         css: 'deemphasize'
       } ],
       fullName: line.raw,
