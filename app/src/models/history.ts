@@ -73,11 +73,35 @@ export const next = () => lineByIncr(+1)
 export const first = () => { cursor = 0; return line(cursor) }
 export const last = () => { cursor = lines.length - 1; return line(cursor) }
 
-/** find */
-export const find = filter => {
-  for (let idx = lines.length - 1; idx >= 0; idx--) {
-    if (filter(lines[idx])) {
-      return lines[idx]
+type FilterFunction = (Object) => boolean
+
+/**
+ * Search the history model
+ *
+ * @param filter a search string, search regexp, or search function
+ * @param startIdx if undefined or negative, start from the end, otherwise,
+ * search backwards from the given index
+ *
+ */
+export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: number) => {
+  let filterFn: FilterFunction
+
+  if (typeof filter === 'string') {
+    const regexp = new RegExp(filter.replace(/([$.])/g, '\\$1'))
+    filterFn = line => line.raw.match(regexp)
+  } else if (filter instanceof RegExp) {
+    filterFn = line => line.raw.match(filter)
+  } else {
+    filterFn = filter
+  }
+
+  for (let idx = startIdx !== undefined && startIdx >= 0 ? startIdx : lines.length - 1; idx >= 0; idx--) {
+    if (filterFn(lines[idx])) {
+      return idx
     }
   }
+}
+export const find = filter => {
+  const idx = findIndex(filter)
+  return idx !== undefined && lines[idx]
 }

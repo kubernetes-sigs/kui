@@ -16,9 +16,11 @@
 
 export const keys = {
   ENTER: 13,
+  BACKSPACE: 127,
   ESCAPE: 27,
   TAB: 9,
   LEFT_ARROW: 37,
+  A: 65,
   C: 67,
   U: 85,
   UP: 38,
@@ -26,6 +28,7 @@ export const keys = {
   DOWN: 40,
   L: 76,
   N: 78,
+  R: 82,
   T: 'T'.charCodeAt(0),
   END: 35,
   HOME: 36

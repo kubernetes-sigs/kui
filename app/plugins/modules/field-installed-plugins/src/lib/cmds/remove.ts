@@ -16,7 +16,8 @@
 
 'use strict'
 
-const debug = require('debug')('plugin/remove')
+import * as Debug from 'debug'
+const debug = Debug('plugins/field-installed-plugins/remove')
 debug('loading')
 
 const path = require('path')

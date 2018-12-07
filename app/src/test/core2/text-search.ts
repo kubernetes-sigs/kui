@@ -63,16 +63,21 @@ describe('Text search', function (this: ISuite) {
   it('should add another grumble to the repl', () => cli.do('grumble', this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))
-  it('should find 2 matches for grumble', () => this.app.client.keys([ui.ctrlOrMeta, 'f'])
-    .then(() => this.app.client.waitForVisible('#search-bar'))
-    .then(() => this.app.client.hasFocus('#search-input'))
-    .then(r => assert.ok(r, 'assert if search-input is focused'))
-    .then(() => this.app.client.waitUntil(async () => {
-      await this.app.client.setValue('#search-input', `grumble${keys.ENTER}`)
-      const txt = await this.app.client.getText('#search-found-text')
-      return txt === '2 matches'
-    }))
-    .catch(common.oops(this)))
+  it('should find 2 matches for grumble', async () => {
+    try {
+      this.app.client.keys([ui.ctrlOrMeta, 'f'])
+      await this.app.client.waitForVisible('#search-bar')
+      await this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'))
+      await this.app.client.waitUntil(async () => {
+        await this.app.client.setValue('#search-input', `grumble${keys.ENTER}`)
+        const txt = await this.app.client.getText('#search-found-text')
+        console.error('EEE', txt)
+        return txt === '2 matches'
+      })
+    } catch (err) {
+      common.oops(this)(err)
+    }
+  })
 
   // 1 match test
   it('should close the search bar if clicking the close button', () => this.app.client.click('#search-close-button')
