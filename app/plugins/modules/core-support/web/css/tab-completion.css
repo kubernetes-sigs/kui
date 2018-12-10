@@ -1,4 +1,5 @@
 .tab-completion-temporary {
+    margin-top: 0.375em;
     display: inline-block;
     background: var(--color-field-01);
     flex-direction: column;
