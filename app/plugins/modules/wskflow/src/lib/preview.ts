@@ -79,7 +79,7 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       if (filepath.indexOf('@') >= 0) {
         debug('readFile for webpack, built-in', filepath)
         try {
-          resolve(require('../../../../../app/plugins/modules' +
+          resolve(require('../../../../../../app/plugins/modules' +
                           filepath.replace(/^\/?app\/plugins\/modules/, '')))
         } catch (err) {
           console.error(err)
@@ -131,7 +131,6 @@ const registration: PluginRegistration = (commandTree, prequire) => {
     const formatForUser = (mode: string) => async (composition: ICompositionWithCode) => {
       const { ast } = composition
       const code = await readFile(input)
-      debug('composition', composition)
       // pass through cli options for the wskflow renderer
       const viewOptions: IViewOptions = new DefaultViewOptions()
 
@@ -174,8 +173,6 @@ const registration: PluginRegistration = (commandTree, prequire) => {
         ]
       }
 
-      debug('here1', options)
-      debug('here', mode)
       if (options.ast || mode === 'ast') {
         // then the user asked to see the fsm
         debug('showing JSON')
