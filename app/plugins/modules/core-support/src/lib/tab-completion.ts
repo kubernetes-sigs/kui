@@ -280,14 +280,16 @@ const makeCompletionContainer = (block, prompt, partial, dirname?, lastIdx?) => 
   // determine pixel width of current input value
   const tmp = document.createElement('div')
   tmp.style.display = 'inline-block'
+  tmp.style.fontSize = '0.925em'
   tmp.style.opacity = '0'
+  tmp.style.position = 'absolute'
   tmp.innerText = input.value.substring(0, input.selectionStart)
-  document.body.appendChild(tmp)
+  block.appendChild(tmp)
   const inputWidth = tmp.clientWidth
-  document.body.removeChild(tmp)
+  block.removeChild(tmp)
 
   const { left, width: containerWidth } = input.getBoundingClientRect()
-  const desiredLeft = left + inputWidth - 5
+  const desiredLeft = inputWidth + 12
 
   if (desiredLeft + inputWidth < containerWidth) {
     // the popup likely won't overflow to the right
