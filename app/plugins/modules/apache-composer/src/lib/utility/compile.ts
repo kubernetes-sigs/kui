@@ -61,7 +61,7 @@ const validateSourceFile = (inputFile) => new Promise((resolve, reject) => {
   } else {
     debug('readFile for webpack')
     try {
-      resolve(require('../../../../../app/plugins/modules' + localCodePath.replace(/^\/?app\/plugins\/modules/, ''))) // TODO: what path???
+      resolve(require('../../../../../../../app/plugins/modules' + localCodePath.replace(/^\/?app\/plugins\/modules/, '')))
     } catch (err) {
       console.error(err)
       const error = new Error('The specified file does not exist')
@@ -72,7 +72,10 @@ const validateSourceFile = (inputFile) => new Promise((resolve, reject) => {
 })
 
 export const validateSourceCode = (inputFile, originalCode?) => {
+  if (inBrowser() && originalCode) return originalCode
+
   const localSourcePath = findFile(expandHomeDir(inputFile))
+
   debug('validate source code from', localSourcePath)
   const filename = localSourcePath && path.basename(localSourcePath) // TODO: do we really need this?
 
@@ -104,17 +107,13 @@ export const validateSourceCode = (inputFile, originalCode?) => {
         // error[code] = originalCode
         throw error
       }
-      compiledAST = require(localSourcePath)
-      // if (extension !== 'py') {
-      //   compiledResult = require(localSourcePath)
-      // }
 
+      compiledAST = require(localSourcePath)
       // Note the use of requireUncached: this allows
       // users to edit and see updates of their
       // compositions, without having to reload or
       // restart the shell
       delete require.cache[require.resolve(localSourcePath)]
-
     } finally {
         // restore our temporary overrides
       console.log = log
