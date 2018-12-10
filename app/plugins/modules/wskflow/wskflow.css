@@ -20,7 +20,7 @@ break {
 }
 #wskflowSVG .edge-label {
     font-size: 5px;
-    font-weight: 300;
+    font-weight: bold;
 }
 #wskflowSVG .node.clickable[data-deployed="not-deployed"]:hover,
 #wskflowSVG .node.clickable:hover .edge-label,
@@ -66,14 +66,31 @@ break {
     stroke-width: 1; /* 2 with support for non-scaling stroke */
     pointer-events: all;
 }
+#wskflowSVG marker#forwardingEnd {
+    fill: #3498DB;
+}
+#wskflowSVG marker#greenEnd {
+    fill: #81C784;
+}
+#wskflowSVG marker#trueEnd, #wskflowSVG .edge-label.true-branch {
+    fill: orange;
+}
+#wskflowSVG marker#falseEnd, #wskflowSVG .edge-label.false-branch {
+    fill: #DC7633;
+}
+#wskflowSVG marker > path {
+    /* for marker paths, we want just a faint shadow */
+    stroke: rgba(0,0,0,0.25) !important;
+}
+
 #wskflowSVG path.hover, #wskflowSVG path:hover {
     stroke-width: 1;
 }
-#wskflowSVG path.true-branch.hover {
+#wskflowSVG path.true-branch.hover, #wskflowSVG path.true-branch:hover {
     stroke: orange !important;
     marker-end: url(#trueEnd);
 }
-#wskflowSVG path.false-branch.hover {
+#wskflowSVG path.false-branch.hover, #wskflowSVG path.false-branch:hover {
     stroke: #DC7633 !important;
     marker-end: url(#falseEnd);
 }
@@ -94,7 +111,7 @@ break {
 #wskflowSVG path[data-visited="true"] {
     /* visited edges */
     stroke: #2166ac !important;
-    stroke-width: 2;
+    stroke-width: 1.25;
     marker-end: url(#edgeTraversedEnd);
 }
 #wskflowSVG path[data-visited="false"] {
@@ -114,10 +131,17 @@ break {
     stroke-width: 0.75; /* 1.25; with non-scaling stroke */
 }
 
+#wskflowSVG marker#end {
+    fill: var(--color-text-02);
+}
+
 #wskflowSVG .node.leaf[data-status="success"] .atom {
     /* visited nodes with success outcome */
-    fill: #2166ac !important;
+    fill: var(--color-brand-01) !important;
     stroke: var(--color-text-01) !important;
+}
+#wskflowSVG marker#edgeTraversedEnd {
+    fill: var(--color-brand-01);
 }
 #wskflowSVG .node.leaf[data-status="failed"] .atom {
     /* visited nodes with failure outcome */

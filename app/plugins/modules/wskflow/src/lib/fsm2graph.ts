@@ -315,6 +315,7 @@ interface IEdge {
   target: string
   targetPort: string
   properties?: any
+  visited?: boolean
 }
 function drawEdgeNew (sourceId: string, targetId: string, layer, type?: string, direction?: string, sourcePort?: string, targetPort?: string): IEdge {
   // let sourcePort, targetPort;
@@ -358,8 +359,8 @@ function drawEdgeNew (sourceId: string, targetId: string, layer, type?: string, 
     source: sourceId,
     sourcePort: sourcePort,
     target: targetId,
-    targetPort: targetPort
-    // visited: (visited && visited[sourceId] && visited[targetId])
+    targetPort: targetPort,
+    visited: visited ? visited[sourceId] && visited[targetId] ? true : false : undefined
   }
 }
 

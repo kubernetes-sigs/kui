@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/wskflow/graph2doms')
+
 import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs'
@@ -51,9 +54,7 @@ const wfColor = {
     hovered: 'grey'
   },
   reOrCon: {
-    normal: '#f9ac1d',
-    trueBranch: 'orange',
-    falseBranch: '#DC7633'
+    normal: '#f9ac1d'
   },
   Value: {
     normal: '#BB8FCE'
@@ -128,27 +129,27 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
     .attr('fill', 'url(#pattern-stripe)')
 
   // define an arrow head
-  const arrowHead = (id, color) => {
-    defs.append('svg:marker')
+  const arrowHead = (id: string) => {
+    const marker = defs.append('svg:marker')
       .attr('id', id)
       .attr('viewBox', '0 -5 10 10')
       .attr('markerUnits', 'userSpaceOnUse')
-      .attr('refX', 10)
-      .attr('refY', 0)
       .attr('markerWidth', 4.2) // marker settings
       .attr('markerHeight', 7)
       .attr('orient', 'auto')
-      .style('fill', color)
-      .append('svg:path')
+
+    marker.append('svg:path')
       .attr('d', 'M0,-5L10,0L0,5')
+
+    return marker
   }
 
-  arrowHead('end', 'var(--color-text-02)')
-  arrowHead('forwardingEnd', wfColor.Edges.forwarding)
-  arrowHead('edgeTraversedEnd', '#2166ac')
-  arrowHead('greenEnd', wfColorAct.active)
-  arrowHead('trueEnd', wfColor.reOrCon.trueBranch)
-  arrowHead('falseEnd', wfColor.reOrCon.falseBranch)
+  arrowHead('end')
+  arrowHead('forwardingEnd').attr('refX', 10)
+  arrowHead('edgeTraversedEnd').attr('markerWidth', 5.25).attr('markerHeight', 8.75).attr('refX', 2.4)
+  arrowHead('greenEnd')
+  arrowHead('trueEnd')
+  arrowHead('falseEnd')
 
   defs.append('svg:g')
     .attr('id', 'retryIconNormal')
@@ -228,7 +229,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         return nodes
       }
 
-      let getLinks = function (nodes) {
+      const getLinks = function (nodes) {
         return d3.merge(nodes.map(function (n) {
           return n.edges || []
         }))
@@ -243,6 +244,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         let o = {
           id: link.id,
           labels: link.labels,
+          visited: link.visited,
           source: link.source,
           sourcePort: link.sourcePort,
           target: link.target,
@@ -276,7 +278,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
     }) /* end of doneRendering */
 
   function drawGraph (nodes, links) {
-    console.log('[wskflow] in drawGraph in graph2doms')
+    debug('drawGraph')
 
     // #1 add the nodes' groups
     const nodeData = root.selectAll('.node')
@@ -488,7 +490,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           } else if (d.type === 'action' && $('#' + d.id).attr('data-deployed') === 'not-deployed') {
             qtipText = `<span class='qtip-prefix red-text'>Warning |</span> This action is not deployed`
           } else if (d.type === 'action' || d.type === 'function') {
-            const typeForDisplay = d.type === 'function' ? 'Inline Function' : 'Cloud Function'
+            const typeForDisplay = d.type === 'function' ? 'Inline Function' : 'Action'
             if (d.type === 'function') {
               qtipPre = true // use white-space: pre for function body
             }
@@ -534,8 +536,8 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
             qtipText += "<div class='top-pad'>This is the <span style='color: orange;'>Y</span>/<span style='color: #DC7633;'>N</span> condition of an if</div>"
 
             // also highlight the edges
-            $(".link[source='" + (d.id + '_ptrue') + "']").css('stroke', wfColor.reOrCon.trueBranch).addClass('hover true-branch')
-            $(".link[source='" + (d.id + '_pfalse') + "']").css('stroke', wfColor.reOrCon.falseBranch).addClass('hover false-branch')
+            $(".link[source='" + (d.id + '_ptrue') + "']").addClass('hover')
+            $(".link[source='" + (d.id + '_pfalse') + "']").addClass('hover')
           }
         }
 
@@ -720,7 +722,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
                 { sidecarPrevious: 'get myApp', echo: true }
               )(d3.event) // pass along the raw dom event
             } else {
-              console.log(`[wskflow] clicking on an inline function: ${d.label}`)
+              debug(`clicking on an inline function: ${d.label}`)
             }
           }
         }
@@ -839,10 +841,9 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       .attr('xlink:href', '#retryIconNormal').attr('href', '#retryIconNormal').attr('x', 10).attr('y', -14)
 
     // #2 add paths with arrows for the edges
-    const linkData = root.selectAll('.link')
+    root.selectAll('.link')
       .data(links, function (d) { return d.id })
-
-    /* const link = */ linkData.enter()
+      .enter()
       .append('path')
       .attr('id', function (d) { return d.id })
       .attr('d', 'M0 0')
@@ -863,6 +864,12 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         if (d.source.indexOf('__origin') >= 0 && d.target.indexOf('__terminus') >= 0) {
           s += ' forwardingLink has-hover-effect'
         }
+        if (d.sourcePort && d.sourcePort.indexOf('_ptrue') !== -1) {
+          s += ' true-branch'
+        }
+        if (d.sourcePort && d.sourcePort.indexOf('_pfalse') !== -1) {
+          s += ' false-branch'
+        }
 
         if (d.properties) {
           for (let key in d.properties) {
@@ -872,18 +879,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
 
         return s
       })
-      .attr('data-visited', d => {
-        // edge was visited?
-        const sourceStatus = $('#' + d.source).attr('data-status')
-        const sourceWasVisited = sourceStatus && sourceStatus !== 'not-run'
-        const targetStatus = $('#' + d.target).attr('data-status')
-        const targetWasVisited = targetStatus && targetStatus !== 'not-run'
-        if (sourceWasVisited && targetWasVisited) {
-          return true
-        } else if (activations) {
-          return false
-        }
-      })
+      .attr('data-visited', d => d.visited) // edge was visited?
       .attr('source', function (d) { return d.sourcePort })
       .style('stroke', function (d) {
         if (activations) {
@@ -939,13 +935,20 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           (d.bendPoints || []).forEach(function (bp, i) {
             path += 'L' + bp.x + ' ' + bp.y + ' '
           })
-          path += 'L' + d.targetPoint.x + ' ' + d.targetPoint.y + ' '
+
+          const isTryCatchEdge = d.target.endsWith('-handler')
+          const isForwardingEdge = (d.source.indexOf('__origin') >= 0 && d.target.indexOf('__terminus') >= 0)
+          const offsetY = isForwardingEdge || isTryCatchEdge ? 0 : 4.2 // arrowhead hacking
+
+          const offsetX = isTryCatchEdge ? -4.2 : 0
+
+          path += 'L' + (d.targetPoint.x + offsetX) + ' ' + (d.targetPoint.y - offsetY) + ' '
         }
         return path
       })
 
     // edge labels
-    links.forEach(edge => {
+    const addEdgeLabels = () => links.forEach(edge => {
       if (edge.labels) {
         edge.labels.forEach(({ text, x, y, width, height }) => {
           d3.select('#' + edge.source)
@@ -962,17 +965,15 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         let x
         let y
         let reverse
-        let fill
+        let cssClass
 
         if (edge.sourcePort.indexOf('_ptrue') !== -1) {
           // add a text label next to its
           t = 'Y'
-          fill = wfColor.reOrCon.trueBranch
+          cssClass = 'true-branch'
         } else if (edge.sourcePort.indexOf('_pfalse') !== -1) {
           t = 'N'
-          fill = wfColor.reOrCon.falseBranch
-        } else {
-          fill = wfColor.reOrCon.normal
+          cssClass = 'false-branch'
         }
 
         if (t !== undefined) {
@@ -1029,14 +1030,11 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
 
           d3.select('#' + edge.source).append('text').classed('edge-label', true).attr('x', x).attr('y', y).text(t)
             .classed('edge-was-traversed', thisEdgeWasTraversed)
-            .style({
-              'font-size': '5px',
-              fill,
-              'font-weight': 'bold'
-            })
+            .classed(cssClass, true)
         }
       }
     })
+    setTimeout(addEdgeLabels, 0) // we aren't properly using d3.select.enter... hacking a bit, for now
   } /* drawGraph */
 
   //
