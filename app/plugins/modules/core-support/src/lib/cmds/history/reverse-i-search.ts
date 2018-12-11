@@ -20,6 +20,7 @@ const debug = Debug('core-support/history/reverse-i-search')
 import * as historyModel from '../../../../../../../build/models/history'
 import { getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '../../../../../../../build/webapp/cli'
 import { keys } from '../../../../../../../build/webapp/keys'
+import { inBrowser } from '../../../../../../../build/core/capabilities'
 
 // TODO externalize
 const strings = {
@@ -79,7 +80,9 @@ function registerListener () {
         placeholder.parentNode.removeChild(placeholder)
       }
       prompt.focus()
+
       prompt.style.opacity = '1'
+      prompt.style.width = 'auto'
     }
   }
 
@@ -158,7 +161,15 @@ function registerListener () {
    *
    */
   document.getElementsByTagName('body')[0].addEventListener('keyup', evt => {
-    if (evt.ctrlKey && (process.platform === 'darwin' || evt.shiftKey)) {
+    //
+    // we want ctrl+R; but if we're in a browser and on linux or
+    // windows, then ctrl+R will result in a browser reload :(
+    //
+    // Note: even if not in a browser (i.e. running in electron mode),
+    // on linux and windows we have to be careful not to use the
+    // default reload keyboard shortcut; see app/src/main/menu.js
+    //
+    if (evt.ctrlKey && (process.platform === 'darwin' || (!inBrowser() || evt.metaKey))) {
       if (evt.keyCode === keys.R) {
         debug('got ctrl+r')
         promptLeft = getCurrentPromptLeft()
@@ -182,6 +193,7 @@ function registerListener () {
           getCurrentBlock().classList.add('using-custom-prompt')
 
           prompt.style.opacity = '0'
+          prompt.style.width = '0'
 
           placeholderContentPart = document.createElement('span') // container for Typed and Matched
           placeholderTypedPart = document.createElement('span') // what the user has typed; e.g. "is" in "history"
