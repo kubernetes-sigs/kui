@@ -31,6 +31,7 @@ export default async (commandTree, prequire) => {
           app.prettyType = 'composition'
           app.prettyKind = 'composition'
           app.onclick = () => repl.pexec(`app get "/${app.namespace}/${app.name}"`)
+          app.noSort = true
           return app
         })
         return apps
