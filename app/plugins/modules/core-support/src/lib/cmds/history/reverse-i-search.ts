@@ -20,10 +20,11 @@ const debug = Debug('core-support/history/reverse-i-search')
 import * as historyModel from '../../../../../../../build/models/history'
 import { getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '../../../../../../../build/webapp/cli'
 import { keys } from '../../../../../../../build/webapp/keys'
+import { inBrowser } from '../../../../../../../build/core/capabilities'
 
 // TODO externalize
 const strings = {
-  prompt: '(reverse-i-search$1): '
+  prompt: '(reverse-i-search$1):`$2\' '
 }
 
 /**
@@ -79,7 +80,9 @@ function registerListener () {
         placeholder.parentNode.removeChild(placeholder)
       }
       prompt.focus()
+
       prompt.style.opacity = '1'
+      prompt.style.width = 'auto'
     }
   }
 
@@ -94,7 +97,7 @@ function registerListener () {
       // if the user hits Backspace, reset currentSearchIdx
       // TODO confirm that this is the behavior of bash
       currentSearchIdx = -1
-      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``)
+      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.value)
     }
 
     // where do we want to start the search? if the user is just
@@ -109,7 +112,7 @@ function registerListener () {
     if (newSearchIdx > 0) {
       currentSearchIdx = newSearchIdx
 
-      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ` ${newSearchIdx}`)
+      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ` ${newSearchIdx}`).replace(/\$2/, this.value)
 
       const newValue = historyModel.lines[currentSearchIdx].raw
       debug('newValue', newValue)
@@ -132,7 +135,7 @@ function registerListener () {
       placeholderTypedPart.innerText = ''
       placeholderMatchedPrefixPart.innerText = ''
       placeholderMatchedSuffixPart.innerText = ''
-      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``)
+      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.value)
     } else {
       placeholderFixedPart.classList.add('alert-pulse')
       setTimeout(() => placeholderFixedPart.classList.remove('alert-pulse'), 1000)
@@ -158,14 +161,23 @@ function registerListener () {
    *
    */
   document.getElementsByTagName('body')[0].addEventListener('keyup', evt => {
-    if (evt.ctrlKey && (process.platform === 'darwin' || evt.shiftKey)) {
+    //
+    // we want ctrl+R; but if we're in a browser and on linux or
+    // windows, then ctrl+R will result in a browser reload :(
+    //
+    // Note: even if not in a browser (i.e. running in electron mode),
+    // on linux and windows we have to be careful not to use the
+    // default reload keyboard shortcut; see app/src/main/menu.js
+    //
+    // re: RUNNING_SHELL_TEST; there seems to be some weird bug here; on linux, the ctrlKey modifier becomes sticky
+    if (evt.ctrlKey && (process.platform === 'darwin' || ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))) {
       if (evt.keyCode === keys.R) {
         debug('got ctrl+r')
         promptLeft = getCurrentPromptLeft()
         const prompt = getCurrentPrompt()
 
         if (isSearchActive) {
-          debug('continuation fo existing reverse-i-search')
+          debug('continuation of existing reverse-i-search')
           doSearch.call(prompt, evt) // we use .call to establish our own 'this'
         } else {
           debug('new reverse-i-search')
@@ -173,15 +185,16 @@ function registerListener () {
 
           placeholder = document.createElement('span')
           placeholderFixedPart = document.createElement('span')
-          placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, '')
+          placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, '').replace(/\$2/, ``)
           placeholder.appendChild(placeholderFixedPart)
           placeholder.classList.add('repl-temporary')
-          placeholderFixedPart.classList.add('slightly-deemphasize')
+          placeholder.classList.add('normal-text')
           placeholderFixedPart.classList.add('smaller-text')
           promptLeft.appendChild(placeholder)
           getCurrentBlock().classList.add('using-custom-prompt')
 
           prompt.style.opacity = '0'
+          prompt.style.width = '0'
 
           placeholderContentPart = document.createElement('span') // container for Typed and Matched
           placeholderTypedPart = document.createElement('span') // what the user has typed; e.g. "is" in "history"
