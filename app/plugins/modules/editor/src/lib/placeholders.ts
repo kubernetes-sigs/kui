@@ -35,7 +35,7 @@ function main(array $args) : array
 }`
 
 export const composition = {
-  javascript: `const composer = require('@ibm-functions/composer')
+  javascript: `const composer = require('openwhisk-composer')
 
 module.exports = composer.sequence('A', 'B')`,
 
