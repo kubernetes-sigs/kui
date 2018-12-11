@@ -1,6 +1,6 @@
 {
   "name": "kui-shell",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "An Electron-based shell for cloud-native development",
   "homepage": "https://github.com/IBM/kui#readme",
   "main": "build/main/main.js",
