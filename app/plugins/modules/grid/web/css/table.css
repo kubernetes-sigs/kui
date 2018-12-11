@@ -498,12 +498,6 @@
     flex-wrap: wrap;
     align-content: flex-start;
 }
-body:not(.subwindow) .activation-viz-plugin:not(.grid-as-timeline) .grid .grid-row {
-    border: 1px solid var(--color-ui-04);
-    padding: 1vh 1vw;
-    background: var(--color-ui-01);
-    box-shadow: 0 0 1px var(--color-ui-03);
-}
 .activation-viz-plugin .grid .grid-label {
     font-weight: 400;
     margin-bottom: 0.125em;
