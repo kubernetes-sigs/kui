@@ -1155,6 +1155,7 @@ code.fancy-code {
     align-items: center;
 }
 .normal-text {
+    color: var(--color-text-01);
     font-weight: 400;
     opacity: 1;
     font-size: 1em;
