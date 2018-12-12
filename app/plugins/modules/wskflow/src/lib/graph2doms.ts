@@ -397,9 +397,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           if (activations && d.visited === undefined) { return wfColorAct.inactiveBorder } else { return 'black' }
         }
       })
-      .style('stroke-width', function (d) {
-        if (d.children) return 1
-      })
       .style('cursor', function (d) {
         if (activations) {
           if (d.visited && d.type === 'action') { return 'pointer' } else { return 'normal' }
