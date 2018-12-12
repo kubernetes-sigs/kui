@@ -1,4 +1,4 @@
-const { sequence: Seq, if: If, finally: Finally, par: InParallel, retain: Retain } = require('@wdpdist/composer')
+const { sequence: Seq, if: If, finally: Finally, parallel: InParallel, retain: Retain } = require('openwhisk-composer')
 
 /** travis for some reason gives us this in string form */
 const parse = ({ payload }) => {
@@ -34,6 +34,6 @@ const And = (...fns) => {
 }
 
 module.exports = Seq(parse, Finally(Retain(If(And(passed, push, master),
-  'swapIntoPlace')),
+  'travis-for-kui/swapIntoPlace')),
 Seq(({ params }) => params,
-  'cleanBucket')))
+  'travis-for-kui/cleanBucket')))

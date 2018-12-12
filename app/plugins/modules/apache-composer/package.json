@@ -15,7 +15,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "openwhisk-composer": "git://github.com:apache/incubator-openwhisk-composer.git",
+    "openwhisk-composer": "git://github.com:tardieu/incubator-openwhisk-composer.git#parallel",
     "app-module-path": "^2.2.0"
   }
 }

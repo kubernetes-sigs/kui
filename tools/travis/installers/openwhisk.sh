@@ -32,6 +32,9 @@ docker pull openwhisk/nodejs6action &
 if [ -n "${NEEDS_OPENWHISK_JAVA8}" ]; then
     docker pull openwhisk/java8action &
 fi
+if [ -n "${NEEDS_OPENWHISK_NODEJS8}" ]; then
+    docker pull openwhisk/action-nodejs-v8 &
+fi
 
 # Clone OpenWhisk
 cd $ROOTDIR
@@ -43,6 +46,8 @@ pip install --user ansible==2.5.2
 # Configure runtimes
 if [ -n "$NEEDS_OPENWHISK_JAVA8" ]; then
     cp "$SCRIPTDIR/openwhisk-runtimes-with-java8.json" "$WHISKDIR/ansible/files/runtimes.json"
+elif [ -n "${NEEDS_OPENWHISK_NODEJS8}" ]; then
+    cp "$SCRIPTDIR/openwhisk-runtimes-with-nodejs8.json" "$WHISKDIR/ansible/files/runtimes.json"
 else
     cp "$SCRIPTDIR/openwhisk-runtimes.json" "$WHISKDIR/ansible/files/runtimes.json"
 fi

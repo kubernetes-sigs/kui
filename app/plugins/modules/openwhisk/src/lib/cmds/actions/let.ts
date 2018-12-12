@@ -423,7 +423,7 @@ export default async (commandTree, wsk) => {
    */
   const createFromFile = (name, mimeType, location, letType, options, execOptions) => {
     const extension = location.substring(location.lastIndexOf('.'))
-    const kind = extensionToKind[extension]
+    const kind = options.kind || extensionToKind[extension]
 
     if (extension === '.zip') {
       return makeZipActionFromZipFile(wsk, name, location, options, execOptions)
@@ -434,7 +434,7 @@ export default async (commandTree, wsk) => {
       // then this is a built-in type
       //
       // const annotationArgs = (options.annotations || []).map(kv => `-a ${kv.key} ${kv.value}`).join(' ')
-      return repl.qexec(`wsk action update "${name}" "${location}"`)
+      return repl.qexec(`wsk action update "${name}" "${location}" --kind "${kind}"`)
         .then(action => {
           (annotators[letType] || []).forEach(annotator => annotator(action))
           if (mimeType) (annotators[mimeType] || []).forEach(annotator => annotator(action))
