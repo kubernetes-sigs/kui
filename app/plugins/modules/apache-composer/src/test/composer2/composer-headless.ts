@@ -230,6 +230,24 @@ describe('Composer Headless Test :', function (this: ISuite) {
     validation.do({ name: 'test1', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
   })
 
+  describe('app list options', function () {
+    it('should get empty result by app list --limit 0', () => cli.do('app list --limit 0')
+      .then(expect.msg(''))
+      .catch(common.oops(this)))
+
+    it('should get 1 by app list --count', () => cli.do('app list --count')
+      .then(expect.msg('1\n'))
+      .catch(common.oops(this)))
+
+    it('should get test1 by app list --limit 1', () => cli.do('app list --limit 1')
+      .then(expect.appList({ name: 'test1', packageName: '' }))
+      .catch(common.oops(this)))
+
+    it('should get empty result by app list --skip 1', () => cli.do('app list --skip 1')
+      .then(expect.msg(''))
+      .catch(common.oops(this)))
+  })
+
   describe('should create composition with package', function () {
     it('should fail with 404 when creating composition with non-existing package', () => cli.do('app create testing/subtest1 @demos/hello.js')
       .then(expect.err(404 - 256))
