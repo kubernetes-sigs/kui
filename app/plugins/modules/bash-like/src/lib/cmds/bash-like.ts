@@ -43,6 +43,22 @@ import { extractJSON } from '../util/json'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { localFilepath } from '../util/usage-helpers'
 
+/**
+ * Strip off ANSI and other control characters from the given string
+ *
+ */
+const stripControlCharacters = (str: string): string => {
+  return str.replace(/\x1b\[(\d+;)?\d+m/g, '') // ansi color codes
+    .replace(/^\x08+/, '') // control characters
+    .replace(/^\x1b\[[012]?K/, '')
+    .replace(/^\x1b\[\(B/, '')
+    .replace(/^\x1b\[38;5;(\d+)m/, '')
+    .replace(/^\x1b\[\d?J/, '')
+    .replace(/^\x1b\[\d{0,3};\d{0,3}f/, '')
+    .replace(/^\x1b\[?[\d;]{0,3}/, '')
+    .replace(/^\W*OK\W*\n/, '') // OK at the beginning
+}
+
 export const doShell = (argv: Array<string>, options, execOptions?) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
     reject('Local file access not supported when running in a browser')
@@ -149,14 +165,24 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
     stream: true // save state across calls
   })
 
-  proc.stdout.on('data', data => {
-    if (execOptions.stdout) {
-      execOptions.stdout(data.toString())
-    } else {
+  proc.stdout.on('data', async data => {
+    const handleANSI = () => {
       const span = document.createElement('span')
-      parentNode.appendChild(span)
       span.setAttribute('class', 'whitespace')
       span.innerHTML = ansi2HTML.toHtml(data.toString())
+      return span
+    }
+
+    if (execOptions.stdout) {
+      const out = data.toString()
+      const maybeUsage = formatUsage(cmdLine, stripControlCharacters(out), { drilldownWithPip: true })
+      if (maybeUsage) {
+        execOptions.stdout(maybeUsage)
+      } else {
+        execOptions.stdout(handleANSI())
+      }
+    } else {
+      parentNode.appendChild(handleANSI())
       rawOut += data.toString()
     }
   })
@@ -203,16 +229,7 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
         const entityType = ''
         const options = {}
 
-        const noControlCharacters = rawOut
-          .replace(/\x1b\[(\d+;)?\d+m/g, '') // ansi color codes
-          .replace(/^\x08+/, '') // control characters
-          .replace(/^\x1b\[[012]?K/, '')
-          .replace(/^\x1b\[\(B/, '')
-          .replace(/^\x1b\[38;5;(\d+)m/, '')
-          .replace(/^\x1b\[\d?J/, '')
-          .replace(/^\x1b\[\d{0,3};\d{0,3}f/, '')
-          .replace(/^\x1b\[?[\d;]{0,3}/, '')
-          .replace(/^\W*OK\W*\n/, '') // OK at the beginning
+        const noControlCharacters = stripControlCharacters(rawOut)
         debug('noControlCharacters', noControlCharacters)
 
         try {
@@ -242,8 +259,8 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
 
           if (maybeUsage) {
             const message = await maybeUsage.message
-            debug('maybeUsage', message)
-            const commandWithoutOptions = cmdLineOrig.replace(/\s--?\w+/g, '')
+            // debug('maybeUsage', message)
+            // const commandWithoutOptions = cmdLineOrig.replace(/\s--?\w+/g, '')
             // return resolve(asSidecarEntity(commandWithoutOptions, message, {}, undefined, 'usage'))
             return resolve(maybeUsage)
           }
@@ -324,10 +341,10 @@ export default (commandTree, prequire) => {
     //
     commandTree.catchall(
       () => true, // we will accept anything
-      ({ command, argvNoOptions, execOptions, parsedOptions }) => {
+      ({ command, argvNoOptions, execOptions, parsedOptions, createOutputStream }) => {
         debug('handling catchall', command)
 
-        return doExec(command, argvNoOptions, execOptions)
+        return doExec(command, argvNoOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
           .catch(err => {
             // here, we trim the first part of "/bin/sh: someNonExistentCommand: command not found"
             if (err.message && typeof err.message === 'string') {

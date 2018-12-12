@@ -35,16 +35,16 @@ import { currentSelection, showEntity, showCustom } from './views/sidecar'
  *
  * @param when wait this long; e.g. the 305ms is in step with the sidecar transition: all 300ms ease-in-out
  * @param which the repl block sub-element that needs to be visible
+ * @param element the element to scroll into view (optional, defaults to use @which)
  * @param center this is passed directly to the underlying API https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoViewIfNeeded
  *
  */
-export const scrollIntoView = ({ when = 305, which = '.repl-active', center = true } = {}) => {
+export const scrollIntoView = ({ when = 305, which = '.repl-active', element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement, center = true } = {}) => {
   const scroll = () => {
     try {
       // false here means "bottom of the element will be aligned to the bottom of the visible area of the scrollable ancestor"
       //    (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView)
       // document.querySelector('tab.visible .repl .repl-active').scrollIntoView(true)
-      const element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement
       element['scrollIntoViewIfNeeded'](center)
     } catch (e) {
         // ok
@@ -123,6 +123,41 @@ export const registerListView = (kind: string, handler: ViewHandler) => {
 const registeredEntityViews = {}
 export const registerEntityView = (kind: string, handler) => {
   registeredEntityViews[kind] = handler
+}
+
+/**
+ * Stream output to the given block
+ *
+ */
+export const streamTo = (block: Element) => {
+  const resultDom = block.querySelector('.repl-result')
+  const pre = document.createElement('pre')
+  pre.classList.add('streaming-output')
+  resultDom.appendChild(pre)
+  resultDom.setAttribute('data-stream', 'data-stream');
+  (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+
+  // so we can scroll this into view as streaming output arrives
+  const spinner = element('.repl-result-spinner', block)
+
+  return async response => {
+    //
+    debug('stream', response)
+
+    if (response.isUsageError) {
+      pre.appendChild(await response.message)
+      pre.classList.add('oops')
+      pre.setAttribute('data-status-code', response.statusCode || response.code || 500)
+    } else if (response.nodeName) {
+      pre.appendChild(response)
+    } else {
+      const line = document.createElement('div')
+      line.innerText = response.message || response
+      pre.appendChild(line)
+    }
+
+    scrollIntoView({ when: 0, element: spinner })
+  }
 }
 
 /**
@@ -545,6 +580,15 @@ export const oops = (block?: Element, nextBlock?: Element) => err => {
 
   // add the http status code, if we have it (helps with testing)
   oopsDom.setAttribute('data-status-code', err.statusCode || err.code || 0)
+
+  if (resultDom.hasAttribute('data-stream')) {
+    // then the command has been streaming its output; copy any such output
+    // over to the oops dom
+    const streamingOutput = resultDom.querySelector('.streaming-output')
+    if (streamingOutput) {
+      oopsDom.appendChild(streamingOutput)
+    }
+  }
 
   installBlock(block.parentNode, block, nextBlock)()
 
