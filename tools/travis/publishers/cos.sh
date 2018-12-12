@@ -3,7 +3,11 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="$SCRIPTDIR/../../../"
 
-if [ "$TRAVIS_REPO_SLUG" == "composer/cloudshell" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.1" ]; then
+#
+# this script expects you tod efine, elsewhere (e.g. a travis env var):
+# @env PUBLISH_THIS_REPO_SLUG the "org/repo" that you wish to result in a publish to s3
+#
+if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.1" ]; then
     echo "pushing builds"
     unset TEST_FROM_BUILD
     (cd $TOPDIR/tests && npm run deinstrument)
