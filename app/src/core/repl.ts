@@ -586,7 +586,10 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
       // the Eval part of REPL
       //
       return Promise.resolve()
-        .then(() => evaluator.eval({ block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions }))
+        .then(() => evaluator.eval({
+          block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
+          createOutputStream: () => cli.streamTo(block)
+        }))
         .then(response => {
           if (response && response.context && nextBlock) {
             // cli.setContextUI(response, nextBlock)

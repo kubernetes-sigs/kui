@@ -39,12 +39,10 @@ describe('shell commands', function (this: ISuite) {
   // these two are useful as a pair; git usage responds with exit code
   // 1, whereas ibmcloud responds with exit code 0
   it('should give usage for git', () => cli.do(`git`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('git'))
+    .then(cli.expectError(1, 'usage: git'))
     .catch(common.oops(this)))
   it('should give usage for ibmcloud', () => cli.do(`ibmcloud`, this.app)
-     .then(cli.expectError(500, header('ibmcloud')))
+    .then(cli.expectError(500, header('ibmcloud')))
     .catch(common.oops(this)))
 
   if (!process.env.LOCAL_OPENWHISK) {

@@ -185,7 +185,7 @@ exports.cli = {
   expectError: (statusCode, expect, passthrough) => res => expectOK(res, { selector: `.oops[data-status-code="${statusCode || 0}"]`, expectError: true, expect: expect, passthrough }).then(_ => passthrough ? _ : res.app),
   expectBlank: res => expectOK(res, { selector: '', expectError: true }),
   expectOKWithCustom: custom => res => expectOK(res, custom), // as long as its ok, accept anything
-  expectOKWithString: expect => res => exports.cli.expectOKWithCustom({ expect })(res),
+  expectOKWithString: (expect, exact) => res => exports.cli.expectOKWithCustom({ expect, exact })(res),
   expectOKWithAny: res => expectOK(res), // as long as its ok, accept anything
   expectOKWithOnly: entityName => res => expectOK(res, entityName), // expect ok and *only* the given result value
   expectOKWith: entityName => res => expectOK(res, [entityName]), // expect ok and at least the given result value

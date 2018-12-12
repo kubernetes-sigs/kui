@@ -180,7 +180,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .repl, .repl input {
     font-family: var(--font-monospace);
 }
-.result-vertical .repl-result, .repl-result > .oops, .repl-result .ok {
+.result-vertical .repl-result, .repl-result .ok {
     font-size: 0.925em;
 }
 .result-as-table .result-table, .result-as-table.result-table {
@@ -409,10 +409,10 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .sidecar-visible .repl-block.processing .repl-output, .sidecar-visible .repl-block.valid-response .repl-output {
     align-items: stretch;
 }
-.repl-block.processing .repl-output .repl-result {
+.repl-block.processing .repl-result-spinner {
     animation: spin 750ms linear infinite;
 }
-.repl-block.processing .repl-output .repl-result:after {
+.repl-block.processing .repl-result-spinner:after {
     content: '|';
 }
 .repl-result pre {
