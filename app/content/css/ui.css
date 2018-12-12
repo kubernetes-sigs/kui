@@ -502,7 +502,8 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
        be a property of entity-name-group, as it is a table-cell, and max-width
        is undefined for table-cell; some browsers seem to support max-width on
        table-cell, but not all */
-    display: block;
+    display: inline-block;
+    vertical-align: middle;
     max-width: 18em;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -651,6 +652,8 @@ badge.clickable:hover {
     border-right: 2px solid;
 }
 .package-prefix {
+    display: inline-block;
+    vertical-align: middle;
     font-size: 0.75em;
     opacity: 0.6;
 }

@@ -20,12 +20,12 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="${SCRIPTDIR}/../../"
 cd "$SCRIPTDIR"
 
-# composition
-../../kui.js app update cloudshell-done ./done.js
-
 # actions
-../../kui.js action update swapIntoPlace ./swapIntoPlace.js --kind nodejs:8 -p secrets @"$ROOTDIR/dist/publishers/s3/secrets-cos.json"
-../../kui.js action update cleanBucket ./cleanBucket.js --kind nodejs:8 -p secrets @"$ROOTDIR/dist/publishers/s3/secrets-cos.json"
+../../kui.js let travis-for-kui/swapIntoPlace = ./swapIntoPlace.js --kind nodejs:8 -p secrets @"$ROOTDIR/dist/publishers/s3/secrets-cos.json"
+../../kui.js let travis-for-kui/cleanBucket = ./cleanBucket.js --kind nodejs:8 -p secrets @"$ROOTDIR/dist/publishers/s3/secrets-cos.json"
 
-# for now, we need a thin web action veneer
-../../kui.js let cloudshell-done-web.json = ./done-web.js
+# composition
+../../kui.js app update travis-for-kui/done ./done.js
+
+# make a web action out of the composition
+../../kui.js webbify travis-for-kui/done

@@ -6,7 +6,7 @@
 
 Kui Shell offers a new development experience for building
 cloud-native applications. By combining the power of familiar CLIs
-with visualizations in high-impact areas, the Shell enables you to
+with visualizations in high-impact areas, Kui enables you to
 manipulate complex JSON and YAML data models, integrate disparate
 tooling, and provides quick access to aggregate views of operational
 data.
@@ -17,13 +17,46 @@ data.
 
 ## This is a CLI, with Visualizations on the Side
 
-The Shell runs on your laptop, or in a browser. When running locally,
-you will have access to your filesystem and your favorite terminal and
-text editor. To help with complex data, the tool also offers a suite
-of **visualizations**. These visualizations also run locally, using an
-[Electron](https://electronjs.org) component. You can gracefully flip
-between the terminal and these visualizations, without having to
-switch to your browser, log in, wait for pages to load, and so on.
+Kui uses [Electron](https://electronjs.org) to provide you with an
+augmented but CLI-focused development experience. By using Electron,
+the same experience carries over, from local development on your
+laptop, to a browser-based experience.
+
+When running locally, you will have access to your filesystem and your
+favorite terminal and text editor. To help with complex data, Kui
+offers a suite of **visualizations**. You can gracefully flip between
+the terminal and these visualizations, without having to switch to
+your browser, log in, wait for pages to load, navigate through complex
+menu structures, and so on.
+
+For example, if you want a visual summary of your Kubernetes pods, you
+can issue this command from your favorite terminal:
+
+```
+kubectl kui get pods --ui
+```
+
+If you are serverless developer using
+[OpenWhisk](https://github.com/apache/incubator-openwhisk), you can
+get a quick summary of your recent function invocations with a simple
+command:
+
+```
+kubectl kui grid
+```
+
+If you are using [Apache
+Composer](https://github.com/apache/incubator-openwhisk-composer/) to
+compose your services together, you can get quick access to a
+visualizatin of your compositions:
+
+```
+kubectl kui preview /path/to/my/composition.js
+```
+
+In all three cases, the story is the same: you can gracefully
+transition into the world of visualizations without altering your
+normal productive workflows.
 
 - [Examples that work well without graphics](#cli-examples)
 - [Examples that provide visualizations](#visualizations)

@@ -100,7 +100,7 @@ describe('Use the app list command to list the invokeable compositions', functio
 
   it(`should list ppp/${seqName2} via wsk app list`, () => cli.do(`app list`, this.app)
     .then(cli.expectOKWithCustom({ selector: `.entity[data-name="${seqName2}"][data-package-name="ppp"]`,
-      expect: `ppp/\n${seqName2}\ncomposition`
+      expect: `ppp/${seqName2}`
     }))
     .then(selector => this.app.client.click(`${selector} .entity-name.clickable`))
     .then(() => this.app)

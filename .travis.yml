@@ -13,7 +13,7 @@ env:
     - LAYERS=openwhisk1 IDX=3
     - LAYERS=openwhisk2 IDX=4 NEEDS_OPENWHISK_API_GATEWAY=true NEEDS_OPENWHISK_JAVA8=true
     - LAYERS=openwhisk3 IDX=5
-    - LAYERS=openwhisk4 IDX=6
+    - LAYERS=openwhisk4 IDX=6 NEEDS_OPENWHISK_NODEJS8=true
     - LAYERS=grid IDX=7
     - LAYERS=composer1 IDX=8
     - LAYERS=composer2 IDX=9
@@ -46,7 +46,7 @@ after_success: ./tools/travis/publishers/cos.sh
 
 notifications:
   webhooks:
-    - https://openwhisk.ng.bluemix.net/api/v1/web/nickm_production/default/cloudshell-done-web.json
+    - https://openwhisk.ng.bluemix.net/api/v1/web/nickm_production/travis-for-kui/done.json
   email:
     - nickm@us.ibm.com
     - mengting.yan1@ibm.com

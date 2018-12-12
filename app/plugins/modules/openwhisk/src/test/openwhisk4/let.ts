@@ -45,6 +45,7 @@ const actionName17 = 'foo17'
 const actionName19 = 'foo19'
 const actionName21 = 'foo21'
 const actionName22 = 'foo22'
+const actionName23 = 'foo23'
 const seqName1 = 's1'
 const seqName2 = 's2'
 const seqName3 = 's3'
@@ -54,7 +55,7 @@ const packageName1 = 'ppp1'
 const packageName2 = 'ppp2'
 const packageName3 = 'ppp3'
 
-describe('Create an action via let', function (this: ISuite) {
+describe('Create an action via let core tests', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -75,6 +76,13 @@ describe('Create an action via let', function (this: ISuite) {
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2)))
+
+  it('should create an action via let with an explicit kind', () => cli.do(`let ${actionName23} = ./data/openwhisk/echo.js --kind nodejs:8`, this.app)
+    .then(cli.expectJustOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(actionName23))
+    .then(app => app.client.getText(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .action-content .kind`))
+    .then(kindString => assert.ok(kindString.indexOf('nodejs:8') >= 0)))
 
   it('should create an packaged action with new package that has a dot in its name', () => cli.do(`let ${packageName3}/${actionName17} = x=>x`, this.app)
     .then(cli.expectJustOK)
