@@ -217,7 +217,8 @@ break {
     font-size: 5px;
 }
 #wskflowSVG .node.compound:not(.root) .atom {
-    stroke-dasharray: 1;
+    stroke-dasharray: 0.5,0.75;
+    stroke-width: 0.5;
     stroke: var(--color-brand-01) !important;
     fill: var(--color-ui-02) !important;
 }
