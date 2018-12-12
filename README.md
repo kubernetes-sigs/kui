@@ -83,7 +83,7 @@ $ kui activation logs c5dba..
 ![logs view](https://ibm.box.com/shared/static/21668bkuw4925y35tydx7btjq2hor5mn.png)
 
 --------------------------------------------
-### A statisitical view of recent invocations
+### A statistical view of recent invocations
 
 ```bash
 $ kui table
