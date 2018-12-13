@@ -18,7 +18,7 @@ import * as repl from '../../../../../../../build/core/repl'
 import UsageError from '../../../../../../../build/core/usage-error'
 import * as view from '../../view/entity-view'
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/create')
+const debug = Debug('plugins/apache-composer/cmd/app-create')
 import * as compileUtil from '../../utility/compile'
 import * as client from '../client'
 

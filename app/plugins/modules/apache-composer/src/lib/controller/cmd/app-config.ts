@@ -15,7 +15,7 @@
  */
 import { properties } from '../../utility/usage'
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/app-get')
+const debug = Debug('plugins/apache-composer/cmd/app-config')
 
 export default async (commandTree, prequire) => {
   /* command handler for propertis*/

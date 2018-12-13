@@ -17,7 +17,7 @@ import { sessionList } from '../../utility/usage'
 import * as repl from '../../../../../../../build/core/repl'
 import UsageError from '../../../../../../../build/core/usage-error'
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/sessionList')
+const debug = Debug('plugins/apache-composer/cmd/session-list')
 
 export default async (commandTree, prequire) => {
   const sessionSyns = ['sessions', 'sess', 'ses', 'session']
