@@ -4,7 +4,9 @@ const path = require('path')
 const AWS = require('ibm-cos-sdk')
 const needle = require('needle')
 
-const secrets = process.env.COS_SECRETS ? JSON.parse(process.env.COS_SECRETS) : require('./secrets-cos.json')
+const secrets = process.env.COS_SECRETS
+  ? JSON.parse(Buffer.from(process.env.COS_SECRETS, 'base64').toString())
+  : require('./secrets-cos.json')
 
 const { productName } = require('../../../app/build/config.json')
 
