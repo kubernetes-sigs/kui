@@ -1,4 +1,4 @@
-# Using Kui with Apache OpenWhisk
+# Kui with Apache OpenWhisk
 
 - [Examples that work well without graphics](#cli-examples)
 - [Examples that provide visualizations](#visualizations)
@@ -8,12 +8,9 @@
 Some commands work well in textual mode, without any need for
 graphical assistance:
 
-|Command                               | Output                        |
+|Command                               | Functionality                 |
 |:-------------------------------------|:------------------------------|
-|`kui app create hello @demos/hello.js`|![ok: updated composition hello](https://ibm.box.com/shared/static/6mz8xvdw3wbldh7o111cuu7gnh1kwss4.png)|
-|`kui app list`                        |![hello            composition](https://ibm.box.com/shared/static/w8m0jigs07bv59a7pl3lf3phwj27orwj.png)|
-|`kui app async hello`                 |![ok: invoked hello with id ...](https://ibm.box.com/shared/static/b646dsiqylqv4b9wom6tj8xquitdkf27.png)|
-|`kui session list`                    |![session list output](https://ibm.box.com/shared/static/hym083s3zt6oe1byyapxu0ap5xzhom37.png)|
+|`kui action list`                     |list deployed actions          |
 
 ## Examples that provide visualizations<a name='visualizations'></a>
 
@@ -25,15 +22,7 @@ command takes only a second or so.
 
 <a name="preview"></a><a name="grid"></a>
 
---------------------------------------------
-### Visualizing a composition
-
-```bash
-$ kui preview @demos/looper.js
-```
-![visualization of composition](https://ibm.box.com/shared/static/xantjhxwwm0zmp31kckh8s0fe07gawew.png)
-
---------------------------------------------
+-------------------------------------------
 ### A grid view of recent activations
 
 ```bash
@@ -42,15 +31,7 @@ $ kui grid
 ![grid view](https://ibm.box.com/shared/static/kzgsbdeou04twohdlbzp20fsdqhzb334.gif)
 
 --------------------------------------------
-### For Compositions, a trace visualization
-
-```bash
-$ kui activation logs eda8a..
-```
-![trace view](https://ibm.box.com/shared/static/1gga6iqforftnn3zdnz3dyj4875cp539.png)
-
---------------------------------------------
-### For Cloud Functions, a log viewer
+### Log viewer
 
 ```bash
 $ kui activation logs c5dba..
@@ -75,6 +56,6 @@ $ kui grid --timeline
 
 ## Next Steps
 
-- [Examples of using Kui with Kubernetes](./kubernetes.md)
-- [Examples of using Kui with Apache Composer](./composer.md)
+- [Examples of Kui with Kubernetes](./kubernetes.md)
+- [Examples of Kui with Apache Composer](./composer.md)
 - Return to the [README](../../../README.md)
