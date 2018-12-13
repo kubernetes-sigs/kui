@@ -39,7 +39,7 @@ import * as repl from '../../../../../../build/core/repl'
 import { removeAllDomChildren } from '../../../../../../build/webapp/util/dom'
 import { injectCSS, injectScript } from '../../../../../../build/webapp/util/inject'
 import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '../../../../../../build/webapp/views/sidecar'
-import { validateSourceCode } from '../../../../apache-composer/plugin/lib/utility/compile'
+import { loadComposition } from '../../../../apache-composer/plugin/lib/utility/compile'
 /** default settings */
 const defaults = {
   kind: 'nodejs:default'
@@ -899,7 +899,7 @@ const addVariantSuffix = kind => {
 const generateFSM = (source, localCodePath, kind) => {
   // const base = kind.substring(0, kind.indexOf(':')) || kind // maybe useful when we have python composer
   try {
-    const result = validateSourceCode(localCodePath, source)
+    const result = loadComposition(localCodePath, source)
     return Promise.resolve(result)
   } catch (error) {
     return Promise.resolve(error)
