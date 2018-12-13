@@ -1,17 +1,38 @@
 # Installion Guide
 
-This page will help you installing and configuring the Kui Shell.
+This page will help you installing and configuring Kui. 
 
-| Download Method | Command  |
-| --------------  | -------- |
-| tarball         | `curl -sL https://tarball.kui-shell.org \| tar jxf -` |
-| zip             | `curl -sL https://zip.kui-shell.org -o kui.zip` |
+## Downloading Kui
 
-To verify your installation:
+We offer both a tarball and a zip download. Choose the one that works
+best for your platform; if you can use either, we suggest the tarball,
+as it is a smaller download. In either case, the initial download is
+small: 2-3 megabytes.
+
+### Download the tarball
 
 ```bash
-$ ./kui/bin/kui version
+curl -sL https://tarball.kui-shell.org | tar jxf -
 ```
+
+### Downloading the zip
+
+```bash
+curl -sL https://zip.kui-shell.org -o kui.zip
+```
+
+### Verifying your installation
+
+```bash
+export PATH=kui/bin:$PATH
+kubectl kui version
+kubectl kui shell
+```
+
+Adding `kui/bin` to your PATH will enable `kubectl` to find the `kui`
+extension to `kubectl`. The last two commands will validate that `kui`
+is installed properly; the last one should open a graphical Electron
+window.
 
 ## Setting up Kubernetes Authorization
 
@@ -42,4 +63,7 @@ ibmcloud wsk list
 
 ## Next Steps
 
+- [Examples of using Kui with Kubernetes](./kubernetes.md)
+- [Examples of using Kui with Apache OpenWhisk](./openwhisk.md)
+- [Examples of using Kui with Apache Composer](./composer.md)
 - Return to the [README](../README.md)

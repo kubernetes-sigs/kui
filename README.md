@@ -12,8 +12,12 @@ tooling, and provides quick access to aggregate views of operational
 data.
 
 - [Install a prebuilt version](docs/installation.md)
-- [Try it Live](https://hello.kui-shell.org/) (this is a webpack build of Kui, simply hosted in an S3 bucket)
-- Clone and contribute! `git clone git@github.com:IBM/kui.git && cd kui && npm install`
+- [Clone and contribute!](docs/dev/README.md)
+- [Try it Live](https://hello.kui-shell.org/)
+
+When running locally (the first and second options), we suggest that
+you add the `bin` directory to your PATH; the above links provide the
+specifics. This will enable `kubectl kui` to work.
 
 ## The Kui Experience
 

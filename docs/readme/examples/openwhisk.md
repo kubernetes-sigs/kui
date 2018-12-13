@@ -75,6 +75,6 @@ $ kui grid --timeline
 
 ## Next Steps
 
-- Using Kui with Kubernetes(./kubernetes.md)
-- Using Kui with Apache Composer(./composer.md)
+- [Examples of using Kui with Kubernetes](./kubernetes.md)
+- [Examples of using Kui with Apache Composer](./composer.md)
 - Return to the [README](../../../README.md)
