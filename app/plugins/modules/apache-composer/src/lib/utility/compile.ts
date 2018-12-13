@@ -8,7 +8,7 @@ import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
 import { inBrowser } from '../../../../../../build/core/capabilities'
 import * as path from 'path'
-import { parseName, deployAction } from './parse'
+import { deployAction } from './parse'
 import { findFile } from '../../../../../../build/core/find-file'
 import * as fs from 'fs'
 import * as expandHomeDir from 'expand-home-dir'
@@ -22,10 +22,22 @@ if (!inBrowser()) {
 }
 
 export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
-  return validateSourceFile(inputFile) // check inputfile extension and existence
-    .then(sourceCode => validateSourceCode(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input
-    .then(compiledAST => {
-      const composition = astToComposition(compiledAST, name)
+  debug('validating source file', inputFile)
+  const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
+  if (extension === 'json' || extension === 'ast') { // we were given the FSM directly
+    debug('input is composer AST')
+  } else if (extension === 'js' || extension === 'py') {
+    debug('input is composer library client', extension)
+  } else {
+    return reject(new UsageError({ message: messages.unknownInput, usage: create('create') }, undefined, 497))
+  }
+
+  const localCodePath = findFile(expandHomeDir(inputFile))
+
+  return loadSourceCode(inputFile, localCodePath) // check inputfile extension and existence and then return the source code
+    .then(sourceCode => loadComposition(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input
+    .then(composition => {
+      composition = compileComposition(composition, name) // parse and compile composition and get {composition, ast, version} object
       if (recursive) {
           // we were asked to (try to) deploy the actions referenced by the AST
         const localSourcePath = findFile(expandHomeDir(inputFile))
@@ -41,18 +53,7 @@ export const sourceToComposition = ({ inputFile, name = '', recursive = false })
     .catch(err => reject(err))
 })
 
-const validateSourceFile = (inputFile) => new Promise((resolve, reject) => {
-  debug('validate', inputFile)
-  const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
-  if (extension === 'json' || extension === 'ast') { // we were given the FSM directly
-    debug('input is composer AST')
-  } else if (extension === 'js' || extension === 'py') {
-    debug('input is composer library client', extension)
-  } else {
-    return reject(new UsageError({ message: messages.unknownInput, usage: create('create') }, undefined, 497))
-  }
-
-  const localCodePath = findFile(expandHomeDir(inputFile))
+const loadSourceCode = (inputFile, localCodePath) => new Promise((resolve, reject) => {
   if (!inBrowser()) {
     debug('readFile in headless mode or for electron')
     fs.readFile(localCodePath, (err, data) => {
@@ -71,13 +72,12 @@ const validateSourceFile = (inputFile) => new Promise((resolve, reject) => {
   }
 })
 
-export const validateSourceCode = (inputFile, originalCode?) => {
+export const loadComposition = (inputFile, originalCode?, localCodePath?) => {
   if (inBrowser() && originalCode) return originalCode
 
-  const localSourcePath = findFile(expandHomeDir(inputFile))
+  const localSourcePath = localCodePath || findFile(expandHomeDir(inputFile))
 
-  debug('validate source code from', localSourcePath)
-  const filename = localSourcePath && path.basename(localSourcePath) // TODO: do we really need this?
+  debug('load source code from', localSourcePath)
 
   try {
     let errorMessage = ''
@@ -88,7 +88,7 @@ export const validateSourceCode = (inputFile, originalCode?) => {
     const err = console.error
     const exit = process.exit
 
-    let compiledAST
+    let composition
 
     try {
       // temporarily override (restored in the finally block)
@@ -108,7 +108,7 @@ export const validateSourceCode = (inputFile, originalCode?) => {
         throw error
       }
 
-      compiledAST = require(localSourcePath)
+      composition = require(localSourcePath)
       // Note the use of requireUncached: this allows
       // users to edit and see updates of their
       // compositions, without having to reload or
@@ -128,35 +128,36 @@ export const validateSourceCode = (inputFile, originalCode?) => {
       }
     }
 
-    debug('compiledAST', typeof compiledAST, compiledAST)
+    debug('got composition', typeof composition, composition)
 
-    compiledAST = allowSourceVariation(compiledAST, logMessage, errorMessage)
+    composition = allowSourceVariation(composition, logMessage, errorMessage)
 
-    return compiledAST
+    return composition
 
   } catch (error) {
     // error handler
+    const filename = localSourcePath && path.basename(localSourcePath)
     throw sourceErrHandler(error, originalCode, filename)
   }
 }
 
 // give style freedom for users to write composition source
-const allowSourceVariation = (compiledAST, logMessage, errorMessage) => {
-  if ((compiledAST.main && isValidAst(compiledAST.main)) || typeof compiledAST.main === 'function') {
+const allowSourceVariation = (composition, logMessage, errorMessage) => {
+  if ((composition.main && isValidAst(composition.main)) || typeof composition.main === 'function') {
     debug('pulling composition from exports.main')
-    compiledAST = compiledAST.main
-  } else if ((compiledAST.composition && isValidAst(compiledAST.composition)) || typeof compiledAST.composition === 'function') {
+    composition = composition.main
+  } else if ((composition.composition && isValidAst(composition.composition)) || typeof composition.composition === 'function') {
     debug('pulling composition from exports.composition')
-    compiledAST = compiledAST.composition
+    composition = composition.composition
   }
 
-  if (typeof compiledAST === 'function') {
+  if (typeof composition === 'function') {
     debug('composition is function; evaluating it')
-    compiledAST = compiledAST()
+    composition = composition()
   }
 
-  if (isValidAst(compiledAST)) {
-    return compiledAST
+  if (isValidAst(composition)) {
+    return composition
   } else { // maybe the code did a console.log?
     let err = ''
     try {
@@ -228,16 +229,16 @@ export const implicitInputFile = (inputFile, name) => {
  * parse source file to composition using Composer library
  *
  */
-export const astToComposition = (compiledAST, name) => {
-  let composition
+export const compileComposition = (composition, name) => {
+  let result
   try {
-    composition = Composer.parse(compiledAST)
-    composition = composition.compile()
-    composition.name = fqn(name)
+    result = Composer.parse(composition)
+    result = result.compile()
+    result.name = fqn(name)
   } catch (error) {
     error.statusCode = 422  // composition error
     throw error
   }
-  debug('compiled source to composition', composition)
-  return composition
+  debug('compiled source to composition', result)
+  return result
 }
