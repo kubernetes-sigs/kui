@@ -56,7 +56,7 @@ try {
 } catch (e) {
   wskprops = {}
   if (e.code === 'ENOENT') {
-    console.error('Could not find wskprops')
+    debug('Could not find wskprops')
   } else {
     console.error(e)
   }
@@ -147,7 +147,7 @@ let self = {}
 
 const initOW = () => {
   if (!apiHost || !auth) {
-    console.error('faking out openwhisk config for now')
+    debug('faking out openwhisk config for now')
   }
 
   const owConfig = {
