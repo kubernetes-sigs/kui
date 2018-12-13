@@ -11,7 +11,7 @@ if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" ==
     echo "pushing builds"
     unset TEST_FROM_BUILD
     (cd $TOPDIR/tests && npm run deinstrument)
-    (cd $TOPDIR/dist/publishers/s3 && npm install && sudo apt-get install wine fakeroot && BRANCH="dev.$TRAVIS_BUILD_NUMBER" ./publish.sh)
+    (cd $TOPDIR/dist/publishers/s3 && npm install && sudo apt-get update && sudo apt-get install wine fakeroot && BRANCH="dev.$TRAVIS_BUILD_NUMBER" ./publish.sh)
 
 else
     echo "not pushing builds"
