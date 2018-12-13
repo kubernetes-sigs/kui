@@ -331,8 +331,8 @@ export default (commandTree, prequire) => {
   commandTree.listen('/!', shellFn, { docs: 'Execute a UNIX shell command' })
 
   // whenever we remove `lcd`, we can remove both of these lines
-  const cdCommand = commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd') })
-  commandTree.synonym('/lcd', cd('lcd'), cdCommand, { usage: usage.cd('lcd') })
+  const cdCommand = commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true })
+  commandTree.synonym('/lcd', cd('lcd'), cdCommand, { usage: usage.cd('lcd'), noAuthOk: true })
 
   if (!inBrowser()) {
     //
