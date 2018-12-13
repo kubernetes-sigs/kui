@@ -118,5 +118,5 @@ const usage = {
 export default (commandTree, prequire) => {
   commandTree.listen('/open', ({ argvNoOptions: argv }) => {
     return open(argv[argv.indexOf('open') + 1], hljs)
-  }, { usage, needsUI: true })
+  }, { usage, needsUI: true, noAuthOk: true })
 }

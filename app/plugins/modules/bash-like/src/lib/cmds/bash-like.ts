@@ -352,7 +352,8 @@ export default (commandTree, prequire) => {
             }
             throw err
           })
-      })
-
+      },
+      0, // priority
+      { noAuthOk: true })
   }
 }
