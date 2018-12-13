@@ -9,16 +9,17 @@ best for your platform; if you can use either, we suggest the tarball,
 as it is a smaller download. In either case, the initial download is
 small: 2-3 megabytes.
 
-### Download the tarball
+### Getting the tarball
 
 ```bash
 curl -sL https://tarball.kui-shell.org | tar jxf -
 ```
 
-### Downloading the zip
+### Getting the zip
 
 ```bash
 curl -sL https://zip.kui-shell.org -o kui.zip
+unzip kui.zip
 ```
 
 ### Verifying your installation
@@ -32,14 +33,19 @@ kubectl kui shell
 Adding `kui/bin` to your PATH will enable `kubectl` to find the `kui`
 extension to `kubectl`. The last two commands will validate that `kui`
 is installed properly; the last one should open a graphical Electron
-window.
+window. The first time you open a graphical window, you should see a
+message indicating that the graphical bits are being downloaded. This
+is a one-time download of the Electron components. (note: there is
+currently a superficial bug in the downloader; you may see the
+"downloading" message repeated twice)
 
 ## Setting up Kubernetes Authorization
 
 If you have a KUBECONFIG environment variable defined in your
-terminal, Kui will pick that up and run with it. In a browser context,
-you can use the command `k8s auth add` command to inject your
-configuration YAML and PEM into the browser local storage.
+terminal, Kui will pick that up and run with it. If you are using Kui
+in a browser context, you can use the command `k8s auth add` command
+to inject your configuration YAML and PEM into browser's local
+storage.
 
 ## Setting up OpenWhisk Authorization
 
@@ -63,7 +69,7 @@ ibmcloud wsk list
 
 ## Next Steps
 
-- [Examples of using Kui with Kubernetes](./kubernetes.md)
-- [Examples of using Kui with Apache OpenWhisk](./openwhisk.md)
-- [Examples of using Kui with Apache Composer](./composer.md)
+- [Examples of Kui with Kubernetes](./kubernetes.md)
+- [Examples of Kui with Apache OpenWhisk](./openwhisk.md)
+- [Examples of Kui with Apache Composer](./composer.md)
 - Return to the [README](../README.md)

@@ -63,12 +63,16 @@ identical to that of `kubectl`, except with some syntax
 coloration. With Kui, you have the power to navigate between these
 modes in a graceful and flexible manner.
 
-Kui also has support for Apache OpenWhisk and Apache Composer.  In all
-three cases, from Kubernetes, to serverless, to serverless
+## Further Reading and Examples
+
+Kui also has support for [Apache
+OpenWhisk](https://github.com/apache/incubator-openwhisk) and [Apache
+Composer](https://github.com/apache/incubator-openwhisk-composer/).
+In all three cases, from Kubernetes, to serverless, to serverless
 composition, the story is the same: you can gracefully transition into
 the world of visualizations without altering your normal productive
 workflows.
 
 - [More Kubernetes Examples](docs/readme/examples/kubernetes.md)
-- [More Apache OpenWhisk Examples](docs/readme/examples/openwhisk.md)
-- [More Apache Composer Examples](docs/readme/examples/composer.md)
+- [Apache OpenWhisk Examples](docs/readme/examples/openwhisk.md)
+- [Apache Composer Examples](docs/readme/examples/composer.md)
