@@ -4,7 +4,7 @@ To get started, the following commands will clone the code locally:
 
 ```bash
 git clone git@github.com:IBM/kui.git
-export PATH=kui/app/bin:$PATH
+export PATH=$PWD/kui/bin:$PATH
 cd kui && npm install
 kubectl kui version
 ```
