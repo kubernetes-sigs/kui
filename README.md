@@ -38,30 +38,31 @@ When running locally, you will have access to your filesystem and your
 favorite terminal and text editor. To help with complex data, Kui
 offers a suite of **visualizations**. You can gracefully flip between
 the terminal and these visualizations, without having to switch to
-your browser, log in, wait for pages to load, navigate through complex
-menu structures, and so on.
+your browser, log in, wait for pages to load, and navigate through
+complex menu structures.
 
-For example, if you want a visual summary of your Kubernetes pods, you
-can issue this command from your favorite terminal:
+For example, to see a visual summary of your Kubernetes pods, issue
+this command from your favorite terminal:
 
-```
-kubectl kui get pods --ui
-```
-
-From there, you can click on one of the rows to drill down to the
-details of one of the pods. In the above screenshot, you can see this
-shown in the `get pods details-v1-6865b9b99d-rjjvp` window. You could
-also have opened this view directly from your terminal, via: 
-
-```
-kubectl kui get pod details-v1-6865b9b99d-rjjvp --ui
-```
+|Example Command|Thumbnail of Output|
+|:--------------------------|:------------------------------|
+|`kubectl kui get pods --ui`|[![](app/content/images/kubectl-get-pods-thumbnail.jpg)](app/content/images/kubectl-get-pods.png)|
 
 Without the `--ui` option, Kui will display the output in your
-terminal directly; you will observe that the output is mostly
-identical to that of `kubectl`, except with some syntax
+terminal directly; you will observe that the output is identical to
+that of `kubectl`, with the possible addition of syntax
 coloration. With Kui, you have the power to navigate between these
 modes in a graceful and flexible manner.
+<a href="https://ibm.box.com/shared/static/55gasbz9fc40qrg43iq4b8t1uckupft4.gif">
+    <img align="right" alt="kubectl get pods drilldown animated gif" src="https://ibm.box.com/shared/static/2y3yhwbol7jaixvitdp59wl29zc5onaw.gif"></img>
+<a>
+
+Now try clicking on a row. You should see the "sidecar" sweep in from
+the right. This split screen mode allows you to drill down to the
+details of your pods. You can click on one, then another, for rapid
+inspection of several of your resources. The animated gif should give
+you a sense of the possibilities (click on it to see a larger
+version).
 
 ## Further Reading and Examples
 

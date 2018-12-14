@@ -947,7 +947,7 @@ export default async (commandTree, prequire) => {
   const wsk = await prequire('openwhisk')
 
   // command registration: edit existing action
-  commandTree.listen('/editor/edit', edit(wsk, prequire), { usage: usage.editUsage })
+  commandTree.listen('/editor/edit', edit(wsk, prequire), { usage: usage.editUsage, noAuthOk: true })
 
   // command registration: create new action
   commandTree.listen('/editor/new', newAction({ wsk, prequire }), { usage: usage.newUsage, noAuthOk: true })
