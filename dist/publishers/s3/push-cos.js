@@ -1,4 +1,4 @@
-const debug = require('debug')('publishers/s3/push-to-cos')
+const debug = require('debug')('publishers/s3/push-cos')
 const fs = require('fs')
 const path = require('path')
 const AWS = require('ibm-cos-sdk')

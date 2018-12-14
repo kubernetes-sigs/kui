@@ -55,6 +55,10 @@ ls -l "../../builds"
 if [ -z "$NO_PUSH" ]; then
     NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
 
+    # deploy the local-proxy.html which lets us offer kui:// links in
+    # unfriendly environs such as github markdown
+    EXIST_OK=true node ./push-file.js web-${COS_BUCKET} ../../local-proxy.html
+
     echo "win32: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-win32-x64.zip"
     echo "macOS: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui.dmg"
     echo "macOS-zip: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-darwin-x64.zip"
