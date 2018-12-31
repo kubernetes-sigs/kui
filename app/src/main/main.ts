@@ -399,7 +399,9 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       // see https://github.com/electron/electron/issues/10572
       // note that this requires show: false above
       mainWindow.webContents.setZoomFactor(1)
+      mainWindow.setVisibleOnAllWorkspaces(true)
       mainWindow.show()
+      mainWindow.setVisibleOnAllWorkspaces(false)
     })
 
     // install tray menu [DISABLED FOR NOW]
