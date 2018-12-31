@@ -345,6 +345,7 @@ repl.sidecar-visible .repl-prompt-right-elements, .repl-active .repl-prompt-righ
     opacity: 0;
     width: 0;
     height: 0;
+    display: none;
 }
 
 body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-prompt-lefty, body/*.sidecar-full-screen*/ repl .repl-prompt-lefty {
