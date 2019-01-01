@@ -417,12 +417,6 @@ export const installBlock = (parentNode, currentBlock, nextBlock) => () => {
   nextBlock.querySelector('input').focus()
   nextBlock.setAttribute('data-input-count', parseInt(currentBlock.getAttribute('data-input-count'), 10) + 1)
 
-  currentBlock.onmouseup = evt => {
-      // for older blocks, squash the "focus the current prompt
-      // no matter where the user clicks" behavior in repl.js
-    evt.stopPropagation()
-  }
-
   // if you want to have the current directory displayed with the prompt
   // nextBlock.querySelector('.repl-context').innerText = process.cwd() === process.env.HOME ? '~' : basename(process.cwd());
 

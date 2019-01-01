@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/new-tab')
 
+import installReplFocusHandlers from './repl-focus'
+
 import { keys } from '../../../../../build/webapp/keys'
 import { isVisible as isSidecarVisible,
          toggle,
@@ -199,15 +201,10 @@ const perTabInit = (doListen = true) => {
     listen(getCurrentPrompt())
   }
 
-  (document.querySelector('tab.visible .repl') as HTMLElement).onclick = evt => {
-    if (!window.getSelection().toString()) {
-      // if there is no selected text, then focus
-      // this works, because the HTML (? or chrome?) section model behavior is to clear the selection upon click
-      // so we only need to protect against mouseups due to the user dragging out a new selection
-      // see github issue #8
-      getCurrentPrompt().focus()
-    }
-  }
+  // we want to focus the current repl input when the user clicks, but
+  // the logic here is a bit complicated; so we'll push the logic out
+  // to a separate source file
+  installReplFocusHandlers()
 
   // maximize button
   element(sidecarSelector('.toggle-sidecar-maximization-button')).onclick = () => {
