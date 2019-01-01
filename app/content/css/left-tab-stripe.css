@@ -40,6 +40,7 @@ body.os-darwin .left-tab-stripe {
 
 .left-tab-stripe-buttons {
     flex: 1;
+    overflow: auto;
 }
 
 /*.left-tab-stripe-button {
@@ -82,28 +83,28 @@ body.os-darwin .left-tab-stripe {
     /* border-radius: 3px / 6px;
     border: 9px solid transparent; */
 }
-.left-tab-stripe-button:nth-child(1) i {
+.left-tab-stripe-button:nth-child(8n+1) i {
     color: var(--color-tab-01);
 }
-.left-tab-stripe-button:nth-child(2) i {
+.left-tab-stripe-button:nth-child(8n+2) i {
     color: var(--color-tab-02);
 }
-.left-tab-stripe-button:nth-child(3) i {
+.left-tab-stripe-button:nth-child(8n+3) i {
     color: var(--color-tab-03);
 }
-.left-tab-stripe-button:nth-child(4) i {
+.left-tab-stripe-button:nth-child(8n+4) i {
     color: var(--color-tab-04);
 }
-.left-tab-stripe-button:nth-child(5) i {
+.left-tab-stripe-button:nth-child(8n+5) i {
     color: var(--color-tab-05);
 }
-.left-tab-stripe-button:nth-child(6) i {
+.left-tab-stripe-button:nth-child(8n+6) i {
     color: var(--color-tab-06);
 }
-.left-tab-stripe-button:nth-child(7) i {
+.left-tab-stripe-button:nth-child(8n+7) i {
     color: var(--color-tab-07);
 }
-.left-tab-stripe-button:nth-child(8) i {
+.left-tab-stripe-button:nth-child(8n+8) i {
     color: var(--color-tab-08);
 }
 .left-tab-stripe-button:after {

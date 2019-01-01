@@ -185,6 +185,8 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   perTabInit()
 
+  newTabButton.scrollIntoView()
+
   return true
 }
 
