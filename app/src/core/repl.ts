@@ -31,6 +31,7 @@ import * as commandTree from './command-tree'
 import UsageError from './usage-error'
 
 import { isHeadless } from './capabilities'
+import { streamTo as headlessStreamTo } from '../main/headless-support'
 import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
@@ -588,7 +589,7 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
       return Promise.resolve()
         .then(() => evaluator.eval({
           block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
-          createOutputStream: () => cli.streamTo(block)
+          createOutputStream: () => isHeadless() ? headlessStreamTo() : cli.streamTo(block)
         }))
         .then(response => {
           if (response && response.context && nextBlock) {
