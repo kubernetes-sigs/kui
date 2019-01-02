@@ -911,20 +911,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           })
         }
       })
-      .attr('data-from-name', function (d) {
-        const fromId = d.source
-        const isName = $('#' + fromId).attr('data-name')
-        if (isName) {
-          return isName
-        }
-      })
-      .attr('data-to-name', function (d) {
-        const toId = d.target
-        const isName = $('#' + toId).attr('data-name')
-        if (isName) {
-          return isName
-        }
-      })
       .attr('d', function (d) {
         let path = ''
         if (d.sourcePoint && d.targetPoint) {
@@ -943,6 +929,21 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         }
         return path
       })
+
+    const addMorePathAttr = () => root.selectAll('path').attr('data-from-name', function (d) {
+      const fromId = d.source
+      const isName = $('#' + fromId).attr('data-name')
+      if (isName) {
+        return isName
+      }
+    })
+    .attr('data-to-name', function (d) {
+      const toId = d.target
+      const isName = $('#' + toId).attr('data-name')
+      if (isName) {
+        return isName
+      }
+    })
 
     // edge labels
     const addEdgeLabels = () => links.forEach(edge => {
@@ -1031,7 +1032,9 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         }
       }
     })
-    setTimeout(addEdgeLabels, 0) // we aren't properly using d3.select.enter... hacking a bit, for now
+
+    setTimeout(addMorePathAttr, 0)  // we aren't properly using d3.select.enter... hacking a bit, for now
+    setTimeout(addEdgeLabels, 0)
   } /* drawGraph */
 
   //

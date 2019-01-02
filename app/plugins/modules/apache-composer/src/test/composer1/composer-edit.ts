@@ -26,6 +26,12 @@ const ui = require(join(ROOT, 'lib/ui'))
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
 const sidecar = ui.sidecar
+const {
+  verifyTheBasicStuff,
+  verifyNodeExists,
+  verifyEdgeExists,
+  verifyNodeAbsence
+} = require('../../../tests/lib/composer-viz-util')
 
 /** set the monaco editor text */
 const setValue = (client, text) => {
@@ -54,6 +60,34 @@ describe('edit compositions', function (this: ISuite) {
   }
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
+
+  it(`should open the editor to a new composition and expect wskflow`, () => cli.do('compose comp1', this.app)
+    .then(verifyTheBasicStuff('comp1'))
+    .then(verifyNodeExists('A'))
+    .then(verifyNodeExists('B'))
+    .then(verifyEdgeExists('Entry', 'A'))
+    .then(verifyEdgeExists('A', 'B'))
+    .then(verifyEdgeExists('B', 'Exit'))
+    .then(() => setValue(this.app.client,
+      '\nmodule.exports = require("openwhisk-composer").sequence(\'A\', \'B\', \'C\')'))
+    .then(() => (this.app))
+    .then(verifyNodeExists('A'))
+    .then(verifyNodeExists('B'))
+    .then(verifyNodeExists('C'))
+    .then(verifyEdgeExists('Entry', 'A'))
+    .then(verifyEdgeExists('A', 'B'))
+    .then(verifyEdgeExists('B', 'C'))
+    .then(verifyEdgeExists('C', 'Exit'))
+    .then(() => setValue(this.app.client,
+      '\nmodule.exports = require("openwhisk-composer").sequence(\'A\', \'B\')'))
+    .then(() => (this.app))
+    .then(verifyNodeExists('A'))
+    .then(verifyNodeExists('B'))
+    .then(verifyNodeAbsence('C'))
+    .then(verifyEdgeExists('Entry', 'A'))
+    .then(verifyEdgeExists('A', 'B'))
+    .then(verifyEdgeExists('B', 'Exit'))
+    .catch(common.oops(this)))
 
   it(`should open the editor to a new composition and expect error handling`, () => cli.do('compose comp3', this.app)
     .then(cli.expectOK)
