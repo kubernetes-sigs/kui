@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-18 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -466,7 +466,7 @@ rowify['live'] = rowify.session // same formatter...
  * pretty printers (such as prettyDom and prettyjson)
  *
  */
-const print = (msg, logger = log, stream = process.stdout, color = 'reset', ok = 'ok') => {
+export const print = (msg, logger = log, stream = process.stdout, color = 'reset', ok = 'ok') => {
   debug('printing in this color: %s', color)
 
   if (verbose && typeof msg === 'string') {

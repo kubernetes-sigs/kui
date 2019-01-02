@@ -20,8 +20,6 @@
  *
  */
 
-declare var hljs
-
 import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/cmds/general')
 
@@ -348,7 +346,7 @@ export default (commandTree, prequire) => {
           .catch(err => {
             // here, we trim the first part of "/bin/sh: someNonExistentCommand: command not found"
             if (err.message && typeof err.message === 'string') {
-              err.message = err.message.replace(/\/bin\/\w*sh:\s*/, '')
+              err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
             }
             throw err
           })

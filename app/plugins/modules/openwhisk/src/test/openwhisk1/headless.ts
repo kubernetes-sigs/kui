@@ -91,7 +91,9 @@ const cli = {
   expectError: (expectedCode, expectedOutput) => ({ code: actualCode, output: actualOutput }) => {
     assert.strictEqual(actualCode, expectedCode)
     if (expectedOutput) {
-      const ok = actualOutput.indexOf(expectedOutput) >= 0
+      const ok = typeof expectedOutput === 'string'
+        ? actualOutput.indexOf(expectedOutput) >= 0
+        : !!actualOutput.match(expectedOutput) // expectedOutput is a RegExp
       if (!ok) {
         console.error(`mismatch; actual='${actualOutput}'; expected='${expectedOutput}'`)
       }
@@ -103,6 +105,13 @@ const cli = {
 
 describe('Headless mode', function (this: ISuite) {
   before(common.before(this, { noApp: true }))
+
+  // intentional typo with "actiono"
+  // sometimes the output has "command not found", and sometimes it has just "not found"
+  //   (macOS versus linux, i think)
+  it('should show command not found', () => cli.do('actiono list', {}, { errOk: 1 })
+    .then(cli.expectError(127, /actiono: (command\s+)?not found/))
+    .catch(common.oops(this)))
 
   it(`should show current version`, () => cli.do('version')
     .then(cli.expectOK(`${require(join(ROOT, '../package.json')).version}\n`, { exact: true }))
