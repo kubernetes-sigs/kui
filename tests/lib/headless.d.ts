@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { HookFunction, Context, Suite } from 'mocha'
-import { Application } from 'spectron'
-
-interface ISuite extends Suite {
-  app: Application
+interface IResponse {
+  code: number
+  output: string
+  stderr?: string
 }
 
-interface IBeforeOptions {
-  noApp?: boolean,
-  noOpenWhisk?: boolean
+interface IOutput {
+  code: number
+  output: string
 }
 
-declare function before (ctx: Suite, options?: IBeforeOptions): HookFunction
-declare function after (ctx: Suite, f?: () => void): HookFunction
-declare function oops (ctx: Suite): ((err: Error) => void)
+interface CLI {
+  do: (cmd: string, env?: object, options?: object) => Promise<IResponse>;
+  exitCode: (statusCode: number) =>  number;
+  expectOK: (expectedOutput?: string | object, options?) => (actual: IOutput) => string;
+  expectError: (expectedCode: number, expectedOutput?: string | object) => (actual: IOutput) => string;
+}
 
-declare function rp (opts: Object): any
+export var cli: CLI
+export var kubectl: CLI
 

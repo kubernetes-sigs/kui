@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const debug = require('debug')('k8s/tests/lib/wipe')
+
 const path = require('path')
 const ROOT = process.env.TEST_ROOT
 const common = require(path.join(ROOT, 'lib/common'))
@@ -26,10 +28,10 @@ const kinds = ['deployments', 'pods', 'crds']
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (kind, name = '') => app => new Promise(resolve => {
+exports.waitTillNone = (kind, theCli = cli, name = '') => app => new Promise(resolve => {
   const iter = () => {
-    return cli.do(`kubectl get "${kind}" ${name}`, app)
-      .then(cli.expectError(404))
+    return theCli.do(`kubectl get "${kind}" ${name}`, app, { errOk: theCli.exitCode(404) })
+      .then(theCli.expectError(theCli.exitCode(404)))
       .then(resolve)
       .catch(() => setTimeout(iter, 3000))
   }
@@ -37,13 +39,15 @@ exports.waitTillNone = (kind, name = '') => app => new Promise(resolve => {
   iter()
 })
 
-exports.wipe = ctx => {
+exports.wipe = (ctx, theCli = cli) => {
   return kinds.reduce(async (P, kind) => {
     await P
 
-    return cli.do(`kubectl delete "${kind}" --all`, ctx.app)
-      .then(cli.expectOK)
-      .then(exports.waitTillNone(kind))
+    debug(`deleting ${kind}`)
+
+    return theCli.do(`kubectl delete "${kind}" --all`, ctx.app)
+      .then(theCli.expectOK)
+      .then(exports.waitTillNone(kind, theCli))
       .catch(common.oops(ctx))
   }, Promise.resolve())
 }

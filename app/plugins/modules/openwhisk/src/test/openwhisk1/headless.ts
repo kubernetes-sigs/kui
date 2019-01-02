@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('test.headless')
+const debug = require('debug')('test.openwhisk1.headless')
 
 import * as assert from 'assert'
 import { exec } from 'child_process'
@@ -31,6 +31,7 @@ const { ISuite } = require(join(ROOT, 'lib/common'))
 const common = require(join(ROOT, 'lib/common'))
 const ui = require(join(ROOT, 'lib/ui'))
 const openwhisk = require(join(ROOT, 'lib/openwhisk'))
+const { cli } = require('../../../../../../../tests/lib/headless')
 
 const kui = process.env.KUI || join(ROOT, '../kui.js')
 
@@ -38,69 +39,6 @@ interface IResponse {
   code: number
   output: string
   stderr?: string
-}
-
-const cli = {
-  do: (cmd, env = {}, { errOk = undefined } = {}): Promise<IResponse> => new Promise((resolve, reject) => {
-    const command = `${kui} ${cmd} --no-color`
-    debug('executing command', command)
-
-    exec(command, { env: Object.assign({}, process.env, env) }, (err, stdout, stderr) => {
-      if (err) {
-        const output = stdout.trim().concat(stderr)
-        if (err['code'] !== errOk) {
-          console.error('Error in command execution', err['code'], output)
-        }
-        resolve({ code: err['code'], output })
-      } else {
-        resolve({ code: 0, output: stdout, stderr })
-      }
-    })
-  }),
-
-  expectOK: (expectedOutput?, { exact = false, skipLines = 0, squish = false } = {}) => ({ code: actualCode, output: actualOutput }) => {
-    assert.strictEqual(actualCode, 0)
-    if (expectedOutput) {
-      let checkAgainst = actualOutput
-
-      // skip a number of initial lines?
-      if (skipLines > 0) {
-        checkAgainst = checkAgainst.split(/\n/).slice(1).join('\n')
-      }
-
-      // squish whitespace?
-      if (squish) {
-        checkAgainst = checkAgainst.split(/\n/).map(_ => _.replace(/\s+/g, ' ').trim()).join('\n').trim()
-      }
-
-      if (exact) {
-        if (checkAgainst !== expectedOutput) {
-          console.error(`mismatch; actual='${actualOutput}'; expected='${checkAgainst}'`)
-        }
-        assert.strictEqual(checkAgainst, expectedOutput)
-      } else {
-        const ok = actualOutput.indexOf(checkAgainst) >= 0
-        if (!ok) {
-          console.error(`mismatch; actual='${actualOutput}'; expected='${checkAgainst}'`)
-        }
-        assert.ok(ok)
-      }
-    }
-    return actualOutput
-  },
-  expectError: (expectedCode, expectedOutput) => ({ code: actualCode, output: actualOutput }) => {
-    assert.strictEqual(actualCode, expectedCode)
-    if (expectedOutput) {
-      const ok = typeof expectedOutput === 'string'
-        ? actualOutput.indexOf(expectedOutput) >= 0
-        : !!actualOutput.match(expectedOutput) // expectedOutput is a RegExp
-      if (!ok) {
-        console.error(`mismatch; actual='${actualOutput}'; expected='${expectedOutput}'`)
-      }
-      assert.ok(ok)
-    }
-    return actualOutput
-  }
 }
 
 describe('Headless mode', function (this: ISuite) {
