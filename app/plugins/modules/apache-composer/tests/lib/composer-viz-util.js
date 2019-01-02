@@ -90,8 +90,8 @@ const verifyNodeExistsById = id => app => {
 const verifyEdgeExists = (from, to) => app => {
   const selector = `#wskflowSVG path[data-from-name="/_/${from}"][data-to-name="/_/${to}"]`
   console.error(`CHECKING EDGE ${from} ${to} ${selector}`)
-  return app.client.elements(selector)
-    .then(edges => assert.strictEqual(edges.value.length, 1))
+  return app.client.waitUntil(() => app.client.elements(selector)
+    .then(edges => edges.value.length === 1))
     .then(() => app)
 }
 
@@ -104,6 +104,17 @@ const verifyOutgoingEdgeExists = from => app => {
   console.error(`CHECKING OUTGOING EDGE ${from} ${selector}`)
   return app.client.elements(selector)
     .then(edges => assert.strictEqual(edges.value.length, 1))
+    .then(() => app)
+}
+
+/**
+ * Verify that a node with the given action name does not exist on the canvas
+ *
+ */
+const verifyNodeAbsence = (name, isDeployed = false, timeout = 2000) => app => {
+  const selector = `#wskflowSVG .node[data-name="/_/${name}"][data-deployed="${isDeployed ? 'deployed' : 'not-deployed'}"]`
+  console.error(`CHECKING NODE ABSENCE ${name} ${selector}`)
+  return app.client.waitForExist(selector, timeout, true)
     .then(() => app)
 }
 
@@ -153,6 +164,7 @@ module.exports = {
   verifyNodeExistsById,
   verifyEdgeExists,
   verifyOutgoingEdgeExists,
+  verifyNodeAbsence,
   verifyNodeLabelsAreSane,
   verifyTheBasicStuff
 }
