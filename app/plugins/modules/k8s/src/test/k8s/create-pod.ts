@@ -18,6 +18,71 @@ import { ISuite } from '../../../../../../../tests/lib/common'
 import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import { cli, selectors } from '../../../../../../../tests/lib/ui'
 import { wipe, waitTillNone } from '../../../../../../../tests/lib/k8s/wipe'
+import { kubectl, cli as kui, CLI } from '../../../../../../../tests/lib/headless'
+
+const doHeadless = (ctx: ISuite, impl: CLI) => {
+  before(common.before(ctx, { noApp: true, noOpenWhisk: true }))
+
+  it('should wipe k8s', () => {
+    return wipe(ctx, impl)
+  })
+
+  it('should create sample pod from local file', () => {
+    return impl.do('kubectl create -f ./data/k8s/pod.yaml', ctx.app)
+      .then(impl.expectOK('nginx'))
+      .catch(common.oops(ctx))
+  })
+
+  it('should list the new pod', () => {
+    return impl.do('kubectl get pods', ctx.app)
+      .then(impl.expectOK('nginx'))
+      .catch(common.oops(ctx))
+  })
+
+  it('should get the new pod', () => {
+    return impl.do('kubectl get pod nginx', ctx.app)
+      .then(impl.expectOK('nginx'))
+      .catch(common.oops(ctx))
+  })
+
+  it('should get the new pod as JSON', () => {
+    return impl.do('kubectl get pod nginx -o json', ctx.app)
+      .then(impl.expectOK({
+        kind: 'Pod',
+        metadata: {
+          name: 'nginx'
+        }
+      }))
+      .catch(common.oops(ctx))
+  })
+
+  it('should delete the new pod by yaml', () => {
+    return impl.do('kubectl delete -f ./data/k8s/pod.yaml', ctx.app)
+      .then(impl.expectOK('pod "nginx" deleted'))
+      .then(waitTillNone('pods', impl))
+      .catch(common.oops(ctx))
+  })
+
+  it('should re-create sample pod from local file', () => {
+    return impl.do('kubectl create -f ./data/k8s/pod.yaml', ctx.app)
+      .then(impl.expectOK('nginx'))
+      .catch(common.oops(ctx))
+  })
+
+  it('should delete the new pod by name', () => {
+    return impl.do('kubectl delete pod nginx', ctx.app)
+      .then(impl.expectOK('pod "nginx" deleted'))
+      .catch(common.oops(ctx))
+  })
+}
+
+describe('k8s create pod kubectl kui headless mode', function (this: ISuite) {
+  doHeadless(this, kubectl)
+})
+
+describe('k8s create pod kui.js headless mode', function (this: ISuite) {
+  doHeadless(this, kui)
+})
 
 describe('k8s create pod', function (this: ISuite) {
   before(common.before(this, { noOpenWhisk: true }))

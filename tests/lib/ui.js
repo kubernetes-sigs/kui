@@ -126,13 +126,24 @@ const expectOK = (appAndCount, opt) => {
 }
 
 exports.cli = {
-  /** execute a CLI command, and return the data-input-count of that command */
-  do: (cmd, app, noNewline) => app.client.waitForExist(selectors.CURRENT_PROMPT_BLOCK)
-    .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
-    .then(count => app.client.getValue(selectors.CURRENT_PROMPT)
-      .then(currentValue => app.client.setValue(selectors.CURRENT_PROMPT, `${currentValue}${cmd}`))
-      .then(() => { if (!noNewline) app.client.execute('repl.doEval()') })
-      .then(() => ({ app: app, count: parseInt(count) }))),
+  /**
+   * Execute a CLI command, and return the data-input-count of that command
+   *
+   */
+  do: (cmd, app, noNewline = false) => {
+    return app.client.waitForExist(selectors.CURRENT_PROMPT_BLOCK)
+      .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+      .then(count => app.client.getValue(selectors.CURRENT_PROMPT)
+        .then(currentValue => app.client.setValue(selectors.CURRENT_PROMPT, `${currentValue}${cmd}`))
+        .then(() => { if (noNewline !== true) app.client.execute('repl.doEval()') })
+        .then(() => ({ app: app, count: parseInt(count) })))
+  },
+
+  /**
+   * Exit code code for the given http status code; this is an identity function; for headless mode, there is the -256 part.
+   * See headless.js for the analogous headless implementation.
+   */
+  exitCode: statusCode => statusCode,
 
   paste: (cmd, app, nLines = 1) => app.client.waitForExist(selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
@@ -369,7 +380,7 @@ const sameStruct = (struct1, struct2, subset = false) => {
       console.log(`typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[key]} ${typeof struct2[key]}`)
       return false
     } else if (typeof struct1[key] === 'object') {
-      if (!sameStruct(struct1[key], struct2[key])) {
+      if (!sameStruct(struct1[key], struct2[key], subset)) {
         return false
       }
     } else if (struct1[key] !== struct2[key]) {
@@ -394,7 +405,7 @@ const sameStruct = (struct1, struct2, subset = false) => {
       console.log(`typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[key]} ${typeof struct2[key]}`)
       return false
     } else if (typeof struct2[key] === 'object') {
-      if (!sameStruct(struct1[key], struct2[key])) {
+      if (!sameStruct(struct1[key], struct2[key], subset)) {
         return false
       }
     } else if (struct1[key] !== struct2[key]) {

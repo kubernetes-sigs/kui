@@ -19,11 +19,12 @@ const debug = Debug('k8s/cmds/kubectl')
 
 import * as expandHomeDir from 'expand-home-dir'
 
-import { inBrowser } from '../../../../../../build/core/capabilities'
+import { isHeadless, inBrowser } from '../../../../../../build/core/capabilities'
 import { findFile } from '../../../../../../build/core/find-file'
 import UsageError from '../../../../../../build/core/usage-error'
 import repl = require('../../../../../../build/core/repl')
 import { oopsMessage } from '../../../../../../build/core/oops'
+import { ExecType } from '../../../../../../build/core/command-tree'
 
 import { FinalState } from './states'
 import { FQN as kubectlFQN, deploy as deployKubectl } from '../../actionProxy/kubectl'
@@ -619,7 +620,7 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
       } else {
         nope()
       }
-    } else if (execOptions.raw) {
+    } else if (execOptions.raw || (isHeadless() && execOptions.type === ExecType.TopLevel)) {
       //
       // caller asked for the raw output
       //

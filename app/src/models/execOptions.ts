@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ExecType } from '../core/command-tree'
+
 export interface IExecOptions {
   isDrilldown?: boolean
   block?: HTMLElement
@@ -31,7 +33,7 @@ export interface IExecOptions {
   rethrowErrors?: boolean
   reportErrors?: boolean
   preserveBackButton?: boolean
-  type?: string
+  type?: ExecType
   container?: Element
   raw?: boolean
   createOnly?: boolean
@@ -49,6 +51,8 @@ export interface IExecOptions {
 }
 
 export class DefaultExecOptions implements IExecOptions {
+  type: ExecType = ExecType.TopLevel
+
   constructor () {
     // nothing to do
   }
