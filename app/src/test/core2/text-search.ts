@@ -71,7 +71,6 @@ describe('Text search', function (this: ISuite) {
       await this.app.client.waitUntil(async () => {
         await this.app.client.setValue('#search-input', `grumble${keys.ENTER}`)
         const txt = await this.app.client.getText('#search-found-text')
-        console.error('EEE', txt)
         return txt === '2 matches'
       })
     } catch (err) {

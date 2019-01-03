@@ -42,51 +42,65 @@ exports.rp = opts => {
 }
 
 /**
+ * Get the electron parts set up, and return an Application
+ * instance. Note that this won't actually start the electron process,
+ * which can subsequently be done by calling `start()` on the return
+ * value of this function.
+ *
+ */
+const prepareElectron = (fuzz) => {
+  const Application = require('spectron').Application
+  const electron = require('../../app/node_modules/electron')
+  const appMain = process.env.APP_MAIN || '../app/build/main/main.js'
+
+  const env = {}
+  if (fuzz) {
+    env.___IBM_FSH_FUZZ = JSON.stringify(fuzz)
+  }
+
+  const opts = {
+    env,
+    chromeDriverArgs: [ '--no-sandbox' ],
+    waitTimeout: process.env.TIMEOUT || 60000
+  }
+
+  if (process.env.TEST_FROM_BUILD) {
+    console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
+    opts.path = process.env.TEST_FROM_BUILD
+  } else {
+    console.log('Using filesystem-based assets')
+    opts.path = electron // this means spectron will use electron located in node_modules
+    opts.args = [ appMain ] // in this mode, we need to specify the main.js to use
+  }
+
+  if (process.env.CHROMEDRIVER_PORT) {
+    opts.port = process.env.CHROMEDRIVER_PORT
+  }
+  if (process.env.WSKNG_NODE_DEBUG) {
+    // pass WSKNG_DEBUG on to NODE_DEBUG for the application
+    opts.env.NODE_DEBUG = process.env.WSKNG_NODE_DEBUG
+  }
+  if (process.env.DEBUG) {
+    opts.env.DEBUG = process.env.DEBUG
+  }
+
+  return new Application(opts)
+}
+
+/**
  * This is the method that will be called before a test begins
- *   fuzz lets us blank out certain portions of the world
+ *
+ * @param fuzz lets you blank out certain portions of the world
+ * @param noApp do not spawn the electron parts
+ * @param noOpenWhisk do not wipe the OpenWhisk slate clean on startup
  *
  */
 exports.before = (ctx, { fuzz, noApp = false, noOpenWhisk = false } = {}) => {
   ctx.retries(10)
 
   return function () {
-    const env = {}
-    if (fuzz) {
-      env.___IBM_FSH_FUZZ = JSON.stringify(fuzz)
-    }
-
     if (!noApp) {
-      const Application = require('spectron').Application
-      const electron = require('../../app/node_modules/electron')
-      const appMain = process.env.APP_MAIN || '../app/build/main/main.js'
-
-      const opts = {
-        env,
-        chromeDriverArgs: [ '--no-sandbox' ],
-        waitTimeout: process.env.TIMEOUT || 60000
-      }
-
-      if (process.env.TEST_FROM_BUILD) {
-        console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
-        opts.path = process.env.TEST_FROM_BUILD
-      } else {
-        console.log('Using filesystem-based assets')
-        opts.path = electron // this means spectron will use electron located in node_modules
-        opts.args = [ appMain ] // in this mode, we need to specify the main.js to use
-      }
-
-      if (process.env.CHROMEDRIVER_PORT) {
-        opts.port = process.env.CHROMEDRIVER_PORT
-      }
-      if (process.env.WSKNG_NODE_DEBUG) {
-        // pass WSKNG_DEBUG on to NODE_DEBUG for the application
-        opts.env.NODE_DEBUG = process.env.WSKNG_NODE_DEBUG
-      }
-      if (process.env.DEBUG) {
-        opts.env.DEBUG = process.env.DEBUG
-      }
-
-      ctx.app = new Application(opts)
+      ctx.app = prepareElectron(fuzz)
     }
 
     // start the app, if requested
@@ -130,21 +144,23 @@ exports.after = (ctx, f) => () => {
   // when we're done with a test suite, look for any important
   // SEVERE errors in the chrome console logs. try to ignore
   // intentional failures as much as possible!
-  ctx.app.client.getRenderProcessLogs().then(logs => logs.forEach(log => {
-    if (log.level === 'SEVERE' && // only console.error messages
-        log.message.indexOf('The requested resource was not found') < 0 && // composer file not found
-        log.message.indexOf('Error compiling app source') < 0 &&
-        log.message.indexOf('ReferenceError') < 0 &&
-        log.message.indexOf('SyntaxError') < 0 &&
-        log.message.indexOf('ENOENT') < 0 && // we probably caused file not found errors
-        log.message.indexOf('UsageError') < 0 && // we probably caused repl usage errors
-        log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
-        log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
-    ) {
-      const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-      console.log(`${log.source} ${log.level}`.bold.red, logMessage)
-    }
-  }))
+  if (ctx.app && ctx.app.client) {
+    ctx.app.client.getRenderProcessLogs().then(logs => logs.forEach(log => {
+      if (log.level === 'SEVERE' && // only console.error messages
+          log.message.indexOf('The requested resource was not found') < 0 && // composer file not found
+          log.message.indexOf('Error compiling app source') < 0 &&
+          log.message.indexOf('ReferenceError') < 0 &&
+          log.message.indexOf('SyntaxError') < 0 &&
+          log.message.indexOf('ENOENT') < 0 && // we probably caused file not found errors
+          log.message.indexOf('UsageError') < 0 && // we probably caused repl usage errors
+          log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
+          log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
+      ) {
+        const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
+        console.log(`${log.source} ${log.level}`.bold.red, logMessage)
+      }
+    }))
+  }
 
   if (ctx.app && ctx.app.isRunning()) {
     return ctx.app.stop()

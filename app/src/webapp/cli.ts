@@ -167,6 +167,39 @@ export const streamTo = (block: Element) => {
 export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?) => response => {
   debug('printResults')
 
+  if (process.env.KUI_TEE_TO_FILE) {
+    // we were asked to tee the output to the system console
+    debug('teeing output to file', process.env.KUI_TEE_TO_FILE)
+    try {
+      const { print } = require('../main/headless-pretty-print')
+      const { createWriteStream } = require('fs')
+      const stream = createWriteStream(process.env.KUI_TEE_TO_FILE)
+      const logger = data => stream.write(data)
+      try {
+        print(response, logger, stream)
+        if (process.env.KUI_TEE_TO_FILE_END_MARKER) {
+          stream.write(process.env.KUI_TEE_TO_FILE_END_MARKER)
+        }
+      } finally {
+        stream.end()
+
+        if (process.env.KUI_TEE_TO_FILE_EXIT_ON_END_MARKER) {
+          // we were asked to exit after writing an end marker
+          try {
+            const { app } = require('electron').remote
+            debug('attempting to quit', app)
+            app.quit()
+          } catch (err) {
+            console.error('Error exiting', err)
+          }
+        }
+      }
+    } catch (err) {
+      debug('error teeing output to console')
+      console.error(err)
+    }
+  }
+
   if (echo) setStatus(block, 'valid-response')
 
   const render = async (response, { echo, resultDom }) => {

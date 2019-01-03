@@ -33,5 +33,6 @@ interface CLI {
 }
 
 export var cli: CLI
+export var kuiElectron: CLI
 export var kubectl: CLI
-
+export var kubectlElectron: CLI
