@@ -115,7 +115,7 @@ describe('Headless mode', function (this: ISuite) {
     .catch(common.oops(this)))
 
   it('should invoke spacey', () => cli.do('action invoke spacey')
-    .then(cli.expectOK('fun: "space cadet"'))
+    .then(cli.expectOK('"fun": "space cadet"'))
     .catch(common.oops(this)))
 
   it('should async spacey', () => cli.do('action async spacey')

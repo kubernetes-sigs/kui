@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { print } from './headless'
+import { print } from './headless-pretty-print'
 
 /**
  * This supports commads streaming their output to the console
