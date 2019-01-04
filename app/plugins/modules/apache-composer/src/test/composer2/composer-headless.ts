@@ -27,29 +27,12 @@ const kui = process.env.KUI || path.join(ROOT, '../kui.js')
 const common = require(path.join(ROOT, 'lib/common'))
 const ui = require(path.join(ROOT, 'lib/ui'))
 // const badges = require(path.join(ROOT, APP, 'plugins/modules/composer/lib/badges.js'))
+const { cli } = require('../../../../../../../tests/lib/headless')
 
 interface IResponse {
   code: number
   output: {}
   stderr?: string
-}
-
-const cli = {
-  do: (cmd, env = {}, { errOk = undefined } = {}) => new Promise((resolve, reject) => {
-    const command = `${kui} ${cmd} --no-color --raw-output`
-
-    exec(command, { env: Object.assign({}, process.env, env) }, (err, stdout, stderr) => {
-      if (err) {
-        const output = stdout.trim().concat(stderr)
-        if (err['code'] !== errOk) {
-          console.error('Error in command execution', err['code'], output)
-        }
-        resolve({ code: err['code'], output })
-      } else {
-        resolve({ code: 0, output: stdout, stderr })
-      }
-    })
-  })
 }
 
 const expect = {
@@ -76,22 +59,6 @@ const expect = {
     return actualOutput
   },
 
-  sessionList: (sessionId) => ({ code: actualCode, output: actualOutput }) => {
-    assert.strictEqual(actualCode, 0)
-    const lines = actualOutput.split('\n')
-    assert.strictEqual(lines[0].replace(/\s+/g, ' ').trim(), 'sessionId app start status')
-
-    for (let num = 1; num < lines.length; num++) {
-      const sessionRow = lines[num].replace(/\s+/g, ' ').trim()
-      const entry = sessionRow.split(' ')
-      if (entry[0] === sessionId) {
-        return actualOutput
-      }
-    }
-    console.error(`sessionList: ${actualOutput} doesn't include sessionId: ${sessionId}`)
-    return actualOutput
-  },
-
   json: ({ expectedOutput, expectedKeys }) => ({ code: actualCode, output: actualOutput }) => {
     assert.strictEqual(actualCode, 0)
     actualOutput = JSON.parse(actualOutput)
@@ -112,28 +79,7 @@ const expect = {
     }
     if (expectedOutput) assert.deepStrictEqual(actualOutput, expectedOutput)
     return actualOutput
-  },
-
-  msg: (expectedOutput: string, { exact = true } = {}) => ({ code: actualCode, output: actualOutput }) => {
-    assert.strictEqual(actualCode, 0)
-    if (exact) {
-      assert.strictEqual(actualOutput, expectedOutput)
-    } else {
-      const ok = actualOutput.indexOf(expectedOutput) >= 0
-      assert.ok(ok)
-    }
-    return actualOutput
-  },
-
-  pass: () => ({ code: actualCode, output: actualOutput }) => {
-    assert.strictEqual(actualCode, 0)
-  },
-
-  err: (expectedCode) => ({ code: actualCode, output: actualOutput }) => {
-    assert.strictEqual(actualCode, expectedCode)
-    return actualOutput
   }
-
 }
 
 const validation = {
@@ -179,21 +125,60 @@ const validation = {
     if (namespace !== '') name = `/${namespace}/${name}`
 
     it(`validate async ${name}`, () => cli.do(`app async ${name}`)
-      .then(expect.msg(`ok: invoked ${name} with id`, { exact: false }))
+      .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
       .catch(common.oops(this)))
 
     it(`validate async ${name} ; session get ; session list`, () => cli.do(`app async ${name}`)
-      .then(expect.msg(`ok: invoked ${name} with id`, { exact: false }))
-      .then(res => {
-        const sessionId = res.replace(/\r?\n|\r/g, '').split(' ').slice(-1)[0]
+      .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
+      .then(line => { // session get
+        const match = line.match(/with id (.*)[\s]*$/)
+        assert.ok(match)
+        assert.strictEqual(match.length, 2)
+        const sessionId = match[1]
 
-        cli.do(`session get ${sessionId}`)
-          .then(expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'annotations', 'duration','end', 'logs', 'name', 'namespace','response', 'start', 'subject'] }))
-          .catch(common.oops(this))
+        return new Promise((resolve, reject) => {
+          const fetch = (retry) => cli.do(`session get ${sessionId}`)
+            .then(response => {
+              if (response.code === 404 - 256) { // retry on 404, because the session might not yet be available
+                if (retry < 5) {
+                  console.error(`${retry} retry session get ${name} when 404`)
+                  setTimeout(function () { fetch(retry + 1) }, 2000)
+                } else {
+                  throw Error(response)
+                }
+              } else {
+                expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'annotations', 'duration','end', 'logs', 'name', 'namespace','response', 'start', 'subject'] })(response)
+                resolve(sessionId)
+              }
+            }).catch(reject)
 
-        cli.do(`session list`)
-          .then(expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'type'] }))
-          .catch(common.oops(this))
+          fetch(0)
+        })
+      })
+      .then(sessionId => {// session list
+        return new Promise((resolve, reject) => {
+          const fetchList = (retry) => cli.do(`session list`)
+            .then(response => {
+              const lines = response.output.split(/\n/)
+              const names = name.split('/')
+              const nameWithoutPackage = names[names.length - 1]
+
+              cli.expectOK('activationId name', { exact: true, skipLines: 0, squish: true })({ code: response.code, output: lines[0] }) // check the title line
+              if (lines.indexOf(`${sessionId} ${nameWithoutPackage}`) === -1) { // Retry when not found, becuase the session might not yet be available for listing
+                if (retry < 10) {
+                  console.error(`${retry} retry session list when not found ${sessionId} ${nameWithoutPackage}`)
+                  debug('session list result', lines)
+                  setTimeout(function () { fetchList(retry + 1) }, 2000)
+                } else {
+                  throw Error(`session list could not find session id: ${sessionId}`)
+                }
+              } else {
+                resolve()
+              }
+            }).catch(reject)
+
+          fetchList(0)
+        })
       })
       .catch(common.oops(this)))
   },
@@ -225,18 +210,18 @@ describe('Composer Headless Test :', function (this: ISuite) {
 
   describe('should create simple composition from @demos', function () {
     it('app create test1 @demos/hello.js', () => cli.do('app create test1 @demos/hello.js')
-      .then(expect.msg('ok: updated composition test1\n'))
+      .then(cli.expectOK('ok: updated composition test1\n', { exact: true }))
       .catch(common.oops(this)))
     validation.do({ name: 'test1', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
   })
 
   describe('app list options', function () {
     it('should get empty result by app list --limit 0', () => cli.do('app list --limit 0')
-      .then(expect.msg(''))
+      .then(cli.expectOK('', { exact: true }))
       .catch(common.oops(this)))
 
     it('should get 1 by app list --count', () => cli.do('app list --count')
-      .then(expect.msg('1\n'))
+      .then(cli.expectOK('1\n', { exact: true }))
       .catch(common.oops(this)))
 
     it('should get test1 by app list --limit 1', () => cli.do('app list --limit 1')
@@ -244,21 +229,21 @@ describe('Composer Headless Test :', function (this: ISuite) {
       .catch(common.oops(this)))
 
     it('should get empty result by app list --skip 1', () => cli.do('app list --skip 1')
-      .then(expect.msg(''))
+      .then(cli.expectOK('', { exact: true }))
       .catch(common.oops(this)))
   })
 
   describe('should create composition with package', function () {
     it('should fail with 404 when creating composition with non-existing package', () => cli.do('app create testing/subtest1 @demos/hello.js')
-      .then(expect.err(404 - 256))
+      .then(cli.expectError(cli.exitCode(404)))
       .catch(common.oops(this)))
 
     it('should create package first', () => cli.do('wsk package create testing')
-      .then(expect.msg('ok: updated package testing\n'))
+      .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
       .catch(common.oops(this)))
 
     it('validate app create testing/subtest1 @demos/hello.js', () => cli.do('app create testing/subtest1 @demos/hello.js')
-      .then(expect.msg('ok: updated composition testing/subtest1\n'))
+      .then(cli.expectOK('ok: updated composition testing/subtest1\n', { exact: true }))
       .catch(common.oops(this)))
 
     validation.do({ name: 'subtest1', packageName: 'testing', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
@@ -267,7 +252,7 @@ describe('Composer Headless Test :', function (this: ISuite) {
   if (ui.expectedNamespace()) {
     describe('should create composition with namespace', function () {
       it('validate app create with namespace', () => cli.do(`app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`)
-        .then(expect.msg(`ok: updated composition testing/subtest2\n`))
+        .then(cli.expectOK(`ok: updated composition testing/subtest2\n`, { exact: true }))
         .catch(common.oops(this)))
       validation.do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
     })
@@ -275,27 +260,27 @@ describe('Composer Headless Test :', function (this: ISuite) {
 
   describe('should fail when creating composition from non-exisiting file', function () {
     it('fails app create error error.js', () => cli.do('app create error error.js')
-      .then(expect.err(1))
+      .then(cli.expectError(1))
       .catch(common.oops(this)))
   })
 
   describe('should create compostion and dependent actions with implicity entity', function () {
     it('validate app create -r test2 @demos/if.js', () => cli.do('app create -r test2 @demos/if.js')
-      .then(expect.msg('ok: updated composition test2\n'))
+      .then(cli.expectOK('ok: updated composition test2\n', { exact: true }))
       .catch(common.oops(this)))
     validation.do({ name: 'test2', output: { html: '<html><body>please say the magic word.</body></html>' } })
   })
 
   describe('should update simple composition', function () {
     it('validate app update test1 @demos/let.js', () => cli.do('app update test1 @demos/let.js')
-      .then(expect.msg('ok: updated composition test1\n'))
+      .then(cli.expectOK('ok: updated composition test1\n', { exact: true }))
       .catch(common.oops(this)))
     validation.do({ name: 'test1', output: { ok: true } })
   })
 
   describe('should update simple composition with packageName', function () {
     it('validate app update testing/subtest1 @demos/let.js', () => cli.do('app update testing/subtest1 @demos/let.js')
-      .then(expect.msg('ok: updated composition testing/subtest1\n'))
+      .then(cli.expectOK('ok: updated composition testing/subtest1\n', { exact: true }))
       .catch(common.oops(this)))
     validation.do({ name: 'subtest1', packageName: 'testing', output: { ok: true } })
   })
@@ -303,7 +288,7 @@ describe('Composer Headless Test :', function (this: ISuite) {
   if (ui.expectedNamespace()) {
     describe('should update simple composition with namespace', function () {
       it(`validate app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`, () => cli.do(`app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`)
-        .then(expect.msg(`ok: updated composition testing/subtest2\n`))
+        .then(cli.expectOK(`ok: updated composition testing/subtest2\n`, { exact: true }))
         .catch(common.oops(this)))
       validation.do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { ok: true } })
     })
@@ -311,41 +296,41 @@ describe('Composer Headless Test :', function (this: ISuite) {
 
   describe('should fail when updating with non-existing path', function () {
     it('should fail when updating with non-existing path', () => cli.do('app update test2 @demos/dummy.js')
-      .then(expect.err(1))
+      .then(cli.expectError(1))
       .catch(common.oops(this)))
   })
 
   describe('should delete tests', function () {
     it('validate app delete test1', () => cli.do('app delete test1')
-      .then(expect.pass())
+      .then(cli.expectOK())
       .catch(common.oops(this)))
 
     it('validate app delete test2', () => cli.do('app delete test2')
-      .then(expect.pass())
+      .then(cli.expectOK())
       .catch(common.oops(this)))
 
     it('validate app delete testing/subtest1', () => cli.do('app delete testing/subtest1')
-      .then(expect.pass())
+      .then(cli.expectOK())
       .catch(common.oops(this)))
 
     if (ui.expectedNamespace()) {
       it(`validate app delete /${ui.expectedNamespace()}/testing/subtest2`, () => cli.do(`app delete /${ui.expectedNamespace()}/testing/subtest2`)
-        .then(expect.pass())
+        .then(cli.expectOK())
         .catch(common.oops(this)))
     }
   })
 
   describe('error handling with non-exisiting composition', function () {
     it('should 404 when invoking deleted composition', () => cli.do('app invoke test2')
-      .then(expect.err(404 - 256))
+      .then(cli.expectError(cli.exitCode(404)))
       .catch(common.oops(this)))
 
     it('should 404 when invoking non-existent composition', () => cli.do('app invoke dummy')
-      .then(expect.err(404 - 256))
+      .then(cli.expectError(cli.exitCode(404)))
       .catch(common.oops(this)))
 
     it('should 404 when deleting non-existent composition', () => cli.do('app delete dummy')
-      .then(expect.err(404 - 256))
+      .then(cli.expectError(cli.exitCode(404)))
       .catch(common.oops(this)))
   })
 })
