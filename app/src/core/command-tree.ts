@@ -321,8 +321,8 @@ const withEvents = (evaluator, leaf, partialMatches?) => {
 
   // if we have a command tree node, add some extra fields to the event
   if (leaf) {
-    event.route = leaf.route // e.g. /wsk/actions/update
-    event.plugin = leaf.options.plugin || 'builtin' // e.g. /ui/commands/openwhisk-core
+    event.route = leaf.route // e.g. "/git/status" from the bash-like plugin
+    event.plugin = leaf.options.plugin || 'builtin' // e.g. "bash-like"
 
     if (leaf.options.isIntention) {
       // e.g. leaf represents |save to cloudant|

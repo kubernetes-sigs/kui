@@ -42,7 +42,7 @@ interface IActivation {
  * Render an activation response in the CLI portion of the UI
  *
  */
-export default (response: IActivation, resultDom: Element, parsedOptions: Object, execOptions: Object): void => {
+export default async (response: IActivation, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<void> => {
   if (!response.response && response.activationId) {
     // probably non-blocking invoke
     // say "ok: invoked foo with id xxx"
@@ -53,7 +53,7 @@ export default (response: IActivation, resultDom: Element, parsedOptions: Object
     const isAbsolute = response.entity.name.charAt(0) === '/'
     const ns = isAbsolute && nameParts[1]
     const restIndex = isAbsolute ? 2 : 0 // '/a/b/c' => ['', 'a', 'b', 'c'], rest starts at 2
-    const nsForDisplay = !ns || ns === currentNamespace() ? '' : `/${ns}/`
+    const nsForDisplay = !ns || ns === await currentNamespace() ? '' : `/${ns}/`
     const prettyName = `${nsForDisplay}${nameParts.slice(restIndex).join('/')}`
 
     suffix.appendChild(document.createTextNode(`: invoked ${prettyName} with id `))

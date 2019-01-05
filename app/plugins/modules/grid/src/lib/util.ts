@@ -80,8 +80,8 @@ const makeFilter = (includePattern, excludePattern) => {
  * ns/foo => ns/foo
  *
  */
-const amendWithNamespace = name => {
-  const ns = namespace.current()
+const amendWithNamespace = async name => {
+  const ns = await namespace.current()
   if (name.indexOf(ns) >= 0) {
     if (name.charAt(0) === '/') return name.substring(1)
     else return name
@@ -183,11 +183,11 @@ export const fetchActivationData /* FromBackend */ = (wsk, N, options) => {
   debug('since', sinceArg || 'none')
 
   /** fetch activations without an app/composer filter */
-  const fetchNonApp = () => Promise.all(new Array(N).fill(0).map((_, idx) => fetch(idx * batchSize)))
+  const fetchNonApp = async () => Promise.all(new Array(N).fill(0).map((_, idx) => fetch(idx * batchSize)))
     .then(flatten)
     .then(filterByLatencyBucket(options))
     .then(filterBySuccess(options))
-    .then(filterOutNonActionActivations(path || filter || include ? makeFilter(path || filter || include, exclude) : name ? makeFilter(amendWithNamespace(name), exclude) : acceptAnything))
+    .then(filterOutNonActionActivations(path || filter || include ? makeFilter(path || filter || include, exclude) : name ? makeFilter(await amendWithNamespace(name), exclude) : acceptAnything))
     .then(activations => {
       if (name && activations.length === 0) {
         // user asked to filter by name, and we found nothing. error out

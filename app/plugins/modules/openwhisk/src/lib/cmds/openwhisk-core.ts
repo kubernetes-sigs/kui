@@ -29,40 +29,20 @@ import settings from '../../../../../../build/core/settings'
 import historyModel = require('../../../../../../build/models/history')
 import { currentSelection } from '../../../../../../build/webapp/views/sidecar'
 
+import { ow, apiHost, apihost, auth as authModel } from '../models/auth'
+import { synonymsTable, synonyms } from '../models/synonyms'
+import { actionSpecificModes, addActionMode } from '../models/modes'
+
 /**
  * This plugin adds commands for the core OpenWhisk API.
  *
  */
 
-import openwhisk = require('openwhisk')
 import minimist = require('yargs-parser')
 import usage = require('./openwhisk-usage')
 const isLinux = require('os').type() === 'Linux'
 
 debug('modules loaded')
-
-let wskprops
-try {
-  const propertiesParser = require('properties-parser')
-  const expandHomeDir = require('expand-home-dir')
-  if (!inBrowser()) {
-    wskprops = propertiesParser.read(process.env['WSK_CONFIG_FILE'] || expandHomeDir('~/.wskprops'))
-  } else {
-    // then we're running in a browser; we'll initialize this
-    // later. clearly there is no local filesystem from which to pull
-    // the openwhisk config
-    wskprops = {}
-  }
-} catch (e) {
-  wskprops = {}
-  if (e.code === 'ENOENT') {
-    debug('Could not find wskprops')
-  } else {
-    console.error(e)
-  }
-}
-
-debug('wskprops loaded')
 
 //
 // docs stuff
@@ -130,42 +110,6 @@ const noImplicitName = {
   list: true
 }
 
-// these values may change, if the user elects to do so
-let localStorageKey = 'wsk.apihost'
-let localStorageKeyIgnoreCerts = 'wsk.apihost.ignoreCerts'
-let apiHost = process.env.__OW_API_HOST || wskprops.APIHOST || window.localStorage.getItem(localStorageKey) || 'https://openwhisk.ng.bluemix.net'
-let auth = process.env.__OW_API_KEY || wskprops.AUTH
-let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething' // tslint:disable-line
-let apigw_space_guid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID // tslint:disable-line
-let ow
-
-let userRequestedIgnoreCerts = window.localStorage.getItem(localStorageKeyIgnoreCerts) !== undefined
-let ignoreCerts = apiHost => userRequestedIgnoreCerts || apiHost.indexOf('localhost') >= 0 || apiHost.startsWith('192.') || apiHost.startsWith('172.') || process.env.IGNORE_CERTS || wskprops.INSECURE_SSL
-
-/** these are the module's exported functions */
-let self = {}
-
-const initOW = () => {
-  if (!apiHost || !auth) {
-    debug('faking out openwhisk config for now')
-  }
-
-  const owConfig = {
-    apihost: apiHost || 'unknown',
-    api_key: auth || 'unknown',
-    apigw_token,
-    apigw_space_guid,
-    ignore_certs: ignoreCerts(apiHost)
-  }
-
-  debug('initOW', owConfig)
-  ow = self['ow'] = openwhisk(owConfig)
-  ow.api = ow.routes
-  delete ow.routes
-  debug('initOW done')
-}
-initOW()
-
 /** is a given entity type CRUDable? i.e. does it have get and update operations, and parameters and annotations properties? */
 const isCRUDable = {
   actions: true,
@@ -185,31 +129,6 @@ const extraVerbs = type => extraVerbsForAllTypes(type).concat(isCRUDable[type] ?
 /** given /a/b/c, return /a/b */
 const parseNamespace = fqn => fqn.substring(0, fqn.lastIndexOf('/'))
 const parseName = fqn => fqn.substring(fqn.lastIndexOf('/') + 1)
-
-const synonyms = {
-  entities: {
-    actions: ['action'],
-    packages: ['package'],
-    rules: ['rule'],
-    triggers: ['trigger'],
-    namespaces: ['namespace', 'ns'],
-    activations: ['$', 'activation']
-  },
-  verbs: {
-    invoke: ['call', 'exec'],
-    fire: [],
-    get: [],
-    list: [],
-    delete: [],
-    create: [
-      // these are synonyms from the openwhisk npm standpoint, but not from the openwhisk command experience standpoint
-      { nickname: 'update', name: 'update', notSynonym: true },
-      { nickname: 'bind', name: 'bind', notSynonym: true, limitTo: { packages: true } }
-    ],
-    update: ['up']
-  }
-}
-const synonymsFn = (type, T?) => synonyms[T || 'entities'][type].concat([type]) // T === entities, or T === verbs
 
 const booleans = {
   actions: {
@@ -529,7 +448,7 @@ const addPrettyType = (entityType, verb, entityName) => entity => {
     entity.verb = verb
 
     // add apihost
-    entity.apiHost = apiHost
+    entity.apiHost = apihost
   }
 
   if (specials[entityType] && specials[entityType][verb]) {
@@ -809,7 +728,6 @@ specials.api = {
   }
 }
 
-const actionSpecificModes = [{ mode: 'code', defaultMode: true }, { mode: 'limits' }]
 specials.actions = {
   get: standardViewModes(actionSpecificModes),
   update: BlankSpecial, // updated below
@@ -997,20 +915,23 @@ specials.packages = {
   get: standardViewModes('content'),
   create: standardViewModes('content'),
   update: standardViewModes('content'),
-  bind: (options, argv) => {
+  bind: async (options, argv) => {
     // the binding syntax is a bit peculiar...
     const parentPackage = options.name
     const bindingName = argv[0]
     if (!parentPackage || !bindingName) {
       throw new Error(usage.bind)
     }
-    if (!namespace.current()) {
+
+    const ns = await namespace.current()
+    if (!ns) {
       throw new Error('namespace uninitialized')
     }
+
     options.name = bindingName
     if (!options.package) options.package = {}
     options.package.binding = {
-      namespace: (parseNamespace(parentPackage) || namespace.current()).replace(/^\//, ''),
+      namespace: (parseNamespace(parentPackage) || ns).replace(/^\//, ''),
       name: parseName(parentPackage)
     }
 
@@ -1121,7 +1042,7 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree, _entity, _verb, verbSynonym?) => ({ argv: argvFull, execOptions }) => {
+const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions }) => {
   let entity = _entity
   let verb = _verb
 
@@ -1216,7 +1137,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => ({ argv: argvFul
   }
 
   if (specials[entity] && specials[entity][verb]) {
-    const res = specials[entity][verb](options, argv.slice(restIndex), verb, execOptions)
+    const res = await specials[entity][verb](options, argv.slice(restIndex), verb, execOptions)
     if (res && res.verb) {
       // updated verb? e.g. 'package bind' => 'package update'
       verb = res.verb
@@ -1348,17 +1269,17 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => ({ argv: argvFul
   })
 }
 
+/** these are the module's exported functions */
+let self = {}
+
 const makeInit = (commandTree) => async () => {
   debug('init')
 
   // exported API
   self = {
     /** given /a/b/c, return /a/b */
-    parseNamespace: parseNamespace,
-    parseName: parseName,
-
-    /** all terms for the given type */
-    synonyms: synonymsFn,
+    parseNamespace,
+    parseName,
 
     /** export the activation bottom stripe modes */
     activationModes: entity => {
@@ -1366,52 +1287,33 @@ const makeInit = (commandTree) => async () => {
       return entity
     },
 
+    /** deprecated; modules should import synonyms directly */
+    synonyms,
+
     /** main terms (not including synonyms) for all crudable types */
     // [].concat(...crudableTypes.map(synonymsFn)), // flatten the result
     crudable: crudableTypes,
 
     /** export the raw interface */
-    ow: ow,
+    ow,
     addPrettyType: addPrettyType,
     parseOptions: parseOptions,
 
-    apiHost: {
-      get: () => Promise.resolve(apiHost),
-      set: (newHost, { ignoreCerts = false } = {}) => {
-        const url = require('url').parse(newHost)
-        if (!url.protocol) {
-          if (newHost.indexOf('localhost') >= 0 || newHost.indexOf('192.168') >= 0) {
-            newHost = `http://${newHost}`
-          } else {
-            newHost = `https://${newHost}`
-          }
+    apiHost,
+    auth: Object.assign({}, authModel, {
+      set: (newAuthKey: string): Promise<boolean> => {
+        if (authModel.set(newAuthKey)) {
+          initSelf()
         }
-        apiHost = newHost // global variable
-        userRequestedIgnoreCerts = ignoreCerts
-        window.localStorage.setItem(localStorageKey, newHost) // remember the choice in localStorage
-        window.localStorage.setItem(localStorageKeyIgnoreCerts, userRequestedIgnoreCerts.toString())
-        initOW() // re-initialize the openwhisk npm
-        debug('apiHost::set', apiHost)
-        return Promise.resolve(newHost)
+        self['ow'] = ow
+        return Promise.resolve(true)
       }
-    },
+    }),
+
     namespace: {
       get: () => ow.namespaces.list(owOpts()).then(A => A[0]) // the api returns, as a historical artifact, an array of length 1
     },
-    auth: {
-      get: () => auth,
-      getSubjectId: () => auth.split(/:/)[0] || auth, // if auth is x:y, return x, otherwise return auth
-      set: newAuth => {
-        auth = newAuth
-        const needReinit = !ow
-        initOW()
-        if (needReinit) {
-          initSelf()
-        }
-        debug('auth::set', auth)
-        return Promise.resolve(true)
-      }
-    },
+
     fillInActionDetails: (Package, type) => actionSummary => Object.assign({}, actionSummary, {
       // given the actionSummary from the 'actions' field of a package entity
       type: type || 'actions',
@@ -1454,10 +1356,7 @@ const makeInit = (commandTree) => async () => {
     },
 
     /** add action modes; where=push|unshift */
-    addActionMode: (mode, where = 'push') => {
-      actionSpecificModes[where](mode)
-      debug('adding action mode', where, mode, actionSpecificModes)
-    },
+    addActionMode,
 
     owOpts: owOpts,
 
@@ -1511,8 +1410,8 @@ const makeInit = (commandTree) => async () => {
         // const master = commandTree.listen(`/wsk/${api}/${verb}`, handler, { docs: docs(api, verb) })
 
         // install synonym route handlers
-        const entities = (synonyms.entities[api] || []).concat([api])
-        const verbs = synonyms.verbs[verb] || []
+        const entities = (synonymsTable.entities[api] || []).concat([api])
+        const verbs = synonymsTable.verbs[verb] || []
         entities.forEach(eee => {
           commandTree.subtreeSynonym(`/wsk/${eee.nickname || eee}`, apiMaster, { usage: docs(eee.nickname || eee) })
 
@@ -1547,7 +1446,7 @@ const makeInit = (commandTree) => async () => {
 
   // trigger fire special case?? hacky
   const doFire = executor(commandTree, 'triggers', 'invoke', 'fire')
-  synonymsFn('triggers').forEach(syn => {
+  synonyms('triggers').forEach(syn => {
     commandTree.listen(`/wsk/${syn}/fire`, doFire, { usage: usage.triggers.available.find(({ command }) => command === 'fire') })
   })
 
@@ -1575,7 +1474,7 @@ const makeInit = (commandTree) => async () => {
         }
       }).then(() => true)
   }
-  synonyms.entities.triggers.forEach(syn => {
+  synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/delete`,
                        removeTrigger,
                        { usage: usage.triggers.available.find(({ command }) => command === 'delete') })
@@ -1664,15 +1563,15 @@ const makeInit = (commandTree) => async () => {
       })
       .then(addPrettyType('triggers', 'create', name))
   }
-  synonyms.entities.triggers.forEach(syn => {
+  synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/create`,
                        createTrigger,
                        { usage: usage.triggers.available.find(({ command }) => command === 'create') })
   })
 
   // count APIs
-  for (let entityType in synonyms.entities) {
-    synonyms.entities[entityType].forEach(syn => {
+  for (let entityType in synonymsTable.entities) {
+    synonymsTable.entities[entityType].forEach(syn => {
       commandTree.listen(`/wsk/${syn}/count`, ({ argvNoOptions, parsedOptions: options }) => {
         const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
         const overrides = { count: true }

@@ -30,7 +30,7 @@ import { add as addToHistory } from '../models/history'
 import * as commandTree from './command-tree'
 import UsageError from './usage-error'
 
-import { isHeadless } from './capabilities'
+import { isHeadless, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support'
 import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
@@ -51,9 +51,9 @@ export const hasAuth = async () => {
   if (forceNoAuth) {
     return false
   } else {
-    const { prequire } = require('./plugins')
-    const wsk = await prequire('openwhisk')
-    return !!wsk.auth.get()
+    // for historical reasons, the default auth scheme is openwhisk;
+    // this will change
+    return hasAuthCapability('openwhisk')
   }
 }
 
@@ -557,7 +557,7 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
       } /* strict usage model conformance checking */
 
       if (evaluator.options && !(await hasAuth()) && !evaluator.options.noAuthOk) {
-        debug('command requires auth, and we dont have it')
+        debug('command requires auth, and we do not have it')
         const err = new Error('Command requires authentication')
         err['code'] = 403
         oops(block, nextBlock)(err)

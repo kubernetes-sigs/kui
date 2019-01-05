@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('openwhisk.context')
+import { setHasAuth } from '../../../../build/core/capabilities'
+import { PluginRequire, PreloadRegistration } from '../../../../build/models/plugin'
 
-import { current } from '../models/namespace'
-import repl = require('../../../../../../build/core/repl')
+import { auth } from './lib/models/auth'
 
-export default (commandTree, prequire) => {
-  // register namespace.current command
-  commandTree.listen(`/wsk/namespace/current`, () => current(),
-                     { docs: 'Print the currently selected namespace' })
+/**
+ * This is the module
+ *
+ */
+const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
+  if (auth.get()) {
+    setHasAuth('openwhisk')
+  }
 }
+
+export default registration

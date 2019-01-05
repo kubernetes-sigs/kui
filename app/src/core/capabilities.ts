@@ -34,6 +34,7 @@ export enum Media {
  */
 class State {
   media = Media.Unknown
+  validCredentials: { [key: string]: boolean } = {}
 }
 let state: State = new State()
 
@@ -47,10 +48,27 @@ export const inElectron = () => state.media === Media.Electron
 export const inBrowser = () => state.media === Media.Browser
 
 /**
- * State morphing
+ * Update the media, e.g. to indicate that we are running in a browser
+ * context versus an Electron context.
  *
  */
 export const setMedia = (media: Media): void => {
   debug('setMedia %s', Media[media])
   state.media = media
 }
+
+/**
+ * Yes, we have valid credentials to interface with the given
+ * provider
+ *
+ */
+export const setHasAuth = (provider: string): void => {
+  debug('setHasAuth', provider)
+  state.validCredentials[provider] = true
+}
+
+/**
+ * Do we have valid credentials to interface with the given provider?
+ *
+ */
+export const hasAuth = (provider: string): boolean => state.validCredentials[provider]

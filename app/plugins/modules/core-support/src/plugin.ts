@@ -23,7 +23,6 @@ import base64 from './lib/cmds/base64'
 import openui from './lib/cmds/open-ui-from-terminal'
 import window from './lib/cmds/window'
 import history from './lib/cmds/history/history'
-import beautify from './lib/cmds/beautify'
 import screenshot from './lib/cmds/screenshot'
 
 // import updater from './lib/admin/updater'
@@ -44,7 +43,6 @@ export default async (commandTree, prequire, options) => {
     about(commandTree, prequire),
     base64(commandTree, prequire),
     history(commandTree, prequire),
-    beautify(commandTree, prequire),
     screenshot(commandTree, prequire)
 
     // updater(commandTree, prequire) <-- disabled for now

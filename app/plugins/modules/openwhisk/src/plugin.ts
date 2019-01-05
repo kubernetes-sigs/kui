@@ -32,6 +32,7 @@ import roots from './lib/cmds/activations/roots'
 import on from './lib/cmds/rules/on'
 import every from './lib/cmds/rules/every'
 import modes from './lib/views/mode'
+import beautify from './lib/cmds/beautify'
 import core from './lib/cmds/openwhisk-core'
 
 import activationList from './lib/cmds/activations/list'
@@ -41,6 +42,7 @@ import registerViews from './views'
 export default async (commandTree, prequire) => {
   const wsk = await core(commandTree)
 
+  // commands
   await cp(commandTree, wsk)
   await mv(commandTree, wsk)
   await rm(commandTree, wsk)
@@ -50,6 +52,7 @@ export default async (commandTree, prequire) => {
   await listAll(commandTree)
   await loadTest(commandTree, wsk)
   await addParameter(commandTree, wsk)
+  await beautify(commandTree, wsk)
 
   // action extensions
   await letCommand(commandTree, wsk)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2017-2018 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('openwhisk.context')
+import * as Debug from 'debug'
+const debug = Debug('plugins/openwhisk/models/modes')
 
-import { current } from '../models/namespace'
-import repl = require('../../../../../../build/core/repl')
+export const actionSpecificModes = [{ mode: 'code', defaultMode: true }, { mode: 'limits' }]
 
-export default (commandTree, prequire) => {
-  // register namespace.current command
-  commandTree.listen(`/wsk/namespace/current`, () => current(),
-                     { docs: 'Print the currently selected namespace' })
+/**
+ * Add action modes; where=push|unshift
+ *
+ */
+export const addActionMode = (mode, where = 'push') => {
+  actionSpecificModes[where](mode)
+  debug('adding action mode', where, mode, actionSpecificModes)
 }

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// localStorage key
+// localStorage key; note: the value here holds no meaning, it is a
+// historical artifact, at this point
 const key = 'openwhisk.history'
 
 export let lines = (typeof window !== 'undefined' && JSON.parse(window.localStorage.getItem(key))) || []

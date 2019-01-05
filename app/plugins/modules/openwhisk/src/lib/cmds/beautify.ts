@@ -18,16 +18,16 @@ declare var hljs
 
 import { isHeadless } from '../../../../../../build/core/capabilities'
 import * as cli from '../../../../../../build/webapp/cli'
-import { currentSelection, getSidecar }from '../../../../../../build/webapp/views/sidecar'
+import { currentSelection, getSidecar } from '../../../../../../build/webapp/views/sidecar'
+
+import { synonyms } from '../models/synonyms'
 
 /**
  * A just for fun plugin: beautify the source code of the selected action
  *
  */
-export default async (commandTree, prequire) => {
-  const wsk = await prequire('openwhisk')
-
-  wsk.synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ block, nextBlock }) => {
+export default async (commandTree, wsk) => {
+  synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ block, nextBlock }) => {
     if (isHeadless()) {
       throw new Error('beautify not supported in headless mode')
     }

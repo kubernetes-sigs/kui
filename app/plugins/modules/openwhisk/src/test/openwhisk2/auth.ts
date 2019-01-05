@@ -43,9 +43,15 @@ describe('auth tests', function (this: ISuite) {
   // list should show only foo
   it(`should find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
 
+  it(`should show ${ns1} for wsk namespace current`, () => cli.do('wsk namespace current', this.app)
+     .then(cli.expectOKWithString(ns1)))
+
   // install namespace key
   it(`should install a namespace key for ${ns2}`, () => cli.do(`wsk auth add ${process.env.AUTH2}`, this.app)
     .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })))
+
+  it(`should show ${ns2} for wsk namespace current`, () => cli.do('wsk namespace current', this.app)
+     .then(cli.expectOKWithString(ns2)))
 
   // list should show no actions
   it(`should NOT find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectJustOK))

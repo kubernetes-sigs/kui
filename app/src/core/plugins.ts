@@ -206,8 +206,9 @@ const loadPlugin = async (route, pluginPath) => {
       topological[route] = adeps
     }
 
-    // generate a mapping from commands (e.g. /wsk/action/invoke) to
-    // plugin (e.g. openwhisk), which services that command
+    // generate a mapping from commands (e.g. "/git/status" which is
+    // hosted by the bash-like plugin) to plugin (e.g. "bash-like"),
+    // which services that command
     for (let k in cmdToPlugin) {
       if (commandToPlugin[k]) {
         debug('override', k, cmdToPlugin[k], commandToPlugin[k])

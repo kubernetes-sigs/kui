@@ -127,14 +127,14 @@ usage.host.toplevel.available = [usage.host.get, usage.host.set]
  *
  */
 const informUserOfChange = (wsk, commandTree, subject) => () => {
-  setTimeout(() => eventBus.emit('/auth/change', {
-    namespace: namespace.current(),
+  setTimeout(async () => eventBus.emit('/auth/change', {
+    namespace: await namespace.current(),
     subject: subject
   }), 0)
 
-  return wsk.apiHost.get().then(host => {
+  return wsk.apiHost.get().then(async host => {
     clearSelection()
-    return `You are now using the OpenWhisk host ${host}, and namespace ${namespace.current()}`
+    return `You are now using the OpenWhisk host ${host}, and namespace ${await namespace.current()}`
   })
 }
 
@@ -142,9 +142,9 @@ const informUserOfChange = (wsk, commandTree, subject) => () => {
  * Notify other plugins of a host change event
  *
  */
-const notifyOfHostChange = (host) => () => {
+const notifyOfHostChange = (host) => async () => {
   eventBus.emit('/host/change', {
-    namespace: namespace.current(),
+    namespace: await namespace.current({ noNamespaceOk: true }),
     host: host
   })
 }
@@ -289,7 +289,7 @@ const addFn = (commandTree, wsk, prequire, key: string, subject: string) => {
 
   const previousAuth = wsk.auth.get()
   return wsk.auth.set(key)
-    .then(() => namespace.init(prequire, true)) // true means that we'll do the error handling
+    .then(() => namespace.init(true)) // true means that we'll do the error handling
     .then(() => updateLocalWskProps(wsk, key, subject))
     .then(informUserOfChange(wsk, commandTree, subject))
     .catch(err => {

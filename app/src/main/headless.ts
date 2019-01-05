@@ -272,8 +272,8 @@ const failure = quit => async err => {
   let completion = Promise.resolve()
 
   if (!noAuth) {
-    // we're not in a corner case of having no openwhisk auth, so
-    // print the error
+    // we're not in a corner case of having no credentials, so print
+    // the error
     const { oopsMessage } = await import('../core/oops')
     const msg = oopsMessage(err)
 
@@ -292,7 +292,7 @@ const failure = quit => async err => {
       completion = print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
     }
   } else {
-    error(`No wskprops file was found. Consider trying again with "kui help" command.`)
+    error(`No credentials found. Consider trying again with "kui help" command.`)
   }
 
   return completion.then(() => {

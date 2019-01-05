@@ -22,6 +22,8 @@ import UsageError from '../../../../../../build/core/usage-error'
 import { isHeadless } from '../../../../../../build/core/capabilities'
 import * as repl from '../../../../../../build/core/repl'
 
+import { synonyms } from '../../../../openwhisk/plugin/lib/models/synonyms'
+
 /**
  * Respond with a top-level usage document
  *
@@ -104,9 +106,7 @@ export default async (commandTree, prequire, { usage, docs }) => {
   const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true })
   commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true })
 
-  const { synonyms } = await prequire('openwhisk')
-
-  synonyms('actions').forEach(syn => {
-    override(`/wsk/${syn}/help`, help(usage, docs), commandTree)
-  })
+  return Promise.all(synonyms('actions').map(syn => {
+    return override(`/wsk/${syn}/help`, help(usage, docs), commandTree)
+  }))
 }

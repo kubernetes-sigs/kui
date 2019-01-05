@@ -322,7 +322,7 @@ export const print = (msg, logger = log, stream = process.stdout, color = 'reset
             }
           }
         } else if (msg.verb && msg.name && (msg.verb === 'create' || msg.verb === 'update')) {
-          // msg is an openwhisk entity, that has just been created or updated
+          // msg is an entity, that has just been created or updated
           debug('printing create or update')
           const isWebExported = msg.annotations && msg.annotations.find(({ key }) => key === 'web-export')
           if (isWebExported) {
@@ -341,10 +341,10 @@ export const print = (msg, logger = log, stream = process.stdout, color = 'reset
           msg.type === 'activations' ? logger(colors.green(`${ok}:`) + ` invoked ${msg.entity.name} with id ${msg.activationId}`)
             : logger(colors.green(`${ok}:`) + ` invoked ${msg.name} with id ${msg.activationId}`)
         } else if (msg.verb === 'get' && msg.activationId /* && msg.response */) {
-          // msg is an openwhisk entity representing an invocation
+          // msg is an entity representing an invocation
           // commenting out this line diverges us from bx wsk output, but we're ok with that:
           // logger(colors.green(`${ok}:`) + ` got activation ${msg.activationId}`)
-          debug('printing get OpenWhisk activation')
+          debug('printing get activation')
           delete msg.prettyType
           delete msg.verb
           delete msg.publish
