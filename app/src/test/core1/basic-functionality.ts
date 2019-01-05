@@ -67,23 +67,4 @@ describe('Basic Functionality', function (this: ISuite) {
       common.oops(this)(err)
     }
   }) */
-
-  it('has a well-formed apihost', () =>
-    this.app.client.waitUntil(async () => {
-      const apihost = await this.app.client.getHTML(selectors.APIHOST, false)
-      return apihost.toLowerCase().replace(/^http[s]?:\/\//, '') === API_HOST.toLowerCase().replace(/^http[s]?:\/\//, '')
-    })
-     .catch(common.oops(this)))
-
-  it('has a well-formed namespace', () =>
-    this.app.client.waitUntil(async () => {
-      const namespace = await this.app.client.getHTML(selectors.NAMESPACE, false)
-      try {
-        validateNamespace(namespace)
-        return true
-      } catch (err) {
-        return false
-      }
-    })
-      .catch(common.oops(this)))
 })

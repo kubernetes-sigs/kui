@@ -20,6 +20,9 @@ const debug = Debug('plugins/openwhisk/models/namespace')
 import { inBrowser, isHeadless } from '../../../../../../build/core/capabilities'
 import cli = require('../../../../../../build/webapp/cli')
 import repl = require('../../../../../../build/core/repl')
+import { prequire } from '../../../../../../build/core/plugins'
+
+import { apiHost } from './auth'
 
 /** localStorage key */
 const key = 'wsk.namespaces'
@@ -28,7 +31,7 @@ const key = 'wsk.namespaces'
 let cached
 let _wsk
 
-const read = (wsk = _wsk) => wsk.apiHost.get().then(host => {
+const read = (wsk = _wsk) => apiHost.get().then(host => {
   debug('read:host', host)
   let model = cached
   if (!model) {
@@ -83,12 +86,12 @@ export const setApiHost = apiHost => {
 }
 
 /** for debugging only; removes localStorage model for current host */
-/* self.__reset = () => wsk.apiHost.get().then(host => read().then(model => {
+/* self.__reset = () => apiHost.get().then(host => read().then(model => {
    delete model[host]
    console.error('namespace::reset', host, model[host])
    write(model)
    }))
-   self.__lookup = () => wsk.apiHost.get().then(host => read().then(model => console.error(`Namespace list for ${host} is ${model.namespaces ? JSON.stringify(model.namespaces) : 'empty'}`))) */
+   self.__lookup = () => apiHost.get().then(host => read().then(model => console.error(`Namespace list for ${host} is ${model.namespaces ? JSON.stringify(model.namespaces) : 'empty'}`))) */
 
 const setNamespace = (namespace, wsk = _wsk) => {
   if (!namespace) {
@@ -215,14 +218,12 @@ export const store = (namespace, auth, wsk) => {
  * Initialize the apihost and namespace bits of the UI
  *
  */
-let prequire
-export const init = async (_prequire, noCatch = false, { noAuthOk = false } = {}) => {
+export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
   debug('init')
-  prequire = _prequire
 
   _wsk = await prequire('openwhisk')
 
-  return _wsk.apiHost.get() // get the current apihost
+  return apiHost.get() // get the current apihost
     .then(setApiHost) // udpate the UI for the apihost
     .then(_wsk.namespace.get) // get the namespace associated with the current auth key
     .then(setNamespace) // update the UI for the namespace
@@ -261,8 +262,26 @@ export const list = async (wsk = _wsk) => {
  * Return the currently selected namespace
  *
  */
-export const current = () => {
-  return document.querySelector('#openwhisk-namespace').getAttribute('data-value')
+interface ICurrentOptions {
+  noNamespaceOk: boolean
+}
+class DefaultCurrentOptions implements ICurrentOptions {
+  noNamespaceOk = false
+  constructor () {
+    // blank
+  }
+}
+export const current = async (opts: ICurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
+  const ns = document.querySelector('#openwhisk-namespace').getAttribute('data-value')
+  debug('current', ns)
+
+  if (!ns && !opts.noNamespaceOk) {
+    // lazily initialize ourselves
+    await init()
+    return current()
+  } else {
+    return Promise.resolve(ns)
+  }
 }
 
 /**
@@ -272,14 +291,14 @@ export const current = () => {
 export const useAndSave = (auth, wsk = _wsk) => wsk.auth.set(auth)
   .then(wsk.namespace.get)
   .then(namespace => writeSelectedNS(namespace)) // store the selected namesapce to local storage (use case e.g. reload the browser after auth switch)
-  .then(() => init(prequire))
+  .then(() => init())
 
 /**
  * Switch to use the given openwhisk auth but don't save
  *
  */
 export const use = (auth, wsk = _wsk) => {
-  return wsk.auth.set(auth).then(() => init(prequire))
+  return wsk.auth.set(auth).then(() => init())
 }
 
 /**

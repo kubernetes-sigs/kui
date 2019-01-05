@@ -20,13 +20,15 @@ debug('loading')
 import { inBrowser } from '../core/capabilities'
 import repl = require('../core/repl')
 
-export const init = () => {
+const currentNamespace = async (): Promise<string> => {
+  const namespace = require('../../plugins/modules/openwhisk/plugin/lib/models/namespace')
+  return namespace.current()
+}
+
+export const init = async () => {
   debug('init')
 
   if (inBrowser()) {
-    const namespace = require('../../plugins/modules/openwhisk/plugin/lib/models/namespace')
-    const currentNamespace = namespace.current()
-
     const windowQuery = window.location.search
     if (windowQuery) {
       // parse and extract the question mark in window.location.search
@@ -38,7 +40,7 @@ export const init = () => {
         const queryExec = () => repl.pexec(query.command)
         const queryNamespace = query.namespace
 
-        if (queryNamespace && queryNamespace !== currentNamespace) {
+        if (queryNamespace && queryNamespace !== await currentNamespace()) {
           // switch to another namespace temporarily and then execute the command
           repl.pexec(`auth switch ${queryNamespace} --no-save`)
             .then(queryExec)

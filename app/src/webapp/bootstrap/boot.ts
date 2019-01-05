@@ -62,8 +62,8 @@ const domReady = (prefs) => async () => {
     element('#about-button').onclick = () => repl.pexec('about')
     element('#help-button').onclick = () => repl.pexec('getting started')
 
-    const namespace = require('../../../plugins/modules/openwhisk/plugin/lib/models/namespace')
-    const nsInit = namespace.init(plugins.prequire, prefs && prefs.noAuthOk, prefs)
+    // const namespace = require('../../../plugins/modules/openwhisk/plugin/lib/models/namespace')
+    // const nsInit = namespace.init(plugins.prequire, prefs && prefs.noAuthOk, prefs)
 
     sidecar.init()
 
@@ -77,8 +77,8 @@ const domReady = (prefs) => async () => {
     await query.init()
     debug('query init done')
 
-    await nsInit
-    debug('ns init done')
+    // await nsInit
+    // debug('ns init done')
 
     document.body.classList.remove('still-loading')
     eventBus.emit('/init/done')

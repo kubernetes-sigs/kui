@@ -21,6 +21,8 @@ debug('loading')
 import { inBrowser, isHeadless } from '../../../../build/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '../../../../build/models/plugin'
 
+import { addActionMode } from '../../openwhisk/plugin/lib/models/modes'
+
 debug('done loading prereqs')
 
 /**
@@ -38,16 +40,15 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
 
   if (!isHeadless()) {
     const { lockIcon, edit } = require('./lib/readonly')
-    const wsk = await prequire('openwhisk')
     const { currentSelection } = require('../../../../build/webapp/views/sidecar')
     const getAction = currentSelection
 
-    wsk.addActionMode(lockIcon({ wsk,
+    addActionMode(lockIcon({
       getAction,
       mode: 'unlock',
       icon: 'fas fa-lock',
       tooltip: 'You are in read-only mode.\u000aClick to edit.', // TODO externalize string
-      direct: edit({ wsk, getAction })
+      direct: edit({ getAction })
     }), 'unshift')
   }
 }

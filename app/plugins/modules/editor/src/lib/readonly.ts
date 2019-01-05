@@ -21,7 +21,7 @@ import * as repl from '../../../../../build/core/repl'
  * Enter read-only mode
  *
  */
-export const readonly = ({ wsk, getAction }) => () => Promise.resolve(getAction())
+export const readonly = ({ getAction }) => () => Promise.resolve(getAction())
   .then(({ namespace, name }) => repl.qexec(`action get "/${namespace}/${name}"`))
   .then(showEntity)
 
@@ -29,7 +29,7 @@ export const readonly = ({ wsk, getAction }) => () => Promise.resolve(getAction(
  * Enter edit mode
  *
  */
-export const edit = ({ wsk, getAction }) => () => Promise.resolve(getAction())
+export const edit = ({ getAction }) => () => Promise.resolve(getAction())
   .then(({ namespace, name }) => repl.qexec(`edit "/${namespace}/${name}"`))
   .then(entity => showCustom(entity, {}))
 
@@ -37,11 +37,11 @@ export const edit = ({ wsk, getAction }) => () => Promise.resolve(getAction())
  * Render a lock/unlock icon as a mode button
  *
  */
-export const lockIcon = ({ wsk, getAction,
+export const lockIcon = ({ getAction,
   mode = 'lock', // doesn't need to be translated, as we use an icon
   icon = 'fas fa-unlock-alt',
   tooltip = 'You are in edit mode.\u000aClick to return to view mode.', // TODO externalize string
-  direct = exports.readonly({ wsk, getAction })
+  direct = exports.readonly({ getAction })
 }) => ({
   mode,
   actAsButton: true,

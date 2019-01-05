@@ -152,26 +152,10 @@ exports.cli = {
       .then(() => ({ app: app, count: parseInt(count) + nLines - 1 }))),
 
   /** wait for the repl to be active */
-  waitForRepl: (app, prefs = {}) => app.client.waitForExist(selectors.CURRENT_PROMPT, timeout)
-    .then(() => app.client.waitUntil(async () => {
-      const apihost = await app.client.getHTML(selectors.APIHOST, false)
-      return prefs.noAuthOk ||
-        apihost.toLowerCase().replace(/^https:\/\//, '') === (prefs.API_HOST || constants.API_HOST).toLowerCase().replace(/^https:\/\//, '')
-    }))
-    .then(() => {
-      if (!prefs || !prefs.noAuthOk) {
-        return app.client.waitUntil(async () => {
-          const namespace = await app.client.getHTML(selectors.NAMESPACE, false)
-          try {
-            exports.validateNamespace(namespace)
-            return true
-          } catch (err) {
-            return false
-          }
-        })
-      }
-    })
-    .then(() => app),
+  waitForRepl: async (app, prefs = {}) => {
+    await app.client.waitForEnabled(selectors.CURRENT_PROMPT, timeout)
+    return app
+  },
 
   /**
    * look at the repl-context and repl-selection after a cli.do (which is the `res` part)
