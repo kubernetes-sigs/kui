@@ -10,7 +10,7 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "debug": "^4.1.0",
+    "debug": "^4.1.1",
     "electron-installer-debian": "^0.8.1",
     "electron-installer-dmg": "^2.0.0",
     "electron-packager": "^12.1.1",

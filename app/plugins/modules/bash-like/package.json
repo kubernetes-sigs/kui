@@ -16,6 +16,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "ansi-to-html": "^0.6.9",
-    "diff2html": "^2.5.0"
+    "diff2html": "^2.7.0"
   }
 }
