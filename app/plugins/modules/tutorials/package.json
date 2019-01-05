@@ -19,6 +19,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "jquery": "^3.3.1",
-    "marked": "^0.5.2"
+    "marked": "^0.6.0"
   }
 }
