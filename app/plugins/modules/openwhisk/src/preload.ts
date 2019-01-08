@@ -16,16 +16,19 @@
 
 import { setHasAuth } from '../../../../build/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '../../../../build/models/plugin'
-
-import { auth } from './lib/models/auth'
+import { getDefaultCommandContext } from '../../../../build/core/command-tree'
 
 /**
  * This is the module
  *
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  if (auth.get()) {
-    setHasAuth('openwhisk')
+  if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
+    const { auth } = await import('./lib/models/auth')
+
+    if (auth.get()) {
+      setHasAuth('openwhisk')
+    }
   }
 }
 

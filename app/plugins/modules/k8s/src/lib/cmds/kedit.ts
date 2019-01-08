@@ -15,9 +15,9 @@
  */
 
 const debug = require('debug')('k8s/cmds/kedit')
+debug('loading')
 
 import { basename, join } from 'path'
-import { readFile, writeFile } from 'fs-extra'
 import expandHomeDir = require('expand-home-dir')
 
 import { inBrowser } from '../../../../../../build/core/capabilities'
@@ -213,6 +213,7 @@ const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
   debug('filepath', filepath)
 
   const { safeLoadAll: parseYAML } = require('js-yaml')
+  const { readFile } = await import('fs-extra') // 22ms or so to load fs-extra, so defer it
   const yamls = parseYAML(await readFile(filepath))
   debug('yamls', yamls)
 

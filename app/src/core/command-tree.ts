@@ -184,7 +184,7 @@ export const subtree = (route, options) => {
     }
 
     //
-    // also listen route e.g. /wsk, and present usage
+    // listen on /kubectl and /kubectl/help to present usage information
     //
     myListen(route, help, Object.assign({}, options, { noArgs: true, subtreeHandler: true, noAuthOk: true }))
     myListen(`${route}/help`, help, Object.assign({}, options, { noArgs: true, subtreeHandler: true, noAuthOk: true }))
@@ -423,7 +423,24 @@ const _read = async (model, argv, contextRetry, originalArgv) => {
     return withEvents(evaluator, leaf)
   }
 }
+
+/**
+ * The default command execution context. For example, if the
+ * execution context is /foo/bar, and there is a command /foo/bar/baz,
+ * then the issuance of a command "baz" will resolve to /foo/bar/baz.
+ *
+ * The default can be overridden either by changing the next line, or
+ * by calling `setDefaultCommandContext`.
+ *
+ */
 let _defaultContext: Array<string> = ['wsk', 'action'] // TODO take this from the site config
+export const getDefaultCommandContext = () => _defaultContext
+
+/**
+ * The command context model, defaulting to the _defaultContext, which
+ * can be overridden via `setDefaultCommandContext`.
+ *
+ */
 const Context = {
   current: _defaultContext
 }

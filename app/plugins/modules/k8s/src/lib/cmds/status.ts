@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/cmds/status')
+import * as Debug from 'debug'
+const debug = Debug('k8s/cmds/status')
+debug('loading')
 
 import { basename, join } from 'path'
 
@@ -24,9 +26,7 @@ import repl = require('../../../../../../build/core/repl')
 import { flatten, isDirectory, toOpenWhiskFQN } from './util'
 import { States, FinalState } from './states'
 import { PACKAGE } from '../../actionProxy/deploy'
-import { deploy as deployKubectl } from '../../actionProxy/kubectl'
 import { formatContextAttr, formatEntity } from '../util/formatEntity'
-import { fetchFile } from '../util/fetch-file'
 import { withRetryOn404 } from '../util/retry'
 
 /** icon to indicate "is a cluster" */
@@ -409,6 +409,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
       const passedAsParameter = !isURL && filepath.match(/\/(!.*$)/)
 
       const { safeLoadAll: parseYAML } = require('js-yaml')
+      const { fetchFile } = await import('../util/fetch-file')
       const specs = (passedAsParameter
                      ? parseYAML(execOptions.parameters[passedAsParameter[1].slice(1)]) // yaml given programatically
                      : parseYAML(await fetchFile(file)))

@@ -22,14 +22,21 @@
  *
  */
 
-const debug = require('debug')('copy')
+import * as Debug from 'debug'
+const debug = Debug('k8s/cmds/copy')
+debug('loading')
 
 import * as fs from 'fs'
+debug('1')
 import { exists, lstat, ensureDir, remove, writeFile } from 'fs-extra'
+debug('2')
 import { basename, join } from 'path'
+debug('3')
 import { dir as tmpDir, file as tmpFile } from 'tmp'
+debug('4')
 
 import { isDirectory } from './util'
+debug('5')
 
 /**
  * Copy one file
