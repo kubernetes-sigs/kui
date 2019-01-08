@@ -16,15 +16,6 @@
 
 const debug = require('debug')('k8s/cmds/auth')
 
-import { prompt } from '../../../../../../build/webapp/cli'
-import repl = require('../../../../../../build/core/repl')
-
-import { PACKAGE } from '../../actionProxy/deploy'
-import { deploy as deployKubectl } from '../../actionProxy/kubectl'
-
-/** matches a kube PEM certificate */
-const certPattern = /^\s*-----BEGIN CERTIFICATE-----[^\-]+-----END CERTIFICATE-----\s*$/
-
 const usage = {
   add: {
     command: 'kubectl auth add',
@@ -34,7 +25,8 @@ const usage = {
   }
 }
 
-const add = ({ block, nextBlock }) => {
+const add = async ({ block, nextBlock }) => {
+  const { prompt } = await import('../../../../../../build/webapp/cli')
   return prompt('kubectl auth add', block, nextBlock, {
     placeholder: 'Paste the contents of your kubeconfig: cat $KUBECONFIG',
     onpaste: 'capture'
@@ -68,12 +60,20 @@ const add = ({ block, nextBlock }) => {
               reprompt: true,
               placeholder: `Paste the contents of your certificate-authority: cat $(dirname $KUBECONFIG})/${cafile}`,
               onpaste: 'capture',
-              completion: ({ field: ca }) => {
+              completion: async ({ field: ca }) => {
                 debug('got ca', ca)
+
+                /** matches a kube PEM certificate */
+                const certPattern = /^\s*-----BEGIN CERTIFICATE-----[^\-]+-----END CERTIFICATE-----\s*$/
+
                 if (!ca.match(certPattern)) {
                   return Promise.reject('This does not look like a kubernetes certificate')
                 } else {
                   // all right! we now have the kubeconfig and the PEM
+                  const repl = await import('../../../../../../build/core/repl')
+                  const { PACKAGE } = await import('../../actionProxy/deploy')
+                  const { deploy: deployKubectl } = await import('../../actionProxy/kubectl')
+
                   return deployKubectl()
                     .then(() => repl.qexec(`package get "${PACKAGE}"`))
                     .then(({ parameters }) => repl.qexec(`package update "${PACKAGE}"`, undefined, undefined, {

@@ -16,6 +16,7 @@
 
 import * as Debug from 'debug'
 const debug = Debug('k8s/cmds/kubectl')
+debug('loading')
 
 import * as expandHomeDir from 'expand-home-dir'
 
@@ -27,8 +28,6 @@ import { oopsMessage } from '../../../../../../build/core/oops'
 import { ExecType } from '../../../../../../build/core/command-tree'
 
 import { FinalState } from './states'
-import { FQN as kubectlFQN, deploy as deployKubectl } from '../../actionProxy/kubectl'
-import { FQN as helmFQN, deploy as deployHelm } from '../../actionProxy/helm'
 import abbreviations from './abbreviations'
 import { IResource, statusButton, deleteResourceButton, renderAndViewStatus } from './modes'
 import { formatLogs } from '../util/log-parser'
@@ -446,6 +445,8 @@ const prepareUsage = async (command: string) => {
  *
  */
 const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, execOptions, options, rawCommand: string) => new Promise(async (resolve, reject) => {
+  debug('exec', command)
+
   const verb = argv[1]
   const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
   const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
@@ -470,11 +471,8 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
 
   const cmdlineForDisplay = argv.slice(1).join(' ')
 
-  // why the dynamic import? being browser friendly here
-  const { copyOut } = await import('./copy')
-
   // replace @seed/yo.yaml with full path
-  const argvWithFileReplacements = await Promise.all(rawArgv.slice(1).map(_ => {
+  const argvWithFileReplacements = await Promise.all(rawArgv.slice(1).map(async _ => {
     if (_.match(/^!.*/)) {
       // !foo params mean they flow programatically via execOptions.parameters.foo
       // we will pass this via stdin, which kubectl represents with a '-'
@@ -483,6 +481,8 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
       // then this is an in-asar filepath. kubectl won't
       // know what to do with this, so copy it out
       debug('copying out of asar', _)
+
+      const { copyOut } = await import('./copy') // why the dynamic import? being browser friendly here
       return copyOut(_)
     } else if (_.match(/^(@.*$)/)) {
       // then this is a cloudshell-hosted file
@@ -491,6 +491,7 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
         // then this is an in-asar filepath. kubectl won't
         // know what to do with this, so copy it out
         debug('copying @ file out of asar', filepath)
+        const { copyOut } = await import('./copy') // why the dynamic import? being browser friendly here
         return copyOut(filepath)
       } else {
         return filepath
@@ -719,6 +720,8 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
 const impls = {
   browser: {
     kubectl: async ({ execOptions, argvNoOptions, parsedOptions: options }) => {
+      const { FQN: kubectlFQN, deploy: deployKubectl } = await import('../../actionProxy/kubectl')
+
       if (argvNoOptions[1] !== 'logs') {
         await confirmFileExistence(options.f || options.file, 'kubectl')
       }
@@ -727,6 +730,8 @@ const impls = {
     },
 
     helm: async ({ command, execOptions, argvNoOptions, parsedOptions: options }) => {
+      const { FQN: helmFQN, deploy: deployHelm } = await import('../../actionProxy/helm')
+
       await confirmFileExistence(options.f || options.file, 'helm')
       if (argvNoOptions[1] === 'install') await confirmFileExistence(argvNoOptions[2], 'helm')
 
@@ -759,13 +764,14 @@ const impls = {
   }
 }
 
-const hasExe = async (exe: string): Promise<boolean> => {
+const hasExes = async (exes: Array<string>): Promise<Array<boolean>> => {
   if (inBrowser()) {
-    return Promise.resolve(false)
+    return Promise.all(exes.map(() => false))
   } else {
     // why the dynamic import? being browser friendly here
-    const exists = await import('command-exists')
-    return exists(exe)
+    // const exists = await import('command-exists')
+    // return Promise.all(exes.map(exe => exists(exe).then(() => true).catch(() => false)))
+    return Promise.all(exes.map(() => true))
   }
 }
 
@@ -793,10 +799,8 @@ const dispatchViaDelegationTo = delegate => opts => {
  *
  */
 export default async (commandTree, prequire) => {
-  const haveKubectl = await hasExe('kubectl').then(() => true).catch(() => false)
+  const [ haveKubectl, haveHelm ] = await hasExes(['kubectl', 'helm'])
   debug('do we have kubectl? %s', haveKubectl)
-
-  const haveHelm = await hasExe('helm').then(() => true).catch(() => false)
   debug('do we have helm? %s', haveHelm)
 
   const impl = {

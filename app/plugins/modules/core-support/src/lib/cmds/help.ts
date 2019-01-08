@@ -20,6 +20,7 @@ debug('loading')
 
 import UsageError from '../../../../../../build/core/usage-error'
 import { isHeadless } from '../../../../../../build/core/capabilities'
+import { getDefaultCommandContext } from '../../../../../../build/core/command-tree'
 import * as repl from '../../../../../../build/core/repl'
 
 import { synonyms } from '../../../../openwhisk/plugin/lib/models/synonyms'
@@ -106,7 +107,13 @@ export default async (commandTree, prequire, { usage, docs }) => {
   const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true })
   commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true })
 
-  return Promise.all(synonyms('actions').map(syn => {
-    return override(`/wsk/${syn}/help`, help(usage, docs), commandTree)
-  }))
+  // if the command execution context is /wsk/action, then we need to
+  // override /wsk/action/help to show general help when it is
+  // executed via "help" (but not when executed via "wsk action
+  // help"); the `override` command helps with this disambiguation
+  if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
+    return Promise.all(synonyms('actions').map(syn => {
+      return override(`/wsk/${syn}/help`, help(usage, docs), commandTree)
+    }))
+  }
 }

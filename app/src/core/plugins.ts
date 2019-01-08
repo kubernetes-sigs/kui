@@ -354,6 +354,7 @@ const makeResolver = prescan => {
   /** resolve one given plugin */
   const resolveOne = async plugin => {
     debug('resolveOne', plugin)
+
     try {
       if (!plugin) {
         return

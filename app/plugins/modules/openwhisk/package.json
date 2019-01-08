@@ -16,6 +16,7 @@
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
   "dependencies": {
+    "debug": "^4.1.1",
     "openwhisk": "git://github.com/starpit/openwhisk-client-js.git#add_client_timeout4"
   },
   "devDependencies": {

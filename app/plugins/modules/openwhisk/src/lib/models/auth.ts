@@ -21,6 +21,7 @@ debug('loading')
 import openwhisk = require('openwhisk')
 
 import { inBrowser } from '../../../../../../build/core/capabilities'
+import { getDefaultCommandContext } from '../../../../../../build/core/command-tree'
 
 let wskprops
 try {
@@ -87,7 +88,9 @@ export const initOW = () => {
   delete ow.routes
   debug('initOW done')
 }
-initOW()
+if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
+  initOW()
+}
 
 export const apiHost = {
   get: () => Promise.resolve(apihost),
