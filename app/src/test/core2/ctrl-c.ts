@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-18 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@ import * as common from '../../../../tests/lib/common' // tslint:disable-line:no
 import * as ui from '../../../../tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
-const delay = 3000
-const actionName = 'foo'
-
 describe('Cancel via Ctrl+C', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
@@ -44,26 +41,13 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
   it('should hit ctrl+c', () => cancel(this.app))
   it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
 
-  // note that this action resolves with its input parameter; we'll check this in the await step below
-  it('should create an action that completes with some delay', () => cli.do(`let ${actionName} = x=> new Promise((resolve, reject) => setTimeout(() => resolve(x), ${delay}))`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName)))
-
-  it('should invoke the long-running action, then cancel', () => cli.do(`invoke -p name openwhisk`, this.app)
-    .then(res => new Promise(resolve => setTimeout(() => resolve(res), delay / 3)))
-    .then(appAndCount => this.app.client.execute('repl.doCancel()').then(() => appAndCount))
-    .then(cli.expectBlank)
-    .catch(common.oops(this)))
-
-  // checking the resolve(x)
-  it('should await the long-running action', () => cli.do(`await`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-    .then(ui.expectStruct({
-      name: 'openwhisk'
-    }))
-    .catch(common.oops(this)))
+  const echoThisString = 'hi'
+  it('should initiate a command that completes with some delay', async () => {
+    const res = await cli.do(`sleep 3; echo ${echoThisString}`, this.app)
+    await this.app.client.execute('repl.doCancel()')
+    return this.app.client.waitUntil(async () => {
+      const actualText = await this.app.client.getText(selectors.OUTPUT_N(res.count))
+      return actualText === echoThisString
+    })
+  })
 })

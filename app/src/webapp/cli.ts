@@ -533,6 +533,13 @@ export const doCancel = () => {
   debug('doCancel')
 
   const block = removeAnyTemps(getCurrentProcessingBlock() || getCurrentBlock())
+
+  if (block['restorePrompt']) {
+    debug('cancelling in-progress "prompt"')
+    block['restorePrompt']()
+  }
+
+  // Note: clone after restorePrompt
   const nextBlock = block.cloneNode(true)
   const nextBlockPrompt = getPrompt(nextBlock)
 
@@ -714,6 +721,7 @@ export const prompt = (msg: string, block: Element, nextBlock: Element, options,
       console.error(err)
     }
   }
+  block['restorePrompt'] = restorePrompt
 
   block['completion'] = value => {
     block.className = `${block.getAttribute('data-base-class')} processing`

@@ -27,7 +27,7 @@ import * as common from '../../../../tests/lib/common' // tslint:disable-line:no
 import * as ui from '../../../../tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
-const expectedVersion = require(join(process.env.TEST_ROOT, '../app/package.json')).version
+export const expectedVersion = require(join(process.env.TEST_ROOT, '../app/package.json')).version
 
 describe('Version command', function (this: ISuite) {
   before(common.before(this))
