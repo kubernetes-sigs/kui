@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../tests/lib/common'
-import * as common from '../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../tests/lib/ui'
+import { ISuite } from '../../../../../../../tests/lib/common'
+import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '../../../../../../../tests/lib/ui'
 const { cli, keys, selectors, sidecar } = ui
 
 /** execute the given async task n times */
@@ -126,56 +126,71 @@ describe('Tab completion', function (this: ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/']
+  it('should create an action foo', () => cli.do('let foo = x=>x', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
 
-  const fileOptions = ['empty1.js', 'empty2.js']
+  it('should create an action foo2', () => cli.do('let foo2 = x=>x', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
 
-  // tab completion using default file completion handler (i.e. if the
-  // command does not register a usage model, then always tab
-  // completion local files)
-  it('should complete on the single-entry directory with git diff', () => tabby(this.app, 'git diff ./data/core/core_single_entry_dir',
-    'git diff ./data/core/core_single_entry_directory/'))
+  it('should create an action bar', () => cli.do('let bar = x=>x', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
 
-  // tab completion of directories
-  it('should complete on the single-entry directory', () => tabby(this.app, 'ls ./data/core/core_single_entry_dir',
-    'ls ./data/core/core_single_entry_directory/'))
+  it('should create an action foofoo/yum', () => cli.do('let foofoo/yum = x=>x', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
 
-  // tab completion of a directory, auto-completing the single entry in the directory
-  it('should complete on the single-entry directory', () => tabby(this.app, 'ls ./data/core/core_single_entry_directory/',
-    'ls ./data/core/core_single_entry_directory/only_one_file_here_please.js'))
+  // expect b to autocomplete with only tab, since we only have one action starting with b
+  it('should tab complete action get bar', () => tabby(this.app, 'action get b', 'action get bar'))
+  it('should tab complete action invoke bar', () => tabby(this.app, 'action invoke b', 'action invoke bar'))
+  it('should tab complete invoke bar', () => tabby(this.app, 'invoke b', 'invoke bar'))
+  it('should tab complete async bar', () => tabby(this.app, 'async b', 'async bar'))
 
-  // tab completion with options, then click on the second (idx=1) entry of the expected cmpletion list
-  it('should tab complete local file path with options', () => tabbyWithOptions(this.app,
-    'lls data/core/core_',
-    options,
-    'lls data/core/core_single_entry_dir/',
-    { click: 1 }))
-
-  it('should tab complete local file path with options, expect prompt update', () => tabbyWithOptions(this.app,
-    'lls data/core/co',
-    options,
-    'lls data/core/core_single_entry_dir/',
+  it('should tab complete action foo2 with options', () => tabbyWithOptions(this.app, 'action get f',
+    ['foofoo/yum', 'foo2', 'foo'],
+    'action get foo2',
     { click: 1,
-      expectedPromptAfterTab: 'lls data/core_' }))
+      expectedPromptAfterTab: 'action get foo' })
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('foo2'))
+    .catch(common.oops(this)))
 
-  // tab completion with file options, then click on the first (idx=0) entry of the expected cmpletion list
-  it('should tab complete local file path with options', () => tabbyWithOptions(this.app,
-    'lls data/core/core_test_directory_1/em',
-    fileOptions,
-    'lls data/core/core_test_directory_1/empty1.js',
-    { click: 0 }))
+  it('should tab complete action foo with options (no prefix)', () => tabbyWithOptions(this.app, 'action get ',
+    ['foofoo/yum', 'bar', 'foo2', 'foo'],
+    'action get foo',
+    { click: 3 })
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('foo'))
+    .catch(common.oops(this)))
 
-  it('should tab complete the data directory', () => tabby(this.app, 'lls da', 'lls data/'))
-  it('should tab complete the data/core/empty.js file', () => tabby(this.app, 'lls data/core/empty.js', 'lls data/core/empty.json'))
-  it('should tab complete the ../app directory', () => tabby(this.app, 'lls ../ap', 'lls ../app/'))
+  it('should not tab complete action without trailing whitespace', () => tabbyWithOptions(this.app, 'action get')
+    .catch(err => {
+      if (!err.failedAsExpected) {
+        throw err
+      } else {
+        return this.app.client.execute('repl.doCancel()') // clear the line
+      }
+    }))
 
-  // same, but this time tab to cycle through the options
-  it('should tab complete local file path', () => tabbyWithOptions(this.app,
-    'lls data/core/core_',
-    options,
-    'lls data/core/core_single_entry_dir/',
-    { nTabs: 1 }))
+  it('should create a trigger', () => cli.do('wsk trigger create ttt', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
 
-  it('should tab complete local file path, then options go away on edit', () => tabbyWithOptionsThenCancel(this.app, 'lls data/core/core_',
-    options))
+  it('should fire trigger with autocomplete', () => tabby(this.app, 'wsk trigger fire t', 'wsk trigger fire ttt'))
+
+  it('should get package foofoo with autocomplete', () => tabby(this.app, 'wsk package get f', 'wsk package get foofoo')
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('foofoo'))
+    .catch(common.oops(this)))
+
+  it('should auto complete wsk command', () => tabby(this.app, 'ws', 'wsk', false))
+  it('should auto complete wsk rules command', () => tabby(this.app, 'wsk rul', 'wsk rules', false))
+  it('should auto complete wsk triggers command', () => tabby(this.app, 'wsk trig', 'wsk triggers', false))
+
+  it('should tab complete wsk action', () => tabbyWithOptions(this.app, 'wsk ac',
+    ['wsk action', 'wsk activations'],
+    'wsk actions',
+    { click: 0, expectOK: false }))
 })

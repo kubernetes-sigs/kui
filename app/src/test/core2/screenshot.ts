@@ -36,7 +36,7 @@ const takeScreenshot = function (ctx, which = '') {
     .catch(common.oops(ctx))
 }
 
-describe('Take screenshot', function (this: ISuite) {
+describe('screenshot', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -57,11 +57,10 @@ describe('Take screenshot', function (this: ISuite) {
   it('should take screenshot last-full', () => takeScreenshot(this, 'last-full'))
 
   // create an entity, so we can open the sidecar
-  const actionName = 'foo'
-  it('should create an action via let', () => cli.do(`let ${actionName} = x=>x`, this.app)
-    .then(cli.expectJustOK)
+  it('should open README.md', () => cli.do(`open ../README.md`, this.app)
+    .then(cli.expectOK)
     .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
+    .then(sidecar.expectShowing('Kui Shell', undefined, undefined, 'README.md'))
     .catch(common.oops(this)))
 
   // now screenshot sidecar should work

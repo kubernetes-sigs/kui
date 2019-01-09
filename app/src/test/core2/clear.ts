@@ -19,7 +19,7 @@ import * as assert from 'assert'
 import { ISuite } from '../../../../tests/lib/common'
 import * as common from '../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '../../../../tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli, selectors, keys } = ui
 
 const expectConsoleToBeClear = ({ app }) => {
   return app.client.waitUntil(() => {
@@ -36,15 +36,55 @@ describe('Clear the console', function (this: ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
+  interface IPromptOptions {
+    enteredString?: string
+    enteredPlaceholder?: string
+    expectedPlaceholder?: string
+    cancel?: boolean
+  }
+  const doPrompt = (opts: IPromptOptions) => async () => {
+    const { enteredString, enteredPlaceholder = '', expectedPlaceholder = 'Test prompt', cancel = false } = opts
+
+    try {
+      const res = await cli.do(`prompt ${enteredPlaceholder}`, this.app)
+      await this.app.client.waitUntil(async () => {
+        const placeholder = await this.app.client.getAttribute(selectors.PROMPT_N(res.count), 'placeholder')
+        return placeholder === expectedPlaceholder
+      })
+      if (cancel) {
+        await this.app.client.execute('repl.doCancel()')
+        return cli.expectBlank(res)
+      } else {
+        this.app.client.keys(`${enteredString}${keys.ENTER}`)
+        return cli.expectOKWithString(enteredString)(res)
+      }
+    } catch (err) {
+      common.oops(this)(err)
+    }
+  }
+  const enteredString = 'does this work?'
+  const enteredString2 = 'does this also work?'
+  it(`quick test of prompt`, doPrompt({ enteredString }))
+  it(`another quick test of prompt`, doPrompt({
+    enteredString: enteredString2,
+    enteredPlaceholder: 'foo',
+    expectedPlaceholder: 'foo'
+  }))
+  it(`cancel test of prompt`, doPrompt({
+    enteredPlaceholder: 'foo3',
+    expectedPlaceholder: 'foo3',
+    cancel: true
+  }))
+
   // get something on the screen
-  it(`should list actions`, () => cli.do('action list', this.app).then(cli.expectJustOK))
+  it(`should list files`, () => cli.do('ls', this.app).then(cli.expectJustOK))
 
   it('should clear the console', () => cli.do('clear', this.app)
     .then(expectConsoleToBeClear)
     .catch(common.oops(this)))
 
   // get something on the screen
-  it(`should list actions again`, () => cli.do('action list', this.app).then(cli.expectJustOK))
+  it(`should list files again`, () => cli.do('ls', this.app).then(cli.expectJustOK))
 
   const JUNK = 'junk text that should stay'
   it('should clear the console with ctrl+l', () => cli.do(JUNK, this.app, true)
@@ -63,12 +103,11 @@ describe('Clear the console', function (this: ISuite) {
   })
 
   // get something on the screen
-  it(`should list actions yet again`, () => cli.do('action list', this.app)
+  it(`should list files yet again`, () => cli.do('ls', this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))
 
-  // see shell issue #485
-  it('should clear properly despite existing prompt', () => cli.do('wipe', this.app) // wipe will change the placeholder text
+  it('should clear properly despite existing prompt', () => cli.do('prompt', this.app) // wipe will change the placeholder text
     .then(() => this.app.client.keys([ui.ctrlOrMeta, 'l'])) // use control-l to clear
     .then(() => ({ app: this.app }))
     .then(expectConsoleToBeClear)

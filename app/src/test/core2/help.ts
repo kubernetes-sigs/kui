@@ -30,37 +30,26 @@ export const header = folder => `Shell Docs
 ${folder}`
 
 /** expect the given sub-folder */
-const header2 = (folder1, folder2) => `${header(folder1)}
+export const header2 = (folder1, folder2) => `${header(folder1)}
 /
 ${folder2}`
 
-/* the header for action help */
-const actionHelpHeader = header2('OpenWhisk', 'Action Operations')
+/** helper method, used in the tests below: ask for help */
+export const doHelp = function (cmd, { code = 500, expect = undefined } = {}) {
+  return it(`should show help via ${cmd}`, () => cli.do(cmd, this.app)
+            .then(cli.expectError(code, expect))
+            .catch(common.oops(this)))
+}
 
 describe('Help command', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
-
-  /** helper method, used in the tests below: ask for help */
-  const doHelp = (cmd, { code = 500, expect = undefined } = {}) => {
-    return it(`should show help via ${cmd}`, () => cli.do(cmd, this.app)
-      .then(cli.expectError(code, expect))
-      .catch(common.oops(this)))
-  }
 
   //
   // and now here come the tests...
   //
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  doHelp('help', { expect: header('Getting Started') })
-  doHelp('wsk', { expect: header('OpenWhisk') })
-  doHelp('wsk action', { expect: actionHelpHeader })
-  doHelp('wsk action help', { expect: actionHelpHeader })
-  doHelp('action help', { expect: actionHelpHeader })
-  doHelp('help action', { expect: actionHelpHeader })
-  doHelp('help wsk action', { expect: actionHelpHeader })
-  doHelp('editor')
-  doHelp('composer', { expect: header('Composer') })
-  doHelp('wsk action create', { code: 497 }) // insufficient arguments
+  doHelp.call(this, 'help', { expect: header('Getting Started') })
+  doHelp.call(this, 'editor')
 })
