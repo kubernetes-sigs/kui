@@ -410,10 +410,11 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .sidecar-visible .repl-block.processing .repl-output, .sidecar-visible .repl-block.valid-response .repl-output {
     align-items: stretch;
 }
-.repl-block.processing .repl-result-spinner {
+.repl-block.processing .repl-result-spinner-inner {
     animation: spin 750ms linear infinite;
+    display: inline-block;
 }
-.repl-block.processing .repl-result-spinner:after {
+.repl-block.processing .repl-result-spinner-inner:after {
     content: '|';
 }
 .repl-result pre {
