@@ -4,10 +4,11 @@
   "description": "IBM Cloud shell plugin for kubernetes",
   "main": "plugin/plugin.js",
   "scripts": {
-    "postinstall": "../../../../node_modules/.bin/tsc",
-    "pretest": "../../../../node_modules/.bin/tsc",
-    "compilenowatch": "../../../../node_modules/.bin/tsc",
-    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+    "postinstall": "npx tsc",
+    "pretest": "npx tsc",
+    "compilenowatch": "npx tsc",
+    "compile": "npx tsc -watch -p ./",
+    "lint": "npx tslint -c tslint.json 'src/**/*.ts'"
   },
   "keywords": [
     "openwhisk",
@@ -17,5 +18,10 @@
   "license": "Apache-2.0",
   "dependencies": {
     "command-exists": "^1.2.8"
+  },
+  "devDependencies": {
+    "tslint": "^5.12.0",
+    "tslint-config-standard": "^8.0.1",
+    "typescript": "^3.2.2"
   }
 }

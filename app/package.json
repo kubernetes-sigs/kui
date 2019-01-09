@@ -7,8 +7,8 @@
   "scripts": {
     "start": "electron .",
     "webpack-pre": "jq 'del(.dependencies.\"electron-download\")' node_modules/electron/package.json > node_modules/electron/package.json-tmp && mv node_modules/electron/package.json-tmp node_modules/electron/package.json && npm prune",
-    "postinstall": "rm -f build/core/repl.d.ts build/models/execOptions.d.ts; ../node_modules/.bin/tsc && (cd plugins && npm install) && npm run build && npm run compile && ./bin/seticon.js",
-    "watch": "../node_modules/.bin/tsc -watch -p ./",
+    "postinstall": "rm -f build/core/repl.d.ts build/models/execOptions.d.ts; npx tsc && (cd plugins && npm install) && npm run build && npm run compile && ./bin/seticon.js",
+    "watch": "npx tsc -watch -p ./",
     "build": "node ./bin/build.js standalone",
     "compile": "if [ -d ../dist ]; then cd ../dist/bin && ./compile.js; fi",
     "test": "cd ../tests && npm run test"
@@ -36,7 +36,12 @@
   "devDependencies": {
     "electron": "^3.0.10",
     "electron-download": "^4.1.1",
-    "terser": "^3.11.0"
+    "terser": "^3.11.0",
+    "typescript": "^3.2.2",
+    "@types/debug": "^0.0.31",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.18",
+    "@types/webdriverio": "^4.13.1"
   },
   "dependencies": {
     "about-window": "^1.12.1",

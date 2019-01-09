@@ -2,14 +2,16 @@
   "name": "kui-shell",
   "version": "2.0.3",
   "description": "[![Travis](https://travis-ci.org/ibm-functions/shell.svg?branch=master)](https://travis-ci.org/ibm-functions/shell) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](http://slack.openwhisk.org/) [![codecov](https://codecov.io/gh/ibm-functions/shell/branch/master/graph/badge.svg)](https://codecov.io/gh/ibm-functions/shell) [![HitCount](http://hits.dwyl.io/ibm-functions/shell.svg)](http://hits.dwyl.io/ibm-functions/shell)",
-  "main": "app/fsh.js",
+  "main": "app/kui.js",
   "bin": {
-    "fsh": "fsh.js"
+    "kui": "kui.js"
   },
   "files": [
     "app/",
     "bin/",
-    "fsh.js"
+    "kui.js",
+    "tests/",
+    "dist/"
   ],
   "directories": {
     "doc": "docs",
@@ -19,7 +21,7 @@
     "major": "npm version major && npx auto-changelog && cd app && npm version major",
     "minor": "npm version minor && npx auto-changelog && cd app && npm version minor",
     "patch": "npm version patch && npx auto-changelog && cd app && npm version patch",
-    "lint": "npx tslint -c app/tslint.json 'app/src/**/*.ts' 'app/plugins/modules/*/src/**/*.ts'",
+    "lint": "npx tslint -c app/tslint.json 'app/src/**/*.ts'; for i in app/plugins/modules/*; do (cd $i && npm run lint); done",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "export CLOUDSHELL_INSTALL_UI=true; (cd tests && ./bin/corral.sh && npm install) && cd app && npm install"
   },
@@ -46,10 +48,6 @@
   },
   "homepage": "https://github.com/IBM/kui#readme",
   "devDependencies": {
-    "@types/debug": "^0.0.31",
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.18",
-    "@types/webdriverio": "^4.13.1",
     "auto-changelog": "^1.10.3",
     "css-loader": "^2.1.0",
     "file-loader": "^3.0.1",
