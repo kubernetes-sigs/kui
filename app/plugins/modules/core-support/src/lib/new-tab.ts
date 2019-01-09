@@ -289,9 +289,9 @@ const closeTab = () => {
 
 const registerCommandHandlers = (commandTree, prequire) => {
   commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(argvNoOptions[argvNoOptions.length - 1]),
-                     { usage, needsUI: true })
-  commandTree.listen('/tab/new', newTabAsync, { needsUI: true })
-  commandTree.listen('/tab/close', closeTab, { needsUI: true })
+                     { usage, needsUI: true, noAuthOk: true })
+  commandTree.listen('/tab/new', newTabAsync, { needsUI: true, noAuthOk: true })
+  commandTree.listen('/tab/close', closeTab, { needsUI: true, noAuthOk: true })
 }
 
 export default async (commandTree, prequire) => {

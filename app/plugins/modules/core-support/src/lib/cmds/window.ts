@@ -26,8 +26,8 @@ export default (commandTree, prequire) => {
 
   // commandTree.listen('/window/bigger', () => tellMain('enlarge-window'))
   // commandTree.listen('/window/smaller', () => tellMain('reduce-window'))
-  commandTree.listen('/window/max', () => tellMain('maximize-window'), { docs: 'Maximize the window' })
-  commandTree.listen('/window/unmax', () => tellMain('unmaximize-window'), { docs: 'Unmaximize the window' })
+  commandTree.listen('/window/max', () => tellMain('maximize-window'), { docs: 'Maximize the window', noAuthOk: true })
+  commandTree.listen('/window/unmax', () => tellMain('unmaximize-window'), { docs: 'Unmaximize the window', noAuthOk: true })
 
   // register a window close command handler
   commandTree.listen('/window/close', () => {
@@ -38,5 +38,5 @@ export default (commandTree, prequire) => {
       let w = remote.getCurrentWindow()
       w.close()
     }
-  })
+  }, { noAuthOk: true })
 }
