@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-const { actions, skipAndLimit, params } = require('../../../openwhisk/plugin/lib/cmds/openwhisk-usage')
-const actionsUsage = {
-  create: actions.available.find(({ command }) => command === 'create'),
-  update: actions.available.find(({ command }) => command === 'update'),
-  invoke: actions.available.find(({ command }) => command === 'invoke')
-}
-
 /** breadcrumb parents */
 const parents = ['module']
 
@@ -69,12 +62,6 @@ export const usage = {
   },
 
   get: projectCommand('get', 'learn more about a module', { related: [`${entity} api`, `${entity} deps`] }),
-
-  api: projectCommand('api', 'learn the API of this module', {
-    optional: [{ name: '--validate', alias: '-v', boolean: true, docs: 'Validate a set of parameter bindings' }]
-      .concat(params.map(_ => Object.assign({}, _, { hidden: true }))),
-    related: [`${entity} get`, `${entity} deps`]
-  }),
 
   imports: projectCommand('imports', 'discover the other modules upon which this module depends', { breadcrumb: 'Module Imports' }),
   deps: projectCommand('deps', 'discover the cloud services upon which this module depends', { breadcrumb: 'Service Dependencies' }),
@@ -135,13 +122,7 @@ export const usage = {
       related: [`${entity} list`, `${entity} watch`]
     }),
 
-  watch: projectCommand('watch', 'Monitor the status of a module\'s deployment', { related: [`${entity} list`, `${entity} status`] }),
-
-  invoke: projectCommand('invoke', 'Invoke the main entry point of a given module', {
-    implicitOK: ['actions', 'activations'],
-    optional: actionsUsage.invoke.optional,
-    related: [`${entity} list`, `${entity} status`]
-  })
+  watch: projectCommand('watch', 'Monitor the status of a module\'s deployment', { related: [`${entity} list`, `${entity} status`] })
 }
 
 /** form a subtree usage model (TODO: this should be moved to a more common spot) */
