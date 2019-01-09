@@ -20,10 +20,7 @@ debug('loading')
 
 import UsageError from '../../../../../../build/core/usage-error'
 import { isHeadless } from '../../../../../../build/core/capabilities'
-import { getDefaultCommandContext } from '../../../../../../build/core/command-tree'
 import * as repl from '../../../../../../build/core/repl'
-
-import { synonyms } from '../../../../openwhisk/plugin/lib/models/synonyms'
 
 /**
  * Respond with a top-level usage document
@@ -31,6 +28,7 @@ import { synonyms } from '../../../../openwhisk/plugin/lib/models/synonyms'
  */
 const help = (usage, docs) => ({ argvNoOptions: args }) => {
   const rest = args.slice(args.indexOf('help') + 1)
+  debug('help command', rest)
 
   if (rest.length > 0) {
     // then the user asked e.g. help action; interpret this as action help
@@ -75,45 +73,10 @@ const help = (usage, docs) => ({ argvNoOptions: args }) => {
 }
 
 /**
- * Since the default context is "wsk action", then issuing just "help"
- * will result in seeing help for actions
- *
- */
-const override = async (route, replacementCmd, commandTree) => {
-  const leaf = await commandTree.find(route)
-  const baseCmd = leaf && leaf.$
-  const path = route.split('/').slice(2) // skip / and wsk
-
-  commandTree.listen(route, (opts) => {
-    const argv = opts.argv.slice(opts.argv.indexOf('wsk') + 1)
-    const prefix = argv.slice(0, path.length)
-
-    debug('override', argv, prefix, path)
-    if (baseCmd && prefix.length === path.length && prefix.every((element, idx) => element === path[idx])) {
-      debug('override with base')
-      return baseCmd(opts)
-    } else {
-      debug('override with replacement')
-      return replacementCmd(opts)
-    }
-  }, { noAuthOk: true })
-}
-
-/**
  * The module. Here, we register as a listener for commands.
  *
  */
 export default async (commandTree, prequire, { usage, docs }) => {
   const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true })
   commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true })
-
-  // if the command execution context is /wsk/action, then we need to
-  // override /wsk/action/help to show general help when it is
-  // executed via "help" (but not when executed via "wsk action
-  // help"); the `override` command helps with this disambiguation
-  if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
-    return Promise.all(synonyms('actions').map(syn => {
-      return override(`/wsk/${syn}/help`, help(usage, docs), commandTree)
-    }))
-  }
 }

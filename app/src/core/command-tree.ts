@@ -186,8 +186,9 @@ export const subtree = (route, options) => {
     //
     // listen on /kubectl and /kubectl/help to present usage information
     //
-    myListen(route, help, Object.assign({}, options, { noArgs: true, subtreeHandler: true, noAuthOk: true }))
-    myListen(`${route}/help`, help, Object.assign({}, options, { noArgs: true, subtreeHandler: true, noAuthOk: true }))
+    const opts = { noArgs: true, subtreeHandler: true, noAuthOk: true, requiresFullyQualifiedRoute: true }
+    myListen(route, help, Object.assign({}, options, opts))
+    myListen(`${route}/help`, help, Object.assign({}, options, opts))
 
     return leaf
   }
@@ -372,9 +373,9 @@ const withEvents = (evaluator, leaf, partialMatches?) => {
  */
 const _read = async (model, argv, contextRetry, originalArgv) => {
   let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
+  let evaluator = leaf && leaf.$
   debug('read', argv)
 
-  let evaluator = leaf && leaf.$
   if (!evaluator) {
     //
     // maybe the plugin that supports this route hasn't been
@@ -402,7 +403,10 @@ const _read = async (model, argv, contextRetry, originalArgv) => {
       return _read(model, originalArgv, undefined, originalArgv)
     } else if (contextRetry.length > 0 && contextRetry[contextRetry.length - 1] !== originalArgv[originalArgv.length - 1]) {
       // command not found so far, look further afield.
-      const maybeInContextRetry = _read(model, /* contextRetry.length === 1 ? originalArgv : */ contextRetry.concat(originalArgv), contextRetry.slice(0, contextRetry.length - 1), originalArgv)
+      const maybeInContextRetry = _read(model,
+                                        contextRetry.concat(originalArgv),
+                                        contextRetry.slice(0, contextRetry.length - 1),
+                                        originalArgv)
 
       if (maybeInContextRetry) {
         debug('context retry helped', maybeInContextRetry)
@@ -420,6 +424,23 @@ const _read = async (model, argv, contextRetry, originalArgv) => {
       return false
     }
   } else {
+    if (leaf.options &&
+        leaf.options.requiresFullyQualifiedRoute) {
+      const routeWithoutContext = `/${originalArgv.join('/')}`
+      if (leaf.route !== routeWithoutContext) {
+        // e.g. executing "help" we don't want to use the default
+        // context (see "subtree help" above for an example use of
+        // this feature)
+        debug('mismatch on fully qualified route %s!=%s', leaf.route, routeWithoutContext)
+        if (argv.length === originalArgv.length && argv.every((elt, idx) => elt === originalArgv[idx])) {
+          debug('giving up')
+          return false
+        } else {
+          return _read(model, originalArgv, undefined, originalArgv)
+        }
+      }
+    }
+
     return withEvents(evaluator, leaf)
   }
 }
