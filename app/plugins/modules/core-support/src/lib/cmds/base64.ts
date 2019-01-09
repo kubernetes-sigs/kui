@@ -69,5 +69,5 @@ export default (commandTree, prequire) => {
       debug('encoding')
       return breakout(str.toString('base64'), options)
     }
-  }, { usage })
+  }, { usage, noAuthOk: true })
 }
