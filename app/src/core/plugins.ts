@@ -193,7 +193,9 @@ const loadPlugin = async (route, pluginPath) => {
   }
 
   const pluginLoaderRef = await import(pluginPath)
+  const preloaderRef = await import(pluginPath)
   const pluginLoader: PluginRegistration = pluginLoaderRef.default || pluginLoaderRef
+
   if (typeof pluginLoader === 'function') {
     // invoke the plugin loader
     registrar[route] = await pluginLoader(ctree, preq, {})
