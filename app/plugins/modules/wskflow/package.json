@@ -1,5 +1,5 @@
 {
-  "name": "@shell/wskflow",
+  "name": "@kui-plugin/wskflow",
   "version": "0.0.1",
   "description": "Visualizations for Composer apps",
   "main": "plugin/plugin.js",

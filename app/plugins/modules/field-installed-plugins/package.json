@@ -1,5 +1,5 @@
 {
-  "name": "plugin",
+  "name": "@kui-plugin/field-installed-plugins",
   "version": "1.0.0",
   "description": "Support for field installation of plugins",
   "main": "plugin/plugin.js",
