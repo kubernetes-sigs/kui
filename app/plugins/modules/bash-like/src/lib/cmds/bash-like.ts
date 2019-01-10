@@ -35,6 +35,7 @@ import * as repl from '../../../../../../build/core/repl'
 import { injectCSS } from '../../../../../../build/webapp/util/inject'
 import { preprocessTable, formatTable } from '../../../../../../build/webapp/util/ascii-to-table'
 import { formatUsage } from '../../../../../../build/webapp/util/ascii-to-usage'
+import formatKeyValue from '../util/ascii-key-value-to-table'
 
 import { reallyLong, handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -173,11 +174,17 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
 
     if (execOptions.stdout) {
       const out = data.toString()
-      const maybeUsage = formatUsage(cmdLine, stripControlCharacters(out), { drilldownWithPip: true })
+      const strippedOut = stripControlCharacters(out)
+      const maybeUsage = formatUsage(cmdLine, strippedOut, { drilldownWithPip: true })
       if (maybeUsage) {
         execOptions.stdout(maybeUsage)
       } else {
-        execOptions.stdout(handleANSI())
+        const maybeKeyValue = formatKeyValue(strippedOut)
+        if (maybeKeyValue) {
+          resolve(maybeKeyValue)
+        } else {
+          execOptions.stdout(handleANSI())
+        }
       }
     } else {
       parentNode.appendChild(handleANSI())

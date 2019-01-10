@@ -1152,6 +1152,12 @@ code.fancy-code {
 .no-wrap {
     white-space: nowrap;
 }
+.normal-wrap {
+    white-space: normal;
+}
+.break-all {
+    word-break: break-all;
+}
 .hide {
     display: none;
 }
