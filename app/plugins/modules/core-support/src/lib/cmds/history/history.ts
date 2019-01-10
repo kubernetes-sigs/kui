@@ -39,19 +39,27 @@ const parseN = str => {
 }
 
 const usage = {
-  history: `List current history, optionally filtering by a given string.
+  history: {
+    command: 'history',
+    strict: 'history',
+    docs: 'List current command history, optionally filtering by a given string',
+    example: 'history 100 filterString',
+    optional: [
+      { name: 'N', positional: true, docs: 'list the most recent N commands' },
+      { name: 'filterString', positional: true, docs: 'filter command history' },
+      { name: '--clear', alias: '-c', docs: 'clear your command history' }
+    ]
+  },
 
-Examples:
-   history              list the most recent ${DEFAULT_HISTORY_N} commands
-   history <N>          list the most recent N commands
-   history <N> <str>    filter the most recent N commands, showing only those that contain the given string
-   history <str>        ibid, but using the default of N=${DEFAULT_HISTORY_N}`,
-
-  again: op => `Re-execute a given command index.
-
-Examples:
-   ${op}                  re-execute the previous comman
-   ${op} <N>              ibid, but at the given history index; hint: use history to list recently executed commands`
+  again: command => ({
+    command,
+    strict: command,
+    docs: 'Re-execute a given command index',
+    example: `${command} 50`,
+    optional: [
+      { name: 'N', positional: true, docs: 're-execute the given history index N' }
+    ]
+  })
 }
 
 /**
@@ -82,8 +90,9 @@ const again = (N: number, historyEntry) => {
  *
  */
 const showHistory = ({ argv, parsedOptions: options }) => {
-  if (options.help) {
-    throw new UsageError(usage.history)
+  if (options.c) {
+    debug('clearing command history')
+    return historyModel.wipe()
   }
 
   const historyIdx = argv.indexOf('history')
@@ -91,12 +100,14 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   const firstArgLooksLikeN = parseN(argv[historyIdx + 1])
   const Nidx = Nargs === 2 || firstArgLooksLikeN ? historyIdx + 1 : -1
   const N = Nidx > 0 ? firstArgLooksLikeN : DEFAULT_HISTORY_N
+
+  // construct the filter
   const filterIdx = Nargs === 2 ? historyIdx + 2 : !firstArgLooksLikeN ? historyIdx + 1 : -1
   const filterStr = filterIdx > 0 && argv[filterIdx]
-  const filter = filterStr ? line => !line.raw.startsWith('history') && line.raw.indexOf(filterStr) >= 0 : () => true // ignore history commands if a filterStr is specified
+  const filter = filterStr ? line => line.raw.indexOf(filterStr) >= 0 : () => true
 
   const startIdx = Math.max(0, historyModel.getCursor() - N - 1)
-  const endIdx = historyModel.getCursor() + 1
+  const endIdx = historyModel.getCursor() - 1
   const recent = historyModel.lines.slice(startIdx, endIdx)
 
   debug('argv', argv)
@@ -105,6 +116,7 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   debug('N', N)
   debug('filterIdx', filterIdx)
   debug('filterStr', filterStr)
+  debug('got', recent.length, startIdx, endIdx)
 
   return recent.map((line, idx) => {
     if (!filter(line)) return
@@ -140,10 +152,10 @@ const showHistory = ({ argv, parsedOptions: options }) => {
 export default (commandTree, prequire) => {
   debug('init')
 
-  commandTree.listen('/history', showHistory, { docs: 'Show recently executed commands' })
+  commandTree.listen('/history', showHistory, { usage: usage.history, noAuthOk: true })
 
   /** clear view or clear history */
-  commandTree.listen('/history/purge', historyModel.wipe, { docs: 'Clear your command history' })
+  // commandTree.listen('/history/purge', historyModel.wipe, { docs: 'Clear your command history' })
 
   /** re-execute from history */
   const againCmd = op => ({ argv, execOptions, parsedOptions: options }) => {
@@ -151,8 +163,6 @@ export default (commandTree, prequire) => {
     console.error(execOptions)
     return again(N, execOptions && execOptions.history)
   }
-  const cmd = commandTree.listen('/!!',
-    againCmd('!!'),
-    { docs: 'Re-execute the last command, or, with !! N, the command at history position N ' })
+  const cmd = commandTree.listen('/!!', againCmd('!!'), { usage: usage.again, noAuthOk: true })
   commandTree.synonym('/again', againCmd('again'), cmd)
 }

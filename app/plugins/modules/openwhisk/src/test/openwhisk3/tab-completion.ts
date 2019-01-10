@@ -43,7 +43,7 @@ describe('Tab completion', function (this: ISuite) {
     .then(() => cli.do('', app)) // "enter" to complete the repl
     .then(data => {
       if (expectOK) {
-        return cli.expectJustOK(data)
+        return cli.expectOKWithAny(data)
       } else {
         return app
       }
@@ -101,7 +101,7 @@ describe('Tab completion', function (this: ISuite) {
       .then(() => cli.do('', app))
       .then(data => {
         if (expectOK) {
-          return cli.expectJustOK(data)
+          return cli.expectOKWithAny(data)
         } else {
           return app
         }

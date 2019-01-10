@@ -202,7 +202,8 @@ function main(args) {
     .then(sidecar.expectBadge('zip')))
   // invoke it
   it('should do an async of the action, using implicit context', () => cli.do(`async -p y 3`, this.app)
-    .then(cli.expectJustOK))
+    .then(cli.expectOKWithString(actionName16)) // e.g. "invoked `actionName16` with id:"
+    .catch(common.oops(this)))
   // call await
   it('should await successful completion of the activation', () => cli.do(`$ await`, this.app)
     .then(cli.expectJustOK)
@@ -219,12 +220,13 @@ function main(args) {
   it('should create a zip action with npm install via let', () => rimraf([join(process.env.TEST_ROOT, 'data/openwhisk/zip-action/src/node_modules/**')])
     .then(() => assert.ok(!fs.existsSync(join(process.env.TEST_ROOT, 'data/openwhisk/zip-action/src/node_modules'))))
     .then(() => cli.do(`let ${actionName18}.zip = data/openwhisk/zip-action/src`, this.app))
-    .then(cli.expectContext('/wsk/actions', actionName16))
+    .then(cli.expectContext('/wsk/actions', actionName18))
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName18)))
   // invoke it
   it('should do an async of the action, using implicit context', () => cli.do(`async --param lines '["and now", "for something completely", "different" ]'`, this.app)
-    .then(cli.expectJustOK))
+    .then(cli.expectOKWithString(actionName18)) // e.g. "invoked `actionName18` with id:"
+    .catch(common.oops(this)))
   // call await
   it('should await successful completion of the activation', () => cli.do(`$ await`, this.app)
     .then(cli.expectJustOK)

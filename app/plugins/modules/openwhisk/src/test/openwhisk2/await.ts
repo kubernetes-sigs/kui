@@ -40,7 +40,7 @@ describe('Invoke asynchronously and await', function (this: ISuite) {
 
   // create the second action
   it('should do an async of the action, using implicit context', () => cli.do(`async`, this.app)
-    .then(cli.expectJustOK))
+    .then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
 
   // call await
   it('should await completion of the activation', () => cli.do(`$ await`, this.app)

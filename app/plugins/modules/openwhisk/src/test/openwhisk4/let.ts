@@ -105,12 +105,12 @@ describe('Create an action via let core tests', function (this: ISuite) {
     .then(sidecar.expectShowing(actionName13, undefined, undefined, packageName2)))
 
   it('should create a sequence with inline file', () => cli.do(`wsk action let ${seqName1} = ${actionName2} -> ./data/openwhisk/hello.html`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOKWithString('http')) // some web address, as this is a web action
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1)))
 
   it('should create a sequence with inline anonymous and inline file', () => cli.do(`wsk action let ${seqName2} = x=>x -> ./data/openwhisk/hello.html`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOKWithString('http')) // some web address, as this is a web action
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName2)))
 
@@ -120,7 +120,7 @@ describe('Create an action via let core tests', function (this: ISuite) {
     .then(sidecar.expectShowing(seqName3)))
 
   it('should create a sequence with two inline files', () => cli.do(`wsk action let ${seqName4}=./data/openwhisk/foo.js-> ./data/openwhisk/hello.html`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOKWithString('http')) // some web address, as this is a web action
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName4)))
 
@@ -333,7 +333,7 @@ describe('Create an action via let core tests', function (this: ISuite) {
 
   // invoke it
   it('should do an async of the action, using implicit context', () => cli.do(`async -p y 3`, this.app)
-    .then(cli.expectJustOK))
+     .then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
 
   // call await
   it('should await successful completion of the activation', () => cli.do(`$ await`, this.app)

@@ -84,7 +84,7 @@ describe('k8s create pod kui.js headless mode', function (this: ISuite) {
   doHeadless(this, kui)
 })
 
-describe('k8s create pod', function (this: ISuite) {
+describe('k8s create pod electron mode', function (this: ISuite) {
   before(common.before(this, { noOpenWhisk: true }))
   after(common.after(this))
 

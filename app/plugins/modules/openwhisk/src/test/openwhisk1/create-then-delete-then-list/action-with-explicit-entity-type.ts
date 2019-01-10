@@ -24,7 +24,7 @@ import * as common from '../../../../../../../../tests/lib/common' // tslint:dis
 import * as ui from '../../../../../../../../tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
-describe('Create an action, list it, delete it, then list nothing (explicit entity type)', function (this: ISuite) {
+describe('Create an action, list it, delete it, then list nothing explicit entity type', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 

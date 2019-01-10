@@ -69,7 +69,7 @@ describe('List root-most non-erroring activations with $$!', function (this: ISu
 
   // invoke the sequences
   it('should do an async of the non-erroring sequence', () => cli.do(`wsk action async ${goodSeqName} -p name nnn`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOKWithString(goodSeqName)) // e.g. "invoked `goodSeqName` with id:"
     .catch(common.oops(this)))
 
   // call await
@@ -82,7 +82,7 @@ describe('List root-most non-erroring activations with $$!', function (this: ISu
     .catch(common.oops(this)))
 
   it('should do an async of the erroring sequence', () => cli.do(`wsk action async ${errorSeqName} -p name nnn`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOKWithString(errorSeqName)) // e.g. "invoked `errorSeqName` with id:"
     .catch(common.oops(this)))
 
   // call await
@@ -96,7 +96,7 @@ describe('List root-most non-erroring activations with $$!', function (this: ISu
 
   // call $ roots
   it('should call $$! successfully', () => cli.do(`$$!`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOKWithAny)
     .catch(common.oops(this)))
 
   it('should list the erroring sequence activation', () => cli.do(`$$!`, this.app)

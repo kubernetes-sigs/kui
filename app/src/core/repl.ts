@@ -232,7 +232,7 @@ const emptyPromise = () => {
 const stripTrailer = (str: string) => str && str.replace(/\s+.*$/, '')
 
 /** turn --foo into foo and -f into f */
-const unflag = (opt: string) => stripTrailer(opt.replace(/^[-]+/, ''))
+const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
 
 const emptyExecOptions = (): IExecOptions => new DefaultExecOptions()
 
@@ -505,7 +505,9 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
         // user passed an incorrect number of positional parameters?
         //
         if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
-          if (nActualArgs !== nRequiredArgs + nPositionalOptionals) {
+          // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
+          if (! (nActualArgs >= nRequiredArgs &&
+                 nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
             // yup, scan for implicitOK
             const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK)
             const selection = currentSelection()
@@ -526,7 +528,9 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
               // implicitOK, or the current selection
               // (or lack thereof) didn't match with the
               // command's typing requirement
-              const message = nRequiredArgs === 0 ? 'This command accepts no positional arguments'
+              const message = nRequiredArgs === 0 && nPositionalOptionals === 0
+                ? 'This command accepts no positional arguments'
+                : nPositionalOptionals > 0 ? 'This command does not accept this many arguments'
                 : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
               const err = new UsageError({ message, usage })
               err.code = 497
