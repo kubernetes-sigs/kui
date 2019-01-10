@@ -63,7 +63,7 @@ const testPagination = (ctx: ISuite, actionName?: string) => {
   const nextButton = `${lastBlock} .list-paginator-button-next`
 
   return cli.do(`$ list --limit ${limit} ${extraArgs}`, app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOKWithAny)
     .then(() => app.client.waitUntil(() => {
       return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)])
         .then(([paginatorText, rows]) => {

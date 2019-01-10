@@ -20,7 +20,7 @@ exports.keys = keys
 exports.aliases = {
   activation: ['activation', '$'],
   list: ['list'],
-  remove: ['rimraf', 'delete']
+  remove: ['delete']
 }
 
 const selectors = {
@@ -92,7 +92,7 @@ const expectOK = (appAndCount, opt) => {
         // expect several entries, of which opt is one
         return app.client.getText(selectors.LIST_RESULTS_BY_NAME_N(N - 1))
           .then(name => !Array.isArray(name) ? [name] : name)
-          .then(name => assert.ok(name !== opt[0] && name.indexOf(opt[0]) >= 0))
+          .then(name => assert.ok(name !== opt[0] && name.find(_ => _.indexOf(opt[0]) >= 0)))
       } else if (opt && (opt.selector || opt.expect)) {
         // more custom, look for expect text under given selector
         const selector = `${selectors.OUTPUT_N(N - 1)} ${opt.selector || ''}`
@@ -112,6 +112,12 @@ const expectOK = (appAndCount, opt) => {
               return opt.passthrough ? N - 1 : selector // so that the caller can inspect the selector in more detail
             })
         }
+      } else if (opt === true) {
+        // ensure that there is nothing other than "ok"
+        return app.client.waitUntil(async () => {
+          const txt = await app.client.getText(selectors.OUTPUT_N(N - 1))
+          return txt.length === 0 || txt === 'ok'
+        })
       } else {
         // nothing to validate with the "console" results of the command
         // return the index of the last executed command

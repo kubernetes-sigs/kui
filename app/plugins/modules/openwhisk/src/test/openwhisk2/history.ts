@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * read-only tests against the cli's list APIs
- *
- */
-
 import { ISuite } from '../../../../../../../tests/lib/common'
 import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '../../../../../../../tests/lib/ui'
 const { cli, rp, selectors, sidecar } = ui
 
-describe('History commands', function (this: ISuite) {
+describe('History', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -50,7 +45,7 @@ describe('History commands', function (this: ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectClosed))
 
-  it('should re-execte from history', () => cli.do('history 5 create', this.app)
+  it('should re-execute from history', () => cli.do('history 5 create', this.app)
     .then(cli.expectOKWithCustom({ passthrough: true }))
     .then(N => this.app.client.click(`${ui.selectors.LIST_RESULTS_N(N)}:first-child .entity-name`))
     .then(() => this.app)
