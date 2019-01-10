@@ -13,7 +13,7 @@
   "description": "A Kui plugin that lets users run and debug actions locally in a docker container",
   "license": "Apache-2.0",
   "main": "plugin.js",
-  "name": "openwhisk-debug",
+  "name": "@kui-plugin/openwhisk-debug",
   "scripts": {
     "postinstall": "../../../../node_modules/.bin/tsc",
     "pretest": "../../../../node_modules/.bin/tsc",

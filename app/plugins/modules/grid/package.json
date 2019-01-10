@@ -1,5 +1,5 @@
 {
-  "name": "activation-visualizations",
+  "name": "@kui-plugin/grid",
   "version": "1.0.0",
   "description": "",
   "main": "plugin.js",

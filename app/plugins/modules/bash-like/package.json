@@ -1,5 +1,5 @@
 {
-  "name": "@shell/core-support",
+  "name": "@kui-plugin/bash-like",
   "version": "1.0.0",
   "description": "",
   "main": "plugin/plugin.js",

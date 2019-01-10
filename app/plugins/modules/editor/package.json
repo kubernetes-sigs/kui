@@ -1,5 +1,5 @@
 {
-  "name": "editor",
+  "name": "@kui-plugin/editor",
   "version": "1.0.0",
   "description": "",
   "main": "plugin.js",

@@ -1,5 +1,5 @@
 {
-  "name": "@shell/apache-composer",
+  "name": "@kui-plugin/apache-composer",
   "version": "0.5.2",
   "description": "IBM Cloud shell plugin for the Apache Composer",
   "main": "plugin/plugin.js",
