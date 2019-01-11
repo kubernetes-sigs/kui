@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-const settings = require('../../build/config.json')
+const settings = require('@settings/config.json')
 
 export default settings

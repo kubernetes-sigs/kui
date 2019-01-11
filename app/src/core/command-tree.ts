@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('core/command-tree')
+import * as Debug from 'debug'
+const debug = Debug('core/command-tree')
 debug('loading')
 
 import eventBus from './events'
@@ -72,7 +73,10 @@ const sameArray = (A, B) => A.length === B.length && A.every((element, idx) => e
  *
  */
 let resolver
-export const setPluginResolver = _ => { resolver = _ }
+export const setPluginResolver = _ => {
+  debug('setPluginResolver')
+  resolver = _
+}
 
 /**
  * Is route (/a/b/c) exactly the same as path (['a', 'b', 'c'])

@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-'use strict'
+import * as Debug from 'debug'
+const debug = Debug('fetch-ui')
 
-const debug = require('debug')('fetch-ui')
-const mkdirp = require('mkdirp-promise')
+if (require.main === module) {
+  debug('called directly')
+  require('module-alias/register')
+}
+
+import * as fs from 'fs'
+import { join } from 'path'
+import { spawn } from 'child_process'
+import mkdirp = require('mkdirp')
+import * as colors from 'colors/safe'
 
 const variants = {
   win32: 'win32-x64.zip',
@@ -30,7 +39,7 @@ const variants = {
  * the 'dev' bucket.
  *
  */
-const versionFromPackageJson = () => require('../../package.json')
+const versionFromPackageJson = () => require('@root/package.json')
 
 /**
  * Return the COS bucket for this version
@@ -52,19 +61,15 @@ const versionFromEnv = process.env.VERSION && { version: process.env.VERSION }
 
 const { version } = versionFromEnv || versionFromPackageJson()
 const baseURL = 'https://s3-api.us-geo.objectstorage.softlayer.net/kui'
-const { productName } = require('../../build/config.json')
+const { productName } = require('@settings/config.json')
 const file = `${encodeURIComponent(productName)}-${variants[process.platform]}`
 const url = `${baseURL}-${bucket(version)}/${file}`
-
-const fs = require('fs')
-const spawn = require('child_process').spawn
-const path = require('path')
 
 const appDir = `${productName}-${process.platform}-x64`
 const app = {
   win32: productName,
   linux: productName,
-  darwin: path.join(`${productName}.app`, 'Contents', 'MacOS', productName)
+  darwin: join(`${productName}.app`, 'Contents', 'MacOS', productName)
 }
 
 /**
@@ -78,11 +83,11 @@ const waitForDone = (notifyOfProgress, stagingArea, doneLock) => new Promise((re
     try {
       fs.stat(doneLock, (err, stats) => {
         if (stats) {
-          const result = path.join(stagingArea, appDir, app[process.platform])
+          const result = join(stagingArea, appDir, app[process.platform])
           debug('completed', result)
 
           if (notifyOfProgress && doneMessageNeeded) {
-            console.log(' Done.'.green) // clear the waiting message with a newline
+            console.log(colors.green(' Done.')) // clear the waiting message with a newline
           }
 
           resolve(result)
@@ -112,18 +117,18 @@ const waitForDone = (notifyOfProgress, stagingArea, doneLock) => new Promise((re
  * download, or initiate a download
  *
  */
-const doneWaitOrFetch = (notifyOfProgress = false) => stagingArea => new Promise((resolve, reject) => {
-  debug('doneWaitOrFetch', notifyOfProgress, stagingArea)
+const doneWaitOrFetch = (notifyOfProgress = false) => (stagingAreaBase: string) => new Promise<string>((resolve, reject) => {
+  debug('doneWaitOrFetch', notifyOfProgress, stagingAreaBase)
 
-  if (!stagingArea) {
+  if (!stagingAreaBase) {
     return reject(new Error('no staging area specified'))
   }
 
-  stagingArea = path.join(stagingArea, version)
+  const stagingArea = join(stagingAreaBase, version)
   debug('stagingArea', stagingArea)
 
-  const doneLock = path.join(stagingArea, 'fetch-ui.done')
-  const fetchLock = path.join(stagingArea, 'fetch-ui.lock')
+  const doneLock = join(stagingArea, 'fetch-ui.done')
+  const fetchLock = join(stagingArea, 'fetch-ui.lock')
 
   const handle = err => {
     console.error(err)
@@ -134,7 +139,9 @@ const doneWaitOrFetch = (notifyOfProgress = false) => stagingArea => new Promise
     })
   }
 
-  return mkdir(stagingArea).then(() => fs.stat(doneLock, (err, stats) => {
+  debug('commencing')
+  mkdir(stagingArea).then(() => fs.stat(doneLock, (err, stats) => {
+    debug('doneLock stat', stats)
     if (stats) {
       // already fetched
       debug('already fetched')
@@ -158,7 +165,7 @@ const doneWaitOrFetch = (notifyOfProgress = false) => stagingArea => new Promise
             } else {
               debug('need to fetch')
 
-              const child = spawn('node', [path.join(__dirname, 'fetcher.js'),
+              const child = spawn('node', [join(__dirname, 'fetcher.js'),
                 stagingArea,
                 fetchLock,
                 doneLock,
@@ -167,6 +174,7 @@ const doneWaitOrFetch = (notifyOfProgress = false) => stagingArea => new Promise
               ],
               { stdio: 'inherit', detached: true })
               child.on('close', (code, signal) => {
+                debug('close', code)
                 if (code !== 0) {
                   handle(err)
                 }
@@ -183,26 +191,55 @@ const doneWaitOrFetch = (notifyOfProgress = false) => stagingArea => new Promise
   }))
 })
 
-/** promise mkdir */
-const mkdir = filepath => mkdirp(filepath)
-  .catch(err => {
+/**
+ * Promisey mkdirp that handles EEXIST gracefully
+ *
+ */
+const mkdir = (filepath: string): Promise<void> => {
+  try {
+    debug('mkdir', filepath)
+    return new Promise((resolve, reject) => {
+      mkdirp(filepath, fs.constants.S_IRWXU, err => {
+        debug('mkdir done', err)
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
+  } catch (err) {
+    debug('got error in mkdir', err)
     if (err.code !== 'EEXIST') {
       throw err
     }
-  })
+  }
+}
+
+export const fetch = doneWaitOrFetch(false)
+export const watch = stagingArea => ({ wait: () => doneWaitOrFetch(true)(stagingArea) })
 
 // if invoked from the CLI, all we do is call main
 if (require.main === module) {
   debug('called directly')
 
-  doneWaitOrFetch(true)(process.argv[2])
-    .then(console.log)
-    .catch(err => {
-      console.error(err.red)
-      process.exit(1)
-    })
+  const stagingAreaBase = process.argv[2]
+
+  try {
+    watch(stagingAreaBase).wait()
+      .then(res => {
+        debug('done')
+      })
+      .catch(err => {
+        debug('error', err)
+        console.error(colors.red(err))
+        process.exit(1)
+      })
+  } catch (err) {
+    debug('error', err)
+    console.error(colors.red(err))
+    process.exit(1)
+  }
 } else {
   debug('required as a module')
-  exports.fetch = doneWaitOrFetch(false)
-  exports.watch = stagingArea => ({ wait: () => doneWaitOrFetch(true)(stagingArea) })
 }

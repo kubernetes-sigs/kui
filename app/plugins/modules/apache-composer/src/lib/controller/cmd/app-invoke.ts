@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { invoke, async } from '../../utility/usage'
-import * as repl from '../../../../../../../build/core/repl'
-import UsageError from '../../../../../../../build/core/usage-error'
+import * as repl from '@kui/core/repl'
+import UsageError from '@kui/core/usage-error'
 import * as view from '../../view/entity-view'
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-invoke')

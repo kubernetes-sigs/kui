@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const { name: gettingStartedDocs } = require('../../../@tutorials/getting-started/package.json')
-const { name: codingBasicsDocs } = require('../../../@tutorials/coding-basics/package.json')
-const { name: combinatorsDocs } = require('../../../@tutorials/combinators/package.json')
+const { name: gettingStartedDocs } = require('@kui-plugin-src/tutorials/@tutorials/getting-started/package.json')
+const { name: codingBasicsDocs } = require('@kui-plugin-src/tutorials/@tutorials/coding-basics/package.json')
+const { name: combinatorsDocs } = require('@kui-plugin-src/tutorials/@tutorials/combinators/package.json')
 
-import repl = require('../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
 /**
  * Here we register as a listener for "shortcut" commands, that make

@@ -21,14 +21,16 @@ debug('loading')
 import * as colors from 'colors/safe'
 import * as path from 'path'
 
-import { isHeadless, inElectron } from '../../../../../../../build/core/capabilities'
-import * as repl from '../../../../../../../build/core/repl'
+import { isHeadless, inElectron } from '@kui/core/capabilities'
+import * as repl from '@kui/core/repl'
 
 import usage from './usage'
-const settings = require('../../../../../../../build/config.json')
+const settings = require('@settings/config.json')
 
 /** path to app/ directory */
-const dots = '../../../../../../../'
+const rootDir = path.dirname(require.resolve('@root/package.json'))
+const ourRootDir = path.dirname(require.resolve('@kui-plugin-src/core-support/package.json'))
+const settingsDir = path.dirname(require.resolve('@settings/package.json'))
 
 /**
  * The repl allows plugins to provide their own window, via the
@@ -39,20 +41,18 @@ const dots = '../../../../../../../'
 const aboutWindow = async () => { /* bringYourOwnWindow impl */
   debug('aboutWindow')
 
-  const root = path.join(__dirname, dots)
-
   // note that this cannot be a top-level import, because the
   // about-window npm does not behave nicely in headless mode
   const openAboutWindow = (await import('about-window')).default
 
   const about = openAboutWindow({
     product_name: settings.productName,
-    icon_path: path.join(root, settings.largeIcon),
-    package_json_dir: path.join(root, 'build'),
+    icon_path: path.join(rootDir, 'app', settings.largeIcon),
+    package_json_dir: settingsDir,
     // use_inner_html: true,
     css_path: [
-      path.join(__dirname, dots, 'content/css/themes/', settings.cssTheme),
-      path.join(__dirname, '../../../../web/css/about.css')
+      path.join(rootDir, 'app/content/css/themes/', settings.cssTheme),
+      path.join(ourRootDir, 'web/css/about.css')
     ],
     win_options: { width: 600, height: 600 }
   })
@@ -69,7 +69,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
  */
 const readPackageDotJson = () => {
   debug('readPackageDotJson')
-  return require('../../../../../../../build/package.json')
+  return require('@root/package.json')
 }
 
 /**

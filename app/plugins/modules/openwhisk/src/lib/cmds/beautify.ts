@@ -16,9 +16,9 @@
 
 declare var hljs
 
-import { isHeadless } from '../../../../../../build/core/capabilities'
-import * as cli from '../../../../../../build/webapp/cli'
-import { currentSelection, getSidecar } from '../../../../../../build/webapp/views/sidecar'
+import { isHeadless } from '@kui/core/capabilities'
+import * as cli from '@kui/webapp/cli'
+import { currentSelection, getSidecar } from '@kui/webapp/views/sidecar'
 
 import { synonyms } from '../models/synonyms'
 

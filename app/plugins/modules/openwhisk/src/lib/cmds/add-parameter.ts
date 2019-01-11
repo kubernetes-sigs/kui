@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import repl = require('../../../../../../build/core/repl')
-import { currentSelection, showEntity } from '../../../../../../build/webapp/views/sidecar'
+import repl = require('@kui/core/repl')
+import { currentSelection, showEntity } from '@kui/webapp/views/sidecar'
 
 /**
  * This plugin introduces

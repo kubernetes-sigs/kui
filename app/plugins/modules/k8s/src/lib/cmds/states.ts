@@ -16,7 +16,7 @@
 
 const debug = require('debug')('k8s/states')
 
-import repl = require('../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
 import { maybeAsDate, TryLaterError } from './util'
 

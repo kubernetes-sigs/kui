@@ -7,11 +7,11 @@ dist/plugins
 *.bak
 node_modules
 wskng.iml
+.pre-scanned.json
 app/.version
 app/build/webpack-stats.html
 app/content/**/*.js.map
-app/plugins/.pre-scanned
-app/plugins/.pre-scanned.json
+app/src/@kui-plugin
 .openwhisk-shell
 dump.rdb
 #openwhisk
@@ -24,3 +24,5 @@ app.inst
 *_LOCAL*
 *_REMOTE*
 keys
+*flycheck*.ts
+/build

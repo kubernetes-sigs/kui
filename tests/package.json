@@ -27,10 +27,9 @@
     ]
   },
   "devDependencies": {
-    "electron": "^3.0.10",
     "expand-home-dir": "0.0.3",
     "mocha": "^5.2.0",
-    "openwhisk": "git://github.com/starpit/openwhisk-client-js.git#add_client_timeout4",
+    "openwhisk": "^3.11.0",
     "promise-retry": "^1.1.1",
     "properties-parser": "^0.3.1",
     "request": "^2.88.0",

@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-'use strict'
+import * as Debug from 'debug'
+const debug = Debug('fetcher')
 
-const debug = require('debug')('fetcher')
-const fs = require('fs')
-const path = require('path')
-const needle = require('needle')
-const extract = require('extract-zip')
-const spawn = require('child_process').spawn
+import fs = require('fs')
+import path = require('path')
+import needle = require('needle')
+import extract = require('extract-zip')
+import { spawn } from 'child_process'
 
 /**
  * Initiate a fetch
  *
  */
-const fetch = (stagingArea, url, file) => new Promise((resolve, reject) => {
+const fetchElectron = (stagingArea: string, url: string, file: string) => new Promise<string>((resolve, reject) => {
   const tmp = path.join(stagingArea, file)
   const out = fs.createWriteStream(tmp)
 
-  debug('fetch', tmp, url)
+  debug('fetchElectron', tmp, url)
 
   needle
     .get(url)
@@ -43,10 +43,10 @@ const fetch = (stagingArea, url, file) => new Promise((resolve, reject) => {
     .on('finish', () => resolve(tmp))
 })
 
-const fetchAndExtract = (stagingArea, fetchLock, doneLock, url, file) => fetch(stagingArea, url, file).then(filepath => {
+const fetchAndExtract = (stagingArea: string, fetchLock: string, doneLock: string, url: string, file: string) => fetchElectron(stagingArea, url, file).then(filepath => {
   debug('fetchAndExtract extracting', filepath)
 
-  const rm = filepath => new Promise((resolve, reject) => {
+  const rm = (filepath: string) => new Promise<void>((resolve, reject) => {
     fs.unlink(filepath, err => {
       if (err) {
         reject(err)
@@ -55,7 +55,7 @@ const fetchAndExtract = (stagingArea, fetchLock, doneLock, url, file) => fetch(s
       }
     })
   })
-  const rmdir = filepath => new Promise((resolve, reject) => {
+  const rmdir = (filepath: string) => new Promise<void>((resolve, reject) => {
     fs.rmdir(filepath, err => {
       if (err) {
         reject(err)
@@ -66,7 +66,7 @@ const fetchAndExtract = (stagingArea, fetchLock, doneLock, url, file) => fetch(s
   })
   const removeTemps = result => Promise.all([rm(filepath), rmdir(fetchLock)]).then(() => result)
 
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const done = () => {
       fs.mkdir(doneLock, err => {
         if (err) {
@@ -104,4 +104,13 @@ const fetchAndExtract = (stagingArea, fetchLock, doneLock, url, file) => fetch(s
   }).then(removeTemps, removeTemps)
 })
 
-fetchAndExtract(...process.argv.slice(2))
+const stagingArea = process.argv[2]
+const fetchLock = process.argv[3]
+const doneLock = process.argv[4]
+const url = process.argv[5]
+const file = process.argv[6]
+fetchAndExtract(stagingArea,
+                fetchLock,
+                doneLock,
+                url,
+                file)

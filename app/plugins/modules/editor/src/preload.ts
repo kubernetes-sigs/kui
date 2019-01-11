@@ -18,10 +18,10 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
-import { inBrowser, isHeadless } from '../../../../build/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '../../../../build/models/plugin'
+import { inBrowser, isHeadless } from '@kui/core/capabilities'
+import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
 
-import { addActionMode } from '../../openwhisk/plugin/lib/models/modes'
+import { addActionMode } from '../../openwhisk/src/lib/models/modes'
 
 debug('done loading prereqs')
 
@@ -40,7 +40,7 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
 
   if (!isHeadless()) {
     const { lockIcon, edit } = require('./lib/readonly')
-    const { currentSelection } = require('../../../../build/webapp/views/sidecar')
+    const { currentSelection } = require('@kui/webapp/views/sidecar')
     const getAction = currentSelection
 
     addActionMode(lockIcon({

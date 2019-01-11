@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import * as fs from 'fs'
 import * as assert from 'assert'
 import { join } from 'path'
@@ -30,7 +30,7 @@ const {
   verifyNodeExists,
   verifyNodeStatusExists,
   verifyTheBasicStuff
-} = require('../../../tests/lib/composer-viz-util')
+} = require('@test/lib/composer-viz-util')
 
 /**
  * Here starts the test

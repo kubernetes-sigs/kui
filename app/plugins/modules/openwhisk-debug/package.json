@@ -14,11 +14,5 @@
   "license": "Apache-2.0",
   "main": "plugin.js",
   "name": "@kui-plugin/openwhisk-debug",
-  "scripts": {
-    "postinstall": "../../../../node_modules/.bin/tsc",
-    "pretest": "../../../../node_modules/.bin/tsc",
-    "compilenowatch": "../../../../node_modules/.bin/tsc",
-    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
-  },
   "version": "0.1.0"
 }

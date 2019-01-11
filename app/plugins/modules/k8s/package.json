@@ -3,12 +3,6 @@
   "version": "0.1.0",
   "description": "IBM Cloud shell plugin for kubernetes",
   "main": "plugin/plugin.js",
-  "scripts": {
-    "postinstall": "../../../../node_modules/.bin/tsc",
-    "pretest": "../../../../node_modules/.bin/tsc",
-    "compilenowatch": "../../../../node_modules/.bin/tsc",
-    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
-  },
   "keywords": [
     "openwhisk",
     "kubernetes"
@@ -16,6 +10,11 @@
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
   "dependencies": {
-    "command-exists": "^1.2.8"
+    "archiver": "^3.0.0",
+    "command-exists": "^1.2.8",
+    "fs-extra": "^7.0.1",
+    "js-yaml": "^3.12.0",
+    "needle": "^2.2.4",
+    "tmp": "0.0.33"
   }
 }

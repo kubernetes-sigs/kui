@@ -19,7 +19,7 @@ const debug = require('debug')('tutorial.list')
 import { readdir } from 'fs'
 import { join } from 'path'
 
-import repl = require('../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
 import { contentDir } from './util'
 

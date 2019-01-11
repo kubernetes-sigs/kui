@@ -19,13 +19,12 @@
  *    this test also covers toggling the sidecar
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, rp, selectors, sidecar } = ui
 
-import { join } from 'path'
-const paramsFileContent = require(join(__dirname, '../../../tests/data/openwhisk/params.json'))
+const paramsFileContent = require('@test/data/openwhisk/params.json')
 
 const actionName = 'foo'
 const actionName2 = 'foo2'

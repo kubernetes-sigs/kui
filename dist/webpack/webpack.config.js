@@ -1,17 +1,48 @@
+/*
+ * Copyright 2018 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 // const Visualizer = require('webpack-visualizer-plugin')
 const CompressionPlugin = require('brotli-webpack-plugin')
 
+/** point webpack to the root directory */
+const context = path.resolve(path.join(__dirname, '../../'))
+
+/**
+ * Take the top-level _moduleAliases and make sure the dirs are relative to this dir
+ *
+ */
+const reroute = aliases => {
+  for (let key in aliases) {
+    aliases[key] = path.join(context, aliases[key])
+  }
+  // console.error(aliases)
+  return aliases
+}
+
 module.exports = {
-  context: path.resolve(path.join(__dirname, '../../')),
+  context,
   entry: {
-    main: './app/build/webapp/bootstrap/webpack.js',
-    'editor.worker': './app/plugins/modules/editor/node_modules/monaco-editor/esm/vs/editor/editor.worker.js',
-    'json.worker': './app/plugins/modules/editor/node_modules/monaco-editor/esm/vs/language/json/json.worker',
-    'css.worker': './app/plugins/modules/editor/node_modules/monaco-editor/esm/vs/language/css/css.worker',
-    'html.worker': './app/plugins/modules/editor/node_modules/monaco-editor/esm/vs/language/html/html.worker',
-    'ts.worker': './app/plugins/modules/editor/node_modules/monaco-editor/esm/vs/language/typescript/ts.worker'
+    main: './build/webapp/bootstrap/webpack.js',
+    'editor.worker': './node_modules/monaco-editor/esm/vs/editor/editor.worker.js',
+    'json.worker': './node_modules/monaco-editor/esm/vs/language/json/json.worker',
+    'css.worker': './node_modules/monaco-editor/esm/vs/language/css/css.worker',
+    'html.worker': './node_modules/monaco-editor/esm/vs/language/html/html.worker',
+    'ts.worker': './node_modules/monaco-editor/esm/vs/language/typescript/ts.worker'
   },
   target: 'web',
   node: {
@@ -37,6 +68,7 @@ module.exports = {
     'webworker-threads', // wskflow
     'child_process',
     'xml2js', // used by ./app/plugins/modules/composer/@demos/combinators/http.js
+    'redis', 'redis-commands', // openwhisk-composer
     'nyc',
     'electron'
   ],
@@ -95,6 +127,7 @@ module.exports = {
       { test: /\/node_modules\/typescript\//, use: 'ignore-loader' },
       { test: /\/node_modules\/@babel\//, use: 'ignore-loader' },
       { test: /\/node_modules\/@types\//, use: 'ignore-loader' },
+      { test: /fetch-ui/, use: 'ignore-loader' },
       // end of typescript rules
       //
       // the following elide terser from modules/plugin
@@ -143,25 +176,15 @@ module.exports = {
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },
+      { test: /\.js.map$/, use: 'raw-loader' },
       { test: /monaco-editor\/min\/vs\/loader\.js/, use: 'raw-loader' },
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
     ]
   },
-  /* resolve: {
-    alias: {
-      '@cloudshell': path.resolve(__dirname, 'app')
-    }
-  }, */
-  /* externals: [
-    function (context, request, callback) {
-      console.error('!!!!!!!!!!!!!', request)
-      if (/^\//.test(request)) {
-        callback(null, `commonjs ${request}`)
-      } else {
-        callback()
-      }
-    }
-  ], */
+  resolve: {
+    // see https://www.npmjs.com/package/module-alias#usage-with-webpack
+    alias: reroute(require('../../package.json')._moduleAliases)
+  },
   plugins: [
     new CompressionPlugin({ deleteOriginalAssets: true }),
     /* new Visualizer({ filename: './webpack-stats.html' }), */

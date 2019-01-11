@@ -18,24 +18,23 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/grid/utils')
 debug('loading')
 
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import * as namespace from '../../../openwhisk/plugin/lib/models/namespace'
+import eventBus from '@kui/core/events'
+import UsageError from '@kui/core/usage-error'
+import { inBrowser } from '@kui/core/capabilities'
+import * as repl from '@kui/core/repl'
+import { removeAllDomChildren } from '@kui/webapp/util/dom'
+import { prettyPrintTime } from '@kui/webapp/util/time'
+import { getSidecar } from '@kui/webapp/views/sidecar'
+import { injectCSS } from '@kui/webapp/util/inject'
 
-import eventBus from '../../../../../build/core/events'
-import UsageError from '../../../../../build/core/usage-error'
-import { inBrowser } from '../../../../../build/core/capabilities'
-import * as repl from '../../../../../build/core/repl'
-import { removeAllDomChildren } from '../../../../../build/webapp/util/dom'
-import { prettyPrintTime } from '../../../../../build/webapp/util/time'
-import { getSidecar } from '../../../../../build/webapp/views/sidecar'
-import { injectCSS } from '../../../../../build/webapp/util/inject'
+import * as namespace from '../../../openwhisk/src/lib/models/namespace'
 import { range as rangeParser } from './time'
-
-const usage = require('../usage')
-const defaults = require('../../defaults.json')
+import * as usage from '../usage'
+import defaults from '../defaults'
 
 export const nbsp = '\u00a0'
 export const newline = '\u000a'
@@ -107,7 +106,7 @@ const filterOutNonActionActivations = filter => activations => {
  *
  */
 const extractTasks = async app => {
-  const composer = await import('../../../apache-composer/plugin/lib/utility/ast')
+  const composer = await import('@kui-plugin/apache-composer/src/lib/utility/ast')
   const { namespace, name, fsm } = app
   return [ `/${namespace}/${name}` ].concat(!fsm ? [] : composer.extractActionsFromAst(fsm))
 }
@@ -236,9 +235,10 @@ export const fetchActivationData /* FromBackend */ = (wsk, N, options) => {
  */
 export const injectContent = () => {
   if (inBrowser()) {
-    injectCSS({ css: require('../../web/css/table.css'), key: 'grid-visualization.table.css' })
+    injectCSS({ css: require('@kui-plugin-src/grid/web/css/table.css'), key: 'grid-visualization.table.css' })
   } else {
-    injectCSS(join(__dirname, '..', '..', 'web', 'css', 'table.css'))
+    const root = dirname(require.resolve('@kui-plugin-src/grid/package.json'))
+    injectCSS(join(root, 'web/css/table.css'))
   }
 
   injectCSS('https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css') // tooltips

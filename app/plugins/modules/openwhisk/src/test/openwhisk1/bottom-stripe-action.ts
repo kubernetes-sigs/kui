@@ -20,9 +20,9 @@
  */
 
 import * as assert from 'assert'
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 const actionName = 'foo'
@@ -31,8 +31,9 @@ const actionName2 = 'foo2'
 // so we can compare the content of code mode
 import { readFileSync } from 'fs'
 import * as path from 'path'
-const fooSrc = readFileSync(path.join(__dirname, '../../../tests/data/openwhisk/foo.js')).toString()
-const foo2Src = readFileSync(path.join(__dirname, '../../../tests/data/openwhisk/foo2.js')).toString()
+const root = path.dirname(require.resolve('@test/package.json'))
+const fooSrc = readFileSync(path.join(root, 'data/openwhisk/foo.js')).toString()
+const foo2Src = readFileSync(path.join(root, 'data/openwhisk/foo2.js')).toString()
 
 describe('Sidecar bottom stripe interactions for actions', function (this: ISuite) {
   before(common.before(this))

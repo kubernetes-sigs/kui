@@ -20,11 +20,6 @@ debug('loading')
 import { inBrowser } from '../core/capabilities'
 import repl = require('../core/repl')
 
-const currentNamespace = async (): Promise<string> => {
-  const namespace = require('../../plugins/modules/openwhisk/plugin/lib/models/namespace')
-  return namespace.current()
-}
-
 export const init = async () => {
   debug('init')
 
@@ -38,13 +33,13 @@ export const init = async () => {
       if (query.command) {
         // execute ?command=<command>
         const queryExec = () => repl.pexec(query.command)
-        const queryNamespace = query.namespace
 
+        /* const queryNamespace = query.namespace
         if (queryNamespace && queryNamespace !== await currentNamespace()) {
           // switch to another namespace temporarily and then execute the command
           repl.pexec(`auth switch ${queryNamespace} --no-save`)
             .then(queryExec)
-        } else {
+        } else */ {
           queryExec()
         }
       }

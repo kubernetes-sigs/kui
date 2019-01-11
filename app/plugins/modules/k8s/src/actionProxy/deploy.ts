@@ -17,12 +17,12 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/k8s/actionProxy')
 
-import repl = require('../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
 export const PACKAGE = 'cloudshell-support'
 
 /** we will use this to check whether the deployed action proxy is up to date */
-const { version: ourVersion } = require('../../package.json')
+const { version: ourVersion } = require('@root/package.json')
 
 /**
  * Actually deploy the action proxy

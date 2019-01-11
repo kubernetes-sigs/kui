@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #
 # Copyright 2018 IBM Corporation
 #
@@ -13,8 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-#!/usr/bin/env bash
 
 #
 # Find plugin-hosted tests
@@ -50,7 +50,7 @@ if [ ! -f $ROOTDIR/tests/bin/corral.sh ]; then
 fi
 
 # scan for tests
-TESTS=`find "$ROOTDIR/app/plugins/modules" -maxdepth 2 -name tests`
+TESTS=`find -L "$ROOTDIR/node_modules/@kui-plugin" -maxdepth 2 -name tests`
 
 # set up (or tear down) links
 for test in $TESTS; do
@@ -112,7 +112,7 @@ for test in $TESTS; do
 done
 
 # scan for typescript core tests
-TESTS=`find "$ROOTDIR/app" -maxdepth 3 -path '*/build/test'`
+TESTS=`find -L "$ROOTDIR/build" -maxdepth 3 -path '*/build/test'`
 for test in $TESTS; do
     echo
     echo "  - found typescript tests $test"
@@ -132,7 +132,7 @@ for test in $TESTS; do
 done
 
 # scan for typescript plugin tests
-TESTS=`find "$ROOTDIR/app/plugins/modules" -maxdepth 3 -path '*/plugin/test'`
+TESTS=`find -L "$ROOTDIR/build/@kui-plugin" -maxdepth 3 -path '*/src/test'`
 for test in $TESTS; do
     echo
     echo "  - found typescript tests $test"

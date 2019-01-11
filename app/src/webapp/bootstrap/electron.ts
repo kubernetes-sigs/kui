@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+require('module-alias/register')
 const myDebug = require('debug')('webapp/bootstrap/electron')
 
 if (process.cwd() === '/') {
@@ -28,11 +29,11 @@ if (process.cwd() === '/') {
 let repl
 if (process.env.TEST_ROOT) {
   myDebug('lifting repl to global for tests')
-  repl = require('./core/repl')
+  repl = require('@kui/core/repl')
 }
 
 try {
   require('./boot').default()
 } catch (err) {
-  require('./webapp/bootstrap/boot').default()
+  require('@kui/webapp/bootstrap/boot').default()
 }

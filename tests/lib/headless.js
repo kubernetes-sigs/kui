@@ -24,7 +24,7 @@ const { exec } = require('child_process')
 const { join } = require('path')
 const ROOT = process.env.TEST_ROOT
 const kui = process.env.KUI || join(ROOT, '../kui.js')
-const bindir = join(ROOT, '../app/bin') // should contain kubectl-kui
+const bindir = join(ROOT, '../bin') // should contain kubectl-kui
 const { expectStruct, expectSubset } = require('./ui')
 
 /**

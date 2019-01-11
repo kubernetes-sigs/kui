@@ -17,7 +17,7 @@
 //
 // test the edit actionName command for compositions
 //
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
@@ -31,7 +31,7 @@ const {
   verifyNodeExists,
   verifyEdgeExists,
   verifyNodeAbsence
-} = require('../../../tests/lib/composer-viz-util')
+} = require('@test/lib/composer-viz-util')
 
 /** set the monaco editor text */
 const setValue = (client, text) => {

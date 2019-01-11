@@ -19,7 +19,7 @@
  *
  */
 
-import repl = require('../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 import { wsk } from './openwhisk-usage'
 
 /** usage model */

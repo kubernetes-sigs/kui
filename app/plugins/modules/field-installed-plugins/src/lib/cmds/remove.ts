@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-'use strict'
-
 import * as Debug from 'debug'
 const debug = Debug('plugins/field-installed-plugins/remove')
 debug('loading')
 
-const path = require('path')
-const { remove } = require('fs-extra')
-const { success } = require('./util')
-const { remove: usage } = require('../usage')
-const compile = require('./compile')
+import * as path from 'path'
+import { remove } from 'fs-extra'
 
-const { userDataDir } = require('../../../../build/core/userdata')
+import { userDataDir } from '@kui/core/userdata'
+import compile from '@kui/core/plugin-assembler'
+
+import { success } from '../util'
+import { remove as usage } from '../../usage'
 
 debug('finished module imports')
 
@@ -44,7 +43,7 @@ const doRemove = ({ argvNoOptions }) => {
   debug(`remove plugin ${name} in ${pluginHome}`)
 
   return remove(pluginHome)
-    .then(() => compile(rootDir, true, false, true)) // the last true means we want a reverse diff
+    .then(() => compile(rootDir, true, true)) // first true: externalOnly; second true: we want a reverse diff
     .then(removedCommands => success('removed', 'will no be longer available, after reload', removedCommands))
 }
 
