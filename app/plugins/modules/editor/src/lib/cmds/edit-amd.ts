@@ -30,16 +30,18 @@ import * as usage from '../../usage'
 import * as placeholders from '../placeholders'
 import { lockIcon } from '../readonly'
 import { applyOverrides } from '../overrides'
-const strings = require('../../../i18n/strings')
+import strings from '../../i18n/strings'
 
-import globalEventBus from '../../../../../../build/core/events'
-import { inBrowser, isHeadless } from '../../../../../../build/core/capabilities'
-import { findFile } from '../../../../../../build/core/find-file'
-import * as repl from '../../../../../../build/core/repl'
-import { removeAllDomChildren } from '../../../../../../build/webapp/util/dom'
-import { injectCSS, injectScript } from '../../../../../../build/webapp/util/inject'
-import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '../../../../../../build/webapp/views/sidecar'
-import { loadComposition } from '../../../../apache-composer/plugin/lib/utility/compile'
+import globalEventBus from '@kui/core/events'
+import { inBrowser, isHeadless } from '@kui/core/capabilities'
+import { findFile } from '@kui/core/find-file'
+import * as repl from '@kui/core/repl'
+import { removeAllDomChildren } from '@kui/webapp/util/dom'
+import { injectCSS, injectScript } from '@kui/webapp/util/inject'
+import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui/webapp/views/sidecar'
+
+import { loadComposition } from '@kui-plugin/apache-composer/src/lib/utility/compile'
+
 /** default settings */
 const defaults = {
   kind: 'nodejs:default'
@@ -478,23 +480,26 @@ const openEditor = (wsk, name, options, execOptions) => {
   // Keep a reference to node's require so we can restore it after executing the amd loader file.
   const nodeRequire = global['require']
 
+  const root = path.dirname(require.resolve('@root/package.json'))
+  const ourRoot = path.dirname(require.resolve('@kui-plugin-src/editor/package.json'))
+
   if (inBrowser()) {
     // const mp = require('./edit-webpack')
-    injectScript({ src: require('../../../node_modules/monaco-editor/min/vs/loader.js'), key: 'editor.monaco' })
+    injectScript({ src: require('@root/node_modules/monaco-editor/min/vs/loader.js'), key: 'editor.monaco' })
   } else {
-    injectScript(path.join(__dirname, '../../../node_modules/monaco-editor/min/vs/loader.js'))
+    injectScript(path.join(root, 'node_modules/monaco-editor/min/vs/loader.js'))
   }
 
   try {
-    injectCSS({ css: require('../../../lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
+    injectCSS({ css: require('@kui-plugin-src/editor/lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
   } catch (err) {
-    injectCSS(path.join(__dirname, '../../../lib/mono-blue.css'))
+    injectCSS(path.join(ourRoot, 'lib/mono-blue.css'))
   }
 
   try {
-    injectCSS({ css: require('../../../lib/editor.css').toString(), key: 'editor.editor' })
+    injectCSS({ css: require('@kui-plugin-src/editor/lib/editor.css').toString(), key: 'editor.editor' })
   } catch (err) {
-    injectCSS(path.join(__dirname, '../../../lib/editor.css'))
+    injectCSS(path.join(ourRoot, 'lib/editor.css'))
   }
 
   const content = document.createElement('div')
@@ -526,7 +531,7 @@ const openEditor = (wsk, name, options, execOptions) => {
 
           if (!inBrowser()) {
             amdRequire.config({
-              baseUrl: uriFromPath(path.join(__dirname, '../../../node_modules/monaco-editor/min'))
+              baseUrl: uriFromPath(path.join(root, 'node_modules/monaco-editor/min'))
             })
           }
 
@@ -1149,7 +1154,7 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
       const readViaImport = () => {
         debug('readViaImport', template,
           findFile(template).replace(/^app\/plugins\/modules/, ''))
-        resolve(require('../../../../../../../app/plugins/modules' +
+        resolve(require('@kui-plugin-src/' +
                         findFile(template).replace(/^app\/plugins\/modules/, '')))
       }
 

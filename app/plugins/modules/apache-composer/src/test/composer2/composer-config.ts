@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import * as path from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(path.join(ROOT, 'lib/common'))

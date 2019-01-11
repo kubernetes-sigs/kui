@@ -18,9 +18,11 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/session-flow')
 debug('loading')
 
-import * as repl from '../../../../../build/core/repl'
-import * as usage from '../../usage'
-import * as astUtil from '../../../apache-composer/plugin/lib/utility/ast'
+import * as repl from '@kui/core/repl'
+
+import * as astUtil from '@kui-plugin/apache-composer/src/lib/utility/ast'
+
+import { flow as usage } from './usage'
 import { zoomToFitButtons } from './util'
 
 debug('finished loading modules')
@@ -126,5 +128,5 @@ export default (commandTree, prequire) => {
         })
 
       })
-  }, { usage: usage.flow })
+  }, { usage })
 }

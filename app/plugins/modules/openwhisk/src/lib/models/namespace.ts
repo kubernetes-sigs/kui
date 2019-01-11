@@ -17,10 +17,10 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/models/namespace')
 
-import { inBrowser, isHeadless } from '../../../../../../build/core/capabilities'
-import cli = require('../../../../../../build/webapp/cli')
-import repl = require('../../../../../../build/core/repl')
-import { prequire } from '../../../../../../build/core/plugins'
+import { inBrowser, isHeadless } from '@kui/core/capabilities'
+import cli = require('@kui/webapp/cli')
+import repl = require('@kui/core/repl')
+import { prequire } from '@kui/core/plugins'
 
 import { apiHost } from './auth'
 

@@ -17,10 +17,10 @@
 import * as Debug from 'debug'
 const debug = Debug('core-support/history/reverse-i-search')
 
-import * as historyModel from '../../../../../../../build/models/history'
-import { getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '../../../../../../../build/webapp/cli'
-import { keys } from '../../../../../../../build/webapp/keys'
-import { inBrowser } from '../../../../../../../build/core/capabilities'
+import * as historyModel from '@kui/models/history'
+import { getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '@kui/webapp/cli'
+import { keys } from '@kui/webapp/keys'
+import { inBrowser } from '@kui/core/capabilities'
 
 // TODO externalize
 const strings = {

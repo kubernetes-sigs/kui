@@ -18,8 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/field-installed-plugins/compile')
 debug('loading')
 
-import { userDataDir } from '../../../../../../build/core/userdata'
-import compile from '../../../../../../build/core/plugin-assembler'
+import { userDataDir } from '@kui/core/userdata'
+import compile from '@kui/core/plugin-assembler'
 
 import { success } from '../util'
 

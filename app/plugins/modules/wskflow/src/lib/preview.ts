@@ -24,17 +24,18 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import * as usage from '../usage'
 
-import { PluginRegistration } from '../../../../../build/models/plugin'
-import { inBrowser } from '../../../../../build/core/capabilities'
-import { findFile } from '../../../../../build/core/find-file'
-import * as repl from '../../../../../build/core/repl'
-import * as wskflowUtil from './util'
-import { showCustom, showEntity } from '../../../../../build/webapp/views/sidecar'
+import { PluginRegistration } from '@kui/models/plugin'
+import { inBrowser } from '@kui/core/capabilities'
+import { findFile } from '@kui/core/find-file'
+import * as repl from '@kui/core/repl'
+import { showCustom, showEntity } from '@kui/webapp/views/sidecar'
+import { optionsToString, handleError } from '@kui/core/utility'
 
-import * as badges from '../../../apache-composer/plugin/lib/utility/badges'
-import * as messages from '../../../apache-composer/plugin/lib/utility/messages'  // TODO: import from plugin js file
-import { optionsToString, handleError } from '../../../../../build/core/utility'
-import * as compileUtil from '../../../apache-composer/plugin/lib/utility/compile'
+import * as badges from '@kui-plugin/apache-composer/src/lib/utility/badges'
+import * as messages from '@kui-plugin/apache-composer/src/lib/utility/messages'  // TODO: import from plugin js file
+import * as compileUtil from '@kui-plugin/apache-composer/src/lib/utility/compile'
+
+import * as wskflowUtil from './util'
 
 const viewName = 'preview' // for back button and sidecar header labels
 const viewNameLong = 'App Visualization' //    ... long form

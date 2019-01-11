@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/prompt')
 
-import cli = require('../../../../../../build/webapp/cli')
+import cli = require('@kui/webapp/cli')
 
 /**
  * The command usage model

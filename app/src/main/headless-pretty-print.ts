@@ -34,7 +34,7 @@ const rawOutput = process.argv.find(_ => _ === '--raw-output') // don't try to p
  * the user specified --color=always.
  *
  */
-const stdoutIsFIFO = process.platform !== 'win32' && fstatSync(1).isFIFO() // 1 is the file descriptor for stdout
+const stdoutIsFIFO = process.platform !== 'win32' && fstatSync && fstatSync(1).isFIFO() // 1 is the file descriptor for stdout
 const noColor = neverColor || (stdoutIsFIFO && !colorAlways)
 debug('stdoutIsFIFO', stdoutIsFIFO, noColor)
 

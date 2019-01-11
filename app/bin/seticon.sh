@@ -30,10 +30,10 @@ if [ ! -x ./node_modules/.bin/fileicon ]; then
 fi
 
 if [ $? == 0 ]; then
-    ./node_modules/.bin/fileicon set ./node_modules/electron/dist/Electron.app/ "$ICON"
+    ./node_modules/.bin/fileicon set ../node_modules/electron/dist/Electron.app/ "$ICON"
 
     # echo "Updating app name"
-    plist="`pwd`/node_modules/electron/dist/Electron.app/Contents/Info.plist"
+    plist="`pwd`/../node_modules/electron/dist/Electron.app/Contents/Info.plist"
     # echo $plist
     plutil -replace CFBundleName -string "$APPNAME" -- "${plist}"
     plutil -replace CFBundleDisplayName -string "$APPNAME" -- "${plist}"
@@ -59,11 +59,11 @@ if [ $? == 0 ]; then
 
     # the remainder is probably needed for the official builds, but doesn't seem to work for the dev environment
     # echo "Updating executable bits"
-    if [ -f node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
+    if [ -f ../node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
 	# echo "Moving binary"
-	mv node_modules/electron/dist/Electron.app/Contents/MacOS/Electron "node_modules/electron/dist/Electron.app/Contents/MacOS/$APPNAME"
-	mv node_modules/electron/dist/Electron.app "node_modules/electron/dist/$APPNAME.app"
+	mv ../node_modules/electron/dist/Electron.app/Contents/MacOS/Electron "../node_modules/electron/dist/Electron.app/Contents/MacOS/$APPNAME"
+	mv ../node_modules/electron/dist/Electron.app "../node_modules/electron/dist/$APPNAME.app"
 
-	echo "dist/$APPNAME.app/Contents/MacOS/$APPNAME" > node_modules/electron/path.txt
+	echo "dist/$APPNAME.app/Contents/MacOS/$APPNAME" > ../node_modules/electron/path.txt
     fi
 fi

@@ -16,7 +16,7 @@
 
 const debug = require('debug')('k8s/util/help')
 
-import UsageError from '../../../../../../build/core/usage-error'
+import UsageError from '@kui/core/usage-error'
 
 /**
  * Pretty-print the kubectl help output

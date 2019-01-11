@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))

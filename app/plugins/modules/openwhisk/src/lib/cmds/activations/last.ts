@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import repl = require('../../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
 /**
  * wsk activation last: find and display the (temporally) last activation

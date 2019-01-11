@@ -22,7 +22,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/cmds/cp')
 
-import repl = require('../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
 /** here is the module */
 export default async (commandTree, wsk) => {

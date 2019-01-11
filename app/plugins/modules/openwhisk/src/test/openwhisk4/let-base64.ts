@@ -17,9 +17,9 @@
 import { join } from 'path'
 import { readFileSync } from 'fs'
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 const file = './data/openwhisk/not-really-png.png'

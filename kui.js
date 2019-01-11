@@ -6,4 +6,4 @@ process.argv.shift()
 process.env.KUI_HEADLESS = true
 process.env.KUI_DEV = true
 
-require('./app/build/main/main').main(process.argv)
+require('./build/main/main').main(process.argv)

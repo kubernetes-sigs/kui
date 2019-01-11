@@ -20,8 +20,8 @@ debug('loading')
 
 import { basename, join } from 'path'
 
-import { findFile } from '../../../../../../build/core/find-file'
-import repl = require('../../../../../../build/core/repl')
+import { findFile } from '@kui/core/find-file'
+import repl = require('@kui/core/repl')
 
 import { flatten, isDirectory, toOpenWhiskFQN } from './util'
 import { States, FinalState } from './states'

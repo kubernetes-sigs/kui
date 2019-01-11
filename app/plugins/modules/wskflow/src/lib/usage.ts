@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-'use strict'
-
-module.exports = {
-  flow: {
-    strict: 'flow',
-    title: 'flow visualization',
-    header: 'Render a visualization of the flow taken by a given session',
-    example: 'session flow <sessionId>',
-    required: [{ name: 'sessionId', docs: 'a session ID' }],
-    parents: ['composer', { command: 'composer session' }]
-  }
+export const flow = {
+  strict: 'flow',
+  title: 'flow visualization',
+  header: 'Render a visualization of the flow taken by a given session',
+  example: 'session flow <sessionId>',
+  required: [{ name: 'sessionId', docs: 'a session ID' }],
+  parents: ['composer', { command: 'composer session' }]
 }

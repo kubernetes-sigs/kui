@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { sessionGet } from '../../utility/usage'
-import * as repl from '../../../../../../../build/core/repl'
+import * as repl from '@kui/core/repl'
 import * as view from '../../view/entity-view'
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/session-get')

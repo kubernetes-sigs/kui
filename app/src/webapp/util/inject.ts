@@ -37,6 +37,8 @@ export const injectCSS = (file: IStylesheetContent | string): void => {
     return
   }
 
+  debug('injectCSS', file)
+
   const contentType = 'text/css'
   const rel = 'stylesheet'
 

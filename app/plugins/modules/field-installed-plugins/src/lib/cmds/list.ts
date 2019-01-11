@@ -20,8 +20,8 @@ const debug = Debug('plugins/field-installed-plugins/list')
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import * as repl from '../../../../../../build/core/repl'
-import { userDataDir } from '../../../../../../build/core/userdata'
+import * as repl from '@kui/core/repl'
+import { userDataDir } from '@kui/core/userdata'
 
 import { list as usage } from '../../usage'
 

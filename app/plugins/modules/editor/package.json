@@ -1,19 +1,19 @@
 {
   "name": "@kui-plugin/editor",
   "version": "1.0.0",
-  "description": "",
+  "description": "Monaco Editor plugin for Kui",
   "main": "plugin.js",
-  "scripts": {
-    "postinstall": "../../../../node_modules/.bin/tsc",
-    "postinstall-yo": "rm -rf node_modules/monaco-editor/esm",
-    "pretest": "../../../../node_modules/.bin/tsc",
-    "compilenowatch": "../../../../node_modules/.bin/tsc",
-    "compile": "../../../../node_modules/.bin/tsc -watch -p ./"
+  "bin": {
+    "@kui-plugin/editor/webpack/pre": "bin/prune-for-browser.sh",
+    "@kui-plugin/editor/webpack/post": "bin/restore-after-prune.sh"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "kui"
+  ],
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
   "dependencies": {
-    "monaco-editor": "^0.14.3"
+    "monaco-editor": "^0.14.3",
+    "tmp": "0.0.33"
   }
 }

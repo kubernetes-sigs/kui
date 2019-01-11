@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import * as fs from 'fs'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
@@ -32,7 +32,7 @@ const {
   verifyEdgeExists,
   verifyOutgoingEdgeExists,
   verifyTheBasicStuff
-} = require('../../../tests/lib/composer-viz-util')
+} = require('@test/lib/composer-viz-util')
 
 /**
  * Define the input files

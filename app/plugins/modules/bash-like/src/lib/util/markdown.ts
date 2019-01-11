@@ -16,7 +16,7 @@
 
 import * as path from 'path'
 
-import { pexec } from '../../../../../../build/core/repl'
+import { pexec } from '@kui/core/repl'
 
 /**
  * Render a markdown file as HTML

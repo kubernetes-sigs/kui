@@ -20,8 +20,8 @@ debug('loading')
 
 import * as colors from 'colors/safe'
 
-import { isHeadless } from '../../../../../build/core/capabilities'
-import * as cli from '../../../../../build/webapp/cli'
+import { isHeadless } from '@kui/core/capabilities'
+import * as cli from '@kui/webapp/cli'
 
 /**
  * Return a message for the REPL, asking the user to reload
