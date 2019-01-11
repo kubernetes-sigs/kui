@@ -1,17 +1,36 @@
+/*
+ * Copyright 2018 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/utility/compile')
-import { extractActionsFromAst, isValidAst } from './ast'
-import { currentSelection } from '../../../../../../build/webapp/views/sidecar'
-import UsageError from '../../../../../../build/core/usage-error'
-import { create } from './usage'
+
+import * as fs from 'fs'
+import * as path from 'path'
+import * as expandHomeDir from 'expand-home-dir'
 import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import * as path from 'path'
+
+import { currentSelection } from '@kui/webapp/views/sidecar'
+import UsageError from '@kui/core/usage-error'
+import { inBrowser } from '@kui/core/capabilities'
+import { findFile } from '@kui/core/find-file'
+
+import { extractActionsFromAst, isValidAst } from './ast'
+import { create } from './usage'
 import { deployAction } from './parse'
-import { findFile } from '../../../../../../build/core/find-file'
-import * as fs from 'fs'
-import * as expandHomeDir from 'expand-home-dir'
 import * as messages from './messages'
 
 // help compositions find our openwhisk-composer module

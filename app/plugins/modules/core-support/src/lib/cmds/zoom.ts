@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/zoom')
 
-import UsageError from '../../../../../../build/core/usage-error'
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import { injectCSS } from '../../../../../../build/webapp/util/inject'
+import UsageError from '@kui/core/usage-error'
+import { inBrowser } from '@kui/core/capabilities'
+import { injectCSS } from '@kui/webapp/util/inject'
 
 import * as path from 'path'
 
@@ -157,7 +157,8 @@ export default (commandTree, prequire) => {
   if (inBrowser()) {
     injectCSS({ css: require('../../../web/css/zoom.css'), key: 'zoom.css' })
   } else {
-    injectCSS(path.join(__dirname, '../../../web/css/zoom.css'))
+    const root = path.dirname(require.resolve('@kui-plugin-src/core-support/package.json'))
+    injectCSS(path.join(root, 'web/css/zoom.css'))
   }
 
   const overlay = document.createElement('div')

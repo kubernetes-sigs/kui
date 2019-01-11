@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { appGet } from '../../utility/usage'
-import * as repl from '../../../../../../../build/core/repl'
-import * as view from '../../view/entity-view'
-import * as parseUtil from '../../utility/parse'
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-get')
+
+import * as repl from '@kui/core/repl'
+
+import { appGet } from '../../utility/usage'
+import * as view from '../../view/entity-view'
+import * as parseUtil from '../../utility/parse'
 
 export default async (commandTree, prequire) => {
   const wsk = await prequire('openwhisk')
@@ -38,7 +41,7 @@ export default async (commandTree, prequire) => {
         return Promise.reject(new Error())
       }
       debug('rendering action get')
-      return actionGet(opts).then(async response => view.visualizeComposition(response, opts.execOptions))
+      return actionGet(opts).then(response => view.visualizeComposition(response, opts.execOptions))
     })
   })
 

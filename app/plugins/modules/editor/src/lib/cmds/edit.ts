@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '../../../../../../build/core/capabilities'
+import { inBrowser } from '@kui/core/capabilities'
 
 export default async (commandTree, prequire) => {
   if (inBrowser()) {

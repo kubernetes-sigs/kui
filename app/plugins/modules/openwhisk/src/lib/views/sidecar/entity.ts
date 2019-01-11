@@ -19,19 +19,19 @@ declare var hljs
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/views/sidecar/entity')
 
-import * as cli from '../../../../../../../build/webapp/cli'
-import * as repl from '../../../../../../../build/core/repl'
-import eventBus from '../../../../../../../build/core/events'
+import * as cli from '@kui/webapp/cli'
+import * as repl from '@kui/core/repl'
+import eventBus from '@kui/core/events'
 
-import { addModeButtons } from '../../../../../../../build/webapp/bottom-stripe'
-import { element, removeAllDomChildren } from '../../../../../../../build/webapp/util/dom'
-import { formatOneListResult } from '../../../../../../../build/webapp/views/table'
-import { addBadge, addNameToSidecarHeader, addVersionBadge, beautify, clearBadges, getSidecar, linkify, renderField } from '../../../../../../../build/webapp/views/sidecar'
-import sidecarSelector from '../../../../../../../build/webapp/views/sidecar-selector'
-import { IShowOptions, DefaultShowOptions } from '../../../../../../../build/webapp/views/show-options'
+import { addModeButtons } from '@kui/webapp/bottom-stripe'
+import { element, removeAllDomChildren } from '@kui/webapp/util/dom'
+import { formatOneListResult } from '@kui/webapp/views/table'
+import { addBadge, addNameToSidecarHeader, addVersionBadge, beautify, clearBadges, getSidecar, linkify, renderField } from '@kui/webapp/views/sidecar'
+import sidecarSelector from '@kui/webapp/views/sidecar-selector'
+import { IShowOptions, DefaultShowOptions } from '@kui/webapp/views/show-options'
 
 // maybe not needed, after some more cleanup
-import { prequire } from '../../../../../../../build/core/plugins'
+import { prequire } from '@kui/core/plugins'
 
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'

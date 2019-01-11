@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { create } from '../../utility/usage'
-import * as repl from '../../../../../../../build/core/repl'
-import UsageError from '../../../../../../../build/core/usage-error'
-import * as view from '../../view/entity-view'
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-create')
+
+import * as repl from '@kui/core/repl'
+import UsageError from '@kui/core/usage-error'
+
+import { create } from '../../utility/usage'
+import * as view from '../../view/entity-view'
 import * as compileUtil from '../../utility/compile'
 import * as client from '../client'
 

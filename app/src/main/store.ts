@@ -37,11 +37,18 @@ export default app => {
 
   let data
   try {
-    data = JSON.parse(readFileSync(userData).toString())
+    let raw = readFileSync(userData).toString()
+    try {
+      data = JSON.parse(raw)
+    } catch (err) {
+      debug('error parsing userData', raw)
+      throw err
+    }
   } catch (err) {
     if (err.code === 'ENOENT') {
       data = {}
     } else {
+      debug('error reading userData')
       throw err
     }
   }

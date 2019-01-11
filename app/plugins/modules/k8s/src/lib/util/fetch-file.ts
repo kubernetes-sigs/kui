@@ -16,7 +16,7 @@
 
 const debug = require('debug')('k8s/util/fetch-file')
 
-import { findFile } from '../../../../../../build/core/find-file'
+import { findFile } from '@kui/core/find-file'
 
 import needle = require('needle')
 import expandHomeDir = require('expand-home-dir')

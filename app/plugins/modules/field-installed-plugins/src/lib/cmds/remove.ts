@@ -26,7 +26,7 @@ const { success } = require('./util')
 const { remove: usage } = require('../usage')
 const compile = require('./compile')
 
-const { userDataDir } = require('../../../../build/core/userdata')
+const { userDataDir } = require('@kui/core/userdata')
 
 debug('finished module imports')
 

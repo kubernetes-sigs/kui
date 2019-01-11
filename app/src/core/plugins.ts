@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('core/plugins')
+import * as Debug from 'debug'
+const debug = Debug('core/plugins')
 debug('loading')
 
-import commandTree = require('./command-tree')
+import * as commandTree from './command-tree'
 import { PluginRegistration } from '../models/plugin'
 
 debug('modules loaded')
 
-const pluginRoot = '../../plugins'
+const pluginRoot = '../@kui-plugin'
 const commandToPlugin = {} // map from command to plugin that defines it
 const isSubtreeSynonym = {}
 const isSynonym = {}
@@ -34,7 +35,7 @@ const registrar = {} // this is the registrar for plugins
 
 let prescanned
 try {
-  prescanned = require('../../plugins/.pre-scanned.json')
+  prescanned = require('@prescan/.pre-scanned.json')
 } catch (err) {
   debug('prescanned does not exist or is not valid JSON', err)
 }
@@ -52,7 +53,7 @@ let prescan
  *
  */
 export const scanForModules = (dir: string, quiet = false) => {
-  debug('scanForModules')
+  debug('scanForModules %s', dir)
 
   const fs = require('fs')
   const path = require('path')
@@ -73,13 +74,17 @@ export const scanForModules = (dir: string, quiet = false) => {
 
         function lookFor (filename: string, destMap: Object, color: string) {
           const pluginPath = path.join(moduleDir, module, filename)
+          debug('lookFor', filename, pluginPath)
+
           if (fs.existsSync(pluginPath)) {
             if (!quiet) {
               console.log(colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module))
             }
             destMap[module] = pluginPath
           } else {
-            const backupPluginPath = path.join(modulePath, 'plugin', filename)
+            const backupPluginPath = path.join(modulePath, 'src', filename)
+            debug('lookFor2', filename, backupPluginPath)
+
             if (fs.existsSync(backupPluginPath)) {
               if (!quiet) {
                 console.log(colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module))
@@ -97,7 +102,7 @@ export const scanForModules = (dir: string, quiet = false) => {
     }
 
     // scan the app/plugins/modules directory
-    const moduleDir = path.join(dir, 'modules')
+    const moduleDir = dir // path.join(dir, 'modules')
     debug('moduleDir', moduleDir)
     doScan({ modules: fs.readdirSync(moduleDir), moduleDir })
 
@@ -288,21 +293,24 @@ const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}) => {
  * Load the prescan model, in preparation for loading the shell
  *
  */
-export const init = () => { // { app = require('electron').remote.app } = {}
+export const init = async () => {
   debug('init')
 
-  // first try loading the prescan from the userData directory
-  return loadPrescan(pluginRoot)
-    /* .then(builtins => loadPrescan(path.join(app.getPath('userData'), 'plugins'))
+  // global
+  prescan = await loadPrescan(pluginRoot)
+
+  // disabled: userData plugins
+  /* .then(builtins => loadPrescan(path.join(app.getPath('userData'), 'plugins'))
       .catch(err => {
         debug('no user-installed plugins, due to %s', err)
         return {}
       })
       .then(unify(builtins)) // merge builtin plugins with user-installed plugins
-*/
-    .then(_ => { prescan = _; return _ }) // global variable, ugh
-    .then(makeResolver)
-    .then(commandTree.setPluginResolver)
+  */
+
+  commandTree.setPluginResolver(makeResolver(prescan))
+
+  debug('init done')
 }
 
 /**
@@ -389,7 +397,7 @@ const makeResolver = prescan => {
     } finally {
       debug('resolveOne done', plugin)
     }
-  }
+  } /* resolveOne */
 
   /** a plugin resolver impl */
   const resolver = {
@@ -444,10 +452,11 @@ const makeResolver = prescan => {
         return Promise.all(prescan.catchalls.map(_ => resolveOne(_.plugin)))
       }
     }
-  }
+  } /* resolver */
 
+  debug('makeResolver done')
   return resolver
-}
+} /* makeResolver */
 
 /**
  * Generate a prescan model

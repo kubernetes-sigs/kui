@@ -17,14 +17,14 @@
 const debug = require('debug')('k8s/cmds/kedit')
 debug('loading')
 
-import { basename, join } from 'path'
+import { basename, dirname, join } from 'path'
 import expandHomeDir = require('expand-home-dir')
 
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import { PluginRegistration, PluginRequire } from '../../../../../../build/models/plugin'
-import { injectCSS } from '../../../../../../build/webapp/util/inject'
-import { findFile } from '../../../../../../build/core/find-file'
-import repl = require('../../../../../../build/core/repl')
+import { inBrowser } from '@kui/core/capabilities'
+import { PluginRegistration, PluginRequire } from '@kui/models/plugin'
+import { injectCSS } from '@kui/webapp/util/inject'
+import { findFile } from '@kui/core/find-file'
+import repl = require('@kui/core/repl')
 
 import { IFormGroup, IFormElement, generateForm } from './form'
 import { formatEntity } from '../util/formatEntity'
@@ -58,7 +58,8 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   if (inBrowser()) {
     injectCSS({ css: require('../../../web/css/main.css').toString(), key: 'kedit' })
   } else {
-    injectCSS(join(__dirname, '../../../web/css/main.css'))
+    const ourRoot = dirname(require.resolve('@kui-plugin-src/wskflow/package.json'))
+    injectCSS(join(ourRoot, 'web/css/main.css'))
   }
 
   // override the type shown in the sidecar header to show the

@@ -91,6 +91,7 @@ const readFile = async (dir: string): Promise<IPrescan> => {
     }
   } catch (err) {
     if (err.code === 'ENOENT') {
+      debug('no file to read %s', dir)
       return {}
     } else {
       console.error(err)
@@ -313,8 +314,8 @@ export default async (rootDir: string, externalOnly = false, reverseDiff = false
   debug('pluginRoot is %s', pluginRoot)
   debug('externalOnly is %s', externalOnly)
 
-  await mkdirp(path.join(pluginRoot, 'modules'))
   const before = await readFile(pluginRoot)
+  debug('before', before)
 
   if (!externalOnly) {
     // uglify

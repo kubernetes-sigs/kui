@@ -20,10 +20,10 @@ const debug = Debug('plugins/bash-like/cmds/git-status')
 import * as path from 'path'
 import { spawn } from 'child_process'
 
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import { partial } from '../../../../../../build/webapp/cli'
-import { pexec } from '../../../../../../build/core/repl'
-import pip from '../../../../../../build/webapp/picture-in-picture'
+import { inBrowser } from '@kui/core/capabilities'
+import { partial } from '@kui/webapp/cli'
+import { pexec } from '@kui/core/repl'
+import pip from '@kui/webapp/picture-in-picture'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'

@@ -16,14 +16,16 @@
 //
 // tests to cover the introductory scenario laid out in the docs
 //
+
 const ROOT = process.env.TEST_ROOT
+
 import * as path from 'path'
 import * as fs from 'fs'
 import * as assert from 'assert'
-import { ISuite } from '../../../../../../../tests/lib/common'
 
-const common = require(path.join(ROOT, 'lib/common'))
-const ui = require(path.join(ROOT, 'lib/ui'))
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli

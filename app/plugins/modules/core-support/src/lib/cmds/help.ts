@@ -18,9 +18,9 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
-import UsageError from '../../../../../../build/core/usage-error'
-import { isHeadless } from '../../../../../../build/core/capabilities'
-import * as repl from '../../../../../../build/core/repl'
+import UsageError from '@kui/core/usage-error'
+import { isHeadless } from '@kui/core/capabilities'
+import * as repl from '@kui/core/repl'
 
 /**
  * Respond with a top-level usage document

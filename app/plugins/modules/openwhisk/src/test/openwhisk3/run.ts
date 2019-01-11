@@ -16,16 +16,18 @@
 
 import * as assert from 'assert'
 import { readFile } from 'fs'
-import { join } from 'path'
+import { dirname, join } from 'path'
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, normalizeHTML, selectors, sidecar } = ui
 const { rp } = common
 
+const root = dirname(require.resolve('@test/package.json'))
+
 const commandFile = 'data/openwhisk/commandFile.wsk'
-const local = join(__dirname, '../../../tests/data/openwhisk/openwhisk-shell-demo-html')
+const local = join(root, 'data/openwhisk/openwhisk-shell-demo-html')
 
 const API_HOST = process.env.API_HOST || 'openwhisk.ng.bluemix.net'
 const ns = ui.expectedNamespace()

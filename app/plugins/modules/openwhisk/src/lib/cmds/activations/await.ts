@@ -25,8 +25,8 @@ const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10) || 1000
 
 const debug = require('debug')('openwhisk.await')
 
-import repl = require('../../../../../../../build/core/repl')
-import historyModel = require('../../../../../../../build/models/history')
+import repl = require('@kui/core/repl')
+import historyModel = require('@kui/models/history')
 
 /** was the given activation handled by the conductor */
 const uuidPattern = /^[0-9a-f]{32}$/

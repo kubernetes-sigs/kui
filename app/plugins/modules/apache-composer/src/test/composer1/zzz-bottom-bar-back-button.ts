@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 //
 // tests that create an action and test that it shows up in the list UI
 //    this test also covers toggling the sidecar

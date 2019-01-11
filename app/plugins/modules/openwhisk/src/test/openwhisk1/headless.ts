@@ -31,7 +31,7 @@ const { ISuite } = require(join(ROOT, 'lib/common'))
 const common = require(join(ROOT, 'lib/common'))
 const ui = require(join(ROOT, 'lib/ui'))
 const openwhisk = require(join(ROOT, 'lib/openwhisk'))
-const { cli } = require('../../../../../../../tests/lib/headless')
+const { cli } = require('@test/lib/headless')
 
 const kui = process.env.KUI || join(ROOT, '../kui.js')
 
@@ -96,7 +96,7 @@ describe('Headless mode', function (this: ISuite) {
       .catch(common.oops(this)))
   })
 
-  it('should create an action', () => cli.do(`action create foo ${join(ROOT, 'data/openwhisk/foo.js')}`)
+  it('should create an action', () => cli.do(`action create foo ${join(ROOT, 'data/openwhisk/headless/foo.js')}`)
     .then(cli.expectOK('ok: updated action foo\n', { exact: true }))
     .catch(common.oops(this)))
 
@@ -106,11 +106,11 @@ describe('Headless mode', function (this: ISuite) {
       .catch(common.oops(this)))
   })
 
-  it('should create an action with an env var parameter', () => cli.do(`action create envfun ${join(ROOT, 'data/openwhisk/echo.js')} -p fun $FUN`, { FUN: 3 })
+  it('should create an action with an env var parameter', () => cli.do(`action create envfun ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun $FUN`, { FUN: 3 })
     .then(cli.expectOK('ok: updated action envfun\n', { exact: true }))
     .catch(common.oops(this)))
 
-  it('should create an action with params-with-spaces', () => cli.do(`action create spacey ${join(ROOT, 'data/openwhisk/echo.js')} -p fun "space cadet"`)
+  it('should create an action with params-with-spaces', () => cli.do(`action create spacey ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun "space cadet"`)
     .then(cli.expectOK('ok: updated action spacey\n', { exact: true }))
     .catch(common.oops(this)))
 

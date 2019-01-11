@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-mkdir bin
+mkdir -f bin
 
 # install jq
 # (doing an apt-get update to install jq takes forever; often 80-90 seconds)

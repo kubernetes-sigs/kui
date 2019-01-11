@@ -32,9 +32,9 @@ const readJSON = (projectHome: string, fileName: string): Promise<any> => new Pr
       const projectName = basename(projectHome)
       debug('reading built-in', projectName, fileName)
 
-            // WARNING: webpack requires that the path prefix be an explicit string :(
-            // DO NOT try to be clever here
-      resolve(require('../../../@tutorials/' + projectName + '/' + fileName))
+      // WARNING: webpack requires that the path prefix be an explicit string :(
+      // DO NOT try to be clever here
+      resolve(require('@kui-plugin-src/tutorials/@tutorials/' + projectName + '/' + fileName))
     } else {
       debug('reading external', projectHome, fileName)
       resolve(join(projectHome, fileName))

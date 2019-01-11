@@ -19,12 +19,12 @@
  *
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, selectors, sidecar } = ui
 
-import { doHelp, header, header2 } from '../../../../../../build/test/core2/help'
+import { doHelp, header, header2 } from '@kui/test/core2/help'
 
 /* the header for action help */
 const actionHelpHeader = header2('OpenWhisk', 'Action Operations')

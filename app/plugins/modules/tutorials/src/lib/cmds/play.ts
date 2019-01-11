@@ -16,7 +16,7 @@
 
 const debug = require('debug')('plugins/tutorials/play')
 
-import { join } from 'path'
+import { dirname, join } from 'path'
 
 /** highlight.js global */
 declare const hljs
@@ -34,12 +34,12 @@ const marked = _ => Marked(_, { renderer })
 import { projectHome as projectHomeDir, readProject } from './util'
 import { wskflowCycle } from './wskflow'
 
-import { injectCSS, loadHTML } from '../../../../../../build/webapp/util/inject'
-import { findFile } from '../../../../../../build/core/find-file'
-import cli = require('../../../../../../build/webapp/cli')
-import repl = require('../../../../../../build/core/repl')
-import { removeAllDomChildren } from '../../../../../../build/webapp/util/dom'
-import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '../../../../../../build/webapp/views/sidecar'
+import { injectCSS, loadHTML } from '@kui/webapp/util/inject'
+import { findFile } from '@kui/core/find-file'
+import cli = require('@kui/webapp/cli')
+import repl = require('@kui/core/repl')
+import { removeAllDomChildren } from '@kui/webapp/util/dom'
+import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui/webapp/views/sidecar'
 
 // TODO eliminate this jquery dependence
 let $
@@ -70,14 +70,12 @@ const injectOurCSS = () => {
   try {
     // webpack style
     injectCSS({ css: require('../../../web/css/main.css').toString(), key: 'tutorial.main' })
-  } catch {
-    // local file style
-    injectCSS(join(__dirname, '../../../web/css/main.css'))
-  }
-  try {
     injectCSS({ css: require('../../../web/css/tutorials.css'), key: 'tutorial.tutorials' })
   } catch {
-    injectCSS(join(__dirname, '../../../web/css/tutorials.css'))
+    // local file style
+    const ourRoot = dirname(require.resolve('@kui-plugin-src/tutorials/package.json'))
+    injectCSS(join(ourRoot, 'web/css/main.css'))
+    injectCSS(join(ourRoot, 'web/css/tutorials.css'))
   }
 }
 
@@ -92,7 +90,8 @@ const injectHTML = () => {
     loader = loadHTML({ html: require('../../../web/html/index.html').toString() })
     debug('webpack html inject')
   } catch {
-    loader = loadHTML(join(__dirname, '../../../web/html/index.html'))
+    const ourRoot = dirname(require.resolve('@kui-plugin-src/tutorials/package.json'))
+    loader = loadHTML(join(ourRoot, 'web/html/index.html'))
     debug('local file html inject')
   }
 

@@ -16,7 +16,7 @@
 
 const debug = require('debug')('k8s/formatters/formatTable')
 
-import repl = require('../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length, maxColumns) => {

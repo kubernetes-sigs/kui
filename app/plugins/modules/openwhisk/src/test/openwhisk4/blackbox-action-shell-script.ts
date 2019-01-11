@@ -18,9 +18,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as assert from 'assert'
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 const flip = 'flip'
@@ -33,7 +33,8 @@ describe('blackbox actions from a shell script', function (this: ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  const expectedFlipSource = removeWhitespace(fs.readFileSync(path.join(__dirname, '../../../tests/data/openwhisk/flip.sh')).toString())
+  const root = path.dirname(require.resolve('@test/package.json'))
+  const expectedFlipSource = removeWhitespace(fs.readFileSync(path.join(root, 'data/openwhisk/flip.sh')).toString())
 
   it('should create a blackbox action', () => cli.do(`wsk action create --native ${flip} ./data/openwhisk/flip.sh`, this.app)
     .then(cli.expectOK)

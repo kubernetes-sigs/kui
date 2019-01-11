@@ -28,15 +28,15 @@ import * as usage from '../../usage'
 import * as placeholders from '../placeholders'
 import { lockIcon } from '../readonly'
 import { applyOverrides } from '../overrides'
-const strings = require('../../../i18n/strings')
+import strings from '../../i18n/strings'
 
-import globalEventBus from '../../../../../../build/core/events'
-import { isHeadless } from '../../../../../../build/core/capabilities'
-import { findFile } from '../../../../../../build/core/find-file'
-import * as repl from '../../../../../../build/core/repl'
-import { removeAllDomChildren } from '../../../../../../build/webapp/util/dom'
-import { injectCSS } from '../../../../../../build/webapp/util/inject'
-import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '../../../../../../build/webapp/views/sidecar'
+import globalEventBus from '@kui/core/events'
+import { isHeadless } from '@kui/core/capabilities'
+import { findFile } from '@kui/core/find-file'
+import * as repl from '@kui/core/repl'
+import { removeAllDomChildren } from '@kui/webapp/util/dom'
+import { injectCSS } from '@kui/webapp/util/inject'
+import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui/webapp/views/sidecar'
 
 import * as monaco from 'monaco-editor'
 // Since packaging is done by you, you need
@@ -442,14 +442,11 @@ const openEditor = (wsk, name, options, execOptions) => {
 
   try {
     injectCSS({ css: require('../../../lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
-  } catch (err) {
-    injectCSS(path.join(__dirname, '../../../lib/mono-blue.css'))
-  }
-
-  try {
     injectCSS({ css: require('../../../lib/editor.css').toString(), key: 'editor.editor' })
   } catch (err) {
-    injectCSS(path.join(__dirname, '../../../lib/editor.css'))
+    const ourRoot = path.dirname(require.resolve('@kui-plugin-src/editor/package.json'))
+    injectCSS(path.join(ourRoot, 'lib/mono-blue.css'))
+    injectCSS(path.join(ourRoot, 'lib/editor.css'))
   }
 
   const content = document.createElement('div')

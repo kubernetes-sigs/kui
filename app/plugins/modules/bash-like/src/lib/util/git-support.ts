@@ -17,11 +17,11 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/util/git-support')
 
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { exec, spawn } from 'child_process'
 
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import { injectCSS as inject } from '../../../../../../build/webapp/util/inject'
+import { inBrowser } from '@kui/core/capabilities'
+import { injectCSS as inject } from '@kui/webapp/util/inject'
 
 /**
  * Load the CSS for diff2html
@@ -34,9 +34,11 @@ export const injectCSS = async () => {
       inject({ css: require('../../../web/css/my-diff2html.css'), key: 'mydiff2html.css' })
     ])
   } else {
+    const root = dirname(require.resolve('@root/package.json'))
+    const ourRoot = dirname(require.resolve('@kui-plugin-src/bash-like/package.json'))
     await Promise.all([
-      inject(join(__dirname, '../../../node_modules/diff2html/dist/diff2html.min.css')),
-      inject(join(__dirname, '../../../web/css/my-diff2html.css'))
+      inject(join(root, 'node_modules/diff2html/dist/diff2html.min.css')),
+      inject(join(ourRoot, 'web/css/my-diff2html.css'))
     ])
   }
 }

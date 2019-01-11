@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import { tellMain } from '../../../../../../build/webapp/electron-events'
+import { inBrowser } from '@kui/core/capabilities'
+import { tellMain } from '@kui/webapp/electron-events'
 
 /**
  * This plugin introduces commands to control the window size.

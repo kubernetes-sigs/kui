@@ -29,12 +29,12 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import * as Ansi2Html from 'ansi-to-html'
 
-import { inBrowser, isHeadless } from '../../../../../../build/core/capabilities'
-import UsageError from '../../../../../../build/core/usage-error'
-import * as repl from '../../../../../../build/core/repl'
-import { injectCSS } from '../../../../../../build/webapp/util/inject'
-import { preprocessTable, formatTable } from '../../../../../../build/webapp/util/ascii-to-table'
-import { formatUsage } from '../../../../../../build/webapp/util/ascii-to-usage'
+import { inBrowser, isHeadless } from '@kui/core/capabilities'
+import UsageError from '@kui/core/usage-error'
+import * as repl from '@kui/core/repl'
+import { injectCSS } from '@kui/webapp/util/inject'
+import { preprocessTable, formatTable } from '@kui/webapp/util/ascii-to-table'
+import { formatUsage } from '@kui/webapp/util/ascii-to-usage'
 import formatKeyValue from '../util/ascii-key-value-to-table'
 
 import { reallyLong, handleNonZeroExitCode } from '../util/exec'

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import { dirname, join } from 'path'
 
-import { addPath } from '../../../../build/core/find-file'
-import { PluginRequire, PreloadRegistration } from '../../../../build/models/plugin'
+import { addPath } from '@kui/core/find-file'
+import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
 
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
   // give visibility to our @demos directory on the module path
-  addPath(join(__dirname, '../tutorials/@tutorials'))
+  const ourRoot = dirname(require.resolve('@kui-plugin-src/tutorials/package.json'))
+  addPath(join(ourRoot, '@tutorials'))
 }
 
 export default registration

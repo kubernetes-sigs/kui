@@ -1,25 +1,12 @@
 {
   "name": "plugins",
   "version": "1.0.0",
-  "description": "OpenWhisk Shell plugins",
+  "description": "Kui plugin support",
   "main": "index.js",
   "scripts": {
-    "postinstall": "./bin/postinstall.sh",
+    "disabled_postinstall": "./bin/postinstall.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
-  "optionalDependencies": {},
-  "dependencies": {
-    "archiver": "^3.0.0",
-    "extract-zip": "^1.6.7",
-    "fs-extra": "^7.0.1",
-    "htmlparser2": "^3.10.0",
-    "js-yaml": "^3.12.0",
-    "needle": "^2.2.4",
-    "parse-duration": "^0.1.1",
-    "promise-retry": "^1.1.1",
-    "shelljs": "^0.8.3",
-    "tmp": "0.0.33"
-  }
+  "license": "Apache-2.0"
 }

@@ -27,8 +27,8 @@ debug('kubectl loaded')
 import status from './lib/cmds/status'
 debug('status loaded')
 
-import { inBrowser } from '../../../../build/core/capabilities'
-import { PluginRegistration, PluginRequire } from '../../../../build/models/plugin'
+import { inBrowser } from '@kui/core/capabilities'
+import { PluginRegistration, PluginRequire } from '@kui/models/plugin'
 
 export default async (commandTree, prequire: PluginRequire) => {
   debug('init')

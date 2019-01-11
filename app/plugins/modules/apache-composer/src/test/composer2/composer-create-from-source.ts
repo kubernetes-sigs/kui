@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import * as fs from 'fs'
 import * as path from 'path'
 const ROOT = process.env.TEST_ROOT
