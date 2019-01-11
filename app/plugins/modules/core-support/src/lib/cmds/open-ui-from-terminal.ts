@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '../../../../../../build/core/capabilities'
+import { isHeadless } from '@kui/core/capabilities'
 
 const usage = {
   command: 'shell',

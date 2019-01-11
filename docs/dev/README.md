@@ -61,4 +61,4 @@ realize your changes.
     requires a restart of the application, which you can do by fully
     quitting any instances of the the graphical UI (e.g. via Command+Q
     or Ctrl+Q, depending on your platform) and restarting them via
-    `./kui.js shell`.
+    `./bin/kui shell`.

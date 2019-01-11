@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-'use strict'
-
 /**
  * Translations
  *
  */
-module.exports = {
+export default {
   save: 'Deploy',
   saveLocalFile: 'Save',
   revert: 'Revert',

@@ -23,11 +23,11 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/cmds/auth')
 
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import { clearSelection } from '../../../../../../build/webapp/views/sidecar'
-import eventBus from '../../../../../../build/core/events'
-import { partial } from '../../../../../../build/webapp/cli'
-import repl = require('../../../../../../build/core/repl')
+import { inBrowser } from '@kui/core/capabilities'
+import { clearSelection } from '@kui/webapp/views/sidecar'
+import eventBus from '@kui/core/events'
+import { partial } from '@kui/webapp/cli'
+import repl = require('@kui/core/repl')
 import namespace = require('../models/namespace')
 
 /**

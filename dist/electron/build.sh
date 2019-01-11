@@ -26,6 +26,12 @@ export BUILDDIR=../builds
 cd $SCRIPTDIR
 
 #
+# ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
+# see the electron-packager docs for --ignore
+#
+IGNORE='(~$)|(\.ts$)|(^/dist)|(^/tests)|(monaco-editor/esm)'
+      
+#
 # input params: choose a platform to build for (default: all)
 #
 PLATFORM=${1-all}
@@ -90,10 +96,10 @@ function win32 {
         echo "Electron build for win32"
 
         ./node_modules/.bin/electron-packager \
-	    $APPDIR \
+	    "$TOPDIR" \
 	    "$PRODUCT_NAME" \
 	    --asar \
-	    --ignore='~$' \
+	    --ignore="$IGNORE" \
             --build-version=$VERSION \
 	    --out=$BUILDDIR \
 	    --platform=win32 \
@@ -127,13 +133,13 @@ function win32 {
 #
 function mac {
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ]; then
-        echo "Electron build darwin"
+        echo "Electron build darwin $TOPDIR"
 
         ./node_modules/.bin/electron-packager \
-	    $APPDIR \
+	    "$TOPDIR" \
 	    "${PRODUCT_NAME}" \
 	    --asar \
-	    --ignore='~$' \
+	    --ignore="$IGNORE" \
             --build-version=$VERSION \
 	    --out=$BUILDDIR \
 	    --platform=darwin \
@@ -179,11 +185,11 @@ function linux {
         echo "Electron build linux"
 
         ./node_modules/.bin/electron-packager \
-	    $APPDIR \
+	    "$TOPDIR" \
 	    "${PRODUCT_NAME}" \
             ${NO_PRUNE} \
 	    --asar \
-	    --ignore='~$' \
+	    --ignore="$IGNORE" \
             --build-version=$VERSION \
 	    --out=$BUILDDIR \
 	    --platform=linux \

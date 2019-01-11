@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '../../../../../build/core/capabilities'
+import { inBrowser } from '@kui/core/capabilities'
 import { PACKAGE, checkDeploy } from './deploy'
 
 /**
@@ -26,6 +26,6 @@ export const FQN = `${PACKAGE}/${ACTION}`
 
 /** we will need the source code for the action proxy */
 const actionProxySource = !inBrowser() ? require('fs-extra').readFile(require('path').join(__dirname, '../../actionProxy/helm.sh'))
-    : Promise.resolve(require('!!raw-loader!../../actionProxy/helm.sh'))
+    : Promise.resolve(require('!!raw-loader!@kui-plugin-src/k8s/actionProxy/helm.sh'))
 
 export const deploy = checkDeploy({ FQN, actionProxySource })

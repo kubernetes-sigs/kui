@@ -17,8 +17,11 @@ import { properties } from '../../utility/usage'
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-config')
 
+/**
+ * Command handler for the properties command
+ *
+ */
 export default async (commandTree, prequire) => {
-  /* command handler for propertis*/
   // the package.json might be in `app/plugins`, or in
   // `app/plugins/modules/composer`, depending, respectively, on whether
   // we are installing composer from npm, versus from git e.g. when
@@ -27,7 +30,11 @@ export default async (commandTree, prequire) => {
   try {
     pckage = require('../../../../../../node_modules/openwhisk-composer/package.json')
   } catch (err) {
-    pckage = require('../../../../node_modules/openwhisk-composer/package.json')
+    try {
+      pckage = require('../../../../node_modules/openwhisk-composer/package.json')
+    } catch (err) {
+      pckage = require('openwhisk-composer/package.json')
+    }
   }
 
   const propertySynonyms = ['wsk/app', 'composer']

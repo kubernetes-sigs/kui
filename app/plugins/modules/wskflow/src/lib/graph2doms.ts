@@ -21,8 +21,8 @@ import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs'
 
-import sidecarSelector from '../../../../../build/webapp/views/sidecar-selector'
-import pictureInPicture from '../../../../../build/webapp/picture-in-picture'
+import sidecarSelector from '@kui/webapp/views/sidecar-selector'
+import pictureInPicture from '@kui/webapp/picture-in-picture'
 
 import { textualPropertiesOfCode } from './util'
 

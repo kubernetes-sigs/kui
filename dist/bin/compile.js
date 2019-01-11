@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
-const compile = require('../../app/build/core/plugin-assembler').default
+require('module-alias/register')
+
+const compile = require('../../build/core/plugin-assembler').default
 const path = require('path')
 
 if (process.argv[2] === 'cleanup') {

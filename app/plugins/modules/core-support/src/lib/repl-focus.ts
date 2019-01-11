@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '../../../../../build/core/capabilities'
-import { getCurrentPrompt } from '../../../../../build/webapp/cli'
+import { isHeadless } from '@kui/core/capabilities'
+import { getCurrentPrompt } from '@kui/webapp/cli'
 
 /**
  * We want to focus the current "active" repl <input> element when the

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/tests/headless')
 import * as assert from 'assert'
@@ -22,12 +22,11 @@ import * as path from 'path'
 import { exec } from 'child_process'
 
 const ROOT = process.env.TEST_ROOT
-const APP = process.env.APP || '../app'
-const kui = process.env.KUI || path.join(ROOT, '../kui.js')
+// const APP = process.env.APP || '../app'
 const common = require(path.join(ROOT, 'lib/common'))
 const ui = require(path.join(ROOT, 'lib/ui'))
 // const badges = require(path.join(ROOT, APP, 'plugins/modules/composer/lib/badges.js'))
-const { cli } = require('../../../../../../../tests/lib/headless')
+const { cli } = require('@test/lib/headless')
 
 interface IResponse {
   code: number

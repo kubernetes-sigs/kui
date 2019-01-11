@@ -21,7 +21,7 @@ debug('loading')
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as events from 'events'
-import * as mkdirp from 'mkdirp-promise'
+import mkdirp = require('mkdirp')
 import { exec } from 'child_process'
 
 import * as plugins from './plugins'
@@ -65,6 +65,8 @@ const prescanned = (dir: string) => path.join(dir, '.pre-scanned.json')
  *
  */
 const writeToFile = async (dir: string, modules): Promise<void> => {
+  debug('writeToFile', dir)
+
   let str
   if (process.env.UGLIFY) {
     str = JSON.stringify(modules)
@@ -91,6 +93,7 @@ const readFile = async (dir: string): Promise<IPrescan> => {
     }
   } catch (err) {
     if (err.code === 'ENOENT') {
+      debug('no file to read %s', dir)
       return {}
     } else {
       console.error(err)
@@ -199,16 +202,26 @@ const uglify = modules => modules.flat.map(module => new Promise((resolve, rejec
 
   debug('uglify %s %s', module.path, tmpPath)
 
-  mkdirp(tmpDir)
-    .then(() => fs.copy(src, tmpPath).then(() => tmpPath))
-    .then(() => {
-      exec(`${path.join(__dirname, '..', '..', 'node_modules', '.bin', 'terser')} --compress --mangle -o "${target}" -- "${tmpPath}"`,
-           (err, stdout, stderr) => {
-             if (err) reject(err)
-             else resolve()
-           })
-    })
-    .catch(reject)
+  mkdirp(tmpDir, async err => {
+    if (err) {
+      reject(err)
+    } else {
+      debug('copying', src, tmpPath)
+      try {
+        await fs.copy(src, tmpPath)
+
+        debug('calling terser')
+        exec(`${path.join(__dirname, '..', '..', 'node_modules', '.bin', 'terser')} --compress --mangle -o "${target}" -- "${tmpPath}"`,
+             (err, stdout, stderr) => {
+               if (err) reject(err)
+               else resolve()
+             })
+      } catch (err) {
+        debug('error', err)
+        reject(err)
+      }
+    }
+  })
 }))
 
 interface ILeaf {
@@ -307,14 +320,14 @@ export default async (rootDir: string, externalOnly = false, reverseDiff = false
    * and write the list to the .pre-scanned.json file
    *
    */
-  const pluginRoot = path.join(rootDir, 'plugins') // pluginRoot points to the root of the modules subdir
+  const pluginRoot = path.join(__dirname, plugins.pluginRoot)
 
   debug('rootDir is %s', rootDir)
   debug('pluginRoot is %s', pluginRoot)
   debug('externalOnly is %s', externalOnly)
 
-  await mkdirp(path.join(pluginRoot, 'modules'))
   const before = await readFile(pluginRoot)
+  debug('before', before)
 
   if (!externalOnly) {
     // uglify
@@ -328,7 +341,10 @@ export default async (rootDir: string, externalOnly = false, reverseDiff = false
 
   /** make the paths relative to the root directory */
   const fixupOnePath = filepath => {
-    return path.relative(path.join(__dirname, '..', '..', 'plugins'), filepath)
+    // NOTE ON @kui-plugin relativization: this is important so that
+    // webpack can be isntructed to pull in the plugins into the build
+    // see the corresponding NOTE in ./plugins.ts and ./preloader.ts
+    return path.relative(path.join(__dirname, '../../build/@kui-plugin'), filepath)
   }
   const fixupPaths = pluginList => pluginList.map(plugin => Object.assign(plugin, {
     path: fixupOnePath(plugin.path)
@@ -342,7 +358,7 @@ export default async (rootDir: string, externalOnly = false, reverseDiff = false
   const modelWithUsage = amendWithUsageModels(model)
 
   await Promise.all([
-    writeToFile(pluginRoot, modelWithUsage)
+    writeToFile(path.join(__dirname, plugins.buildRoot), modelWithUsage)
     // ...uglify(modelWithUsage)
   ])
 

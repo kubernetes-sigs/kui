@@ -50,8 +50,8 @@ exports.rp = opts => {
  */
 const prepareElectron = (fuzz) => {
   const Application = require('spectron').Application
-  const electron = require('../../app/node_modules/electron')
-  const appMain = process.env.APP_MAIN || '../app/build/main/main.js'
+  const electron = require('../../node_modules/electron') // relative to __dirname
+  const appMain = process.env.APP_MAIN || '../build/main/main.js' // relative to the tests/ directory
 
   const env = {}
   if (fuzz) {

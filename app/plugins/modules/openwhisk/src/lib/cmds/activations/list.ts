@@ -17,10 +17,10 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/activations/list')
 
-import repl = require('../../../../../../../build/core/repl')
+import repl = require('@kui/core/repl')
 
-import { isHeadless } from '../../../../../../../build/core/capabilities'
-import { registerListView } from '../../../../../../../build/webapp/cli'
+import { isHeadless } from '@kui/core/capabilities'
+import { registerListView } from '@kui/webapp/cli'
 
 import { activations as usage } from '../openwhisk-usage'
 import { renderActivationListView } from '../../views/cli/activations/list'

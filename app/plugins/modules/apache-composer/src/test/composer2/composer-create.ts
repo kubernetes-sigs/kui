@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
+import { ISuite } from '@test/lib/common'
 import * as path from 'path'
 import * as assert from 'assert'
 const ROOT = process.env.TEST_ROOT
@@ -32,7 +32,7 @@ const packageName1 = 'ppp1'
 const {
   verifyNodeExists,
   verifyTheBasicStuff
-} = require('../../../tests/lib/composer-viz-util')
+} = require('@test/lib/composer-viz-util')
 
 describe('app create and sessions', function (this: ISuite) {
   before(common.before(this))

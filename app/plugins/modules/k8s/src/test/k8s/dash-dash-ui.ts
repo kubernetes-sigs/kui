@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import { cli, selectors } from '../../../../../../../tests/lib/ui'
-import { wipe, waitTillNone } from '../../../../../../../tests/lib/k8s/wipe'
-import { cli as kui, kubectlElectron, kuiElectron, CLI } from '../../../../../../../tests/lib/headless'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import { cli, selectors } from '@test/lib/ui'
+import { wipe, waitTillNone } from '@test/lib/k8s/wipe'
+import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@test/lib/headless'
 
 const doTests = (ctx: ISuite, impl: CLI) => {
   before(common.before(ctx, { noOpenWhisk: true, noApp: true }))

@@ -18,9 +18,9 @@ import { join } from 'path'
 import { readFile } from 'fs'
 import * as assert from 'assert'
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, normalizeHTML, selectors, sidecar } = ui
 const { rp } = common
 

@@ -1,7 +1,7 @@
 {
   "name": "headless",
   "version": "1.0.0",
-  "description": "Files for creating a Shell distributable headless binary",
+  "description": "Utilities for creating a Kui headless distribution",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as repl from '../../../../../build/core/repl'
+import * as repl from '@kui/core/repl'
 import { optionsToString } from './util'
 
 /**

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { showCustom, showEntity } from '../../../../../build/webapp/views/sidecar'
-import * as repl from '../../../../../build/core/repl'
+import { showCustom, showEntity } from '@kui/webapp/views/sidecar'
+import * as repl from '@kui/core/repl'
 
 /**
  * Enter read-only mode

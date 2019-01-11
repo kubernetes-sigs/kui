@@ -17,12 +17,12 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/tab completion')
 
-import { inBrowser } from '../../../../../build/core/capabilities'
-import { keys } from '../../../../../build/webapp/keys'
-import * as cli from '../../../../../build/webapp/cli'
-import * as repl from '../../../../../build/core/repl'
-import { findFile } from '../../../../../build/core/find-file'
-import { injectCSS } from '../../../../../build/webapp/util/inject'
+import { inBrowser } from '@kui/core/capabilities'
+import { keys } from '@kui/webapp/keys'
+import * as cli from '@kui/webapp/cli'
+import * as repl from '@kui/core/repl'
+import { findFile } from '@kui/core/find-file'
+import { injectCSS } from '@kui/webapp/util/inject'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -575,9 +575,10 @@ export default () => {
   if (typeof document === 'undefined') return
 
   if (inBrowser()) {
-    injectCSS({ css: require('../../web/css/tab-completion.css'), key: 'tab-completion.css' })
+    injectCSS({ css: require('@kui-plugin-src/core-support/web/css/tab-completion.css'), key: 'tab-completion.css' })
   } else {
-    injectCSS(path.join(__dirname, '../../web/css/tab-completion.css'))
+    const root = path.dirname(require.resolve('@kui-plugin-src/core-support/package.json'))
+    injectCSS(path.join(root, 'web/css/tab-completion.css'))
   }
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work

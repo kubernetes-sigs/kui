@@ -19,9 +19,9 @@
  *    this test also covers toggling the sidecar
  */
 
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, keys, selectors, sidecar } = ui
 
 describe('List activations, then drill down to summary views', function (this: ISuite) {

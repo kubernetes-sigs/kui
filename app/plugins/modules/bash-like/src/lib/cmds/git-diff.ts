@@ -19,10 +19,8 @@ const debug = Debug('plugins/bash-like/cmds/git-diff')
 
 import * as path from 'path'
 
-import { Diff2Html } from 'diff2html'
-
-import { inBrowser } from '../../../../../../build/core/capabilities'
-import { split } from '../../../../../../build/core/repl'
+import { inBrowser } from '@kui/core/capabilities'
+import { split } from '@kui/core/repl'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -51,7 +49,7 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
   proc.stderr.on('data', data => {
     rawErr += data.toString()
   })
-  proc.on('close', exitCode => {
+  proc.on('close', async exitCode => {
     if (exitCode === 0) {
       if (rawOut.trim().length === 0) {
         debug('nothing to show')
@@ -68,6 +66,9 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
       const argv = split(command)
       const commandPart = argv[1]
       const filePart = argv.slice(2).join(' ') || 'All changes'
+
+      // loaded lazily to help with the size of the headless dist
+      const { Diff2Html } = await import('diff2html')
 
       // note: no sidecar header if this launched from the command line ("subwindow mode")
       resolve(asSidecarEntity(filePart, Diff2Html.getPrettyHtml(rawOut, {

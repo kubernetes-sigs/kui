@@ -15,8 +15,7 @@
  */
 
 const isDev = false// require('electron-is-dev');
-const path = require('path')
-const productName = require(path.join(__dirname, '../config.json'))['productName']
+const productName = require('@settings/config.json')['productName']
 
 interface IMenuItem {
   label?: string

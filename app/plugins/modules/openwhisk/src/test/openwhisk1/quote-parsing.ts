@@ -15,9 +15,9 @@
  */
 
 import * as assert from 'assert'
-import { ISuite } from '../../../../../../../tests/lib/common'
-import * as common from '../../../../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 describe('parameter parsing with quotes', function (this: ISuite) {

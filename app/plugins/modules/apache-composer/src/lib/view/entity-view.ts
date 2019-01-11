@@ -1,10 +1,29 @@
+/*
+ * Copyright 2018 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/entity-view')
-import * as repl from '../../../../../../build/core/repl'
-import { isHeadless } from '../../../../../../build/core/capabilities'
+
+import * as repl from '@kui/core/repl'
+import { isHeadless } from '@kui/core/capabilities'
+
 import * as util from '../utility/ast'
+
 const defaultMode = 'visualization'
-// import * as wskFlowUtil from '../../../../wskflow/plugin/lib/util'
+
 /**
  * Format the given activation record for display as a session
  *
@@ -68,7 +87,8 @@ export const visualizeComposition = async (response, execOptions) => {
     const doVisualize = execOptions.override || !execOptions.nested
     const options = execOptions.originalOptions || {}
     // use require rather than import here to prevent from prequiring wskflow module in headless mode
-    const content = await require('../../../../wskflow/plugin/lib/util').decorateAsApp({ action, doVisualize, options: Object.assign({}, execOptions, options) })
+    const { decorateAsApp } = require('@kui-plugin/wskflow/src/lib/util')
+    const content = await decorateAsApp({ action, doVisualize, options: Object.assign({}, execOptions, options) })
     const input = `/${response.namespace}/${response.name}`
 
     if (doVisualize) {

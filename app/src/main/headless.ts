@@ -422,7 +422,7 @@ export const main = async (app, mainFunctions) => {
   try {
     if (!process.env.TRAVIS_JOB_ID && !process.env.RUNNING_SHELL_TEST && !process.env.CLOUD_SHELL_GO &&
        !process.env.KUI_DEV) {
-      const { fetch, watch } = await import('../../plugins/bin/fetch-ui')
+      const { fetch, watch } = await import('../webapp/util/fetch-ui')
       const { userDataDir } = await import('../core/userdata')
       const stagingArea = userDataDir()
       debug('initiating UI fetcher', stagingArea)

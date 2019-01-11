@@ -22,9 +22,9 @@
 import { join } from 'path'
 import * as assert from 'assert'
 
-import { ISuite } from '../../../../tests/lib/common'
-import * as common from '../../../../tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '../../../../tests/lib/ui'
+import { ISuite } from '@test/lib/common'
+import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@test/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 export const expectedVersion = require(join(process.env.TEST_ROOT, '../app/package.json')).version

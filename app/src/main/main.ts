@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('main/main')
+import * as Debug from 'debug'
+const debug = Debug('main/main')
 debug('loading')
 
-import colors = require('colors')
+require('module-alias/register')
 import { SubwindowPrefs, getCommand, initElectron, initHeadless } from './spawn-electron'
 
 /**
