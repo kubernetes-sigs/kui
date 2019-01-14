@@ -38,7 +38,7 @@ const filter = (L, f) => {
 describe('List root-most activations with $$', function () {
   // disabled until the bluewhisk views finish updating 20170927
 /*
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

@@ -30,7 +30,7 @@ const ROOT = process.env.TEST_ROOT
 const { ISuite } = require(join(ROOT, 'lib/common'))
 const common = require(join(ROOT, 'lib/common'))
 const ui = require(join(ROOT, 'lib/ui'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk'))
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const { cli } = require('@test/lib/headless')
 
 const kui = process.env.KUI || join(ROOT, '../kui.js')
@@ -42,7 +42,7 @@ interface IResponse {
 }
 
 describe('Headless mode', function (this: ISuite) {
-  before(common.before(this, { noApp: true }))
+  before(openwhisk.before(this, { noApp: true }))
 
   // intentional typo with "actiono"
   // sometimes the output has "command not found", and sometimes it has just "not found"

@@ -25,6 +25,7 @@ import * as assert from 'assert'
 
 import { ISuite } from '@test/lib/common'
 import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 import * as ui from '@test/lib/ui'
 
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
@@ -229,7 +230,7 @@ const composer = {
 }
 
 describe('Intro demo scenario', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

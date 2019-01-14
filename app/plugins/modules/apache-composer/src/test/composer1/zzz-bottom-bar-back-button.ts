@@ -22,7 +22,7 @@ import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
-
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(join(ROOT, 'lib/ui'))
 const uuid = require('uuid/v4')
 const cli = ui.cli
@@ -37,7 +37,7 @@ const cell1 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child .grid-ce
 const cell2 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child .grid-cell:last-child`
 
 describe('Bottom bar back button functionality', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

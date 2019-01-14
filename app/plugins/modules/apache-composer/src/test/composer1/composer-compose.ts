@@ -18,14 +18,14 @@ import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
-
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(join(ROOT, 'lib/ui'))
 const cli = ui.cli
 const expectedError = `Usage: This command is intended for use from the CLI, to launch this graphical Shell.
 You are already here. Welcome!`
 
 describe('try using "shell" to open the graphical shell, when already in the graphical shell', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

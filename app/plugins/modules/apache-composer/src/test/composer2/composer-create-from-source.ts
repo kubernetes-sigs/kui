@@ -19,13 +19,14 @@ import * as fs from 'fs'
 import * as path from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(path.join(ROOT, 'lib/common'))
+const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(path.join(ROOT, 'lib/ui'))
 const cli = ui.cli
 const sidecar = ui.sidecar
 const srcDir = './data/composer/composer-source' // inputs for create-from-source
 
 describe('composer create from source', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   // create from source

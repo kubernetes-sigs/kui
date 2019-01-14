@@ -20,7 +20,7 @@ import * as assert from 'assert'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
-
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(join(ROOT, 'lib/ui'))
 const cli = ui.cli
 const sidecar = ui.sidecar
@@ -38,7 +38,7 @@ const {
  */
 // test if the graph is by default zoom to fit
 describe('bring up the composer visualization when the sidecar is minimized', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
@@ -60,7 +60,7 @@ describe('bring up the composer visualization when the sidecar is minimized', fu
 
 // test if app preview update a graph when the watched file gets updated
 describe('app preview should actively watching an external file', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   let tempFileName = 'testtemp.js'
@@ -138,7 +138,7 @@ describe('app preview should actively watching an external file', function (this
 
 // test if session flow highlighting is correct
 describe('create a if composition, invoke, verify session flow is shown correctly', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
   const appName = 'test-if'
   const appFile = 'data/composer/composer-source/if-session.js'
@@ -183,7 +183,7 @@ describe('create a if composition, invoke, verify session flow is shown correctl
 
 // click on node in wskflow and show action
 describe('drilldown to action from wskflow', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   const appName = 'test-if'
@@ -207,7 +207,7 @@ describe('drilldown to action from wskflow', function (this: ISuite) {
 
 // test if mousedown on a node, drag and release triggers the clicking behavior of the node (it shouldn't)
 describe('test if pressing a node, dragging and releasing triggers the clicking behavior of the node it should not', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   const appName = 'test-if'

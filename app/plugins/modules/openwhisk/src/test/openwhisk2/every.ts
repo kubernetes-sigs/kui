@@ -36,7 +36,7 @@ const ruleName = `every_${interval}_do_${actionName}`
 describe('Create a rule using every', function () {
   // alarms tests disabled
   /*
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this), () => cli.do(`wsk rule delete ${ruleName}`))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

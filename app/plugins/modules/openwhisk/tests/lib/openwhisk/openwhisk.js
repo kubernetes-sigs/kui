@@ -36,7 +36,7 @@ const apihostIsLocal = apihost.indexOf('localhost') >= 0 ||
 exports.apihost = apihost
 exports.apihostIsLocal = apihostIsLocal
 
-exports.cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)) => {
+const cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)) => {
   if (!api_key) return Promise.resolve(true) // eslint-disable-line
 
   const opts = {
@@ -124,4 +124,28 @@ exports.cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY
     .catch(logThen(cleanOnce)).catch(logThen(cleanOnce))
 //  .then(() => event.sender.send('asynchronous-reply', 'true'))
 //  .catch(() => event.sender.send('asynchronous-reply', 'false'))
+}
+
+exports.cleanAll = cleanAll
+
+exports.before = (ctx, { fuzz, noApp = false } = {}) => {
+  ctx.retries(10)
+
+  return function () {
+    if (!noApp) {
+      ctx.app = require('@test/lib/common').prepareElectron(fuzz)
+    }
+
+    // start the app, if requested
+    const start = noApp ? x => x : () => {
+      return ctx.app.start() // this will launch electron
+      // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
+        // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
+        .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
+    }
+
+    // clean openwhisk assets from previous runs, then start the app
+    return Promise.all([ cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), cleanAll(true, process.env.AUTH2) ])
+      .then(start)
+  }
 }

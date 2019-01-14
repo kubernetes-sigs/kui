@@ -21,7 +21,7 @@ import { wipe, waitTillNone } from '@test/lib/k8s/wipe'
 import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@test/lib/headless'
 
 const doTests = (ctx: ISuite, impl: CLI) => {
-  before(common.before(ctx, { noOpenWhisk: true, noApp: true }))
+  before(common.before(ctx, { noApp: true }))
   after(common.after(ctx))
 
   it('should wipe k8s', () => {

@@ -21,7 +21,7 @@ import { wipe, waitTillNone } from '@test/lib/k8s/wipe'
 import { kubectl, cli as kui, CLI } from '@test/lib/headless'
 
 const doHeadless = (ctx: ISuite, impl: CLI) => {
-  before(common.before(ctx, { noApp: true, noOpenWhisk: true }))
+  before(common.before(ctx, { noApp: true }))
 
   it('should wipe k8s', () => {
     return wipe(ctx, impl)
@@ -85,7 +85,7 @@ describe('k8s create pod kui.js headless mode', function (this: ISuite) {
 })
 
 describe('k8s create pod electron mode', function (this: ISuite) {
-  before(common.before(this, { noOpenWhisk: true }))
+  before(common.before(this))
   after(common.after(this))
 
   it('should wipe k8s', () => {

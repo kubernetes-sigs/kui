@@ -17,11 +17,12 @@ import { ISuite } from '@test/lib/common'
 import * as path from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(path.join(ROOT, 'lib/common'))
+const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(path.join(ROOT, 'lib/ui'))
 const cli = ui.cli
 
 describe('composer config', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   /** app config */

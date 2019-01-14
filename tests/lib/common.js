@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const wsk = require('./openwhisk')
 const ui = require('./ui')
 require('colors')
 
@@ -87,15 +86,16 @@ const prepareElectron = (fuzz) => {
   return new Application(opts)
 }
 
+exports.prepareElectron = prepareElectron
+
 /**
  * This is the method that will be called before a test begins
  *
  * @param fuzz lets you blank out certain portions of the world
  * @param noApp do not spawn the electron parts
- * @param noOpenWhisk do not wipe the OpenWhisk slate clean on startup
  *
  */
-exports.before = (ctx, { fuzz, noApp = false, noOpenWhisk = false } = {}) => {
+exports.before = (ctx, { fuzz, noApp = false } = {}) => {
   ctx.retries(10)
 
   return function () {
@@ -111,13 +111,7 @@ exports.before = (ctx, { fuzz, noApp = false, noOpenWhisk = false } = {}) => {
         .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
     }
 
-    if (!noOpenWhisk) {
-      // clean openwhisk assets from previous runs, then start the app
-      return Promise.all([ wsk.cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), wsk.cleanAll(true, process.env.AUTH2) ])
-        .then(start)
-    } else {
-      return start()
-    }
+    return start()
   }
 }
 

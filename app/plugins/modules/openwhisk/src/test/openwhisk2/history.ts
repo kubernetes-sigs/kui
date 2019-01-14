@@ -17,10 +17,11 @@
 import { ISuite } from '@test/lib/common'
 import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@test/lib/ui'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
 
 describe('History', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   const entityName = 'foo'

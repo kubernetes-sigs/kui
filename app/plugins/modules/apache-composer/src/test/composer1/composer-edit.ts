@@ -21,7 +21,7 @@ import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
-
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(join(ROOT, 'lib/ui'))
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
@@ -41,7 +41,7 @@ const setValue = (client, text) => {
 }
 
 describe('edit compositions', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   /** deploy the changes */
