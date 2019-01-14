@@ -22,8 +22,7 @@ interface ISuite extends Suite {
 }
 
 interface IBeforeOptions {
-  noApp?: boolean,
-  noOpenWhisk?: boolean
+  noApp?: boolean
 }
 
 declare function before (ctx: Suite, options?: IBeforeOptions): HookFunction
@@ -31,4 +30,3 @@ declare function after (ctx: Suite, f?: () => void): HookFunction
 declare function oops (ctx: Suite): ((err: Error) => void)
 
 declare function rp (opts: Object): any
-

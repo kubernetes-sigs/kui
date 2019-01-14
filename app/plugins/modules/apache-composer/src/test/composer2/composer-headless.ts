@@ -24,6 +24,7 @@ import { exec } from 'child_process'
 const ROOT = process.env.TEST_ROOT
 // const APP = process.env.APP || '../app'
 const common = require(path.join(ROOT, 'lib/common'))
+const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(path.join(ROOT, 'lib/ui'))
 // const badges = require(path.join(ROOT, APP, 'plugins/modules/composer/lib/badges.js'))
 const { cli } = require('@test/lib/headless')
@@ -205,7 +206,7 @@ const validation = {
 }
 
 describe('Composer Headless Test :', function (this: ISuite) {
-  before(common.before(this, { noApp: true }))
+  before(openwhisk.before(this, { noApp: true }))
 
   describe('should create simple composition from @demos', function () {
     it('app create test1 @demos/hello.js', () => cli.do('app create test1 @demos/hello.js')

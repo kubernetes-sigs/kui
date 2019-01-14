@@ -17,6 +17,7 @@ import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(join(ROOT, 'lib/ui'))
 const cli = ui.cli
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
@@ -26,7 +27,7 @@ const cli = ui.cli
  *
  */
 describe('app init --reset', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

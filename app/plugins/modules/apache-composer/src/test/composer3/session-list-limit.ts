@@ -18,6 +18,7 @@ import * as path from 'path'
 import * as assert from 'assert'
 const ROOT = process.env.TEST_ROOT
 const common = require(path.join(ROOT, 'lib/common'))
+const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(path.join(ROOT, 'lib/ui'))
 const cli = ui.cli
 const sidecar = ui.sidecar
@@ -25,7 +26,7 @@ import * as Debug from 'debug'
 const debug = Debug('tests/apache-composer/session-list-limit')
 
 describe('session list --limit --skip', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   const getUniqueName = () => {

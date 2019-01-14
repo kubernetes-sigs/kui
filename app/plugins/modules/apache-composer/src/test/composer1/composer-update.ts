@@ -18,7 +18,7 @@ import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
-
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(join(ROOT, 'lib/ui'))
 const cli = ui.cli
 const sidecar = ui.sidecar
@@ -26,7 +26,7 @@ const sidecar = ui.sidecar
 const appName1 = 'foo1'
 
 describe('confirm that app update preserves annotations and parameters', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

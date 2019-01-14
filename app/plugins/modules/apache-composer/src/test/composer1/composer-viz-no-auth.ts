@@ -18,7 +18,7 @@ import { ISuite } from '@test/lib/common'
 import { join } from 'path'
 const ROOT = process.env.TEST_ROOT
 const common = require(join(ROOT, 'lib/common'))
-
+const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(join(ROOT, 'lib/ui'))
 const cli = ui.cli
 const {
@@ -40,7 +40,7 @@ const fuzz = { fuzz: { rules: ['noAuth'],
  *
  */
 describe('show the composer visualization with no wskauth', function (this: ISuite) {
-  before(common.before(this, fuzz)) // fuzz testing: eliminate authentication bits
+  before(openwhisk.before(this, fuzz)) // fuzz testing: eliminate authentication bits
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app, fuzz.fuzz.prefs))

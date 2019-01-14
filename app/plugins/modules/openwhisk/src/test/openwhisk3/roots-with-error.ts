@@ -19,6 +19,7 @@ import * as assert from 'assert'
 import { ISuite } from '@test/lib/common'
 import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@test/lib/ui'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 const goodSeqName = '59E47471-F64B-4235-8FF0-00896DDB3AFB'
@@ -38,7 +39,7 @@ const filter = (L, f) => {
 }
 
 describe('List root-most non-erroring activations with $$!', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

@@ -22,9 +22,8 @@
 import { ISuite } from '@test/lib/common'
 import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@test/lib/ui'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
-
-import * as openwhisk from '@test/lib/openwhisk'
 
 const args = {
   action: './data/openwhisk/foo.js',
@@ -34,7 +33,7 @@ const args = {
 }
 
 describe('Create with explicit entity type, then list', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

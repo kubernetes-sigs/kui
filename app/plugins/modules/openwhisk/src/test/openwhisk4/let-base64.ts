@@ -20,6 +20,7 @@ import { readFileSync } from 'fs'
 import { ISuite } from '@test/lib/common'
 import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@test/lib/ui'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 const file = './data/openwhisk/not-really-png.png'
@@ -28,7 +29,7 @@ const content = readFileSync(join(process.env.TEST_ROOT, file)).toString()
 const actionName1 = 'foo'
 
 describe('Invoke an action with a binary-formatted parameter', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

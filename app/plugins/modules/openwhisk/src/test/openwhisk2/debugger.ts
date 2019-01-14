@@ -22,7 +22,7 @@ const actionName = 'foo' */
 /*
 if (false) {
   describe('Debugger', function () {
-    before(common.before(this))
+    before(openwhisk.before(this))
     after(common.after(this))
 
     it('should have an active repl', () => cli.waitForRepl(this.app))

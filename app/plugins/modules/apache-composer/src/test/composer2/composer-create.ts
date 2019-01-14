@@ -19,6 +19,7 @@ import * as path from 'path'
 import * as assert from 'assert'
 const ROOT = process.env.TEST_ROOT
 const common = require(path.join(ROOT, 'lib/common'))
+const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
 const ui = require(path.join(ROOT, 'lib/ui'))
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
@@ -35,7 +36,7 @@ const {
 } = require('@test/lib/composer-viz-util')
 
 describe('app create and sessions', function (this: ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
