@@ -33,7 +33,7 @@ const ui = require(join(ROOT, 'lib/ui'))
 const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
 const { cli } = require('@test/lib/headless')
 
-const kui = process.env.KUI || join(ROOT, '../kui.js')
+const kui = process.env.KUI || join(ROOT, '../bin/kui')
 
 interface IResponse {
   code: number

@@ -41,7 +41,7 @@ const doTests = (ctx: ISuite, impl: CLI) => {
   })
 }
 
-describe('k8s with electron via kui.js', function (this: ISuite) {
+describe('k8s with electron via bin/kui', function (this: ISuite) {
   doTests(this, kuiElectron)
 })
 

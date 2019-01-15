@@ -23,7 +23,7 @@ const { exec } = require('child_process')
 
 const { join } = require('path')
 const ROOT = process.env.TEST_ROOT
-const kui = process.env.KUI || join(ROOT, '../kui.js')
+const kui = process.env.KUI || join(ROOT, '../bin/kui')
 const bindir = join(ROOT, '../bin') // should contain kubectl-kui
 const { expectStruct, expectSubset } = require('./ui')
 
@@ -227,10 +227,10 @@ class CLI {
   }
 }
 
-/** kui.js impl */
+/** bin/kui impl */
 exports.cli = new CLI()
 
-/** kui.js --ui impl */
+/** bin/kui --ui impl */
 exports.kuiElectron = new CLI(kui, undefined, true) // the last true requests teeToFile mode
 
 /** kubectl kui impl */
