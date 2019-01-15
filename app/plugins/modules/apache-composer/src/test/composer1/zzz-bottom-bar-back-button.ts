@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ISuite } from '@test/lib/common'
 //
 // tests that create an action and test that it shows up in the list UI
 //    this test also covers toggling the sidecar
 //
 import { join } from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(join(ROOT, 'lib/common'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(join(ROOT, 'lib/ui'))
+
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const uuid = require('uuid/v4')
 const cli = ui.cli
 const sidecar = ui.sidecar
@@ -36,7 +34,7 @@ const seqName1 = 'seq1'
 const cell1 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child .grid-cell:first-child`
 const cell2 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child .grid-cell:last-child`
 
-describe('Bottom bar back button functionality', function (this: ISuite) {
+describe('Bottom bar back button functionality', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

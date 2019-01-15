@@ -22,13 +22,10 @@ const ROOT = process.env.TEST_ROOT
 import * as path from 'path'
 import * as fs from 'fs'
 import * as assert from 'assert'
-
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 import * as ui from '@test/lib/ui'
 
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
 const sidecar = ui.sidecar
 const inputs = [
@@ -229,7 +226,7 @@ const composer = {
   }
 }
 
-describe('Intro demo scenario', function (this: ISuite) {
+describe('Intro demo scenario', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

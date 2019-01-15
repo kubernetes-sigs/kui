@@ -19,8 +19,7 @@
  *    this test also covers toggling the sidecar
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -29,7 +28,7 @@ const actionName1 = 'foo bar'
 const actionName2 = 'bam'
 const sequenceName1 = 'sss'
 
-describe('Create a sequence with whitespacey names', function (this: ISuite) {
+describe('Create a sequence with whitespacey names', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

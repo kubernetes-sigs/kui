@@ -17,9 +17,8 @@
 const debug = require('debug')('k8s/tests/lib/wipe')
 
 const path = require('path')
-const ROOT = process.env.TEST_ROOT
-const common = require(path.join(ROOT, 'lib/common'))
-const ui = require(path.join(ROOT, 'lib/ui'))
+const common = require('@test/lib/common')
+const ui = require('@test/lib/ui')
 const cli = ui.cli
 
 const kinds = ['deployments', 'pods', 'crds']

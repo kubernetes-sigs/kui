@@ -21,8 +21,7 @@
 
 import * as assert from 'assert'
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, sidecar } = ui
@@ -38,7 +37,7 @@ const selectors = {
   NAMESPACE: '#openwhisk-namespace'
 }
 
-describe('openwhisk namespace display', function (this: ISuite) {
+describe('openwhisk namespace display', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

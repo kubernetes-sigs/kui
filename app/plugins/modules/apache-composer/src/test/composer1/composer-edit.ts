@@ -17,12 +17,10 @@
 //
 // test the edit actionName command for compositions
 //
-import { ISuite } from '@test/lib/common'
 import { join } from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(join(ROOT, 'lib/common'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(join(ROOT, 'lib/ui'))
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
 const sidecar = ui.sidecar
@@ -40,7 +38,7 @@ const setValue = (client, text) => {
   }, text)
 }
 
-describe('edit compositions', function (this: ISuite) {
+describe('edit compositions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

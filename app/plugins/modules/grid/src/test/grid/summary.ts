@@ -16,9 +16,7 @@
 
 import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
-
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 const { cli, sidecar } = ui
 
@@ -90,7 +88,7 @@ export const openTableExpectCountOf = function (ctx, expectedCount, expectedErro
   it(`open activation table, with ${cmd}`, () => _openTableExpectCountOf(ctx, expectedCount, expectedErrorRate, cmd))
 }
 
-describe('summary visualization', function (this: ISuite) {
+describe('summary visualization', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

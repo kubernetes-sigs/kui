@@ -16,9 +16,7 @@
 
 import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
-
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 const { cli, sidecar } = ui
 
@@ -28,7 +26,7 @@ const actionName = `activation-grid-${uuid()}` // some unique name
 const N = 1 // number of activation batches to fetch
 const randomGarbage = `activation-grid-garbage-${uuid()}` // some unique name
 
-describe('grid visualization', function (this: ISuite) {
+describe('grid visualization', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

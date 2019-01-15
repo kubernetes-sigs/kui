@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ISuite } from '@test/lib/common'
 import * as fs from 'fs'
 import { join } from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(join(ROOT, 'lib/common'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(join(ROOT, 'lib/ui'))
+
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379',
@@ -58,7 +56,7 @@ const addSubscription = composerErrorInput('addSubscription.js')
  * Here starts the test
  *
  */
-describe('show the composer visualization without creating openwhisk assets', function (this: ISuite) {
+describe('show the composer visualization without creating openwhisk assets', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

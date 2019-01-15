@@ -16,13 +16,11 @@
 
 import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
-
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 const { cli, sidecar } = ui
 
-describe('timeline visualization', function (this: ISuite) {
+describe('timeline visualization', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

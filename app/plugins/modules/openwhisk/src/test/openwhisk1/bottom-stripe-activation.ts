@@ -21,15 +21,15 @@
  */
 
 import * as assert from 'assert'
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 const actionName = 'foo'
 
-describe('Sidecar bottom stripe interactions for activations', function (this: ISuite) {
+describe('Sidecar bottom stripe interactions for activations', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

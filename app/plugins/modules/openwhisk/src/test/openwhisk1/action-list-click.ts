@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -23,7 +22,7 @@ const { cli, selectors, sidecar } = ui
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
-describe('create action list it then click to show it again', function (this: ISuite) {
+describe('create action list it then click to show it again', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

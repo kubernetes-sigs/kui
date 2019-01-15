@@ -18,8 +18,7 @@ import { join } from 'path'
 import { readFile } from 'fs'
 import * as assert from 'assert'
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, normalizeHTML, selectors, sidecar } = ui
@@ -43,7 +42,7 @@ const packageName = 'ppp'
 const packageName2 = 'ppp2'
 const packageName3 = 'ppp3'
 
-describe('Create an action via let from a remote resource', function (this: ISuite) {
+describe('Create an action via let from a remote resource', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ISuite } from '@test/lib/common'
 import { join } from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(join(ROOT, 'lib/common'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(join(ROOT, 'lib/ui'))
+
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const cli = ui.cli
 const {
   composerInput,
@@ -39,7 +37,7 @@ const fuzz = { fuzz: { rules: ['noAuth'],
  * Here starts the test
  *
  */
-describe('show the composer visualization with no wskauth', function (this: ISuite) {
+describe('show the composer visualization with no wskauth', function (this: common.ISuite) {
   before(openwhisk.before(this, fuzz)) // fuzz testing: eliminate authentication bits
   after(common.after(this))
 

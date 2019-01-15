@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
@@ -23,7 +22,7 @@ const { cli, rp, selectors, sidecar } = ui
 const subset = ['foo', 'foo2']
 const actions = subset.concat(['goo'])
 
-describe('Delete using rimraf with wildcards', function (this: ISuite) {
+describe('Delete using rimraf with wildcards', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

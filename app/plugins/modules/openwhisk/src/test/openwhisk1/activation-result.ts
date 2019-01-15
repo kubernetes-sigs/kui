@@ -18,16 +18,14 @@
  * tests that create an action and test that it shows up in the list UI
  *    this test also covers toggling the sidecar
  */
-
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 const actionName1 = `foo1-${new Date().getTime()}`
 
-describe('wsk activation result and wsk activation logs', function (this: ISuite) {
+describe('wsk activation result and wsk activation logs', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

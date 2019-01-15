@@ -20,8 +20,8 @@
  */
 
 import * as assert from 'assert'
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -36,7 +36,7 @@ const root = path.dirname(require.resolve('@test/package.json'))
 const fooSrc = readFileSync(path.join(root, 'data/openwhisk/foo.js')).toString()
 const foo2Src = readFileSync(path.join(root, 'data/openwhisk/foo2.js')).toString()
 
-describe('Sidecar bottom stripe interactions for actions', function (this: ISuite) {
+describe('Sidecar bottom stripe interactions for actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

@@ -20,8 +20,8 @@
  */
 
 import * as assert from 'assert'
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -30,7 +30,7 @@ const pckage = 'package'
 const package2 = 'package2'
 const action = 'action'
 
-describe('wsk package list tests', function (this: ISuite) {
+describe('wsk package list tests', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

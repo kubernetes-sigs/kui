@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import { cli, selectors } from '@test/lib/ui'
 import { wipe, waitTillNone } from '@test/lib/k8s/wipe'
 import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@test/lib/headless'
 
-const doTests = (ctx: ISuite, impl: CLI) => {
+const doTests = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))
   after(common.after(ctx))
 
@@ -41,10 +40,10 @@ const doTests = (ctx: ISuite, impl: CLI) => {
   })
 }
 
-describe('k8s with electron via bin/kui', function (this: ISuite) {
+describe('k8s with electron via bin/kui', function (this: common.ISuite) {
   doTests(this, kuiElectron)
 })
 
-describe('k8s with electron via kubectl kui', function (this: ISuite) {
+describe('k8s with electron via kubectl kui', function (this: common.ISuite) {
   doTests(this, kubectlElectron)
 })
