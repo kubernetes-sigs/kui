@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 import { normalize } from 'path'
 
-describe('Change shell directory via cd and lcd', function (this: ISuite) {
+describe('Change shell directory via cd and lcd', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

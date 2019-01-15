@@ -17,10 +17,10 @@
 'use strict'
 
 // import { join } from 'path'
-// const ROOT = process.env.TEST_ROOT
-// const common = require(join(ROOT, 'lib/common'))
 //
-// const ui = require(join(ROOT, 'lib/ui'))
+// import * as common from '@test/lib/common'
+//
+// import * as ui from '@test/lib/ui'
 // const cli = ui.cli
 // const sidecar = ui.sidecar
 // const actionName1 = 'foo1'

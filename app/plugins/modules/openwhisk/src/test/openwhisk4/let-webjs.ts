@@ -16,8 +16,7 @@
 
 import * as assert from 'assert'
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -27,7 +26,7 @@ const HTML_WITH_JS_INPUT = './data/openwhisk/hello-with-script.html'
 
 const actionName = 'foo'
 
-describe('Create a javascript web action via let', function (this: ISuite) {
+describe('Create a javascript web action via let', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

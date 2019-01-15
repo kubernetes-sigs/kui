@@ -19,8 +19,7 @@
  *    this test also covers toggling the sidecar
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -31,7 +30,7 @@ const triggerName = 'ttt'
 const actionNameInPackage = `${packageName}/${actionName}`
 const ruleName = `on_${triggerName}_do_${actionNameInPackage.replace(/\//g, '_')}`
 
-describe('List all OpenWhisk entities v2', function (this: ISuite) {
+describe('List all OpenWhisk entities v2', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this, () => cli.do(`wsk rule rm ${ruleName}`, this.app)))
 

@@ -19,8 +19,7 @@
  *    this test also covers toggling the sidecar
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -28,7 +27,7 @@ const { cli, selectors, sidecar } = ui
 const actionName1 = `foo1-${new Date().getTime()}`
 const actionName2 = `foo2-${new Date().getTime()}`
 
-describe('wsk activation get --last', function (this: ISuite) {
+describe('wsk activation get --last', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

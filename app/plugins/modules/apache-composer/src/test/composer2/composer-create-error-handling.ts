@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
 import * as path from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(path.join(ROOT, 'lib/common'))
-const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
-
-const ui = require(path.join(ROOT, 'lib/ui'))
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const cli = ui.cli
 
 /**
  * this test covers app create error handling, and app create --dry-run
  *
  */
-describe('app create error handling', function (this: ISuite) {
+describe('app create error handling', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

@@ -20,8 +20,8 @@
  */
 
 import * as assert from 'assert'
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -29,7 +29,7 @@ const { cli, selectors, sidecar } = ui
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
-describe('Invoke -q (quiet invoke)', function (this: ISuite) {
+describe('Invoke -q (quiet invoke)', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

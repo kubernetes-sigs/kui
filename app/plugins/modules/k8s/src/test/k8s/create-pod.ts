@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import { cli, selectors } from '@test/lib/ui'
 import { wipe, waitTillNone } from '@test/lib/k8s/wipe'
 import { kubectl, cli as kui, CLI } from '@test/lib/headless'
 
-const doHeadless = (ctx: ISuite, impl: CLI) => {
+const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))
 
   it('should wipe k8s', () => {
@@ -76,15 +75,15 @@ const doHeadless = (ctx: ISuite, impl: CLI) => {
   })
 }
 
-describe('k8s create pod kubectl kui headless mode', function (this: ISuite) {
+describe('k8s create pod kubectl kui headless mode', function (this: common.ISuite) {
   doHeadless(this, kubectl)
 })
 
-describe('k8s create pod bin/kui headless mode', function (this: ISuite) {
+describe('k8s create pod bin/kui headless mode', function (this: common.ISuite) {
   doHeadless(this, kui)
 })
 
-describe('k8s create pod electron mode', function (this: ISuite) {
+describe('k8s create pod electron mode', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

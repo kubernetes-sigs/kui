@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 const triggerName = 'ppp'
 
-describe('Add parameters to triggers', function (this: ISuite) {
+describe('Add parameters to triggers', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

@@ -26,13 +26,11 @@ interface ISuite extends Suite {
   app: Application
 }
 import { join } from 'path'
+import * as common from '@test/lib/common'
+import * as ui from '@test/lib/ui'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import { cli } from '@test/lib/headless'
 const ROOT = process.env.TEST_ROOT
-const { ISuite } = require(join(ROOT, 'lib/common'))
-const common = require(join(ROOT, 'lib/common'))
-const ui = require(join(ROOT, 'lib/ui'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
-const { cli } = require('@test/lib/headless')
-
 const kui = process.env.KUI || join(ROOT, '../bin/kui')
 
 interface IResponse {
@@ -41,7 +39,7 @@ interface IResponse {
   stderr?: string
 }
 
-describe('Headless mode', function (this: ISuite) {
+describe('Headless mode', function (this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
   // intentional typo with "actiono"

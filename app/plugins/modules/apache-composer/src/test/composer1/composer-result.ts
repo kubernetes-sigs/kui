@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ISuite } from '@test/lib/common'
 import { join } from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(join(ROOT, 'lib/common'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(join(ROOT, 'lib/ui'))
+
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const assert = require('assert')
 const cli = ui.cli
 const sidecar = ui.sidecar
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const seqName1 = 'seq1'
 
-describe('kill composer invocation', function (this: ISuite) {
+describe('kill composer invocation', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
 import { join } from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(join(ROOT, 'lib/common'))
-const openwhisk = require(join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(join(ROOT, 'lib/ui'))
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const seqName1 = 'seq1'
 
-describe('Use the app delete command to delete an invokeable composition', function (this: ISuite) {
+describe('Use the app delete command to delete an invokeable composition', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

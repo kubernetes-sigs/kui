@@ -18,8 +18,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as assert from 'assert'
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -28,7 +27,7 @@ const flip = 'flip'
 
 const removeWhitespace = txt => txt.replace(/\s/g, '')
 
-describe('blackbox actions from a shell script', function (this: ISuite) {
+describe('blackbox actions from a shell script', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

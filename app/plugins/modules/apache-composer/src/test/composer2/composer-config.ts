@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ISuite } from '@test/lib/common'
 import * as path from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(path.join(ROOT, 'lib/common'))
-const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(path.join(ROOT, 'lib/ui'))
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const cli = ui.cli
 
-describe('composer config', function (this: ISuite) {
+describe('composer config', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

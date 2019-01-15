@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
 import * as fs from 'fs'
 import * as path from 'path'
-const ROOT = process.env.TEST_ROOT
-const common = require(path.join(ROOT, 'lib/common'))
-const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(path.join(ROOT, 'lib/ui'))
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 const srcDir = './data/composer/composer-source' // inputs for create-from-source
 
-describe('composer create from source', function (this: ISuite) {
+describe('composer create from source', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

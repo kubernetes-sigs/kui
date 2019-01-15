@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -49,7 +48,7 @@ const invokeABunch = (ctx, actionName) => {
  * the given action
  *
  */
-const testPagination = (ctx: ISuite, actionName?: string) => {
+const testPagination = (ctx: common.ISuite, actionName?: string) => {
   const { app } = ctx
 
   const limit = NN / 2
@@ -96,7 +95,7 @@ const testPagination = (ctx: ISuite, actionName?: string) => {
     .catch(common.oops(ctx))
 }
 
-describe('Activation list paginator', function (this: ISuite) {
+describe('Activation list paginator', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

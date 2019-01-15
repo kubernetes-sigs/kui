@@ -19,8 +19,7 @@
  *    this test also covers toggling the sidecar
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
@@ -32,7 +31,7 @@ const actionName2 = 'foo2'
 const actionName3 = 'foo3'
 const seqName = 'sss'
 
-describe('@file params and annotations', function (this: ISuite) {
+describe('@file params and annotations', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

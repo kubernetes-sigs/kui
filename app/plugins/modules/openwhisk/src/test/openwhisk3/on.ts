@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -31,7 +30,7 @@ const ruleName3 = `on_${triggerName2}_do_${actionName2}`
 import { join } from 'path'
 const { expectRule } = require(join(process.env.TEST_ROOT, 'lib/composer-viz-util'))
 
-describe('Create a rule via on', function (this: ISuite) {
+describe('Create a rule via on', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

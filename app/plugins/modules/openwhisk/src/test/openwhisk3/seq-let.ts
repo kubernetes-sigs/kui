@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -27,7 +26,7 @@ const seqName4 = 'seq4'
 const seqName5 = 'seq5'
 const actionNames = ['a', 'b', 'c']
 
-describe('Create a sequence via let', function (this: ISuite) {
+describe('Create a sequence via let', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

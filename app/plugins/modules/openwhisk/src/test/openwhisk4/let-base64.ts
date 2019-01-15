@@ -17,8 +17,7 @@
 import { join } from 'path'
 import { readFileSync } from 'fs'
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -28,7 +27,7 @@ const content = readFileSync(join(process.env.TEST_ROOT, file)).toString()
 
 const actionName1 = 'foo'
 
-describe('Invoke an action with a binary-formatted parameter', function (this: ISuite) {
+describe('Invoke an action with a binary-formatted parameter', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

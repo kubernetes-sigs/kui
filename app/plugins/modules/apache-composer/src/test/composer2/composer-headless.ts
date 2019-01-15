@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/tests/headless')
 import * as assert from 'assert'
 import * as path from 'path'
 import { exec } from 'child_process'
-
-const ROOT = process.env.TEST_ROOT
-// const APP = process.env.APP || '../app'
-const common = require(path.join(ROOT, 'lib/common'))
-const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(path.join(ROOT, 'lib/ui'))
-// const badges = require(path.join(ROOT, APP, 'plugins/modules/composer/lib/badges.js'))
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const { cli } = require('@test/lib/headless')
 
 interface IResponse {
@@ -205,7 +200,7 @@ const validation = {
 
 }
 
-describe('Composer Headless Test :', function (this: ISuite) {
+describe('Composer Headless Test :', function (this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
   describe('should create simple composition from @demos', function () {

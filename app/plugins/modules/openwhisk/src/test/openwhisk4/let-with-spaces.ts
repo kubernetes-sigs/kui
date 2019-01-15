@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -31,7 +30,7 @@ const actionName3 = 'foo3 fun'
 const packageName1 = 'ppp'
 const packageName2 = 'ppp fun'
 
-describe('Create an action via let with spaces', function (this: ISuite) {
+describe('Create an action via let with spaces', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

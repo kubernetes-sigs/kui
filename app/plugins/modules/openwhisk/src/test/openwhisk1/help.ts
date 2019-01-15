@@ -19,8 +19,7 @@
  *
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -30,7 +29,7 @@ import { doHelp, header, header2 } from '@kui/test/core2/help'
 /* the header for action help */
 const actionHelpHeader = header2('OpenWhisk', 'Action Operations')
 
-describe('Help command', function (this: ISuite) {
+describe('Help command', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

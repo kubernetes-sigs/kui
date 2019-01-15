@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ISuite } from '@test/lib/common'
 import * as path from 'path'
 import * as assert from 'assert'
-const ROOT = process.env.TEST_ROOT
-const common = require(path.join(ROOT, 'lib/common'))
-const openwhisk = require(path.join(ROOT, 'lib/openwhisk/openwhisk'))
-const ui = require(path.join(ROOT, 'lib/ui'))
+import * as common from '@test/lib/common'
+import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as ui from '@test/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 import * as Debug from 'debug'
 const debug = Debug('tests/apache-composer/session-list-scan-limit')
 
-describe('session list --scan-limit --skip', function (this: ISuite) {
+describe('session list --scan-limit --skip', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@test/lib/common'
 import * as ui from '@test/lib/ui'
 import * as openwhisk from '@test/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
@@ -27,7 +26,7 @@ const packageName = 'ppp'
 const packageNameWithSpaces = 'ppp ppp'
 const seqName = 'sss'
 
-describe('Delete multiple actions using rimraf', function (this: ISuite) {
+describe('Delete multiple actions using rimraf', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
