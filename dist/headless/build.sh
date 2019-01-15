@@ -110,7 +110,6 @@ function build {
     (cd $TOPDIR && rm -rf kui && mkdir kui && mkdir kui/bin && \
          tar -C . -cf - \
              --exclude "^kui" \
-             --exclude "^kui.js" \
              --exclude ".git/*" \
              --exclude "^dist" \
              --exclude "**/node_modules/electron*/*" \

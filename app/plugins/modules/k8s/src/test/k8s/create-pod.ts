@@ -80,7 +80,7 @@ describe('k8s create pod kubectl kui headless mode', function (this: ISuite) {
   doHeadless(this, kubectl)
 })
 
-describe('k8s create pod kui.js headless mode', function (this: ISuite) {
+describe('k8s create pod bin/kui headless mode', function (this: ISuite) {
   doHeadless(this, kui)
 })
 
