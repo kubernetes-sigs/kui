@@ -21,29 +21,37 @@
 
 import repl = require('@kui/core/repl')
 
+import { CMD as copy } from './copy'
+
+/** name for the command */
+export const CMD = 'rename'
+
 /**
- * Print usage/docs information
+ * usage model
  *
  */
-const usage = () => {
-  return 'Usage: mv name new_name'
-}
+const usage = (type: string, command: string) => ({
+  command,
+  strict: command,
+  required: [
+    { name: 'name', docs: 'Name of the deployed entity to rename', entity: `wsk ${type}` },
+    { name: 'newName', docs: 'The replacement name to use' }
+  ],
+  docs: 'Rename an Openwhisk entity',
+  example: `${command} name newName`
+})
 
 /**
  * This is the core logic
  *
  */
-const mv = type => ({ argvNoOptions: argv, parsedOptions: options }) => {
-  const idx = argv.indexOf('rename') + 1
+const mv = (type: string) => (op: string) => ({ argvNoOptions: argv, parsedOptions: options }) => {
+  const idx = argv.indexOf(op) + 1
   const oldName = argv[idx]
   const newName = argv[idx + 1]
 
-  if (!oldName || !newName || options.help) {
-    return usage()
-  } else {
-    return repl.qfexec(`${type} cp "${oldName}" "${newName}"`)
-        .then(resp => repl.qexec(`wsk ${type} delete "${oldName}"`).then(() => resp))
-  }
+  return repl.qfexec(`wsk ${type} ${copy} "${oldName}" "${newName}"`)
+    .then(resp => repl.qexec(`wsk ${type} delete "${oldName}"`).then(() => resp))
 }
 
 /**
@@ -55,7 +63,7 @@ export default async (commandTree, wsk) => {
   ['actions'].forEach(type => {
     const handler = mv(type)
     wsk.synonyms(type).forEach(syn => {
-      commandTree.listen(`/wsk/${syn}/rename`, handler, { docs: `Rename OpenWhisk ${type}` })
+      commandTree.listen(`/wsk/${syn}/${CMD}`, handler(CMD), { usage: usage(type, CMD) })
     })
   })
 }

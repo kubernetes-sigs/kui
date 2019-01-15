@@ -32,13 +32,15 @@ const packageName3 = 'ppp3'
 const key1 = 'foo'
 const value1 = 'bar'
 
-describe('Use cp to copy entities', function (this: ISuite) {
+const CMD = 'copy'
+
+describe('Use copy to copy openwhisk entities', function (this: ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  const cp = (a, b, aPackage?, bPackage?, cmd = 'cp') => {
+  const cp = (a, b, aPackage?, bPackage?, cmd = CMD) => {
     // pass this key-value pair to the invocation
     const key = 'name'
     const value = `whisker ${a} to ${b}`

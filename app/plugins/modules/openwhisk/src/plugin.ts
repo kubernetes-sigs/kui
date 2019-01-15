@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import cp from './lib/cmds/cp'
+import cp from './lib/cmds/copy'
 import mv from './lib/cmds/mv'
 import rm from './lib/cmds/rm'
 import auth from './lib/cmds/auth'
