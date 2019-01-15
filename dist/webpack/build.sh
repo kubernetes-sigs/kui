@@ -60,5 +60,7 @@ function build {
     npx webpack-cli --mode development
 }
 
-pre && build && post
+build
+
+# pre and post disabled for now:
 #pre && build && post

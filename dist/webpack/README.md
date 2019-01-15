@@ -7,10 +7,11 @@ compliant browser.
 
 ## Building for webpack
 
-This command will generate the webpack bundles.
+This command will generate the webpack bundles:
 
 ```bash
-npm run webpack
+npm install
+./build.sh
 ```
 
 When it is done (which may take 2-3 minutes), you should see a
