@@ -191,14 +191,14 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
 
   // deal with multiple processes
   if (!process.env.RUNNING_SHELL_TEST) {
-    const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
       // Someone tried to run a second instance, open a new window
       // to handle it
       const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
       debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
       createWindow(true, argv, subwindowPlease, subwindowPrefs)
     })
-    if (isSecondInstance) {
+    if (!app.requestSingleInstanceLock()) { // The primary instance of app failed to optain the lock, which means another instance of app is already running with the lock
       debug('exiting, since we are not the first instance')
       return app.exit(0)
     }
