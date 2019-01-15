@@ -21,7 +21,7 @@ import * as repl from '@kui/core/repl'
  * Enter read-only mode
  *
  */
-export const readonly = ({ getAction }) => () => Promise.resolve(getAction())
+export const readonly = ({ getEntity }) => () => Promise.resolve(getEntity())
   .then(({ namespace, name }) => repl.qexec(`action get "/${namespace}/${name}"`))
   .then(showEntity)
 
@@ -29,7 +29,7 @@ export const readonly = ({ getAction }) => () => Promise.resolve(getAction())
  * Enter edit mode
  *
  */
-export const edit = ({ getAction }) => () => Promise.resolve(getAction())
+export const edit = ({ getEntity }) => () => Promise.resolve(getEntity())
   .then(({ namespace, name }) => repl.qexec(`edit "/${namespace}/${name}"`))
   .then(entity => showCustom(entity, {}))
 
@@ -37,11 +37,11 @@ export const edit = ({ getAction }) => () => Promise.resolve(getAction())
  * Render a lock/unlock icon as a mode button
  *
  */
-export const lockIcon = ({ getAction,
+export const lockIcon = ({ getEntity,
   mode = 'lock', // doesn't need to be translated, as we use an icon
   icon = 'fas fa-unlock-alt',
   tooltip = 'You are in edit mode.\u000aClick to return to view mode.', // TODO externalize string
-  direct = exports.readonly({ getAction })
+  direct = exports.readonly({ getEntity })
 }) => ({
   mode,
   actAsButton: true,

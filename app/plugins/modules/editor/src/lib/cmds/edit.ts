@@ -14,13 +14,49 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui/core/capabilities'
+import * as Debug from 'debug'
+const debug = Debug('plugins/editor/cmds/edit-amd')
+
+import { respondToRepl } from '../util'
+import { fetchEntity } from '../fetchers'
+import * as usage from '../../usage'
+import { lockIcon } from '../readonly'
+import { applyOverrides } from '../overrides'
+import { openEditor } from '../open'
+
+import * as repl from '@kui/core/repl'
+
+/**
+ * Command handler for `edit <entity>`
+ *
+ */
+const edit = (prequire) => async ({ argvNoOptions, parsedOptions, execOptions }) => {
+  debug('edit command execution started')
+
+  const name = argvNoOptions[argvNoOptions.indexOf('edit') + 1]
+
+  //
+  // fetch the entity and open the editor in parallel
+  // then update the editor to show the entity
+  // then send a response back to the repl
+  //
+  debug('name', name)
+  const [entity, injectEntityIntoView] = await Promise.all([
+    fetchEntity(name, parsedOptions, execOptions), // fetch the entity model
+    openEditor(name, parsedOptions, execOptions) // prepare the editor view
+  ])
+
+  // apply any command line overrides of the default behaviors
+  applyOverrides(parsedOptions)([entity])
+
+  // now we're ready to inject the entity into the editor view
+  const model = await injectEntityIntoView(entity)
+
+  // respond with a repl-compatible data model
+  return respondToRepl([ lockIcon ])(model)
+}
 
 export default async (commandTree, prequire) => {
-  if (inBrowser()) {
-    const mod = (await require('./edit-esm')).default
-    return mod(commandTree, prequire)
-  } else {
-    return require('./edit-amd')(commandTree, prequire)
-  }
+  // command registration: edit an existing entity
+  commandTree.listen('/editor/edit', edit(prequire), { usage: usage.editUsage('edit'), noAuthOk: true, needsUI: true })
 }

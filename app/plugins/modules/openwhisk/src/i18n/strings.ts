@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-export const applyOverrides = parsedOptions => params => {
-  const [ entity ] = params
+/**
+ * Translations
+ *
+ */
+export default {
+  editor: {
+    save: 'Deploy',
+    actionAlreadyExists: 'The given action name is already in use',
 
-  if (parsedOptions.name) {
-    entity.name = parsedOptions.name
+    // commands
+    docs: {
+      new: 'Open the code editor to create a new action'
+    }
   }
-
-  if (parsedOptions.type) {
-    entity.type = parsedOptions.type
-  }
-
-  return params
 }
