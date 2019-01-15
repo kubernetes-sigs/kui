@@ -33,12 +33,3 @@ function main(array $args) : array
     echo $greeting;
     return ["greeting" => $greeting];
 }`
-
-export const composition = {
-  javascript: `const composer = require('openwhisk-composer')
-
-module.exports = composer.sequence('A', 'B')`,
-
-  python: `# try typing "composer." to begin your composition
-`
-}

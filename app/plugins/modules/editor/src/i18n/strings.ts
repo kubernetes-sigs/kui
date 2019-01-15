@@ -24,7 +24,6 @@ export default {
   revert: 'Revert',
   tidy: 'Reformat source code',
   readonly: 'Done Editing',
-  actionAlreadyExists: 'The given action name is already in use',
   isNew: 'You are in edit mode, viewing <strong>undeployed code</strong>',
   isNewReadOnly: 'You are in readonly mode, viewing <strong>undeployed code</strong>',
   isUpToDate: 'You are in edit mode, viewing the <strong>currently saved version</strong>',
@@ -33,8 +32,6 @@ export default {
 
   // commands
   docs: {
-    edit: 'Open the code for an action in a text editor',
-    new: 'Open the code editor to create a new action',
-    compose: 'Open the code editor to create a new composition'
+    edit: 'Open the code for a local file or existing entity in a text editor'
   }
 }

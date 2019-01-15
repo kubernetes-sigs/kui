@@ -18,6 +18,8 @@ import { setHasAuth } from '@kui/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
 import { getDefaultCommandContext } from '@kui/core/command-tree'
 
+import editorPreload from './preload-editor-extensions'
+
 /**
  * This is the module
  *
@@ -29,6 +31,8 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
     if (auth.get()) {
       setHasAuth('openwhisk')
     }
+
+    editorPreload(commandTree, prequire, options)
   }
 }
 

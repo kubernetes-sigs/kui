@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('core/webapp/util/ascii-to-table')
 
+import * as repl from '@kui/core/repl'
+
 /**
  * Find the column splits
  *

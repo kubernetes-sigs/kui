@@ -34,6 +34,7 @@ import every from './lib/cmds/rules/every'
 import modes from './lib/views/mode'
 import beautify from './lib/cmds/beautify'
 import core from './lib/cmds/openwhisk-core'
+import editorBits from './lib/cmds/editor-extensions'
 
 import activationList from './lib/cmds/activations/list'
 
@@ -53,6 +54,7 @@ export default async (commandTree, prequire) => {
   await loadTest(commandTree, wsk)
   await addParameter(commandTree, wsk)
   await beautify(commandTree, wsk)
+  await editorBits(commandTree, wsk)
 
   // action extensions
   await letCommand(commandTree, wsk)

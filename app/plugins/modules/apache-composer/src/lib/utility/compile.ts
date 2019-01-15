@@ -35,9 +35,15 @@ import * as messages from './messages'
 
 // help compositions find our openwhisk-composer module
 if (!inBrowser()) {
-  debug('path',path.join(__dirname, '../../../node_modules'))
+  debug('adding node_modules to the require module path')
+
+  // add the kui-root node_modules
   const root = path.dirname(require.resolve('@root/package.json'))
   require('app-module-path').addPath(path.join(root, 'node_modules'))
+
+  // add our-root node_modules
+  const ourRoot = path.dirname(require.resolve('@kui-plugin-src/apache-composer/package.json'))
+  require('app-module-path').addPath(path.join(ourRoot, 'node_modules'))
 }
 
 export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {

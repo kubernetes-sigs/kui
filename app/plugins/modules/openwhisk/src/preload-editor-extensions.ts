@@ -15,26 +15,40 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/preload')
+const debug = Debug('plugins/openwhisk/preload-editor-extensions')
 debug('loading')
 
-import { inBrowser } from '@kui/core/capabilities'
+import { inBrowser, isHeadless } from '@kui/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
 
 debug('done loading prereqs')
 
 /**
- * Here, we prefetch the editor, if we're running in browser
- * mode. It is slow to load.
+ * A preloaded plugin that enhances the view modes for actions
  *
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
   debug('initializing')
 
-  if (inBrowser()) {
-    // NOTE how there is no await; this is because our goal is only to
-    // prefetch it
-    prequire('editor')
+  if (!isHeadless()) {
+    const { lockIcon, edit } = await import('@kui-plugin/editor/src/lib/readonly')
+    const { currentSelection } = await import('@kui/webapp/views/sidecar')
+    const getEntity = currentSelection
+
+    const { registerFetcher } = await import('@kui-plugin/editor/src/lib/fetchers')
+
+    const { addActionMode } = await import('./lib/models/modes')
+    const { fetchAction } = await import('./lib/cmds/editor-extensions')
+
+    registerFetcher(fetchAction())
+
+    addActionMode(lockIcon({
+      getEntity,
+      mode: 'unlock',
+      icon: 'fas fa-lock',
+      tooltip: 'You are in read-only mode.\u000aClick to edit.', // TODO externalize string
+      direct: edit({ getEntity })
+    }), 'unshift')
   }
 }
 
