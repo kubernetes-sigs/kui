@@ -564,8 +564,7 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
         debug('command requires auth, and we do not have it')
         const err = new Error('Command requires authentication')
         err['code'] = 403
-        oops(block, nextBlock)(err)
-        return
+        return oops(block, nextBlock)(err)
       }
 
       // if we don't have a head (yet), but this command

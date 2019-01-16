@@ -30,6 +30,7 @@ const key = 'wsk.namespaces'
 /** semi-globals */
 let cached
 let _wsk
+let currentNS
 
 const read = (wsk = _wsk) => apiHost.get().then(host => {
   debug('read:host', host)
@@ -110,6 +111,9 @@ const setNamespace = (namespace, wsk = _wsk) => {
   hostDom.className = 'clickable'
   hostDom.onclick = () => cli.partial('host set <your_api_host>')
 
+  // cache
+  currentNS = namespace
+
   // persistence bits
   return store(namespace, wsk.auth.get(), wsk)
 }
@@ -129,6 +133,9 @@ export const setNoNamespace = (provideHelp = true) => {
   namespaceDom.onclick = () => cli.partial('wsk auth add <your_auth_key>')
   namespaceDom.removeAttribute('data-value')
   document.body.classList.add('no-auth')
+
+  // cache
+  currentNS = undefined
 
   if (provideHelp) {
     if (inBrowser()) {
@@ -272,7 +279,7 @@ class DefaultCurrentOptions implements ICurrentOptions {
   }
 }
 export const current = async (opts: ICurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
-  const ns = document.querySelector('#openwhisk-namespace').getAttribute('data-value')
+  const ns = currentNS
   debug('current', ns)
 
   if (!ns && !opts.noNamespaceOk) {
