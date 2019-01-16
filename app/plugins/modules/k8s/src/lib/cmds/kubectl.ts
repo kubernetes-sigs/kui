@@ -721,6 +721,7 @@ const impls = {
   browser: {
     kubectl: async ({ execOptions, argvNoOptions, parsedOptions: options }) => {
       const { FQN: kubectlFQN, deploy: deployKubectl } = await import('../../actionProxy/kubectl')
+      debug('impls/browser/kubectl')
 
       if (argvNoOptions[1] !== 'logs') {
         await confirmFileExistence(options.f || options.file, 'kubectl')

@@ -46,13 +46,13 @@ module.exports = {
   },
   target: 'web',
   node: {
-    fs: 'empty'
+    fs: 'empty',
+    child_process: 'empty'
   },
   externals: [
     'tape', // modules/composer/node_modules/safer-buffer
     'dns', // modules/openwhisk/node_modules/retry/example/dns.js
     'tls', // needed by request
-    'ansi-to-html', // needed by bash-like; not needed in a browser
     'readline',
     'chokidar',
     'fsevents',
@@ -66,7 +66,6 @@ module.exports = {
     'module',
     'net',
     'webworker-threads', // wskflow
-    'child_process',
     'xml2js', // used by ./app/plugins/modules/composer/@demos/combinators/http.js
     'redis', 'redis-commands', // openwhisk-composer
     'nyc',
@@ -170,6 +169,7 @@ module.exports = {
       { test: /\.markdown$/, use: 'ignore-loader' },
       { test: /~$/, use: 'ignore-loader' },
       { test: /\.tsx?$/, use: 'ignore-loader' },
+      { test: /^Dockerfile$/, use: 'ignore-loader' },
       // end of ignore-loader
       //
       { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] },

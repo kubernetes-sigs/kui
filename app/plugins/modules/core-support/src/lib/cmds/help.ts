@@ -19,7 +19,7 @@ const debug = Debug('plugins/core-support/help')
 debug('loading')
 
 import UsageError from '@kui/core/usage-error'
-import { isHeadless } from '@kui/core/capabilities'
+import { isHeadless, inBrowser } from '@kui/core/capabilities'
 import * as repl from '@kui/core/repl'
 
 /**
@@ -31,7 +31,7 @@ const help = (usage, docs) => ({ argvNoOptions: args }) => {
   debug('help command', rest)
 
   if (rest.length > 0) {
-    // then the user asked e.g. help action; interpret this as action help
+    // then the user asked e.g. "help foo"; interpret this as "foo help"
     debug('reversal')
     return repl.qexec(rest.concat('help').map(repl.encodeComponent).join(' '))
 
@@ -50,11 +50,16 @@ const help = (usage, docs) => ({ argvNoOptions: args }) => {
     // traverse the top-level usage documents, populating topLevelUsage.available
     for (let key in usage) {
       const { route, usage: model } = usage[key]
-      if (model && (isHeadless() || !model.headlessOnly)) {
+      if (model &&
+          !model.synonymFor &&
+          (isHeadless() || !model.headlessOnly) &&
+          (!inBrowser() || !model.requiresLocal)
+         ) {
         topLevelUsage.available.push({
           label: route.substring(1),
           available: model.available,
           hidden: model.hidden,
+          synonyms: model.synonyms,
           command: model.commandPrefix || model.command, // either subtree or leaf command
           docs: model.command ? model.header : model.title // for leaf commands, print full header
         })

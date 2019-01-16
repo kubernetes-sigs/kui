@@ -295,10 +295,14 @@ const amendWithUsageModels = modules => {
   modules.docs = {}
   modules.usage = {}
 
-  commandTree.getModel().forEachNode(({ route, options }) => {
+  commandTree.getModel().forEachNode(({ route, options, synonyms }) => {
     if (options && options.usage) {
       modules.usage[route] = options.usage
       if (options.needsUI) modules.usage[route].needsUI = true
+      if (options.requiresLocal) modules.usage[route].requiresLocal = true
+      if (options.noAuthOk) modules.usage[route].noAuthOk = true
+      if (options.synonymFor) modules.usage[route].synonymFor = options.synonymFor.route
+      if (synonyms) modules.usage[route].synonyms = Object.keys(synonyms).map(route => synonyms[route].key)
     }
 
     if (options && options.docs) {

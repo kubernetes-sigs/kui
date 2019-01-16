@@ -71,7 +71,9 @@ export default (source, fullpath, hljs) => {
     const exec = pexecs[idx] as HTMLElement
     const url = exec.getAttribute('data-url')
     if (url && url.charAt(0) === '!') {
-      exec.onclick = () => pexec(url.substring(1).replace(/(?<!\\)\//g, ' ').replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
+      // NOTE: please keep the 'new RegExp' (rather than /.../) form
+      // below; some browsers don't (yet?) support <!
+      exec.onclick = () => pexec(url.substring(1)/*.replace(new RegExp('(?<!\\)\/', 'g'), ' ')*/.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
     } else {
       exec.onclick = () => pexec(`open ${url}`)
     }

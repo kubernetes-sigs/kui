@@ -20,7 +20,6 @@ const debug = Debug('plugins/bash-like/cmds/git-status')
 import * as path from 'path'
 import { spawn } from 'child_process'
 
-import { inBrowser } from '@kui/core/capabilities'
 import { partial } from '@kui/webapp/cli'
 import { pexec } from '@kui/core/repl'
 import pip from '@kui/webapp/picture-in-picture'
@@ -191,7 +190,5 @@ const numstat = (): Promise<Stats> => new Promise<Stats>((resolve, reject) => {
  *
  */
 export default (commandTree, prequire) => {
-  if (!inBrowser()) {
-    commandTree.listen('/git/status', doStatus, { needsUI: true })
-  }
+  commandTree.listen('/git/status', doStatus, { needsUI: true, requiresLocal: true, noAuthOk: true })
 }

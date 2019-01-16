@@ -30,7 +30,7 @@ import { add as addToHistory } from '../models/history'
 import * as commandTree from './command-tree'
 import UsageError from './usage-error'
 
-import { isHeadless, hasAuth as hasAuthCapability } from './capabilities'
+import { isHeadless, inBrowser, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support'
 import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
@@ -564,6 +564,13 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
         debug('command requires auth, and we do not have it')
         const err = new Error('Command requires authentication')
         err['code'] = 403
+        return oops(block, nextBlock)(err)
+      }
+
+      if (evaluator.options && evaluator.options.requiresLocal && inBrowser()) {
+        debug('command does not work in a browser')
+        const err = new Error('Command requires local access')
+        err['code'] = 406 // http not acceptable
         return oops(block, nextBlock)(err)
       }
 
