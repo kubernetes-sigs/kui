@@ -71,51 +71,6 @@ let graphicalShellIsOpen = false
  */
 let noAuth = false
 
-// TODO factor this out
-let ns
-let auth
-const setNoAuth = () => {
-  if (!graphicalShellIsOpen) {
-    noAuth = true
-    repl.setNoAuth()
-  }
-}
-const namespace = {
-  init: async () => {
-    const wsk = await prequire('openwhisk')
-    try {
-      auth = wsk.auth.get()
-      return wsk.namespace.get()
-        .then(_ => { ns = _; return ns })
-        .catch(() => {
-          setNoAuth()
-        })
-    } catch (err) {
-      setNoAuth()
-      return Promise.resolve()
-    }
-  },
-  setApiHost: () => {
-    // no-op; this would update any UI elements for electron mode
-  },
-  setNoNamespace: () => {
-    // no-op; this would update any UI elements for electron mode
-  },
-  get: ons => ons === ns ? Promise.resolve(auth) : Promise.resolve(undefined),
-  list: () => Promise.resolve(ns ? [{ namespace: ns }] : []),
-  store: (newNamespace, auth) => { ns = newNamespace; return ns },
-  current: () => {
-    if (!ns) {
-      throw new Error('namespace uninitialized')
-    } else {
-      return ns
-    }
-  }
-}
-
-const ui = {
-}
-
 /**
  * Create structures to mimic having a head
  *
@@ -217,15 +172,7 @@ function mimicDom (app) {
     addEventListener: () => true,
     createTextNode: text => { const element = dom0(); element.innerText = text; return element },
     querySelector: selector => {
-      if (selector === '#openwhisk-namespace') {
-        return {
-          getAttribute: () => {
-            return namespace.current()
-          }
-        }
-      } else {
-        return dom0()
-      }
+      return dom0()
     }
   }
   global['document'] = document
@@ -299,21 +246,6 @@ const failure = quit => async err => {
     if (!graphicalShellIsOpen) {
       // if the graphical shell isn't open, then we're done here
       exitCode = typeof code === 'number' ? code : 1
-
-      if (exitCode === 401) {
-        const fs = require('fs')
-        const expandHomeDir = require('expand-home-dir')
-        const propertiesParser = require('properties-parser')
-        const wskprops = expandHomeDir('~/.wskprops')
-
-        if ((!fs.existsSync(wskprops) || !propertiesParser.read(wskprops).AUTH) &&
-                    !process.env.__OW_API_KEY) {
-          // hmm, the user doesn't seem to have any credentials, yet
-          error('')
-          error('Please use ' + colors.yellow('ibmcloud login') + ' followed by ' + colors.green('ibmcloud wsk list') +
-                          ' to acquire the necessary credentials.')
-        }
-      }
 
       process.exit(exitCode > 128 ? exitCode - 256 : exitCode)
       if (quit) quit()
@@ -442,14 +374,8 @@ export const main = async (app, mainFunctions) => {
     await initCommandContext()
 
     const maybeRetry = err => {
-      if (/*! namespace.current() || */ err.message === 'namespace uninitialized') {
-        debug('delayed namespace loading')
-        return namespace.init()
-          .then(() => evaluate(cmd))
-          .catch(failure(quit))
-      } else {
-        return failure(quit)(err)
-      }
+      // nothing, yet
+      return failure(quit)(err)
     }
 
     debug('invoking plugin preloader')
