@@ -109,9 +109,6 @@ function win32 {
 	    --win32metadata.CompanyName="Apache" \
 	    --win32metadata.ProductName="${PRODUCT_NAME}"
 
-        # CLI scripts
-        # cp ../fsh.js "$BUILDDIR/${PRODUCT_NAME}-win32-x64/fsh"
-
         #
         # deal with win32 packaging
         #
@@ -149,9 +146,6 @@ function mac {
 
         # use a custom icon for mac
         cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
-
-        # CLI script
-        # cp ../fsh.js "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/MacOS/fsh"
 
         # create the installers
         #if [ -n "$ZIP_INSTALLER" ]; then
@@ -196,9 +190,6 @@ function linux {
 	    --protocol=wsk --protocol-name="Execute ${PRODUCT_NAME} commands" \
             --icon=$ICON_LINUX \
 	    --overwrite
-
-        # CLI script
-        # cp ../fsh.js "$BUILDDIR/${PRODUCT_NAME}-linux-x64/fsh"
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
