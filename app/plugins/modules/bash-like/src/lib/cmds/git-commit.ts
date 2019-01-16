@@ -23,7 +23,6 @@ import { spawn } from 'child_process'
 import * as expandHomeDir from 'expand-home-dir'
 
 import eventBus from '@kui/core/events'
-import { inBrowser } from '@kui/core/capabilities'
 import { qexec } from '@kui/core/repl'
 import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui/webapp/views/sidecar'
 
@@ -147,7 +146,5 @@ ${commentedStatus}`
  *
  */
 export default (commandTree, prequire) => {
-  if (!inBrowser()) {
-    commandTree.listen('/git/commit', doCommit, { needsUI: true })
-  }
+  commandTree.listen('/git/commit', doCommit, { needsUI: true, requiresLocal: true, noAuthOk: true })
 }

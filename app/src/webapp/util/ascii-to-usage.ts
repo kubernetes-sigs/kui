@@ -112,10 +112,13 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
 
       debug('rest', rest)
 
+      // NOTE: please keep the 'new RegExp' (rather than /.../) form
+      // below; some browsers don't (yet?) support <=
+
       return new UsageError(Object.assign({
         command: breadcrumbs.pop(),
         parents: breadcrumbs,
-        commandPrefix: command.replace(/(?<=\s)--?\w+/, ''),
+        commandPrefix: command.replace(new RegExp('(?<=\s)--?\w+'), ''),
         commandSuffix: '--help',
         header,
         example,

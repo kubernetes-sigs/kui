@@ -279,6 +279,6 @@ const usage = command => ({
  *
  */
 export default (commandTree, prequire) => {
-  commandTree.listen('/ls', doLs('ls'), { usage: usage('ls'), noAuthOk: true })
-  commandTree.listen('/lls', doLs('lls'), { usage: usage('lls'), noAuthOk: true })
+  const ls = commandTree.listen('/ls', doLs('ls'), { usage: usage('ls'), noAuthOk: true, requiresLocal: true })
+  commandTree.synonym('/lls', doLs('lls'), ls, { usage: usage('lls'), noAuthOk: true, requiresLocal: true })
 }

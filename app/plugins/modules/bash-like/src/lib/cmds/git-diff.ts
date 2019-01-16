@@ -19,7 +19,6 @@ const debug = Debug('plugins/bash-like/cmds/git-diff')
 
 import * as path from 'path'
 
-import { inBrowser } from '@kui/core/capabilities'
 import { split } from '@kui/core/repl'
 
 import { handleNonZeroExitCode } from '../util/exec'
@@ -90,7 +89,5 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
  *
  */
 export default (commandTree, prequire) => {
-  if (!inBrowser()) {
-    commandTree.listen('/git/diff', doDiff, { needsUI: true })
-  }
+  commandTree.listen('/git/diff', doDiff, { needsUI: true, requiresLocal: true, noAuthOk: true })
 }

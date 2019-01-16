@@ -382,7 +382,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
             command = outerCommand,
             name = command, label = name,
             noclick = false,
-            alias, numeric, aliases = [alias], hidden = false, advanced = false,
+            synonyms, alias, numeric, aliases = synonyms || [alias], hidden = false, advanced = false,
             available,
             example = numeric && 'N', dir: isDir = available || false,
             title, header, docs = header || title, partial = false, allowed, defaultValue } = rowData

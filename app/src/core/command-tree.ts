@@ -184,6 +184,10 @@ export const subtree = (route, options) => {
                   (options.synonymFor && options.synonymFor.options &&
                       (options.synonymFor.options.usage || options.synonymFor.options.docs))
 
+      if (options.synonymFor) {
+        usageMessage.synonymFor = options.synonymFor
+      }
+
       throw new UsageError(usageMessage)
     }
 
@@ -202,7 +206,7 @@ export const subtree = (route, options) => {
  * Register a synonym of a subtree
  *
  */
-export const subtreeSynonym = (route, master, options) => {
+export const subtreeSynonym = (route: string, master, options) => {
   if (route !== master.route) { // <-- don't alias to yourself!
     const mySubtree = subtree(route, Object.assign({}, options, { synonymFor: master }))
 
@@ -269,14 +273,14 @@ const _listen = (model, route, handler, options: IOptions = new DefaultOptions()
     return leaf
   }
 }
-export const listen = (route, handler, options) => _listen(model, route, handler, options)
+export const listen = (route: string, handler, options) => _listen(model, route, handler, options)
 
 /**
  * Register a command handler on the given route, as a synonym of the given master handler
  *    master is the return value of `listen`
  *
  */
-export const synonym = (route, handler, master, options = {}) => {
+export const synonym = (route: string, handler, master, options = {}) => {
   if (route !== master.route) {
     // don't alias to yourself!
     const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
