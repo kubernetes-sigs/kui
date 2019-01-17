@@ -1,6 +1,7 @@
-# Cloning and Developing for Kui
+# Kui Developers Guide
 
-To get started, the following commands will clone the code locally:
+To get started with developing and extending Kui, first clone and
+build the code:
 
 ```bash
 git clone git@github.com:IBM/kui.git
@@ -9,37 +10,44 @@ cd kui && npm install
 kubectl kui version
 ```
 
-The last of those commands is to verify that `kui` was built
+The last of those commands will verify that `kui` was built
 properly. You may also try `kubectl kui shell` if you want to test out
 the graphical shell environment.
 
-If you have already set `KUBECONFIG`, then you are good to
-go, as far as credentials are concerned. Otherwise, or if you are an
-Apache OpenWhisk user, consult [the installation
+If you have already set `KUBECONFIG` (or `.wskprops`, for Apache
+OpenWhisk users), then you are good to go, as far as credentials are
+concerned. Otherwise, consult the [Kui installation
 guide](../installation.md) for more information on setting up
 credentials.
 
-## Introductions
+  - [Coding Strategy](#coding-strategy)
+  - [Packaging](packaging.md)
+  - [Code Structure](lay-of-the-land.md)
+  - [Running Tests](local-testing.md)
+
+## Coding Strategy
 
 Kui is an [Electron](https://electron.atom.io/) application. Electron
 is a framework for developing rich client applications, using browser
-technologies. Electron applications are cross-platform, at least to
-the extent that the framework has builds for Windows, macOS, and
-Linux.
+technologies. Electron applications can be built to provide local
+double-clickable clients on Windows, macOS, and Linux. Browser
+deployments are also possible, further extending the reach of Kui.
 
-   - [Quick Start Guide](#quick-start-guide)
-   - [Lay of the land](lay-of-the-land.md) describes the structure and
-     layout of the code
-   - [Running Local Tests](local-testing.md) shows how to run the test
-     suite locally
+Kui is written in [TypeScript](https://www.typescriptlang.org/), which
+is a typed variant of JavaScript in fairly wide use now across the
+JavaScript ecosystem. After the initial `npm install`, you can set up
+a compile watcher via this command, executed in the top-level
+directory:
 
-## The Edit-Debug Cycle
+```bash
+> npm run watch
+```
 
-For the most part, any edits to UI code can be incorporated into that
-running instance by simply reloading the Shell, as you would a browser
-window; e.g. Command+R on macOS, or Control+R on Windows and
-Linux. This allows you to quickly edit and debug changes, without slow
-rebuild and restart steps.
+For the most part, after the TypeScript compilation completes, edits
+to source code can be incorporated into a running instance of the
+graphical `kui shell` simply by reloading the Shell: Command+R on
+macOS, or Shift+Control+R on Windows and Linux. The turnaround time,
+from edit to use, is usually on the order of a few seconds.
 
 ### More Advanced Scenarios
 
@@ -48,17 +56,26 @@ realize your changes.
 
  1. **Adding new commands** For efficiency, Kui relies on a
     precompiled model of the command tree. This allows Kui to load
-    plugin code lazily, as needed by command execution. Thus, if you
-    add a new command, you must recompile the command registry: `cd
-    app && npm run compile`
+    plugin code lazily. If you add a new command, or move a command
+    from one plugin to another, you must therefore recompile the
+    command registry: 
+    
+    ```bash
+    > cd app && npm run compile
+    ```
 
  2. **Changing code in the main process** Electron applications
     consist of two groups of processes: the renderer processes
-    (e.g. one per window, one per web view, one per web worker, etc.),
-    and the "main" or server-side processes. The javascript code under
-    the `app/src/main` directory (e.g. `main.js` and `headless.js`)
-    are run in this main/server process. Thus, changes to these files
-    requires a restart of the application, which you can do by fully
-    quitting any instances of the the graphical UI (e.g. via Command+Q
-    or Ctrl+Q, depending on your platform) and restarting them via
-    `./bin/kui shell`.
+    (e.g. one per window, web view, web worker, etc.), and the "main"
+    or server-side processes. The javascript code under the
+    `app/src/main` directory (e.g. `main.js` and `headless.js`) are
+    run in the main/server process. Thus, changes to these files
+    require a full quit and relaunch of the Electron application.
+
+ 3. **Changing the HTML templates** Changes to files under the
+    `templates/` directory, such as `templates/index.html` require a
+    rebuild, accomplished via
+
+    ```bash
+    > cd app && npm run build
+    ```

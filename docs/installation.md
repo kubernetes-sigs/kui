@@ -49,10 +49,10 @@ storage.
 
 ## Setting up OpenWhisk Authorization
 
-If you are currently a user of OpenWhisk, then your `.wskprops` file
-is sufficient to get you started; you may skip over this section. If
-you have *not* yet configured your local environment for use with
-OpenWhisk, then continue reading.
+If you are currently a user of Apache OpenWhisk, then your `.wskprops`
+file is sufficient to get you started; you may skip over this
+section. If you have *not* yet configured your local environment for
+use with OpenWhisk, then continue reading.
 
 ### Getting an Authorization Key for IBM Cloud
 
