@@ -47,7 +47,11 @@ module.exports = {
   target: 'web',
   node: {
     fs: 'empty',
-    child_process: 'empty'
+    child_process: 'empty',
+    'node-docker-api': 'empty',
+    'docker-modem': 'empty',
+    'fs-extra': 'empty',
+    'original-fs': 'empty'
   },
   externals: [
     'tape', // modules/composer/node_modules/safer-buffer
@@ -56,12 +60,8 @@ module.exports = {
     'readline',
     'chokidar',
     'fsevents',
-    'fs-extra',
-    'original-fs',
     'shelljs',
     'lodash',
-    'node-docker-api',
-    'docker-modem',
     'async',
     'module',
     'net',

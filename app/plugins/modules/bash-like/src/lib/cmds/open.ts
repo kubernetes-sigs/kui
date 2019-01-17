@@ -106,8 +106,8 @@ const open = async (filepath, hljs) => {
 const usage = {
   strict: 'open',
   command: 'open',
-  title: 'open local file',
-  header: 'View the contents of a local file',
+  title: 'open file',
+  header: 'View the contents a file',
   optional: localFilepath
 }
 

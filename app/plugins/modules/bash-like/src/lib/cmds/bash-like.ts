@@ -306,14 +306,7 @@ const usage = {
     title: 'change working directory',
     header: 'Update the current working directory for local filesystem manipulations',
     optional: localFilepath
-  }),
-  lrm: {
-    strict: 'lrm',
-    command: 'lrm',
-    title: 'local file remove',
-    header: 'Remove a file in the local filesystem',
-    required: [{ name: 'path', docs: 'local file path', file: true }]
-  }
+  })
 }
 
 /**
@@ -333,11 +326,11 @@ const cd = cmd => ({ command, execOptions, parsedOptions }) => {
  */
 export default (commandTree, prequire) => {
   const shellFn = ({ command, execOptions, parsedOptions }) => doShell(repl.split(command, false), parsedOptions, execOptions)
-  commandTree.listen('/!', shellFn, { docs: 'Execute a UNIX shell command' })
+  commandTree.listen('/!', shellFn, { docs: 'Execute a UNIX shell command', requiresLocal: true })
 
   // whenever we remove `lcd`, we can remove both of these lines
-  const cdCommand = commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true })
-  commandTree.synonym('/lcd', cd('lcd'), cdCommand, { usage: usage.cd('lcd'), noAuthOk: true })
+  const cdCommand = commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true, requiresLocal: true })
+  commandTree.synonym('/lcd', cd('lcd'), cdCommand, { usage: usage.cd('lcd'), noAuthOk: true, requiresLocal: true })
 
   if (!inBrowser()) {
     //
