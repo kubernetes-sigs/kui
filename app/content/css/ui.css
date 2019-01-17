@@ -2162,7 +2162,7 @@ sidecar .usage-error-wrapper .hideable {
 .page-content p {
     font-weight: 400;
     line-height: 1.5em;
-    padding: 0 0 1rem;
+    padding: 0 0 0.5rem;
 }
 .page-content h1 {
     font-size: 3.375rem;
@@ -2176,8 +2176,8 @@ sidecar .usage-error-wrapper .hideable {
 .page-content h2, .page-h2 {
     font-size: 1.75rem;
     font-weight: 300;
-    margin-top: 6rem;
-    padding: 1rem 0 3rem;
+    margin-top: 3rem;
+    padding: 1rem 0 1.5rem;
     position: relative;
     line-height: 1.25;
 }
@@ -2199,7 +2199,7 @@ sidecar .usage-error-wrapper .hideable {
     font-size: 1.125rem;
     font-weight: 600;
     letter-spacing: 0;
-    padding: 4rem 0 1rem;
+    padding: 1rem 0 1rem;
     line-height: 1.25em;
 }
 .page-content ol, .page-content ul {
@@ -2212,6 +2212,9 @@ sidecar .usage-error-wrapper .hideable {
     font-weight: 400;
     padding-left: .25rem;
     list-style-type: disc;
+}
+sidecar .page-content pre > code {
+    display: inline-block;
 }
 
 .icon-container {
