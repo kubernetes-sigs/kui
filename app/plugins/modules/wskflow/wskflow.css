@@ -8,7 +8,7 @@ break {
     flex: 1;
     font-weight: 400;
     position: relative;
-    overflow: hidden; // we will do pan and zoom ourselves
+    overflow: hidden; /* we will do pan and zoom ourselves */
     -webkit-app-region: no-drag;
 }
 #wskflowDiv {
