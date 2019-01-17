@@ -9,14 +9,15 @@
     "baseUrl": "./app",
     "paths": {
       "@kui/*": ["src/*"],
-      "@kui-plugin/*": ["src/@kui-plugin/*"],
-      "@kui-plugin-src/*": ["node_modules/@kui-plugin/*"],
+      "@kui-plugin/*": ["../packages/*"],
+      "@kui-plugin-src/*": ["../packages/*"],
       "@settings": ["build"],
       "@test/*": ["../tests/*"]
     }
   },
   "include": [
-    "app/src/**/*"
+    "app/src",
+    "packages"
   ],
   "exclude": [
     "build/",

@@ -50,7 +50,7 @@ function init {
     fi
 
     # assemble plugins and by default, we want to uglify the javascript
-    UGLIFY=true ../bin/compile.js
+    UGLIFY=false ../bin/compile.js
     if [ $? -ne 0 ]; then
         echo "Error in uglify $?"
         exit 1
@@ -67,7 +67,7 @@ function init {
 
 # hacks to trim down some of the npms
 function trimDeps1 {
-    (cd "$TOPDIR"/kui/app/plugins/modules/bash-like && npm uninstall --save diff2html)
+    (cd "$TOPDIR"/kui/packages/bash-like && npm uninstall --save diff2html)
 }
 
 function trimDeps2 {
@@ -134,11 +134,13 @@ function build {
              --exclude "node_modules/jquery" \
              --exclude "node_modules/typescript" \
              --exclude "node_modules/@types" \
-             --exclude "^app/plugins/modules/editor" \
-             --exclude "^app/plugins/modules/grid" \
-             --exclude "^app/plugins/modules/openwhisk-debug" \
-             --exclude "^app/plugins/modules/tutorials" \
-             --exclude "^app/plugins/modules/wskflow" \
+             --exclude "^packages/**/node_modules/*" \
+             --exclude "^packages/editor" \
+             --exclude "^packages/field-installed-plugins" \
+             --exclude "^packages/grid" \
+             --exclude "^packages/openwhisk-debug" \
+             --exclude "^packages/tutorials" \
+             --exclude "^packages/wskflow" \
              --exclude "**/*.ts" \
              --exclude "**/package-lock.json" \
              --exclude "^tests/node_modules/*" \
@@ -152,14 +154,13 @@ function build {
              --exclude "node_modules/**/test/*" \
              --exclude "node_modules/js-beautify" . \
              | tar -C kui -xf - && \
-         (mkdir kui/app/plugins/modules/editor || true) && \
-         (mkdir kui/app/plugins/modules/grid || true) && \
-         (mkdir mkdir kui/app/plugins/modules/openwhisk-debug || true) && \
-         (mkdir kui/app/plugins/modules/tutorials || true) && \
-         (mkdir kui/app/plugins/modules/wskflow || true) && \
-         node -e 'const pjson = require("./kui/package.json"); delete pjson.devDepdencies; delete pjson.dependencies["@kui-plugin/editor"]; delete pjson.dependencies["@kui-plugin/wskflow"]; delete pjson.dependencies["js-beautify"]; delete pjson.dependencies["@kui-plugin/grid"]; delete pjson.dependencies["@kui-plugin/openwhisk-debug"]; delete pjson.dependencies["@kui-plugin/tutorials"]; delete pjson.dependencies["@kui-plugin/field-installed-plugins"]; pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); npm install --production mocha openwhisk; APP=.. RUNNING_SHELL_TEST=true TEST_ROOT=$SCRIPTDIR/tests KUI=$\{KUI-$SCRIPTDIR/bin/kui\} mocha -c --require module-alias/register --exit --bail --recursive -t 60000 tests/tests --grep "\$\{TEST_FILTER:-.*\}"`; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))' && \
+         node -e 'const pjson = require("./kui/package.json"); delete pjson.devDepdencies; pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); npm install --production mocha openwhisk; APP=.. RUNNING_SHELL_TEST=true TEST_ROOT=$SCRIPTDIR/tests KUI=$\{KUI-$SCRIPTDIR/bin/kui\} mocha -c --require module-alias/register --exit --bail --recursive -t 60000 tests/tests --grep "\$\{TEST_FILTER:-.*\}"`; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))' && \
          trimDeps1 && \
+         (cd kui && cp package.json bak.json) && \
+         (cd kui && npx lerna link convert) && \
+         (node -e 'const pjson = require("./kui/package.json"); const pjson2 = require("./kui/bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))') && \
          (cd kui && npm prune --production) && \
+         (cd kui && npm install --production --ignore-scripts) && \
          trimDeps2 && \
          cp dist/bin/kui.cmd kui/bin/kui.cmd && \
          find -L kui/tests/tests/passes/ -name '*headless*.js' -prune -o -type f -exec rm {} \; && \
@@ -180,4 +181,4 @@ ls -lh $BUILDDIR/*headless*
 
 #         cp tests/data/openwhisk/foo.js tests/data/openwhisk/echo.js kui/tests/data/openwhisk && \
 #         (cd kui/tests && cp -a $TOPDIR/tests/lib .) && \
-#             --exclude "^app/plugins/modules/*/tests/data/**" \
+#             --exclude "^packages/*/tests/data/**" \

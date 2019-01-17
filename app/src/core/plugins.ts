@@ -23,8 +23,8 @@ import { PluginRegistration } from '../models/plugin'
 
 debug('modules loaded')
 
-export const buildRoot = '..'
-export const pluginRoot = '../@kui-plugin'
+export const buildRoot = '../../../'
+export const pluginRoot = '../../../packages'
 
 const commandToPlugin = {} // map from command to plugin that defines it
 const isSubtreeSynonym = {}

@@ -53,7 +53,8 @@ if [ -n "${TEST_FROM_BUILD}" ]; then
     NO_INSTALLER=true
 else
     # by default, we want to uglify the javascript
-    export UGLIFY=true
+    #    export UGLIFY=true
+    echo "uglify disabled"
 fi
 
 function init {
