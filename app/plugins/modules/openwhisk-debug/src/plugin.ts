@@ -64,6 +64,7 @@ const commandOptions = {
   needsUI: true,
   fullscreen: false, // width: 800, height: 600,
   // clearREPLOnLoad: true,
+  requiresLocal: true, // we need a docker container, so we don't yet support running in-browser
   noAuthOk: true
   // placeholder: 'Loading visualization ...'
 }
@@ -125,7 +126,7 @@ export default async (commandTree, prequire) => {
   const wsk = await prequire('openwhisk')
 
   const handler = local(wsk)
-  commandTree.subtree('/local', { usage })
+  commandTree.subtree('/local', { usage, requiresLocal: true })
   commandTree.listen('/local/invoke', handler, Object.assign({ docs: strings.invoke }, commandOptions))
   commandTree.listen('/local/debug', handler, Object.assign({ docs: strings.debug }, commandOptions))
   commandTree.listen('/local/init', handler, Object.assign({ docs: strings.init }, commandOptions))

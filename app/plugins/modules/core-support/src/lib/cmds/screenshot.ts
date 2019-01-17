@@ -348,5 +348,5 @@ export default async (commandTree, prequire) => {
       console.error(e)
       reject(new Error('Internal Error'))
     }
-  }), { usage, noAuthOk: true })
+  }), { usage, noAuthOk: true, requiresLocal: true }) // currently screenshot does not support browser mode
 }
