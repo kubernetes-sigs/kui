@@ -3,6 +3,6 @@
   "bodyCss": "in-electron",
   "cssHome": "../content/css/",
   "imageHome": "../content/icons/ico/",
-  "jsHome": "../../build/webapp/bootstrap/"
+  "jsHome": "../../build/app/src/webapp/bootstrap/"
 }
 

@@ -18,7 +18,7 @@
 
 require('module-alias/register')
 
-const compile = require('../../build/core/plugin-assembler').default
+const compile = require('../../build/app/src/core/plugin-assembler').default
 const path = require('path')
 
 if (process.argv[2] === 'cleanup') {

@@ -424,7 +424,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
 
     // and load the index.html of the app.
     const urlSpec = {
-      pathname: require('path').join(__dirname, '../../app/build/index.html'),
+      pathname: require('path').join(__dirname, '../../../../app/build/index.html'),
       protocol: 'file:',
       search: commandContext ? `?${commandContext}` : '',
       slashes: true

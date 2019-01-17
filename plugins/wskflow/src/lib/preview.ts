@@ -80,7 +80,7 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       if (filepath.indexOf('@') >= 0) {
         debug('readFile for webpack, built-in', filepath)
         try {
-          resolve(require('../../../../../../app/plugins/modules' +
+          resolve(require('@kui-plugin-src/apache-composer' +
                           filepath.replace(/^\/?app\/plugins\/modules/, '')))
         } catch (err) {
           console.error(err)

@@ -192,7 +192,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
     resultWrapper.appendChild(result)
 
-    const repl = require('../../build/core/repl')
+    const repl = require('@kui/core/repl')
 
     //
     // breadcrumb

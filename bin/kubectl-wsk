@@ -8,4 +8,4 @@ process.env.KUI_HEADLESS = true
 
 // process.env.DEFAULT_TO_UI = true
 
-require('../build/main/main').main(process.argv)
+require('../build/app/src/main/main').main(process.argv)
