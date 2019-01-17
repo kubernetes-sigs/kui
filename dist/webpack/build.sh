@@ -44,15 +44,14 @@ function trimWskflow {
 }
 
 function pre {
-    # trimTutorials && trimWskflow
     (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/pre' -exec {} \;)
     # (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/pre' -exec rm node_modules/@kui-plugin/{} \;)
-    npm prune --production
+    # npm prune --production
 }
 
 function post {
     (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/post' -exec {} \;)
-    npm install
+    # npm install
 }
 
 function build {
@@ -60,7 +59,6 @@ function build {
     npx webpack-cli --mode development
 }
 
-build
-
-# pre and post disabled for now:
-#pre && build && post
+#pre &&
+    build
+#post

@@ -50,7 +50,7 @@ if [ ! -f $ROOTDIR/tests/bin/corral.sh ]; then
 fi
 
 # scan for tests
-TESTS=`find -L "$ROOTDIR/node_modules/@kui-plugin" -maxdepth 2 -name tests`
+TESTS=`find -L "$ROOTDIR/plugins" -maxdepth 2 -name tests`
 
 # set up (or tear down) links
 for test in $TESTS; do
@@ -112,8 +112,8 @@ for test in $TESTS; do
 done
 
 # scan for typescript core tests
-if [ -d "$ROOTDIR/build" ]; then
-    TESTS=`find -L "$ROOTDIR/build" -maxdepth 3 -path '*/build/test'`
+if [ -d "$ROOTDIR/build/app" ]; then
+    TESTS=`find -L "$ROOTDIR/build/app/src" -maxdepth 2 -path '*/build/app/src/test'`
     for test in $TESTS; do
         echo
         echo "  - found typescript tests $test"
@@ -134,8 +134,8 @@ if [ -d "$ROOTDIR/build" ]; then
 fi
 
 # scan for typescript plugin tests
-if [ -d "$ROOTDIR/build/@kui-plugin" ]; then
-    TESTS=`find -L "$ROOTDIR/build/@kui-plugin" -maxdepth 3 -path '*/src/test'`
+if [ -d "$ROOTDIR/build/plugins" ]; then
+    TESTS=`find -L "$ROOTDIR/build/plugins" -maxdepth 3 -path '*/src/test'`
     for test in $TESTS; do
         echo
         echo "  - found typescript tests $test"

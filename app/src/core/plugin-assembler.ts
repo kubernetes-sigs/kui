@@ -195,7 +195,7 @@ const scanRoot = (root: string): Array<IFile> => {
 const uglify = modules => modules.flat.map(module => new Promise((resolve, reject) => {
   if (process.env.UGLIFY !== 'true') return resolve()
 
-  const src = module.root ? path.join(__dirname, '..', '..', module.path) : path.join(__dirname, '..', '..', 'plugins', module.path)
+  const src = module.root ? path.join(__dirname, '..', '..', module.path) : path.join(__dirname, '../../../plugins', module.path)
   const target = src // we'll copy it aside, and overwrite the original
   const tmpPath = module.root ? path.join(TMA, module.path) : path.join(path.join(TMA, TMP), module.path)
   const tmpDir = path.join(tmpPath, '..') // we want the name of the enclosing directory
@@ -348,7 +348,7 @@ export default async (rootDir: string, externalOnly = false, reverseDiff = false
     // NOTE ON @kui-plugin relativization: this is important so that
     // webpack can be isntructed to pull in the plugins into the build
     // see the corresponding NOTE in ./plugins.ts and ./preloader.ts
-    return path.relative(path.join(__dirname, '../../build/@kui-plugin'), filepath)
+    return path.relative(path.join(__dirname, '../../../plugins'), filepath)
   }
   const fixupPaths = pluginList => pluginList.map(plugin => Object.assign(plugin, {
     path: fixupOnePath(plugin.path)

@@ -37,7 +37,7 @@ const reroute = aliases => {
 module.exports = {
   context,
   entry: {
-    main: './build/webapp/bootstrap/webpack.js',
+    main: './build/app/src/webapp/bootstrap/webpack.js',
     'editor.worker': './node_modules/monaco-editor/esm/vs/editor/editor.worker.js',
     'json.worker': './node_modules/monaco-editor/esm/vs/language/json/json.worker',
     'css.worker': './node_modules/monaco-editor/esm/vs/language/css/css.worker',
@@ -57,6 +57,14 @@ module.exports = {
     'tape', // modules/composer/node_modules/safer-buffer
     'dns', // modules/openwhisk/node_modules/retry/example/dns.js
     'tls', // needed by request
+    'tap', // wskflow
+    'babel-core/register', // wskflow
+    'aws-sdk', // wskflow
+    './es6/crc9_1wire', // k8s
+    './es6/crc17_xmodem', // k8s, openwhisk
+    './es6/crc17_modbus', // k8s, openwhisk
+    './es6/crc17_kermit', // k8s, openwhisk
+    './es6/crc17_ccitt', // k8s, openwhisk
     'readline',
     'chokidar',
     'fsevents',
@@ -158,6 +166,8 @@ module.exports = {
       { test: /\.DOCS/, use: 'ignore-loader' },
       { test: /\/docs\//, use: 'ignore-loader' },
       { test: /\/examples\//, use: 'ignore-loader' },
+      { test: /plugins\/*\/node_modules/, use: 'ignore-loader' },
+      { test: /packages\/*\/node_modules/, use: 'ignore-loader' },
       // { test: /modules\/composer\/@demos\/.*\.js/, use: 'raw-loader' },
       // DANGEROUS: some node modules must have critical files under src/: { test: /\/src\//, use: 'ignore-loader' },
       { test: /\/test\//, use: 'ignore-loader' },

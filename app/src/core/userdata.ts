@@ -29,7 +29,7 @@ export const userDataDir = (): string => {
   } else {
     // headless
     const { join } = require('path')
-    const { name } = require('../../package.json')
+    const { name } = require('@root/package.json')
 
     switch (process.platform) {
       case 'darwin':

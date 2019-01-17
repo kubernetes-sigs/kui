@@ -1,6 +1,9 @@
 # see https://github.com/IBM/kui/issues/209
 /package-lock.json
 
+packages/*/package-lock.json
+plugins/*/package-lock.json
+
 *~
 #*
 dist/app
