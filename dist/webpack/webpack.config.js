@@ -169,7 +169,7 @@ module.exports = {
       { test: /\.markdown$/, use: 'ignore-loader' },
       { test: /~$/, use: 'ignore-loader' },
       { test: /\.tsx?$/, use: 'ignore-loader' },
-      { test: /^Dockerfile$/, use: 'ignore-loader' },
+      { test: /Dockerfile$/, use: 'ignore-loader' },
       // end of ignore-loader
       //
       { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] },
