@@ -50,7 +50,7 @@ function init {
     fi
 
     # assemble plugins and by default, we want to uglify the javascript
-    UGLIFY=false ../bin/compile.js
+    UGLIFY=true ../bin/compile.js
     if [ $? -ne 0 ]; then
         echo "Error in uglify $?"
         exit 1

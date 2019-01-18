@@ -30,7 +30,7 @@ cd $SCRIPTDIR
 # see the electron-packager docs for --ignore
 #
 IGNORE='(~$)|(\.ts$)|(^/dist)|(^/tests)|(monaco-editor/esm)'
-      
+
 #
 # input params: choose a platform to build for (default: all)
 #
@@ -53,8 +53,7 @@ if [ -n "${TEST_FROM_BUILD}" ]; then
     NO_INSTALLER=true
 else
     # by default, we want to uglify the javascript
-    #    export UGLIFY=true
-    echo "uglify disabled"
+    export UGLIFY=true
 fi
 
 function init {
@@ -82,7 +81,7 @@ function init {
 
     VERSION=`cat $APPDIR/package.json | jq --raw-output .version`
     echo "$VERSION" > $APPDIR/.version
-    
+
     if [ "$BUILD_ENV" == "production" ]; then (cd $APPDIR/plugins; for i in modules/!(*-preload); do echo "remove devDependencies packages in $i"; (cd $i && npm prune --production); done); fi
 }
 

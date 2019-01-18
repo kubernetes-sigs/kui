@@ -176,11 +176,11 @@ const scanModules = (root: string): Array<IFile> => {
 }
 
 /**
- * Scan files in app/build
+ * Scan files in app/src
  */
 const scanRoot = (root: string): Array<IFile> => {
   const files = []
-  scanForJsFiles(path.join(root, 'build')).forEach(f => {
+  scanForJsFiles(path.join(root, 'src')).forEach(f => {
     const subdirs = f.split('/')
     files.push({ root: true, path: f.replace(root + '/', '') })
   })
@@ -211,7 +211,7 @@ const uglify = modules => modules.flat.map(module => new Promise((resolve, rejec
         await fs.copy(src, tmpPath)
 
         debug('calling terser')
-        exec(`${path.join(__dirname, '..', '..', 'node_modules', '.bin', 'terser')} --compress --mangle -o "${target}" -- "${tmpPath}"`,
+        exec(`${path.join(__dirname, '..', '..', '..', '..', 'node_modules', '.bin', 'terser')} --compress --mangle -o "${target}" -- "${tmpPath}"`,
              (err, stdout, stderr) => {
                if (err) reject(err)
                else resolve()

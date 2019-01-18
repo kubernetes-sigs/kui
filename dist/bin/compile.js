@@ -29,7 +29,7 @@ if (process.argv[2] === 'cleanup') {
   const externalOnly = idx >= 0
   const rootDir = externalOnly // dir points to the final location of .pre-scanned
     ? process.argv[idx + 1] //    save the model to the given directory
-    : path.join(__dirname, '../../app') //    save the model to the built-in directory
+    : path.join(__dirname, '../../build/app') //    save the model to the built-in directory
 
   compile(rootDir, externalOnly)
     .then(() => process.exit(0))
