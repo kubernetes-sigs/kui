@@ -37,7 +37,7 @@ env:
     - WINDOW_WIDTH=1400                   # ! important ! so that clicks don't fail due to elements being off-viewport
     - WINDOW_HEIGHT=1050                  # ! ibid !
     - KEY_FROM_LAYER=true                 # use one api key per test layer?
-    - TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/builds/Kui-linux-x64/Kui" # test against a specific dist build
+    - TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/packages/kui-builder/dist/builds/Kui-linux-x64/Kui" # test against a specific dist build
     - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
 
 install: ./tools/travis/test/install.sh

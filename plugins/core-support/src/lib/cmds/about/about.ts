@@ -25,12 +25,11 @@ import { isHeadless, inElectron } from '@kui/core/capabilities'
 import * as repl from '@kui/core/repl'
 
 import usage from './usage'
-const settings = require('@settings/config.json')
+const settings = require('@kui/settings/config.json')
 
 /** path to app/ directory */
-const rootDir = path.dirname(require.resolve('@root/package.json'))
 const ourRootDir = path.dirname(require.resolve('@kui-plugin-src/core-support/package.json'))
-const settingsDir = path.dirname(require.resolve('@settings/package.json'))
+const settingsDir = path.dirname(require.resolve('@kui/settings/package.json'))
 
 /**
  * The repl allows plugins to provide their own window, via the
@@ -47,11 +46,11 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 
   const about = openAboutWindow({
     product_name: settings.productName,
-    icon_path: path.join(rootDir, 'app', settings.largeIcon),
+    icon_path: path.join(settingsDir, '..', settings.largeIcon),
     package_json_dir: settingsDir,
     // use_inner_html: true,
     css_path: [
-      path.join(rootDir, 'app/content/css/themes/', settings.cssTheme),
+      path.join(settingsDir, '../content/css/themes/', settings.cssTheme),
       path.join(ourRootDir, 'web/css/about.css')
     ],
     win_options: { width: 600, height: 600 }
@@ -69,7 +68,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
  */
 const readPackageDotJson = () => {
   debug('readPackageDotJson')
-  return require('@root/package.json')
+  return require('@kui/settings/package.json')
 }
 
 /**

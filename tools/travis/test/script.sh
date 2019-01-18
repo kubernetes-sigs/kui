@@ -16,5 +16,5 @@ elif [ "$LAYERS" != "HEADLESS" ]; then
 else
     export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
     (cd tests && ./bin/allocate.sh "$TEST_SPACE")
-    (cd dist/builds/kui && npm run test)
+    (cd packages/kui-builder/dist/builds/kui && npm run test)
 fi

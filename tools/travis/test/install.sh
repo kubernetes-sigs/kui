@@ -31,9 +31,9 @@ if [ "$LAYERS" != "LINT" ]; then
     # npm install
     # and create a dist build to test against
     if [ "$LAYERS" != "HEADLESS" ]; then
-        npm install && (cd dist/electron && NO_INSTALLER=true ./build.sh linux)
+        npm install && (cd packages/kui-builder/dist/electron && NO_INSTALLER=true ./build.sh linux)
     else
-        npm install && (cd dist/headless && ./build.sh; cd ../builds && tar jxf "Kui-headless.tar.bz2")
+        npm install && (cd packages/kui-builder/dist/headless && ./build.sh; cd ../builds && tar jxf "Kui-headless.tar.bz2")
     fi
 
     wait

@@ -47,14 +47,14 @@ export const openEditor = async (name, options, execOptions) => {
   /** returns the current entity */
   const getEntity = currentSelection
 
-  const root = path.dirname(require.resolve('@root/package.json'))
   const ourRoot = path.dirname(require.resolve('@kui-plugin-src/editor/package.json'))
 
   if (inBrowser()) {
     // const mp = require('./edit-webpack')
-    injectScript({ src: require('@root/node_modules/monaco-editor/min/vs/loader.js'), key: 'editor.monaco' })
+    injectScript({ src: require('monaco-editor/min/vs/loader.js'), key: 'editor.monaco' })
   } else {
-    injectScript(path.join(root, 'node_modules/monaco-editor/min/vs/loader.js'))
+    const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
+    injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
   }
 
   try {

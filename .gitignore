@@ -1,6 +1,9 @@
 # see https://github.com/IBM/kui/issues/209
 /package-lock.json
 
+# in case we have some leftover temporary build output
+/kui
+
 packages/*/package-lock.json
 plugins/*/package-lock.json
 
