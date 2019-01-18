@@ -1,0 +1,26 @@
+{
+  "productName": "Kui",
+  "productTitle": "Kui Shell",
+  "ogSiteName": "Kui Shell",
+  "ogTitle": "Kui Shell: The Hybrid CLI Cloud Shell",
+  "ogUrl": "https://hello.kui-shell.org",
+  "ogDescription": "Kui Shell offers a new development experience for building cloud-native applications. By combining the power of familiar CLIs with visualizations in high-impact areas, the Shell enables you to manipulate complex JSON and YAML data models, integrate disparate tooling, and provides quick access to aggregate views of operational data.",
+  "ogImage": "http://content.kui-shell.org/images/ogImage.jpg",
+  "ogLabel1": "Clone on GitHub",
+  "ogData1": "https://github.com/IBM/kui",
+  "ogLabel2": "Download Now",
+  "ogData2": "https://tarball.kui-shell.org",
+  "companyName": "",
+  "productSubName": "Kui",
+  "shellName": "Shell",
+  "userAgent": "Kui-Shell",
+  "cssTheme": "kui.css",
+  "appIcon": "../../packages/app/content/icons/png/kui.png",
+  "largeIcon": "content/icons/svg/kui.svg",
+  "favicon": "icons/ico/kui.ico",
+  "filesystemIcons": {
+    "darwin": "../../packages/app/content/icons/icns/kui.icns",
+    "win32": "../../packages/app/content/icons/ico/kui.ico",
+    "linux": "../../packages/app/content/icons/png/kui.png"
+  }
+}

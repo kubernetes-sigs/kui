@@ -36,8 +36,6 @@ let amdRequire
 let initDone
 
 export default (editorWrapper: HTMLElement, options) => {
-  const root = path.dirname(require.resolve('@root/package.json'))
-
   // Monaco uses a custom amd loader that over-rides node's require.
   // Keep a reference to node's require so we can restore it after executing the amd loader file.
   const nodeRequire = global['require']
@@ -58,8 +56,10 @@ export default (editorWrapper: HTMLElement, options) => {
           global['require'] = nodeRequire
 
           if (!inBrowser()) {
+            const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
+
             amdRequire.config({
-              baseUrl: uriFromPath(path.join(root, 'node_modules/monaco-editor/min'))
+              baseUrl: uriFromPath(path.join(monacoRoot, 'min'))
             })
           }
 

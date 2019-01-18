@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2016",
+    "outDir": "../../build",
+    "sourceMap": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "baseUrl": "../app",
+    "paths": {
+      "@kui/*": ["src/*"],
+      "@kui-plugin/*": ["../../plugins/*"],
+      "@kui-plugin-src/*": ["../../plugins/*"],
+      "@kui/settings/*": ["../../build/*"],
+      "@kui/prescan": ["../../build/.pre-scanned.json"],
+      "@test/*": ["../../tests/*"]
+    }
+  },
+  "include": [
+    "../../packages",
+    "../../plugins"
+  ],
+  "exclude": [
+    "**/flycheck*.ts"
+  ]
+}

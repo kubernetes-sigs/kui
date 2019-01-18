@@ -112,8 +112,8 @@ for test in $TESTS; do
 done
 
 # scan for typescript core tests
-if [ -d "$ROOTDIR/build/app" ]; then
-    TESTS=`find -L "$ROOTDIR/build/app/src" -maxdepth 2 -path '*/build/app/src/test'`
+if [ -d "$ROOTDIR/build/packages" ]; then
+    TESTS=`find -L "$ROOTDIR/build/packages" -maxdepth 3 -path '*/src/test'`                                   
     for test in $TESTS; do
         echo
         echo "  - found typescript tests $test"

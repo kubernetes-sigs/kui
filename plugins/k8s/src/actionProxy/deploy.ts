@@ -22,7 +22,7 @@ import repl = require('@kui/core/repl')
 export const PACKAGE = 'cloudshell-support'
 
 /** we will use this to check whether the deployed action proxy is up to date */
-const { version: ourVersion } = require('@root/package.json')
+const { version: ourVersion } = require('@kui/settings/package.json')
 
 /**
  * Actually deploy the action proxy
