@@ -10,9 +10,9 @@
     "baseUrl": "../app",
     "paths": {
       "@kui/*": ["src/*"],
-      "@kui/plugins/*": ["../../plugins/*"],
       "@kui/settings/*": ["../../build/*"],
       "@kui/prescan": ["../../build/.pre-scanned.json"],
+      "@kui-plugin/*": ["../../plugins/*"],
       "@test/*": ["../../tests/*"]
     }
   },

@@ -37,9 +37,9 @@ export default async (passedFsm, container, w, h, activations, options, rule) =>
   debug('visualize', passedFsm, options, rule)
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugins/wskflow/web/css/wskflow.css').toString(), key: 'wskflow' })
+    injectCSS({ css: require('@kui-plugin/wskflow/web/css/wskflow.css').toString(), key: 'wskflow' })
   } else {
-    const ourRoot = dirname(require.resolve('@kui/plugins/wskflow/package.json'))
+    const ourRoot = dirname(require.resolve('@kui-plugin/wskflow/package.json'))
     injectCSS(join(ourRoot, 'web/css/wskflow.css'))
   }
 

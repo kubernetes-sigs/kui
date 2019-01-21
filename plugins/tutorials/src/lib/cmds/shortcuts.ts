@@ -17,9 +17,9 @@
 // DO NOT USE IMPORT
 // as it conflicts with the kui-builder kui-link-source-assets.sh
 // the typescript compiler moves the json files into the builddir, if we use import
-const { name: gettingStartedDocs } = require('@kui/plugins/tutorials/lib/@tutorials/getting-started/package.json')
-const { name: codingBasicsDocs } = require('@kui/plugins/tutorials/lib/@tutorials/coding-basics/package.json')
-const { name: combinatorsDocs } = require('@kui/plugins/tutorials/lib/@tutorials/combinators/package.json')
+const { name: gettingStartedDocs } = require('@kui-plugin/tutorials/lib/@tutorials/getting-started/package.json')
+const { name: codingBasicsDocs } = require('@kui-plugin/tutorials/lib/@tutorials/coding-basics/package.json')
+const { name: combinatorsDocs } = require('@kui-plugin/tutorials/lib/@tutorials/combinators/package.json')
 
 import repl = require('@kui/core/repl')
 

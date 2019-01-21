@@ -21,7 +21,7 @@ import { qexec } from '@kui/core/repl'
 
 import { basename } from 'path'
 
-import { extension } from '@kui/plugins/editor/src/lib/file-types'
+import { extension } from '@kui-plugin/editor/src/lib/file-types'
 
 /**
  * If this is a Composer parse error, display the error as editor decorations
