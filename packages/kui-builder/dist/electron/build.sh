@@ -100,7 +100,11 @@ function init {
          npx lerna link convert && \
          (node -e 'const pjson = require("./package.json"); const pjson2 = require("./bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./package.json", JSON.stringify(pjson, undefined, 2))') && \
          npm install --production --ignore-scripts --no-package-lock && \
+         ("$TOPDIR"/packages/kui-builder/bin/link-build-assets.sh) && \
          rm bak.json)
+    if [ $? != 0 ]; then
+        exit $?
+    fi
     echo "lerna magic done"
 
     if [ -n "$TARBALL_ONLY" ]; then exit; fi

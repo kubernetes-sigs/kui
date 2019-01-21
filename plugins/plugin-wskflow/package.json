@@ -1,0 +1,31 @@
+{
+  "name": "@kui/plugin-wskflow",
+  "version": "0.0.1",
+  "description": "Visualizations for Composer apps",
+  "main": "plugin/plugin.js",
+  "bin": {
+    "@kui/plugin/wskflow/webpack/pre": "bin/prune-for-browser.sh",
+    "@kui/plugin/wskflow/webpack/post": "bin/restore-after-prune.sh"
+  },
+  "keywords": [
+    "OpenWhisk",
+    "Apache Composer",
+    "kui",
+    "flow",
+    "wskflow"
+  ],
+  "author": "Kerry Chang",
+  "license": "Apache-2.0",
+  "webpack-prune": [
+    "chokidar"
+  ],
+  "dependencies": {
+    "chokidar": "^2.0.4",
+    "d3": "^3.5.17",
+    "elkjs": "0.3.0",
+    "es6-promise-pool": "^2.5.0",
+    "expand-home-dir": "0.0.3",
+    "jquery": "^3.3.1",
+    "tmp": "0.0.33"
+  }
+}

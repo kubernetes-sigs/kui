@@ -32,10 +32,11 @@ export default async (prequire: PluginRequire, commandTree, prescan, options) =>
     // FIXME to support field-installed plugin paths
     try {
       debug('preloading %s', module.path)
-      // NOTE ON @kui-plugin relativization: this is important so that
-      // webpack can be isntructed to pull in the plugins into the build
-      // see the corresponding NOTE in ./plugin-assembler.ts and ./plugins.ts
-      const registrationRef = await import('@kui-plugin/' + module.path)
+      // NOTE ON @kui relativization: this is important so that
+      // webpack can be isntructed to pull in the plugins into the
+      // build see the corresponding NOTE in ./plugin-assembler.ts and
+      // ./plugins.ts
+      const registrationRef = await import('@kui/' + module.path)
       const registration: PreloadRegistration = registrationRef.default || registrationRef
       await registration(commandTree.proxy(module.route), prequire, options)
       debug('done preloading %s', module.path)

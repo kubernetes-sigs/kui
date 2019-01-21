@@ -1,0 +1,714 @@
+/*
+ * Copyright 2017-18 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as Debug from 'debug'
+const debug = Debug('plugins/core-support/tab completion')
+
+import { inBrowser } from '@kui/core/core/capabilities'
+import { keys } from '@kui/core/webapp/keys'
+import * as cli from '@kui/core/webapp/cli'
+import * as repl from '@kui/core/core/repl'
+import { findFile } from '@kui/core/core/find-file'
+import { injectCSS } from '@kui/core/webapp/util/inject'
+
+import * as fs from 'fs'
+import * as path from 'path'
+import * as expandHomeDir from 'expand-home-dir'
+
+/**
+ * Return partial updated with the given match; there may be some
+ * overlap at the beginning.
+ *
+ */
+const completeWith = (partial, match, addSpace = false) => {
+  const partialIdx = match.indexOf(partial)
+  return (partialIdx >= 0 ? match.substring(partialIdx + partial.length) : match) + (addSpace ? ' ' : '')
+}
+
+/**
+ * Is the given filepath a directory?
+ *
+ */
+const isDirectory = filepath => new Promise((resolve, reject) => {
+  fs.lstat(filepath, (err, stats) => {
+    if (err) {
+      reject(err)
+    } else {
+      if (stats.isSymbolicLink()) {
+        debug('following symlink')
+        // TODO: consider turning these into the better async calls?
+        return fs.realpath(filepath, (err, realpath) => {
+          if (err) {
+            reject(err)
+          } else {
+            return isDirectory(realpath)
+              .then(resolve)
+              .catch(reject)
+          }
+        })
+      }
+
+      resolve(stats.isDirectory())
+    }
+  })
+})
+
+/**
+ * We've found a match. Add this match to the given partial match,
+ * located in the given dirname'd directory, and update the given
+ * prompt, which is an <input>.
+ *
+ */
+const complete = (match, prompt, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, addSpace = false }) => {
+  debug('completion', match, partial, dirname)
+
+  // in case match includes partial as a prefix
+  const completion = completeWith(partial, match, addSpace)
+
+  if (temporaryContainer) {
+    temporaryContainer.cleanup()
+  }
+
+  const addToPrompt = (extra: string): void => {
+    const pos = prompt.selectionStart + extra.length
+    prompt.value = prompt.value.substring(0, prompt.selectionStart)
+      + extra
+      + prompt.value.substring(prompt.selectionStart)
+    prompt.setSelectionRange(pos, pos)
+  }
+
+  if (dirname) {
+    // see if we need to add a trailing slash
+    const filepath = expandHomeDir(path.join(dirname, match))
+    isDirectory(filepath)
+      .then(isDir => {
+        if (isDir) {
+          // add a trailing slash if the dirname/match is a directory
+          debug('complete as directory')
+          addToPrompt(completion + '/')
+        } else {
+          // otherwise, dirname/match is not a directory
+          debug('complete as scalar')
+          addToPrompt(completion)
+        }
+      }).catch(err => {
+        console.error(err)
+      })
+  } else {
+    // otherwise, just add the completion to the prompt
+    debug('complete as scalar (alt)')
+    addToPrompt(completion)
+  }
+}
+
+/**
+ * Install keyboard event handlers into the given REPL prompt.
+ *
+ */
+const installKeyHandlers = prompt => {
+  if (prompt) {
+    return [ listenForUpDown(prompt),
+      listenForEscape(prompt)
+    ]
+  } else {
+    return []
+  }
+}
+
+/**
+ * Given a list of matches to the partial that is in the
+ * prompt.value, update prompt.value so that it contains the longest
+ * common prefix of the matches
+ *
+ */
+const updateReplToReflectLongestPrefix = (prompt, matches, temporaryContainer, partial = temporaryContainer.partial) => {
+  if (matches.length > 0) {
+    const shortest = matches.reduce((minLength, match) => !minLength ? match.length : Math.min(minLength, match.length), false)
+    let idx = 0
+
+    const partialComplete = idx => {
+      // debug('partial complete', idx)
+      const completion = completeWith(partial, matches[0].substring(0, idx))
+      temporaryContainer.partial = temporaryContainer.partial + completion
+      prompt.value = prompt.value + completion
+    }
+
+    for (idx = 0; idx < shortest; idx++) {
+      const char = matches[0].charAt(idx)
+
+      for (let jdx = 1; jdx < matches.length; jdx++) {
+        const other = matches[jdx].charAt(idx)
+        if (char !== other) {
+          if (idx > 0) {
+            // then we found some common prefix
+            // debug('partial complete midway')
+            return partialComplete(idx)
+          } else {
+            // debug('no partial completion :(')
+            return
+          }
+        }
+      }
+    }
+
+    if (idx > 0) {
+      // debug('partial complete at end')
+      partialComplete(idx)
+    }
+  }
+}
+
+/**
+ * Install keyboard up-arrow and down-arrow handlers in the given REPL
+ * prompt. This needs to be installed in the prompt, as ui.js installs
+ * the equivalent handlers in the prompt as well.
+ *
+ */
+const listenForUpDown = prompt => {
+  const moveTo = (nextOp, evt) => {
+    const block = cli.getCurrentBlock()
+    let temporaryContainer = block && block.querySelector('.tab-completion-temporary')
+
+    if (temporaryContainer) {
+      const current = temporaryContainer.querySelector('.selected')
+      if (current) {
+        const next = current[nextOp]
+
+        if (next) {
+          current.classList.remove('selected')
+          next.classList.add('selected')
+          next.scrollIntoViewIfNeeded(false)
+          evt.preventDefault() // prevent REPL processing
+        }
+      }
+    }
+  }
+
+  const previousKeyDown = prompt.onkeydown
+  prompt.onkeydown = evt => { // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
+    const char = evt.keyCode
+
+    if (char === keys.DOWN) {
+      moveTo('nextSibling', evt)
+    } else if (char === keys.UP) {
+      moveTo('previousSibling', evt)
+    } else if (char === keys.C && evt.ctrlKey) {
+      // Ctrl+C, cancel
+      cli.doCancel()
+    }
+  }
+
+  // cleanup routine
+  return () => { prompt.onkeydown = previousKeyDown }
+}
+
+/**
+ * Listen for escape key, and remove tab completion popup, if it is
+ * visible
+ *
+ */
+const listenForEscape = prompt => {
+  // listen for escape key
+  const previousKeyup = document.onkeyup
+  const cleanup = () => { document.onkeyup = previousKeyup }
+
+  document.onkeyup = evt => {
+    if (evt.keyCode === keys.ESCAPE) {
+      const block = cli.getCurrentBlock()
+      let temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+
+      if (temporaryContainer) {
+        evt.preventDefault()
+        temporaryContainer.cleanup()
+      }
+    }
+  }
+
+  return cleanup
+}
+
+interface IMatch {
+  match: string
+  completion: any
+  option: HTMLElement
+}
+
+/** declaration-merge on HTMLDivElement */
+interface TemporaryContainer extends HTMLDivElement {
+  scrollContainer: HTMLElement
+  lastIdx?: number
+  partial?: string
+  dirname?: string
+  cleanup?: () => void
+  currentMatches?: Array<IMatch>
+}
+
+/**
+ * Make a container UI for tab completions
+ *
+ */
+const makeCompletionContainer = (block, prompt, partial, dirname?, lastIdx?) => {
+  const input = block.querySelector('input')
+
+  const temporaryContainer = document.createElement('div') as TemporaryContainer
+  temporaryContainer.className = 'tab-completion-temporary repl-temporary'
+
+  const scrollContainer = document.createElement('div')
+  scrollContainer.className = 'scrollable'
+  temporaryContainer.appendChild(scrollContainer)
+  temporaryContainer.scrollContainer = scrollContainer
+
+  if (!process.env.RUNNING_SHELL_TEST) {
+    // see shell issue #699; chrome seems not to play the fade-in
+    // animation when the window is offscreen
+    temporaryContainer.classList.add('fade-in')
+  }
+
+  // determine pixel width of current input value
+  const tmp = document.createElement('div')
+  tmp.style.display = 'inline-block'
+  tmp.style.fontSize = '0.925em'
+  tmp.style.opacity = '0'
+  tmp.style.position = 'absolute'
+  tmp.innerText = input.value.substring(0, input.selectionStart)
+  block.appendChild(tmp)
+  const inputWidth = tmp.clientWidth
+  block.removeChild(tmp)
+
+  const { left, width: containerWidth } = input.getBoundingClientRect()
+  const desiredLeft = inputWidth + 12
+
+  if (desiredLeft + inputWidth < containerWidth) {
+    // the popup likely won't overflow to the right
+    temporaryContainer.style.marginLeft = `${desiredLeft}px`
+  } else {
+    // oops, it will overflow to the right; position it flush right, then
+    temporaryContainer.style.marginLeft = `calc(${containerWidth}px - 15em)`
+  }
+
+  // for later completion
+  temporaryContainer.partial = partial
+  temporaryContainer.dirname = dirname
+  temporaryContainer.lastIdx = lastIdx
+  temporaryContainer.currentMatches = []
+
+  block.appendChild(temporaryContainer)
+  const handlers = installKeyHandlers(prompt)
+
+  /** respond to change of prompt value */
+  const onChange = () => {
+    if (!prompt.value.endsWith(partial)) {
+      // oof! then the prompt changed substantially; get out of
+      // here quickly
+      return temporaryContainer.cleanup()
+    }
+
+    const args = repl.split(prompt.value)
+    const currentText = args[temporaryContainer.lastIdx]
+    const prevMatches = temporaryContainer.currentMatches
+    const newMatches = prevMatches.filter(({ match, option }) => match.indexOf(currentText) === 0)
+    const removedMatches = prevMatches.filter(({ match, option }) => match.indexOf(currentText) !== 0)
+
+    temporaryContainer.currentMatches = newMatches
+    removedMatches.forEach(({ option }) => temporaryContainer.removeChild(option))
+
+    temporaryContainer['partial'] = currentText
+
+    if (temporaryContainer.currentMatches.length === 0) {
+      // no more matches, so remove the temporary container
+      temporaryContainer.cleanup()
+    }
+  }
+  prompt.addEventListener('input', onChange)
+
+  temporaryContainer.cleanup = () => {
+    try {
+      block.removeChild(temporaryContainer)
+    } catch (err) {
+      // already removed
+    }
+    try {
+      handlers.forEach(cleanup => cleanup())
+    } catch (err) {
+      // just in case
+    }
+    prompt.removeEventListener('input', onChange)
+  }
+
+  // in case the container scrolls off the bottom TODO we should
+  // probably have it positioned above, so as not to introduce
+  // scrolling?
+  setTimeout(cli.scrollIntoView, 0)
+
+  return temporaryContainer
+}
+
+/**
+ * Add a suggestion to the suggestion container
+ *
+ */
+const addSuggestion = (temporaryContainer: TemporaryContainer, dirname, prompt) => (match, idx) => {
+  const matchLabel = match.label || match
+  const matchCompletion = match.completion || matchLabel
+
+  const option = document.createElement('div')
+  const optionInnerFill = document.createElement('span')
+  const optionInner = document.createElement('a')
+
+  temporaryContainer.scrollContainer.appendChild(option)
+  option.appendChild(optionInnerFill)
+  optionInnerFill.appendChild(optionInner)
+
+  // we want the clickable part to fill horizontal space
+  optionInnerFill.className = 'tab-completion-temporary-fill'
+
+  optionInner.appendChild(document.createTextNode(matchLabel))
+
+  // maybe we have a doc string for the match?
+  if (match.docs) {
+    const optionDocs = document.createElement('span')
+    optionDocs.className = 'deemphasize deemphasize-partial left-pad'
+    option.appendChild(optionDocs)
+    optionDocs.innerText = `(${match.docs})`
+  }
+
+  option.className = 'tab-completion-option'
+  optionInner.className = 'clickable plain-anchor'
+  if (idx === 0) {
+    // first item is selected by default
+    option.classList.add('selected')
+  }
+
+  // onclick, use this match as the completion
+  option.addEventListener('click', () => {
+    complete(matchCompletion, prompt, { temporaryContainer, dirname, addSpace: match.addSpace })
+  })
+
+  option.setAttribute('data-match', matchLabel)
+  option.setAttribute('data-completion', matchCompletion)
+  if (match.addSpace) option.setAttribute('data-add-space', match.addSpace)
+  option.setAttribute('data-value', optionInner.innerText)
+
+  // for incremental completion; see onChange handler above
+  temporaryContainer.currentMatches.push({ match: matchLabel, completion: matchCompletion, option })
+
+  return { option, optionInner }
+}
+
+/**
+ * Suggest completions for a local file
+ *
+ */
+const suggestLocalFile = (last, block, prompt, temporaryContainer, lastIdx) => {
+  // dirname will "foo" in the above example; it
+  // could also be that last is itself the name
+  // of a directory
+  const lastIsDir = last.charAt(last.length - 1) === '/'
+  const dirname = lastIsDir ? last : path.dirname(last)
+
+  debug('suggest local file', dirname, last)
+
+  if (dirname) {
+    // then dirname exists! now scan the directory so we can find matches
+    fs.readdir(dirname, (err, files) => {
+      if (err) {
+        debug('fs.readdir error', err)
+      } else {
+        debug('fs.readdir success')
+
+        const partial = path.basename(last)
+        const matches = files.filter(f => (lastIsDir || f.indexOf(partial) === 0) &&
+                                             !f.endsWith('~') && !f.startsWith('.'))
+
+        if (matches.length === 1) {
+          //
+          // then there is one unique match, so autofill it now;
+          // completion will be the bit we have to append to the current prompt.value
+          //
+          debug('singleton file completion', matches[0])
+          complete(matches[0], prompt, { temporaryContainer, partial, dirname })
+        } else if (matches.length > 1) {
+          //
+          // then there are multiple matches, present the choices
+          //
+          debug('multi file completion')
+
+          // make a temporary div to house the completion options,
+          // and attach it to the block that encloses the current prompt
+          if (!temporaryContainer) {
+            temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+          }
+
+          updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
+
+          // add each match to that temporary div
+          matches.forEach((match, idx) => {
+            const { option, optionInner } = addSuggestion(temporaryContainer, dirname, prompt)(match, idx)
+
+            // see if the match is a directory, so that we add a trailing slash
+            const filepath = path.join(dirname, match)
+            isDirectory(filepath)
+              .then(isDir => {
+                if (isDir) {
+                  optionInner.innerText = match + '/'
+                } else {
+                  optionInner.innerText = match
+                }
+                option.setAttribute('data-value', optionInner.innerText)
+              }).catch(err => {
+                console.error(err)
+              })
+          })
+        }
+      }
+    })
+  }
+}
+
+/**
+ * Given a list of entities, filter them and present options
+ *
+ */
+const filterAndPresentEntitySuggestions = (last, block, prompt, temporaryContainer, lastIdx) => entities => {
+  debug('filtering these entities', entities)
+  debug('against this filter', last)
+
+  // find matches, given the current prompt contents
+  const filteredList = entities.map(({ name, packageName, namespace }) => {
+    const packageNamePart = packageName ? `${packageName}/` : ''
+    const actionWithPackage = `${packageNamePart}${name}`
+    const fqn = `/${namespace}/${actionWithPackage}`
+
+    return (name.indexOf(last) === 0 && actionWithPackage) ||
+            (actionWithPackage.indexOf(last) === 0 && actionWithPackage) ||
+            (fqn.indexOf(last) === 0 && fqn)
+  }).filter(x => x)
+
+  debug('filtered list', filteredList)
+
+  if (filteredList.length === 1) {
+    // then we found just one match; we can complete it now,
+    // without bothering with a completion popup
+    debug('singleton entity match', filteredList[0])
+    complete(filteredList[0], prompt, { partial: last, dirname: false })
+  } else if (filteredList.length > 0) {
+    // then we found multiple matches; we need to render them as
+    // a tab completion popup
+    const partial = last
+    const dirname = undefined
+
+    if (!temporaryContainer) {
+      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+    }
+
+    updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+
+    filteredList.forEach(addSuggestion(temporaryContainer, dirname, prompt))
+  }
+}
+
+/**
+ * Command not found, but we have command completions to offer the user
+ *
+ */
+const suggestCommandCompletions = (matches, partial, block, prompt, temporaryContainer) => {
+  // don't suggest anything without a usage model, and then align to
+  // the addSuggestion model
+  matches = matches.filter(({ usage, docs }) => usage || docs)
+    .map(({ command, docs, usage = { command, docs, commandPrefix: undefined, title: undefined, header: undefined } }) => ({
+      label: usage.command || usage.commandPrefix,
+      completion: command,
+      addSpace: true,
+      docs: usage.title || usage.header || usage.docs // favoring shortest first
+    }))
+
+  if (matches.length === 1) {
+    debug('singleton command completion', matches[0])
+    complete(matches[0].completion, prompt, { partial, dirname: false })
+  } else if (matches.length > 0) {
+    debug('suggesting command completions', matches, partial)
+
+    if (!temporaryContainer) {
+      temporaryContainer = makeCompletionContainer(block, prompt, partial)
+    }
+
+    // add suggestions to the container
+    matches.forEach(addSuggestion(temporaryContainer, undefined, prompt))
+  }
+}
+
+/**
+ * Suggest options
+ *
+ */
+const suggest = (param, last, block, prompt, temporaryContainer, lastIdx) => {
+  if (param.file) {
+    // then the expected parameter is a file; we can auto-complete
+    // based on the contents of the local filesystem
+    return suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
+  } else if (param.entity) {
+    // then the expected parameter is an existing entity; so we
+    // can enumerate the entities of the specified type
+    return repl.qexec(`${param.entity} list --limit 200`)
+      .then(filterAndPresentEntitySuggestions(path.basename(last), block, prompt, temporaryContainer, lastIdx))
+  }
+}
+
+/**
+ * This plugin implements tab completion in the REPL.
+ *
+ */
+export default () => {
+  if (typeof document === 'undefined') return
+
+  if (inBrowser()) {
+    injectCSS({ css: require('@kui/plugin-core-support/web/css/tab-completion.css'), key: 'tab-completion.css' })
+  } else {
+    const root = path.dirname(require.resolve('@kui/plugin-core-support/package.json'))
+    injectCSS(path.join(root, 'web/css/tab-completion.css'))
+  }
+
+  // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
+  document.addEventListener('keydown', evt => {
+    const block = cli.getCurrentBlock()
+    let temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+
+    if (evt.keyCode === keys.ENTER) {
+      if (temporaryContainer) {
+        //
+        // user hit enter, and we have a temporary container open; remove it
+        //
+
+        // first see if we have a selection; if so, add it to the input
+        const current = temporaryContainer.querySelector('.selected')
+        if (current) {
+          const completion = current.getAttribute('data-completion')
+          const addSpace = current.hasAttribute('data-add-space')
+          const prompt = cli.getCurrentPrompt()
+
+          complete(completion, prompt, { temporaryContainer, addSpace })
+        }
+
+        // prevent the REPL from evaluating the expr
+        evt.preventDefault()
+
+        // now remove the container from the DOM
+        try {
+          temporaryContainer.cleanup()
+        } catch (err) {
+          // it may have already been removed elsewhere
+        }
+      }
+    } else if (evt.keyCode === keys.TAB) {
+      const prompt = cli.getCurrentPrompt()
+
+      if (prompt) {
+        const value = prompt.value
+        if (value) {
+          evt.preventDefault() // for now at least, we want to keep the focus on the current <input>
+
+          if (temporaryContainer) {
+            // we already have a temporaryContainer
+            // attached to the block, so tab means cycle
+            // through the options
+            const current = temporaryContainer.querySelector('.selected')
+            const next = (current.nextSibling || temporaryContainer.querySelector(':first-child')) as HTMLElement
+            if (next) {
+              current.classList.remove('selected')
+              next.classList.add('selected')
+              next['scrollIntoViewIfNeeded'](false)
+            }
+            return
+          }
+
+          const handleUsage = usageError => {
+            const usage = usageError.raw ? usageError.raw.usage || usageError.raw : usageError.usage || usageError
+            debug('usage', usage, usageError)
+
+            if (usage.fn) {
+              // resolve the generator and retry
+              debug('resolving generator')
+              handleUsage(usage.fn(usage.command))
+            } else if (usageError.partialMatches || usageError.available) {
+              // command not found, with partial matches that we can offer the user
+              suggestCommandCompletions(usageError.partialMatches || usageError.available,
+                prompt.value,
+                block, prompt,
+                temporaryContainer)
+            } else if (usage && usage.command) {
+              // so we have a usage model; let's
+              // determine what parameters we might be
+              // able to help with
+              const required = usage.required || []
+              const optionalPositionals = (usage.optional || []).filter(({ positional }) => positional)
+              const oneofs = usage.oneof ? [usage.oneof[0]] : []
+              const positionals = required.concat(oneofs).concat(optionalPositionals)
+
+              debug('positionals', positionals)
+              if (positionals.length > 0) {
+                const args = repl.split(prompt.value) // this is the "argv", for the current prompt value
+                const commandIdx = args.indexOf(usage.command) + 1 // the terminal command of the prompt
+                const nActuals = args.length - commandIdx
+                const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
+                const param = positionals[lastIdx]
+
+                debug('maybe', args.length, commandIdx, param, args[commandIdx + lastIdx])
+
+                if (commandIdx === args.length && !prompt.value.match(/\s+$/)) {
+                  // then the prompt has e.g. "wsk package" with no terminal whitespace; nothing to do yet
+
+                } else if (param) {
+                  // great, there is a positional we can help with
+                  try {
+                    // we found a required positional parameter, now suggest values for this parameter
+                    suggest(param, findFile(args[commandIdx + lastIdx], true),
+                      block, prompt, temporaryContainer, commandIdx + lastIdx)
+                  } catch (err) {
+                    console.error(err)
+                  }
+                }
+              }
+            } else if (!inBrowser()) {
+              debug('falling back on local file completion')
+              const { A: args, endIndices } = repl._split(prompt.value, true, true) as repl.ISplit
+              const lastIdx = prompt.selectionStart
+
+              for (let ii = 0; ii < endIndices.length; ii++) {
+                if (endIndices[ii] >= lastIdx) {
+                  const last = prompt.value.substring(endIndices[ii - 1], lastIdx).trim()
+                  suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
+                  break
+                }
+              }
+            }
+          }
+
+          try {
+            debug('fetching usage', value)
+            const usage = repl.qexec(`${value} --help`, undefined, undefined, { failWithUsage: true })
+            if (usage.then) {
+              usage.then(handleUsage, handleUsage)
+            } else {
+              handleUsage(usage)
+            }
+          } catch (err) {
+            console.error(err)
+          }
+        }
+      }
+    }
+  })
+}

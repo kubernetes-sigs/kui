@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 const debug = Debug('main/main')
 debug('loading')
 
-require('module-alias/register')
 import { SubwindowPrefs, getCommand, initElectron, initHeadless } from './spawn-electron'
 
 /**
