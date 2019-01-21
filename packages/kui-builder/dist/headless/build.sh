@@ -169,18 +169,19 @@ function build {
          find -L kui/tests/tests/passes/ -name '*headless*.js' -prune -o -type f -exec rm {} \; && \
          find -L kui/tests/data -type d -name headless -prune -o -type f -exec rm {} \; && \
          "$TAR" -jcf "$SCRIPTDIR/$BUILDDIR/$DEST_TGZ" \
-             --exclude "node_modules/@types" \
-             --exclude "node_modules/js-beautify" \
-             --exclude "**/.bak" \
-             --exclude "**/*.map" \
-             --exclude "**/*.png" \
-             --exclude "**/*.icns" \
-             --exclude "**/*.ico" \
-             --exclude "lerna.json" \
-             --exclude "**/yarn.lock" \
-             --exclude "**/*.debug.js" \
-             --exclude "**/package-lock.json" \
-             kui && \
+                --exclude "node_modules/@types" \
+                --exclude "node_modules/js-beautify" \
+                --exclude "node_modules/.bin" \
+                --exclude "**/.bak" \
+                --exclude "**/*.map" \
+                --exclude "**/*.png" \
+                --exclude "**/*.icns" \
+                --exclude "**/*.ico" \
+                --exclude "lerna.json" \
+                --exclude "**/yarn.lock" \
+                --exclude "**/*.debug.js" \
+                --exclude "**/package-lock.json" \
+                kui && \
          rm -rf kui)
 
     TEMP="`mktemp -d`"

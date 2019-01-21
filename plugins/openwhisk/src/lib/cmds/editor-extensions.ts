@@ -20,15 +20,15 @@ const debug = Debug('plugins/openwhisk/cmds/editor-extensions')
 import * as repl from '@kui/core/repl'
 import { isHeadless } from '@kui/core/capabilities'
 
-import { respondToRepl } from '@kui-plugin/editor/src/lib/util'
-import { fetchFile, registerFetcher } from '@kui-plugin/editor/src/lib/fetchers'
-import { language } from '@kui-plugin/editor/src/lib/file-types'
-import { openEditor } from '@kui-plugin/editor/src/lib/open'
+import { respondToRepl } from '@kui/plugins/editor/src/lib/util'
+import { fetchFile, registerFetcher } from '@kui/plugins/editor/src/lib/fetchers'
+import { language } from '@kui/plugins/editor/src/lib/file-types'
+import { openEditor } from '@kui/plugins/editor/src/lib/open'
 
 import strings from '../../i18n/strings'
 import * as placeholders from '../editor-placeholders'
 
-import { persister as compositionPersister } from '@kui-plugin/apache-composer/src/lib/model/editor/composition-persister'
+import { persister as compositionPersister } from '@kui/plugins/apache-composer/src/lib/model/editor/composition-persister'
 
 /**
  * Default settings

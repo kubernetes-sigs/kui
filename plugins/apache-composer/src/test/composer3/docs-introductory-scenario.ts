@@ -52,8 +52,8 @@ const inputs = [
 ]
 
 /** fetch source code for the app */
-const root = path.dirname(require.resolve('@kui-plugin-src/apache-composer/package.json'))
-const src = app => fs.readFileSync(path.join(root, '@demos/', `${app}.js`)).toString()
+const root = path.dirname(require.resolve('@kui/plugins/apache-composer/package.json'))
+const src = app => fs.readFileSync(path.join(root, 'lib/@demos/', `${app}.js`)).toString()
 
 // hardcode for now... we need to generate this every time
 const ast = {

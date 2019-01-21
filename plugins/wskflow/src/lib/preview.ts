@@ -31,9 +31,9 @@ import * as repl from '@kui/core/repl'
 import { showCustom, showEntity } from '@kui/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui/core/utility'
 
-import * as badges from '@kui-plugin/apache-composer/src/lib/utility/badges'
-import * as messages from '@kui-plugin/apache-composer/src/lib/utility/messages'  // TODO: import from plugin js file
-import * as compileUtil from '@kui-plugin/apache-composer/src/lib/utility/compile'
+import * as badges from '@kui/plugins/apache-composer/src/lib/utility/badges'
+import * as messages from '@kui/plugins/apache-composer/src/lib/utility/messages'  // TODO: import from plugin js file
+import * as compileUtil from '@kui/plugins/apache-composer/src/lib/utility/compile'
 
 import * as wskflowUtil from './util'
 
@@ -80,7 +80,7 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       if (filepath.indexOf('@') >= 0) {
         debug('readFile for webpack, built-in', filepath)
         try {
-          resolve(require('@kui-plugin-src/apache-composer' +
+          resolve(require('@kui/plugins/apache-composer' +
                           filepath.replace(/^\/?app\/plugins\/modules/, '')))
         } catch (err) {
           console.error(err)

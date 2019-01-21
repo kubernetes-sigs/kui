@@ -87,7 +87,7 @@ const loadSourceCode = (inputFile, localCodePath) => new Promise((resolve, rejec
   } else {
     debug('readFile for webpack')
     try {
-      resolve(require('@kui-plugin-src/apache-composer' + localCodePath.replace(/^\/?app\/plugins\/modules/, '')))
+      resolve(require('@kui/plugins/apache-composer' + localCodePath.replace(/^\/?app\/plugins\/modules/, '')))
     } catch (err) {
       console.error(err)
       const error = new Error('The specified file does not exist')

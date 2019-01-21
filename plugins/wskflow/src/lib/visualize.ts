@@ -37,10 +37,10 @@ export default async (passedFsm, container, w, h, activations, options, rule) =>
   debug('visualize', passedFsm, options, rule)
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-plugin-src/wskflow/wskflow.css').toString(), key: 'wskflow' })
+    injectCSS({ css: require('@kui/plugins/wskflow/web/css/wskflow.css').toString(), key: 'wskflow' })
   } else {
-    const ourRoot = dirname(require.resolve('@kui-plugin-src/wskflow/package.json'))
-    injectCSS(join(ourRoot, 'wskflow.css'))
+    const ourRoot = dirname(require.resolve('@kui/plugins/wskflow/package.json'))
+    injectCSS(join(ourRoot, 'web/css/wskflow.css'))
   }
 
   // create a copy - all annotations make by wskflow will not affect the original object.
