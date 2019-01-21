@@ -64,9 +64,9 @@ fi
 rm logs/* 2> /dev/null
 
 # which tests to run; the default is every test
-if [ -n "$LAYER" ]; then
-    # a single layer, specified by env var
-    WHICH=tests/passes/$LAYER
+if [ -n "$LAYERS" ]; then
+    # one or more layers, specified by env var
+    WHICH=tests/passes/$LAYERS
 elif [ $# -ne 0 ]; then
     # one or more layers, specified on command line
     for i in $@; do
