@@ -68,12 +68,12 @@ realize your changes.
     consist of two groups of processes: the renderer processes
     (e.g. one per window, web view, web worker, etc.), and the "main"
     or server-side processes. The javascript code under the
-    `app/src/main` directory (e.g. `main.js` and `headless.js`) are
+    `packages/app/src/main` directory (e.g. `main.js` and `headless.js`) are
     run in the main/server process. Thus, changes to these files
     require a full quit and relaunch of the Electron application.
 
  3. **Changing the HTML templates** Changes to files under the
-    `templates/` directory, such as `templates/index.html` require a
+    `packages/app/templates/` directory, such as `packages/app/templates/index.html` require a
     rebuild, accomplished via
 
     ```bash
