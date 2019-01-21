@@ -25,7 +25,7 @@ export const ACTION = 'helm'
 export const FQN = `${PACKAGE}/${ACTION}`
 
 /** we will need the source code for the action proxy */
-const actionProxySource = !inBrowser() ? require('fs-extra').readFile(require('path').join(__dirname, '../../actionProxy/helm.sh'))
-    : Promise.resolve(require('!!raw-loader!@kui-plugin-src/k8s/actionProxy/helm.sh'))
+const actionProxySource = !inBrowser() ? require('fs-extra').readFile(require('path').join(__dirname, '../../lib/actionProxy/helm.sh'))
+    : Promise.resolve(require('!!raw-loader!@kui/plugins/k8s/lib/actionProxy/helm.sh'))
 
 export const deploy = checkDeploy({ FQN, actionProxySource })

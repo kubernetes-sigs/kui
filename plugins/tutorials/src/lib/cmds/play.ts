@@ -73,7 +73,7 @@ const injectOurCSS = () => {
     injectCSS({ css: require('../../../web/css/tutorials.css'), key: 'tutorial.tutorials' })
   } catch {
     // local file style
-    const ourRoot = dirname(require.resolve('@kui-plugin-src/tutorials/package.json'))
+    const ourRoot = dirname(require.resolve('@kui/plugins/tutorials/package.json'))
     injectCSS(join(ourRoot, 'web/css/main.css'))
     injectCSS(join(ourRoot, 'web/css/tutorials.css'))
   }
@@ -90,7 +90,7 @@ const injectHTML = () => {
     loader = loadHTML({ html: require('../../../web/html/index.html').toString() })
     debug('webpack html inject')
   } catch {
-    const ourRoot = dirname(require.resolve('@kui-plugin-src/tutorials/package.json'))
+    const ourRoot = dirname(require.resolve('@kui/plugins/tutorials/package.json'))
     loader = loadHTML(join(ourRoot, 'web/html/index.html'))
     debug('local file html inject')
   }

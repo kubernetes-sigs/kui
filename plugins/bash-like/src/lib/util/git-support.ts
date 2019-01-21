@@ -31,11 +31,11 @@ export const injectCSS = async () => {
   if (inBrowser()) {
     await Promise.all([
       inject({ css: require('diff2html/dist/diff2html.min.css'), key: 'diff2html.css' }),
-      inject({ css: require('@kui-plugin-src/bash-like/web/css/my-diff2html.css'), key: 'mydiff2html.css' })
+      inject({ css: require('@kui/plugins/bash-like/web/css/my-diff2html.css'), key: 'mydiff2html.css' })
     ])
   } else {
     const root = dirname(require.resolve('diff2html/package.json'))
-    const ourRoot = dirname(require.resolve('@kui-plugin-src/bash-like/package.json'))
+    const ourRoot = dirname(require.resolve('@kui/plugins/bash-like/package.json'))
     await Promise.all([
       inject(join(root, 'dist/diff2html.min.css')),
       inject(join(ourRoot, 'web/css/my-diff2html.css'))

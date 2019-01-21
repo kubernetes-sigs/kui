@@ -20,11 +20,11 @@ const debug = Debug('plugins/apache-composer/cmds/editor-extensions')
 import { findFile } from '@kui/core/find-file'
 import { isHeadless } from '@kui/core/capabilities'
 
-import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from '@kui-plugin/openwhisk/src/lib/cmds/editor-extensions'
-import { extension, language } from '@kui-plugin/editor/src/lib/file-types'
-import { respondToRepl } from '@kui-plugin/editor/src/lib/util'
-import { openEditor } from '@kui-plugin/editor/src/lib/open'
-import { loadComposition } from '@kui-plugin/apache-composer/src/lib/utility/compile'
+import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from '@kui/plugins/openwhisk/src/lib/cmds/editor-extensions'
+import { extension, language } from '@kui/plugins/editor/src/lib/file-types'
+import { respondToRepl } from '@kui/plugins/editor/src/lib/util'
+import { openEditor } from '@kui/plugins/editor/src/lib/open'
+import { loadComposition } from '@kui/plugins/apache-composer/src/lib/utility/compile'
 
 import { handleParseError, persister } from '../../model/editor/composition-persister'
 
@@ -225,7 +225,7 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
       const readViaImport = () => {
         debug('readViaImport', template,
           findFile(template).replace(/^app\/plugins\/modules/, ''))
-        resolve(require('@kui-plugin-src/' +
+        resolve(require('@kui/plugins/' +
                         findFile(template).replace(/^app\/plugins\/modules/, '')))
       }
 

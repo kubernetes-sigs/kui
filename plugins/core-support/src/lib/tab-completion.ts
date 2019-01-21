@@ -575,9 +575,9 @@ export default () => {
   if (typeof document === 'undefined') return
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-plugin-src/core-support/web/css/tab-completion.css'), key: 'tab-completion.css' })
+    injectCSS({ css: require('@kui/plugins/core-support/web/css/tab-completion.css'), key: 'tab-completion.css' })
   } else {
-    const root = path.dirname(require.resolve('@kui-plugin-src/core-support/package.json'))
+    const root = path.dirname(require.resolve('@kui/plugins/core-support/package.json'))
     injectCSS(path.join(root, 'web/css/tab-completion.css'))
   }
 

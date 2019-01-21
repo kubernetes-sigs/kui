@@ -28,7 +28,7 @@ import usage from './usage'
 const settings = require('@kui/settings/config.json')
 
 /** path to app/ directory */
-const ourRootDir = path.dirname(require.resolve('@kui-plugin-src/core-support/package.json'))
+const ourRootDir = path.dirname(require.resolve('@kui/plugins/core-support/package.json'))
 const settingsDir = path.dirname(require.resolve('@kui/settings/package.json'))
 
 /**

@@ -20,18 +20,17 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../.."
 BUILDDIR="${TOPDIR}/build"
 
-cd "$SCRIPTDIR/.."
+cd "$TOPDIR"
 
-mkdir "$BUILDDIR" >& /dev/null
-touch "$BUILDDIR"/.pre-scanned.json
-
-# link lib and web files
-"$SCRIPTDIR"/kui-link-source-assets.sh
-
-# compile source
-echo "compiling source"
-npx tsc
-
-# pre-compile plugin registry
-echo "compiling plugin registry"
-(cd ./dist/bin && ./compile.js)
+for pluginPath in plugins/*; do
+    plugin=`basename "$pluginPath"`
+    for subdir in lib web package.json; do
+        if [ -e "$pluginPath/$subdir" ]; then
+            echo "linking library $plugin/$subdir"
+            if [ ! -d "$BUILDDIR/$pluginPath" ]; then
+                mkdir -p "$BUILDDIR/$pluginPath"
+            fi
+            (cd "$BUILDDIR/$pluginPath" && rm -rf "$subdir" && ln -sf "../../../$pluginPath/$subdir")
+        fi
+    done
+done

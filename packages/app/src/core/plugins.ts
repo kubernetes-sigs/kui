@@ -531,10 +531,10 @@ export const prequire = async (route, options?) => {
         const module = prescan.flat.find(_ => _.route === route)
         if (module) {
           try {
-            // NOTE ON @kui-plugin relativization: this is important so that
+            // NOTE ON @kui/plugins relativization: this is important so that
             // webpack can be isntructed to pull in the plugins into the build
             // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
-            const registrationRef = await import('@kui-plugin/' + module.path)
+            const registrationRef = await import('@kui/plugins/' + module.path)
             const registration: PluginRegistration = registrationRef.default || registrationRef
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 

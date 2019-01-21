@@ -21,8 +21,8 @@ import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
 
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
   // give visibility to our @demos directory on the module path
-  const ourRoot = dirname(require.resolve('@kui-plugin-src/tutorials/package.json'))
-  addPath(join(ourRoot, '@tutorials'))
+  const ourRoot = dirname(require.resolve('@kui/plugins/tutorials/package.json'))
+  addPath(join(ourRoot, 'lib/@tutorials'))
 }
 
 export default registration
