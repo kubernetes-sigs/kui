@@ -21,7 +21,7 @@ specifics. This will enable `kubectl kui` to work.
 
 ## The Kui Experience
 
-[![Kui screenshot](app/content/images/kubectl-examples.jpg)](https://youtu.be/jcV0csyzGdY)
+[![Kui screenshot](packages/app/content/images/kubectl-examples.jpg)](https://youtu.be/jcV0csyzGdY)
 
 Click the image to see [Kui in
 motion](https://youtu.be/jcV0csyzGdY). For more of the backstory of
@@ -46,7 +46,7 @@ this command from your favorite terminal:
 
 |Example Command|Thumbnail of Output|
 |:--------------------------|:------------------------------|
-|`kubectl kui get pods --ui`|[![](app/content/images/kubectl-get-pods-thumbnail.jpg)](app/content/images/kubectl-get-pods.png)|
+|`kubectl kui get pods --ui`|[![](packages/app/content/images/kubectl-get-pods-thumbnail.jpg)](packages/app/content/images/kubectl-get-pods.png)|
 
 Without the `--ui` option, Kui will display the output in your
 terminal directly; you will observe that the output is identical to
