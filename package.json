@@ -50,7 +50,7 @@
   },
   "_moduleAliases": {
     "@kui": "build/packages/app/src",
-    "@kui/plugins": "build/plugins",
+    "@kui-plugin": "build/plugins",
     "@kui/settings": "packages/app/build",
     "@kui/prescan": "build/.pre-scanned.json",
     "@test": "tests"

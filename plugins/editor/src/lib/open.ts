@@ -47,7 +47,7 @@ export const openEditor = async (name, options, execOptions) => {
   /** returns the current entity */
   const getEntity = currentSelection
 
-  const ourRoot = path.dirname(require.resolve('@kui/plugins/editor/package.json'))
+  const ourRoot = path.dirname(require.resolve('@kui-plugin/editor/package.json'))
 
   if (inBrowser()) {
     // const mp = require('./edit-webpack')
@@ -58,13 +58,13 @@ export const openEditor = async (name, options, execOptions) => {
   }
 
   try {
-    injectCSS({ css: require('@kui/plugins/editor/lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
+    injectCSS({ css: require('@kui-plugin/editor/lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
   } catch (err) {
     injectCSS(path.join(ourRoot, 'lib/mono-blue.css'))
   }
 
   try {
-    injectCSS({ css: require('@kui/plugins/editor/lib/editor.css').toString(), key: 'editor.editor' })
+    injectCSS({ css: require('@kui-plugin/editor/lib/editor.css').toString(), key: 'editor.editor' })
   } catch (err) {
     injectCSS(path.join(ourRoot, 'lib/editor.css'))
   }

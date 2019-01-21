@@ -106,7 +106,7 @@ const filterOutNonActionActivations = filter => activations => {
  *
  */
 const extractTasks = async app => {
-  const composer = await import('@kui/plugins/apache-composer/src/lib/utility/ast')
+  const composer = await import('@kui-plugin/apache-composer/src/lib/utility/ast')
   const { namespace, name, fsm } = app
   return [ `/${namespace}/${name}` ].concat(!fsm ? [] : composer.extractActionsFromAst(fsm))
 }
@@ -235,9 +235,9 @@ export const fetchActivationData /* FromBackend */ = (wsk, N, options) => {
  */
 export const injectContent = () => {
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugins/grid/web/css/table.css'), key: 'grid-visualization.table.css' })
+    injectCSS({ css: require('@kui-plugin/grid/web/css/table.css'), key: 'grid-visualization.table.css' })
   } else {
-    const root = dirname(require.resolve('@kui/plugins/grid/package.json'))
+    const root = dirname(require.resolve('@kui-plugin/grid/package.json'))
     injectCSS(join(root, 'web/css/table.css'))
   }
 

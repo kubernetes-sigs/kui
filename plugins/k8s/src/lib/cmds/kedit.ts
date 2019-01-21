@@ -56,9 +56,9 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugins/k8s/web/css/main.css').toString(), key: 'kedit' })
+    injectCSS({ css: require('@kui-plugin/k8s/web/css/main.css').toString(), key: 'kedit' })
   } else {
-    const ourRoot = dirname(require.resolve('@kui/plugins/k8s/package.json'))
+    const ourRoot = dirname(require.resolve('@kui-plugin/k8s/package.json'))
     injectCSS(join(ourRoot, 'web/css/main.css'))
   }
 

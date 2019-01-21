@@ -46,10 +46,10 @@ function registerListener () {
   // inject css
   if (inBrowser()) {
     // try webpack style
-    injectCSS({ css: require('@kui/plugins/core-support/web/css/text-search.css').toString(), key: 'text-search' })
+    injectCSS({ css: require('@kui-plugin/core-support/web/css/text-search.css').toString(), key: 'text-search' })
   } else {
     // fall back to raw file style
-    const root = path.dirname(require.resolve('@kui/plugins/core-support/package.json'))
+    const root = path.dirname(require.resolve('@kui-plugin/core-support/package.json'))
     injectCSS(path.join(root, 'web/css/text-search.css'))
   }
 
