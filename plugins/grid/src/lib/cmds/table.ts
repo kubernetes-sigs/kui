@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { removeAllDomChildren } from '@kui/webapp/util/dom'
-import { addNameToSidecarHeader } from '@kui/webapp/views/sidecar'
+import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
+import { addNameToSidecarHeader } from '@kui/core/webapp/views/sidecar'
 
 import * as prettyPrintDuration from 'pretty-ms'
 import * as events from 'events'

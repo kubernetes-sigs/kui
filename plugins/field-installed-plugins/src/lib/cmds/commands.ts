@@ -21,8 +21,8 @@ debug('loading')
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import * as repl from '@kui/core/repl'
-import { userDataDir } from '@kui/core/userdata'
+import * as repl from '@kui/core/core/repl'
+import { userDataDir } from '@kui/core/core/userdata'
 import { commands as usage } from '../../usage'
 
 debug('finished loading modules')

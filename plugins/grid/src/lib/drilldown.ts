@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import sidecarSelector from '@kui/webapp/views/sidecar-selector'
-import pictureInPicture from '@kui/webapp/picture-in-picture'
+import sidecarSelector from '@kui/core/webapp/views/sidecar-selector'
+import pictureInPicture from '@kui/core/webapp/picture-in-picture'
 
 export const drilldownWith = (returnTo, command, highlightThis?, callThese = []) => event => {
   // invoke any precursor functions

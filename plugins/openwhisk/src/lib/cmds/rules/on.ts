@@ -22,7 +22,7 @@
  *
  */
 
-import repl = require('@kui/core/repl')
+import repl = require('@kui/core/core/repl')
 
 /**
  * on <trigger> do <action>

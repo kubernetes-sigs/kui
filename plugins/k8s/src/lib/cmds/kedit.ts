@@ -20,11 +20,11 @@ debug('loading')
 import { basename, dirname, join } from 'path'
 import expandHomeDir = require('expand-home-dir')
 
-import { inBrowser } from '@kui/core/capabilities'
-import { PluginRegistration, PluginRequire } from '@kui/models/plugin'
-import { injectCSS } from '@kui/webapp/util/inject'
-import { findFile } from '@kui/core/find-file'
-import repl = require('@kui/core/repl')
+import { inBrowser } from '@kui/core/core/capabilities'
+import { PluginRegistration, PluginRequire } from '@kui/core/models/plugin'
+import { injectCSS } from '@kui/core/webapp/util/inject'
+import { findFile } from '@kui/core/core/find-file'
+import repl = require('@kui/core/core/repl')
 
 import { IFormGroup, IFormElement, generateForm } from './form'
 import { formatEntity } from '../util/formatEntity'

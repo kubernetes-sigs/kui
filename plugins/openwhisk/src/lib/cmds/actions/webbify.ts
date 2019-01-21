@@ -21,7 +21,7 @@
  *
  */
 
-import { currentSelection } from '@kui/webapp/views/sidecar'
+import { currentSelection } from '@kui/core/webapp/views/sidecar'
 
 // some helpers for the pattern matcher, helping to find the components of a match
 const matchOf = idx => match => match[idx] // the match is idx'th element of the result of string.match

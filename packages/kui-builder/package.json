@@ -1,5 +1,5 @@
 {
-  "name": "kui-builder",
+  "name": "@kui/builder",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",

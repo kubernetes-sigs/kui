@@ -16,9 +16,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/util')
 
-import * as sidecar from '@kui/webapp/views/sidecar'
-import * as repl from '@kui/core/repl'
-import { optionsToString } from '@kui/core/utility'
+import * as sidecar from '@kui/core/webapp/views/sidecar'
+import * as repl from '@kui/core/core/repl'
+import { optionsToString } from '@kui/core/core/utility'
 
 import * as astUtil from '@kui-plugin/apache-composer/src/lib/utility/ast'
 import * as badges from '@kui-plugin/apache-composer/src/lib/utility/badges'

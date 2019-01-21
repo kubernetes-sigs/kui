@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui/core/capabilities'
+import { inBrowser } from '@kui/core/core/capabilities'
 import { PACKAGE, checkDeploy } from './deploy'
 
 /**

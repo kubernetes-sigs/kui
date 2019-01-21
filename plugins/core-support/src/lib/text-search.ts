@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/text-search')
 
-import { inBrowser } from '@kui/core/capabilities'
-import * as cli from '@kui/webapp/cli'
-import { injectCSS } from '@kui/webapp/util/inject'
+import { inBrowser } from '@kui/core/core/capabilities'
+import * as cli from '@kui/core/webapp/cli'
+import { injectCSS } from '@kui/core/webapp/util/inject'
 
 import * as path from 'path'
 

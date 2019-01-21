@@ -16,9 +16,9 @@
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as common from '@test/lib/common'
-import * as openwhisk from '@test/lib/openwhisk/openwhisk'
-import * as ui from '@test/lib/ui'
+import * as common from '@kui/core/tests/lib/common'
+import * as openwhisk from '@kui-plugin/openwhisk/tests/lib/openwhisk/openwhisk'
+import * as ui from '@kui/core/tests/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 const srcDir = './data/composer/composer-source' // inputs for create-from-source

@@ -19,9 +19,9 @@ const debug = Debug('plugins/apache-composer/tests/headless')
 import * as assert from 'assert'
 import * as path from 'path'
 import { exec } from 'child_process'
-import * as common from '@test/lib/common'
-import * as openwhisk from '@test/lib/openwhisk/openwhisk'
-import * as ui from '@test/lib/ui'
+import * as common from '@kui/core/tests/lib/common'
+import * as openwhisk from '@kui-plugin/openwhisk/tests/lib/openwhisk/openwhisk'
+import * as ui from '@kui/core/tests/lib/ui'
 const { cli } = require('@test/lib/headless')
 
 interface IResponse {

@@ -9,11 +9,11 @@
     "resolveJsonModule": true,
     "baseUrl": "../app",
     "paths": {
-      "@kui/*": ["src/*"],
+      "@kui/core/*": ["src/*"],
+      "@kui/core/tests/*": ["../../build/packages/app/tests/*"],
       "@kui/settings/*": ["../../build/*"],
       "@kui/prescan": ["../../build/.pre-scanned.json"],
-      "@kui-plugin/*": ["../../plugins/*"],
-      "@test/*": ["../../tests/*"]
+      "@kui-plugin/*": ["../../plugins/*"]
     }
   },
   "include": [

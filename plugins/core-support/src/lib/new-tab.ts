@@ -19,17 +19,17 @@ const debug = Debug('plugins/core-support/new-tab')
 
 import installReplFocusHandlers from './repl-focus'
 
-import { keys } from '@kui/webapp/keys'
+import { keys } from '@kui/core/webapp/keys'
 import { isVisible as isSidecarVisible,
          toggle,
          toggleMaximization,
-         clearSelection } from '@kui/webapp/views/sidecar'
-import sidecarSelector from '@kui/webapp/views/sidecar-selector'
-import { element } from '@kui/webapp/util/dom'
-import { listen, getCurrentPrompt } from '@kui/webapp/cli'
-import eventBus from '@kui/core/events'
-import { pexec, qexec } from '@kui/core/repl'
-import { IEvent, ExecType } from '@kui/core/command-tree'
+         clearSelection } from '@kui/core/webapp/views/sidecar'
+import sidecarSelector from '@kui/core/webapp/views/sidecar-selector'
+import { element } from '@kui/core/webapp/util/dom'
+import { listen, getCurrentPrompt } from '@kui/core/webapp/cli'
+import eventBus from '@kui/core/core/events'
+import { pexec, qexec } from '@kui/core/core/repl'
+import { IEvent, ExecType } from '@kui/core/core/command-tree'
 
 const usage = {
   strict: 'switch',

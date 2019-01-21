@@ -22,9 +22,9 @@ import { writeFile } from 'fs'
 import { spawn } from 'child_process'
 import * as expandHomeDir from 'expand-home-dir'
 
-import eventBus from '@kui/core/events'
-import { qexec } from '@kui/core/repl'
-import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui/webapp/views/sidecar'
+import eventBus from '@kui/core/core/events'
+import { qexec } from '@kui/core/core/repl'
+import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui/core/webapp/views/sidecar'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'

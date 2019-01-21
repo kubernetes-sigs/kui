@@ -19,9 +19,9 @@
  *
  */
 
-import { isHeadless } from '@kui/core/capabilities'
-import repl = require('@kui/core/repl')
-import { show as showSidecar, currentSelection, showEntity } from '@kui/webapp/views/sidecar'
+import { isHeadless } from '@kui/core/core/capabilities'
+import repl = require('@kui/core/core/repl')
+import { show as showSidecar, currentSelection, showEntity } from '@kui/core/webapp/views/sidecar'
 
 /**
  * These options help guide the help system; this command needs a

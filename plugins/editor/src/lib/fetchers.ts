@@ -21,7 +21,7 @@ import { basename } from 'path'
 import { lstat, readFile } from 'fs'
 import * as expandHomeDir from 'expand-home-dir'
 
-import { findFile } from '@kui/core/find-file'
+import { findFile } from '@kui/core/core/find-file'
 import { persisters } from './persisters'
 
 /** allows us to reassign a string code to a numeric one */

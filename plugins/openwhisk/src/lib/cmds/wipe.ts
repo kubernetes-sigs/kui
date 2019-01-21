@@ -17,10 +17,10 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/cmds/wipe')
 
-import { inBrowser, isHeadless } from '@kui/core/capabilities'
-import cli = require('@kui/webapp/cli')
-import repl = require('@kui/core/repl')
-import { hide as hideSidecar } from '@kui/webapp/views/sidecar'
+import { inBrowser, isHeadless } from '@kui/core/core/capabilities'
+import cli = require('@kui/core/webapp/cli')
+import repl = require('@kui/core/core/repl')
+import { hide as hideSidecar } from '@kui/core/webapp/views/sidecar'
 
 /**
  * This plugin introduces /wsk/wipe, which helps with removing all

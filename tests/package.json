@@ -33,7 +33,6 @@
     "properties-parser": "^0.3.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "spectron": "^5.0.0",
     "tmp": "0.0.33"
   },
   "dependencies": {

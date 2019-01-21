@@ -18,8 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/visualize')
 debug('loading')
 
-import { isHeadless, inBrowser } from '@kui/core/capabilities'
-import { injectCSS } from '@kui/webapp/util/inject'
+import { isHeadless, inBrowser } from '@kui/core/core/capabilities'
+import { injectCSS } from '@kui/core/webapp/util/inject'
 
 type GraphRenderer = (ir, containerElement, acts, options, rule) => void
 

@@ -24,12 +24,12 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import * as usage from '../usage'
 
-import { PluginRegistration } from '@kui/models/plugin'
-import { inBrowser } from '@kui/core/capabilities'
-import { findFile } from '@kui/core/find-file'
-import * as repl from '@kui/core/repl'
-import { showCustom, showEntity } from '@kui/webapp/views/sidecar'
-import { optionsToString, handleError } from '@kui/core/utility'
+import { PluginRegistration } from '@kui/core/models/plugin'
+import { inBrowser } from '@kui/core/core/capabilities'
+import { findFile } from '@kui/core/core/find-file'
+import * as repl from '@kui/core/core/repl'
+import { showCustom, showEntity } from '@kui/core/webapp/views/sidecar'
+import { optionsToString, handleError } from '@kui/core/core/utility'
 
 import * as badges from '@kui-plugin/apache-composer/src/lib/utility/badges'
 import * as messages from '@kui-plugin/apache-composer/src/lib/utility/messages'  // TODO: import from plugin js file

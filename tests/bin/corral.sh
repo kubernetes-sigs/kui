@@ -32,7 +32,14 @@ if [ ! -d tests ]; then
         mkdir tests/passes
     fi
 fi
-           
+
+if [ ! -d data ]; then
+    mkdir data
+fi
+if [ ! -d lib ]; then
+    mkdir lib
+fi
+
 # are we setting up links or tearing them down (a.k.a. clean)?
 if [ "$1" == "clean" ]; then
     CLEAN=true
@@ -49,67 +56,52 @@ if [ ! -f $ROOTDIR/tests/bin/corral.sh ]; then
     exit 1
 fi
 
-# scan for tests
-TESTS=`find -L "$ROOTDIR/plugins" -maxdepth 2 -name tests`
-
 # set up (or tear down) links
-for test in $TESTS; do
-    echo
-    echo "Scanning $test"
-
-    if [ -d "$test/data" ]; then
-        echo "  - found test input data"
-
-        for data in "$test"/data/*; do
-            base=`basename $data`
-            if [ -n "$CLEAN" ]; then
-                echo -e "    $CROSS unlinking data $base"
-                (cd data && rm -f "$base")
-            elif [ ! -L "data/$base" ]; then
-                echo -e "    $CHECK linking data $base"
-                (cd data && ln -s "../$data" .)
-            else
-                echo -e "    $DASH already linked data $base"
-            fi
-        done
-    fi
-
-    if [ -d "$test/lib" ]; then
+function scan {
+    TESTS=`find -L "$ROOTDIR/$1" -maxdepth 2 -name tests`
+    for test in $TESTS; do
         echo
-        echo "  - found test library files"
+        echo "Scanning $test"
 
-        for lib in "$test"/lib/*; do
-            base=`basename $lib`
-            if [ -n "$CLEAN" ]; then
-                echo -e "    $CROSS unlinking lib $base"
-                (cd lib && rm -f "$base")
-            elif [ ! -L "lib/$base" ]; then
-                echo -e "    $CHECK linking lib $base"
-                (cd lib && ln -s "../$lib" .)
-            else
-                echo -e "    $DASH already linked lib $base"
-            fi
-        done
-    fi
+        if [ -d "$test/data" ]; then
+            echo "  - found test input data"
 
-    if [ -d "$test/tests/passes" ]; then
-        echo
-        echo "  - found javascript tests"
+            for data in "$test"/data/*; do
+                base=`basename $data`
+                if [ -n "$CLEAN" ]; then
+                    echo -e "    $CROSS unlinking data $base"
+                    (cd data && rm -f "$base")
+                elif [ ! -L "data/$base" ]; then
+                    echo -e "    $CHECK linking data $base"
+                    (cd data && ln -s "../$data" .)
+                else
+                    echo -e "    $DASH already linked data $base"
+                fi
+            done
+        fi
 
-        for pass in "$test"/tests/passes/*; do
-            base=`basename $pass`
-            if [ -n "$CLEAN" ]; then
-                echo -e "    $CROSS unlinking pass $base"
-                (cd tests/passes && rm -f "$base")
-            elif [ ! -L "tests/passes/$base" ]; then
-                echo -e "    $CHECK linking pass $base"
-                (cd tests/passes && ln -s "../../$pass" .)
-            else
-                echo -e "    $DASH already linked pass $base"
-            fi
-        done
-    fi
-done
+        if [ -d "$test/lib" ]; then
+            echo
+            echo "  - found test library files"
+
+            for lib in "$test"/lib/*; do
+                base=`basename $lib`
+                if [ -n "$CLEAN" ]; then
+                    echo -e "    $CROSS unlinking lib $base"
+                    (cd lib && rm -f "$base")
+                elif [ ! -L "lib/$base" ]; then
+                    echo -e "    $CHECK linking lib $base"
+                    (cd lib && ln -s "../$lib" .)
+                else
+                    echo -e "    $DASH already linked lib $base"
+                fi
+            done
+        fi
+    done
+}
+
+scan packages
+scan plugins
 
 # scan for typescript core tests
 if [ -d "$ROOTDIR/build/packages" ]; then

@@ -17,7 +17,7 @@
  */
 
 require('module-alias/register')
-const { default: compile } = require('@kui/core/plugin-assembler')
+const { default: compile } = require('@kui/core/core/plugin-assembler')
 
 if (process.argv[2] === 'cleanup') {
   // nothing to do

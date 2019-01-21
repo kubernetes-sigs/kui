@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-delete')
 
-import * as repl from '@kui/core/repl'
-import UsageError from '@kui/core/usage-error'
+import * as repl from '@kui/core/core/repl'
+import UsageError from '@kui/core/core/usage-error'
 
 import { appDelete } from '../../utility/usage'
 import * as view from '../../view/entity-view'

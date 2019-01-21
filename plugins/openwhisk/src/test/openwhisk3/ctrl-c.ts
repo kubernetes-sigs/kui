@@ -16,9 +16,9 @@
 
 import * as assert from 'assert'
 
-import * as common from '@test/lib/common'
-import * as ui from '@test/lib/ui'
-import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as common from '@kui/core/tests/lib/common'
+import * as ui from '@kui/core/tests/lib/ui'
+import * as openwhisk from '@kui-plugin/openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 const delay = 3000

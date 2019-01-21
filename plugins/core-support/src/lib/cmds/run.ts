@@ -22,9 +22,9 @@ import { dirname } from 'path'
 
 import * as expandHomeDir from 'expand-home-dir'
 
-import * as repl from '@kui/core/repl'
-import { findFile } from '@kui/core/find-file'
-import { formatMultiListResult } from '@kui/webapp/views/table'
+import * as repl from '@kui/core/core/repl'
+import { findFile } from '@kui/core/core/find-file'
+import { formatMultiListResult } from '@kui/core/webapp/views/table'
 
 const execInSequence = async function (arr, status, idx: number) {
   const item = arr[idx]

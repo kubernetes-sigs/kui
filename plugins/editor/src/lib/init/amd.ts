@@ -18,7 +18,7 @@ declare var AMDLoader: any
 
 import * as path from 'path'
 
-import { inBrowser } from '@kui/core/capabilities'
+import { inBrowser } from '@kui/core/core/capabilities'
 
 import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'

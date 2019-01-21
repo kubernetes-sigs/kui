@@ -31,12 +31,12 @@ import dockerConfig from './config'
 import * as strings from './strings'
 import { main as usage } from './docs'
 
-import UsageError from '@kui/core/usage-error'
-import { oopsMessage } from '@kui/core/oops'
-import { qexec, pexec } from '@kui/core/repl'
-import { addNameToSidecarHeader, clearSelection, currentSelection, showEntity } from '@kui/webapp/views/sidecar'
-import { removeAllDomChildren } from '@kui/webapp/util/dom'
-import { injectScript } from '@kui/webapp/util/inject'
+import UsageError from '@kui/core/core/usage-error'
+import { oopsMessage } from '@kui/core/core/oops'
+import { qexec, pexec } from '@kui/core/core/repl'
+import { addNameToSidecarHeader, clearSelection, currentSelection, showEntity } from '@kui/core/webapp/views/sidecar'
+import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
+import { injectScript } from '@kui/core/webapp/util/inject'
 
 interface IProtoActivation {
   result?: any

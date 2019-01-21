@@ -19,8 +19,8 @@ const debug = Debug('plugins/wskflow/fsm2graph')
 
 import * as $ from 'jquery'
 
-import * as repl from '@kui/core/repl'
-import sidecarSelector from '@kui/webapp/views/sidecar-selector'
+import * as repl from '@kui/core/core/repl'
+import sidecarSelector from '@kui/core/webapp/views/sidecar-selector'
 
 import graph2doms from './graph2doms'
 import { textualPropertiesOfCode } from './util'

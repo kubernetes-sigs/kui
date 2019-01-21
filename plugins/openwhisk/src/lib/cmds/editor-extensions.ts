@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/cmds/editor-extensions')
 
-import * as repl from '@kui/core/repl'
-import { isHeadless } from '@kui/core/capabilities'
+import * as repl from '@kui/core/core/repl'
+import { isHeadless } from '@kui/core/core/capabilities'
 
 import { respondToRepl } from '@kui-plugin/editor/src/lib/util'
 import { fetchFile, registerFetcher } from '@kui-plugin/editor/src/lib/fetchers'

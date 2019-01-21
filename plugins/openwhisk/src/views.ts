@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui/core/capabilities'
-import { ViewHandler, registerListView, registerEntityView as registerCLIEntityView } from '@kui/webapp/cli'
-import { ISidecarViewHandler, registerEntityView as registerSidecarEntityView } from '@kui/webapp/views/sidecar'
-import { IShowOptions } from '@kui/webapp/views/show-options'
+import { isHeadless } from '@kui/core/core/capabilities'
+import { ViewHandler, registerListView, registerEntityView as registerCLIEntityView } from '@kui/core/webapp/cli'
+import { ISidecarViewHandler, registerEntityView as registerSidecarEntityView } from '@kui/core/webapp/views/sidecar'
+import { IShowOptions } from '@kui/core/webapp/views/show-options'
 
 export default () => {
   if (!isHeadless()) {
