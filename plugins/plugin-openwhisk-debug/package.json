@@ -1,0 +1,18 @@
+{
+  "name": "@kui/plugin-openwhisk-debug",
+  "description": "A Kui plugin that lets users run and debug actions locally in a docker container",
+  "license": "Apache-2.0",
+  "main": "plugin.js",
+  "version": "0.1.0",
+  "author": {
+    "name": "Kerry Chang"
+  },
+  "dependencies": {
+    "extract-zip": "^1.6.7",
+    "fs-extra": "^7.0.1",
+    "needle": "^2.2.4",
+    "node-docker-api": "^1.1.22",
+    "promise-retry": "^1.1.1",
+    "tmp": "0.0.33"
+  }
+}

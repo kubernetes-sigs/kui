@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('main/spawn-electron')
+import * as Debug from 'debug'
+const debug = Debug('main/spawn-electron')
 debug('loading')
 
 import * as colors from 'colors/safe'
@@ -425,7 +426,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     // and load the index.html of the app.
     const root = require('path').dirname(require.resolve('@kui/settings/package.json'))
     const urlSpec = {
-      pathname: require('path').join(root, '../build/index.html'),
+      pathname: require('path').join(root, 'index.html'),
       protocol: 'file:',
       search: commandContext ? `?${commandContext}` : '',
       slashes: true

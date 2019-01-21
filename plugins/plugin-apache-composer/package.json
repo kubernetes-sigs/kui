@@ -1,0 +1,16 @@
+{
+  "name": "@kui/plugin-apache-composer",
+  "version": "0.5.2",
+  "description": "IBM Cloud shell plugin for the Apache Composer",
+  "main": "plugin/plugin.js",
+  "author": {
+    "name": "Nick Mitchell",
+    "email": "nickm@us.ibm.com"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "app-module-path": "^2.2.0",
+    "expand-home-dir": "0.0.3",
+    "openwhisk-composer": "git://github.com:tardieu/incubator-openwhisk-composer.git#parallel"
+  }
+}

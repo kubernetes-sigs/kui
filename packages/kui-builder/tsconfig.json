@@ -13,12 +13,12 @@
       "@kui/core/tests/*": ["../../build/packages/app/tests/*"],
       "@kui/settings/*": ["../../build/*"],
       "@kui/prescan": ["../../build/.pre-scanned.json"],
-      "@kui-plugin/*": ["../../plugins/*"]
+      "@kui/*": ["../../plugins/*"]
     }
   },
   "include": [
-    "../../packages",
-    "../../plugins"
+    "../../packages/*/src",
+    "../../plugins/*/src"
   ],
   "exclude": [
     "**/flycheck*.ts"

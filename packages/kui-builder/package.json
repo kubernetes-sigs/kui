@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "kui-builder-compile": "./bin/kui-builder-compile.sh",
-    "kui-builder-watch": "./bin/kui-builder-watch.sh"
+    "@kui/builder/compile": "./bin/compile.sh",
+    "@kui/builder/lint": "./bin/lint.sh",
+    "@kui/builder/watch": "./bin/watch.sh"
   },
   "scripts": {},
   "author": "",

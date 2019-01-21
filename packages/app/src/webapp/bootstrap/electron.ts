@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-require('module-alias/register')
 const myDebug = require('debug')('webapp/bootstrap/electron')
 
 if (process.cwd() === '/') {

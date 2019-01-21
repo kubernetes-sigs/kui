@@ -19,7 +19,6 @@ const debug = Debug('fetch-ui')
 
 if (require.main === module) {
   debug('called directly')
-  require('module-alias/register')
 }
 
 import * as fs from 'fs'

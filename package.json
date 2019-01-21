@@ -16,11 +16,11 @@
     "test": "tests"
   },
   "scripts": {
-    "lint": "./packages/kui-builder/bin/kui-builder-lint.sh",
+    "lint": "./packages/kui-builder/bin/lint.sh",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "./packages/kui-builder/bin/kui-builder-compile.sh",
-    "watch": "./packages/kui-builder/bin/kui-builder-watch.sh",
-    "postinstall": "export CLOUDSHELL_INSTALL_UI=true; npx lerna bootstrap --hoist; (cd tests && ./bin/corral.sh && npm install) && (cd packages/app && npm run prep) && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done && (cd tests && ./bin/corral.sh)"
+    "compile": "./packages/kui-builder/bin/compile.sh",
+    "watch": "./packages/kui-builder/bin/watch.sh",
+    "postinstall": "export CLOUDSHELL_INSTALL_UI=true; npx lerna bootstrap --hoist; (cd tests && ./bin/corral.sh && npm install --no-package-lock) && (cd packages/app && npm run prep) && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done && (cd tests && ./bin/corral.sh)"
   },
   "dependencies": {},
   "repository": {
@@ -47,13 +47,5 @@
   "homepage": "https://github.com/IBM/kui#readme",
   "devDependencies": {
     "lerna": "^3.10.5"
-  },
-  "_moduleAliases": {
-    "@kui/core": "build/packages/app/src",
-    "@kui/core/tests": "build/packages/app/tests",
-    "@kui-plugin": "build/plugins",
-    "@kui/settings": "packages/app/build",
-    "@kui/prescan": "build/.pre-scanned.json",
-    "@test": "tests"
   }
 }

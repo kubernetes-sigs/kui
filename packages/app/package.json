@@ -39,7 +39,6 @@
     "js-beautify": "^1.8.9",
     "json-colorizer": "^2.1.2",
     "mkdirp": "^0.5.1",
-    "module-alias": "^2.1.0",
     "needle": "^2.2.4",
     "opn": "^5.4.0",
     "pretty-ms": "^4.0.0",

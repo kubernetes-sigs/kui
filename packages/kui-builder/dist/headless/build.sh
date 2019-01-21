@@ -90,8 +90,8 @@ function trimDeps {
     fi
 
     if [ -d "$TOPDIR/kui/node_modules/terser" ]; then
-        (cd "$TOPDIR/kui/node_modules" \
-             && rm -rf terser)
+        (cd "$TOPDIR/kui/node_modules/terser" \
+             && rm -rf tools bin lib)
     fi
 
     if [ -d "$TOPDIR/kui/node_modules/js-yaml" ]; then
@@ -112,10 +112,11 @@ function build {
     echo "Building to $BUILDDIR/$DEST and $BUILDDIR/$DEST_TGZ"
     rm -f "$BUILDDIR/$DEST" "$BUILDDIR/$DEST_TGZ"
 
-    (cd $TOPDIR && rm -rf kui && mkdir kui && mkdir kui/bin && \
+    (cd "$TOPDIR" && rm -rf kui && mkdir kui && mkdir kui/bin && \
          "$TAR" -C . -cf - \
              --exclude "./kui" \
              --exclude ".git*" \
+             --exclude "./tools" \
              --exclude ".travis*" \
              --exclude "./docs" \
              --exclude "./node_modules" \
@@ -142,12 +143,12 @@ function build {
              --exclude "node_modules/d3" \
              --exclude "node_modules/jquery" \
              --exclude "node_modules/typescript" \
-             --exclude "./plugins/editor" \
-             --exclude "./plugins/field-installed-plugins" \
-             --exclude "./plugins/grid" \
-             --exclude "./plugins/openwhisk-debug" \
-             --exclude "./plugins/tutorials" \
-             --exclude "./plugins/wskflow" \
+             --exclude "./plugins/plugin-editor" \
+             --exclude "./plugins/plugin-manager" \
+             --exclude "./plugins/plugin-grid" \
+             --exclude "./plugins/plugin-openwhisk-debug" \
+             --exclude "./plugins/plugin-tutorials" \
+             --exclude "./plugins/plugin-wskflow" \
              --exclude "**/*.ts" \
              --exclude "./tests/node_modules/*" \
              --exclude "node_modules/*.bak/*" \
@@ -159,11 +160,12 @@ function build {
              --exclude "node_modules/**/docs/**/*.js" \
              --exclude "node_modules/**/test/*" . \
              | "$TAR" -C kui -xf - && \
-         node -e 'const pjson = require("./kui/package.json"); delete pjson.devDepdencies; pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); npm install --production mocha openwhisk; APP=.. RUNNING_SHELL_TEST=true TEST_ROOT=$SCRIPTDIR/tests KUI=$\{KUI-$SCRIPTDIR/bin/kui\} mocha -c --require module-alias/register --exit --bail --recursive -t 60000 tests/tests --grep "\$\{TEST_FILTER:-.*\}"`; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))' && \
+         node -e 'const pjson = require("./kui/package.json"); delete pjson.devDepdencies; pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); cd tests && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true TEST_ROOT=$SCRIPTDIR/tests KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx mocha -c --exit --bail --recursive -t 60000 tests --grep "\$\{TEST_FILTER:-.*\}"`; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))' && \
          (cd kui && cp package.json bak.json) && \
          (cd kui && npx lerna link convert) && \
          (node -e 'const pjson = require("./kui/package.json"); const pjson2 = require("./kui/bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))') && \
          (cd kui && npm install --production --ignore-scripts --no-package-lock) && \
+         (cd kui && ../packages/kui-builder/bin/link-build-assets.sh) && \
          trimDeps && \
          cp packages/kui-builder/dist/bin/kui.cmd kui/bin/kui.cmd && \
          find -L kui/tests/tests/passes/ -name '*headless*.js' -prune -o -type f -exec rm {} \; && \
