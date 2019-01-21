@@ -28,7 +28,7 @@ try {
   const propertiesParser = require('properties-parser')
   const expandHomeDir = require('expand-home-dir')
   if (!inBrowser()) {
-    wskprops = propertiesParser.read(process.env['WSK_CONFIG_FILE'] || expandHomeDir('~/.wskprops'))
+    wskprops = propertiesParser.read(expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))
   } else {
     // then we're running in a browser; we'll initialize this
     // later. clearly there is no local filesystem from which to pull
