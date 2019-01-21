@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-get')
 
-import * as repl from '@kui/core/repl'
+import * as repl from '@kui/core/core/repl'
 
 import { appGet } from '../../utility/usage'
 import * as view from '../../view/entity-view'

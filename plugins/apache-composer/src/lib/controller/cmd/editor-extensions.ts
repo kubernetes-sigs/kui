@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmds/editor-extensions')
 
-import { findFile } from '@kui/core/find-file'
-import { isHeadless } from '@kui/core/capabilities'
+import { findFile } from '@kui/core/core/find-file'
+import { isHeadless } from '@kui/core/core/capabilities'
 
 import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from '@kui-plugin/openwhisk/src/lib/cmds/editor-extensions'
 import { extension, language } from '@kui-plugin/editor/src/lib/file-types'

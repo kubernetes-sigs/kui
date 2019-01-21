@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/k8s/actionProxy')
 
-import repl = require('@kui/core/repl')
+import repl = require('@kui/core/core/repl')
 
 export const PACKAGE = 'cloudshell-support'
 

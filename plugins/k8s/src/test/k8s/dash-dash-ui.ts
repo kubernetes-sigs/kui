@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import * as common from '@test/lib/common'
-import { cli, selectors } from '@test/lib/ui'
-import { wipe, waitTillNone } from '@test/lib/k8s/wipe'
-import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@test/lib/headless'
+import * as common from '@kui/core/tests/lib/common'
+import { cli, selectors } from '@kui/core/tests/lib/ui'
+import { wipe, waitTillNone } from '@kui-plugin/k8s/tests/lib/k8s/wipe'
+import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@kui/core/tests/lib/headless'
 
 const doTests = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))

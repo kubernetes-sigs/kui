@@ -21,12 +21,12 @@ const debug = Debug('plugins/openwhisk/views/sidecar/activation')
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import * as repl from '@kui/core/repl'
+import * as repl from '@kui/core/core/repl'
 
-import { element, removeAllDomChildren } from '@kui/webapp/util/dom'
-import { linkify, getSidecar, renderField, showCustom } from '@kui/webapp/views/sidecar'
-import { prettyPrintTime } from '@kui/webapp/util/time'
-import { IShowOptions, DefaultShowOptions } from '@kui/webapp/views/show-options'
+import { element, removeAllDomChildren } from '@kui/core/webapp/util/dom'
+import { linkify, getSidecar, renderField, showCustom } from '@kui/core/webapp/views/sidecar'
+import { prettyPrintTime } from '@kui/core/webapp/util/time'
+import { IShowOptions, DefaultShowOptions } from '@kui/core/webapp/views/show-options'
 
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'

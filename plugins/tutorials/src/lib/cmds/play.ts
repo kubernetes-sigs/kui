@@ -34,12 +34,12 @@ const marked = _ => Marked(_, { renderer })
 import { projectHome as projectHomeDir, readProject } from './util'
 import { wskflowCycle } from './wskflow'
 
-import { injectCSS, loadHTML } from '@kui/webapp/util/inject'
-import { findFile } from '@kui/core/find-file'
-import cli = require('@kui/webapp/cli')
-import repl = require('@kui/core/repl')
-import { removeAllDomChildren } from '@kui/webapp/util/dom'
-import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui/webapp/views/sidecar'
+import { injectCSS, loadHTML } from '@kui/core/webapp/util/inject'
+import { findFile } from '@kui/core/core/find-file'
+import cli = require('@kui/core/webapp/cli')
+import repl = require('@kui/core/core/repl')
+import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
+import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui/core/webapp/views/sidecar'
 
 // TODO eliminate this jquery dependence
 let $

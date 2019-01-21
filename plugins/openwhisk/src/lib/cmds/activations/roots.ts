@@ -25,7 +25,7 @@
 
 const minimist = require('minimist')
 
-import repl = require('@kui/core/repl')
+import repl = require('@kui/core/core/repl')
 
 const rootSynonyms = ['root', '$$']
 const defaultOptions = {

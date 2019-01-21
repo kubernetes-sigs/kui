@@ -18,9 +18,9 @@ import * as assert from 'assert'
 import { readFile } from 'fs'
 import { dirname, join } from 'path'
 
-import * as common from '@test/lib/common'
-import * as ui from '@test/lib/ui'
-import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import * as common from '@kui/core/tests/lib/common'
+import * as ui from '@kui/core/tests/lib/ui'
+import * as openwhisk from '@kui-plugin/openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, normalizeHTML, selectors, sidecar } = ui
 const { rp } = common
 

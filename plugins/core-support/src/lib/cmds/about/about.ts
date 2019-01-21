@@ -21,8 +21,8 @@ debug('loading')
 import * as colors from 'colors/safe'
 import * as path from 'path'
 
-import { isHeadless, inElectron } from '@kui/core/capabilities'
-import * as repl from '@kui/core/repl'
+import { isHeadless, inElectron } from '@kui/core/core/capabilities'
+import * as repl from '@kui/core/core/repl'
 
 import usage from './usage'
 const settings = require('@kui/settings/config.json')

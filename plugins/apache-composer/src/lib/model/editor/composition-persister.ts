@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/model/editor/composition-persister')
 
-import { qexec } from '@kui/core/repl'
+import { qexec } from '@kui/core/core/repl'
 
 import { basename } from 'path'
 

@@ -24,10 +24,10 @@ import * as path from 'path'
 import { exec, spawn } from 'child_process'
 import * as which from 'which'
 
-import * as repl from '@kui/core/repl'
-import { userDataDir } from '@kui/core/userdata'
+import * as repl from '@kui/core/core/repl'
+import { userDataDir } from '@kui/core/core/userdata'
 
-import compile from '@kui/core/plugin-assembler'
+import compile from '@kui/core/core/plugin-assembler'
 import { success } from '../util'
 import { install as usage } from '../../usage'
 

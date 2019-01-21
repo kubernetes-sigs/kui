@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/session-flow')
 debug('loading')
 
-import * as repl from '@kui/core/repl'
+import * as repl from '@kui/core/core/repl'
 
 import * as astUtil from '@kui-plugin/apache-composer/src/lib/utility/ast'
 

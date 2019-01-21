@@ -23,9 +23,9 @@ import { basename, dirname } from 'path'
 import { readFile } from 'fs'
 import * as expandHomeDir from 'expand-home-dir'
 
-import { isHeadless } from '@kui/core/capabilities'
-import { qexec } from '@kui/core/repl'
-import { findFile } from '@kui/core/find-file'
+import { isHeadless } from '@kui/core/core/capabilities'
+import { qexec } from '@kui/core/core/repl'
+import { findFile } from '@kui/core/core/find-file'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'

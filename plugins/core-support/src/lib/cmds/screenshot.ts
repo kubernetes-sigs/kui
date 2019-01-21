@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import UsageError from '@kui/core/usage-error'
-import { inBrowser } from '@kui/core/capabilities'
-import * as cli from '@kui/webapp/cli'
-import { keys } from '@kui/webapp/keys'
-import { isVisible as isSidecarVisible } from '@kui/webapp/views/sidecar'
-import sidecarSelector from '@kui/webapp/views/sidecar-selector'
+import UsageError from '@kui/core/core/usage-error'
+import { inBrowser } from '@kui/core/core/capabilities'
+import * as cli from '@kui/core/webapp/cli'
+import { keys } from '@kui/core/webapp/keys'
+import { isVisible as isSidecarVisible } from '@kui/core/webapp/views/sidecar'
+import sidecarSelector from '@kui/core/webapp/views/sidecar-selector'
 
 /**
  * Usage message

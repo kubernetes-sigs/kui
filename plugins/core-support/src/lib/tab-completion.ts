@@ -17,12 +17,12 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/tab completion')
 
-import { inBrowser } from '@kui/core/capabilities'
-import { keys } from '@kui/webapp/keys'
-import * as cli from '@kui/webapp/cli'
-import * as repl from '@kui/core/repl'
-import { findFile } from '@kui/core/find-file'
-import { injectCSS } from '@kui/webapp/util/inject'
+import { inBrowser } from '@kui/core/core/capabilities'
+import { keys } from '@kui/core/webapp/keys'
+import * as cli from '@kui/core/webapp/cli'
+import * as repl from '@kui/core/core/repl'
+import { findFile } from '@kui/core/core/find-file'
+import { injectCSS } from '@kui/core/webapp/util/inject'
 
 import * as fs from 'fs'
 import * as path from 'path'

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { dirname } from 'path'
-import { isHeadless } from '@kui/core/capabilities'
-import { addPath } from '@kui/core/find-file'
-import * as repl from '@kui/core/repl'
-import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
+import { isHeadless } from '@kui/core/core/capabilities'
+import { addPath } from '@kui/core/core/find-file'
+import * as repl from '@kui/core/core/repl'
+import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
 import * as Debug from 'debug'
 const debug = Debug('plugins/composer/preload')
 

@@ -2,3 +2,6 @@ logs
 .nyc_output
 coverage
 my-auth*
+data
+lib
+tests

@@ -20,11 +20,11 @@ const debug = Debug('plugins/editor/open')
 import * as path from 'path'
 import * as events from 'events'
 
-import globalEventBus from '@kui/core/events'
-import { inBrowser } from '@kui/core/capabilities'
-import { removeAllDomChildren } from '@kui/webapp/util/dom'
-import { injectCSS, injectScript } from '@kui/webapp/util/inject'
-import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui/webapp/views/sidecar'
+import globalEventBus from '@kui/core/core/events'
+import { inBrowser } from '@kui/core/core/capabilities'
+import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
+import { injectCSS, injectScript } from '@kui/core/webapp/util/inject'
+import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui/core/webapp/views/sidecar'
 
 import strings from '../i18n/strings'
 import { extension, language } from './file-types'

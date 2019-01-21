@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { addBadge } from '@kui/webapp/views/sidecar'
+import { addBadge } from '@kui/core/webapp/views/sidecar'
 
 /**
  * Given a web action, return the url that points to the deployed action

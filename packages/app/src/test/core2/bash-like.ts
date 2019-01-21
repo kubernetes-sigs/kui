@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '@test/lib/ui'
+import { ISuite } from '@kui/core/tests/lib/common'
+import * as common from '@kui/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@kui/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 import { unlinkSync, rmdirSync } from 'fs'
@@ -59,12 +59,12 @@ describe('shell commands', function (this: ISuite) {
     .then(cli.expectOKWithCustom({ expect: 'hi' }))
     .catch(common.oops(this)))
 
-  it('should change working directory', () => cli.do(`cd data`, this.app)
+  it('should change working directory', () => cli.do(`cd bin`, this.app)
     .then(cli.expectOK)
     .catch(common.oops(this)))
 
   it('should list core/', () => cli.do(`ls`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'core/' }))
+    .then(cli.expectOKWithCustom({ expect: 'runTest.sh' }))
     .catch(common.oops(this)))
 
   // clean up possible previous test leftovers

@@ -19,7 +19,7 @@ const debug = Debug('plugins/bash-like/cmds/git-diff')
 
 import * as path from 'path'
 
-import { split } from '@kui/core/repl'
+import { split } from '@kui/core/core/repl'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'

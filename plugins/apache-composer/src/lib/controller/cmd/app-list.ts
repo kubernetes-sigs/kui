@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { appList } from '../../utility/usage'
-import * as repl from '@kui/core/repl'
+import * as repl from '@kui/core/core/repl'
 import * as astUtil from '../../utility/ast'
-import UsageError from '@kui/core/usage-error'
+import UsageError from '@kui/core/core/usage-error'
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-list')
 

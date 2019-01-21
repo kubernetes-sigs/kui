@@ -49,7 +49,8 @@
     "lerna": "^3.10.5"
   },
   "_moduleAliases": {
-    "@kui": "build/packages/app/src",
+    "@kui/core": "build/packages/app/src",
+    "@kui/core/tests": "build/packages/app/tests",
     "@kui-plugin": "build/plugins",
     "@kui/settings": "packages/app/build",
     "@kui/prescan": "build/.pre-scanned.json",

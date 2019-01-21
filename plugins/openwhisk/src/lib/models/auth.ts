@@ -20,8 +20,8 @@ debug('loading')
 
 import openwhisk = require('openwhisk')
 
-import { inBrowser } from '@kui/core/capabilities'
-import { getDefaultCommandContext } from '@kui/core/command-tree'
+import { inBrowser } from '@kui/core/core/capabilities'
+import { getDefaultCommandContext } from '@kui/core/core/command-tree'
 
 let wskprops
 try {

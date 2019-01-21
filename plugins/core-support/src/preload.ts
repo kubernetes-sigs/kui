@@ -21,7 +21,7 @@ import textSearch from './lib/text-search'
 import tabCompletion from './lib/tab-completion'
 import reverseISearch from './lib/cmds/history/reverse-i-search'
 
-import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
+import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
 
 /**
  * This is the module

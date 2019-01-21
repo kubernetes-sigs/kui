@@ -16,8 +16,8 @@
 
 import { dirname, join } from 'path'
 
-import { addPath } from '@kui/core/find-file'
-import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
+import { addPath } from '@kui/core/core/find-file'
+import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
 
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
   // give visibility to our @demos directory on the module path

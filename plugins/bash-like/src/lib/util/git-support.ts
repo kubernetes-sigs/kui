@@ -20,8 +20,8 @@ const debug = Debug('plugins/bash-like/util/git-support')
 import { dirname, join } from 'path'
 import { exec, spawn } from 'child_process'
 
-import { inBrowser } from '@kui/core/capabilities'
-import { injectCSS as inject } from '@kui/webapp/util/inject'
+import { inBrowser } from '@kui/core/core/capabilities'
+import { injectCSS as inject } from '@kui/core/webapp/util/inject'
 
 /**
  * Load the CSS for diff2html

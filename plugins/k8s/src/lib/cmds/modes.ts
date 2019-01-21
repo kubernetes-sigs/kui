@@ -16,10 +16,10 @@
 
 const debug = require('debug')('k8s/modes')
 
-import { formatMultiListResult } from '@kui/webapp/views/table'
-import repl = require('@kui/core/repl')
-import { removeAllDomChildren } from '@kui/webapp/util/dom'
-import { getSidecar } from '@kui/webapp/views/sidecar'
+import { formatMultiListResult } from '@kui/core/webapp/views/table'
+import repl = require('@kui/core/core/repl')
+import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
+import { getSidecar } from '@kui/core/webapp/views/sidecar'
 
 import { FinalState } from './states'
 

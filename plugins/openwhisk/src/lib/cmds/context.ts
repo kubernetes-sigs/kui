@@ -17,7 +17,7 @@
 const debug = require('debug')('openwhisk.context')
 
 import { current } from '../models/namespace'
-import repl = require('@kui/core/repl')
+import repl = require('@kui/core/core/repl')
 
 export default (commandTree, prequire) => {
   // register namespace.current command

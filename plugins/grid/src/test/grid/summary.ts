@@ -16,8 +16,8 @@
 
 import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
-import * as common from '@test/lib/common'
-import * as ui from '@test/lib/ui'
+import * as common from '@kui/core/tests/lib/common'
+import * as ui from '@kui/core/tests/lib/ui'
 const { cli, sidecar } = ui
 
 const actionName = `activation-table-${uuid()}` // some unique name

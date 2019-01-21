@@ -21,7 +21,7 @@ const { name: gettingStartedDocs } = require('@kui-plugin/tutorials/lib/@tutoria
 const { name: codingBasicsDocs } = require('@kui-plugin/tutorials/lib/@tutorials/coding-basics/package.json')
 const { name: combinatorsDocs } = require('@kui-plugin/tutorials/lib/@tutorials/combinators/package.json')
 
-import repl = require('@kui/core/repl')
+import repl = require('@kui/core/core/repl')
 
 /**
  * Here we register as a listener for "shortcut" commands, that make

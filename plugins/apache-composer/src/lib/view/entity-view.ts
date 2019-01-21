@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/entity-view')
 
-import * as repl from '@kui/core/repl'
-import { isHeadless } from '@kui/core/capabilities'
+import * as repl from '@kui/core/core/repl'
+import { isHeadless } from '@kui/core/core/capabilities'
 
 import * as util from '../utility/ast'
 

@@ -21,9 +21,9 @@
 
 import * as assert from 'assert'
 
-import { ISuite } from '@test/lib/common'
-import * as common from '@test/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '@test/lib/ui'
+import { ISuite } from '@kui/core/tests/lib/common'
+import * as common from '@kui/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@kui/core/tests/lib/ui'
 
 const { validateNamespace } = ui
 

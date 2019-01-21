@@ -19,7 +19,7 @@
  *
  */
 
-import { tellMain } from '@kui/webapp/electron-events'
+import { tellMain } from '@kui/core/webapp/electron-events'
 
 const doQuit = () => tellMain('quit')
 

@@ -26,10 +26,10 @@ interface ISuite extends Suite {
   app: Application
 }
 import { join } from 'path'
-import * as common from '@test/lib/common'
-import * as ui from '@test/lib/ui'
-import * as openwhisk from '@test/lib/openwhisk/openwhisk'
-import { cli } from '@test/lib/headless'
+import * as common from '@kui/core/tests/lib/common'
+import * as ui from '@kui/core/tests/lib/ui'
+import * as openwhisk from '@kui-plugin/openwhisk/tests/lib/openwhisk/openwhisk'
+import { cli } from '@kui/core/tests/lib/headless'
 const ROOT = process.env.TEST_ROOT
 const kui = process.env.KUI || join(ROOT, '../bin/kui')
 

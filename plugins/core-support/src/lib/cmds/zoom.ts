@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/zoom')
 
-import UsageError from '@kui/core/usage-error'
-import { inBrowser } from '@kui/core/capabilities'
-import { injectCSS } from '@kui/webapp/util/inject'
+import UsageError from '@kui/core/core/usage-error'
+import { inBrowser } from '@kui/core/core/capabilities'
+import { injectCSS } from '@kui/core/webapp/util/inject'
 
 import * as path from 'path'
 

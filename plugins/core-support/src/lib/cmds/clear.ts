@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/clear')
 
-import { isHeadless } from '@kui/core/capabilities'
-import { removeAllDomChildren } from '@kui/webapp/util/dom'
+import { isHeadless } from '@kui/core/core/capabilities'
+import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
 
 const usage = {
   command: 'clear',

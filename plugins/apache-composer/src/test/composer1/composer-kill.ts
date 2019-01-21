@@ -18,17 +18,17 @@
 
 // import { join } from 'path'
 //
-// import * as common from '@test/lib/common'
+// import * as common from '@kui/core/tests/lib/common'
 //
-// import * as ui from '@test/lib/ui'
+// import * as ui from '@kui/core/tests/lib/ui'
 // const cli = ui.cli
 // const sidecar = ui.sidecar
 // const actionName1 = 'foo1'
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 // const killFailure404 = 'Cannot find live session'
 
-import { ISuite } from '@test/lib/common'
-import * as openwhisk from '@test/lib/openwhisk/openwhisk'
+import { ISuite } from '@kui/core/tests/lib/common'
+import * as openwhisk from '@kui-plugin/openwhisk/tests/lib/openwhisk/openwhisk'
 describe('killing and purging composer invocations', function (this: ISuite) {
   // no more kill and purge with composer v2
   // return

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { setHasAuth } from '@kui/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui/models/plugin'
-import { getDefaultCommandContext } from '@kui/core/command-tree'
+import { setHasAuth } from '@kui/core/core/capabilities'
+import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
+import { getDefaultCommandContext } from '@kui/core/core/command-tree'
 
 import editorPreload from './preload-editor-extensions'
 

@@ -18,16 +18,16 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/cmds/core-commands')
 debug('loading')
 
-import { inBrowser } from '@kui/core/capabilities'
+import { inBrowser } from '@kui/core/core/capabilities'
 import namespace = require('../models/namespace')
-import { findFile } from '@kui/core/find-file'
-import UsageError from '@kui/core/usage-error'
-import repl = require('@kui/core/repl')
-import { oopsMessage } from '@kui/core/oops'
-import eventBus from '@kui/core/events'
-import settings from '@kui/core/settings'
-import historyModel = require('@kui/models/history')
-import { currentSelection } from '@kui/webapp/views/sidecar'
+import { findFile } from '@kui/core/core/find-file'
+import UsageError from '@kui/core/core/usage-error'
+import repl = require('@kui/core/core/repl')
+import { oopsMessage } from '@kui/core/core/oops'
+import eventBus from '@kui/core/core/events'
+import settings from '@kui/core/core/settings'
+import historyModel = require('@kui/core/models/history')
+import { currentSelection } from '@kui/core/webapp/views/sidecar'
 
 import { ow, apiHost, apihost, auth as authModel } from '../models/auth'
 import { synonymsTable, synonyms } from '../models/synonyms'
