@@ -8,8 +8,8 @@ dist: trusty
 
 env:
   matrix:
-    - LAYERS=core1 IDX=1
-    - LAYERS=core2 IDX=2
+    - LAYERS=core IDX=1
+    - LAYERS="bash-like core-support field-installed-plugins editor" IDX=2
     - LAYERS=openwhisk1 IDX=3
     - LAYERS=openwhisk2 IDX=4 NEEDS_OPENWHISK_API_GATEWAY=true NEEDS_OPENWHISK_JAVA8=true
     - LAYERS=openwhisk3 IDX=5

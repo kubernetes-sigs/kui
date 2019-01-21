@@ -24,7 +24,7 @@ import * as ui from '@kui/core/tests/lib/ui'
 import * as openwhisk from '@kui-plugin/openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
-import { doHelp, header, header2 } from '@kui/core/test/core2/help'
+import { doHelp, header, header2 } from '@kui/core/test/core/help'
 
 /* the header for action help */
 const actionHelpHeader = header2('OpenWhisk', 'Action Operations')
