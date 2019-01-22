@@ -190,10 +190,6 @@ module.exports = {
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
     ]
   },
-  resolve: {
-    // see https://www.npmjs.com/package/module-alias#usage-with-webpack
-    alias: reroute(require(path.join(context, 'package.json'))._moduleAliases)
-  },
   plugins: [
     new CompressionPlugin({ deleteOriginalAssets: true }),
     /* new Visualizer({ filename: './webpack-stats.html' }), */

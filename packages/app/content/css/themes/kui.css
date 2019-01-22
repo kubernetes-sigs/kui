@@ -57,6 +57,6 @@ body {
 .application-icon {
     background-image: url('../../icons/svg/kui.svg');
 }
-body.not-electron:not(.webpack-local) .application-icon {
+/* body.not-electron:not(.webpack-local) .application-icon {
     background-image: url('../icons/svg/kui.svg');
-}
+} */
