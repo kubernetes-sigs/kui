@@ -350,7 +350,6 @@ function drawEdgeNew (sourceId: string, targetId: string, layer, type?: string, 
   }
 
   if (sourcePort === undefined || targetPort === undefined) {
-    console.error('ERROR!!!')
     debug('source or target not found', sourceId, targetId, layer, graphData)
   }
 
