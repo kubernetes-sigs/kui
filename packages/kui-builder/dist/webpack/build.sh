@@ -82,9 +82,13 @@ rm -rf kui && \
          npx lerna link convert && \
          (node -e 'const pjson = require("./package.json"); const pjson2 = require("./bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./package.json", JSON.stringify(pjson, undefined, 2))') && \
          npm install --production --ignore-scripts --no-package-lock && \
+         (cd "$STAGING" && "$TOPDIR"/packages/kui-builder/bin/link-build-assets.sh) && \
          rm bak.json) && \
     echo "lerna magic done" && \
     build
 
-rm -rf "$STAGING"
+if [ -z "$NO_CLEAN" ]; then
+    rm -rf "$STAGING"
+fi
+
 #post
