@@ -1,5 +1,5 @@
 {
-  "name": "@kui/plugin-manager",
+  "name": "@kui-shell/plugin-manager",
   "version": "0.0.1",
   "description": "Support for field installation of plugins",
   "main": "plugin/plugin.js",

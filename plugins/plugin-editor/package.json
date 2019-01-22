@@ -1,11 +1,11 @@
 {
-  "name": "@kui/plugin-editor",
+  "name": "@kui-shell/plugin-editor",
   "version": "0.0.1",
   "description": "Monaco Editor plugin for Kui",
   "main": "plugin.js",
   "bin": {
-    "@kui/plugins/editor/webpack/pre": "bin/prune-for-browser.sh",
-    "@kui/plugins/editor/webpack/post": "bin/restore-after-prune.sh"
+    "@kui-shell/plugins/editor/webpack/pre": "bin/prune-for-browser.sh",
+    "@kui-shell/plugins/editor/webpack/post": "bin/restore-after-prune.sh"
   },
   "keywords": [
     "kui"

@@ -1,5 +1,5 @@
 {
-  "name": "@kui/plugin-openwhisk",
+  "name": "@kui-shell/plugin-openwhisk",
   "version": "0.0.1",
   "description": "IBM Cloud shell plugin for OpenWhisk",
   "main": "plugin/plugin.js",

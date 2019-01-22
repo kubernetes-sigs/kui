@@ -26,9 +26,9 @@ debug('loading')
 
 const DEFAULT_HISTORY_N = 20 // the default number of history elements to show with /history
 
-import * as historyModel from '@kui/core/models/history'
-import UsageError from '@kui/core/core/usage-error'
-import * as repl from '@kui/core/core/repl'
+import * as historyModel from '@kui-shell/core/models/history'
+import UsageError from '@kui-shell/core/core/usage-error'
+import * as repl from '@kui-shell/core/core/repl'
 
 const parseN = str => {
   try {

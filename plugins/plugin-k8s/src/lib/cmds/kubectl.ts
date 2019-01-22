@@ -20,12 +20,12 @@ debug('loading')
 
 import * as expandHomeDir from 'expand-home-dir'
 
-import { isHeadless, inBrowser } from '@kui/core/core/capabilities'
-import { findFile } from '@kui/core/core/find-file'
-import UsageError from '@kui/core/core/usage-error'
-import repl = require('@kui/core/core/repl')
-import { oopsMessage } from '@kui/core/core/oops'
-import { ExecType } from '@kui/core/core/command-tree'
+import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
+import { findFile } from '@kui-shell/core/core/find-file'
+import UsageError from '@kui-shell/core/core/usage-error'
+import repl = require('@kui-shell/core/core/repl')
+import { oopsMessage } from '@kui-shell/core/core/oops'
+import { ExecType } from '@kui-shell/core/core/command-tree'
 
 import { FinalState } from './states'
 import abbreviations from './abbreviations'

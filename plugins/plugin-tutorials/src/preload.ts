@@ -16,12 +16,12 @@
 
 import { dirname, join } from 'path'
 
-import { addPath } from '@kui/core/core/find-file'
-import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
+import { addPath } from '@kui-shell/core/core/find-file'
+import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
   // give visibility to our @demos directory on the module path
-  const ourRoot = dirname(require.resolve('@kui/plugin-tutorials/package.json'))
+  const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
   addPath(join(ourRoot, 'lib/@tutorials'))
 }
 

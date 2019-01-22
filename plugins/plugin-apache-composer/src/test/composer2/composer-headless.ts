@@ -19,10 +19,10 @@ const debug = Debug('plugins/apache-composer/tests/headless')
 import * as assert from 'assert'
 import * as path from 'path'
 import { exec } from 'child_process'
-import * as common from '@kui/core/tests/lib/common'
-import * as openwhisk from '@kui/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui/core/tests/lib/ui'
-import { cli } from '@kui/core/tests/lib/headless'
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+import * as ui from '@kui-shell/core/tests/lib/ui'
+import { cli } from '@kui-shell/core/tests/lib/headless'
 
 interface IResponse {
   code: number

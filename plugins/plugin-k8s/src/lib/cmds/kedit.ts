@@ -20,11 +20,11 @@ debug('loading')
 import { basename, dirname, join } from 'path'
 import expandHomeDir = require('expand-home-dir')
 
-import { inBrowser } from '@kui/core/core/capabilities'
-import { PluginRegistration, PluginRequire } from '@kui/core/models/plugin'
-import { injectCSS } from '@kui/core/webapp/util/inject'
-import { findFile } from '@kui/core/core/find-file'
-import repl = require('@kui/core/core/repl')
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { findFile } from '@kui-shell/core/core/find-file'
+import repl = require('@kui-shell/core/core/repl')
 
 import { IFormGroup, IFormElement, generateForm } from './form'
 import { formatEntity } from '../util/formatEntity'
@@ -56,9 +56,9 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugin-k8s/web/css/main.css').toString(), key: 'kedit' })
+    injectCSS({ css: require('@kui-shell/plugin-k8s/web/css/main.css').toString(), key: 'kedit' })
   } else {
-    const ourRoot = dirname(require.resolve('@kui/plugin-k8s/package.json'))
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-k8s/package.json'))
     injectCSS(join(ourRoot, 'web/css/main.css'))
   }
 

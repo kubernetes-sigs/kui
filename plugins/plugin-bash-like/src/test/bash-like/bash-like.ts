@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui/core/tests/lib/common'
-import * as common from '@kui/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
-import * as ui from '@kui/core/tests/lib/ui'
+import { ISuite } from '@kui-shell/core/tests/lib/common'
+import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 import { unlinkSync, rmdirSync } from 'fs'

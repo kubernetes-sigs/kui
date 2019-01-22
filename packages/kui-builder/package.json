@@ -1,14 +1,14 @@
 {
-  "name": "@kui/builder",
+  "name": "@kui-shell/builder",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "bin": {
-    "@kui/builder/compile": "./bin/compile.sh",
-    "@kui/builder/link-source-assets.sh": "./bin/link-source-assets.sh",
-    "@kui/builder/link-build-assets.sh": "./bin/link-build-assets.sh",
-    "@kui/builder/lint": "./bin/lint.sh",
-    "@kui/builder/watch": "./bin/watch.sh"
+    "@kui-shell/builder/compile": "./bin/compile.sh",
+    "@kui-shell/builder/link-source-assets.sh": "./bin/link-source-assets.sh",
+    "@kui-shell/builder/link-build-assets.sh": "./bin/link-build-assets.sh",
+    "@kui-shell/builder/lint": "./bin/lint.sh",
+    "@kui-shell/builder/watch": "./bin/watch.sh"
   },
   "scripts": {},
   "author": "Nick Mitchell",

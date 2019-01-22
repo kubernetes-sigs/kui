@@ -15,7 +15,7 @@
  */
 
 const isDev = false// require('electron-is-dev');
-const productName = require('@kui/settings/config.json')['productName']
+const productName = require('@kui-shell/settings/config.json')['productName']
 
 interface IMenuItem {
   label?: string

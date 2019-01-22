@@ -1,11 +1,11 @@
 {
-  "name": "@kui/plugin-wskflow",
+  "name": "@kui-shell/plugin-wskflow",
   "version": "0.0.1",
   "description": "Visualizations for Composer apps",
   "main": "plugin/plugin.js",
   "bin": {
-    "@kui/plugin/wskflow/webpack/pre": "bin/prune-for-browser.sh",
-    "@kui/plugin/wskflow/webpack/post": "bin/restore-after-prune.sh"
+    "@kui-shell/plugin/wskflow/webpack/pre": "bin/prune-for-browser.sh",
+    "@kui-shell/plugin/wskflow/webpack/post": "bin/restore-after-prune.sh"
   },
   "keywords": [
     "OpenWhisk",

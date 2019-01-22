@@ -20,11 +20,11 @@ const debug = Debug('plugins/editor/open')
 import * as path from 'path'
 import * as events from 'events'
 
-import globalEventBus from '@kui/core/core/events'
-import { inBrowser } from '@kui/core/core/capabilities'
-import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
-import { injectCSS, injectScript } from '@kui/core/webapp/util/inject'
-import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui/core/webapp/views/sidecar'
+import globalEventBus from '@kui-shell/core/core/events'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { injectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
+import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
 
 import strings from '../i18n/strings'
 import { extension, language } from './file-types'
@@ -47,7 +47,7 @@ export const openEditor = async (name, options, execOptions) => {
   /** returns the current entity */
   const getEntity = currentSelection
 
-  const ourRoot = path.dirname(require.resolve('@kui/plugin-editor/package.json'))
+  const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
 
   if (inBrowser()) {
     // const mp = require('./edit-webpack')
@@ -58,13 +58,13 @@ export const openEditor = async (name, options, execOptions) => {
   }
 
   try {
-    injectCSS({ css: require('@kui/plugin-editor/lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
+    injectCSS({ css: require('@kui-shell/plugin-editor/lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
   } catch (err) {
     injectCSS(path.join(ourRoot, 'lib/mono-blue.css'))
   }
 
   try {
-    injectCSS({ css: require('@kui/plugin-editor/lib/editor.css').toString(), key: 'editor.editor' })
+    injectCSS({ css: require('@kui-shell/plugin-editor/lib/editor.css').toString(), key: 'editor.editor' })
   } catch (err) {
     injectCSS(path.join(ourRoot, 'lib/editor.css'))
   }

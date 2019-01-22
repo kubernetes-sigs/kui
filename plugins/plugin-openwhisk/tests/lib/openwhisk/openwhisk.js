@@ -149,7 +149,7 @@ exports.before = (ctx, { fuzz, noApp = false } = {}) => {
 
   return function () {
     if (!noApp) {
-      ctx.app = require('@kui/core/tests/lib/common').prepareElectron(fuzz)
+      ctx.app = require('@kui-shell/core/tests/lib/common').prepareElectron(fuzz)
     }
 
     // start the app, if requested

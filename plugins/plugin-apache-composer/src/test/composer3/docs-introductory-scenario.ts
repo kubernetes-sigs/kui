@@ -22,9 +22,9 @@ const ROOT = process.env.TEST_ROOT
 import * as path from 'path'
 import * as fs from 'fs'
 import * as assert from 'assert'
-import * as common from '@kui/core/tests/lib/common'
-import * as openwhisk from '@kui/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui/core/tests/lib/ui'
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+import * as ui from '@kui-shell/core/tests/lib/ui'
 
 const cli = ui.cli
 const sidecar = ui.sidecar
@@ -52,7 +52,7 @@ const inputs = [
 ]
 
 /** fetch source code for the app */
-const root = path.dirname(require.resolve('@kui/plugin-apache-composer/package.json'))
+const root = path.dirname(require.resolve('@kui-shell/plugin-apache-composer/package.json'))
 const src = app => fs.readFileSync(path.join(root, 'lib/@demos/', `${app}.js`)).toString()
 
 // hardcode for now... we need to generate this every time

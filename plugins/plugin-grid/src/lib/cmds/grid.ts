@@ -20,9 +20,9 @@ const debug = Debug('plugins/grid/cmds/grid')
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { v4 as uuid } from 'uuid'
-import * as repl from '@kui/core/core/repl'
-import { addNameToSidecarHeader, showCustom } from '@kui/core/webapp/views/sidecar'
-import sidecarSelector from '@kui/core/webapp/views/sidecar-selector'
+import * as repl from '@kui-shell/core/core/repl'
+import { addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
+import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
 import { drilldownWith } from '../drilldown'

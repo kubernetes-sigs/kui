@@ -1,5 +1,5 @@
 {
-  "name": "@kui/plugin-k8s",
+  "name": "@kui-shell/plugin-k8s",
   "version": "0.0.1",
   "description": "IBM Cloud shell plugin for kubernetes",
   "main": "plugin/plugin.js",

@@ -19,12 +19,12 @@
  *
  */
 
-import * as common from '@kui/core/tests/lib/common'
-import * as ui from '@kui/core/tests/lib/ui'
-import * as openwhisk from '@kui/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as ui from '@kui-shell/core/tests/lib/ui'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
-import { doHelp, header, header2 } from '@kui/plugin-core-support/src/test/core-support/help'
+import { doHelp, header, header2 } from '@kui-shell/plugin-core-support/src/test/core-support/help'
 
 /* the header for action help */
 const actionHelpHeader = header2('OpenWhisk', 'Action Operations')

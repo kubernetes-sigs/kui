@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-const settings = require('@kui/settings/config.json')
+const settings = require('@kui-shell/settings/config.json')
 
 export default settings

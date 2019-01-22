@@ -34,12 +34,12 @@ const marked = _ => Marked(_, { renderer })
 import { projectHome as projectHomeDir, readProject } from './util'
 import { wskflowCycle } from './wskflow'
 
-import { injectCSS, loadHTML } from '@kui/core/webapp/util/inject'
-import { findFile } from '@kui/core/core/find-file'
-import cli = require('@kui/core/webapp/cli')
-import repl = require('@kui/core/core/repl')
-import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
-import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui/core/webapp/views/sidecar'
+import { injectCSS, loadHTML } from '@kui-shell/core/webapp/util/inject'
+import { findFile } from '@kui-shell/core/core/find-file'
+import cli = require('@kui-shell/core/webapp/cli')
+import repl = require('@kui-shell/core/core/repl')
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui-shell/core/webapp/views/sidecar'
 
 // TODO eliminate this jquery dependence
 let $
@@ -73,7 +73,7 @@ const injectOurCSS = () => {
     injectCSS({ css: require('../../../web/css/tutorials.css'), key: 'tutorial.tutorials' })
   } catch {
     // local file style
-    const ourRoot = dirname(require.resolve('@kui/plugin-tutorials/package.json'))
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
     injectCSS(join(ourRoot, 'web/css/main.css'))
     injectCSS(join(ourRoot, 'web/css/tutorials.css'))
   }
@@ -90,7 +90,7 @@ const injectHTML = () => {
     loader = loadHTML({ html: require('../../../web/html/index.html').toString() })
     debug('webpack html inject')
   } catch {
-    const ourRoot = dirname(require.resolve('@kui/plugin-tutorials/package.json'))
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
     loader = loadHTML(join(ourRoot, 'web/html/index.html'))
     debug('local file html inject')
   }

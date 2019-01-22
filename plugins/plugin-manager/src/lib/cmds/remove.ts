@@ -21,8 +21,8 @@ debug('loading')
 import * as path from 'path'
 import { remove } from 'fs-extra'
 
-import { userDataDir } from '@kui/core/core/userdata'
-import compile from '@kui/core/core/plugin-assembler'
+import { userDataDir } from '@kui-shell/core/core/userdata'
+import compile from '@kui-shell/core/core/plugin-assembler'
 
 import { success } from '../util'
 import { remove as usage } from '../../usage'

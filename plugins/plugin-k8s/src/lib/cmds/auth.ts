@@ -26,7 +26,7 @@ const usage = {
 }
 
 const add = async ({ block, nextBlock }) => {
-  const { prompt } = await import('@kui/core/webapp/cli')
+  const { prompt } = await import('@kui-shell/core/webapp/cli')
   return prompt('kubectl auth add', block, nextBlock, {
     placeholder: 'Paste the contents of your kubeconfig: cat $KUBECONFIG',
     onpaste: 'capture'
@@ -70,7 +70,7 @@ const add = async ({ block, nextBlock }) => {
                   return Promise.reject('This does not look like a kubernetes certificate')
                 } else {
                   // all right! we now have the kubeconfig and the PEM
-                  const repl = await import('@kui/core/core/repl')
+                  const repl = await import('@kui-shell/core/core/repl')
                   const { PACKAGE } = await import('../../actionProxy/deploy')
                   const { deploy: deployKubectl } = await import('../../actionProxy/kubectl')
 

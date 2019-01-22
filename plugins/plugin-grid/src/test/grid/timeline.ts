@@ -16,8 +16,8 @@
 
 import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
-import * as common from '@kui/core/tests/lib/common'
-import * as ui from '@kui/core/tests/lib/ui'
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
 
 describe('timeline visualization', function (this: common.ISuite) {

@@ -37,7 +37,7 @@ if [ ! -d "$BUILDDIR" ]; then
     if [ $? != 0 ]; then exit $?; fi
 fi
 
-# the import of @kui/prescan fails in tsc if this file does not exist
+# the import of @kui-shell/prescan fails in tsc if this file does not exist
 # we will generate the real deal below, in "compiling plugin registry"
 touch "$BUILDDIR"/.pre-scanned.json
 

@@ -1,5 +1,5 @@
 {
-  "name": "@kui/plugin-bash-like",
+  "name": "@kui-shell/plugin-bash-like",
   "version": "0.0.1",
   "description": "",
   "main": "dist/diff.min.js",

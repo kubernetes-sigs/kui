@@ -18,9 +18,9 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
-import UsageError from '@kui/core/core/usage-error'
-import { isHeadless, inBrowser } from '@kui/core/core/capabilities'
-import * as repl from '@kui/core/core/repl'
+import UsageError from '@kui-shell/core/core/usage-error'
+import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
+import * as repl from '@kui-shell/core/core/repl'
 
 /**
  * Respond with a top-level usage document

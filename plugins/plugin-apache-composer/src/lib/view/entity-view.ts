@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/entity-view')
 
-import * as repl from '@kui/core/core/repl'
-import { isHeadless } from '@kui/core/core/capabilities'
+import * as repl from '@kui-shell/core/core/repl'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import * as util from '../utility/ast'
 
@@ -87,7 +87,7 @@ export const visualizeComposition = async (response, execOptions) => {
     const doVisualize = execOptions.override || !execOptions.nested
     const options = execOptions.originalOptions || {}
     // use require rather than import here to prevent from prequiring wskflow module in headless mode
-    const { decorateAsApp } = require('@kui/plugin-wskflow/src/lib/util')
+    const { decorateAsApp } = require('@kui-shell/plugin-wskflow/src/lib/util')
     const content = await decorateAsApp({ action, doVisualize, options: Object.assign({}, execOptions, options) })
     const input = `/${response.namespace}/${response.name}`
 

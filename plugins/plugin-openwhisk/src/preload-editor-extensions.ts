@@ -18,8 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/preload-editor-extensions')
 debug('loading')
 
-import { inBrowser, isHeadless } from '@kui/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
+import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 debug('done loading prereqs')
 
@@ -31,11 +31,11 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
   debug('initializing')
 
   if (!isHeadless()) {
-    const { lockIcon, edit } = await import('@kui/plugin-editor/src/lib/readonly')
-    const { currentSelection } = await import('@kui/core/webapp/views/sidecar')
+    const { lockIcon, edit } = await import('@kui-shell/plugin-editor/src/lib/readonly')
+    const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
     const getEntity = currentSelection
 
-    const { registerFetcher } = await import('@kui/plugin-editor/src/lib/fetchers')
+    const { registerFetcher } = await import('@kui-shell/plugin-editor/src/lib/fetchers')
 
     const { addActionMode } = await import('./lib/models/modes')
     const { fetchAction } = await import('./lib/cmds/editor-extensions')

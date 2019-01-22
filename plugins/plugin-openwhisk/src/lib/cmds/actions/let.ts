@@ -43,10 +43,10 @@ import needle = require('needle')
 import withRetry = require('promise-retry')
 import expandHomeDir = require('expand-home-dir')
 
-import { inBrowser } from '@kui/core/core/capabilities'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { current as currentNamespace } from '../../models/namespace'
-import { findFile } from '@kui/core/core/find-file'
-import repl = require('@kui/core/core/repl')
+import { findFile } from '@kui-shell/core/core/find-file'
+import repl = require('@kui-shell/core/core/repl')
 
 import { deployHTMLViaOpenWhisk } from './_html'
 import { ANON_KEY, ANON_KEY_FQN, ANON_CODE, isAnonymousLet, isAnonymousLetFor } from './let-core'
