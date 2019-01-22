@@ -273,7 +273,7 @@ const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}) => {
   debug('resolveFromLocalFilesystem')
 
   const path = require('path')
-  const pluginRootAbsolute = path.join(__dirname, pluginRoot) // filesystem path for the plugins
+  const pluginRootAbsolute = process.env.PLUGIN_ROOT || path.join(__dirname, pluginRoot) // filesystem path for the plugins
   debug('pluginRootAbsolute', pluginRootAbsolute)
 
   const { plugins, preloads } = scanForModules(opts.pluginRootAbsolute || pluginRootAbsolute)

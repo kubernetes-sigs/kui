@@ -1,15 +1,15 @@
 {
   "name": "@kui/plugin-grid",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "plugin.js",
-  "author": {
-    "name": "Nick Mitchell",
-    "email": "nickm@us.ibm.com"
-  },
+  "author": "Nick Mitchell",
   "license": "Apache-2.0",
   "dependencies": {
     "pretty-ms": "^4.0.0",
     "uuid": "^3.3.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

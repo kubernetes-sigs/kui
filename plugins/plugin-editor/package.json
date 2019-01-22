@@ -1,6 +1,6 @@
 {
   "name": "@kui/plugin-editor",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Monaco Editor plugin for Kui",
   "main": "plugin.js",
   "bin": {
@@ -11,9 +11,15 @@
     "kui"
   ],
   "author": "Nick Mitchell",
+  "contributors": [
+    "Mengting Yan"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "monaco-editor": "^0.14.3",
     "tmp": "0.0.33"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@kui/plugin-openwhisk",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "IBM Cloud shell plugin for OpenWhisk",
   "main": "plugin/plugin.js",
   "keywords": [
@@ -8,6 +8,9 @@
     "kubernetes"
   ],
   "author": "Nick Mitchell",
+  "contributors": [
+    "Mengting Yan"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "adm-zip": "^0.4.13",
@@ -21,5 +24,8 @@
     "pretty-ms": "^4.0.0",
     "promise-retry": "^1.1.1",
     "tmp": "0.0.33"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

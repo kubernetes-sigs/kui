@@ -324,7 +324,7 @@ const amendWithUsageModels = modules => {
  * and write the list to the .pre-scanned.json file
  *
  */
-export default async (pluginRoot = path.join(__dirname, plugins.pluginRoot), externalOnly = false, reverseDiff = false) => {
+export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirname, plugins.pluginRoot), externalOnly = false, reverseDiff = false) => {
   debug('pluginRoot is %s', pluginRoot)
   debug('externalOnly is %s', externalOnly)
 

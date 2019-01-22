@@ -1,15 +1,18 @@
 {
   "name": "@kui/plugin-core-support",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "plugin/plugin.js",
-  "author": {
-    "name": "Nick Mitchell",
-    "email": "nickm@us.ibm.com"
-  },
+  "author": "Nick Mitchell",
+  "contributors": [
+    "Mengting Yan"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "about-window": "^1.12.1",
     "tmp": "0.0.33"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
