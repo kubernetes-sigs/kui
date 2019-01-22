@@ -22,16 +22,16 @@ import { dirname, join } from 'path'
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import eventBus from '@kui/core/core/events'
-import UsageError from '@kui/core/core/usage-error'
-import { inBrowser } from '@kui/core/core/capabilities'
-import * as repl from '@kui/core/core/repl'
-import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
-import { prettyPrintTime } from '@kui/core/webapp/util/time'
-import { getSidecar } from '@kui/core/webapp/views/sidecar'
-import { injectCSS } from '@kui/core/webapp/util/inject'
+import eventBus from '@kui-shell/core/core/events'
+import UsageError from '@kui-shell/core/core/usage-error'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import * as repl from '@kui-shell/core/core/repl'
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
+import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
-import * as namespace from '@kui/plugin-openwhisk/src/lib/models/namespace'
+import * as namespace from '@kui-shell/plugin-openwhisk/src/lib/models/namespace'
 import { range as rangeParser } from './time'
 import * as usage from '../usage'
 import defaults from '../defaults'
@@ -106,7 +106,7 @@ const filterOutNonActionActivations = filter => activations => {
  *
  */
 const extractTasks = async app => {
-  const composer = await import('@kui/plugin-apache-composer/src/lib/utility/ast')
+  const composer = await import('@kui-shell/plugin-apache-composer/src/lib/utility/ast')
   const { namespace, name, fsm } = app
   return [ `/${namespace}/${name}` ].concat(!fsm ? [] : composer.extractActionsFromAst(fsm))
 }
@@ -235,9 +235,9 @@ export const fetchActivationData /* FromBackend */ = (wsk, N, options) => {
  */
 export const injectContent = () => {
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugin-grid/web/css/table.css'), key: 'grid-visualization.table.css' })
+    injectCSS({ css: require('@kui-shell/plugin-grid/web/css/table.css'), key: 'grid-visualization.table.css' })
   } else {
-    const root = dirname(require.resolve('@kui/plugin-grid/package.json'))
+    const root = dirname(require.resolve('@kui-shell/plugin-grid/package.json'))
     injectCSS(join(root, 'web/css/table.css'))
   }
 

@@ -18,8 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
-import { inBrowser } from '@kui/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 debug('done loading prereqs')
 

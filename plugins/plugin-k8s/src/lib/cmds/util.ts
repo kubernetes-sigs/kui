@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui/core/core/capabilities'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 
 export interface ITypedEntityName {
   type: string

@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/text-search')
 
-import { inBrowser } from '@kui/core/core/capabilities'
-import * as cli from '@kui/core/webapp/cli'
-import { injectCSS } from '@kui/core/webapp/util/inject'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import * as cli from '@kui-shell/core/webapp/cli'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import * as path from 'path'
 
@@ -46,10 +46,10 @@ function registerListener () {
   // inject css
   if (inBrowser()) {
     // try webpack style
-    injectCSS({ css: require('@kui/plugin-core-support/web/css/text-search.css').toString(), key: 'text-search' })
+    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/text-search.css').toString(), key: 'text-search' })
   } else {
     // fall back to raw file style
-    const root = path.dirname(require.resolve('@kui/plugin-core-support/package.json'))
+    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
     injectCSS(path.join(root, 'web/css/text-search.css'))
   }
 

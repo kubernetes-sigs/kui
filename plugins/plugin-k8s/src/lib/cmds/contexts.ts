@@ -16,7 +16,7 @@
 
 const debug = require('debug')('k8s/cmds/contexts')
 
-import repl = require('@kui/core/core/repl')
+import repl = require('@kui-shell/core/core/repl')
 
 const usage = {
   context: command => ({

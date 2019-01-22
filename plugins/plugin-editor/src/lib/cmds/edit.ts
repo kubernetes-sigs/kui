@@ -24,7 +24,7 @@ import { lockIcon } from '../readonly'
 import { applyOverrides } from '../overrides'
 import { openEditor } from '../open'
 
-import * as repl from '@kui/core/core/repl'
+import * as repl from '@kui-shell/core/core/repl'
 
 /**
  * Command handler for `edit <entity>`

@@ -17,8 +17,8 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/utility/parse')
 import * as path from 'path'
 import * as fs from 'fs'
-import * as repl from '@kui/core/core/repl'
-import { findFile } from '@kui/core/core/find-file'
+import * as repl from '@kui-shell/core/core/repl'
+import { findFile } from '@kui-shell/core/core/find-file'
 
 /* use wsk utility to parse parameters from a command */
 export const parseParams = (argv, wsk) => {

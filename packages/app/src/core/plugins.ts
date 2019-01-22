@@ -316,7 +316,7 @@ export const init = async () => {
  */
 const loadPrescan = async (userDataDir: string) => {
   try {
-    prescanned = await import('@kui/prescan')
+    prescanned = await import('@kui-shell/prescan')
     return prescanned
   } catch (err) {
     debug('prescanned does not exist or is not valid JSON', err)
@@ -531,10 +531,10 @@ export const prequire = async (route, options?) => {
         const module = prescan.flat.find(_ => _.route === route)
         if (module) {
           try {
-            // NOTE ON @kui relativization: this is important so that
+            // NOTE ON @kui-shell relativization: this is important so that
             // webpack can be isntructed to pull in the plugins into the build
             // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
-            const registrationRef = await import('@kui/' + module.path)
+            const registrationRef = await import('@kui-shell/' + module.path)
             const registration: PluginRegistration = registrationRef.default || registrationRef
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 

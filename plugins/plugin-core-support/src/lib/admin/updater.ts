@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as repl from '@kui/core/core/repl'
+import * as repl from '@kui-shell/core/core/repl'
 
 const messages = {
   error: 'Error checking for updates'

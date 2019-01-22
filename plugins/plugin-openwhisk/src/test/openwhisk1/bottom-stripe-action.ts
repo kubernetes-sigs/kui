@@ -21,9 +21,9 @@
 
 import * as assert from 'assert'
 
-import * as common from '@kui/core/tests/lib/common'
-import * as ui from '@kui/core/tests/lib/ui'
-import * as openwhisk from '@kui/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as ui from '@kui-shell/core/tests/lib/ui'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
 const actionName = 'foo'
@@ -32,7 +32,7 @@ const actionName2 = 'foo2'
 // so we can compare the content of code mode
 import { readFileSync } from 'fs'
 import * as path from 'path'
-const root = path.dirname(require.resolve('@kui/plugin-openwhisk/package.json'))
+const root = path.dirname(require.resolve('@kui-shell/plugin-openwhisk/package.json'))
 const fooSrc = readFileSync(path.join(root, 'tests/data/openwhisk/foo.js')).toString()
 const foo2Src = readFileSync(path.join(root, 'tests/data/openwhisk/foo2.js')).toString()
 

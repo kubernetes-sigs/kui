@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-create')
 
-import * as repl from '@kui/core/core/repl'
-import UsageError from '@kui/core/core/usage-error'
+import * as repl from '@kui-shell/core/core/repl'
+import UsageError from '@kui-shell/core/core/usage-error'
 
 import { create } from '../../utility/usage'
 import * as view from '../../view/entity-view'

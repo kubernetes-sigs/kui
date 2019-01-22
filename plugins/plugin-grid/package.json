@@ -1,5 +1,5 @@
 {
-  "name": "@kui/plugin-grid",
+  "name": "@kui-shell/plugin-grid",
   "version": "0.0.1",
   "description": "",
   "main": "plugin.js",

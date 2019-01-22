@@ -19,7 +19,7 @@
  *
  */
 
-import repl = require('@kui/core/core/repl')
+import repl = require('@kui-shell/core/core/repl')
 
 import { CMD as copy } from './copy'
 

@@ -16,9 +16,9 @@
 import * as fs from 'fs'
 import { join } from 'path'
 
-import * as common from '@kui/core/tests/lib/common'
-import * as openwhisk from '@kui/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui/core/tests/lib/ui'
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379',
@@ -30,7 +30,7 @@ import {
   verifyEdgeExists,
   verifyOutgoingEdgeExists,
   verifyTheBasicStuff
-} from '@kui/plugin-apache-composer/tests/lib/composer-viz-util'
+} from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 
 /**
  * Define the input files

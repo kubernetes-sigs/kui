@@ -21,15 +21,15 @@ debug('loading')
 import * as colors from 'colors/safe'
 import * as path from 'path'
 
-import { isHeadless, inElectron } from '@kui/core/core/capabilities'
-import * as repl from '@kui/core/core/repl'
+import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
+import * as repl from '@kui-shell/core/core/repl'
 
 import usage from './usage'
-const settings = require('@kui/settings/config.json')
+const settings = require('@kui-shell/settings/config.json')
 
 /** path to app/ directory */
-const ourRootDir = path.dirname(require.resolve('@kui/plugin-core-support/package.json'))
-const settingsDir = path.dirname(require.resolve('@kui/settings/package.json'))
+const ourRootDir = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+const settingsDir = path.dirname(require.resolve('@kui-shell/settings/package.json'))
 
 /**
  * The repl allows plugins to provide their own window, via the
@@ -68,7 +68,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
  */
 const readPackageDotJson = () => {
   debug('readPackageDotJson')
-  return require('@kui/settings/package.json')
+  return require('@kui-shell/settings/package.json')
 }
 
 /**

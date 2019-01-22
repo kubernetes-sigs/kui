@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { dirname } from 'path'
-import { isHeadless } from '@kui/core/core/capabilities'
-import { addPath } from '@kui/core/core/find-file'
-import * as repl from '@kui/core/core/repl'
-import { PluginRequire, PreloadRegistration } from '@kui/core/models/plugin'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { addPath } from '@kui-shell/core/core/find-file'
+import * as repl from '@kui-shell/core/core/repl'
+import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 import * as Debug from 'debug'
 const debug = Debug('plugins/composer/preload')
 
@@ -52,7 +52,7 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
   listenForDrops()
 
   // give visibility to our @demos directory on the module path
-  addPath(dirname(require.resolve('@kui/plugin-apache-composer/lib/@demos/hello.js')))
+  addPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/lib/@demos/hello.js')))
 }
 
 export default registration

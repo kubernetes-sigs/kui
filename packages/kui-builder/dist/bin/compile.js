@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-const { default: compile } = require('@kui/core/core/plugin-assembler')
+const { default: compile } = require('@kui-shell/core/core/plugin-assembler')
 
 console.error('!!!!!!!!!', process.cwd())
 

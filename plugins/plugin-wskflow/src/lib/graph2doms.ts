@@ -21,8 +21,8 @@ import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs'
 
-import sidecarSelector from '@kui/core/webapp/views/sidecar-selector'
-import pictureInPicture from '@kui/core/webapp/picture-in-picture'
+import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import { textualPropertiesOfCode } from './util'
 

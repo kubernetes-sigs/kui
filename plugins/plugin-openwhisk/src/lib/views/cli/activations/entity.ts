@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
-import { ok } from '@kui/core/webapp/cli'
-import { showEntity } from '@kui/core/webapp/views/sidecar'
-import { pexec } from '@kui/core/core/repl'
+import { ok } from '@kui-shell/core/webapp/cli'
+import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import { pexec } from '@kui-shell/core/core/repl'
 
 import { current as currentNamespace } from '../../../models/namespace'
 

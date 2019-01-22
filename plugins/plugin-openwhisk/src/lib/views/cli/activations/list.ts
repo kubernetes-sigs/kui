@@ -17,10 +17,10 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/views/cli/activations/list')
 
-import repl = require('@kui/core/core/repl')
-import { prettyPrintTime } from '@kui/core/webapp/util/time'
-import { removeAllDomChildren } from '@kui/core/webapp/util/dom'
-import pictureInPicture from '@kui/core/webapp/picture-in-picture'
+import repl = require('@kui-shell/core/core/repl')
+import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import * as prettyPrintDuration from 'pretty-ms'
 

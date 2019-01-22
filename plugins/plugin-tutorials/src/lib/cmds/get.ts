@@ -26,8 +26,8 @@ import { projectHome as projectHomeDir, readProject } from './util'
 import { join } from 'path'
 import marked = require('marked')                      // markdown to
 
-import { injectCSS } from '@kui/core/webapp/util/inject'
-import repl = require('@kui/core/core/repl')
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import repl = require('@kui-shell/core/core/repl')
 
 debug('finished loading modules')
 

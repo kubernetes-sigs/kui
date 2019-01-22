@@ -16,7 +16,7 @@
 
 const debug = require('debug')('k8s/util/formatEntity')
 
-import eventBus from '@kui/core/core/events'
+import eventBus from '@kui-shell/core/core/events'
 
 import { flatten, isDirectory, toOpenWhiskFQN } from '../cmds/util'
 import { State, States, FinalState, endWatchWithConflict, watchStatus, rendering as stateRendering } from '../cmds/states'

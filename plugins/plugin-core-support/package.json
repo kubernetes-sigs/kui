@@ -1,5 +1,5 @@
 {
-  "name": "@kui/plugin-core-support",
+  "name": "@kui-shell/plugin-core-support",
   "version": "0.0.1",
   "description": "",
   "main": "plugin/plugin.js",

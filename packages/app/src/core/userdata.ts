@@ -29,7 +29,7 @@ export const userDataDir = (): string => {
   } else {
     // headless
     const { join } = require('path')
-    const { name } = require('@kui/settings/package.json')
+    const { name } = require('@kui-shell/settings/package.json')
 
     switch (process.platform) {
       case 'darwin':

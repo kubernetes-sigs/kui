@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/zoom')
 
-import UsageError from '@kui/core/core/usage-error'
-import { inBrowser } from '@kui/core/core/capabilities'
-import { injectCSS } from '@kui/core/webapp/util/inject'
+import UsageError from '@kui-shell/core/core/usage-error'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import * as path from 'path'
 
@@ -155,9 +155,9 @@ export default (commandTree, prequire) => {
   // inject our CSS
   //
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugin-core-support/web/css/zoom.css'), key: 'zoom.css' })
+    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/zoom.css'), key: 'zoom.css' })
   } else {
-    const root = path.dirname(require.resolve('@kui/plugin-core-support/package.json'))
+    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
     injectCSS(path.join(root, 'web/css/zoom.css'))
   }
 

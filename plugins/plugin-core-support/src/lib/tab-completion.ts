@@ -17,12 +17,12 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/tab completion')
 
-import { inBrowser } from '@kui/core/core/capabilities'
-import { keys } from '@kui/core/webapp/keys'
-import * as cli from '@kui/core/webapp/cli'
-import * as repl from '@kui/core/core/repl'
-import { findFile } from '@kui/core/core/find-file'
-import { injectCSS } from '@kui/core/webapp/util/inject'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { keys } from '@kui-shell/core/webapp/keys'
+import * as cli from '@kui-shell/core/webapp/cli'
+import * as repl from '@kui-shell/core/core/repl'
+import { findFile } from '@kui-shell/core/core/find-file'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -575,9 +575,9 @@ export default () => {
   if (typeof document === 'undefined') return
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugin-core-support/web/css/tab-completion.css'), key: 'tab-completion.css' })
+    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'), key: 'tab-completion.css' })
   } else {
-    const root = path.dirname(require.resolve('@kui/plugin-core-support/package.json'))
+    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
     injectCSS(path.join(root, 'web/css/tab-completion.css'))
   }
 

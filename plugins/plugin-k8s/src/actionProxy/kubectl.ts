@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui/core/core/capabilities'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { PACKAGE, checkDeploy } from './deploy'
 
 /**
@@ -26,6 +26,6 @@ export const FQN = `${PACKAGE}/${ACTION}`
 
 /** we will need the source code for the action proxy */
 const actionProxySource = !inBrowser() ? require('fs-extra').readFile(require('path').join(__dirname, '../../lib/actionProxy/kubectl.sh'))
-    : Promise.resolve(require('!!raw-loader!@kui/plugin-k8s/lib/actionProxy/kubectl.sh'))
+    : Promise.resolve(require('!!raw-loader!@kui-shell/plugin-k8s/lib/actionProxy/kubectl.sh'))
 
 export const deploy = checkDeploy({ FQN, actionProxySource })

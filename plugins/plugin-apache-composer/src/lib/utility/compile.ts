@@ -23,10 +23,10 @@ import * as expandHomeDir from 'expand-home-dir'
 import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
 
-import { currentSelection } from '@kui/core/webapp/views/sidecar'
-import UsageError from '@kui/core/core/usage-error'
-import { inBrowser } from '@kui/core/core/capabilities'
-import { findFile } from '@kui/core/core/find-file'
+import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
+import UsageError from '@kui-shell/core/core/usage-error'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { findFile } from '@kui-shell/core/core/find-file'
 
 import { extractActionsFromAst, isValidAst } from './ast'
 import { create } from './usage'
@@ -87,7 +87,7 @@ const loadSourceCode = (inputFile, localCodePath) => new Promise((resolve, rejec
   } else {
     debug('readFile for webpack')
     try {
-      resolve(require('@kui/plugin-apache-composer' + localCodePath.replace(/^\/?app\/plugins\/modules/, '')))
+      resolve(require('@kui-shell/plugin-apache-composer' + localCodePath.replace(/^\/?app\/plugins\/modules/, '')))
     } catch (err) {
       console.error(err)
       const error = new Error('The specified file does not exist')

@@ -28,11 +28,11 @@ if (process.cwd() === '/') {
 let repl
 if (process.env.TEST_ROOT) {
   myDebug('lifting repl to global for tests')
-  repl = require('@kui/core/core/repl')
+  repl = require('@kui-shell/core/core/repl')
 }
 
 try {
   require('./boot').default()
 } catch (err) {
-  require('@kui/core/webapp/bootstrap/boot').default()
+  require('@kui-shell/core/webapp/bootstrap/boot').default()
 }

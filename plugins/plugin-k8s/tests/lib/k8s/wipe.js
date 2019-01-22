@@ -17,8 +17,8 @@
 const debug = require('debug')('k8s/tests/lib/wipe')
 
 const path = require('path')
-const common = require('@kui/core/tests/lib/common')
-const ui = require('@kui/core/tests/lib/ui')
+const common = require('@kui-shell/core/tests/lib/common')
+const ui = require('@kui-shell/core/tests/lib/ui')
 const cli = ui.cli
 
 const kinds = ['deployments', 'pods', 'crds']

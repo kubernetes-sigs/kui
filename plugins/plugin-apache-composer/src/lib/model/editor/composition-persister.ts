@@ -17,11 +17,11 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/model/editor/composition-persister')
 
-import { qexec } from '@kui/core/core/repl'
+import { qexec } from '@kui-shell/core/core/repl'
 
 import { basename } from 'path'
 
-import { extension } from '@kui/plugin-editor/src/lib/file-types'
+import { extension } from '@kui-shell/plugin-editor/src/lib/file-types'
 
 /**
  * If this is a Composer parse error, display the error as editor decorations

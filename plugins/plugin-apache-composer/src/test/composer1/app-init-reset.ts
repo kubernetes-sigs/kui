@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { join } from 'path'
-import * as common from '@kui/core/tests/lib/common'
-import * as openwhisk from '@kui/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui/core/tests/lib/ui'
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 

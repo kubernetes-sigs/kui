@@ -1,5 +1,5 @@
 {
-  "name": "@kui/plugin-tutorials",
+  "name": "@kui-shell/plugin-tutorials",
   "version": "0.0.1",
   "description": "IBM Cloud shell plugin for tutorials",
   "main": "plugin/plugin.js",

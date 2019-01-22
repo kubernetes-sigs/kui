@@ -22,9 +22,9 @@ import { isAbsolute, join } from 'path'
 
 import * as expandHomeDir from 'expand-home-dir'
 
-import UsageError from '@kui/core/core/usage-error'
-import * as repl from '@kui/core/core/repl'
-import { findFile, isSpecialDirectory } from '@kui/core/core/find-file'
+import UsageError from '@kui-shell/core/core/usage-error'
+import * as repl from '@kui-shell/core/core/repl'
+import { findFile, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
 import { doShell } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'

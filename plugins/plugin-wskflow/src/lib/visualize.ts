@@ -18,8 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/visualize')
 debug('loading')
 
-import { isHeadless, inBrowser } from '@kui/core/core/capabilities'
-import { injectCSS } from '@kui/core/webapp/util/inject'
+import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 type GraphRenderer = (ir, containerElement, acts, options, rule) => void
 
@@ -37,9 +37,9 @@ export default async (passedFsm, container, w, h, activations, options, rule) =>
   debug('visualize', passedFsm, options, rule)
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui/plugin-wskflow/web/css/wskflow.css').toString(), key: 'wskflow' })
+    injectCSS({ css: require('@kui-shell/plugin-wskflow/web/css/wskflow.css').toString(), key: 'wskflow' })
   } else {
-    const ourRoot = dirname(require.resolve('@kui/plugin-wskflow/package.json'))
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-wskflow/package.json'))
     injectCSS(join(ourRoot, 'web/css/wskflow.css'))
   }
 

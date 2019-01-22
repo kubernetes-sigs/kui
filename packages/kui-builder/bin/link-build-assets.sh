@@ -25,7 +25,7 @@ if [ ! -e lerna.json ]; then
     exit 1
 fi
 
-# we will work in node_modules/@kui; so TOPDIR is two levels up
+# we will work in node_modules/@kui-shell; so TOPDIR is two levels up
 cd node_modules
 TOPDIR=../..
 BUILDDIR="$TOPDIR/build"
@@ -34,10 +34,10 @@ BUILDDIR="$TOPDIR/build"
 ABS=$(cd "$TOPDIR" && pwd)
 echo "Running under this absolute path: $ABS"
 
-if [ ! -d @kui ]; then
-    mkdir @kui
+if [ ! -d @kui-shell ]; then
+    mkdir @kui-shell
 fi
-cd @kui
+cd @kui-shell
 
 function link {
     echo "linking build asset $1"

@@ -16,7 +16,7 @@
 
 const assert = require('assert')
 const path = require('path')
-const ui = require('@kui/core/tests/lib/ui')
+const ui = require('@kui-shell/core/tests/lib/ui')
 const cli = ui.cli
 const sidecar = ui.sidecar
 

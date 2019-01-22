@@ -388,7 +388,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       // BrowserWindow opts doesn't stick; and... this has to be on
       // did-finish-load, for some reason... at least these are true
       // statements for electron 1.6.x
-      const productName = require('@kui/settings/config.json')['productName']
+      const productName = require('@kui-shell/settings/config.json')['productName']
 
       if (mainWindow) {
         mainWindow.setTitle(productName)
@@ -424,7 +424,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     }
 
     // and load the index.html of the app.
-    const root = require('path').dirname(require.resolve('@kui/settings/package.json'))
+    const root = require('path').dirname(require.resolve('@kui-shell/settings/package.json'))
     const urlSpec = {
       pathname: require('path').join(root, 'index.html'),
       protocol: 'file:',

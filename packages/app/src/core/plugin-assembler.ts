@@ -58,7 +58,7 @@ debug('modules loaded')
  * Return the location of the pre-scanned cache file
  *
  */
-const prescanned = (): string => require.resolve('@kui/prescan')
+const prescanned = (): string => require.resolve('@kui-shell/prescan')
 
 /**
  * Write the plugin list to the .pre-scanned.json file in app/plugins/.pre-scanned.json

@@ -21,7 +21,7 @@ import { dirname, resolve as pathResolve } from 'path'
 import expandHomeDir = require('expand-home-dir')
 import htmlparser = require('htmlparser2')
 
-import repl = require('@kui/core/core/repl')
+import repl = require('@kui-shell/core/core/repl')
 
 /**
  * Deploy a linked asset
