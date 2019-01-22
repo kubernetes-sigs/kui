@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-18 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  */
 
 const { default: compile } = require('@kui/core/core/plugin-assembler')
+
+console.error('!!!!!!!!!', process.cwd())
 
 if (process.argv[2] === 'cleanup') {
   // nothing to do

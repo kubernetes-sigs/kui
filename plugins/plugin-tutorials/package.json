@@ -1,6 +1,6 @@
 {
   "name": "@kui/plugin-tutorials",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "IBM Cloud shell plugin for tutorials",
   "main": "plugin/plugin.js",
   "keywords": [
@@ -9,9 +9,16 @@
     "tutorials"
   ],
   "author": "Nick Mitchell",
+  "contributors": [
+    "Kerry Chang",
+    "Zoë Barnswell"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "jquery": "^3.3.1",
     "marked": "^0.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

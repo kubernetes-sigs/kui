@@ -17,7 +17,11 @@
 #
 
 if [ ! -e lerna.json ]; then
-    echo "Error: execute this script from the top level of the kui project"
+    if [ -d plugins ] || [ -d packages ]; then
+        echo "Error: perhaps you forgot to run `lerna init`?"
+    else
+        echo "Error: execute this script from the top level of the kui project"
+    fi
     exit 1
 fi
 
@@ -41,19 +45,25 @@ function link {
     ln -s "$1" "$2"
 }
 
-for pluginPath in "$BUILDDIR"/plugins/*; do
-    plugin=`basename $pluginPath`
-    link "$pluginPath" "$plugin"
-done
+if [ -d "$BUILDDIR"/plugins ]; then
+    for pluginPath in "$BUILDDIR"/plugins/*; do
+        plugin=`basename $pluginPath`
+        link "$pluginPath" "$plugin"
+    done
+fi
 
-echo "linking build asset core"
-link "$BUILDDIR"/packages/app/src core
-(cd core && link ../../"$BUILDDIR"/packages/app/tests tests)
-(cd core && link ../../"$BUILDDIR"/packages/app/package.json package.json)
+if [ -d "$BUILDDIR"/packages/app/src ]; then
+    echo "linking build asset core"
+    link "$BUILDDIR"/packages/app/src core
+    (cd core && link ../../"$BUILDDIR"/packages/app/tests tests)
+    (cd core && link ../../"$BUILDDIR"/packages/app/package.json package.json)
+fi
 
 echo "linking prescan"
 link "$BUILDDIR"/.pre-scanned.json prescan.json
 
-echo "linking config"
-link "$TOPDIR"/packages/app/build settings
-link "$TOPDIR"/packages/app/content content
+if [ -d "$TOPDIR"/packages/app/build ]; then
+    echo "linking config"
+    link "$TOPDIR"/packages/app/build settings
+    link "$TOPDIR"/packages/app/content content
+fi

@@ -16,27 +16,55 @@
 # limitations under the License.
 #
 
+if [ ! -e lerna.json ]; then
+    if [ -d plugins ] || [ -d packages ]; then
+        echo "Error: perhaps you forgot to run `lerna init`?"
+    else
+        echo "Error: execute this script from the top level of the kui project"
+    fi
+    exit 1
+fi
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR="${SCRIPTDIR}/../../.."
+TOPDIR=.
 BUILDDIR="${TOPDIR}/build"
 
-cd "$SCRIPTDIR/.."
+# for compile.js below; give it an absolute path
+export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/build/plugins"
 
-mkdir "$BUILDDIR" >& /dev/null
+if [ ! -d "$BUILDDIR" ]; then
+    mkdir "$BUILDDIR"
+    if [ $? != 0 ]; then exit $?; fi
+fi
+
+# the import of @kui/prescan fails in tsc if this file does not exist
+# we will generate the real deal below, in "compiling plugin registry"
 touch "$BUILDDIR"/.pre-scanned.json
 
 # link lib and web files
-(cd "$TOPDIR" && "$SCRIPTDIR"/link-source-assets.sh)
+"$SCRIPTDIR"/link-source-assets.sh
 if [ $? != 0 ]; then exit $?; fi
+
+TSCONFIG_HOME=`readlink $0`
+if [ $? == 1 ]; then
+    TSCONFIG_HOME="$SCRIPTDIR/.."
+    TSCONFIG="$TSCONFIG_HOME/tsconfig.json"
+    echo "it looks like we are not working off a symlink ${TSCONFIG_HOME}"
+else
+    TSCONFIG_HOME=$(dirname "$SCRIPTDIR/`dirname $TSCONFIG_HOME`")
+    TSCONFIG="$TSCONFIG_HOME/tsconfig.json"
+    echo "following link to find build home ${TSCONFIG_HOME}"
+fi
 
 # compile source
-echo "compiling source"
-npx tsc
+echo ""
+echo "compiling source $TSCONFIG_HOME"
+"$TSCONFIG_HOME"/node_modules/.bin/tsc --build "$TSCONFIG"
 if [ $? != 0 ]; then exit $?; fi
 
-(cd "$TOPDIR" && "$SCRIPTDIR"/link-build-assets.sh)
+"$SCRIPTDIR"/link-build-assets.sh
 if [ $? != 0 ]; then exit $?; fi
 
 # pre-compile plugin registry
 echo "compiling plugin registry"
-(cd ./dist/bin && ./compile.js)
+(cd "$TSCONFIG_HOME"/dist/bin && ./compile.js)

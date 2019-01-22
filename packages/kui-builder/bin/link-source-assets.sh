@@ -17,7 +17,11 @@
 #
 
 if [ ! -e lerna.json ]; then
-    echo "Error: execute this script from the top level of the kui project"
+    if [ -d plugins ] || [ -d packages ]; then
+        echo "Error: perhaps you forgot to run `lerna init`?"
+    else
+        echo "Error: execute this script from the top level of the kui project"
+    fi
     exit 1
 fi
 

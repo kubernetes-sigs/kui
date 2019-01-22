@@ -5,11 +5,13 @@
   "main": "index.js",
   "bin": {
     "@kui/builder/compile": "./bin/compile.sh",
+    "@kui/builder/link-source-assets.sh": "./bin/link-source-assets.sh",
+    "@kui/builder/link-build-assets.sh": "./bin/link-build-assets.sh",
     "@kui/builder/lint": "./bin/lint.sh",
     "@kui/builder/watch": "./bin/watch.sh"
   },
   "scripts": {},
-  "author": "",
+  "author": "Nick Mitchell",
   "license": "Apache-2.0",
   "dependencies": {
     "@types/debug": "^0.0.31",
@@ -25,5 +27,8 @@
     "tslint": "^5.12.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.2.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
