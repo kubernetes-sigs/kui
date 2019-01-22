@@ -144,10 +144,8 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
                     const visibleWhen = button.getAttribute('visible-when')
                     if (visibleWhen) {
                         if (visibleWhen !== (mode||label)) {
-                            console.error('!!!!!!!!!!!', button)
                             button.classList.add(css.hidden)
                         } else {
-                            console.error('@@@@@@@@@@@', button)
                             button.classList.remove(css.hidden)
                         }
                     }

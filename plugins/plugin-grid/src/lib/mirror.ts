@@ -211,7 +211,6 @@ const lsUpto = () => lsKey('upto') */
                 const n = parseInt(A)
                 from = startOfWeek - n * 7 * oneDay
                 to = startOfWeek - (n - 1) * 7 * oneDay
-                console.error('!!!!!!!!!!', n, new Date(from), new Date(to))
             } catch (e) {
             }
         }

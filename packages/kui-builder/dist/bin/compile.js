@@ -18,8 +18,6 @@
 
 const { default: compile } = require('@kui-shell/core/core/plugin-assembler')
 
-console.error('!!!!!!!!!', process.cwd())
-
 if (process.argv[2] === 'cleanup') {
   // nothing to do
 } else {
