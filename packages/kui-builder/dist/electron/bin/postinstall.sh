@@ -4,7 +4,7 @@
 # electron distributions from a macOS host
 if [[ `uname` == Darwin ]]; then
     # for mac, we need gtar
-    which gtar
+    which gtar >& /dev/null
     if [ $? != 0 ]; then
         brew install gtar
     fi

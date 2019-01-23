@@ -72,6 +72,7 @@ function init {
              --exclude ".travis*" \
              --exclude "./node_modules" \
              --exclude "./packages/kui-builder" \
+             --exclude "./packages/proxy" \
              --exclude "./build/*/node_modules" \
              --exclude "./plugins/*/node_modules" \
              --exclude "**/*~" \

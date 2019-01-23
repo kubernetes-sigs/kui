@@ -33,6 +33,8 @@ import { cli } from '@kui-shell/core/tests/lib/headless'
 const ROOT = process.env.TEST_ROOT
 const kui = process.env.KUI || join(ROOT, '../bin/kui')
 
+export const { version: expectedVersion } = require('@kui-shell/settings/package.json')
+
 interface IResponse {
   code: number
   output: string
@@ -50,7 +52,7 @@ describe('Headless mode', function (this: common.ISuite) {
     .catch(common.oops(this)))
 
   it(`should show current version`, () => cli.do('version')
-    .then(cli.expectOK(`${require(join(ROOT, '../package.json')).version}\n`, { exact: true }))
+    .then(cli.expectOK(`${expectedVersion}\n`, { exact: true }))
     .catch(common.oops(this)))
 
   it(`should show current namespace`, () => cli.do('namespace current')

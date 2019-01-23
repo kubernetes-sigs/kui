@@ -1,14 +1,17 @@
 {
   "name": "@kui-shell/builder",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "",
   "main": "index.js",
   "bin": {
-    "@kui-shell/builder/compile": "./bin/compile.sh",
-    "@kui-shell/builder/link-source-assets.sh": "./bin/link-source-assets.sh",
-    "@kui-shell/builder/link-build-assets.sh": "./bin/link-build-assets.sh",
-    "@kui-shell/builder/lint": "./bin/lint.sh",
-    "@kui-shell/builder/watch": "./bin/watch.sh"
+    "kui-shell-build-headless": "./dist/headless/build.sh",
+    "kui-shell-build-electron": "./dist/electron/build.sh",
+    "kui-shell-build-webpack": "./dist/webpack/build.sh",
+    "kui-shell-compile": "./bin/compile.sh",
+    "link-source-assets.sh": "./bin/link-source-assets.sh",
+    "link-build-assets.sh": "./bin/link-build-assets.sh",
+    "kui-shell-lint": "./bin/lint.sh",
+    "kui-shell-watch": "./bin/watch.sh"
   },
   "scripts": {},
   "author": "Nick Mitchell",
@@ -30,5 +33,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "lerna": "^3.10.7"
   }
 }

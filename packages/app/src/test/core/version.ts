@@ -27,7 +27,7 @@ import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-lin
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
-export const expectedVersion = require(join(process.env.TEST_ROOT, '../packages/app/package.json')).version
+export const { version: expectedVersion } = require('@kui-shell/settings/package.json')
 
 describe('Version command', function (this: ISuite) {
   before(common.before(this))

@@ -16,12 +16,9 @@
 # limitations under the License.
 #
 
-if [ ! -e lerna.json ]; then
-    if [ -d plugins ] || [ -d packages ]; then
-        echo "Error: perhaps you forgot to run `lerna init`?"
-    else
-        echo "Error: execute this script from the top level of the kui project"
-    fi
+grep name package.json | grep kui-shell >& /dev/null
+if [ $? == 1 ]; then
+    echo "Error: execute this script from the top level of the kui project"
     exit 1
 fi
 

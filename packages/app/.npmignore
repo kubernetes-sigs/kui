@@ -1,0 +1,2 @@
+# override the rule in .gitignore with an do-not-ignore rule
+!build
