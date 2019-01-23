@@ -30,7 +30,7 @@ import { findFile } from '@kui-shell/core/core/find-file'
 
 import { extractActionsFromAst, isValidAst } from './ast'
 import { create } from './usage'
-import { deployAction } from './parse'
+import { deployAction } from '../controller/client'
 import * as messages from './messages'
 
 // help compositions find our openwhisk-composer module

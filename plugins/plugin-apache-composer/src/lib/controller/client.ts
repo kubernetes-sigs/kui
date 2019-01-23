@@ -16,7 +16,10 @@
 
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/client')
-
+import * as path from 'path'
+import * as repl from '@kui-shell/core/core/repl'
+import { findFile } from '@kui-shell/core/core/find-file'
+import { pathExists } from 'fs-extra'
 import * as Conductor from 'openwhisk-composer/conductor'
 
 const options = {
@@ -40,3 +43,28 @@ export const deploy = ({ composition, overwrite }) => {
       return Object.assign(entity[0], { name: entity[0].id, verb: 'update', type: 'composition' })
     })
 }
+
+/**
+ * Deploy a given action, if we can find the source
+ *
+ */
+export const deployAction = (home: string) => actionFQN => new Promise(async (resolve, reject) => {
+  const actionName = actionFQN.replace(/^\/[^/]\//, '') // stripe namespace off actionFQN
+  const suffixes = ['.js', '.php', '.python']
+  const actionPaths = suffixes.map(suffix => path.join(home, `${actionName}${suffix}`))
+  const filePaths = actionPaths.map(actionPath => findFile(actionPath))
+
+  debug(`attempting to find and deploy action ${actionFQN} from local paths`, filePaths)
+
+  const validfilePaths = (await Promise.all(filePaths.map(filePath => pathExists(filePath).then(exists => exists ? filePath : undefined))))
+    .filter(existFilePath => existFilePath)
+
+  debug(`found validfilePaths ${validfilePaths}`)
+
+  if (validfilePaths.length === 0) {
+    reject(new Error(`Failed to deploy ${actionFQN}. \nYou don't have any matching .js, .php or .python file in your local file system.`))
+  } else {
+    return Promise.all(validfilePaths.map(filePath => repl.qexec(`wsk action update "${actionFQN}" "${filePath}"`)))
+      .then(resolve, reject)
+  }
+})
