@@ -15,10 +15,6 @@
  */
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/utility/parse')
-import * as path from 'path'
-import * as fs from 'fs'
-import * as repl from '@kui-shell/core/core/repl'
-import { findFile } from '@kui-shell/core/core/find-file'
 
 /* use wsk utility to parse parameters from a command */
 export const parseParams = (argv, wsk) => {
@@ -31,39 +27,3 @@ export const parseParams = (argv, wsk) => {
 
 /* parse the composition name from a command */
 export const parseName = (args, cmd) => args[args.indexOf(cmd) + 1]
-
-// TODO: move to somewhere else
-/**
- * Deploy a given action, if we can find the source
- *
- */
-export const deployAction = (home: string) => actionFQN => new Promise((resolve, reject) => {
-  try {
-    const actionName = actionFQN.replace(/^\/[^/]\//, '') // stripe namespace off actionFQN
-    const suffixes = ['.js', '.php', '.python']
-
-    for (let idx = 0; idx < suffixes.length; idx++) {
-      const suffix = suffixes[idx]
-      const actionPath = path.join(home, `${actionName}${suffix}`)
-      const filepath = findFile(actionPath)
-
-      debug('attempting to deploy action', actionPath)
-
-      fs.stat(filepath, (err, stats) => {
-        if (!err) {
-          debug('deploying action', actionName, filepath)
-          return repl.qexec(`wsk action update "${actionFQN}" "${filepath}"`)
-            .then(resolve, reject)
-        }
-      })
-    }
-
-    // console.error(`Warning: action source near ${path.join(home, actionName)} cannot be found`)
-
-    resolve()
-  } catch (err) {
-    reject(err)
-  }
-}).catch(err => {
-  console.error(err)
-})
