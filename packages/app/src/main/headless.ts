@@ -49,14 +49,12 @@ if (process.env.DEVMODE) {
 }
 
 const commandContextPattern = /--command-context/
-const commandContext = process.argv.find(_ => !!_.match(commandContextPattern))
-const argv = process.argv.slice(argStart).filter(arg => !arg.match(commandContextPattern) && arg !== '--kui-headless' && arg !== '-v' && arg !== '--raw-output' && arg !== '--no-color' && arg !== '--no-colors' && arg !== '--color=always' && arg !== '--ui')
+let commandContext
 
 const log = console.log
 const error = console.error
 
 debug('modules loaded')
-debug('argv', argv)
 
 /**
  * Certain commands may open the graphical shell; remember this, so
@@ -201,6 +199,11 @@ function mimicDom (app) {
 /** completion handlers for success and failure */
 const success = quit => async out => {
   debug('success!')
+  if (process.env.KUI_REPL_MODE) {
+    debug('returning repl mode result')
+    return out
+  }
+
   await print(out, log, process.stdout)
 
   if (!graphicalShellIsOpen) {
@@ -247,8 +250,10 @@ const failure = quit => async err => {
       // if the graphical shell isn't open, then we're done here
       exitCode = typeof code === 'number' ? code : 1
 
-      process.exit(exitCode > 128 ? exitCode - 256 : exitCode)
-      if (quit) quit()
+      if (!process.env.KUI_REPL_MODE) {
+        process.exit(exitCode > 128 ? exitCode - 256 : exitCode)
+        if (quit) quit()
+      }
     }
 
     return false
@@ -259,7 +264,7 @@ const failure = quit => async err => {
  * Insufficient arguments provided?
  *
  */
-const insufficientArgs = () => argv.length === 0
+const insufficientArgs = (argv: Array<string>) => argv.length === 0
 
 /**
  * Opens the full UI
@@ -286,7 +291,7 @@ export const createWindow = (argv: Array<string>, subwindowPlease: boolean, subw
  *
  *
  */
-const initCommandContext = async () => {
+const initCommandContext = async (commandContext: string) => {
   if (commandContext) {
     try {
       debug('setting command context', commandContext);
@@ -301,8 +306,17 @@ const initCommandContext = async () => {
  * Initialize headless mode
  *
  */
-export const main = async (app, mainFunctions) => {
+export const main = async (app, mainFunctions, rawArgv = process.argv) => {
   debug('main')
+
+  const ourCommandContext = rawArgv.find(_ => !!_.match(commandContextPattern))
+  debug('commandContext', ourCommandContext)
+  if (!commandContext && ourCommandContext) {
+    commandContext = ourCommandContext
+  }
+
+  const argv = rawArgv.slice(argStart).filter(arg => !arg.match(commandContextPattern) && arg !== '--kui-headless' && arg !== '-v' && arg !== '--raw-output' && arg !== '--no-color' && arg !== '--no-colors' && arg !== '--color=always' && arg !== '--ui')
+  debug('argv', argv)
 
   const { quit } = app
   repl.installOopsHandler(() => failure(quit)) // TODO should be repl.installOopsHandler
@@ -352,8 +366,11 @@ export const main = async (app, mainFunctions) => {
   }
 
   try {
-    if (!process.env.TRAVIS_JOB_ID && !process.env.RUNNING_SHELL_TEST && !process.env.CLOUD_SHELL_GO &&
-       !process.env.KUI_DEV) {
+    if (!process.env.TRAVIS_JOB_ID &&
+        !process.env.RUNNING_SHELL_TEST &&
+        !process.env.CLOUD_SHELL_GO &&
+        !process.env.KUI_REPL_MODE &&
+        !process.env.KUI_DEV) {
       const { fetch, watch } = await import('../webapp/util/fetch-ui')
       const { userDataDir } = await import('../core/userdata')
       const stagingArea = userDataDir()
@@ -368,10 +385,10 @@ export const main = async (app, mainFunctions) => {
 
   /** main work starts here */
   debug('bootstrap')
-  pluginsInit(/* { app } */).then(async () => {
+  return pluginsInit(/* { app } */).then(async () => {
     debug('plugins initialized')
 
-    await initCommandContext()
+    await initCommandContext(commandContext)
 
     const maybeRetry = err => {
       // nothing, yet
@@ -382,7 +399,7 @@ export const main = async (app, mainFunctions) => {
     await preload()
     debug('invoking plugin preloader... done')
 
-    if (insufficientArgs()) {
+    if (insufficientArgs(argv)) {
       debug('insufficient args, invoking help command')
       return evaluate('help')
     }
@@ -396,7 +413,9 @@ export const main = async (app, mainFunctions) => {
       return evaluate(cmd).catch(maybeRetry)
     } else {
       debug('exiting, no command')
-      process.exit(0)
+      if (!process.env.KUI_REPL_MODE) {
+        process.exit(0)
+      }
     }
-  }).then(success(quit)).catch(failure(quit))
+  }).catch(failure(quit))
 }

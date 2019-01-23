@@ -99,7 +99,7 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
      */
     const maybeSpawnGraphics = async () => {
       if (!app) {
-        await initHeadless(true)
+        await initHeadless(process.argv, true)
       }
       if (app.graphics) {
         promise = spawnGraphics()
@@ -251,7 +251,7 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
  * Bootstrap headless mode
  *
  */
-export async function initHeadless (force = false, isRunningHeadless = false) {
+export async function initHeadless (argv: Array<string>, force = false, isRunningHeadless = false) {
   if (/* noHeadless !== true && */ force || isRunningHeadless) {
     debug('initHeadless')
 
@@ -269,12 +269,16 @@ export async function initHeadless (force = false, isRunningHeadless = false) {
           // because this will be called for cases where we want a headless -> GUI transition
           return createWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
         }
-      })
+      }, argv)
     } catch (err) {
       // oof, something real bad happened
       console.error('Internal Error, please report this bug:')
       console.error(err)
-      process.exit(1)
+      if (!process.env.KUI_REPL_MODE) {
+        process.exit(1)
+      } else {
+        throw err
+      }
     }
   } else {
     // in case the second argument isn't undefined...

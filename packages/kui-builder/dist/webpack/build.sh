@@ -75,7 +75,7 @@ fi
 
 rm -rf kui && \
     mkdir kui && \
-    "$TAR" -C "$TOPDIR" --exclude './node_modules' --exclude '*.ts' --exclude './packages/kui-builder' --exclude './tests' -cf - . | "$TAR" -C kui -xf - && \
+    "$TAR" -C "$TOPDIR" --exclude './packages/proxy' --exclude './node_modules' --exclude './plugins/*/node_modules' --exclude './packages/*/node_modules' --exclude '*.ts' --exclude './packages/kui-builder' --exclude './tests' -cf - . | "$TAR" -C kui -xf - && \
     echo "tar copy done" && \
     (cd "$STAGING" && \
          cp package.json bak.json && \
