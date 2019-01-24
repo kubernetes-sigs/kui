@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@
  *
  */
 
-'use strict'
-
-const { ui } = require('../../../content/js/ui')
-const repl = require('../../../content/js/repl')
+import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import * as repl from '@kui-shell/core/core/repl'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 /**
  * This is the command handler. Handlers can return plain strings,
@@ -39,10 +38,11 @@ const repl = require('../../../content/js/repl')
  *
  */
 const openSidecar = ({ argv, command, argvNoOptions, parsedOptions }) => {
+  if (isHeadless()) throw new Error(`Can't open sidecar in headless mode. Suggested command: sample sidecar --ui.`)
   return repl.qexec('sample create action') // qexec will use the repl to perform a nested evaluation
     .then(action => {
       action.demo = { sampleField: 'This is a sample sidecar mode' } // here we add a field
-      return ui.showEntity(action, { show: 'demo' }) // and open the sidecar, specifying that our new field should be shown
+      return showEntity(action, { show: 'demo' }) // and open the sidecar, specifying that our new field should be shown
     })
 }
 
@@ -50,6 +50,6 @@ const openSidecar = ({ argv, command, argvNoOptions, parsedOptions }) => {
  * This is the exported module. It registers a handler for "sample sidecar" commands
  *
  */
-module.exports = (commandTree, prequire) => {
+export default (commandTree, prequire) => {
   commandTree.listen('/sample/sidecar', openSidecar, { docs: 'Open the sidecar' })
 }

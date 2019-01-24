@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import sayHello from './lib/cmds/say-hello'
+import openSidecar from './lib/cmds/open-sidecar'
+import createEcho from './lib/cmds/create-echo'
 
-module.exports = (commandTree, prequire) => {
-  commandTree.subtree('/sample', { docs: 'Sample Shell plugins' })
+export default async (commandTree, prequire) => {
+  commandTree.subtree('/sample', { docs: 'Sample kui-shell plugins' })
 
-  require('./lib/say-hello')(commandTree, prequire)
-  require('./lib/open-sidecar')(commandTree, prequire)
-  require('./lib/create-echo')(commandTree, prequire)
+  // commands
+  await sayHello(commandTree, prequire)
+  await openSidecar(commandTree, prequire)
+  await createEcho(commandTree, prequire)
 }

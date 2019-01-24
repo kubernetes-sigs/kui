@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
  */
 
 /**
- * This sample plugin creates an echo action.
+ * This sample plugin creates an openwhisk echo action.
  *
  */
 
-'use strict'
-
-const repl = require('../../../content/js/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 /**
  * This is the command handler. Handlers can return plain strings,
@@ -44,6 +42,6 @@ const createEcho = ({ argv, command, argvNoOptions, parsedOptions }) => {
  * This is the exported module. It registers a handler for "sample create action" commands
  *
  */
-module.exports = (commandTree, prequire) => {
+export default (commandTree, prequire) => {
   commandTree.listen('/sample/create/action', createEcho, { docs: 'Make an echo action' })
 }
