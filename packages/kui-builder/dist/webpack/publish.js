@@ -225,12 +225,12 @@ const main = async () => {
 
     debug('assembling assets')
     const assets = await Promise.all([
-      // globp('../../app/plugins/modules/', 'web/css/**/*.css', true),
-      globp('../../app/content/css/', '**/*.css'),
-      globp('../../app/content/', '**/*.ico'),
-      globp('../../app/content/', '**/*.jpg'),
-      globp('../../app/content/', '**/*.png'),
-      globp('../../app/content/', '**/*.svg'),
+      // globp('../../../app/plugins/modules/', 'web/css/**/*.css', true),
+      globp('../../../app/content/css/', '**/*.css'),
+      globp('../../../app/content/', '**/*.ico'),
+      globp('../../../app/content/', '**/*.jpg'),
+      globp('../../../app/content/', '**/*.png'),
+      globp('../../../app/content/', '**/*.svg'),
       globp('./build/', '*.bundle.js.br')
     ]).then(flatten)
 
@@ -242,7 +242,7 @@ const main = async () => {
     // then update the index.html after those assets are in place
     debug('uploading index')
     const index = await putObject(cos, Bucket)({
-      filepath: '../../app/build/index-webpack.html',
+      filepath: '../../../app/build/index-webpack.html',
       targetName: 'index.html'
     })
 
