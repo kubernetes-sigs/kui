@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
+
 const sayHello = ({ argv, command, argvNoOptions, parsedOptions }) => {
   return 'hello world'
 }
@@ -40,7 +41,7 @@ const sayHello = ({ argv, command, argvNoOptions, parsedOptions }) => {
  * This is the exported module. It registers a handler for "sample hello" commands
  *
  */
-module.exports = (commandTree, prequire) => {
+export default (commandTree, prequire) => {
   const cmd = commandTree.listen('/sample/hello', sayHello, { docs: 'Say hello!' })
   commandTree.synonym('/sample/hi', sayHello, cmd)
 }

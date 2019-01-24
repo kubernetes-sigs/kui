@@ -58,10 +58,10 @@ realize your changes.
     precompiled model of the command tree. This allows Kui to load
     plugin code lazily. If you add a new command, or move a command
     from one plugin to another, you must therefore recompile the
-    command registry: 
-    
+    command registry:
+
     ```bash
-    > cd app && npm run compile
+    > npm run compile
     ```
 
  2. **Changing code in the main process** Electron applications
