@@ -25,7 +25,8 @@ import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
 
 import usage from './usage'
-const settings = require('@kui-shell/settings/config.json')
+import { version } from '@kui-shell/settings/package.json'
+import settings = require('@kui-shell/settings/config.json')
 
 /** path to app/ directory */
 const ourRootDir = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
@@ -63,21 +64,12 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 }
 
 /**
- * Load the package.json for the tool
- *
- */
-const readPackageDotJson = () => {
-  debug('readPackageDotJson')
-  return require('@kui-shell/settings/package.json')
-}
-
-/**
  * Return, textually, the current version of the tool
  *
  */
 const getVersion = () => {
   debug('getVersion')
-  return readPackageDotJson().version
+  return version
 }
 
 /**
@@ -99,7 +91,7 @@ const reportVersion = ({ argv }) => {
   // otherwise, we were asked to check for updates
   //
   if (isHeadless()) {
-    console.log('You are currently on version ' + version.blue)
+    console.log('You are currently on version ' + colors.blue(version))
     process.stdout.write(colors.dim('Checking for updates... '))
   }
 

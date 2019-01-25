@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+shopt -s extglob
+
 grep name package.json | grep kui-shell >& /dev/null
 if [ $? == 1 ]; then
     echo "Error: execute this script from the top level of the kui project"
@@ -37,13 +39,13 @@ fi
 cd @kui-shell
 
 function link {
-    echo "linking build asset $1"
+    echo "linking build asset $1 -> $2"
     rm -f "$2"
     ln -s "$1" "$2"
 }
 
 if [ -d "$BUILDDIR"/plugins ]; then
-    for pluginPath in "$BUILDDIR"/plugins/*; do
+    for pluginPath in "$BUILDDIR"/plugins/* "$BUILDDIR"/packages/!(kui-builder|app); do
         plugin=`basename $pluginPath`
         link "$pluginPath" "$plugin"
     done

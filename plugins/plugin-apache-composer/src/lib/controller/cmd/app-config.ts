@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { properties } from '../../utility/usage'
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-config')
+
+import { properties } from '../../utility/usage'
+import { version } from 'openwhisk-composer/package.json'
 
 /**
  * Command handler for the properties command
@@ -26,24 +29,14 @@ export default async (commandTree, prequire) => {
   // `app/plugins/modules/composer`, depending, respectively, on whether
   // we are installing composer from npm, versus from git e.g. when
   // testing a development branch
-  let pckage
-  try {
-    pckage = require('../../../../../../node_modules/openwhisk-composer/package.json')
-  } catch (err) {
-    try {
-      pckage = require('../../../../node_modules/openwhisk-composer/package.json')
-    } catch (err) {
-      pckage = require('openwhisk-composer/package.json')
-    }
-  }
 
   const propertySynonyms = ['wsk/app', 'composer']
   propertySynonyms.forEach(tree => {
-    const cmd = commandTree.listen(`/${tree}/properties`, () => { return `Composer version ${pckage.version}` }, { usage: properties('properties'), noAuthOk: true })
+    const cmd = commandTree.listen(`/${tree}/properties`, () => { return `Composer version ${version}` }, { usage: properties('properties'), noAuthOk: true })
 
     // synonyms of app properties
-    commandTree.synonym(`/${tree}/props`, () => { return `Composer version ${pckage.version}` }, cmd, { usage: properties('props'), noAuthOk: true })
-    commandTree.synonym(`/${tree}/config`, () => { return `Composer version ${pckage.version}` }, cmd, { usage: properties('config'), noAuthOk: true })
+    commandTree.synonym(`/${tree}/props`, () => { return `Composer version ${version}` }, cmd, { usage: properties('props'), noAuthOk: true })
+    commandTree.synonym(`/${tree}/config`, () => { return `Composer version ${version}` }, cmd, { usage: properties('config'), noAuthOk: true })
   })
 
 }

@@ -48,9 +48,6 @@ const baseOptions: IOptions = {
 /**
  * The activation list impl.
  *
- * WARNING: do not extract the wsk.ow field in the outer closure here,
- * as it may be updated over time.
- *
  */
 const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOptions }) => {
   debug('command', command)
@@ -75,7 +72,7 @@ const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOption
   delete opts._
 
   try {
-    const list = await wsk.ow.activations.list(opts)
+    const list = await wsk.client(execOptions).activations.list(opts)
       .then(L => L.map(wsk.addPrettyType('activations', 'list')))
 
     return list

@@ -28,6 +28,8 @@ BUILDDIR="${TOPDIR}/build"
 for pluginPath in plugins/* packages/app; do
     plugin=`basename "$pluginPath"`
     for subdir in bin tests lib web package.json; do
+        if [ "$subdir" == "package.json" ] && [ "$plugin" == "app" ]; then continue; fi
+
         if [ -e "$pluginPath/$subdir" ]; then
             echo "linking library $plugin/$subdir"
             if [ ! -d "$BUILDDIR/$pluginPath" ]; then

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/cmds/auth')
+import * as Debug from 'debug'
+const debug = Debug('k8s/cmds/auth')
+
+import { setAuth } from '../models/auth'
 
 const usage = {
   add: {
@@ -70,10 +73,11 @@ const add = async ({ block, nextBlock }) => {
                   return Promise.reject('This does not look like a kubernetes certificate')
                 } else {
                   // all right! we now have the kubeconfig and the PEM
-                  const repl = await import('@kui-shell/core/core/repl')
+                  setAuth(kubeconfigString, ca, cafile)
+
+                  /* const repl = await import('@kui-shell/core/core/repl')
                   const { PACKAGE } = await import('../../actionProxy/deploy')
                   const { deploy: deployKubectl } = await import('../../actionProxy/kubectl')
-
                   return deployKubectl()
                     .then(() => repl.qexec(`package get "${PACKAGE}"`))
                     .then(({ parameters }) => repl.qexec(`package update "${PACKAGE}"`, undefined, undefined, {
@@ -83,7 +87,7 @@ const add = async ({ block, nextBlock }) => {
                         cafile
                       })
                     }))
-                    .then(() => 'Successfully imported your kubeconfig and certificate')
+                    .then(() => 'Successfully imported your kubeconfig and certificate') */
                 }
               }
             }
@@ -101,5 +105,5 @@ const add = async ({ block, nextBlock }) => {
  *
  */
 export default (commandTree, prequire) => {
-  commandTree.listen('/k8s/auth/add', add, { usage, noAuthOk: [ 'openwhisk' ] })
+  commandTree.listen('/k8s/auth/add', add, { usage, noAuthOk: [ 'openwhisk' ], inBrowserOK: true })
 }

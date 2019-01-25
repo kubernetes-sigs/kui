@@ -15,27 +15,21 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/preload')
+const debug = Debug('plugins/k8s/preload')
 
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
-import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
 
-import editorPreload from './preload-editor-extensions'
+import { restoreAuth } from './lib/models/auth'
 
 /**
  * This is the module
  *
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
-    const { auth } = await import('./lib/models/auth')
-
-    if (auth.get()) {
-      debug('we have openwhisk credentials available from startup')
-      // capabilities.setHasAuth will be called from the auth model impl
-    }
-
-    editorPreload(commandTree, prequire, options)
+  if (inBrowser()) {
+    debug('preload for browser')
+    restoreAuth()
   }
 }
 

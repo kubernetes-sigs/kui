@@ -30,8 +30,8 @@ interface IMenuItem {
  * Tell the renderer to execute a command
  *
  */
-const tellRendererToExecute = (command: string) => {
-  const { webContents } = require('electron')
+const tellRendererToExecute = async (command: string) => {
+  const { webContents } = await import('electron')
   webContents.getFocusedWebContents().send('/repl/pexec', { command })
 }
 
@@ -75,8 +75,7 @@ export const install = (app, Menu, createWindow) => {
         label: 'Getting Started with Composer',
         click: () => {
           try {
-            const { webContents } = require('electron')
-            webContents.getFocusedWebContents().send('/repl/pexec', { command: 'getting started' })
+            tellRendererToExecute('getting started')
           } catch (err) {
             console.log(err)
           }
@@ -86,8 +85,7 @@ export const install = (app, Menu, createWindow) => {
         label: 'Composer Coding 101',
         click: () => {
           try {
-            const { webContents } = require('electron')
-            webContents.getFocusedWebContents().send('/repl/pexec', { command: 'coding basics' })
+            tellRendererToExecute('coding basics')
           } catch (err) {
             console.log(err)
           }
@@ -97,8 +95,7 @@ export const install = (app, Menu, createWindow) => {
         label: 'Combinator Reference Guide',
         click: () => {
           try {
-            const { webContents } = require('electron')
-            webContents.getFocusedWebContents().send('/repl/pexec', { command: 'combinators' })
+            tellRendererToExecute('combinators')
           } catch (err) {
             console.log(err)
           }
@@ -108,8 +105,7 @@ export const install = (app, Menu, createWindow) => {
         label: 'Interactive Tutorials',
         click: () => {
           try {
-            const { webContents } = require('electron')
-            webContents.getFocusedWebContents().send('/repl/pexec', { command: 'tutorials' })
+            tellRendererToExecute('tutorials')
           } catch (err) {
             console.log(err)
           }
@@ -174,7 +170,7 @@ export const install = (app, Menu, createWindow) => {
     const about: IMenuItem = { label: `About ${productName}`,
       click: () => {
         try {
-          require('./plugins/welcome/about')()
+          tellRendererToExecute('about')
         } catch (err) {
           console.log(err)
         }

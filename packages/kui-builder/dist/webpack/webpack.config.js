@@ -16,26 +16,18 @@
 
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
-// const Visualizer = require('webpack-visualizer-plugin')
 const CompressionPlugin = require('brotli-webpack-plugin')
+// const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
 const context = path.resolve(path.join(__dirname, 'kui'))
 
-/**
- * Take the top-level _moduleAliases and make sure the dirs are relative to this dir
- *
- */
-const reroute = aliases => {
-  for (let key in aliases) {
-    aliases[key] = path.join(context, aliases[key])
-  }
-  // console.error(aliases)
-  return aliases
-}
-
 module.exports = {
   context,
+  stats: {
+    // while developing, you should set this to true
+    warnings: false
+  },
   entry: {
     main: './build/packages/app/src/webapp/bootstrap/webpack.js',
     'editor.worker': './node_modules/monaco-editor/esm/vs/editor/editor.worker.js',
@@ -50,8 +42,7 @@ module.exports = {
     child_process: 'empty',
     'node-docker-api': 'empty',
     'docker-modem': 'empty',
-    'fs-extra': 'empty',
-    'original-fs': 'empty'
+    'fs-extra': 'empty'
   },
   externals: [
     'tape', // modules/composer/node_modules/safer-buffer
@@ -181,6 +172,11 @@ module.exports = {
       { test: /Dockerfile$/, use: 'ignore-loader' },
       // end of ignore-loader
       //
+      { test: /\.py$/, use: 'file-loader' },
+      { test: /\.ico$/, use: 'file-loader' },
+      { test: /\.jpg$/, use: 'file-loader' },
+      { test: /\.png$/, use: 'file-loader' },
+      { test: /\.svg$/, use: 'svg-inline-loader' },
       { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },

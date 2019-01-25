@@ -1,0 +1,19 @@
+{
+  "name": "@kui-shell/proxy",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start-local": "node ./bin/www",
+    "preinstall": "rm -rf node_modules/@kui-shell",
+    "build": "./build.sh",
+    "build-docker": "docker build . -t kui-proxy",
+    "start": "if [ ! -d node_modules/@kui-shell ]; then echo 'npm run build'; else npm run build-docker; fi; docker run -e DEBUG=* --name kui-proxy --rm -p 8081:3000 kui-proxy"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
+    "debug": "^4.1.1",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1"
+  }
+}

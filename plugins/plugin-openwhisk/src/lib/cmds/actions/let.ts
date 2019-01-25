@@ -256,7 +256,7 @@ const makeZipActionFromZipFile = (wsk, name: string, location: string, options, 
             // broadcast that this is a binary action
             owOpts.action.annotations.push({ key: 'binary', value: true })
 
-            return wsk.ow.actions.update(owOpts)
+            return wsk.client(execOptions).actions.update(owOpts)
               .then(wsk.addPrettyType('actions', 'update', name))
               .then(resolve)
               .catch(reject)
@@ -409,7 +409,7 @@ const makeWebAsset = (wsk, name, extension, location, text, options, execOptions
   action.exec.code = webAssetTransformer(location, text, extension)
 
   const owOpts = wsk.owOpts({ name, action })
-  return wsk.ow.actions.update(owOpts)
+  return wsk.client(execOptions).actions.update(owOpts)
     .then(wsk.addPrettyType('actions', 'update', name))
 }
 
@@ -447,7 +447,7 @@ export default async (commandTree, wsk) => {
             name: name,
             action: action
           })
-          return wsk.ow.actions.update(owOpts)
+          return wsk.client(execOptions).actions.update(owOpts)
         })
         .then(wsk.addPrettyType('actions', 'update', name))
     } else {
@@ -465,7 +465,7 @@ export default async (commandTree, wsk) => {
   }
 
   let currentIter = 0 // optimization
-  const createWithRetryOnName = (code: string, parentActionName: string, idx: number, iter: number, desiredName?: string) => wsk.ow.actions.create(wsk.owOpts({
+  const createWithRetryOnName = (code: string, parentActionName: string, execOptions, idx: number, iter: number, desiredName?: string) => wsk.client(execOptions).actions.create(wsk.owOpts({
     name: desiredName || `${baseName}-${idx}-${iter}`,
     action: {
       exec: {
@@ -483,7 +483,7 @@ export default async (commandTree, wsk) => {
     if (err.statusCode === 409) {
       // name conflict
       if (!desiredName) currentIter++ // optimization
-      return createWithRetryOnName(code, parentActionName, idx, desiredName ? iter : iter + 1)
+      return createWithRetryOnName(code, parentActionName, execOptions, idx, desiredName ? iter : iter + 1)
     } else {
       throw err
     }
@@ -554,7 +554,7 @@ export default async (commandTree, wsk) => {
         debug('sequence component is inline function', match[0])
         const body = `let main = ${match[0]}`
         const candidateName = `${parentActionName}-${idx + 1}`
-        return createWithRetryOnName(body, parentActionName, idx, currentIter, candidateName)
+        return createWithRetryOnName(body, parentActionName, execOptions, idx, currentIter, candidateName)
       } else {
         if (intentionMatch) {
           debug('sequence component is intention', intentionMatch[1])
@@ -564,7 +564,7 @@ export default async (commandTree, wsk) => {
           debug('sequence component is local file', component)
           // then we assume that the component identifies a local file
           //    note: the first step reserves a name
-          return createWithRetryOnName('let main=x=>x', parentActionName, idx, currentIter, basename(component.replace(/\..*$/, '')))
+          return createWithRetryOnName('let main=x=>x', parentActionName, execOptions, idx, currentIter, basename(component.replace(/\..*$/, '')))
             .then(reservedAction => reservedAction.name)
             .then(reservedName => maybeComponentIsFile(reservedName, undefined, component, 'let', {}, { nested: true }))
         } else {
@@ -617,7 +617,7 @@ export default async (commandTree, wsk) => {
             namespace: action.namespace,
             action: action
           })
-          return wsk.ow.actions[update](owOpts)
+          return wsk.client(execOptions).actions[update](owOpts)
             .then(wsk.addPrettyType('actions', 'update'))
         })
         .catch(packageAutoCreate(name))
@@ -735,7 +735,7 @@ export default async (commandTree, wsk) => {
                     namespace: action.namespace,
                     action: action
                   })
-                  return wsk.ow.actions[update](owOpts)
+                  return wsk.client(execOptions).actions[update](owOpts)
                     .then(wsk.addPrettyType('actions', 'update'))
                 })
             })
@@ -785,7 +785,7 @@ export default async (commandTree, wsk) => {
 
     // resolve the given expression to an action
     //   e.g. is "a" the name of an action, or the name of a file
-    resolve: (expr, parentActionName, idx) => repl.qexec(`wsk actions get ${expr}`, undefined, undefined, { noRetry: true })
+    resolve: (expr, parentActionName, execOptions, idx) => repl.qexec(`wsk actions get ${expr}`, undefined, undefined, { noRetry: true })
       .catch(err => {
         if (err.statusCode === 404 || err.statusCode === 400) {
           // then this isn't an action (yet)
@@ -801,7 +801,7 @@ export default async (commandTree, wsk) => {
           if (!intentionMatch && !isSequenceMatch && actionMatch) {
             // then this is an inline anonymous function
             debug('resolve::inline')
-            return createWithRetryOnName(`let main = ${expr}`, parentActionName, idx, 0)
+            return createWithRetryOnName(`let main = ${expr}`, parentActionName, execOptions, idx, 0)
           } else if (intentionMatch) {
             const baseName = intentionMatch[4].substring(1, intentionMatch[4].indexOf(' '))
             return repl.iexec(`${intentionMatch[4]} --name ${baseName}-anon-${idx}`)
