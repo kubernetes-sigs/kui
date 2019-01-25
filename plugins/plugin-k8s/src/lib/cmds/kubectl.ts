@@ -47,6 +47,45 @@ const dashify = str => {
 }
 
 /**
+ * Export credentials to the filesystem, if we need to
+ *
+ */
+type CleanupFunction = () => void
+const possiblyExportCredentials = (execOptions, env): Promise<CleanupFunction> => new Promise(async (resolve, reject) => {
+  debug('possiblyExportCredentials', process.env.KUBECONFIG, execOptions && execOptions.credentials)
+
+  if (!process.env.KUBECONFIG && execOptions && execOptions.credentials && execOptions.credentials.k8s) {
+    debug('exporting kubernetes credentials')
+    const { dir: tmpDir } = await import('tmp')
+    tmpDir(async (err, path, cleanupCallback) => {
+      if (err) {
+        reject(err)
+      } else {
+        const { join } = await import('path')
+        const { writeFile, remove } = await import('fs-extra')
+        const { kubeconfig, ca, cafile } = execOptions.credentials.k8s
+        try {
+          const kubeconfigFilepath = join(path, 'kubeconfig.yml')
+
+          await Promise.all([
+            writeFile(kubeconfigFilepath, kubeconfig),
+            writeFile(join(path, cafile), ca)
+          ])
+
+          env.KUBECONFIG = kubeconfigFilepath
+          resolve(() => remove(path))
+
+        } catch (err) {
+          reject(err)
+        }
+      }
+    })
+  } else {
+    resolve(() => { /* nothing to do */ })
+  }
+})
+
+/**
  * Dispatch the given cmdline to the action proxy
  *
  */
@@ -444,7 +483,7 @@ const prepareUsage = async (command: string) => {
  * @param options parsed-out command line options
  *
  */
-const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, execOptions, options, rawCommand: string) => new Promise(async (resolve, reject) => {
+const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, execOptions, options, rawCommand: string) => new Promise(async (resolveBase, reject) => {
   debug('exec', command)
 
   const verb = argv[1]
@@ -507,8 +546,14 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
   }
   debug('argvWithFileReplacements', argvWithFileReplacements)
 
+  const env = Object.assign({}, process.env)
+  const cleanupCallback = await possiblyExportCredentials(execOptions, env)
+  const resolve = async val => {
+    await cleanupCallback()
+    resolveBase(val)
+  }
+
   const { spawn } = require('child_process')
-  const env = process.env
   delete env.DEBUG // don't pass this through to kubectl or helm; helm in particular emits crazy output
   const child = spawn(command,
                       argvWithFileReplacements,
@@ -621,7 +666,7 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
       } else {
         nope()
       }
-    } else if (execOptions.raw || (isHeadless() && execOptions.type === ExecType.TopLevel)) {
+    } else if (execOptions.raw || (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied)) {
       //
       // caller asked for the raw output
       //

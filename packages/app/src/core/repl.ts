@@ -30,13 +30,50 @@ import { add as addToHistory } from '../models/history'
 import * as commandTree from './command-tree'
 import UsageError from './usage-error'
 
-import { isHeadless, inBrowser, hasAuth as hasAuthCapability } from './capabilities'
+import { isHeadless, inBrowser, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support'
 import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
 
 debug('finished loading modules')
+
+/**
+ * repl.exec, and the family repl.qexec, repl.pexec, etc. are all
+ * backed by an implementation of this interface
+ *
+ */
+export interface IExecutor {
+  name: string
+  exec (commandUntrimmed: string, execOptions: IExecOptions)
+}
+
+/**
+ * Apply the given evaluator to the given arguments
+ *
+ */
+export interface IEvaluator {
+  name: string
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator, args)
+}
+
+/**
+ * Directly apply the given evaluator to the given arguments. This is
+ * the default evaluator implementation.
+ *
+ */
+export class DirectEvaluator implements IEvaluator {
+  name = 'DirectEvaluator'
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator, args) {
+    return evaluator.eval(args)
+  }
+}
+let currentEvaluatorImpl: IEvaluator = new DirectEvaluator()
+
+export const setEvaluatorImpl = (impl: IEvaluator): void => {
+  debug('setting evaluator impl', impl.name)
+  currentEvaluatorImpl = impl
+}
 
 /**
  * do we have authentication? we don't cache this, to keep things
@@ -85,18 +122,20 @@ export const doEval = () => {
  *
  */
 export const qfexec = (command: string, block?, nextBlock?, execOptions?: IExecOptions) => {
-    // context change ok, final exec in a chain of nested execs
+  // context change ok, final exec in a chain of nested execs
   return qexec(command, block, true, execOptions, nextBlock)
 }
 export const iexec = (command: string, block?, contextChangeOK?, execOptions?: IExecOptions, nextBlock?) => {
   return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }
 export const qexec = (command: string, block?, contextChangeOK?, execOptions?: IExecOptions, nextBlock?) => {
-  return exec(command, Object.assign({ block: block,
+  return exec(command, Object.assign({
+    block: block,
     nextBlock: nextBlock,
     noHistory: true,
     contextChangeOK,
-    type: commandTree.ExecType.Nested }, execOptions))
+    type: commandTree.ExecType.Nested
+  }, execOptions))
 }
 
 /**
@@ -234,84 +273,62 @@ const stripTrailer = (str: string) => str && str.replace(/\s+.*$/, '')
 /** turn --foo into foo and -f into f */
 const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
 
-const emptyExecOptions = (): IExecOptions => new DefaultExecOptions()
-
 /**
- * Execute the given command-line
+ * Execute the given command-line directly in this process
  *
  */
-export const exec = async (commandUntrimmed: string, execOptions = emptyExecOptions()) => {
-  // debug(`repl::exec ${new Date()}`)
-  debug('exec', commandUntrimmed)
+class InProcessExecutor implements IExecutor {
+  name = 'InProcessExecutor'
 
-  const echo = !execOptions || execOptions.echo !== false
-  const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
-  if (nested) execOptions.nested = nested
+  async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
+    // debug(`repl::exec ${new Date()}`)
+    debug('exec', commandUntrimmed)
 
-  const block = (execOptions && execOptions.block) || cli.getCurrentBlock()
-  const blockParent = block && block.parentNode // remember this one, in case the command removes block from its parent
-  const prompt = block && cli.getPrompt(block)
+    const echo = !execOptions || execOptions.echo !== false
+    const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
+    if (nested) execOptions.nested = nested
 
-  // maybe execOptions has been attached to the prompt dom (e.g. see repl.partial)
-  if (!execOptions) execOptions = prompt.execOptions
-  if (execOptions && execOptions.pip) {
-    const { container, returnTo } = execOptions.pip
-    try {
-      return pictureInPicture(commandUntrimmed, undefined, document.querySelector(container), returnTo)()
-    } catch (err) {
-      console.error(err)
-      // fall through to normal execution, if pip fails
-    }
-  }
+    const block = (execOptions && execOptions.block) || cli.getCurrentBlock()
+    const blockParent = block && block.parentNode // remember this one, in case the command removes block from its parent
+    const prompt = block && cli.getPrompt(block)
 
-  // clone the current block so that we have one for the next
-  // prompt, when we're done evaluating the current command
-  let nextBlock
-  if (!execOptions || (!execOptions.noHistory && echo)) {
-    // this is a top-level exec
-    cli.unlisten(prompt)
-    nextBlock = (execOptions && execOptions.nextBlock) || block.cloneNode(true)
-
-    // since we cloned it, make sure it's all cleaned out
-    nextBlock.querySelector('input').value = ''
-    // nextBlock.querySelector('input').setAttribute('placeholder', 'enter your command')
-  } else {
-    // qfexec with nextBlock, see rm plugin
-    nextBlock = execOptions && execOptions.nextBlock
-  }
-
-  if (nextBlock) {
-    // remove any .repl-temporary that might've come along for the
-    // ride when we cloned the current block
-    cli.removeAnyTemps(nextBlock)
-  }
-
-  // blank line, after removing comments?
-  const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
-  if (!command) {
-    if (block) {
-      cli.setStatus(block, 'valid-response')
-      cli.installBlock(blockParent, block, nextBlock)()
-    }
-    return emptyPromise()
-  }
-
-  if (execOptions && execOptions.echo && prompt) {
-    // this is a programmatic exec, so make the command appear in the console
-    prompt.value = commandUntrimmed
-  }
-
-  try {
-    if (block && !nested && echo) {
-      block.className = `${block.getAttribute('data-base-class')} processing`
-      cli.scrollIntoView({ when: 0, which: '.processing .repl-result' })
-      prompt.readOnly = true
+    // maybe execOptions has been attached to the prompt dom (e.g. see repl.partial)
+    if (!execOptions) execOptions = prompt.execOptions
+    if (execOptions && execOptions.pip) {
+      const { container, returnTo } = execOptions.pip
+      try {
+        return pictureInPicture(commandUntrimmed, undefined, document.querySelector(container), returnTo)()
+      } catch (err) {
+        console.error(err)
+        // fall through to normal execution, if pip fails
+      }
     }
 
-    const argv = split(command)
-    // debug('split', command, argv)
+    // clone the current block so that we have one for the next
+    // prompt, when we're done evaluating the current command
+    let nextBlock
+    if (!execOptions || (!execOptions.noHistory && echo)) {
+      // this is a top-level exec
+      cli.unlisten(prompt)
+      nextBlock = (execOptions && execOptions.nextBlock) || block.cloneNode(true)
 
-    if (argv.length === 0) {
+      // since we cloned it, make sure it's all cleaned out
+      nextBlock.querySelector('input').value = ''
+      // nextBlock.querySelector('input').setAttribute('placeholder', 'enter your command')
+    } else {
+      // qfexec with nextBlock, see rm plugin
+      nextBlock = execOptions && execOptions.nextBlock
+    }
+
+    if (nextBlock) {
+      // remove any .repl-temporary that might've come along for the
+      // ride when we cloned the current block
+      cli.removeAnyTemps(nextBlock)
+    }
+
+    // blank line, after removing comments?
+    const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
+    if (!command) {
       if (block) {
         cli.setStatus(block, 'valid-response')
         cli.installBlock(blockParent, block, nextBlock)()
@@ -319,427 +336,478 @@ export const exec = async (commandUntrimmed: string, execOptions = emptyExecOpti
       return emptyPromise()
     }
 
-    debug(`issuing ${command} ${new Date()}`)
-
-    // add a history entry
-    if ((!execOptions || !execOptions.noHistory)) {
-      if (!execOptions || !execOptions.quiet) {
-        execOptions.history = addToHistory({
-          raw: command
-        })
-      }
+    if (execOptions && execOptions.echo && prompt) {
+      // this is a programmatic exec, so make the command appear in the console
+      prompt.value = commandUntrimmed
     }
 
-    // the Read part of REPL
-    const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-    const evaluator = await (execOptions && execOptions.intentional ? commandTree.readIntention(argvNoOptions) : commandTree.read(argvNoOptions, false, false, execOptions))
-    // debug('evaluator', evaluator)
-
-    if (evaluator && evaluator.eval) {
-      //
-      // fetch the usage model for the command
-      //
-      const _usage = evaluator.options && evaluator.options.usage
-      const usage = _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
-      // debug('usage', usage)
-
-      if (execOptions && execOptions.failWithUsage && !usage) {
-        debug('caller needs usage model, but none exists for this command')
-        return false
+    try {
+      if (block && !nested && echo) {
+        block.className = `${block.getAttribute('data-base-class')} processing`
+        cli.scrollIntoView({ when: 0, which: '.processing .repl-result' })
+        prompt.readOnly = true
       }
 
-      const builtInOptions: Array<any> = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
-      if (!usage || !usage.noHelp) {
-        // usage might tell us not to add help, or not to add the -h help alias
-        const help = { name: '--help', hidden: true, boolean: true }
-        if (!usage || !usage.noHelpAlias) {
-          help['alias'] = '-h'
+      const argv = split(command)
+      // debug('split', command, argv)
+
+      if (argv.length === 0) {
+        if (block) {
+          cli.setStatus(block, 'valid-response')
+          cli.installBlock(blockParent, block, nextBlock)()
         }
-        builtInOptions.push(help)
+        return emptyPromise()
       }
 
-      // here, we encode some common aliases, and then overlay any flags from the command
-      // narg: any flags that take more than one argument e.g. -p key value would have { narg: { p: 2 } }
-      const commandFlags = (evaluator.options && evaluator.options.flags) ||
-            (evaluator.options && evaluator.options.synonymFor &&
-             evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
-        {}
-      const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
-      const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
-      const optionalAliases = optional && optional.filter(({ alias }) => alias).reduce((M, { name, alias }) => {
-        M[unflag(alias)] = unflag(name)
-        return M
-      }, {})
+      debug(`issuing ${command} ${new Date()}`)
 
-      const allFlags = {
-        configuration: Object.assign({ 'camel-case-expansion': false }, (usage && usage.configuration) || {}),
-        boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
-        alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
-        narg: optional && optional.reduce((N, { name, alias, narg }) => {
-          if (narg) {
-            N[unflag(name)] = narg
-            N[unflag(alias)] = narg
-          }
-          return N
-        }, {})
-      }
-
-      // now use minimist to parse the command line options
-      // minimist stores the residual, non-opt, args in _
-      const parsedOptions = minimist(argv, allFlags)
-      const argvNoOptions = parsedOptions._
-
-      //
-      // if the user asked for help, and the plugin registered a
-      // usage model, we can service that here, without having
-      // to involve the plugin. this lets us avoid having each
-      // plugin check for options.help
-      //
-      if ((!usage || !usage.noHelp) && parsedOptions.help && evaluator.options && evaluator.options.usage) {
-        if (execOptions && execOptions.failWithUsage) {
-          return evaluator.options.usage
-        } else {
-          return oops(block, nextBlock)(new UsageError(evaluator.options.usage))
-        }
-      }
-
-      //
-      // here is where we enforce the usage model
-      //
-      if (usage && usage.strict) { // strict: command wants *us* to enforce conformance
-        // required and optional parameters
-        const { strict: cmd, onlyEnforceOptions = false, required = [], oneof = [], optional: _optional = [] } = usage
-        const optLikeOneOfs = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
-        const positionalConsumers = _optional.filter(({ name, alias, consumesPositional }) => consumesPositional && (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)]))
-        const optional = builtInOptions.concat(_optional).concat(optLikeOneOfs)
-        const positionalOptionals = optional.filter(({ positional }) => positional)
-        const nPositionalOptionals = positionalOptionals.length
-
-        // just introducing a shorter variable name, here
-        const args = argvNoOptions
-        const nPositionalsConsumed = positionalConsumers.length
-        const nRequiredArgs = required.length + (oneof.length > 0 ? 1 : 0) - nPositionalsConsumed
-        const optLikeActuals = optLikeOneOfs.filter(({ name, alias = '' }) => parsedOptions.hasOwnProperty(unflag(name)) || parsedOptions.hasOwnProperty(unflag(alias)))
-        const nOptLikeActuals = optLikeActuals.length
-        const cmdArgsStart = args.indexOf(cmd)
-        const nActualArgs = args.length - cmdArgsStart - 1 + nOptLikeActuals
-
-        // did the user pass an unsupported optional parameter?
-        for (let optionalArg in parsedOptions) {
-          // skip over minimist's _
-          if (optionalArg === '_' ||
-              parsedOptions[optionalArg] === false) { // minimist nonsense
-            continue
-          }
-
-          // should we enforce this option?
-          const enforceThisOption = !!(!onlyEnforceOptions ||
-                                       onlyEnforceOptions === true ||
-                                       onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`))
-          if (!enforceThisOption) {
-            // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)
-            // nor did the spec said only to enforce options, but enforce them all (onlyEnforceOptions === true)
-            // nor did the spec enumerated options to enforce, and this is one of them
-            continue
-          }
-
-          // find a matching declared optional arg
-          const match: any = optional.find(({ name, alias }) => {
-            return stripTrailer(alias) === `-${optionalArg}` ||
-              stripTrailer(name) === `-${optionalArg}` ||
-              stripTrailer(name) === `--${optionalArg}`
+      // add a history entry
+      if ((!execOptions || !execOptions.noHistory)) {
+        if (!execOptions || !execOptions.quiet) {
+          execOptions.history = addToHistory({
+            raw: command
           })
+        }
+      }
 
-          if (!match) {
-            //
-            // then the user passed an option, but the command doesn't accept it
-            //
-            debug('unsupported optional paramter', optionalArg)
+      // the Read part of REPL
+      const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
+      const evaluator = await (execOptions && execOptions.intentional ? commandTree.readIntention(argvNoOptions) : commandTree.read(argvNoOptions, false, false, execOptions))
+      // debug('evaluator', evaluator)
 
-            const message = `Unsupported optional parameter ${optionalArg}`
-            const err = new UsageError({ message, usage })
-            err.code = 499
-            debug(message, args, parsedOptions, optional, argv) // args is argv with options stripped
-            if (execOptions && execOptions.failWithUsage) {
-              return err
-            } else {
-              return oops(block, nextBlock)(err)
+      if (evaluator && evaluator.eval) {
+        //
+        // fetch the usage model for the command
+        //
+        const _usage = evaluator.options && evaluator.options.usage
+        const usage = _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
+        // debug('usage', usage)
+
+        if (execOptions && execOptions.failWithUsage && !usage) {
+          debug('caller needs usage model, but none exists for this command')
+          return false
+        }
+
+        const builtInOptions: Array<any> = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
+        if (!usage || !usage.noHelp) {
+          // usage might tell us not to add help, or not to add the -h help alias
+          const help = { name: '--help', hidden: true, boolean: true }
+          if (!usage || !usage.noHelpAlias) {
+            help['alias'] = '-h'
+          }
+          builtInOptions.push(help)
+        }
+
+        // here, we encode some common aliases, and then overlay any flags from the command
+        // narg: any flags that take more than one argument e.g. -p key value would have { narg: { p: 2 } }
+        const commandFlags = (evaluator.options && evaluator.options.flags) ||
+          (evaluator.options && evaluator.options.synonymFor &&
+           evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
+          {}
+        const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
+        const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
+        const optionalAliases = optional && optional.filter(({ alias }) => alias).reduce((M, { name, alias }) => {
+          M[unflag(alias)] = unflag(name)
+          return M
+        }, {})
+
+        const allFlags = {
+          configuration: Object.assign({ 'camel-case-expansion': false }, (usage && usage.configuration) || {}),
+          boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
+          alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
+          narg: optional && optional.reduce((N, { name, alias, narg }) => {
+            if (narg) {
+              N[unflag(name)] = narg
+              N[unflag(alias)] = narg
             }
-          } else if ((match.boolean && typeof parsedOptions[optionalArg] !== 'boolean') ||
-                     (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
-                     (match.booleanOK && !(typeof parsedOptions[optionalArg] === 'boolean' || typeof parsedOptions[optionalArg] === 'string')) ||
-                     (match.numeric && typeof parsedOptions[optionalArg] !== 'number') ||
-                     (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
-                     (!match.boolean && !match.booleanOK && !match.numeric && (!match.narg || match.narg === 1) &&
-                      !(typeof parsedOptions[optionalArg] === 'string' ||
-                        typeof parsedOptions[optionalArg] === 'number' ||
-                        typeof parsedOptions[optionalArg] === 'boolean')) ||
+            return N
+          }, {})
+        }
 
-                     // is the given option not one of the allowed options
-                     (match.allowed && !match.allowed.find(_ => _ === parsedOptions[optionalArg] ||
-                                                           _ === '...' ||
-                                                           (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)))) {
-            //
-            // then the user passed an option, but of the wrong type
-            //
-            debug('bad value for option', optionalArg, match, parsedOptions, args, allFlags)
+        // now use minimist to parse the command line options
+        // minimist stores the residual, non-opt, args in _
+        const parsedOptions = minimist(argv, allFlags)
+        const argvNoOptions = parsedOptions._
 
-            const expectedMessage = match.boolean ? ', expected boolean'
-              : match.numeric ? ', expected a number'
-                : match.file ? ', expected a file path'
-                  : ''
-
-            const message = `Bad value for option ${optionalArg}${expectedMessage}${typeof parsedOptions[optionalArg] === 'boolean' ? '' : ', got ' + parsedOptions[optionalArg]}${match.allowed ? ' expected one of: ' + match.allowed.join(', ') : ''}`
-            const error = new UsageError({ message, usage })
-            debug(message, match)
-            error.code = 498
-            if (execOptions && execOptions.failWithUsage) {
-              return error
-            } else {
-              return oops(block, nextBlock)(error)
-            }
+        //
+        // if the user asked for help, and the plugin registered a
+        // usage model, we can service that here, without having
+        // to involve the plugin. this lets us avoid having each
+        // plugin check for options.help
+        //
+        if ((!usage || !usage.noHelp) && parsedOptions.help && evaluator.options && evaluator.options.usage) {
+          if (execOptions && execOptions.failWithUsage) {
+            return evaluator.options.usage
+          } else {
+            return oops(block, nextBlock)(new UsageError(evaluator.options.usage))
           }
         }
 
         //
-        // user passed an incorrect number of positional parameters?
+        // here is where we enforce the usage model
         //
-        if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
-          // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
-          if (! (nActualArgs >= nRequiredArgs &&
-                 nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
-            // yup, scan for implicitOK
-            const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK)
-            const selection = currentSelection()
+        if (usage && usage.strict) { // strict: command wants *us* to enforce conformance
+          // required and optional parameters
+          const { strict: cmd, onlyEnforceOptions = false, required = [], oneof = [], optional: _optional = [] } = usage
+          const optLikeOneOfs = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
+          const positionalConsumers = _optional.filter(({ name, alias, consumesPositional }) => consumesPositional && (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)]))
+          const optional = builtInOptions.concat(_optional).concat(optLikeOneOfs)
+          const positionalOptionals = optional.filter(({ positional }) => positional)
+          const nPositionalOptionals = positionalOptionals.length
 
-            let nActualArgsWithImplicit = nActualArgs
+          // just introducing a shorter variable name, here
+          const args = argvNoOptions
+          const nPositionalsConsumed = positionalConsumers.length
+          const nRequiredArgs = required.length + (oneof.length > 0 ? 1 : 0) - nPositionalsConsumed
+          const optLikeActuals = optLikeOneOfs.filter(({ name, alias = '' }) => parsedOptions.hasOwnProperty(unflag(name)) || parsedOptions.hasOwnProperty(unflag(alias)))
+          const nOptLikeActuals = optLikeActuals.length
+          const cmdArgsStart = args.indexOf(cmd)
+          const nActualArgs = args.length - cmdArgsStart - 1 + nOptLikeActuals
 
-            if (implicitIdx >= 0 && selection && required[implicitIdx].implicitOK.find(_ => _ === selection.type ||
-                                                                                       _ === selection.prettyType)) {
-              nActualArgsWithImplicit++
-
-              // if implicit, maybe other required parameters aren't needed
-              const notNeededIfImplicit = required.filter(({ notNeededIfImplicit }) => notNeededIfImplicit)
-              nActualArgsWithImplicit += notNeededIfImplicit.length
+          // did the user pass an unsupported optional parameter?
+          for (let optionalArg in parsedOptions) {
+            // skip over minimist's _
+            if (optionalArg === '_' ||
+                parsedOptions[optionalArg] === false) { // minimist nonsense
+              continue
             }
 
-            if (nActualArgsWithImplicit !== nRequiredArgs) {
-              // then either the command didn't specify
-              // implicitOK, or the current selection
-              // (or lack thereof) didn't match with the
-              // command's typing requirement
-              const message = nRequiredArgs === 0 && nPositionalOptionals === 0
-                ? 'This command accepts no positional arguments'
-                : nPositionalOptionals > 0 ? 'This command does not accept this many arguments'
-                : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
-              const err = new UsageError({ message, usage })
-              err.code = 497
-              debug(message, cmd, nActualArgs, nRequiredArgs, args, optLikeActuals)
+            // should we enforce this option?
+            const enforceThisOption = !!(!onlyEnforceOptions ||
+                                         onlyEnforceOptions === true ||
+                                         onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`))
+            if (!enforceThisOption) {
+              // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)
+              // nor did the spec said only to enforce options, but enforce them all (onlyEnforceOptions === true)
+              // nor did the spec enumerated options to enforce, and this is one of them
+              continue
+            }
 
-              if (execOptions && execOptions.nested) {
-                debug('returning usage error')
+            // find a matching declared optional arg
+            const match: any = optional.find(({ name, alias }) => {
+              return stripTrailer(alias) === `-${optionalArg}` ||
+                stripTrailer(name) === `-${optionalArg}` ||
+                stripTrailer(name) === `--${optionalArg}`
+            })
+
+            if (!match) {
+              //
+              // then the user passed an option, but the command doesn't accept it
+              //
+              debug('unsupported optional paramter', optionalArg)
+
+              const message = `Unsupported optional parameter ${optionalArg}`
+              const err = new UsageError({ message, usage })
+              err.code = 499
+              debug(message, args, parsedOptions, optional, argv) // args is argv with options stripped
+              if (execOptions && execOptions.failWithUsage) {
                 return err
               } else {
-                debug('broadcasting usage error')
                 return oops(block, nextBlock)(err)
               }
-            } else {
-              debug('repl selection', selection)
-              // for activation, the proper entity path is an annotation
-              const activationPath = selection.type === 'activations' && selection.annotations && selection.annotations.find(_ => _.key === 'path')
-              if (activationPath) {
-                // ooh, then splice in the implicit parameter and entity type. We splice entity type here for later commands to easily distinguish composition/action.
-                args.splice(implicitIdx, cmdArgsStart + 1, `/${activationPath.value}`, selection.sessionId || selection.fsm ? 'composition' : 'action')
+            } else if ((match.boolean && typeof parsedOptions[optionalArg] !== 'boolean') ||
+                       (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
+                       (match.booleanOK && !(typeof parsedOptions[optionalArg] === 'boolean' || typeof parsedOptions[optionalArg] === 'string')) ||
+                       (match.numeric && typeof parsedOptions[optionalArg] !== 'number') ||
+                       (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
+                       (!match.boolean && !match.booleanOK && !match.numeric && (!match.narg || match.narg === 1) &&
+                        !(typeof parsedOptions[optionalArg] === 'string' ||
+                          typeof parsedOptions[optionalArg] === 'number' ||
+                          typeof parsedOptions[optionalArg] === 'boolean')) ||
+
+                       // is the given option not one of the allowed options
+                       (match.allowed && !match.allowed.find(_ => _ === parsedOptions[optionalArg] ||
+                                                             _ === '...' ||
+                                                             (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)))) {
+              //
+              // then the user passed an option, but of the wrong type
+              //
+              debug('bad value for option', optionalArg, match, parsedOptions, args, allFlags)
+
+              const expectedMessage = match.boolean ? ', expected boolean'
+                : match.numeric ? ', expected a number'
+                : match.file ? ', expected a file path'
+                : ''
+
+              const message = `Bad value for option ${optionalArg}${expectedMessage}${typeof parsedOptions[optionalArg] === 'boolean' ? '' : ', got ' + parsedOptions[optionalArg]}${match.allowed ? ' expected one of: ' + match.allowed.join(', ') : ''}`
+              const error = new UsageError({ message, usage })
+              debug(message, match)
+              error.code = 498
+              if (execOptions && execOptions.failWithUsage) {
+                return error
               } else {
-                // ooh, then splice in the implicit parameter
-                args.splice(implicitIdx, cmdArgsStart + 1, selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name)
+                return oops(block, nextBlock)(error)
               }
-              debug('spliced in implicit argument', cmdArgsStart, implicitIdx, args)
             }
           }
+
+          //
+          // user passed an incorrect number of positional parameters?
+          //
+          if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
+            // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
+            if (! (nActualArgs >= nRequiredArgs &&
+                   nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
+              // yup, scan for implicitOK
+              const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK)
+              const selection = currentSelection()
+
+              let nActualArgsWithImplicit = nActualArgs
+
+              if (implicitIdx >= 0 && selection && required[implicitIdx].implicitOK.find(_ => _ === selection.type ||
+                                                                                         _ === selection.prettyType)) {
+                nActualArgsWithImplicit++
+
+                // if implicit, maybe other required parameters aren't needed
+                const notNeededIfImplicit = required.filter(({ notNeededIfImplicit }) => notNeededIfImplicit)
+                nActualArgsWithImplicit += notNeededIfImplicit.length
+              }
+
+              if (nActualArgsWithImplicit !== nRequiredArgs) {
+                // then either the command didn't specify
+                // implicitOK, or the current selection
+                // (or lack thereof) didn't match with the
+                // command's typing requirement
+                const message = nRequiredArgs === 0 && nPositionalOptionals === 0
+                  ? 'This command accepts no positional arguments'
+                  : nPositionalOptionals > 0 ? 'This command does not accept this many arguments'
+                  : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
+                const err = new UsageError({ message, usage })
+                err.code = 497
+                debug(message, cmd, nActualArgs, nRequiredArgs, args, optLikeActuals)
+
+                if (execOptions && execOptions.nested) {
+                  debug('returning usage error')
+                  return err
+                } else {
+                  debug('broadcasting usage error')
+                  return oops(block, nextBlock)(err)
+                }
+              } else {
+                debug('repl selection', selection)
+                // for activation, the proper entity path is an annotation
+                const activationPath = selection.type === 'activations' && selection.annotations && selection.annotations.find(_ => _.key === 'path')
+                if (activationPath) {
+                  // ooh, then splice in the implicit parameter and entity type. We splice entity type here for later commands to easily distinguish composition/action.
+                  args.splice(implicitIdx, cmdArgsStart + 1, `/${activationPath.value}`, selection.sessionId || selection.fsm ? 'composition' : 'action')
+                } else {
+                  // ooh, then splice in the implicit parameter
+                  args.splice(implicitIdx, cmdArgsStart + 1, selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name)
+                }
+                debug('spliced in implicit argument', cmdArgsStart, implicitIdx, args)
+              }
+            }
+          }
+        } /* strict usage model conformance checking */
+
+        if (evaluator.options && !(await hasAuth()) && !evaluator.options.noAuthOk) {
+          debug('command requires auth, and we do not have it')
+          const err = new Error('Command requires authentication')
+          err['code'] = 403
+          return oops(block, nextBlock)(err)
         }
-      } /* strict usage model conformance checking */
 
-      if (evaluator.options && !(await hasAuth()) && !evaluator.options.noAuthOk) {
-        debug('command requires auth, and we do not have it')
-        const err = new Error('Command requires authentication')
-        err['code'] = 403
-        return oops(block, nextBlock)(err)
-      }
+        if (evaluator.options && evaluator.options.requiresLocal && !hasLocalAccess()) {
+          debug('command does not work in a browser')
+          const err = new Error('Command requires local access')
+          err['code'] = 406 // http not acceptable
+          return oops(block, nextBlock)(err)
+        }
 
-      if (evaluator.options && evaluator.options.requiresLocal && inBrowser()) {
-        debug('command does not work in a browser')
-        const err = new Error('Command requires local access')
-        err['code'] = 406 // http not acceptable
-        return oops(block, nextBlock)(err)
-      }
+        // if we don't have a head (yet), but this command
+        // requires one, then ask for a head and try again. note
+        // that we ignore this needsUI constraint if the user is
+        // asking for help
+        if (isHeadless() && !parsedOptions.cli && !parsedOptions.help &&
+            ((process.env.DEFAULT_TO_UI && !parsedOptions.cli)
+             || (evaluator.options && evaluator.options.needsUI))) {
+          import('../main/headless').then(({ createWindow }) => createWindow(argv, evaluator.options.fullscreen, evaluator.options))
+          return Promise.resolve(true)
+        }
 
-      // if we don't have a head (yet), but this command
-      // requires one, then ask for a head and try again. note
-      // that we ignore this needsUI constraint if the user is
-      // asking for help
-      if (isHeadless() && !parsedOptions.cli && !parsedOptions.help &&
-          ((process.env.DEFAULT_TO_UI && !parsedOptions.cli)
-            || (evaluator.options && evaluator.options.needsUI))) {
-        import('../main/headless').then(({ createWindow }) => createWindow(argv, evaluator.options.fullscreen, evaluator.options))
-        return Promise.resolve(true)
-      }
+        if (execOptions && execOptions.placeholder && prompt) {
+          // prompt might not be defined, e.g. if the command
+          // does a qexec, i.e. delegates to some other command;
+          // that's ok, because in that case, we've already
+          // displayed the placeholder
+          prompt.value = execOptions.placeholder
+        }
 
-      if (execOptions && execOptions.placeholder && prompt) {
-        // prompt might not be defined, e.g. if the command
-        // does a qexec, i.e. delegates to some other command;
-        // that's ok, because in that case, we've already
-        // displayed the placeholder
-        prompt.value = execOptions.placeholder
-      }
-
-      //
-      // the Eval part of REPL
-      //
-      return Promise.resolve()
-        .then(() => evaluator.eval({
-          block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
-          createOutputStream: () => isHeadless() ? headlessStreamTo() : cli.streamTo(block)
-        }))
-        .then(response => {
-          if (response && response.context && nextBlock) {
-            // cli.setContextUI(response, nextBlock)
-            return response.message
-          } else {
-            return response
-          }
+        //
+        // the Eval part of REPL
+        //
+        debug('eval', currentEvaluatorImpl.name)
+        return Promise.resolve().then(() => {
+          return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
+            block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
+            createOutputStream: () => isHeadless() ? headlessStreamTo() : cli.streamTo(block)
+          })
         })
-        .then(response => {
-          if (response === undefined) {
-            // weird, the response is empty!
-            console.error(argv)
-            throw new Error('Internal Error')
-          }
-
-          if (block && block['isCancelled']) {
-            // user cancelled the command
-            debug('squashing output of cancelled command')
-            return
-          }
-
-          if (response.verb === 'delete') {
-            if (maybeHideEntity(response) && nextBlock) {
-              // cli.setContextUI(commandTree.currentContext(), nextBlock)
+          .then(response => {
+            if (!execOptions.rawResponse && response && response.context && nextBlock) {
+              // cli.setContextUI(response, nextBlock)
+              return response.message
+            } else {
+              return response
             }
-          }
+          })
+          .then(response => {
+            if (execOptions.rawResponse) {
+              return response
+            }
 
-          if (response.isUsageError) {
-            throw response
-          }
+            if (response === undefined) {
+              // weird, the response is empty!
+              console.error(argv)
+              throw new Error('Internal Error')
+            }
 
-          // indicate that the command was successfuly completed
-          evaluator.success({
-            type: (execOptions && execOptions.type) || commandTree.ExecType.TopLevel,
-            isDrilldown: execOptions.isDrilldown,
-            command,
-            parsedOptions
+            if (block && block['isCancelled']) {
+              // user cancelled the command
+              debug('squashing output of cancelled command')
+              return
+            }
+
+            if (response.verb === 'delete') {
+              if (maybeHideEntity(response) && nextBlock) {
+                // cli.setContextUI(commandTree.currentContext(), nextBlock)
+              }
+            }
+
+            if (response.isUsageError) {
+              throw response
+            }
+
+            // indicate that the command was successfuly completed
+            evaluator.success({
+              type: (execOptions && execOptions.type) || commandTree.ExecType.TopLevel,
+              isDrilldown: execOptions.isDrilldown,
+              command,
+              parsedOptions
+            })
+
+            // response=true means we are in charge of 'ok'
+            if (nested || response.mode === 'prompt' || block['_isFakeDom']) {
+              // the parent exec will deal with the repl
+              debug('passing control back to prompt processor or headless', response, commandUntrimmed)
+              return Promise.resolve(response)
+            } else {
+              // we're the top-most exec, so deal with the repl!
+              debug('displaying response')
+              const resultDom = block.querySelector('.repl-result')
+              return new Promise(resolve => {
+                cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions)(response) // <--- the Print part of REPL
+                  .then(() => {
+                    if (echo) {
+                      // <-- create a new input, for the next iter of the Loop
+                      setTimeout(() => {
+                        cli.installBlock(blockParent, block, nextBlock)()
+                        resolve(response)
+                      }, 100)
+                    } else {
+                      resolve(response)
+                    }
+                  })
+                  .catch(err => {
+                    console.error(err)
+                    if (execOptions && execOptions.noHistory) {
+                      // then pass the error upstream
+                      throw err
+                    } else {
+                      // then report the error to the repl
+                      oops(block, nextBlock)(err)
+                    }
+                  })
+              })
+            }
+          })
+          .catch(err => {
+            // console.error('error in command execution', err)
+            if (isHeadless()) {
+              throw err
+            } else {
+              // indicate that the command was NOT successfuly completed
+              const orig = err
+              err = evaluator.error(command, err)
+
+              // how should we handle the error?
+              const returnIt = execOptions && execOptions.failWithUsage // return to caller; it'll take care of things from now
+              const rethrowIt = execOptions && execOptions.rethrowErrors // rethrow the exception
+              const reportIt = execOptions && execOptions.reportErrors // report it to the user via the repl
+
+              if (returnIt) {
+                debug('returning command execution error', err.code, err, orig.err)
+                return err
+              } else if (!nested && !rethrowIt) {
+                debug('reporting command execution error to user via repl')
+                console.error(err)
+                oops(block, nextBlock)(err)
+              } else {
+                debug('rethrowing command execution error')
+                if (reportIt) {
+                  // maybe the caller also wants us to report it via the repl?
+                  debug('also reporting command execution error to user via repl')
+                  oops(block, nextBlock)(err)
+                }
+                throw err
+              }
+            }
           })
 
-          // response=true means we are in charge of 'ok'
-          if (nested || response.mode === 'prompt' || block['_isFakeDom']) {
-            // the parent exec will deal with the repl
-            debug('passing control back to prompt processor or headless', response, commandUntrimmed)
-            return Promise.resolve(response)
-          } else {
-            // we're the top-most exec, so deal with the repl!
-            debug('displaying response')
-            const resultDom = block.querySelector('.repl-result')
-            return new Promise(resolve => {
-              cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions)(response) // <--- the Print part of REPL
-                .then(() => {
-                  if (echo) {
-                    // <-- create a new input, for the next iter of the Loop
-                    setTimeout(() => {
-                      cli.installBlock(blockParent, block, nextBlock)()
-                      resolve(response)
-                    }, 100)
-                  } else {
-                    resolve(response)
-                  }
-                })
-                .catch(err => {
-                  console.error(err)
-                  if (execOptions && execOptions.noHistory) {
-                    // then pass the error upstream
-                    throw err
-                  } else {
-                    // then report the error to the repl
-                    oops(block, nextBlock)(err)
-                  }
-                })
-            })
-          }
-        })
-        .catch(err => {
-          // console.error('error in command execution', err)
-
-          if (isHeadless()) {
-            throw err
-          } else {
-            // indicate that the command was NOT successfuly completed
-            const orig = err
-            err = evaluator.error(command, err)
-
-            // how should we handle the error?
-            const returnIt = execOptions && execOptions.failWithUsage // return to caller; it'll take care of things from now
-            const rethrowIt = execOptions && execOptions.rethrowErrors // rethrow the exception
-            const reportIt = execOptions && execOptions.reportErrors // report it to the user via the repl
-
-            if (returnIt) {
-              debug('returning command execution error', err.code, err, orig.err)
-              return err
-            } else if (!nested && !rethrowIt) {
-              debug('reporting command execution error to user via repl')
-              console.error(err)
-              oops(block, nextBlock)(err)
-            } else {
-              debug('rethrowing command execution error')
-              if (reportIt) {
-                // maybe the caller also wants us to report it via the repl?
-                debug('also reporting command execution error to user via repl')
-                oops(block, nextBlock)(err)
-              }
-              throw err
-            }
-          }
-        })
-    }
-  } catch (e) {
-    if (execOptions && execOptions.failWithUsage) {
-      return e
-    } else if (isHeadless()) {
-      throw e
-    }
-
-    console.error('catastrophic error in repl')
-    console.error(e)
-
-    if (execOptions.nested) {
-      // for nested/qexecs, we don't want to report anything to the
-      // repl
-      return
-    }
-
-    const blockForError = block || cli.getCurrentProcessingBlock()
-
-    return Promise.resolve(e.message).then(message => {
-      if (message.nodeName) {
-        e.message = message
-        oops(block, nextBlock)(e)
-      } else {
-        const cmd = cli.showHelp(blockForError, nextBlock, message || 'Unknown command')
-        const resultDom = blockForError.querySelector('.repl-result')
-        return Promise.resolve(cmd)
-          .then(cli.printResults(blockForError, nextBlock, resultDom))
-          .then(cli.installBlock(blockForError.parentNode, blockForError, nextBlock))
       }
-    })
+    } catch (e) {
+      if (execOptions && execOptions.failWithUsage) {
+        return e
+      } else if (isHeadless()) {
+        throw e
+      }
+
+      console.error('catastrophic error in repl')
+      console.error(e)
+
+      if (execOptions.nested) {
+        // for nested/qexecs, we don't want to report anything to the
+        // repl
+        return
+      }
+
+      const blockForError = block || cli.getCurrentProcessingBlock()
+
+      return Promise.resolve(e.message).then(message => {
+        if (message.nodeName) {
+          e.message = message
+          oops(block, nextBlock)(e)
+        } else {
+          const cmd = cli.showHelp(blockForError, nextBlock, message || 'Unknown command')
+          const resultDom = blockForError.querySelector('.repl-result')
+          return Promise.resolve(cmd)
+            .then(cli.printResults(blockForError, nextBlock, resultDom))
+            .then(cli.installBlock(blockForError.parentNode, blockForError, nextBlock))
+        }
+      })
+    }
   }
+} /* InProcessExecutor */
+
+const emptyExecOptions = (): IExecOptions => new DefaultExecOptions()
+
+/**
+ * Execute the given command-line. This function operates by
+ * delegation to the IExecutor impl.
+ *
+ */
+let currentExecutorImpl: IExecutor = new InProcessExecutor()
+export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions()) => {
+  return currentExecutorImpl.exec(commandUntrimmed, execOptions)
+}
+
+/**
+ * Update the executor impl
+ *
+ */
+export const setExecutorImpl = (impl: IExecutor): void => {
+  debug('updating executor impl', impl.name)
+  currentExecutorImpl = impl
 }
 
 /**

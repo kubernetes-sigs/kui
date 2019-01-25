@@ -19,7 +19,7 @@ const debug = require('debug')('tutorial.utils')
 import { join, basename, dirname } from 'path'
 
 /** enclosing directory for tutorials */
-export const contentDir = join(__dirname, '../../../@tutorials')
+export const contentDir = join(__dirname, '../../../lib/@tutorials')
 
 /** enclosing directory for a given tutorial */
 export const projectHome = projectName => join(contentDir, projectName)

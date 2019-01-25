@@ -29,7 +29,7 @@ import settings from '@kui-shell/core/core/settings'
 import historyModel = require('@kui-shell/core/models/history')
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
-import { ow, apiHost, apihost, auth as authModel } from '../models/auth'
+import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode } from '../models/modes'
 
@@ -43,6 +43,14 @@ import usage = require('./openwhisk-usage')
 const isLinux = require('os').type() === 'Linux'
 
 debug('modules loaded')
+
+const getClient = (execOptions) => {
+  if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
+    return initOWFromConfig(execOptions.credentials.openwhisk)
+  } else {
+    return globalOW
+  }
+}
 
 //
 // docs stuff
@@ -619,13 +627,13 @@ specials.api = {
     }
 
     return {
-      preprocess: _ => {
+      preprocess: (_, execOptions) => {
         // we need to confirm that the action is web-exported
+        const ow = getClient(execOptions)
 
         // this is the desired action impl for the api
         const name = argv[argv.length - 1]
         debug('fetching action', name)
-
         return ow.actions.get(owOpts({ name }))
           .then(action => {
             const isWebExported = action.annotations.find(({ key }) => key === 'web-export')
@@ -758,7 +766,7 @@ specials.actions = {
       debug('action copy SRC', src, 'DEST', dest, argv)
 
       return {
-        options: ow.actions.get(owOpts({ name: src }))
+        options: getClient(execOptions).actions.get(owOpts({ name: src }))
           .then(action => {
             if (options.action.parameters && !action.parameters) {
               action.parameters = options.action.parameters
@@ -1046,6 +1054,11 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
   let entity = _entity
   let verb = _verb
 
+  if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
+    // FIXME we can do better here
+    initOWFromConfig(execOptions.credentials.openwhisk)
+  }
+
   const pair = parseOptions(argvFull, toOpenWhiskKind(entity))
   const regularOptions = minimist(pair.argv, {
     boolean: booleans[entity] && booleans[entity][verb],
@@ -1129,7 +1142,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
 
   // pre and post-process the output of openwhisk; default is do nothing
   let postprocess = x => x
-  let preprocess = x => x
+  let preprocess = (options, execOptions) => options
 
   if (entity === 'activations' && verb === 'get' && options.last) {
     // special case for wsk activation get --last
@@ -1205,6 +1218,8 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       })
     }
 
+    const ow = self['client'](execOptions)
+
     if (!ow[entity][verb]) {
       return Promise.reject(new Error('Unknown OpenWhisk command'))
     } else {
@@ -1213,7 +1228,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       owOpts(options, execOptions)
 
       return Promise.resolve(options)
-        .then(preprocess)
+        .then(options => preprocess(options, execOptions))
         .then(options => ow[entity][verb](options))
         .then(handle204(options.name))
         .then(postprocess)
@@ -1295,7 +1310,8 @@ const makeInit = (commandTree) => async () => {
     crudable: crudableTypes,
 
     /** export the raw interface */
-    ow,
+    client: getClient,
+    ow: globalOW,
     addPrettyType: addPrettyType,
     parseOptions: parseOptions,
 
@@ -1305,13 +1321,14 @@ const makeInit = (commandTree) => async () => {
         if (authModel.set(newAuthKey)) {
           initSelf()
         }
-        self['ow'] = ow
+        self['ow'] = globalOW
         return Promise.resolve(true)
       }
     }),
 
     namespace: {
-      get: () => ow.namespaces.list(owOpts()).then(A => A[0]) // the api returns, as a historical artifact, an array of length 1
+      // FIXME globalOW
+      get: () => globalOW.namespaces.list(owOpts()).then(A => A[0]) // the api returns, as a historical artifact, an array of length 1
     },
 
     fillInActionDetails: (Package, type) => actionSummary => Object.assign({}, actionSummary, {
@@ -1329,7 +1346,8 @@ const makeInit = (commandTree) => async () => {
       entity.annotations && entity.annotations.find(kv => kv.key === 'kind' && kv.value === 'sequence'),
 
     /** update the given openwhisk entity */
-    update: (entity, retryCount) => {
+    update: execOptions => (entity, retryCount) => {
+      const ow = getClient(execOptions)
       const options = owOpts({
         name: entity.name,
         namespace: entity.namespace
@@ -1378,8 +1396,9 @@ const makeInit = (commandTree) => async () => {
   // for each entity type
   /* const apiMaster = */ commandTree.subtree(`/wsk`, { usage: usage.wsk })
 
-  for (let api in ow) {
-    const clazz = ow[api].constructor
+  // FIXME globalOW
+  for (let api in globalOW) {
+    const clazz = globalOW[api].constructor
     const props = Object.getOwnPropertyNames(clazz.prototype).concat(extraVerbs(api) || [])
     // alsoInstallAtRoot = api === 'actions'
 
@@ -1456,8 +1475,10 @@ const makeInit = (commandTree) => async () => {
    * lifecycle event on the feed.
    *
    */
-  const removeTrigger = ({ argv }) => {
+  const removeTrigger = ({ argv, execOptions }) => {
     const name = argv[argv.length - 1]
+    const ow = getClient(execOptions)
+
     return ow.triggers.delete(owOpts({ name: name }))
       .then(trigger => {
         const feedAnnotation = trigger.annotations && trigger.annotations.find(kv => kv.key === 'feed')
@@ -1486,11 +1507,12 @@ const makeInit = (commandTree) => async () => {
    * creation
    *
    */
-  const createTrigger = ({ argvNoOptions: argv, parsedOptions: options }) => {
+  const createTrigger = ({ argvNoOptions: argv, parsedOptions: options, execOptions }) => {
     const name = argv[argv.length - 1]
     const triggerSpec = owOpts({ name })
     const paramsArray = []
     const params = {}
+    const ow = getClient(execOptions)
 
     if (options.param) {
       for (let idx = 0; idx < options.param.length; idx += 2) {
@@ -1572,7 +1594,7 @@ const makeInit = (commandTree) => async () => {
   // count APIs
   for (let entityType in synonymsTable.entities) {
     synonymsTable.entities[entityType].forEach(syn => {
-      commandTree.listen(`/wsk/${syn}/count`, ({ argvNoOptions, parsedOptions: options }) => {
+      commandTree.listen(`/wsk/${syn}/count`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
         const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
         const overrides = { count: true }
         delete options._
@@ -1583,6 +1605,7 @@ const makeInit = (commandTree) => async () => {
         }
 
         const opts = owOpts(Object.assign({}, options, overrides))
+        const ow = getClient(execOptions)
 
         return ow[entityType].list(opts)
           .then(res => res[entityType])

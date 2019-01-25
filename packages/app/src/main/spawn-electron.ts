@@ -18,6 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('main/spawn-electron')
 debug('loading')
 
+import { IExecOptions } from '../models/execOptions'
+
 import * as colors from 'colors/safe'
 
 export interface SubwindowPrefs {
@@ -110,7 +112,7 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
     }
 
     try {
-      const { _location, name } = require('../../../package.json')
+      const { _location, name } = require('../../package.json')
 
       if (!_location || name !== 'kui-shell') {
         // then this is probably an unrelated package.json file
@@ -251,7 +253,7 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
  * Bootstrap headless mode
  *
  */
-export async function initHeadless (argv: Array<string>, force = false, isRunningHeadless = false) {
+export async function initHeadless (argv: Array<string>, force = false, isRunningHeadless = false, execOptions?: IExecOptions) {
   if (/* noHeadless !== true && */ force || isRunningHeadless) {
     debug('initHeadless')
 
@@ -269,7 +271,7 @@ export async function initHeadless (argv: Array<string>, force = false, isRunnin
           // because this will be called for cases where we want a headless -> GUI transition
           return createWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
         }
-      }, argv)
+      }, argv, execOptions)
     } catch (err) {
       // oof, something real bad happened
       console.error('Internal Error, please report this bug:')

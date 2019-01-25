@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('tutorial.list')
+import * as Debug from 'debug'
+const debug = Debug('plugins/tutorial/list')
 
 import { readdir } from 'fs'
-import { join } from 'path'
 
 import repl = require('@kui-shell/core/core/repl')
 
@@ -30,7 +30,6 @@ import { contentDir } from './util'
 const levelToNumber = { Beginner: 0, Intermediate: 1, Advanced: 2 }
 const sort = list => {
   return list.sort((a,b) => {
-    console.error(a.sort, b.sort)
     return ((a.sort !== undefined ? a.sort : levelToNumber[a.level])
             - (b.sort !== undefined ? b.sort : levelToNumber[b.level]))
       || (a.sort || a.name).localeCompare(b.sort || b.name)
@@ -42,22 +41,22 @@ const sort = list => {
  *
  */
 const doList = () => new Promise((resolve, reject) => {
-  readdir(contentDir, (err, files) => {
+  readdir(contentDir, async (err, files) => {
     if (err) {
       reject(err)
     } else {
       const pane = document.querySelector('#tutorialPane')
       const nowPlaying = pane && pane.getAttribute('now-playing')
 
-      resolve(sort(files.map(name => {
-        const { disabled, sort, description, level } = require(join(contentDir, name, 'package.json'))
+      const tutorials = (await Promise.all(files.map(async name => {
+        const { disabled, sort, description, level } = await import('@kui-shell/plugin-tutorials/lib/@tutorials/' + name + '/package.json')
 
         if (disabled) {
           // then this tutorial is currently disabled
           return
         }
 
-        const { skills } = require(join(contentDir, name, 'tutorial.json'))
+        const { skills } = await import('@kui-shell/plugin-tutorials/lib/@tutorials/' + name + '/tutorial.json')
         const attributes = []
 
         // add a "level" column
@@ -109,7 +108,9 @@ const doList = () => new Promise((resolve, reject) => {
           onclick: () => repl.pexec(`tutorial play @tutorials/${name}`),
           attributes
         }
-      }).filter(x => x))) // filter out any nils due to disabled tutorials
+      }))).filter(x => x) // filter out any nils due to disabled tutorials
+
+      resolve(sort(tutorials))
     }
   })
 })

@@ -28,13 +28,18 @@ export enum Media {
   Browser
 }
 
+/** map from provider to credentials */
+type ICredentialsMap = { [key: string]: any }
+
 /**
  * Current state of capabilities
  *
  */
 class State {
+  assertedLocalAccess = false
+  hasLocalAccess = true // may change as media changes or assertLocalAccess is called
   media = Media.Unknown
-  validCredentials: { [key: string]: boolean } = {}
+  validCredentials: ICredentialsMap = {} // map to the credentials
 }
 let state: State = new State()
 
@@ -55,6 +60,10 @@ export const inBrowser = () => state.media === Media.Browser
 export const setMedia = (media: Media): void => {
   debug('setMedia %s', Media[media])
   state.media = media
+
+  if (!state.assertedLocalAccess && inBrowser()) {
+    state.hasLocalAccess = false
+  }
 }
 
 /**
@@ -62,13 +71,44 @@ export const setMedia = (media: Media): void => {
  * provider
  *
  */
-export const setHasAuth = (provider: string): void => {
-  debug('setHasAuth', provider)
-  state.validCredentials[provider] = true
+export const setHasAuth = (provider: string, creds: any): void => {
+  debug('setHasAuth', provider, creds)
+  state.validCredentials[provider] = creds
+}
+
+/**
+ * Return a map of all valid credentials
+ *
+ */
+export const getValidCredentials = (): ICredentialsMap => state.validCredentials
+
+/**
+ * Inject the credentials map
+ *
+ */
+export const setValidCredentials = (creds: ICredentialsMap): void => {
+  state.validCredentials = creds
 }
 
 /**
  * Do we have valid credentials to interface with the given provider?
  *
  */
-export const hasAuth = (provider: string): boolean => state.validCredentials[provider]
+export const hasAuth = (provider: string): boolean => !!state.validCredentials[provider]
+
+/**
+ * Do we have access to a local system?
+ *
+ */
+export const hasLocalAccess = (): boolean => {
+  return state.hasLocalAccess
+}
+
+/**
+ * Assert that we have local access, even if the default behavior
+ * would indicate otherwise
+ *
+ */
+export const assertLocalAccess = (): void => {
+  state.hasLocalAccess = true
+}

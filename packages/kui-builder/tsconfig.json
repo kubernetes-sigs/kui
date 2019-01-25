@@ -7,13 +7,14 @@
     "declaration": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "baseUrl": "../app",
+    "baseUrl": "../..",
     "paths": {
-      "@kui-shell/core/*": ["src/*"],
-      "@kui-shell/core/tests/*": ["../../build/packages/app/tests/*"],
-      "@kui-shell/settings/*": ["../../build/*"],
-      "@kui-shell/prescan": ["../../build/.pre-scanned.json"],
-      "@kui-shell/*": ["../../plugins/*"]
+      "@kui-shell/core/tests/*": ["build/packages/app/tests/*"],
+      "@kui-shell/settings/*": ["packages/app/build/*"],
+      "@kui-shell/prescan": ["build/.pre-scanned.json"],
+      "@kui-shell/plugin-*": ["plugins/plugin-*"],
+      "@kui-shell/core/*": ["packages/app/src/*"],
+      "@kui-shell/*": ["packages/*"]
     }
   },
   "include": [

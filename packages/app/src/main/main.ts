@@ -18,13 +18,14 @@ import * as Debug from 'debug'
 const debug = Debug('main/main')
 debug('loading')
 
+import { IExecOptions } from '../models/execOptions'
 import { SubwindowPrefs, getCommand, initElectron, initHeadless } from './spawn-electron'
 
 /**
  * This is the main entry point to kui
  *
  */
-export const main = (argv: Array<string>, env = process.env) => {
+export const main = (argv: Array<string>, env = process.env, execOptions?: IExecOptions) => {
   const forceUI = !!argv.find(arg => arg === '--ui')
   const isShell = !!argv.find(arg => arg === 'shell')
   const kuiShell = forceUI || isShell
@@ -43,7 +44,7 @@ export const main = (argv: Array<string>, env = process.env) => {
                  : subwindowPrefs)
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
-    const result = initHeadless(argv, false, isRunningHeadless)
+    const result = initHeadless(argv, false, isRunningHeadless, execOptions)
     if (env.KUI_REPL_MODE) {
       debug('returning repl mode result')
       return result

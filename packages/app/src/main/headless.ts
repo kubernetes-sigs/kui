@@ -24,6 +24,7 @@ import * as repl from '../core/repl'
 import { prequire, preload, init as pluginsInit } from '../core/plugins'
 import Store from './store'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
+import { IExecOptions } from '../models/execOptions'
 
 // set the headless capability
 import { Media, setMedia } from '../core/capabilities'
@@ -306,7 +307,7 @@ const initCommandContext = async (commandContext: string) => {
  * Initialize headless mode
  *
  */
-export const main = async (app, mainFunctions, rawArgv = process.argv) => {
+export const main = async (app, mainFunctions, rawArgv = process.argv, execOptions?: IExecOptions) => {
   debug('main')
 
   const ourCommandContext = rawArgv.find(_ => !!_.match(commandContextPattern))
@@ -330,7 +331,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv) => {
    * Evaluate the given command
    *
    */
-  const evaluate = cmd => Promise.resolve(repl.exec(cmd))
+  const evaluate = cmd => Promise.resolve(repl.exec(cmd, execOptions))
     .then(success(quit))
 
   console.log = function () {

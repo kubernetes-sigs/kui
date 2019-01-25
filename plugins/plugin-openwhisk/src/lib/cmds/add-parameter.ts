@@ -167,7 +167,7 @@ const logThen = f => err => {
  * @param attr will be 'parameters' or 'annotations'
  *
  */
-const add = (wsk, type) => (op, opKind = op, attr = 'parameters') => ({ command: rawCommand }) => {
+const add = (wsk, type) => (op, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions }) => {
   /** fetch the given entity with the given type */
   const fetchEntityWithType = (name, type) => repl.qexec(`wsk ${type} get ${name}`)
 
@@ -244,7 +244,7 @@ const add = (wsk, type) => (op, opKind = op, attr = 'parameters') => ({ command:
   // here is where we do the work!
   return fetchEntity(dest, tryThisType) // grab a copy of the current attributes
     .then(updateMapping(opKind, attr, key, value)) // update our copy
-    .then(wsk.update) // then push the updates to the backend
+    .then(wsk.update(execOptions)) // then push the updates to the backend
     .then(entity => showEntity(entity, { show: attr })) // open the entity, showing the attribute, e.g. parameters or annotations
     .then(() => true)
 }

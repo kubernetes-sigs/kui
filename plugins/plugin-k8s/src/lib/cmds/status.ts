@@ -113,8 +113,8 @@ interface IContext {
  * Return an [IContext] model for all known contexts
  *
  */
-const allContexts = async (): Promise<Array<IContext>> => {
-  return (await repl.qexec(`k8s contexts`))[0]
+const allContexts = async (execOptions): Promise<Array<IContext>> => {
+  return (await repl.qexec(`k8s contexts`, undefined, undefined, execOptions))[0]
     .slice(1)
     .map(({ name, attributes }) => ({
       name: attributes.find(({ key }) => key === 'NAME').value,
@@ -136,14 +136,15 @@ const removeDuplicateResources = L => L.filter((item, idx) => {
  *
  */
 const getStatusForKnownContexts = (execOptions, parsedOptions) => async (contexts: Array<IContext> = []) => {
-  const currentContext = repl.qexec(`kubectl config current-context`,
-                                    undefined, undefined, { raw: true })
+  const raw = Object.assign({}, execOptions, { raw: true })
+
+  const currentContext = repl.qexec(`kubectl config current-context`, undefined, undefined, raw)
 
   if (contexts.length === 0) {
     const ccName = await currentContext
-    contexts = (await allContexts()).filter(({ name }) => name === ccName)
+    contexts = (await allContexts(execOptions)).filter(({ name }) => name === ccName)
     if (contexts.length === 0) {
-      debug('Odd, no contexts found', await allContexts(), (await allContexts()).filter(({ name }) => name === ccName))
+      debug('Odd, no contexts found', await allContexts(execOptions), (await allContexts(execOptions)).filter(({ name }) => name === ccName))
       throw new Error('No contexts found')
     }
   }
@@ -154,12 +155,12 @@ const getStatusForKnownContexts = (execOptions, parsedOptions) => async (context
     try {
       debug('fetching kubectl get all', name, namespace)
       const coreResources = repl.qexec(`kubectl get --context "${name}" all ${adminCoreFilter} -o json`,
-                                       undefined, undefined, { raw: true })
+                                       undefined, undefined, raw)
         .catch(handleError)
 
       debug('fetching crds', name, namespace)
       const crds = await repl.qexec(`kubectl get --context "${name}" crds ${adminCRDFilter} -o json`,
-                                    undefined, undefined, { raw: true })
+                                    undefined, undefined, raw)
       debug('crds', name, crds)
 
       // TODO: hack for now; we need app=seed, or something like that
@@ -168,7 +169,7 @@ const getStatusForKnownContexts = (execOptions, parsedOptions) => async (context
       const crdResources = flatten(await Promise.all(filteredCRDs.map(crd => {
         const kind = (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) || crd.spec.names.kind
         return repl.qexec(`kubectl get --context "${name}" -n "${namespace}" ${adminCoreFilter} "${kind}" -o json`,
-                          undefined, undefined, { raw: true })
+                          undefined, undefined, raw)
           .catch(handleError)
       })))
 
@@ -275,6 +276,8 @@ const errorEntity = (execOptions, base, backupNamespace?: string) => err => {
  *
  */
 const getDirectReferences = (command: string) => async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
+  const raw = Object.assign({}, execOptions, { raw: true })
+
   const idx = argvNoOptions.indexOf(command) + 1
   const file = argvNoOptions[idx]
   const name = argvNoOptions[idx + 1]
@@ -300,7 +303,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     // CRDs
     //
     debug('global status check')
-    return getStatusForKnownContexts(execOptions, parsedOptions)(await allContexts())
+    return getStatusForKnownContexts(execOptions, parsedOptions)(await allContexts(execOptions))
   } else if (!file && !name) {
     //
     // ibid, but only for the current context
@@ -313,7 +316,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     debug('status by programmatic parameter', resources)
     const entities = await Promise.all(resources.map(_ => {
       return repl.qexec(`kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`,
-                        undefined, undefined, { raw: true })
+                        undefined, undefined, raw)
     }))
     if (execOptions.raw) {
       return entities
@@ -331,7 +334,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     const command = `kubectl get "${kind}" "${name || ''}" ${ns()} -o json`
     debug('status by kind and name', command)
 
-    const kubeEntity = withRetryOn404(() => repl.qexec(command, undefined, undefined, { raw: true }), command)
+    const kubeEntity = withRetryOn404(() => repl.qexec(command, undefined, undefined, raw), command)
 
     if (execOptions.raw) {
       return kubeEntity
@@ -383,7 +386,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
       debug('status by resource kind', file, name)
 
       const kubeEntities = repl.qexec(`kubectl get "${file}" "${name || ''}" ${ns()} -o json`,
-                                      undefined, undefined, Object.assign({}, execOptions, { raw: true }))
+                                      undefined, undefined, raw)
         .catch(err => {
           if (err.code === 404) {
             // then no such resource type exists
@@ -418,7 +421,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
 
       const kubeEntities = Promise.all(specs.map(spec => {
         return repl.qexec(`kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(spec)} -o json`,
-                          undefined, undefined, { raw: true })
+                          undefined, undefined, raw)
           .catch(errorEntity(execOptions, spec, namespace))
       }))
 
@@ -443,10 +446,11 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
 const findControlledResources = async (args, kubeEntities: Array<any>): Promise<Array<any>> => {
   debug('findControlledResources', kubeEntities)
 
+  const raw = Object.assign({}, args.execOptions, { raw: true })
   const pods = removeDuplicateResources(flatten(await Promise.all(kubeEntities.map(({ kind, metadata: { labels, namespace, name } }) => {
     if (labels && labels.app && kind !== 'Pod') {
       return repl.qexec(`kubectl get pods -n "${namespace}" -l "app=${labels.app}" -o json`,
-                        undefined, undefined, { raw: true })
+                        undefined, undefined, raw)
     }
   }).filter(x => x))))
 
@@ -517,11 +521,13 @@ const status = command => async args => {
 export default (commandTree, prequire) => {
   const cmd = commandTree.listen('/k8s/status', status('status'), {
     usage: usage('status'),
+    inBrowserOK: true,
     noAuthOk: [ 'openwhisk' ]
   })
 
   commandTree.synonym('/k8s/list', status('list'), cmd, {
     usage: usage('list'),
+    inBrowserOK: true,
     noAuthOk: [ 'openwhisk' ]
   })
 }

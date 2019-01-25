@@ -27,7 +27,7 @@ import { synonyms } from '../models/synonyms'
  *
  */
 export default async (commandTree, wsk) => {
-  synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ block, nextBlock }) => {
+  synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ block, nextBlock, execOptions }) => {
     if (isHeadless()) {
       throw new Error('beautify not supported in headless mode')
     }
@@ -51,7 +51,7 @@ export default async (commandTree, wsk) => {
       setTimeout(() => hljs.highlightBlock(code), 0)
 
       // save
-      return wsk.update(selection)
+      return wsk.update(execOptions)(selection)
     }
   }, { docs: 'Reformat the source code of an action',
     requireSelection: true,

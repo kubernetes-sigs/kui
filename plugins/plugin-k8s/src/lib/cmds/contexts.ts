@@ -17,6 +17,7 @@
 const debug = require('debug')('k8s/cmds/contexts')
 
 import repl = require('@kui-shell/core/core/repl')
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 const usage = {
   context: command => ({
@@ -37,34 +38,38 @@ const usage = {
  * Add click handlers to change context
  *
  */
-const addClickHandlers = table => {
-  debug('table', table)
-  return [table[0]].concat(table.slice(1).map(row => {
-    const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
-    const { value: contextName } = nameAttr
+const addClickHandlers = execOptions => table => {
+  if (isHeadless()) {
+    return table
+  } else {
+    debug('table', table)
+    return [table[0]].concat(table.slice(1).map(row => {
+      const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
+      const { value: contextName } = nameAttr
 
-    nameAttr.outerCSS += ' entity-name-group-narrow'
+      nameAttr.outerCSS += ' entity-name-group-narrow'
 
-    row.onclick = async () => {
-      await repl.qexec(`kubectl config use-context ${repl.encodeComponent(contextName)}`,
-                             undefined, undefined, { raw: true })
-      row.setSelected()
-    }
+      row.onclick = async () => {
+        await repl.qexec(`kubectl config use-context ${repl.encodeComponent(contextName)}`,
+                         undefined, undefined, Object.assign({}, execOptions, { raw: true }))
+        row.setSelected()
+      }
 
-    return row
-  }))
+      return row
+    }))
+  }
 }
 
 /**
  * List contets command handler
  *
  */
-const listContexts = opts => repl.qexec(`kubectl config get-contexts`)
-    .then(addClickHandlers)
-    .then(table => {
-      table[0].title = 'Kubernetes Contexts'
-      return [table]
-    })
+const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions)
+  .then(addClickHandlers(opts.execOptions))
+  .then(table => {
+    table[0].title = 'Kubernetes Contexts'
+    return [table]
+  })
 
 /**
  * Register the commands
@@ -72,11 +77,12 @@ const listContexts = opts => repl.qexec(`kubectl config get-contexts`)
  */
 export default (commandTree, prequire) => {
   commandTree.listen('/k8s/context',
-                     async () => {
+                     async ({ execOptions }) => {
                        return (await repl.qexec(`kubectl config current-context`,
-                                                undefined, undefined, { raw: true })).trim()
+                                                undefined, undefined, Object.assign({}, execOptions, { raw: true }))).trim()
                      },
     { usage: usage.context('context'),
+      inBrowserOK: true,
       noAuthOk: [ 'openwhisk' ] })
 
   commandTree.listen('/k8s/contexts',
@@ -84,5 +90,6 @@ export default (commandTree, prequire) => {
     { usage: usage.contexts('contexts'),
       width: 1024,
       height: 600,
+      inBrowserOK: true,
       noAuthOk: [ 'openwhisk' ] })
 }

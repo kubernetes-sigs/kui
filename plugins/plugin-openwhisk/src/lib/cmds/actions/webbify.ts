@@ -93,8 +93,9 @@ const doWebbify = (wsk) => ({ command, execOptions }) => {
       }
 
       // fetch, update, render to user
-      return wsk.ow.actions.get(wsk.owOpts({ name: action.name || action, namespace: action.namespace }))
-        .then(action => wsk.ow.actions.update(wsk.owOpts({ name: action.name,
+      const ow = wsk.client(execOptions)
+      return ow.actions.get(wsk.owOpts({ name: action.name || action, namespace: action.namespace }))
+        .then(action => ow.actions.update(wsk.owOpts({ name: action.name,
           namespace: action.namespace,
           action: Object.assign(action, { annotations: addAnnotations(action.annotations, mimeType) })
         })))
