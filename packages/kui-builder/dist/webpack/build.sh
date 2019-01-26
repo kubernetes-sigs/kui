@@ -16,6 +16,11 @@
 # limitations under the License.
 #
 
+#
+# This script builds the webpack bundles. IT DOES NOT build the docker
+# image. You can use ./build-docker.sh for that.
+#
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../../../"
 STAGING="$SCRIPTDIR/kui"
