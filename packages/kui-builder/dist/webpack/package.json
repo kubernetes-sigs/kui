@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack-stats": "npm run webpack-pre && webpack --json > /tmp/stats.json; npm run webpack-post",
-    "http-allocate-cert": "if [ ! -d .keys ]; then mkdir .keys && openssl genrsa -out .keys/ssl.key 2048 && openssl req -new -key .keys/ssl.key -x509 -days 999 -out .keys/ssl.crt; fi; if [ ! -f .keys/ssl.key ] || [ ! -f .keys/ssl.crt ]; then echo '!!! KUI ERROR: the self-signed cert was not created successfully' && echo '!!! Make sure to provide at least one non-empty answer to the cert creation step' && echo '!!! Please try again' && echo '' && rm -rf .keys; exit 1; fi;",
-    "http": "npm run http-allocate-cert && echo 'Now visit this url:'; echo 'https://localhost:8080/app/build/index-webpack-local.html'; (cd ../../../../packages && http-server --cors --brotli --ssl --cert ./kui-builder/dist/webpack/.keys/ssl.crt --key ./kui-builder/dist/webpack/.keys/ssl.key --silent)",
+    "http-allocate-cert": "./bin/ssl.sh",
+    "http": "npm run http-allocate-cert && echo 'Now visit this url:'; echo 'https://localhost:9080'; docker run --rm -p 9080:443 kui-webpack",
     "webpack-cli-heap": "cp node_modules/.bin/webpack-cli node_modules/.bin/webpack-cli.orig && awk 'FNR==1 {print $0, \"--max-old-space-size=8192\"} FNR > 1 { print $0 }' node_modules/.bin/webpack-cli.orig > node_modules/.bin/webpack-cli",
     "postinstall": "npm run webpack-cli-heap"
   },
@@ -18,7 +18,6 @@
     "brotli-webpack-plugin": "^1.0.0",
     "css-loader": "^2.1.0",
     "file-loader": "^3.0.1",
-    "http-server": "git://github.com/starpit/http-server.git#fix_445",
     "ibm-cos-sdk": "^1.4.1",
     "ignore-loader": "^0.1.2",
     "needle": "^2.2.4",

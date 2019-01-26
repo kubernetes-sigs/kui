@@ -52,34 +52,6 @@ const getClient = (execOptions) => {
   }
 }
 
-//
-// docs stuff
-//
-/* const swagger = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../docs/apiv1swagger.json')))
-   const verbToPath = { // any odd mappings; if it's 1-1, don't bother enumerating here
-   list: type => `/namespaces/{namespace}/${type}`
-   }
-   const verbToMethod = { // any odd verb-to-method mappings; if it's 1-1, don't bother enumerating here; e.g. get->get, delete->delete
-   list: 'get',
-   create: 'put',
-   update: 'put',
-   invoke: 'post',
-   enable: 'post',
-   disable: 'post',
-   fire: 'post'
-   }
-   const docsKey = (type, verb) => verbToPath[verb] ? verbToPath[verb](type) : `/namespaces/{namespace}/${type}/{${toOpenWhiskKind(type)}Name}`
-   const apiDocs = (type, verb) => swagger.paths[docsKey(type, verb)] || {}
-   const docs = (type, verb) => {
-   if (type === 'package' || type === 'packages' && verb === 'bind') {
-   // oof, hack for now for package bind, as it doesn't have its own swagger entry
-   return 'Create a new package binding'
-   } else {
-   return apiDocs(type, verb)[verbToMethod[verb] || verb]
-   }
-   }
-*/
-
 /**
  * Maybe add a header row for tables. If this is a nested call,
  * i.e. some other plugin is calling us for the data rather than the
@@ -1325,11 +1297,6 @@ const makeInit = (commandTree) => async () => {
         return Promise.resolve(true)
       }
     }),
-
-    namespace: {
-      // FIXME globalOW
-      get: () => globalOW.namespaces.list(owOpts()).then(A => A[0]) // the api returns, as a historical artifact, an array of length 1
-    },
 
     fillInActionDetails: (Package, type) => actionSummary => Object.assign({}, actionSummary, {
       // given the actionSummary from the 'actions' field of a package entity

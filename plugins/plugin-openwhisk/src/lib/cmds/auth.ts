@@ -473,16 +473,25 @@ export default async (commandTree, wsk, prequire) => {
 
   const add = ({ argvNoOptions }) => addFn(commandTree, wsk, prequire, firstArg(argvNoOptions, 'add'), undefined)
 
-  commandTree.listen('/wsk/auth/switch', use(commandTree, wsk, 'switch'), { usage: usage.auth.switch, noAuthOk: true })
-  commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true })
-  commandTree.listen('/wsk/auth/list', list(wsk), { usage: usage.auth.list, noAuthOk: true })
+  commandTree.listen('/wsk/auth/switch', use(commandTree, wsk, 'switch'), { usage: usage.auth.switch, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/auth/list', list(wsk), { usage: usage.auth.list, noAuthOk: true, inBrowserOK: true })
 
   /**
    * OpenWhisk API host: get and set commands
    *
    */
-  commandTree.listen('/wsk/host/get', () => wsk.apiHost.get(), { usage: usage.host.get, noAuthOk: true })
-  commandTree.listen('/wsk/host/set', hostSet(wsk), { usage: usage.host.set, noAuthOk: true })
+  commandTree.listen('/wsk/host/get', () => wsk.apiHost.get(), { usage: usage.host.get, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/host/set', hostSet(wsk), { usage: usage.host.set, noAuthOk: true, inBrowserOK: true })
+
+  /**
+   * An internal command that turns the current auth key into the corresponding openwhisk namespace
+   *
+   */
+  commandTree.listen('/wsk/auth/namespace/get', ({ execOptions }) => {
+    // the api returns, as a historical artifact, an array of length 1
+    return wsk.client(execOptions).namespaces.list(wsk.owOpts()).then(A => A[0])
+  }, { hidden: true })
 
   return {
     add: addFn

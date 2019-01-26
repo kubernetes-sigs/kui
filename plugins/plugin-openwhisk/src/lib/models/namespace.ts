@@ -232,7 +232,7 @@ export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
 
   return apiHost.get() // get the current apihost
     .then(setApiHost) // udpate the UI for the apihost
-    .then(_wsk.namespace.get) // get the namespace associated with the current auth key
+    .then(() => repl.qexec('wsk auth namespace get')) // get the namespace associated with the current auth key
     .then(setNamespace) // update the UI for the namespace
     .catch(err => {
       debug('namespace init error', noAuthOk)
@@ -296,7 +296,7 @@ export const current = async (opts: ICurrentOptions = new DefaultCurrentOptions(
  *
  */
 export const useAndSave = (auth, wsk = _wsk) => wsk.auth.set(auth)
-  .then(wsk.namespace.get)
+  .then(() => repl.qexec('wsk namespace current'))
   .then(namespace => writeSelectedNS(namespace)) // store the selected namesapce to local storage (use case e.g. reload the browser after auth switch)
   .then(() => init())
 
