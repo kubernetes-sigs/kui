@@ -40,3 +40,6 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/exec', execRouter)
 
 module.exports = app
+
+// helps with ctrl-c when running in a docker container
+process.on('SIGINT', () => process.exit())

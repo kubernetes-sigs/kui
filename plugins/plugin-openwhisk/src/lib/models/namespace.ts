@@ -32,7 +32,7 @@ let cached
 let _wsk
 let currentNS
 
-const read = (wsk = _wsk) => apiHost.get().then(host => {
+const read = () => apiHost.get().then(host => {
   debug('read:host', host)
   let model = cached
   if (!model) {
@@ -96,7 +96,7 @@ export const setApiHost = apiHost => {
 
 const setNamespace = (namespace, wsk = _wsk) => {
   if (!namespace) {
-    return setNeedsNamespace(wsk)
+    return setNeedsNamespace()
   }
 
   // UI bits
@@ -115,7 +115,7 @@ const setNamespace = (namespace, wsk = _wsk) => {
   currentNS = namespace
 
   // persistence bits
-  return store(namespace, wsk.auth.get(), wsk)
+  return store(namespace, wsk.auth.get())
 }
 
 /**
@@ -164,7 +164,7 @@ export const setPleaseSelectNamespace = () => {
  * wsk.namespace.get call failed
  *
  */
-export const setNeedsNamespace = async (wsk, err?: Error) => {
+export const setNeedsNamespace = async (err?: Error) => {
   // oops, we're in a bit of a weird state. if we get here,
   // then the user has specified a valid api host, but
   // hasn't yet selected a namespace.
@@ -210,8 +210,8 @@ export const setNeedsNamespace = async (wsk, err?: Error) => {
  * Record namespace to local store
  *
  */
-export const store = (namespace, auth, wsk) => {
-  return read(wsk).then(model => {
+const store = (namespace, auth) => {
+  return read().then(model => {
     let hostModel = model._full[model._host]
     if (!hostModel) {
       hostModel = model._full[model._host] = {}
@@ -238,7 +238,7 @@ export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
       debug('namespace init error', noAuthOk)
       console.error('namespace::init error ' + JSON.stringify(err), err)
       if (!noCatch) {
-        return setNeedsNamespace(_wsk, err)
+        return setNeedsNamespace(err)
       } else if (!noAuthOk) {
         throw err
       }
@@ -249,8 +249,8 @@ export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
  * List known namespaces
  *
  */
-export const list = async (wsk = _wsk) => {
-  const model = await read(wsk)
+export const list = async () => {
+  const model = await read()
   const namespaces = model.namespaces
   const A = []
 
@@ -312,4 +312,4 @@ export const use = (auth, wsk = _wsk) => {
  * Fetch the namespace details for the given namespace, by name
  *
  */
-export const get = (name, wsk = _wsk) => read(wsk).then(model => model && model.namespaces[name])
+export const get = (name) => read().then(model => model && model.namespaces[name])

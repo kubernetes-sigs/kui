@@ -66,12 +66,21 @@ class ProxyEvaluator implements IEvaluator {
                                       body,
                                       Object.assign({ json: true }, proxyServerConfig.needleOptions))
         debug('response', response)
-        return response.body
+
+        if (response.statusCode !== 200) {
+          debug('rethrowing non-200 response', response)
+          // to trigger the catch just below
+          const err = new Error(response.body)
+          err['code'] = response.statusCode
+          throw err
+        } else {
+          return response.body
+        }
       } catch (err) {
         debug('proxy execution resulted in an error, recasting to local exception', err.code, err.message, err.body, err)
 
-        const error = new Error((err.body && err.body.message) || err.message)
-        err['code'] = (err.body && err.body.code) || err.code
+        const error = new Error((err.body && err.body.message) || (typeof err.body === 'string' ? err.body : err.message || 'Internal error'))
+        err['code'] = (err.body && err.body.code) || err.code || err.statusCode
         throw error
       }
     }

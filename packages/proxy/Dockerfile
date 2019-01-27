@@ -39,4 +39,4 @@ RUN apk add --no-cache ca-certificates bash git \
 
 COPY . /kui-proxy
 
-CMD bin/www
+CMD ["bin/www"]

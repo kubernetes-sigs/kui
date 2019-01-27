@@ -107,10 +107,9 @@ rm -rf kui && \
          (cd "$STAGING" && "$TOPDIR"/packages/kui-builder/bin/link-build-assets.sh) && \
          rm bak.json) && \
     echo "lerna magic done" && \
-    build
-
-if [ -z "$NO_CLEAN" ]; then
-    rm -rf "$STAGING"
-fi
+    build && \
+    ./build-docker.sh && \
+    if [ -z "$NO_CLEAN" ]; then rm -rf "$STAGING"; fi
 
 #post
+

@@ -724,6 +724,7 @@ class InProcessExecutor implements IExecutor {
           .catch(err => {
             // console.error('error in command execution', err)
             if (isHeadless()) {
+              debug('rethrowing error because we are in headless mode')
               throw err
             } else {
               // indicate that the command was NOT successfuly completed
@@ -842,6 +843,7 @@ export const installOopsHandler = fn => {
 }
 const oops = (block?: Element, nextBlock?: Element) => err => {
   if (oopsHandler) {
+    debug('invoking registered oops handler')
     return oopsHandler(block, nextBlock)(err)
   } else {
     return cli.oops(block, nextBlock)(err)

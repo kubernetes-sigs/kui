@@ -20,6 +20,8 @@
 NM="`pwd`/node_modules/@kui-shell"
 STAGING="$NM/staging"
 
+npm install
+
 # ssl cert
 (cd ../kui-builder/dist/webpack && npm run http-allocate-cert)
 rm -rf .keys && cp -r ../kui-builder/dist/webpack/.keys .

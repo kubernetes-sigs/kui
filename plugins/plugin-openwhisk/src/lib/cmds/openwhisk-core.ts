@@ -19,7 +19,6 @@ const debug = Debug('plugins/openwhisk/cmds/core-commands')
 debug('loading')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import namespace = require('../models/namespace')
 import { findFile } from '@kui-shell/core/core/find-file'
 import UsageError from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
@@ -29,9 +28,10 @@ import settings from '@kui-shell/core/core/settings'
 import historyModel = require('@kui-shell/core/models/history')
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
-import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
+import namespace = require('../models/namespace')
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode } from '../models/modes'
+import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
 
 /**
  * This plugin adds commands for the core OpenWhisk API.
@@ -450,7 +450,7 @@ const addPrettyType = (entityType, verb, entityName) => entity => {
     //
     // then this is the .map(addPrettyName) part of a list result
     //
-    entity.onclick = () => repl.pexec(`wsk ${entity.type} get ${repl.encodeComponent(`/${entity.namespace}/${entity.name}`)}`)
+    entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(`/${entity.namespace}/${entity.name}`)}`
 
     if (entity.type === 'actions' && entity.prettyType === 'sequence') {
       // add a fun a->b->c rendering of the sequence
@@ -1190,7 +1190,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       })
     }
 
-    const ow = self['client'](execOptions)
+    const ow = getClient(execOptions)
 
     if (!ow[entity][verb]) {
       return Promise.reject(new Error('Unknown OpenWhisk command'))
@@ -1361,9 +1361,13 @@ const makeInit = (commandTree) => async () => {
   }
 
   // for each entity type
-  /* const apiMaster = */ commandTree.subtree(`/wsk`, { usage: usage.wsk })
+  commandTree.subtree(`/wsk`, { usage: usage.wsk })
 
-  // FIXME globalOW
+  //
+  // here we use globalOW, but only to introspect on the Class fields
+  // and methods, not to make authenticated requests against its
+  // methods
+  //
   for (let api in globalOW) {
     const clazz = globalOW[api].constructor
     const props = Object.getOwnPropertyNames(clazz.prototype).concat(extraVerbs(api) || [])
