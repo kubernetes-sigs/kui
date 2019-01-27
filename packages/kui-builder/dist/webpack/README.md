@@ -56,7 +56,7 @@ deployments. First, build the docker image:
 This will create a docker image named `kui-webpack`. To run it:
 
 ```bash
-npm run http
+npm start
 ```
 
 This npm script makes sure that the self-signed SSL certificates have

@@ -389,7 +389,7 @@ const makeResolver = prescan => {
           }
         })
       } else {
-        debug('already resolved', plugin, isResolved[plugin])
+        debug('already resolved', plugin)
       }
 
       // NOTE: even if isResolved[plugin] already has an entry, we may

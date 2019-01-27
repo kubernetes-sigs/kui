@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const debug = require('debug')('proxy/exec')
+
 const express = require('express')
 const router = express.Router()
 
@@ -26,18 +28,26 @@ const { setValidCredentials } = require('@kui-shell/core/build/packages/app/src/
 const exec = (commandExtractor) => async function (req, res, next) {
   const { command, execOptions } = commandExtractor(req)
 
-  console.log('CCCCCCCCCCCC', req.body)
+  // so that our catch (err) below is used upon command execution failure
+  execOptions.rethrowErrors = true
+
   if (execOptions && execOptions.credentials) {
     // FIXME this should not be a global
     setValidCredentials(execOptions.credentials)
   }
 
-  const response = await main([ '', ...command.split(' ') ], process.env, execOptions)
-  if (typeof response === 'string') {
-    res.send(response)
-  } else {
-    const code = response.code || 200
-    res.status(code).json(response)
+  try {
+    const response = await main([ '', ...command.split(' ') ], process.env, execOptions)
+    if (typeof response === 'string') {
+      res.send(response)
+    } else {
+      const code = response.code || response.statusCode || 200
+      res.status(code).json(response)
+    }
+  } catch (err) {
+    debug('exception in command execution', err.code, err.message, err)
+    const code = err.code || err.statusCode || 500
+    res.status(code).send(err.message)
   }
 }
 

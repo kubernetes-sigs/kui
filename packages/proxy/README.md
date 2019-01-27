@@ -46,6 +46,8 @@ To run the proxy:
 npm start
 ```
 
-If you want to add debugging output, modify the `start` script rule in
-the [package.json](package.json) to add a `-e DEBUG=*`, for some
-suitable value of '*'.
+If you want to add debugging output, set a `DEBUG` environment variable to the value of your choosing:
+
+```bash
+DEBUG=* npm start
+```

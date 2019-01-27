@@ -29,6 +29,7 @@ import eventBus from '@kui-shell/core/core/events'
 import { partial } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
 import namespace = require('../models/namespace')
+import { apiHost } from '../models/auth'
 
 /**
  * Location of the wskprops file
@@ -132,7 +133,7 @@ const informUserOfChange = (wsk, commandTree, subject) => () => {
     subject: subject
   }), 0)
 
-  return wsk.apiHost.get().then(async host => {
+  return apiHost.get().then(async host => {
     clearSelection()
     return `You are now using the OpenWhisk host ${host}, and namespace ${await namespace.current()}`
   })
@@ -155,7 +156,7 @@ const notifyOfHostChange = (host) => async () => {
  * @return resolves with the updated structure
  *
  */
-const readFromLocalWskProps = (wsk, auth?: string, subject?: string) => wsk.apiHost.get().then(apiHost => new Promise((resolve, reject) => {
+const readFromLocalWskProps = (wsk, auth?: string, subject?: string) => apiHost.get().then(apiHost => new Promise((resolve, reject) => {
   // read from ~/.wskprops
   const propertiesParser = require('properties-parser')
   propertiesParser.read(wskpropsFile(), (err, wskprops) => {
@@ -216,9 +217,11 @@ const updateLocalWskProps = (wsk, auth?: string, subject?: string): Promise<stri
  * List registered namespaces
  *
  */
-const list = (wsk) => async () => {
+const list = async () => {
+  debug('list')
+
   const type = 'namespaces'
-  const list = await namespace.list(wsk)
+  const list = await namespace.list()
 
   const headerRow = {
     type,
@@ -260,7 +263,7 @@ const use = (commandTree, wsk, verb: string) => ({ argvNoOptions, parsedOptions 
         .then(informUserOfChange(wsk, commandTree, undefined))
     }
   } else {
-    return namespace.list(wsk).then(namespaces => {
+    return namespace.list().then(namespaces => {
       const ns = firstArg(argvNoOptions, verb)
       console.error(`Namespace not found ${ns} ${JSON.stringify(namespaces)}`)
       throw new Error(`The details for this namespace were not found: ${ns}`)
@@ -317,15 +320,18 @@ const addFn = (commandTree, wsk, prequire, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = (wsk) => ({ argvNoOptions, parsedOptions: options }) => {
+const hostSet = (wsk) => async ({ argvNoOptions, parsedOptions: options, execOptions }) => {
   const argv = slice(argvNoOptions, 'set')
-  let host = argv[0] || options.host // the new apihost to use
-  let ignoreCerts = options.ignoreCerts || options.insecureSSL || options.insecure
-  let isLocal = false // is this a local openwhisk?
 
-  if (!host || options.help) {
+  let hostConfig = {
+    host: argv[0] || options.host, // the new apihost to use
+    ignoreCerts: options.ignoreCerts || options.insecureSSL || options.insecure,
+    isLocal: false // is this a local openwhisk?
+  }
+
+  if (!hostConfig.host || options.help) {
     throw new Error('Usage: host set <hostname>')
-  } else if (host === '<your_api_host>') {
+  } else if (hostConfig.host === '<your_api_host>') {
     // clicking on the host in the upper right prefills some content;
     // if the user hits return, we want the operation to be cancelled
     // see shell issue #192
@@ -337,129 +343,158 @@ const hostSet = (wsk) => ({ argvNoOptions, parsedOptions: options }) => {
   // couple of common scenarios. we check for
   // those here
   //
-  if (host === 'dallas' || host === 'us-south') {
+  if (hostConfig.host === 'dallas' || hostConfig.host === 'us-south') {
     // accept a short-hand for the Dallas Bluemix OpenWhisk
-    host = 'https://openwhisk.ng.bluemix.net'
-  } else if (host === 'us-east') {
+    hostConfig.host = 'https://us-south.functions.cloud.ibm.com'
+  } else if (hostConfig.host === 'us-east') {
     // accept a short-hand for the London Bluemix OpenWhisk
-    host = 'https://us-east.functions.cloud.ibm.com'
-  } else if (host === 'london' || host === 'eu-gb') {
+    hostConfig.host = 'https://us-east.functions.cloud.ibm.com'
+  } else if (hostConfig.host === 'london' || hostConfig.host === 'eu-gb') {
     // accept a short-hand for the London Bluemix OpenWhisk
-    host = 'https://openwhisk.eu-gb.bluemix.net'
-  } else if (host === 'frankfurt' || host === 'eu-de') {
+    hostConfig.host = 'https://openwhisk.eu-gb.bluemix.net'
+  } else if (hostConfig.host === 'frankfurt' || hostConfig.host === 'eu-de') {
     // accept a short-hand for the Frankfurt Bluemix OpenWhisk
-    host = 'https://openwhisk.eu-de.bluemix.net'
-  } else if (host === 'docker-machine' || host === 'dm' || host === 'mac' || host === 'darwin' || host === 'macos') {
+    hostConfig.host = 'https://openwhisk.eu-de.bluemix.net'
+  } else if (hostConfig.host === 'docker-machine' || hostConfig.host === 'dm' || hostConfig.host === 'mac' || hostConfig.host === 'darwin' || hostConfig.host === 'macos') {
     // local docker-machine host (this is usually macOS)
-    host = 'http://192.168.99.100:10001'
-    ignoreCerts = true
-    isLocal = true
-  } else if (host === 'vagrant') {
+    hostConfig.host = 'http://192.168.99.100:10001'
+    hostConfig.ignoreCerts = true
+    hostConfig.isLocal = true
+  } else if (hostConfig.host === 'vagrant') {
     // local vagrant
-    host = 'https://192.168.33.13'
-    ignoreCerts = true
-    isLocal = true
-  } else if (host === 'local' || host === 'localhost') {
-    // try a variety of options
-    const variants = [
-      'https://192.168.33.13', 'https://192.168.33.16', // these are vagrant
-      'https://172.17.0.1',
-      'http://172.17.0.1:10001', 'http://192.168.99.100:10001' // these are direct-to-controller
-    ]
-    const needle = require('needle')
-
-    host = new Promise((resolve, reject) => {
-      const ping = idx => {
-        const host = variants[idx]
-        debug('ping', idx, host)
-
-        debug('trying local', host)
-
-        const tryNext = (err?: Error) => {
-          if (err) {
-            console.error(err)
-          }
-          if (idx === variants.length - 1) {
-            reject(new Error('No local OpenWhisk host found'))
-          } else {
-            // nope! try the next one in the variants list
-            ping(idx + 1)
-          }
-        }
-
-        needle('get', `${host}/ping`, {}, {
-          rejectUnauthorized: false,
-          timeout: 500,
-          open_timeout: 500
-        }).then(response => {
-          if (response.statusCode >= 400) {
-            tryNext()
-          } else {
-            ignoreCerts = true
-            isLocal = true
-            resolve(host)
-          }
-        }).catch(err => {
-          // for what it's worth, err.code === ECONNRESET is a good
-          // indicator that the given host is not online
-          debug('giving up on this host, trying the next', err.code, err)
-          tryNext()
-        })
-      }
-      ping(0)
-    })
+    hostConfig.host = 'https://192.168.33.13'
+    hostConfig.ignoreCerts = true
+    hostConfig.isLocal = true
+  } else if (hostConfig.host === 'local' || hostConfig.host === 'localhost') {
+    hostConfig = repl.qexec('wsk host pinglocal', undefined, undefined, execOptions)
   }
 
-  return Promise.resolve(host).then(host => wsk.apiHost.set(host, { ignoreCerts })
-                                    .then(namespace.setApiHost)
-                                    .then(() => updateLocalWskProps(wsk))
-                                    .then(notifyOfHostChange(host))
-                                    .then(() => namespace.list(wsk).then(auths => {
-                                      debug('got auths', auths)
-                                      //
-                                      // after switching hosts, we'll need to get a new AUTH key. either:
-                                      //
-                                      //    1. the user provided one on the CLI (specifiedKey), or
-                                      //    2. the user has not yet registered any keys for this host
-                                      //    3. there is exactly one key (that the user has previously registered with a wsk auth add command)
-                                      //       in this case, we use that singleton auth key without question
-                                      //    4. there user has previously registered more than one; in this case, we list them
-                                      //
-                                      const specifiedKey = argv[1] || options.auth || options.key
-                                      if (specifiedKey) {
-                                        // use `wsk auth add` to register the key for this host
-                                        return repl.qfexec(`wsk auth add ${specifiedKey}`)
-                                      } else if (auths.length === 0) {
-                                        if (isLocal && !process.env.LOCAL_OPENWHISK) {
-                                          // fixed key for local openwhisk
-                                          // when in travis (LOCAL_OPENWHISK), then we aren't using the
-                                          // default key, hence the extra if guard
-                                          const key = '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
-                                          return repl.qfexec('wsk auth add ${key}')
-                                        }
-                                        // no keys, yet. enter a special mode requesting further assistance
-                                        namespace.setNoNamespace(false)
-                                        const dom = document.createElement('div')
-                                        const clicky = document.createElement('span')
-                                        const cmd = 'wsk auth add <AUTH_KEY>'
+  const { host, ignoreCerts, isLocal } = await Promise.resolve(hostConfig)
+  debug('!!!!!!!!!!!!!', host, ignoreCerts, isLocal)
 
-                                        clicky.className = 'clickable clickable-blatant'
-                                        clicky.innerText = cmd
-                                        clicky.onclick = () => partial(cmd)
+  return apiHost.set(host, { ignoreCerts })
+    .then(namespace.setApiHost)
+    .then(() => updateLocalWskProps(wsk))
+    .then(notifyOfHostChange(host))
+    .then(() => namespace.list().then(auths => {
+      debug('got auths', auths)
+      //
+      // after switching hosts, we'll need to get a new AUTH key. either:
+      //
+      //    1. the user provided one on the CLI (specifiedKey), or
+      //    2. the user has not yet registered any keys for this host
+      //    3. there is exactly one key (that the user has previously registered with a wsk auth add command)
+      //       in this case, we use that singleton auth key without question
+      //    4. there user has previously registered more than one; in this case, we list them
+      //
+      const specifiedKey = argv[1] || options.auth || options.key
+      if (specifiedKey) {
+        // use `wsk auth add` to register the key for this host
+        debug('using specified key')
+        return repl.qfexec(`wsk auth add ${specifiedKey}`)
+      } else if (auths.length === 0) {
+        if (isLocal && !process.env.LOCAL_OPENWHISK) {
+          // fixed key for local openwhisk
+          // when in travis (LOCAL_OPENWHISK), then we aren't using the
+          // default key, hence the extra if guard
+          debug('using fixed localhost key')
+          const key = '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
+          return repl.qfexec('wsk auth add ${key}')
+        }
 
-                                        dom.appendChild(document.createTextNode('Before you can proceed, please provide an OpenWhisk auth key, using '))
-                                        dom.appendChild(clicky)
-                                        return dom
-                                      } else if (auths.length === 1) {
-                                        // if there's just one namespace, then select it
-                                        return repl.qfexec(`auth switch ${auths[0].namespace}`)
-                                      } else {
-                                        // otherwise, offer a list of them to the user
-                                        namespace.setPleaseSelectNamespace()
-                                        return list(wsk)
-                                      }
-                                    })))
+        // no keys, yet. enter a special mode requesting further assistance
+        debug('no auth found')
+        namespace.setNoNamespace(false)
+        const dom = document.createElement('div')
+        const clicky = document.createElement('span')
+        const cmd = 'wsk auth add <AUTH_KEY>'
+
+        clicky.className = 'clickable clickable-blatant'
+        clicky.innerText = cmd
+        clicky.onclick = () => partial(cmd)
+
+        dom.appendChild(document.createTextNode('Before you can proceed, please provide an OpenWhisk auth key, using '))
+        dom.appendChild(clicky)
+        return dom
+      } else if (auths.length === 1) {
+        // if there's just one namespace, then select it
+        debug('found exactly one auth')
+        return repl.qfexec(`auth switch ${auths[0].namespace}`)
+      } else {
+        // otherwise, offer a list of them to the user
+        debug('found multiple auths')
+        namespace.setPleaseSelectNamespace()
+        return list()
+      }
+    }))
 }
+
+/**
+ * Ping a variety of localhost options to see if one is awake
+ *
+ */
+const pingLocal = async () => {
+  debug('pingLocal')
+
+  // we will try a variety of options
+  const variants = [
+    'https://192.168.33.13', 'https://192.168.33.16', // these are vagrant
+    'https://172.17.0.1',
+    'http://172.17.0.1:10001', 'http://192.168.99.100:10001', // these are direct-to-controller
+    'https://localhost'
+  ]
+
+  const needle = await import('needle')
+
+  return new Promise((resolve, reject) => {
+    const ping = idx => {
+      const host = variants[idx]
+      debug('ping', idx, host)
+
+      debug('trying local', host)
+
+      const tryNext = (err?: Error) => {
+        if (err) {
+          console.error(err)
+        }
+        if (idx === variants.length - 1) {
+          const error = new Error('No local OpenWhisk host found')
+          error['code'] = 404
+          reject(error)
+        } else {
+          // nope! try the next one in the variants list
+          ping(idx + 1)
+        }
+      }
+
+      needle('get', `${host}/ping`, {}, {
+        rejectUnauthorized: false,
+        timeout: 500,
+        open_timeout: 500
+      }).then(response => {
+        if (response.statusCode >= 400) {
+          tryNext()
+        } else {
+          debug('found local openwhisk', host)
+
+          resolve({
+            host,
+            ignoreCerts: true,
+            isLocal: true
+          })
+        }
+      }).catch(err => {
+        // for what it's worth, err.code === ECONNRESET is a good
+        // indicator that the given host is not online
+        debug('giving up on this host, trying the next', err.code, err)
+        tryNext()
+      })
+    }
+
+    // start the ping loop with the first variant
+    ping(0)
+  })
+} /* pingLocal */
 
 /**
  * Register command handlers
@@ -475,14 +510,15 @@ export default async (commandTree, wsk, prequire) => {
 
   commandTree.listen('/wsk/auth/switch', use(commandTree, wsk, 'switch'), { usage: usage.auth.switch, noAuthOk: true, inBrowserOK: true })
   commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true, inBrowserOK: true })
-  commandTree.listen('/wsk/auth/list', list(wsk), { usage: usage.auth.list, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/auth/list', list, { usage: usage.auth.list, noAuthOk: true, inBrowserOK: true })
 
   /**
    * OpenWhisk API host: get and set commands
    *
    */
-  commandTree.listen('/wsk/host/get', () => wsk.apiHost.get(), { usage: usage.host.get, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/host/get', () => apiHost.get(), { usage: usage.host.get, noAuthOk: true, inBrowserOK: true })
   commandTree.listen('/wsk/host/set', hostSet(wsk), { usage: usage.host.set, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/host/pinglocal', pingLocal, { hidden: true, noAuthOk: true })
 
   /**
    * An internal command that turns the current auth key into the corresponding openwhisk namespace

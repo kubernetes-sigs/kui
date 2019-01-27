@@ -216,7 +216,11 @@ const success = quit => async out => {
     debug('graphical shell is open')
   }
 }
-const failure = quit => async err => {
+const failure = (quit, execOptions?) => async err => {
+  if (execOptions && execOptions.rethrowErrors) {
+    throw err
+  }
+
   const code = err.code || err.statusCode
   debug('failure', code, err)
 
@@ -320,7 +324,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
   debug('argv', argv)
 
   const { quit } = app
-  repl.installOopsHandler(() => failure(quit)) // TODO should be repl.installOopsHandler
+  repl.installOopsHandler(() => failure(quit, execOptions)) // TODO should be repl.installOopsHandler
 
   electronCreateWindowFn = mainFunctions.createWindow
 
@@ -393,7 +397,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
 
     const maybeRetry = err => {
       // nothing, yet
-      return failure(quit)(err)
+      return failure(quit, execOptions)(err)
     }
 
     debug('invoking plugin preloader')
@@ -418,5 +422,5 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
         process.exit(0)
       }
     }
-  }).catch(failure(quit))
+  }).catch(failure(quit, execOptions))
 }

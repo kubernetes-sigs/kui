@@ -172,6 +172,7 @@ module.exports = {
       { test: /Dockerfile$/, use: 'ignore-loader' },
       // end of ignore-loader
       //
+      { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
       { test: /\.py$/, use: 'file-loader' },
       { test: /\.ico$/, use: 'file-loader' },
       { test: /\.jpg$/, use: 'file-loader' },
@@ -181,7 +182,6 @@ module.exports = {
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },
-      { test: /\.js.map$/, use: 'raw-loader' },
       { test: /monaco-editor\/min\/vs\/loader\.js/, use: 'raw-loader' },
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
     ]

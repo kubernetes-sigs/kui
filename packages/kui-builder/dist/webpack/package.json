@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack-stats": "npm run webpack-pre && webpack --json > /tmp/stats.json; npm run webpack-post",
     "http-allocate-cert": "./bin/ssl.sh",
-    "http": "npm run http-allocate-cert && echo 'Now visit this url:'; echo 'https://localhost:9080'; docker run --rm -p 9080:443 kui-webpack"
+    "http": "npm run http-allocate-cert && echo 'Now visit this url:'; echo 'https://localhost:9080'; docker run --rm -p 9080:443 kui-webpack",
+    "start": "npm run http"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,7 @@
     "needle": "^2.2.4",
     "raw-loader": "^1.0.0",
     "shebang-loader": "0.0.1",
+    "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.1",
     "svg-inline-loader": "^0.8.0",
     "terser-webpack-plugin": "^1.2.1",

@@ -258,6 +258,8 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
   if (entity.onclick === false) {
     // the provider has told us the entity name is not clickable
     entityNameClickable.classList.remove('clickable')
+  } else if (typeof entity.onclick === 'string') {
+    entityNameClickable.onclick = () => pexec(entity.onclick)
   } else {
     entityNameClickable.onclick = entity.onclick
   }

@@ -20,7 +20,7 @@ debug('loading')
 
 import openwhisk = require('openwhisk')
 
-import { inBrowser, setHasAuth } from '@kui-shell/core/core/capabilities'
+import { inBrowser, getAuthValue, setHasAuth } from '@kui-shell/core/core/capabilities'
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
 
 let wskprops
@@ -47,10 +47,10 @@ try {
 debug('wskprops loaded')
 
 /**
- *
+ * keys into the localStorage map
  *
  */
-let localStorageKey = {
+const localStorageKey = {
   host: 'wsk.apihost',
   ignoreCerts: 'wsk.apihost.ignoreCerts',
   auth: 'wsk.auth'
@@ -60,9 +60,9 @@ let localStorageKey = {
  *
  *
  */
-export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || window.localStorage.getItem(localStorageKey.host) || 'https://openwhisk.ng.bluemix.net'
+export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || window.localStorage.getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost') || 'https://openwhisk.ng.bluemix.net'
 
-let authKey = process.env.__OW_API_KEY || wskprops.AUTH || window.localStorage.getItem(localStorageKey.auth)
+let authKey = process.env.__OW_API_KEY || wskprops.AUTH || window.localStorage.getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 
 let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething' // tslint:disable-line
 
@@ -73,6 +73,8 @@ let userRequestedIgnoreCerts = window.localStorage.getItem(localStorageKey.ignor
 let ignoreCerts = apiHost => userRequestedIgnoreCerts || apiHost.indexOf('localhost') >= 0 || apiHost.startsWith('192.') || apiHost.startsWith('172.') || process.env.IGNORE_CERTS || wskprops.INSECURE_SSL
 
 export const initOWFromConfig = (owConfig) => {
+  debug('initOWFromConfig', owConfig)
+
   if (owConfig.api_key !== 'unknown') {
     setHasAuth('openwhisk', owConfig)
   }
@@ -124,6 +126,7 @@ export const apiHost = {
     userRequestedIgnoreCerts = ignoreCerts
     window.localStorage.setItem(localStorageKey.host, newHost) // remember the choice in localStorage
     window.localStorage.setItem(localStorageKey.ignoreCerts, userRequestedIgnoreCerts.toString())
+    authKey = undefined
     initOW() // re-initialize the openwhisk npm
     debug('apiHost::set', apihost)
     return Promise.resolve(newHost)

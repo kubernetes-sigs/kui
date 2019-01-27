@@ -16,11 +16,12 @@
 
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/client')
+
 import * as path from 'path'
+import * as Conductor from 'openwhisk-composer/conductor'
+
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { pathExists } from 'fs-extra'
-import * as Conductor from 'openwhisk-composer/conductor'
 
 const options = {
   ignore_certs: process.env.IGNORE_CERTS && process.env.IGNORE_CERTS !== 'false' && process.env.IGNORE_CERTS !== '0'
@@ -55,6 +56,9 @@ export const deployAction = (home: string) => actionFQN => new Promise(async (re
   const filePaths = actionPaths.map(actionPath => findFile(actionPath))
 
   debug(`attempting to find and deploy action ${actionFQN} from local paths`, filePaths)
+
+  // dynamic import for webpack friendliness
+  const { pathExists } = await import('fs-extra')
 
   const validfilePaths = (await Promise.all(filePaths.map(filePath => pathExists(filePath).then(exists => exists ? filePath : undefined))))
     .filter(existFilePath => existFilePath)

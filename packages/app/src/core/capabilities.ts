@@ -77,6 +77,21 @@ export const setHasAuth = (provider: string, creds: any): void => {
 }
 
 /**
+ * Retrieve the auth model for the given provider
+ *
+ */
+export const getAuth = (provider: string) => state.validCredentials[provider]
+
+/**
+ * Retrieve the value for the given key for the auth model of the given provider
+ *
+ */
+export const getAuthValue = (provider: string, key: string) => {
+  const model = state.validCredentials[provider]
+  return model && model[key]
+}
+
+/**
  * Return a map of all valid credentials
  *
  */
@@ -87,6 +102,7 @@ export const getValidCredentials = (): ICredentialsMap => state.validCredentials
  *
  */
 export const setValidCredentials = (creds: ICredentialsMap): void => {
+  debug('setValidCredentials', creds)
   state.validCredentials = creds
 }
 
