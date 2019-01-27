@@ -7,7 +7,12 @@ mkdir -f bin
 (cd bin && curl -L -O https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && mv jq-linux64 jq && chmod +x jq)
 
 
-if [ "$LAYERS" != "LINT" ]; then
+# are we running a test.d script, or a mocha test suite?
+if [ -z "$SCRIPTS" ]; then
+    #
+    # then we're running one or more mocha test suites (which suites as indicated by $LAYERS)
+    #
+    
     # some tests require ibmcloud, e.g. bash-like; it's fast enough to
     # install, let's not go crazy with optimizing
     ./tools/travis/installers/ibmcloud.sh &
@@ -31,8 +36,10 @@ if [ "$LAYERS" != "LINT" ]; then
     # npm install
     # and create a dist build to test against
     if [ "$LAYERS" != "HEADLESS" ]; then
+        # create an electron dist to test against
         npm install && (cd packages/kui-builder/dist/electron && NO_INSTALLER=true ./build.sh linux)
     else
+        # create a headless dist to test against
         npm install && (cd packages/kui-builder/dist/headless && ./build.sh; cd ../builds && tar jxf "Kui-headless.tar.bz2")
     fi
 
@@ -49,8 +56,12 @@ if [ "$LAYERS" != "LINT" ]; then
     (cd tests && ./bin/corral.sh)
 
 else
+    #
+    # otherwise, we were asked to run one or more test.d/ scripts
+    # all we need to do is a plain npm install to set them up
+    #
     npm install
 fi
 
 # we will return to code coverage later:
-# if [ "$LAYERS" != "LINT" ]; then (cd tests && npm run _instrument); fi
+# if [ -z "$SCRIPTS" ]; then (cd tests && npm run _instrument); fi
