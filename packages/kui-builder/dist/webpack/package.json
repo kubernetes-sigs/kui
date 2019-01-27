@@ -7,9 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack-stats": "npm run webpack-pre && webpack --json > /tmp/stats.json; npm run webpack-post",
     "http-allocate-cert": "./bin/ssl.sh",
-    "http": "npm run http-allocate-cert && echo 'Now visit this url:'; echo 'https://localhost:9080'; docker run --rm -p 9080:443 kui-webpack",
-    "webpack-cli-heap": "cp node_modules/.bin/webpack-cli node_modules/.bin/webpack-cli.orig && awk 'FNR==1 {print $0, \"--max-old-space-size=8192\"} FNR > 1 { print $0 }' node_modules/.bin/webpack-cli.orig > node_modules/.bin/webpack-cli",
-    "postinstall": "npm run webpack-cli-heap"
+    "http": "npm run http-allocate-cert && echo 'Now visit this url:'; echo 'https://localhost:9080'; docker run --rm -p 9080:443 kui-webpack"
   },
   "keywords": [],
   "author": "",

@@ -132,6 +132,9 @@ function build {
         echo "Building headless dist to $STAGING/kui"
     fi
 
+    # word of warning for linux: in the TAR command below, the `-cf -` has
+    # to come before the --exclude rules!
+
     (cd "$STAGING" && rm -rf kui && mkdir kui && mkdir kui/bin && \
          "$TAR" -C "$TOPDIR" -cf - \
              --exclude "./kui" \

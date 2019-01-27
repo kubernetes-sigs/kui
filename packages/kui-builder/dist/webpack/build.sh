@@ -24,7 +24,7 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../../../"
 STAGING="$SCRIPTDIR/kui"
-cd $SCRIPTDIR
+cd "$SCRIPTDIR"
 
 function trimTutorials {
     (cd "$TOPDIR" \
@@ -62,7 +62,7 @@ function post {
 
 function build {
     rm -f ./build/*.js.br
-    npx webpack-cli --mode development
+    npx webpack-cli --mode development --verbose
 }
 
 if [ ! -d node_modules ]; then
@@ -78,9 +78,26 @@ fi
 
 #pre &&
 
+# word of warning for linux: in the TAR command below, the `-cf -` has
+# to come before the --exclude rules!
+
 rm -rf kui && \
     mkdir kui && \
-    "$TAR" -C "$TOPDIR" --exclude '*flycheck_*.js' --exclude '*.icns' --exclude '*~' --exclude Dockerfile --exclude package-lock.json --exclude '*/tests/*' --exclude './packages/proxy/*.js' --exclude './node_modules' --exclude './plugins/*/node_modules' --exclude './packages/*/node_modules' --exclude '*.ts' --exclude './packages/kui-builder' --exclude './tests' -cf - . | "$TAR" -C kui -xf - && \
+    "$TAR" -C "$TOPDIR" -cf - \
+           --exclude '.git*' \
+           --exclude '*flycheck_*.js' \
+           --exclude '*.icns' \
+           --exclude '*~' \
+           --exclude Dockerfile \
+           --exclude package-lock.json \
+           --exclude '*/tests/*' \
+           --exclude './packages/proxy/*.js' \
+           --exclude './node_modules' \
+           --exclude './plugins/*/node_modules' \
+           --exclude './packages/*/node_modules' \
+           --exclude '*.ts' \
+           --exclude './packages/kui-builder' \
+           --exclude './tests' . | "$TAR" -C kui -xf - && \
     echo "tar copy done" && \
     (cd "$STAGING" && \
          cp package.json bak.json && \

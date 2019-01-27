@@ -60,6 +60,9 @@ else
 fi
 
 function init {
+    # word of warning for linux: in the TAR command below, the `-cf -` has
+    # to come before the --exclude rules!
+
     (rm -rf "$STAGING" && mkdir "$STAGING" && cd $TOPDIR && \
          "$TAR" -C . -cf - \
              --exclude "**/kui/*" \

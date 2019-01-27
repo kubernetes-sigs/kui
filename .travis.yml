@@ -20,7 +20,7 @@ env:
     - LAYERS=composer3 IDX=10
     - LAYERS=HEADLESS IDX=11
     - LAYERS=k8s IDX=12
-    - LAYERS=LINT
+    - SCRIPTS="lint.sh webpack.sh"
 
   global:
     - TRAVIS_KUBE_VERSION=1.12 # kubeadm-dind
