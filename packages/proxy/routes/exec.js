@@ -26,7 +26,7 @@ const { main } = require('@kui-shell/core')
 const { setValidCredentials } = require('@kui-shell/core/build/packages/app/src/core/capabilities')
 
 const exec = (commandExtractor) => async function (req, res, next) {
-  const { command, execOptions } = commandExtractor(req)
+  const { command, execOptions = {} } = commandExtractor(req)
 
   // so that our catch (err) below is used upon command execution failure
   execOptions.rethrowErrors = true
