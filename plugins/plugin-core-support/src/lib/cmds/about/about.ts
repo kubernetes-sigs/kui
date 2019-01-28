@@ -26,7 +26,7 @@ import * as repl from '@kui-shell/core/core/repl'
 
 import usage from './usage'
 import { version } from '@kui-shell/settings/package.json'
-import settings = require('@kui-shell/settings/config.json')
+import { theme as settings } from '@kui-shell/core/core/settings'
 
 /** path to app/ directory */
 const ourRootDir = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))

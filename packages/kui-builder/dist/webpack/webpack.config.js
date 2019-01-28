@@ -20,10 +20,13 @@ const CompressionPlugin = require('brotli-webpack-plugin')
 // const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
-const context = path.resolve(path.join(__dirname, 'kui'))
+const stageDir = path.resolve(path.join(__dirname, 'kui'))
+
+/** point webpack to the output directory */
+const buildDir = path.join(__dirname, 'build')
 
 module.exports = {
-  context,
+  context: stageDir,
   stats: {
     // while developing, you should set this to true
     warnings: false
@@ -172,7 +175,8 @@ module.exports = {
       { test: /Dockerfile$/, use: 'ignore-loader' },
       // end of ignore-loader
       //
-      { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
+      // { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
+      { test: /\.js.map$/, use: 'ignore-loader' },
       { test: /\.py$/, use: 'file-loader' },
       { test: /\.ico$/, use: 'file-loader' },
       { test: /\.jpg$/, use: 'file-loader' },
@@ -193,11 +197,19 @@ module.exports = {
       apply: compiler => {
         compiler.hooks.compilation.tap('CloudShellHtmlBuilder', compilation => {
           compilation.hooks.afterHash.tap('CloudShellHtmlBuilder', () => {
+            // we need to inject the name of the main bundle into the configuration
             const hash = compilation.hash
-            const main = `main.${hash}.bundle.js`
+            const main = `main.${hash}.bundle.js` // <-- this is the name of the main bundle
             console.log('CloudShellHtmlBuilder using this build hash', hash)
-            const Builder = require('../../../../packages/app/bin/build.js')
-            new Builder({ main }).build()
+
+            const overrides = {
+              build: { buildDir, writeConfig: false },
+              env: { main }
+            }
+
+            // and this will inject it
+            const Builder = require('../../lib/configure')
+            new Builder().build('webpack', overrides)
           })
         })
       }
@@ -205,7 +217,7 @@ module.exports = {
   ],
   output: {
     globalObject: 'self', // for monaco
-    path: path.resolve(__dirname, 'build'),
+    path: buildDir,
     filename: '[name].[hash].bundle.js'
   }
 }

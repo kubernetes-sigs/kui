@@ -15,7 +15,9 @@
  */
 
 const isDev = false// require('electron-is-dev');
-const productName = require('@kui-shell/settings/config.json')['productName']
+
+import { theme } from '@kui-shell/settings/config.json'
+const { productName } = theme
 
 interface IMenuItem {
   label?: string

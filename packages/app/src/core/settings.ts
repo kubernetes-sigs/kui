@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-const settings = require('@kui-shell/settings/config.json')
+import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
-export default settings
+export const theme = t
+export const env = e
+export const config = c
