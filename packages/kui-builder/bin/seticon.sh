@@ -17,7 +17,8 @@
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-ROOTDIR="${SCRIPTDIR}/../../.."
+TOPDIR="${SCRIPTDIR}/../../.."
+CONFDIR="$TOPDIR"/packages/app/build
 
 cd "$SCRIPTDIR/.."
 
@@ -27,16 +28,18 @@ if [[ `uname` != Darwin ]]; then
     echo "Not setting icon"
     exit;
 else
-    npm install --no-save fileicon
+    if [ ! -d node_modules/fileicon ]; then
+        npm install --no-save fileicon
+    fi
 
-    ICON=`cat ./build/config.json | jq --raw-output .appIcon`
-    APPNAME=`cat ./build/config.json | jq --raw-output .productName`
+    ICON=`cat "$CONFDIR"/config.json | jq --raw-output .theme.appIcon`
+    APPNAME=`cat "$CONFDIR"/config.json | jq --raw-output .theme.productName`
     echo "Using appName=${APPNAME} and appIcon=${ICON}"
 
-    npx fileicon set "$ROOTDIR"/node_modules/electron/dist/Electron.app/ "$ICON"
+    npx fileicon set "$TOPDIR"/node_modules/electron/dist/Electron.app/ "$ICON"
 
     # echo "Updating app name"
-    plist="$ROOTDIR"/node_modules/electron/dist/Electron.app/Contents/Info.plist
+    plist="$TOPDIR"/node_modules/electron/dist/Electron.app/Contents/Info.plist
     # echo $plist
     plutil -replace CFBundleName -string "$APPNAME" -- "${plist}"
     plutil -replace CFBundleDisplayName -string "$APPNAME" -- "${plist}"
@@ -62,10 +65,10 @@ else
 
     # the remainder is probably needed for the official builds, but doesn't seem to work for the dev environment
     # echo "Updating executable bits"
-    if [ -f "$ROOTDIR"/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
+    if [ -f "$TOPDIR"/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
 	# echo "Moving binary"
-	mv "$ROOTDIR"/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron "../node_modules/electron/dist/Electron.app/Contents/MacOS/$APPNAME"
-	mv "$ROOTDIR"/node_modules/electron/dist/Electron.app "../node_modules/electron/dist/$APPNAME.app"
+	mv "$TOPDIR"/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron "../node_modules/electron/dist/Electron.app/Contents/MacOS/$APPNAME"
+	mv "$TOPDIR"/node_modules/electron/dist/Electron.app "../node_modules/electron/dist/$APPNAME.app"
 
 	echo "dist/$APPNAME.app/Contents/MacOS/$APPNAME" > ../node_modules/electron/path.txt
     fi

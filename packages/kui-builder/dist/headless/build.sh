@@ -40,7 +40,7 @@ else
 fi
 
 # product name
-export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/build/config.json | jq --raw-output .productName`}"
+export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/build/config.json | jq --raw-output .theme.productName`}"
 
 # targets
 DEST="${PRODUCT_NAME}-headless.zip"
@@ -149,7 +149,6 @@ function build {
              --exclude "./build/*/node_modules/*" \
              --exclude "./plugins/*/node_modules/*" \
              --exclude "**/node_modules/electron*/*" \
-             --exclude "./packages/app/bin/postinstall.js" \
              --exclude "./packages/app/content/icons/*" \
              --exclude "./packages/app/content/images/*" \
              --exclude "**/*~" \
@@ -158,9 +157,6 @@ function build {
              --exclude "**/*.png" \
              --exclude "**/*.icns" \
              --exclude "**/*.ico" \
-             --exclude "./packages/app/bin/build.js" \
-             --exclude "./packages/app/bin/seticon.sh" \
-             --exclude "./packages/app/bin/seticon.js" \
              --exclude "./packages/app/build/webpack-stats.html" \
              --exclude "node_modules/monaco-editor" \
              --exclude "node_modules/fsevents" \

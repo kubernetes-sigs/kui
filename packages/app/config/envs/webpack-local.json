@@ -1,8 +1,0 @@
-{
-  "nameSuffix": "-webpack-local",
-  "main": "main.bundle.js",
-  "bodyCss": "not-electron webpack-local",
-  "cssHome": "../content/css/",
-  "imageHome": "../content/",
-  "jsHome": "../../kui-builder/dist/webpack/build/"
-}

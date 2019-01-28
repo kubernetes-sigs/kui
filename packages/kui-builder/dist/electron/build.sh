@@ -80,9 +80,6 @@ function init {
              --exclude "./plugins/*/node_modules" \
              --exclude "**/*~" \
              --exclude "**/.bak" \
-             --exclude "./packages/app/bin/build.js" \
-             --exclude "./packages/app/bin/seticon.sh" \
-             --exclude "./packages/app/bin/seticon.js" \
              --exclude "**/*.ts" \
              --exclude "**/yarn.lock" \
              --exclude "**/*.debug.js" \
@@ -114,12 +111,12 @@ function init {
     if [ -n "$TARBALL_ONLY" ]; then exit; fi
 
     # product name
-    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .productName`}"
+    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
 
     # filesystem icons
-    ICON_MAC=../../`cat $APPDIR/build/config.json | jq --raw-output .filesystemIcons.darwin`
-    ICON_WIN32=../../`cat $APPDIR/build/config.json | jq --raw-output .filesystemIcons.win32`
-    ICON_LINUX=../../`cat $APPDIR/build/config.json | jq --raw-output .filesystemIcons.linux`
+    ICON_MAC=../../`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
+    ICON_WIN32=../../`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
+    ICON_LINUX=../../`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
 
     # make the build directory
     if [ ! -d $BUILDDIR ]; then

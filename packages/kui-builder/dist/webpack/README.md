@@ -5,6 +5,31 @@ This directory will help you to create and publish a
 creating a hosted version of Kui, for use within any reasonably
 compliant browser.
 
+## Configuring the Build
+
+If you wish to override the default build parameters, you have three
+ways to do so.
+
+1. *Theme Overrides* via a `theme.json` located in the specified
+   override directory. You may specify overrides of the [default
+   theme](../../defaults/themes/kui.json).
+2. *Env Overrides* via an `env.json` in that directory. It is less
+   likely you would need to tweak this; these settings are intended to
+   modify the directory structure of a deployed build.
+3. *Application Configuration* via a `config.json` in that
+   directory. This will give you the opportunity to inject
+   configuration options into your plugin code. Using the [sample overrides](sample-overrides/config.json) as an example,
+   you would access that example configuration setting via:
+   ```typescript
+   import { config } from '@kui-shell/core/core/settings'
+   if (config['disableProxy']) { ... }
+   ```
+
+To specify the override directory, you may either define
+`KUI_BUILD_CONFIG` to point to your override directory, or you may
+place the files in `./overrides`. The directory
+[sample-overrides](./sample-overrides) offers some examples.
+
 ## Building for webpack
 
 This command will generate the webpack bundles:

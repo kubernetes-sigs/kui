@@ -14,10 +14,6 @@
     "templates",
     "tests"
   ],
-  "scripts": {
-    "prep": "npm run build && ./bin/seticon.js",
-    "build": "node ./bin/build.js standalone"
-  },
   "bin": {
     "kui": "bin/kui",
     "kubectl-kui": "bin/kubectl-kui"

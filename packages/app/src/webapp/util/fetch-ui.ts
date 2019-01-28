@@ -60,7 +60,8 @@ const versionFromEnv = process.env.VERSION && { version: process.env.VERSION }
 
 const { version } = versionFromEnv || versionFromPackageJson()
 const baseURL = 'https://s3-api.us-geo.objectstorage.softlayer.net/kui'
-const { productName } = require('@kui-shell/settings/config.json')
+import { theme } from '@kui-shell/settings/config.json'
+const { productName } = theme
 const file = `${encodeURIComponent(productName)}-${variants[process.platform]}`
 const url = `${baseURL}-${bucket(version)}/${file}`
 

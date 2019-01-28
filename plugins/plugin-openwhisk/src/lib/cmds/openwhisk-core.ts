@@ -24,7 +24,7 @@ import UsageError from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
-import settings from '@kui-shell/core/core/settings'
+import { theme as settings } from '@kui-shell/core/core/settings'
 import historyModel = require('@kui-shell/core/models/history')
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 

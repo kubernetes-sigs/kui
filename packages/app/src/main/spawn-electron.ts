@@ -389,12 +389,12 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     }
 
     /** this event handler will be called when the window's content finishes loading */
-    mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.on('did-finish-load', async () => {
       // for some reason, adding the title attribute to the new
       // BrowserWindow opts doesn't stick; and... this has to be on
       // did-finish-load, for some reason... at least these are true
       // statements for electron 1.6.x
-      const productName = require('@kui-shell/settings/config.json')['productName']
+      const productName = (await import('@kui-shell/settings/config.json')).theme.productName
 
       if (mainWindow) {
         mainWindow.setTitle(productName)

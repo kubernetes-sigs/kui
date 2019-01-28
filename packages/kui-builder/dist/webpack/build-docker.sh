@@ -35,7 +35,7 @@ npm run http-allocate-cert
 
 # some of the assets are in sibling directories; let's copy them here
 # to our TARGET directory:
-cp "$TOPDIR"/packages/app/build/index-webpack.html "$TARGET"/index.html
+cp "$TARGET"/index-webpack.html "$TARGET"/index.html
 cp -r "$TOPDIR"/packages/app/content/css/ "$TARGET" # !!! intentional trailing slash: css/
 cp -r "$TOPDIR"/packages/app/content/icons "$TARGET" # !!! intentional NO trailing slash: icons
 cp -r "$TOPDIR"/packages/app/content/images "$TARGET" # !!! intentional NO trailing slash: images

@@ -13,7 +13,9 @@
     "kui-shell-lint": "./bin/lint.sh",
     "kui-shell-watch": "./bin/watch.sh"
   },
-  "scripts": {},
+  "scripts": {
+    "configure": "node ./lib/configure.js"
+  },
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
   "dependencies": {

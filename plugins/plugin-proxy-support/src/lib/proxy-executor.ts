@@ -20,6 +20,7 @@ const debug = Debug('plugins/proxy-support/executor')
 import { IEvaluator, DirectEvaluator } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
 import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
+import { config } from '@kui-shell/core/core/settings'
 
 import * as needle from 'needle'
 
@@ -30,7 +31,8 @@ import * as needle from 'needle'
  *
  */
 import defaultProxyServerConfig = require('@kui-shell/proxy/lib/defaultProxyServerConfig.json')
-const proxyServerConfig = defaultProxyServerConfig
+const proxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
+debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */
 const directEvaluator = new DirectEvaluator()
