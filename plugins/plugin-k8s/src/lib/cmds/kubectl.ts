@@ -483,7 +483,10 @@ const prepareUsage = async (command: string) => {
  * @param options parsed-out command line options
  *
  */
-const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, execOptions, options, rawCommand: string) => new Promise(async (resolveBase, reject) => {
+/* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
+  return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
+} */
+const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand }) => new Promise(async (resolveBase, reject) => {
   debug('exec', command)
 
   const verb = argv[1]
@@ -759,67 +762,11 @@ const exec = (command: string, rawArgv: Array<string>, argv: Array<string>, exec
 })
 
 /**
- * local versus browser impls of kubectl and helm
+ * Executor implementations
  *
  */
-const impls = {
-  browser: {
-    kubectl: async ({ execOptions, argvNoOptions, parsedOptions: options }) => {
-      const { FQN: kubectlFQN, deploy: deployKubectl } = await import('../../actionProxy/kubectl')
-      debug('impls/browser/kubectl')
-
-      if (argvNoOptions[1] !== 'logs') {
-        await confirmFileExistence(options.f || options.file, 'kubectl')
-      }
-      await deployKubectl()
-      return dispatch(argvNoOptions, options, kubectlFQN, 'kubectl', execOptions)
-    },
-
-    helm: async ({ command, execOptions, argvNoOptions, parsedOptions: options }) => {
-      const { FQN: helmFQN, deploy: deployHelm } = await import('../../actionProxy/helm')
-
-      await confirmFileExistence(options.f || options.file, 'helm')
-      if (argvNoOptions[1] === 'install') await confirmFileExistence(argvNoOptions[2], 'helm')
-
-      await deployHelm()
-
-      try {
-        return await dispatch(argvNoOptions, options, helmFQN, 'helm', execOptions)
-      } catch (err) {
-        const message = err.raw ? await err.raw.message : err.message
-
-        if (message.match(/You might need to run `helm init`/)) {
-          debug('re-running helm init')
-          await repl.qexec('helm init')
-          return repl.qexec(command)
-        } else if (message.match(/running `helm repo update` may help/)) {
-          debug('re-running helm repo update')
-          await repl.qexec('helm repo update')
-          return repl.qexec(command)
-        } else {
-          debug('unknown helm error', err)
-          throw err
-        }
-      }
-    }
-  },
-
-  local: {
-    kubectl: async ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => exec('kubectl', argv, argvNoOptions, execOptions, parsedOptions, command),
-    helm: async ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => exec('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
-  }
-}
-
-const hasExes = async (exes: Array<string>): Promise<Array<boolean>> => {
-  if (inBrowser()) {
-    return Promise.all(exes.map(() => false))
-  } else {
-    // why the dynamic import? being browser friendly here
-    // const exists = await import('command-exists')
-    // return Promise.all(exes.map(exe => exists(exe).then(() => true).catch(() => false)))
-    return Promise.all(exes.map(() => true))
-  }
-}
+const kubectl = executeLocally('kubectl')
+const helm = executeLocally('helm')
 
 /**
  * Delegate 'k8s <verb>' to 'kubectl verb'
@@ -845,17 +792,8 @@ const dispatchViaDelegationTo = delegate => opts => {
  *
  */
 export default async (commandTree, prequire) => {
-  const [ haveKubectl, haveHelm ] = await hasExes(['kubectl', 'helm'])
-  debug('do we have kubectl? %s', haveKubectl)
-  debug('do we have helm? %s', haveHelm)
-
-  const impl = {
-    kubectl: !inBrowser() && haveKubectl ? impls.local.kubectl : impls.browser.kubectl,
-    helm: !inBrowser() && haveHelm ? impls.local.helm : impls.browser.helm
-  }
-
-  await commandTree.listen('/k8s/kubectl', impl.kubectl, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
-  await commandTree.listen('/k8s/helm', impl.helm, { usage: usage('helm'), noAuthOk: [ 'openwhisk' ] })
+  await commandTree.listen('/k8s/kubectl', kubectl, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
+  await commandTree.listen('/k8s/helm', helm, { usage: usage('helm'), noAuthOk: [ 'openwhisk' ] })
 
   //
   // register some of the common verbs so that the kubectl plugin works more gracefully:
@@ -871,7 +809,7 @@ export default async (commandTree, prequire) => {
   ]
   await Promise.all(shorthands.map(verb => {
     return commandTree.listen(`/k8s/${verb}`,
-                              dispatchViaDelegationTo(impl.kubectl),
+                              dispatchViaDelegationTo(kubectl),
                               { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
   }))
 }

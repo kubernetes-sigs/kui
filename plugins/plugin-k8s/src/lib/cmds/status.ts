@@ -25,7 +25,6 @@ import repl = require('@kui-shell/core/core/repl')
 
 import { flatten, isDirectory, toOpenWhiskFQN } from './util'
 import { States, FinalState } from './states'
-import { PACKAGE } from '../../actionProxy/deploy'
 import { formatContextAttr, formatEntity } from '../util/formatEntity'
 import { withRetryOn404 } from '../util/retry'
 
