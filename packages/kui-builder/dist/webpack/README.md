@@ -1,40 +1,22 @@
-# webpack builds
+# Kui webpack builds
 
 This directory will help you to create and publish a
 [webpack](https://webpack.js.org/) distribution. The intention is for
 creating a hosted version of Kui, for use within any reasonably
 compliant browser.
 
-## Configuring the Build
+## Configuring and Customizing the Build
 
-If you wish to override the default build parameters, you have three
-ways to do so.
-
-1. *Theme Overrides* via a `theme.json` located in the specified
-   override directory. You may specify overrides of the [default
-   theme](../../defaults/themes/kui.json).
-2. *Env Overrides* via an `env.json` in that directory. It is less
-   likely you would need to tweak this; these settings are intended to
-   modify the directory structure of a deployed build.
-3. *Application Configuration* via a `config.json` in that
-   directory. This will give you the opportunity to inject
-   configuration options into your plugin code. Using the [sample overrides](sample-overrides/config.json) as an example,
-   you would access that example configuration setting via:
-   ```typescript
-   import { config } from '@kui-shell/core/core/settings'
-   if (config['disableProxy']) { ... }
-   ```
-
-To specify the override directory, define the `KUI_BUILD_CONFIG`
-environment variable to point to your override directory. The
-directory [sample-overrides](./sample-overrides) offers some examples.
+If you wish to customize the build, e.g. by using a custom theme,
+consult the [build customization
+guide](../../../../docs/dev/build-customization.md).
 
 ## Building for webpack
 
 This command will generate the webpack bundles:
 
 ```bash
-npm install
+export KUI_BUILD_CONFIG=/optional/path/to/my/build/config
 ./build.sh
 ```
 

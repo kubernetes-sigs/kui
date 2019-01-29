@@ -14,7 +14,7 @@
   "productSubName": "Kui",
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
-  "cssTheme": "kui-fun.css",
+  "cssTheme": "material.css",
   "appIcon": "../../packages/app/content/icons/png/kui.png",
   "largeIcon": "content/icons/svg/kui.svg",
   "favicon": "icons/ico/kui.ico",

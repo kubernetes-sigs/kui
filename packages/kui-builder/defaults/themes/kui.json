@@ -15,6 +15,7 @@
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
   "cssTheme": "kui.css",
+  "fonts": "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,600",
   "appIcon": "../../packages/app/content/icons/png/kui.png",
   "largeIcon": "content/icons/svg/kui.svg",
   "favicon": "icons/ico/kui.ico",
