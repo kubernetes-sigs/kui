@@ -2286,7 +2286,7 @@ badge.gray-background {
 }
 
 sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoration="application error"] {
-    color: rgba(227, 26, 28, 0.8);
+    color: var(--color-support-01-lighter);
 }
 
 .repl-block.processing .repl-input input {

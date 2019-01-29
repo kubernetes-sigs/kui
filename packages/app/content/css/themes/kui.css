@@ -11,6 +11,7 @@ body {
     --color-text-01: #152934;
     --color-text-02: #5a6872;
     --color-support-01: #e71d32;
+    --color-support-01-lighter: rgba(227, 26, 28, 0.8);
     --color-support-02: #5aa700;
     --color-support-03: #efc100;
     --color-support-03-darker: hsl(48, 100%, 38%);  /* dialed down from 47% lightness */
