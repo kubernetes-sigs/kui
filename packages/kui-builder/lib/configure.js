@@ -176,9 +176,15 @@ const main = (env, overrides = {}) => {
     })
 }
 
-if (require.main === module) {
-  debug('called directly')
-
+/**
+ * Load the overrides from the KUI_BUILD_CONFIG or the default overrides location
+ *
+ * @param programmaticOverrides if we are being invoked programmatically, such as
+ * from webpack.config.js, then this gives the caller the option to
+ * specify some overrides via that programmatic call path
+ *
+ */
+const loadOverrides = (programmaticOverrides = {}) => {
   const find = dir => {
     if (dir) {
       if (path.isAbsolute(dir)) {
@@ -189,11 +195,16 @@ if (require.main === module) {
     }
   }
 
-  const overrideDirectory = find(process.env.KUI_BUILD_CONFIG) || path.join(__dirname, '../overrides')
-  debug(`Using this override directory: ${overrideDirectory}`)
+  const overrideDirectory = find(process.env.KUI_BUILD_CONFIG)
+
   const loadOverride = (file) => {
     try {
-      return require(path.join(overrideDirectory, file))
+      if (overrideDirectory) {
+        debug(`Using this override directory: ${overrideDirectory}`)
+        return require(path.join(overrideDirectory, file))
+      } else {
+        return {}
+      }
     } catch (err) {
       return {}
     }
@@ -203,23 +214,31 @@ if (require.main === module) {
   const userConfig = loadOverride('config')
 
   const overrides = {
-    build: { },
-    env: userEnv,
-    theme: userTheme,
-    config: userConfig
+    build: programmaticOverrides.build || {},
+    env: Object.assign({}, userEnv, programmaticOverrides.env),
+    theme: Object.assign({}, userTheme, programmaticOverrides.theme),
+    config: Object.assign({}, userConfig, programmaticOverrides.config)
   }
+
   if (process.env.KUI_STAGE) {
     overrides.build.configDir = path.join(process.env.KUI_STAGE, 'packages/app/build')
   }
+
   debug('overrides', overrides)
-  main('standalone', overrides)
+  return overrides
+}
+
+if (require.main === module) {
+  debug('called directly')
+
+  main('standalone', loadOverrides())
 } else {
   debug('required as a module')
 
   class Builder {
     /** @param env is one of the entries in ../defaults/envs */
     build (env, overrides) {
-      return main(env, overrides)
+      return main(env, loadOverrides(overrides))
     }
   }
 

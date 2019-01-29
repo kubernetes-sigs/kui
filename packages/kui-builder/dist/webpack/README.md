@@ -25,10 +25,9 @@ ways to do so.
    if (config['disableProxy']) { ... }
    ```
 
-To specify the override directory, you may either define
-`KUI_BUILD_CONFIG` to point to your override directory, or you may
-place the files in `./overrides`. The directory
-[sample-overrides](./sample-overrides) offers some examples.
+To specify the override directory, define the `KUI_BUILD_CONFIG`
+environment variable to point to your override directory. The
+directory [sample-overrides](./sample-overrides) offers some examples.
 
 ## Building for webpack
 

@@ -40,5 +40,18 @@ cp -r "$TOPDIR"/packages/app/content/css/ "$TARGET" # !!! intentional trailing s
 cp -r "$TOPDIR"/packages/app/content/icons "$TARGET" # !!! intentional NO trailing slash: icons
 cp -r "$TOPDIR"/packages/app/content/images "$TARGET" # !!! intentional NO trailing slash: images
 
+# if we are using a build config override, then copy in its assets
+if [ -n "$KUI_BUILD_CONFIG" ]; then
+    if [ -d "$KUI_BUILD_CONFIG"/css ]; then
+        cp -r "$KUI_BUILD_CONFIG"/css/ "$TARGET" # !!! intentional trailing slash: css/
+    fi
+    if [ -d "$KUI_BUILD_CONFIG"/icons ]; then
+        cp -r "$KUI_BUILD_CONFIG"/icons "$TARGET" # !!! intentional NO trailing slash: icons
+    fi
+    if [ -d "$KUI_BUILD_CONFIG"/images ]; then
+        cp -r "$KUI_BUILD_CONFIG"/images "$TARGET" # !!! intentional NO trailing slash: images
+    fi
+fi
+
 # finally, build the docker image
 docker build . -t kui-webpack
