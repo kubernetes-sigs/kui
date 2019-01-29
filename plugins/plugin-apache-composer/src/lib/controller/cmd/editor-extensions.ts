@@ -25,8 +25,10 @@ import { extension, language } from '@kui-shell/plugin-editor/src/lib/file-types
 import { respondToRepl } from '@kui-shell/plugin-editor/src/lib/util'
 import { openEditor } from '@kui-shell/plugin-editor/src/lib/open'
 import { loadComposition } from '@kui-shell/plugin-apache-composer/src/lib/utility/compile'
+import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
-import { handleParseError, persister } from '../../model/editor/composition-persister'
+import { handleError, persister, clearSidecarWarning } from '../../model/editor/composition-persister'
 
 export const composeUsage = {
   strict: 'compose',
@@ -160,7 +162,7 @@ const addWskflow = prequire => opts => {
     if (fsm.statusCode || fsm.code) {
       // some error generating the fsm
       editor.clearDecorations()
-      handleParseError(fsm, filepath, editor)
+      handleError(fsm, filepath, editor)
     } else {
       if (differentFSMs(action.fsm, fsm)) {
         action.fsm = fsm
@@ -172,6 +174,9 @@ const addWskflow = prequire => opts => {
   // when the editor content changes, see if the current contents can
   // render a wskflow
   eventBus.on('/editor/change', tryWskflow)
+
+  // when the editor content changes, clear all sidecar warnings issued by wskflow or deloy button
+  eventBus.on('/editor/change', clearSidecarWarning)
 
   // and try it once onload
   tryWskflow()

@@ -23,11 +23,16 @@ import { basename } from 'path'
 
 import { extension } from '@kui-shell/plugin-editor/src/lib/file-types'
 
+import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+
 /**
  * If this is a Composer parse error, display the error as editor decorations
- *
+ * For deploy button errors, display the errors as warning in sidecar
+ * Reject all other errors
  */
-export const handleParseError = (err, filepath, editor) => {
+export const handleError = (err, filepath, editor) => {
   if (err.statusCode === 'ENOPARSE') {
     debug('composition did not parse', err)
     // try two patterns to spot stack trace information;
@@ -68,7 +73,52 @@ export const handleParseError = (err, filepath, editor) => {
       ]
       editor.__cloudshell_decorations = editor.deltaDecorations([], decorations)
     }
+  } else if (err.message.includes('Failed to deploy')) { // add sidecar warning for deploy button failure
+    const container = document.querySelector(sidecarSelector('.sidecar-header .sidecar-header-secondary-content .custom-header-content'))
+    if (container) {
+      const css = {
+        message: 'deploy-button-fail-warning',
+        text: 'deploy-button-fail-warning-text'
+      }
+      let message = container.querySelector(`.${css.message}`)
+
+      let text
+
+      const makeExampleDoms = () => {
+        const message = document.createElement('div')
+        const warning = document.createElement('strong')
+
+        text = document.createElement('span')
+
+        message.className = css.message
+        text.className = css.text
+        warning.className = 'red-text'
+
+        message.appendChild(warning)
+        message.appendChild(text)
+        container.appendChild(message)
+
+        warning.innerText = 'Warning: '
+      }
+
+      if (!message) {
+        makeExampleDoms()
+      } else {
+        text = message.querySelector(`.${css.text}`)
+      }
+      text.innerText = err.message
+    }
+  } else {
+    return Promise.reject(err)
   }
+}
+
+// clear all sidecar warnings issued by wskflow or deploy button
+export const clearSidecarWarning = () => {
+  const allPossibleWarnings = ['.wskflow-undeployed-action-warning', '.deploy-button-fail-warning']
+  allPossibleWarnings.map(possibleWarning => document.querySelector(sidecarSelector(`.sidecar-header .sidecar-header-secondary-content .custom-header-content ${possibleWarning}`)))
+    .filter(existingWarningHeader => existingWarningHeader)
+    .forEach(existingWarningHeader => { existingWarningHeader.remove(); removeAllDomChildren(existingWarningHeader) })
 }
 
 // persisters for apps/compositions
@@ -121,10 +171,11 @@ export const persister = {
               .then(res => {
                 // successful compilation, so remove any parse error decorations
                 editor.clearDecorations()
+                clearSidecarWarning()
                 return res
               })
               .catch(err => {
-                handleParseError(err, filepath, editor)
+                handleError(err, filepath, editor)
               })
           }
         })

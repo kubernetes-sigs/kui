@@ -63,10 +63,12 @@ export const deployAction = (home: string) => actionFQN => new Promise(async (re
   const validfilePaths = (await Promise.all(filePaths.map(filePath => pathExists(filePath).then(exists => exists ? filePath : undefined))))
     .filter(existFilePath => existFilePath)
 
-  debug(`found validfilePaths ${validfilePaths}`)
+  debug(`found validfilePaths: ${validfilePaths}`)
 
   if (validfilePaths.length === 0) {
-    reject(new Error(`Failed to deploy ${actionFQN}. \nYou don't have any matching .js, .php or .python file in your local file system.`))
+    return repl.qexec(`wsk action get ${actionFQN}`)
+      .then(resolve)
+      .catch(err => err.statusCode === 404 ? reject(new Error(`Failed to deploy ${actionFQN}. You don't have any matching .js, .php or .python file in your local file system.`)) : reject(err))
   } else {
     return Promise.all(validfilePaths.map(filePath => repl.qexec(`wsk action update "${actionFQN}" "${filePath}"`)))
       .then(resolve, reject)

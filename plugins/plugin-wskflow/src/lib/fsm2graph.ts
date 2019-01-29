@@ -649,7 +649,7 @@ export default function fsm2graph (ir, containerElement, acts, options, rule): v
     edges: []
   }
 
-  $('.wskflowWarning').remove()
+  $('.wskflow-undeployed-action-warning').remove()
 
   if (activations) {
     // parse the activations to get a list of states that was visted
