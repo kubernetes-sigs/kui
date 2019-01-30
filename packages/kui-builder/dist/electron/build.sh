@@ -22,8 +22,10 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="$SCRIPTDIR/../../../../"
 STAGING="$SCRIPTDIR/kui"
 APPDIR="$STAGING/packages/app"
+KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../../examples/build-configs/default}
 export BUILDDIR=$SCRIPTDIR/../builds
 
+initialDirectory=`pwd`
 cd $SCRIPTDIR
 
 #
@@ -102,11 +104,25 @@ function init {
          (node -e 'const pjson = require("./package.json"); const pjson2 = require("./bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./package.json", JSON.stringify(pjson, undefined, 2))') && \
          npm install --production --ignore-scripts --no-package-lock && \
          ("$TOPDIR"/packages/kui-builder/bin/link-build-assets.sh) && \
+         (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$TOPDIR"/packages/kui-builder/lib/configure.js) && \
          rm bak.json)
     if [ $? != 0 ]; then
         exit $?
     fi
     echo "lerna magic done"
+
+    if [ -d "$KUI_BUILD_CONFIG"/css ]; then
+        echo "copying in theme css"
+        cp -r "$KUI_BUILD_CONFIG"/css "$STAGING"/packages/app/content
+    fi
+    if [ -d "$KUI_BUILD_CONFIG"/icons ]; then
+        echo "copying in theme icons"
+        cp -r "$KUI_BUILD_CONFIG"/icons "$STAGING"/packages/app
+    fi
+    if [ -d "$KUI_BUILD_CONFIG"/images ]; then
+        echo "copying in theme images"
+        cp -r "$KUI_BUILD_CONFIG"/images "$STAGING"/packages/app
+    fi
 
     if [ -n "$TARBALL_ONLY" ]; then exit; fi
 

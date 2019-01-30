@@ -50,3 +50,26 @@ environment variable to point to your override directory. The
 directory [example
 overrides](../../packages/kui-builder/examples/build-configs/material-design)
 offers an example.
+
+## A webpack Example
+
+To build a webpack image with the example "material" theme:
+
+```bash
+export KUI_BUILD_CONFIG=../../examples/build-configs/material-design
+cd packages/kui-builder/dist/webpack
+./build.sh
+```
+
+By default, this script will build using the [default
+theme](../../packages/kui-builder/examples/build-configs/default/). By
+specifying a value for `KUI_BUILD_CONFIG` you override this default
+choice of build configuration.
+
+In other words, the default behavior is equivalent to:
+
+```bash
+export KUI_BUILD_CONFIG=../../examples/build-configs/default
+cd packages/kui-builder/dist/webpack
+./build.sh
+```
