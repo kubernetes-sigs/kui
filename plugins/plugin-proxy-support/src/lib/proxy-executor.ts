@@ -23,7 +23,7 @@ import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOpt
 import { config } from '@kui-shell/core/core/settings'
 
 import * as needle from 'needle'
-import url = require('url');
+import url = require('url')
 
 /**
  * The proxy server configuration.
@@ -64,7 +64,7 @@ class ProxyEvaluator implements IEvaluator {
       debug('sending body', body)
 
       try {
-        const proxyURL = new URL(proxyServerConfig.url, window.location.origin);
+        const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
 
         const response = await needle('post',
                                       proxyURL.href,

@@ -2,9 +2,15 @@
 
 # make .keys/ssl.crt and .keys/ssl.key
 if [ ! -d .keys ]; then
+    if [ -n "$TRAVIS_JOB_ID" ]; then
+        # we are running in travis; specify a fake subject on the command line
+        echo "using a fake subject for the certificate --- just for travis"
+        SUBJECT="-subj /C=GB/ST=London/L=London/O=GlobalSecurity/OU=ITDepartment/CN=example.com"
+    fi
+
     mkdir .keys && \
         openssl genrsa -out .keys/ssl.key 2048 && \
-        openssl req -new -key .keys/ssl.key -x509 -days 999 -out .keys/ssl.crt
+        openssl req -new -key .keys/ssl.key -x509 -days 999 -out .keys/ssl.crt ${SUBJECT}
 
     if [ $? != 0 ]; then exit $?; fi
 fi
