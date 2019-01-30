@@ -14,7 +14,7 @@
     "kui-shell-watch": "./bin/watch.sh"
   },
   "scripts": {
-    "configure": "node ./lib/configure.js"
+    "configure": "node ./lib/configure.js && ./dist/dev/build.sh"
   },
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
