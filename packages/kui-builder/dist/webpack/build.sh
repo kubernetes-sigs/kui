@@ -67,6 +67,7 @@ function build {
 
 if [ ! -d node_modules ]; then
     npm install
+    if [ $? != 0 ]; then exit $?; fi
 fi
 
 if [[ `uname` == Darwin ]]; then
