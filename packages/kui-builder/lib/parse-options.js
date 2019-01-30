@@ -27,10 +27,10 @@ module.exports = (env, overrides) => new Promise((resolve, reject) => {
   // default value assignments for options
   const defaultOptions = {
     // theme settings
-    theme: require('../defaults/themes/kui'),
+    theme: require('../examples/build-configs/default/theme'),
 
     // env settings, e.g. webpack versus standalone
-    env: require('../defaults/envs/' + env),
+    env: require('../examples/build-configs/default/' + env),
 
     // allows for arbitrary injection of configuration parameters
     config: {},
