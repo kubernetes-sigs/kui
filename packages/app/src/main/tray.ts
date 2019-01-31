@@ -17,6 +17,8 @@
 /**
  * Tray menu: e.g. upper-right menu on MacOS, or lower-right widget on Windows
  *
+ * NOTE: this file is kept for demonstration purposes. It is not currently used.
+ *
  */
 
 import { join } from 'path'
@@ -35,7 +37,6 @@ export default ({ Tray, Menu }, app, createWindow) => {
   const template = [
     {
       label: 'Visualize a Composition',
-      // icon: join(__dirname, '../../content/icons/png/activity-timeline-icon-50.png'),
       click: () => createWindow(true, 'app preview --select', true, {
         title: 'App Visualization',
         sidecarOnly: true,
@@ -48,7 +49,6 @@ export default ({ Tray, Menu }, app, createWindow) => {
 
     {
       label: 'Activity Timeline',
-      icon: join(__dirname, '../../content/icons/png/activity-timeline-icon-50.png'),
       click: () => createWindow(true, 'loading activity timeline ...', true, Object.assign({
         title: 'Activity Timeline',
         theme: 'dark',
@@ -59,7 +59,6 @@ export default ({ Tray, Menu }, app, createWindow) => {
 
     {
       label: 'Activity Grid',
-      icon: join(__dirname, '../../content/icons/png/activity-grid-icon-50.png'),
       click: () => createWindow(true, 'loading activity grid ...', true, Object.assign({
         title: 'Activity Grid',
         theme: 'dark',
@@ -69,14 +68,12 @@ export default ({ Tray, Menu }, app, createWindow) => {
     },
     {
       label: 'CLI',
-      icon: join(__dirname, '../../content/icons/png/cli-icon-50.png'),
       click: () => createWindow(true, '')
     },
 
     { type: 'separator' },
     {
       label: 'Run a Load Test',
-      // icon: join(__dirname, '../../content/icons/png/activity-timeline-icon-50.png'),
       click: () => createWindow(true, 'lt <action> --numThreads 1 --numIters 10 -p key value', true, {
         title: 'Load Test',
         sidecarOnly: false,
@@ -89,7 +86,6 @@ export default ({ Tray, Menu }, app, createWindow) => {
     },
     {
       label: 'Switch Namespace',
-      // icon: join(__dirname, '../../content/icons/png/activity-timeline-icon-50.png'),
       click: () => createWindow(true, 'auth list        # click on a namespace to switch', true, Object.assign({
         title: 'Namespace Chooser', sidecarOnly: false
         /* position: { x: screenSize.x + (screenSize.width - 2 * dimensions.width - 100),
