@@ -12,7 +12,7 @@ if [ -z "$SCRIPTS" ]; then
     #
     # then we're running one or more mocha test suites (which suites as indicated by $LAYERS)
     #
-    
+
     # some tests require ibmcloud, e.g. bash-like; it's fast enough to
     # install, let's not go crazy with optimizing
     ./tools/travis/installers/ibmcloud.sh &
@@ -42,6 +42,8 @@ if [ -z "$SCRIPTS" ]; then
         # create a headless dist to test against
         npm install && (cd packages/kui-builder/dist/headless && ./build.sh; cd ../builds && tar jxf "Kui-headless.tar.bz2")
     fi
+
+    if [ $? != 0 ]; then exit $?;  fi
 
     wait
     if [ $? != 0 ]; then
