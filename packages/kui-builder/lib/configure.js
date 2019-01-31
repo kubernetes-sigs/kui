@@ -26,6 +26,7 @@ const parseOptions = require('./parse-options')
  *
  */
 const task = taskName => console.log(colors.dim('task: ') + taskName)
+const info = (key, value) => console.log(colors.blue(`${key}: `) + value)
 
 /**
  * Read in index.html
@@ -60,22 +61,6 @@ const evaluateMacros = settings => str => {
 
   return str
 }
-
-/**
- * Ensure that the buildDir exists
- *
- */
-const makeBuildDir = settings => new Promise((resolve, reject) => {
-  const { buildDir } = settings.build
-
-  fs.mkdir(buildDir, err => {
-    if (err && err.code !== 'EEXIST') {
-      reject(err)
-    } else {
-      resolve()
-    }
-  })
-})
 
 /**
  * Write the updated index.html
@@ -154,6 +139,9 @@ const doBuild = (settings) => () => Promise.all([
  *
  */
 const doWork = (settings) => {
+  info('theme', settings.theme.cssTheme)
+  info('buildDir', settings.build.buildDir)
+
   return Promise.all([
     fs.mkdirp(settings.build.buildDir),
     fs.mkdirp(settings.build.configDir)
@@ -196,6 +184,7 @@ const loadOverrides = (programmaticOverrides = {}) => {
   }
 
   const overrideDirectory = find(process.env.KUI_BUILD_CONFIG)
+  info('theme directory', overrideDirectory)
 
   const loadOverride = (file) => {
     try {
@@ -206,6 +195,7 @@ const loadOverrides = (programmaticOverrides = {}) => {
         return {}
       }
     } catch (err) {
+      debug('error in loadOverride', err)
       return {}
     }
   }
@@ -221,7 +211,7 @@ const loadOverrides = (programmaticOverrides = {}) => {
   }
 
   if (process.env.KUI_STAGE) {
-    overrides.build.configDir = path.join(process.env.KUI_STAGE, 'packages/app/build')
+    overrides.build.buildDir = overrides.build.configDir = path.join(process.env.KUI_STAGE, 'packages/app/build')
   }
 
   debug('overrides', overrides)

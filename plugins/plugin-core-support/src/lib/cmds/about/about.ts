@@ -47,7 +47,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 
   const about = openAboutWindow({
     product_name: settings.productName,
-    icon_path: path.join(settingsDir, '..', settings.largeIcon),
+    icon_path: path.join(settingsDir, settings.largeIcon),
     package_json_dir: settingsDir,
     // use_inner_html: true,
     css_path: [

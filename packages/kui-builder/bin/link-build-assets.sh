@@ -24,19 +24,20 @@ if [ $? == 1 ]; then
     exit 1
 fi
 
-# we will work in node_modules/@kui-shell; so TOPDIR is two levels up
 cd node_modules
+if [ ! -d @kui-shell ]; then
+    mkdir @kui-shell
+fi
+cd @kui-shell
+
+# note how, with the two `cd` just above, we will be working in
+# node_modules/@kui-shell; so TOPDIR is two levels up
 TOPDIR=../..
 BUILDDIR="$TOPDIR/build"
 
 # echo for sanity checking; we won't use ABS after this
 ABS=$(cd "$TOPDIR" && pwd)
 echo "Running under this absolute path: $ABS"
-
-if [ ! -d @kui-shell ]; then
-    mkdir @kui-shell
-fi
-cd @kui-shell
 
 function link {
     echo "linking build asset $1 -> $2"
@@ -64,5 +65,5 @@ link "$BUILDDIR"/.pre-scanned.json prescan.json
 if [ -d "$TOPDIR"/packages/app/build ]; then
     echo "linking config"
     link "$TOPDIR"/packages/app/build settings
-    link "$TOPDIR"/packages/app/content content
+#    link "$TOPDIR"/packages/app/content content
 fi
