@@ -27,12 +27,9 @@ import appList from './lib/controller/cmd/app-list'
 import appConfig from './lib/controller/cmd/app-config'
 import editorBits from './lib/controller/cmd/editor-extensions'
 import * as usage from './usage'
-import { initRequirePath } from './lib/utility/compile'
 
 export default async (commandTree, prequire) => {
   debug('initializing')
-
-  await initRequirePath()
 
   commandTree.subtree('/composer', { usage: usage.composer })
 

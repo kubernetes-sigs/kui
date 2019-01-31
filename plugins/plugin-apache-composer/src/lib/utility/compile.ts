@@ -33,19 +33,6 @@ import { create } from './usage'
 import { deployAction } from '../controller/client'
 import * as messages from './messages'
 
-// help compositions find our openwhisk-composer module
-export const initRequirePath = async () => {
-  if (!inBrowser()) {
-    debug('adding node_modules to the require module path')
-    const appModulePath = await import('app-module-path')
-
-    // add the directory that encloses `openwhisk-composer`
-    // this is needed e.g. for `compose foo`
-    const root = path.dirname(require.resolve('openwhisk-composer/package.json'))
-    appModulePath.addPath(path.join(root, '..'))
-  }
-}
-
 export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
   debug('validating source file', inputFile)
   const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)

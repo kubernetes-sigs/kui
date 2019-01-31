@@ -18,6 +18,7 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { addPath } from '@kui-shell/core/core/find-file'
 import * as repl from '@kui-shell/core/core/repl'
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import initRequirePath from './initRequirePath'
 import * as Debug from 'debug'
 const debug = Debug('plugins/composer/preload')
 
@@ -50,6 +51,9 @@ const listenForDrops = () => {
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
   // listen for drag and drop
   listenForDrops()
+
+  // help compositions find our openwhisk-composer module
+  await initRequirePath()
 
   // give visibility to our @demos directory on the module path
   addPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/lib/@demos/hello.js')))
