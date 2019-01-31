@@ -15,12 +15,12 @@
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
   "cssTheme": "material.css",
-  "appIcon": "../../packages/app/content/icons/png/kui.png",
-  "largeIcon": "content/icons/svg/kui.svg",
+  "appIcon": "../default/icons/png/kui.png",
+  "largeIcon": "../default/icons/svg/kui.svg",
   "favicon": "icons/ico/kui.ico",
   "filesystemIcons": {
-    "darwin": "../../packages/app/content/icons/icns/kui.icns",
-    "win32": "../../packages/app/content/icons/ico/kui.ico",
-    "linux": "../../packages/app/content/icons/png/kui.png"
+    "darwin": "../default/icons/icns/kui.icns",
+    "win32": "../default/icons/ico/kui.ico",
+    "linux": "../default/icons/png/kui.png"
   }
 }

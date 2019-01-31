@@ -1,8 +1,8 @@
 {
   "main": "electron.js",
   "bodyCss": "in-electron",
-  "cssHome": "../content/css/",
-  "imageHome": "../content/icons/ico/",
+  "cssHome": "css/",
+  "imageHome": "icons/ico/",
   "jsHome": "../../../build/packages/app/src/webapp/bootstrap/"
 }
 

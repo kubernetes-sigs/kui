@@ -113,15 +113,15 @@ function init {
 
     if [ -d "$KUI_BUILD_CONFIG"/css ]; then
         echo "copying in theme css"
-        cp -r "$KUI_BUILD_CONFIG"/css "$STAGING"/packages/app/content
+        cp -r "$KUI_BUILD_CONFIG"/css "$STAGING"/packages/app/build
     fi
     if [ -d "$KUI_BUILD_CONFIG"/icons ]; then
         echo "copying in theme icons"
-        cp -r "$KUI_BUILD_CONFIG"/icons "$STAGING"/packages/app
+        cp -r "$KUI_BUILD_CONFIG"/icons "$STAGING"/packages/app/build
     fi
     if [ -d "$KUI_BUILD_CONFIG"/images ]; then
         echo "copying in theme images"
-        cp -r "$KUI_BUILD_CONFIG"/images "$STAGING"/packages/app
+        cp -r "$KUI_BUILD_CONFIG"/images "$STAGING"/packages/app/build
     fi
 
     if [ -n "$TARBALL_ONLY" ]; then exit; fi
@@ -130,9 +130,9 @@ function init {
     export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
 
     # filesystem icons
-    ICON_MAC=../../`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
-    ICON_WIN32=../../`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
-    ICON_LINUX=../../`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
+    ICON_MAC="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
+    ICON_WIN32="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
+    ICON_LINUX="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
 
     # make the build directory
     if [ ! -d $BUILDDIR ]; then
