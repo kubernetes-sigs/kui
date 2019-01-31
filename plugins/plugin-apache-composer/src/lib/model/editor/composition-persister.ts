@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/model/editor/composition-persister')
 
-import { qexec } from '@kui-shell/core/core/repl'
+import { pexec } from '@kui-shell/core/core/repl'
 
 import { basename } from 'path'
 
@@ -112,8 +112,7 @@ export const persister = {
           if (err) {
             reject(err)
           } else {
-            // -r means try to deploy the actions, too
-            return qexec(`app update "${app.name}" "${filepath}" -r --kind ${app.exec.kind}`, undefined, undefined, { noHeader: true })
+            return pexec(`app update ${app.name} ${filepath} --kind ${app.exec.kind}`)
               .then(app => {
                 cleanup()
                 resolve(app)

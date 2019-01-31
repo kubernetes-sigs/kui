@@ -19,7 +19,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
-
+const sidecar = ui.sidecar
 /**
  * this test covers app create error handling, and app create --dry-run
  *
@@ -30,6 +30,47 @@ describe('app create error handling', function (this: common.ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
+  it('should create a composition with undeloyed actions', () => cli.do('app create if @demos/if.js', this.app)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('if'))
+    .then(app => app.client.waitUntil(() => {
+      return app.client.getText('.wskflow-undeployed-action-warning-text')
+          .then(expectedText => expectedText === 'This composition depends on 3 undeployed components')
+    }, 2000))
+    .catch(common.oops(this)))
+
+  it('should fail to invoke composition with undeployed actions', () => cli.do('app invoke if', this.app)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('if'))
+    .then(app => app.client.waitUntil(() => {
+      return app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+          .then(activationResult => activationResult.includes('Failed to resolve action'))
+    }), 2000)
+    .catch(common.oops(this)))
+
+  it('should deploy action authenticate', () => cli.do('action create authenticate @demos/authenticate.js', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
+
+  it('should deploy action welcome', () => cli.do('action create welcome @demos/welcome.js', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
+
+  it('should deploy action login', () => cli.do('action create login @demos/login.js', this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
+
+  it('should successfully invoke compostiion with deployed actions', () => cli.do('app invoke if', this.app)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('if'))
+    .then(app => app.client.waitUntil(() => {
+      return app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+          .then(ui.expectStruct({ html: '<html><body>please say the magic word.</body></html>' }))
+    }), 2000)
+    .catch(common.oops(this)))
   /* it('should initialize composer', () => cli.do(`app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
         .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
        .catch(common.oops(this))) */

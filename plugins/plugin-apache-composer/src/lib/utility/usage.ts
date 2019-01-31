@@ -45,13 +45,8 @@ export const create = command => ({
   example: `app ${command} <name> <sourceFile>`,
   required: [{ name: 'name', docs: 'the name of your new app', implicitOK: ['actions', 'preview'] },
                { name: 'sourceFile', docs: 'source file or pre-compiled composition', file: true, notNeededIfImplicit: true }],
-  optional: actionsUsage[command].optional.concat([
-        { name: '--recursive', alias: '-r', boolean: true, docs: 'also deploy any referenced actions' }]),
-        /*{ name: '--dry-run', consumesPositional: 1, alias: '-n', boolean: true, advanced: true, docs: 'only check the given input for validity' },
-        { name: '--log-input', boolean: true, advanced: true, docs: 'log initial input' },
-        { name: '--log-inline', boolean: true, advanced: true, docs: 'log inline function output' },
-        { name: '--log-all', boolean: true, advanced: true, docs: 'log initial input and inline function out    ]), */
-  sampleInputs: sampleInputs(sampleName => `app ${command} -r ${sampleName}`),
+  optional: actionsUsage[command].optional,
+  sampleInputs: sampleInputs(sampleName => `app ${command} ${sampleName}`),
   parents: ['composer', { command: 'composer app' }],
   related: ['app get', 'app invoke', 'app list']
 })

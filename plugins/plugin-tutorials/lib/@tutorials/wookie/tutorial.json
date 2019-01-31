@@ -5,7 +5,7 @@
     "steps": [
         {
             "heading": "Introduction",
-            "content": "This tutorial reviews an application that searches two APIs for information from the Star Wars or Star Trek universes. You will see how to create and deploy a **new serverless API** by combining existing APIs, simply by writing a Composer program.", 
+            "content": "This tutorial reviews an application that searches two APIs for information from the Star Wars or Star Trek universes. You will see how to create and deploy a **new serverless API** by combining existing APIs, simply by writing a Composer program.",
             "transition": "next",
             "extras":{
                 "learnMore": {
@@ -118,8 +118,8 @@
             "fontawesome": "fas fa-cloud-upload-alt",
             "extras": {
                 "nextSteps": [
-                    { "display": "app create", "command": "app create -r wookie @demos/wookie/app.js",
-                      "doc": "Deploys a given composition, naming it, in this case \"wookie\". The `-r` argument requests that any referenced Cloud Functions also be deployed." }
+                    { "display": "app create", "command": "app create wookie @demos/wookie/app.js",
+                      "doc": "Deploys a given composition, naming it, in this case \"wookie\". " }
                 ]
             }
         },
@@ -171,4 +171,4 @@
             }
         }
     ]
-}  
+}
