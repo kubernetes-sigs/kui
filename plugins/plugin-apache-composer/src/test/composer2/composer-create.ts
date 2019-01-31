@@ -189,16 +189,15 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(sidecar.expectShowing(seqName1))
     .catch(common.oops(this)))
 
-  /** test: create with -r, testing for handling of auto-deploy */
-  it(`should create wookiechat and dependent actions with implicit entity`, () => cli.do('app update -r wookie @demos/wookie/app.js', this.app)
+  it(`should create wookiechat and dependent actions with implicit entity`, () => cli.do('app update wookie @demos/wookie/app.js', this.app)
     .then(verifyTheBasicStuff('wookie', 'composerLib')) // the .replace part strips off the ".js" suffix
-    .then(verifyNodeExists('swapi', true)) // expect to be deployed
-    .then(verifyNodeExists('stapi', true)) // expect to be deployed
-    .then(verifyNodeExists('validate-swapi', true)) // expect to be deployed
-    .then(verifyNodeExists('validate-stapi', true)) // expect to be deployed
-    .then(verifyNodeExists('report-swapi', true)) // expect to be deployed
-    .then(verifyNodeExists('report-stapi', true)) // expect to be deployed
-    .then(verifyNodeExists('report-empty', true)) // expect to be deployed
+    .then(verifyNodeExists('swapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('stapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('validate-swapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('validate-stapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('report-swapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('report-stapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('report-empty', false)) // expect not to be deployed
     .catch(common.oops(this)))
 
   getSessions('sessions list', 0, 0) // no sessions, yet

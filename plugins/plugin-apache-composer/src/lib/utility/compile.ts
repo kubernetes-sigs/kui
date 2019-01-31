@@ -30,7 +30,6 @@ import { findFile } from '@kui-shell/core/core/find-file'
 
 import { extractActionsFromAst, isValidAst } from './ast'
 import { create } from './usage'
-import { deployAction } from '../controller/client'
 import * as messages from './messages'
 
 export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
@@ -48,20 +47,7 @@ export const sourceToComposition = ({ inputFile, name = '', recursive = false })
 
   return loadSourceCode(inputFile, localCodePath) // check inputfile extension and existence and then return the source code
     .then(sourceCode => loadComposition(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input
-    .then(composition => {
-      composition = compileComposition(composition, name) // parse and compile composition and get {composition, ast, version} object
-      if (recursive) {
-          // we were asked to (try to) deploy the actions referenced by the AST
-        const localSourcePath = findFile(expandHomeDir(inputFile))
-        const actions = extractActionsFromAst(composition.ast)  // extract the action name from ast
-        debug('extracted actions from ast', actions)
-        return Promise.all(actions.map(deployAction(path.join(localSourcePath, '..')))) // deploy the referenced actions
-            .then(() => resolve(composition))
-            .catch(error => reject(error))
-      } else {
-        return resolve(composition)
-      }
-    })
+    .then(composition => resolve(compileComposition(composition, name))) // parse and compile composition and get {composition, ast, version} object
     .catch(err => reject(err))
 })
 

@@ -260,10 +260,13 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
   })
 
   describe('should create compostion and dependent actions with implicity entity', function () {
-    it('validate app create -r test2 @demos/if.js', () => cli.do('app create -r test2 @demos/if.js')
+    it('validate app create test2 @demos/if.js', () => cli.do('app create test2 @demos/if.js')
       .then(cli.expectOK('ok: updated composition test2\n', { exact: true }))
       .catch(common.oops(this)))
-    validation.do({ name: 'test2', output: { html: '<html><body>please say the magic word.</body></html>' } })
+
+    it('validate app invoke test2 fails', () => cli.do('app invoke test2')
+      .then(res => res.output.indexOf('Failed to resolve action') !== -1)
+      .catch(common.oops(this)))
   })
 
   describe('should update simple composition', function () {

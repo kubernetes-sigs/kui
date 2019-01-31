@@ -186,18 +186,26 @@ describe('drilldown to action from wskflow', function (this: common.ISuite) {
 
   const appName = 'test-if'
   const appFile = '@demos/if.js'
+  const actionName = 'authenticate'
+  const actionFile = '@demos/authenticate.js'
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it(`should create an app with ${appFile}`, () => cli.do(`app create -r ${appName} ${appFile}`, this.app)
+  it(`should deploy action ${actionName}`, () => cli.do(`action create ${actionName} ${actionFile}`, this.app)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(actionName))
+    .catch(common.oops(this)))
+
+  it(`should create an app with ${appFile}`, () => cli.do(`app create ${appName} ${appFile}`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(appName))
     .catch(common.oops(this)))
 
-  it(`should click on the authenticate node and go to the action`, () => this.app.client.click('#wskflowSVG .node[data-name="/_/authenticate"]')
+  it(`should click on the authenticate node and go to the action`, () => this.app.client.click(`#wskflowSVG .node[data-name="/_/${actionName}"]`)
     .then(() => this.app.client.waitUntil(async () => {
       return this.app.client.getText(ui.selectors.SIDECAR_TITLE)
-        .then(text => text === 'authenticate')
+        .then(text => text === actionName)
     }))
     .then(() => this.app.client.waitForExist('#qtip', 2000, false)) // qtip better not be visible
     .catch(common.oops(this)))

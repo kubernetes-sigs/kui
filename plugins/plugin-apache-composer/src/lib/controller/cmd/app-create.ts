@@ -43,7 +43,7 @@ export default async (commandTree, prequire) => {
       }
     }
 
-    return compileUtil.sourceToComposition({ inputFile, name, recursive: parsedOptions.r || parsedOptions.recursive })
+    return compileUtil.sourceToComposition({ inputFile, name })
       .then(source => client.deploy({ composition: source, overwrite: false })
         .then(view.formatCompositionEntity(execOptions)))
       .catch(err => { throw err })
@@ -65,7 +65,7 @@ export default async (commandTree, prequire) => {
       }
     }
 
-    return compileUtil.sourceToComposition({ inputFile, name, recursive: parsedOptions.r || parsedOptions.recursive })
+    return compileUtil.sourceToComposition({ inputFile, name })
       .then(composition => client.deploy({ composition, overwrite: true })
         .then(view.formatCompositionEntity(execOptions)))
   }, { usage: create('update') })

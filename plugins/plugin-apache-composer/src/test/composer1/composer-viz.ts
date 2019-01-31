@@ -175,15 +175,15 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .catch(common.oops(this)))
 
   /** test: viz, then create with -r, testing for handling of implicit entity and auto-deploy */
-  it(`should create wookiechat and dependent actions with implicit entity`, () => cli.do('app update -r', this.app)
+  it(`should create wookiechat and dependent actions with implicit entity`, () => cli.do('app update', this.app)
     .then(verifyTheBasicStuff('app.js', 'composerLib'))
-    .then(verifyNodeExists('swapi', true)) // expect to be deployed
-    .then(verifyNodeExists('stapi', true)) // expect to be deployed
-    .then(verifyNodeExists('validate-swapi', true)) // expect to be deployed
-    .then(verifyNodeExists('validate-stapi', true)) // expect to be deployed
-    .then(verifyNodeExists('report-swapi', true)) // expect to be deployed
-    .then(verifyNodeExists('report-stapi', true)) // expect to be deployed
-    .then(verifyNodeExists('report-empty', true)) // expect to be deployed
+    .then(verifyNodeExists('swapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('stapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('validate-swapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('validate-stapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('report-swapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('report-stapi', false)) // expect not to be deployed
+    .then(verifyNodeExists('report-empty', false)) // expect not to be deployed
     .catch(common.oops(this)))
 
   // /** test: if js file */
