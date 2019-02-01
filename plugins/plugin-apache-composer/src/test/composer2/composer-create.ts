@@ -170,7 +170,6 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
-    // .then(sidecar.expectBadge(badges.fsm))
     .catch(common.oops(this)))
 
   it('should create a package', () => cli.do(`wsk package create ${packageName1}`, this.app)
@@ -181,7 +180,6 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1, undefined, undefined, packageName1))
-    // .then(sidecar.expectBadge(badges.fsm))
     .catch(common.oops(this)))
   invoke({ package: packageName1, action: seqName1 }, 'x', 3, { aa: 11, bb: 22, cc: 22 })
 
@@ -189,7 +187,6 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
-    // .then(sidecar.expectBadge(badges.fsm))
     .catch(common.oops(this)))
 
   /** test: create with -r, testing for handling of auto-deploy */
@@ -219,7 +216,6 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
-    // .then(sidecar.expectBadge(badges.fsm))
     .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_MODE_BUTTONS}`))
     .then(buttons => buttons.length > 0 && buttons.filter(x => x).reduce((M, button) => { // filter removes blanks due to image icons
       if (M[button]) {
@@ -236,7 +232,6 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
-    // .then(sidecar.expectBadge(badges.fsm))
     .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON('visualization')}`))
     .catch(common.oops(this)))
 

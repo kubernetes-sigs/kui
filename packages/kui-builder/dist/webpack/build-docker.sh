@@ -36,9 +36,7 @@ npm run http-allocate-cert
 # some of the assets are in sibling directories; let's copy them here
 # to our TARGET directory:
 cp "$TARGET"/index-webpack.html "$TARGET"/index.html
-cp -r "$TOPDIR"/packages/app/content/css/ "$TARGET" # !!! intentional trailing slash: css/
-cp -r "$TOPDIR"/packages/app/content/icons "$TARGET" # !!! intentional NO trailing slash: icons
-cp -r "$TOPDIR"/packages/app/content/images "$TARGET" # !!! intentional NO trailing slash: images
+cp -r "$TOPDIR"/packages/app/web/css/ "$TARGET" # !!! intentional trailing slash: css/
 
 # if we are using a build config override, then copy in its assets
 KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../../examples/build-configs/default}

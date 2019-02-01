@@ -45,7 +45,7 @@ const get = activationId => new Promise((resolve, reject) => {
 })
 
 /**
- * Fetch the action itself, so we have the FSM
+ * Fetch the action itself, so we have the AST
  *
  */
 const fetchTheAction = session => {
@@ -87,29 +87,29 @@ export default (commandTree, prequire) => {
     const sessionId = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
     debug('session flow', sessionId)
 
-    // fetch the session, then fetch the trace (so we can show the flow) and action (to get the FSM)
+    // fetch the session, then fetch the trace (so we can show the flow) and action (to get the AST)
     return repl.qexec(`session get ${sessionId}`)
       .then(session => Promise.all([session, fetchTrace(session), fetchTheAction(session)]))
       .then(async ([session, activations, action]) => {
-        let fsm
+        let ast
         if (action.wskflowErr) {
           // 1) if an app was deleted, the last promise item returns an error
           const error = new Error(`Sorry, this view is not available, as the composition was deleted`)
           error['code'] = 404
           throw error
         } else {
-          // extract the FSM
-          const fsmAnno = astUtil.astAnnotation(action)
-          if (!fsmAnno) {
+          // extract the AST
+          const astAnno = astUtil.astAnnotation(action)
+          if (!astAnno) {
             const error = new Error(`Sorry, this view is not available, as the composition was improperly created`)
             error['code'] = 404
             throw error
           }
-          fsm = fsmAnno && fsmAnno.value
+          ast = astAnno && astAnno.value
         }
 
         const visualize = require('./visualize').default
-        const { view, controller } = await visualize(fsm, undefined, undefined, undefined, activations)
+        const { view, controller } = await visualize(ast, undefined, undefined, undefined, activations)
 
         // set the default mode to session flow
         session.modes.find(({ defaultMode }) => defaultMode).defaultMode = false

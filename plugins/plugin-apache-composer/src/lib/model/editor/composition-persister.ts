@@ -93,7 +93,7 @@ export const persister = {
           }
         })
       } else {
-        // action.exec.code = JSON.stringify(action.fsm, undefined, 4)
+        // action.exec.code = JSON.stringify(action.ast, undefined, 4)
         const err = new Error('Your composition does not have an assocated source file')
         err['code'] = 406
         reject(err)

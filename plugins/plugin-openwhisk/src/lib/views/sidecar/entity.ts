@@ -212,8 +212,8 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
         const extraCss = entity.exec.components.length < 5 ? 'small-node-count-canvas' : ''
         sequence.className = `${sequence.getAttribute('data-base-class')} ${extraCss}`
 
-        // form a fake FSM, so we can use the wskflow visualization
-        // wskflw now use the IR, so we have to fake a IR instead of a FSM
+        // form a fake AST, so we can use the wskflow visualization
+        // wskflw now use the IR, so we have to fake a IR instead of a AST
         // const key = idx => `action_${idx}`
         Promise.all(entity.exec.components.map((actionName, idx, A) => repl.qexec(`wsk action get "${actionName}"`)
                                                .then(action => {
@@ -233,7 +233,7 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
                                                    }
                                                  })))
           .then(actions => ({ type: 'sequence', components: actions }))
-          .then(fsm => wskflow(fsm))
+          .then(ast => wskflow(ast))
       }
     } else {
       //
@@ -308,10 +308,10 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
     // enabled indicator
     sidecar.classList.add(`rule-enabled-${entity.status === 'active'}`)
 
-    // form a fake FSM, so we can use the wskflow visualization
-    // wskflw now use the IR, so we have to fake a IR instead of a FSM
+    // form a fake AST, so we can use the wskflow visualization
+    // wskflw now use the IR, so we have to fake a IR instead of a AST
     // const key = idx => `action_${idx}`
-    const fsm = {
+    const ast = {
       type: 'sequence',
       components: [{
         type: 'action',
@@ -320,7 +320,7 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
       }]
     }
     const rule = entity
-    wskflow(fsm, rule)
+    wskflow(ast, rule)
   } else if (entity.type === 'packages') {
     const actionCountDom = sidecar.querySelector('.package-action-count')
     const actionCount = (entity.actions && entity.actions.length) || 0
@@ -386,8 +386,8 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
  * A small shim on top of the wskflow renderer
  *
  */
-const wskflow = async (fsm, rule?) => {
-  debug('wskflow', fsm, rule)
+const wskflow = async (ast, rule?) => {
+  debug('wskflow', ast, rule)
   const sidecar = getSidecar()
   const { visualize } = await prequire('plugin-wskflow')
 
@@ -395,7 +395,7 @@ const wskflow = async (fsm, rule?) => {
   const container = document.querySelector(sidecarSelector('.custom-content'))
   removeAllDomChildren(container)
 
-  const { view } = await visualize(fsm, undefined, undefined, undefined, undefined, undefined, rule)
+  const { view } = await visualize(ast, undefined, undefined, undefined, undefined, undefined, rule)
   container.appendChild(view)
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 }

@@ -107,7 +107,6 @@ describe('edit compositions', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('comp1'))
-    // .then(sidecar.expectBadge(badges.fsm))
     .catch(common.oops(this)))
 
   it('should fail to edit the fsm-based app', () => cli.do('edit comp1', this.app)

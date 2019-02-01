@@ -34,7 +34,7 @@ export default async (commandTree, prequire) => {
       /**
        * Export a programmatic API to visualize a Composition
        *
-       * [required] fsm: composer-generated JSON. container: DOM selector
+       * [required] ast: composer-generated JSON. container: DOM selector
        * [optional] w & h: canvas width and height. data: activation data
        *
        */
