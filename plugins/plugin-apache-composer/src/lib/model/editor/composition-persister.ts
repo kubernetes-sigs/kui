@@ -44,7 +44,7 @@ export const handleParseError = (err, filepath, editor) => {
     debug('pattern', pattern1, pattern2, pattern3)
     debug('message', err.message)
     if (match) {
-      const problem = match3 ? match[2] : match[1]
+      const problem = err.cause && err.cause.code ? err.cause.message : match3 ? match[2] : match[1]
       const line = match3 ? match[1] : match[2]
       const column = match[3]
       debug('got match', problem, line, column)
