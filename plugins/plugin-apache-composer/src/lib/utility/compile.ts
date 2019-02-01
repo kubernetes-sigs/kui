@@ -198,6 +198,7 @@ const sourceErrHandler = (error, originalCode, filename) => {
     statusCode: 'ENOPARSE', // would like to use code here, but we've already used it for code:originalCode
     message,
     ast: message,
+    cause: error,
     code: originalCode
   }
 }
