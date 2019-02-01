@@ -42,7 +42,6 @@ describe('app invoke -r', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
-    // .then(sidecar.expectBadge(badges.fsm))
     .catch(common.oops(this)))
 
   for (let idx = 0; idx < 5; idx++) {

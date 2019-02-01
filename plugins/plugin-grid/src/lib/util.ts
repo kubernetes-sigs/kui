@@ -107,8 +107,8 @@ const filterOutNonActionActivations = filter => activations => {
  */
 const extractTasks = async app => {
   const composer = await import('@kui-shell/plugin-apache-composer/src/lib/utility/ast')
-  const { namespace, name, fsm } = app
-  return [ `/${namespace}/${name}` ].concat(!fsm ? [] : composer.extractActionsFromAst(fsm))
+  const { namespace, name, ast } = app
+  return [ `/${namespace}/${name}` ].concat(!ast ? [] : composer.extractActionsFromAst(ast))
 }
 
 /**

@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmds/editor-extensions')
 
 import { findFile } from '@kui-shell/core/core/find-file'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 
 import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from '@kui-shell/plugin-openwhisk/src/lib/cmds/editor-extensions'
 import { extension, language } from '@kui-shell/plugin-editor/src/lib/file-types'
@@ -67,7 +67,7 @@ const addWskflow = prequire => opts => {
   content.appendChild(wskflowContainer)
   wskflowContainer.className = 'wskflow-container'
 
-  /** update the view to show the latest FSM */
+  /** update the view to show the latest AST */
   let lock
   const updateView = async (_?, { event = 'init' } = {}) => {
     if (lock) return
@@ -75,11 +75,11 @@ const addWskflow = prequire => opts => {
 
     try {
       const action = getEntity()
-      const { fsm } = action
+      const { ast } = action
 
-      debug('wskflow updateView', action)
+      debug('wskflow updateView', action, ast)
 
-      if (fsm) {
+      if (ast) {
         const { visualize } = await prequire('plugin-wskflow')
 
         wskflowContainer.classList.add('visible')
@@ -90,7 +90,8 @@ const addWskflow = prequire => opts => {
           content.removeChild(wskflowContainer)
           content.appendChild(wskflowContainer)
         } else {
-          await visualize(fsm)
+          debug('handing off to the wskflow plugin')
+          await visualize(ast)
             .then(({ view, controller }) => {
               const currentSVG = wskflowContainer.querySelector('svg')
 
@@ -156,14 +157,14 @@ const addWskflow = prequire => opts => {
     const source = editor.getValue()
     await write(source)
 
-    const fsm = await generateFSM(source, filepath, action.exec.kind)
-    if (fsm.statusCode || fsm.code) {
-      // some error generating the fsm
+    const ast = await generateAST(source, filepath, action.exec.kind)
+    if (ast.statusCode || ast.code) {
+      // some error generating the AST
       editor.clearDecorations()
-      handleParseError(fsm, filepath, editor)
+      handleParseError(ast, filepath, editor)
     } else {
-      if (differentFSMs(action.fsm, fsm)) {
-        action.fsm = fsm
+      if (differentASTs(action.ast, ast)) {
+        action.ast = ast
         await updateView()
       }
     }
@@ -180,28 +181,28 @@ const addWskflow = prequire => opts => {
 }
 
 /**
- * Are the two FSMs different?
+ * Are the two ASTs different?
  *
  */
-const differentFSMs = (fsm1, fsm2) => {
-  if (!!fsm1 !== !!fsm2) { // tslint:disable-line
+const differentASTs = (ast1, ast2) => {
+  if (!!ast1 !== !!ast2) { // tslint:disable-line
     // one or the other is null
     return true
-  } else if (typeof fsm1 !== typeof fsm2) {
+  } else if (typeof ast1 !== typeof ast2) {
     return true
-  } else if (fsm1 === fsm2) {
+  } else if (ast1 === ast2) {
     return false
-  } else if (typeof fsm1 === 'string') {
+  } else if (typeof ast1 === 'string') {
     // we just checked ===, so they are different if these are string keys
     return true
-  } else if (fsm1.type !== fsm2.type) {
+  } else if (ast1.type !== ast2.type) {
     return true
-  } else if (Array.isArray(fsm1) && fsm1.length !== fsm2.length) {
+  } else if (Array.isArray(ast1) && ast1.length !== ast2.length) {
     return true
   } else {
-    for (let key in fsm1) {
+    for (let key in ast1) {
       if (key.charAt(0) === '.') continue
-      else if (differentFSMs(fsm1[key], fsm2[key])) {
+      else if (differentASTs(ast1[key], ast2[key])) {
         return true
       }
     }
@@ -223,14 +224,12 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
     // otherwise, we will open the editor showing a template file
     return new Promise((resolve, reject) => {
       const readViaImport = () => {
-        debug('readViaImport', template,
-          findFile(template).replace(/^app\/plugins\/modules/, ''))
-        resolve(require('@kui-shell/plugin-' +
-                        findFile(template).replace(/^app\/plugins\/modules/, '')))
+        debug('readViaImport', findFile(template), findFile(template).replace(/^plugins\/plugin-apache-composer\/lib\/@demos/, ''))
+        resolve(require('raw-loader!@kui-shell/plugin-apache-composer/lib/@demos' + findFile(template).replace(/^plugins\/plugin-apache-composer\/lib\/@demos/, '')))
       }
 
       const readViaFilesystem = () => {
-        debug('standalone mode')
+        debug('readViaFilesystem')
         require('fs').readFile(findFile(template), (err, data) => {
           if (err) {
             reject(err)
@@ -241,13 +240,18 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
       }
 
       try {
-        if (template.indexOf('@') >= 0) {
-          readViaImport()
+        debug('attempting to read template', template)
+        if (inBrowser()) {
+          if (template.indexOf('@') >= 0) {
+            readViaImport()
+          } else {
+            reject('Unable to read the given template')
+          }
         } else {
           readViaFilesystem()
         }
       } catch (err) {
-        console.error(err)
+        console.error('error with readViaImport', err)
         readViaFilesystem()
       }
     })
@@ -258,7 +262,7 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
  * Turn source into composer IR
  *
  */
-const generateFSM = (source, localCodePath, kind) => {
+const generateAST = (source, localCodePath, kind) => {
   // const base = kind.substring(0, kind.indexOf(':')) || kind // maybe useful when we have python composer
   try {
     const result = loadComposition(localCodePath, source)
@@ -317,10 +321,12 @@ export const newAction = ({ prequire, cmd = 'new', type = 'actions', _kind = def
   const makePlaceholderCode = placeholderFn || (() => placeholder || placeholders[language(kind)])
 
   const code = await makePlaceholderCode(Object.assign({ kind }, options))
+  debug('placeholder code', code)
 
-  // generate FSM, if we were given a template
+  // generate AST, if we were given a template
   const compile = () => type === 'compositions' && options.template
-    ? generateFSM(code, options.template, options.kind || defaults.kind)
+    ? inBrowser() ? import('@kui-shell/plugin-apache-composer/lib/@demos' + findFile(options.template).replace(/^plugins\/plugin-apache-composer\/lib\/@demos/, ''))
+    : generateAST(code, options.template, options.kind || defaults.kind)
     : Promise.resolve()
 
   // our placeholder action

@@ -36,7 +36,7 @@ import * as messages from './messages'
 export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
   debug('validating source file', inputFile)
   const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
-  if (extension === 'json' || extension === 'ast') { // we were given the FSM directly
+  if (extension === 'json' || extension === 'ast') { // we were given the AST directly
     debug('input is composer AST')
   } else if (extension === 'js' || extension === 'py') {
     debug('input is composer library client', extension)
@@ -207,7 +207,7 @@ const sourceErrHandler = (error, originalCode, filename) => {
     .replace(/\s+at ContextifyScript[^\n]*/g, '')
 
   // for parse error, error message is shown in the ast (JSON) tab, and user code in the source (code) tab
-  // reject now returns {fsm:errMsg, code:originalCode}
+  // reject now returns {ast:errMsg, code:originalCode}
   return {
     statusCode: 'ENOPARSE', // would like to use code here, but we've already used it for code:originalCode
     message,
