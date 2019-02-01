@@ -65,16 +65,17 @@ export const sourceToComposition = ({ inputFile, name = '', recursive = false })
     .catch(err => reject(err))
 })
 
-const loadSourceCode = (inputFile, localCodePath) => new Promise((resolve, reject) => {
+const loadSourceCode = (inputFile, localCodePath) => new Promise(async (resolve, reject) => {
   if (!inBrowser()) {
     debug('readFile in headless mode or for electron')
     fs.readFile(localCodePath, (err, data) => {
       if (err) { reject(err) } else { resolve(data.toString()) }
     })
   } else {
-    debug('readFile for webpack')
+    debug('readFile for webpack', localCodePath)
     try {
-      resolve(require('@kui-shell/plugin-apache-composer' + localCodePath.replace(/^\/?app\/plugins\/modules/, '')))
+      const data = await import('@kui-shell/plugin-apache-composer/lib' + localCodePath.replace(/^\/?plugins\/plugin-apache-composer\/lib/, ''))
+      resolve(data)
     } catch (err) {
       console.error(err)
       const error = new Error('The specified file does not exist')

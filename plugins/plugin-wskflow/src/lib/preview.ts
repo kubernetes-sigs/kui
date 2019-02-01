@@ -62,7 +62,7 @@ interface ICompositionWithCode {
  *
  */
 const registration: PluginRegistration = (commandTree, prequire) => {
-  const readFile = (input) => new Promise((resolve, reject) => {
+  const readFile = (input) => new Promise(async (resolve, reject) => {
     const filepath = findFile(expandHomeDir(input))
 
     if (!inBrowser()) {
@@ -80,8 +80,9 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       if (filepath.indexOf('@') >= 0) {
         debug('readFile for webpack, built-in', filepath)
         try {
-          resolve(require('@kui-shell/plugin-apache-composer' +
-                          filepath.replace(/^\/?app\/plugins\/modules/, '')))
+          const data = await import('@kui-shell/plugin-apache-composer/lib' + filepath.replace(/^\/?plugins\/plugin-apache-composer\/lib/, ''))
+
+          resolve(data)
         } catch (err) {
           console.error(err)
           const error = new Error('The specified file does not exist')
