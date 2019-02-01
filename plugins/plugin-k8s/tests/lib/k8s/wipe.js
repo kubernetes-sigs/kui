@@ -16,21 +16,29 @@
 
 const debug = require('debug')('k8s/tests/lib/wipe')
 
-const path = require('path')
 const common = require('@kui-shell/core/tests/lib/common')
 const ui = require('@kui-shell/core/tests/lib/ui')
 const cli = ui.cli
 
-const kinds = ['deployments', 'pods', 'crds']
+const kinds = [ 'deployments', 'pods', 'crds' ] /* , 'services' */
+const okToSurvive = [ null, null, null ] /* , 'kubernetes' */
 
 /**
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (kind, theCli = cli, name = '') => app => new Promise(resolve => {
+exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive) => app => new Promise(resolve => {
+  // fetch the entities
+  const fetch = () => theCli.do(`kubectl get "${kind}" ${name}`, app, { errOk: theCli.exitCode(404) })
+
+  // verify the entities
+  const verify = okToSurvive
+    ? theCli.expectOKWith(okToSurvive)
+    : theCli.expectError(theCli.exitCode(404))
+
   const iter = () => {
-    return theCli.do(`kubectl get "${kind}" ${name}`, app, { errOk: theCli.exitCode(404) })
-      .then(theCli.expectError(theCli.exitCode(404)))
+    return fetch()
+      .then(verify)
       .then(resolve)
       .catch(() => setTimeout(iter, 3000))
   }
@@ -39,14 +47,14 @@ exports.waitTillNone = (kind, theCli = cli, name = '') => app => new Promise(res
 })
 
 exports.wipe = (ctx, theCli = cli) => {
-  return kinds.reduce(async (P, kind) => {
+  return kinds.reduce(async (P, kind, idx) => {
     await P
 
     debug(`deleting ${kind}`)
 
     return theCli.do(`kubectl delete "${kind}" --all`, ctx.app)
-      .then(theCli.expectOK)
-      .then(exports.waitTillNone(kind, theCli))
+      .then(theCli.expectOKWithAny)
+      .then(exports.waitTillNone(kind, theCli, undefined, okToSurvive[idx]))
       .catch(common.oops(ctx))
   }, Promise.resolve())
 }

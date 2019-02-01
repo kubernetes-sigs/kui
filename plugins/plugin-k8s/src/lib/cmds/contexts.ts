@@ -39,25 +39,21 @@ const usage = {
  *
  */
 const addClickHandlers = execOptions => table => {
-  if (isHeadless()) {
-    return table
-  } else {
-    debug('table', table)
-    return [table[0]].concat(table.slice(1).map(row => {
-      const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
-      const { value: contextName } = nameAttr
+  debug('table', table)
+  return [table[0]].concat(table.slice(1).map(row => {
+    const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
+    const { value: contextName } = nameAttr
 
-      nameAttr.outerCSS += ' entity-name-group-narrow'
+    nameAttr.outerCSS += ' entity-name-group-narrow'
 
-      row.onclick = async () => {
-        await repl.qexec(`kubectl config use-context ${repl.encodeComponent(contextName)}`,
-                         undefined, undefined, Object.assign({}, execOptions, { raw: true }))
-        row.setSelected()
-      }
+    row.onclick = async () => {
+      await repl.qexec(`kubectl config use-context ${repl.encodeComponent(contextName)}`,
+                       undefined, undefined, Object.assign({}, execOptions, { raw: true }))
+      row.setSelected()
+    }
 
-      return row
-    }))
-  }
+    return row
+  }))
 }
 
 /**

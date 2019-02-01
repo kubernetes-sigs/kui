@@ -17,13 +17,15 @@ if [ -z "$SCRIPTS" ]; then
     # install, let's not go crazy with optimizing
     ./tools/travis/installers/ibmcloud.sh &
 
-    if [ "$LAYERS" == "k8s" ]; then
+    if [ "$NEEDS_KUBERNETES" == "true" ]; then
         # install kubectl: no longer needed, as we are getting it from kubeadm-dind
         # ./tools/travis/installers/kubectl.sh &
 
         # set up a local cluster, using kubeadm-dind
         ./tools/travis/installers/kubeadm-dind/start-cluster.sh &
-    else
+    fi
+
+    if [ "$NEEDS_OPENWHISK" == "true" ]; then
         # install the openwhisk runtime
         ./tools/travis/installers/openwhisk.sh &
     fi

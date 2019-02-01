@@ -28,6 +28,7 @@ interface IOutput {
 interface CLI {
   do: (cmd: string, env?: object, options?: object) => Promise<IResponse>;
   exitCode: (statusCode: number) =>  number;
+  expectJustOK: () => any;
   expectOK: (expectedOutput?: string | object, options?) => (actual: IOutput) => string;
   expectError: (expectedCode: number, expectedOutput?: string | object) => (actual: IOutput) => string;
 }

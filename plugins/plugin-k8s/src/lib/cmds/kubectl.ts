@@ -669,7 +669,7 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
       } else {
         nope()
       }
-    } else if (execOptions.raw || (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied)) {
+    } else if (execOptions.raw || (isHeadless() && !output && execOptions.type === ExecType.TopLevel && !execOptions.isProxied)) {
       //
       // caller asked for the raw output
       //
@@ -692,6 +692,18 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
       //
       debug('formatting structured output', output)
 
+      const result = output === 'json'
+        ? JSON.parse(out)
+        : {
+          result: output === 'accesslog' ? formatLogs(out)
+            : output === 'yaml' ? redactYAML(out, options)
+            : redactJSON(out, options)
+        }
+
+      if (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied) {
+        return resolve(result)
+      }
+
       const modes = [
         { mode: 'result',
           direct: () => repl.pexec(rawCommand),
@@ -705,7 +717,7 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
         modes.push(deleteResourceButton())
       }
 
-      const result = {
+      const record = {
         type: 'activations',
         annotations: [],
         namespace: options.namespace || options.n,
@@ -717,23 +729,17 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
         response: {
           success: true,
           status: 'success',
-          result: output === 'json'
-            ? JSON.parse(out)
-            : {
-              result: output === 'accesslog' ? formatLogs(out)
-                : output === 'yaml' ? redactYAML(out, options)
-                : redactJSON(out, options)
-            }
+          result
         }
       }
 
       if (output !== 'json') {
-        result['contentType'] = output
-        result['contentTypeProjection'] = 'result'
+        record['contentType'] = output
+        record['contentTypeProjection'] = 'result'
       }
 
-      debug('exec output json', result)
-      resolve(result)
+      debug('exec output json', record)
+      resolve(record)
     } else if ((options.f || options.file || (command === 'kubectl' && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
       //
       // then this was a create or delete from file; show the status of the operation

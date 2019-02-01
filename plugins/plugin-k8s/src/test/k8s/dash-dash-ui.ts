@@ -28,7 +28,7 @@ const doTests = (ctx: common.ISuite, impl: CLI) => {
   })
 
   it('should create sample pod from local file', () => {
-    return kui.do('kubectl create -f ./data/k8s/pod.yaml', ctx.app)
+    return kui.do('kubectl create -f ./data/k8s/headless/pod.yaml', ctx.app)
       .then(kui.expectOK('nginx'))
       .catch(common.oops(ctx))
   })
