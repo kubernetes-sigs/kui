@@ -133,9 +133,10 @@ export const qexec = (command: string, block?, contextChangeOK?, execOptions?: I
     block: block,
     nextBlock: nextBlock,
     noHistory: true,
-    contextChangeOK,
+    contextChangeOK
+  }, execOptions, {
     type: commandTree.ExecType.Nested
-  }, execOptions))
+  }))
 }
 
 /**

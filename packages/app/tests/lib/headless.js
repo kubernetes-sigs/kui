@@ -163,6 +163,18 @@ class CLI {
     return statusCode - 256
   }
 
+  expectJustOK () {
+    return args => {
+      return this.expectOK('', { exect: true })(args)
+    }
+  }
+
+  expectOKWithAny () {
+    return args => {
+      return this.expectOK()
+    }
+  }
+
   expectOK (expectedOutput, { exact = false, skipLines = 0, squish = false } = {}) {
     return ({ code: actualCode, output: actualOutput }) => {
       assert.strictEqual(actualCode, 0)
