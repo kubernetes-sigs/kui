@@ -8,7 +8,7 @@ const secrets = process.env.COS_SECRETS
   ? JSON.parse(Buffer.from(process.env.COS_SECRETS, 'base64').toString())
   : require('./secrets-cos.json')
 
-const { productName } = require('../../../app/build/config.json')
+const { theme: { productName } } = require('../../../../app/build/config.json')
 
 const version = process.argv[2]
 

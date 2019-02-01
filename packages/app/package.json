@@ -46,6 +46,7 @@
     "electron-context-menu": "^0.10.1",
     "electron-squirrel-startup": "^1.0.0",
     "expand-home-dir": "0.0.3",
+    "extract-zip": "^1.6.7",
     "fs-extra": "^7.0.1",
     "js-beautify": "^1.8.9",
     "json-colorizer": "^2.1.2",
