@@ -236,6 +236,7 @@ const topologicalSortForScan = async (pluginPaths, iter) => {
     throw new Error('Unable to resolve plugins')
   }
 
+  let lastError // so we don't repeat making the same mistake 100 times!
   let nUnresolved = 0
   const unresolved = []
   for (let route in pluginPaths) {
@@ -245,10 +246,29 @@ const topologicalSortForScan = async (pluginPaths, iter) => {
       await loadPlugin(route, pluginPaths[route] /*, opts */)
       flat.push(module)
       delete pluginPaths[route]
-    } catch (e) {
-      if (e.message.indexOf('Module not found') < 0 || iter > 10) {
-        console.error(e)
+    } catch (err) {
+      if ((err.message.indexOf('Module not found') < 0 || iter > 10) && (lastError && lastError.message === err.message)) {
+        //
+        // note how we do not print the error if any of three
+        // conditions hold (but we still continue iterating)
+        //
+        // 1. Module not found errors; these are why we have to iterate, because of inter-module dependencies
+        //
+        // 2. don't print errors for the first 10 iterations; only print errors if they persist
+        //
+        // 3. if this error is the same as the last; no sense in repeating ourselves
+        //
+        debug('not retrying')
+        console.error(err)
       }
+
+      //
+      // let's try again; here we are implementing a fixpoint
+      // computation by iterating till convergence; this fixpoint
+      // gives us the topological sort without having to bother
+      // computing the topological sort!
+      //
+      lastError = err
       nUnresolved++
       unresolved.push(route)
     }
