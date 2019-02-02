@@ -45,10 +45,18 @@ pip install --user ansible==2.5.2
 
 # Configure runtimes
 if [ -n "$NEEDS_OPENWHISK_JAVA8" ]; then
-    cp "$SCRIPTDIR/openwhisk-runtimes-with-java8.json" "$WHISKDIR/ansible/files/runtimes.json"
+    if [ -n "$NEEDS_OPENWHISK_NODEJS8" ]; then
+        echo "using the java8+nodejs8 openwhisk configuration"
+        cp "$SCRIPTDIR/openwhisk-runtimes-with-java8-and-nodejs8.json" "$WHISKDIR/ansible/files/runtimes.json"
+    else
+        echo "using the java8 openwhisk configuration"
+        cp "$SCRIPTDIR/openwhisk-runtimes-with-java8.json" "$WHISKDIR/ansible/files/runtimes.json"
+    fi
 elif [ -n "${NEEDS_OPENWHISK_NODEJS8}" ]; then
+    echo "using the nodejs8 openwhisk configuration"
     cp "$SCRIPTDIR/openwhisk-runtimes-with-nodejs8.json" "$WHISKDIR/ansible/files/runtimes.json"
 else
+    echo "using the default openwhisk configuration"
     cp "$SCRIPTDIR/openwhisk-runtimes.json" "$WHISKDIR/ansible/files/runtimes.json"
 fi
 
@@ -66,8 +74,25 @@ $ANSIBLE_CMD properties.yml # NOTE: required to run before routemgmt.yml
 
 if [ -n "${NEEDS_OPENWHISK_API_GATEWAY}" ]; then
     $ANSIBLE_CMD apigateway.yml
+
+    set +e # don't fail fast here, because routemgmt needs to be retried
     $ANSIBLE_CMD routemgmt.yml
+    if [ $? != 0 ]; then
+        # sometimes this step fails; perhaps couchdb isn't ready yet?
+        echo "routemgmt failed; retrying in 2 seconds"
+        sleep 2
+        $ANSIBLE_CMD routemgmt.yml
+        if [ $? != 0 ]; then
+            # sometimes this step fails; perhaps couchdb isn't ready yet?
+            echo "routemgmt failed again; retrying in 20 seconds"
+            sleep 20
+            $ANSIBLE_CMD routemgmt.yml
+            if [ $? != 0 ]; then exit $?; fi
+        fi
+    fi
 fi
+
+set -e
 
 # Log configuration
 docker images

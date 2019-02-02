@@ -1,5 +1,7 @@
+#!/usr/bin/env bash
+
 #
-# Copyright 2017 IBM Corporation
+# Copyright 2017-19 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +16,6 @@
 # limitations under the License.
 #
 
-#!/usr/bin/env bash
-
 #
 # This script runs a given test suite "layer". We try at most three
 # times for success.
@@ -27,29 +27,47 @@ ROOTDIR="$SCRIPTDIR/../.."
 if [ -n "$LAYER" ]; then
     # user asked to run tests in just one specified layer, e.g. "07"
 
-    echo "Checking KEY_FROM_LAYER $KEY_FROM_LAYER"
-    if [ "$KEY_FROM_LAYER" == "true" ]; then
-        # user asked to pick up a previously configured auth key
+    if [ -n "$NEEDS_OPENWHISK" ]; then
+        #
+        # allocate openwhisk keys
+        #
 
-        export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
-        export TEST_SPACE2="${TEST_SPACE_PREFIX-ns}${KEY}b"
-        "$SCRIPTDIR"/allocate.sh $TEST_SPACE
+        #
+        # Notes:
+        # - in Travis, where we use a travis-local openwhisk, we
+        # need to allocate auth keys on the fly
+        #
+        # - for local (not travis) testing, the openwhisk auth model
+        # will use ~/.wskprops of process.env.WSK_CONFIG_FILE as per
+        # the nominal openwhisk behavior
+        #
+        echo "Allocating OpenWhisk keys for travis"
 
-        if [ -f ~/.wskpropsb ]; then
-            . ~/.wskpropsb
+        export WSK_CONFIG_FILE=~/.wskprops_${KEY}_${PORT_OFFSET}
+        export WSK_CONFIG_FILEb=~/.wskpropsb_${KEY}_${PORT_OFFSET}
+        export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}"
+        export TEST_SPACE2="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}b"
+        "$SCRIPTDIR"/allocate.sh "$TEST_SPACE" "$TEST_SPACE2"
+
+        if [ -f "$WSK_CONFIG_FILEb" ]; then
+            . "$WSK_CONFIG_FILEb"
             export AUTH2=$AUTH
             echo "Key from layer2 '$TEST_SPACE2' '$AUTH2'"
         fi
 
-        . ~/.wskprops
+        . "$WSK_CONFIG_FILE"
         export AUTH=$AUTH
         export __OW_APIGW_TOKEN=$APIGW_ACCESS_TOKEN
 
-        echo "Key from layer '$TEST_SPACE' '$AUTH'"
+        echo "Key from layer '$TEST_SPACE' '${AUTH}'"
     fi
 
     LAYER="passes/${LAYER}"
 fi
+
+IDX=$((PORT_OFFSET-1))
+export KUI_POSITION_X="$((IDX*$WINDOW_WIDTH))"
+echo "KUI_POSITION_X=$KUI_POSITION_X"
 
 #
 # note that, in the following, passing --bail to mocha means we fail
