@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+#
+# Copyright 2017-18 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 function wait_and_get_exit_codes() {
@@ -16,26 +32,26 @@ function wait_and_get_exit_codes() {
    done
 }
 
+children=()
 if [ -n "$SCRIPTS" ]; then
     #
     # then we were asked to run one or more test.d/ scripts
     #
-    children=()
     for script in $SCRIPTS; do
         echo "spawning test script: $script"
         "$SCRIPTDIR"/test.d/$script &
         children+=("$!")
     done
+fi
+if [ $? != 0 ]; then exit $?; fi
 
-    wait_and_get_exit_codes "${children[@]}"
-    exit "$EXIT_CODE"
-else
+if [ -n "$LAYERS" ]; then
     #
-    # otherwise, we were asked to run one or more mocha test suites
-    # (which suites as indicated by $LAYERS)
+    # we were asked to run one or more mocha test suites (which suites
+    # as indicated by $LAYERS)
     #
 
-    export KEY=`node -e 'console.log(parseInt(process.env.IDX) + process.env.NUM_OPENWHISK_AUTH_LAYERS * (process.env.TRAVIS_BUILD_NUMBER % process.env.MAX_TRAVIS_CONCURRENCY))'`
+    export KEY=$TRAVIS_JOB_NUMBER
     echo "Using KEY=$KEY"
 
     if [ "$LAYERS" != "HEADLESS" ]; then
@@ -53,7 +69,12 @@ else
         # fail if we don't have TEST_SPACE.
 
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
+        export WSK_CONFIG_FILE=~/.wskprops_${KEY}
         (cd tests && ./bin/allocate.sh "$TEST_SPACE")
         (cd packages/kui-builder/dist/builds/kui && npm run test)
     fi
 fi
+if [ $? != 0 ]; then exit $?; fi
+
+wait_and_get_exit_codes "${children[@]}"
+exit "$EXIT_CODE"

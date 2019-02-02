@@ -340,11 +340,19 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     }
 
     const { BrowserWindow } = electron
-    const opts = Object.assign({ width: width,
-      height: height,
+    const opts = Object.assign({
+      width,
+      height,
       show: false, // do not remove without consulting the ready-to-show comment below
-      titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default' },
+      titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
+    },
     subwindowPrefs && subwindowPrefs.position)
+    if (process.env.KUI_POSITION_X) {
+      opts.x = process.env.KUI_POSITION_X
+    }
+    if (process.env.KUI_POSITION_Y) {
+      opts.y = process.env.KUI_POSITION_Y
+    }
     debug('createWindow::new BrowserWindow')
     mainWindow = new BrowserWindow(opts)
     debug('createWindow::new BrowserWindow success')

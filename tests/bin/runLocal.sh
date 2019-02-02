@@ -32,7 +32,6 @@ if [ ! -f ~/.wskprops ]; then
     echo "INSECURE_SSL=true" >> ~/.wskprops
 fi
 
-export KEY_FROM_LAYER=${KEY_FROM_LAYER-true}
 export PATH=./node_modules/.bin:$PATH
 
 if [ -z "$REDIS_URL" ]; then
@@ -55,6 +54,8 @@ function finished {
     if [ -n "$REDIS_PID" ]; then
         kill ${REDIS_PID} 2> /dev/null
     fi
+
+    exit "${EXIT_CODE-0}"
 }
 
 if [ ! -d logs ]; then
@@ -80,15 +81,32 @@ fi
 echo "Running these layers: $# $WHICH"
 
 idx=1
+children=()
 for i in $WHICH; do
     LAYER=`basename $i`
-    # echo $LAYER
-    LAYER=$LAYER ./bin/runTest.sh 2>&1 | tee logs/$LAYER.out
+    echo "spawning mocha layer $LAYER"
+    (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx ./bin/runTest.sh 2>&1 | tee logs/$LAYER.out) &
 
-    if [ $? != 0 ]; then
-        exit 1
-    fi
+    children+=("$!")
+    idx=$((idx+1))
 done
+
+function wait_and_get_exit_codes() {
+    children=("$@")
+    EXIT_CODE=0
+    for job in "${children[@]}"; do
+       echo "waiting on ${job}"
+       CODE=0;
+       wait ${job} || CODE=$?
+       if [[ "${CODE}" != "0" ]]; then
+           echo "At least one test failed with a non-zero exit code ${CODE}"
+           EXIT_CODE=1;
+       else
+           echo "job ${job} finished successfully"
+       fi
+   done
+}
+wait_and_get_exit_codes "${children[@]}"
 
 # finally, if the tests were successful, report on code coverage
 if [ $? == 0 ]; then
