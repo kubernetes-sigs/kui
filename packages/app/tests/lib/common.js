@@ -63,6 +63,10 @@ const prepareElectron = (fuzz) => {
     waitTimeout: process.env.TIMEOUT || 60000
   }
 
+  if (process.env.PORT_OFFSET) {
+    opts.port = 9515 + parseInt(process.env.PORT_OFFSET)
+  }
+
   if (process.env.TEST_FROM_BUILD) {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
     opts.path = process.env.TEST_FROM_BUILD

@@ -37,7 +37,7 @@ import { apiHost } from '../models/auth'
  */
 const wskpropsFile = (): string => {
   const expandHomeDir = require('expand-home-dir')
-  return expandHomeDir('~/.wskprops')
+  return expandHomeDir(process.env.WSK_CONFIG_FILE || '~/.wskprops')
 }
 
 /**
@@ -195,6 +195,7 @@ const writeToLocalWskProps = (wskprops): Promise<string> => new Promise((resolve
   for (let key in wskprops) {
     props += `${key}=${wskprops[key]}\n`
   }
+  console.error('writing wskprops file to %s %s', wskpropsFile(), wskprops.AUTH)
   require('fs').writeFile(wskpropsFile(), props, err => {
     if (err) reject(err)
     else resolve(wskprops.AUTH)
@@ -370,7 +371,6 @@ const hostSet = (wsk) => async ({ argvNoOptions, parsedOptions: options, execOpt
   }
 
   const { host, ignoreCerts, isLocal } = await Promise.resolve(hostConfig)
-  debug('!!!!!!!!!!!!!', host, ignoreCerts, isLocal)
 
   return apiHost.set(host, { ignoreCerts })
     .then(namespace.setApiHost)

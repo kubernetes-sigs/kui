@@ -78,7 +78,7 @@ const expectOK = (appAndCount, opt) => {
     .then(nextPrompt => app.client.getAttribute(selectors.PROMPT_N(N), 'placeholder')) // it should have a placeholder text
     // .then(attr => assert.strictEqual(attr, constants.CLI_PLACEHOLDER)) //      ... verify that
     .then(() => app.client.getValue(selectors.PROMPT_N(N), timeout)) // it should have an empty value
-    .then(promptValue => { if (promptValue.length !== 0) { console.error(promptValue) } return promptValue })
+    .then(promptValue => { if (promptValue.length !== 0) { console.error(`Expected prompt value to be empty: ${promptValue}`) } return promptValue })
     .then(promptValue => assert.strictEqual(promptValue.length, 0)) //      ... verify that
     .then(() => opt && opt.expectError ? false : app.client.getText(selectors.OK_N(N - 1), timeout)) // get the "ok" part of the current command
     .then(ok => opt && opt.expectError ? false : assert.strictEqual(ok, constants.OK)) // make sure it says "ok" !
