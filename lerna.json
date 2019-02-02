@@ -3,5 +3,10 @@
     "packages/*",
     "plugins/*"
   ],
-  "version": "independent"
+  "version": "independent",
+  "command": {
+    "publish": {
+      "conventionalCommits": true
+    }
+  }
 }
