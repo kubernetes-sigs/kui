@@ -25,10 +25,9 @@ if (process.cwd() === '/') {
   }
 }
 
-let repl
 if (process.env.TEST_ROOT) {
   myDebug('lifting repl to global for tests')
-  repl = require('@kui-shell/core/core/repl')
+  global['repl'] = require('@kui-shell/core/core/repl')
 }
 
 try {
