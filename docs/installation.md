@@ -25,19 +25,43 @@ unzip kui.zip
 ### Verifying your installation
 
 ```bash
-export PATH=kui/bin:$PATH
-kubectl kui version
-kubectl kui shell
+export PATH=$PWD/kui/bin:$PATH
+kui version
+kui shell
 ```
 
-Adding `kui/bin` to your PATH will enable `kubectl` to find the `kui`
-extension to `kubectl`. The last two commands will validate that `kui`
-is installed properly; the last one should open a graphical Electron
-window. The first time you open a graphical window, you should see a
-message indicating that the graphical bits are being downloaded. This
-is a one-time download of the Electron components. (note: there is
-currently a superficial bug in the downloader; you may see the
-"downloading" message repeated twice)
+These commands validate that `kui` is installed properly: the second
+line should print a semver-like version, and the third line should
+open a graphical Electron window. The first time you open a graphical
+window, you should see a message indicating that the graphical bits
+are being downloaded. This is a one-time download of the Electron
+components.
+
+(warning: there is currently a superficial bug in the downloader; you
+may see the "downloading" message repeated twice)
+
+## Using Kui as a kubectl plugin
+
+If you have a versin of kubectl newer than 1.12, then you have the
+option of using Kui as a [kubectl
+plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/).
+Adding `$PWD/kui/bin` to your PATH will enable `kubectl` to find the
+`kui` extension to `kubectl`. You may then execute kubernetes-related
+commands via:
+
+```bash
+kubectl kui get pods --ui
+```
+
+Compare this with the equivalent non-plugin usage of the Kui
+kubernetes commands:
+
+```bash
+kui kubectl get pods --ui
+```
+
+It is your choice. The two usage modes will, as far as kubernetes
+commands are concerned, cover the same set of functionality.
 
 ## Setting up Kubernetes Authorization
 
