@@ -17,6 +17,9 @@
  */
 
 const { default: compile } = require('@kui-shell/core/core/plugin-assembler')
+const { default: mimicDom } = require('@kui-shell/core/util/mimic-dom')
+
+mimicDom()
 
 if (process.argv[2] === 'cleanup') {
   // nothing to do

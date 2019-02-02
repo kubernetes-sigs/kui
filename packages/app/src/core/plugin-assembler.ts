@@ -30,28 +30,6 @@ import * as commandTree from './command-tree'
 const TMP = 'plugins' // we'll stash the original plugins here
 const TMA = 'app' // we'll stash the original app here
 
-if (typeof global['localStorage'] === 'undefined') {
-  global['localStorage'] = { getItem: () => '{}' }
-} else {
-  // assignment to read-only properties is not allowed in strict mode
-  Object.defineProperty(global['localStorage'], 'getItem', {
-    value: () => '{}',
-    writable: true,
-    configurable: true
-  })
-}
-
-if (typeof global['window'] === 'undefined') {
-  global['window'] = { localStorage: global['localStorage'] }
-} else {
-  // assignment to read-only properties is not allowed in strict mode
-  Object.defineProperty(global['window'], 'localStorage', {
-    value: global['localStorage'],
-    writable: true,
-    configurable: true
-  })
-}
-
 debug('modules loaded')
 
 /**

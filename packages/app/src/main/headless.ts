@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('main/headless')
+import * as Debug from 'debug'
+const debug = Debug('main/headless')
 debug('loading')
 
 import * as colors from 'colors/safe'
 import * as events from 'events'
 
 import * as repl from '../core/repl'
+import mimicDom from '../util/mimic-dom'
 import { prequire, preload, init as pluginsInit } from '../core/plugins'
-import Store from './store'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
 import { IExecOptions } from '../models/execOptions'
 
@@ -69,133 +70,6 @@ let graphicalShellIsOpen = false
  *
  */
 let noAuth = false
-
-/**
- * Create structures to mimic having a head
- *
- */
-function mimicDom (app) {
-  debug('mimicDom')
-
-  const { quit } = app
-
-  try {
-    global['localStorage'] = Store(app)
-    debug('successfully initialized persistent localStorage')
-  } catch (err) {
-    debug('error initializing persistent localStorage', err)
-
-    const localStorage = {}
-    global['localStorage'] = {
-      setItem: (k, v) => { localStorage[k] = v; return v },
-      getItem: k => localStorage[k] || null
-    }
-  } finally {
-    global['window'] = { localStorage: global['localStorage'] }
-  }
-
-  const dom0 = () => {
-    const obj = {
-      _isFakeDom: true,
-      value: '',
-      innerText: '',
-      innerHTML: '',
-      className: '',
-      _classList: [],
-      classList: {
-        add: _ => obj._classList.push(_),
-        remove: _ => {
-          const idx = obj._classList.findIndex(x => x === _)
-          if (idx >= 0) {
-            obj._classList.splice(idx, 1)
-          }
-        }
-      },
-      nodeType: '',
-      attrs: {},
-      style: {},
-      children: [],
-      focus: () => { /* empty ok */ },
-      appendChild: c => obj.children.push(c),
-      getAttribute: (k: string) => obj.attrs[k] || '',
-      setAttribute: (k: string, v) => { obj.attrs[k] = v; return v },
-      removeAttribute: (k: string) => delete obj.attrs[k],
-      cloneNode: () => Object.assign({}, obj),
-      querySelectorAll: selector => [],
-      querySelector: sel => {
-        return obj[sel] || dom0()
-      },
-      hasStyle: (style, desiredValue) => {
-        const actualValue = obj.style && obj.style[style]
-        // intentional double equals, so that 500=='500'
-        if (desiredValue) return desiredValue == actualValue // tslint:disable-line
-        else return actualValue
-      },
-      recursiveInnerTextLength: () => {
-        return obj.innerText.length + obj.children.reduce((sum, child) => sum + child.recursiveInnerTextLength(), 0)
-      }
-    }
-
-    return obj
-  }
-  const dom = () => Object.assign(dom0(), {
-    input: dom0()
-  })
-  const block = () => Object.assign(dom(), {
-    '.repl-result': dom0()
-  })
-
-  const document = {
-    body: dom0(),
-    createElement: type => {
-      const element = dom0()
-      element.nodeType = type
-      if (type === 'table') {
-        element['rows'] = []
-        element['insertRow'] = idx => {
-          const row = document.createElement('tr')
-          row['cells'] = []
-          row['insertCell'] = idx => {
-            const cell = document.createElement('td')
-            if (idx === -1) row['cells'].push(cell)
-            else row['cells'].splice(idx, 0, cell)
-            return cell
-          }
-          if (idx === -1) element['rows'].push(row)
-          else element['rows'].splice(idx, 0, row)
-          return row
-        }
-      }
-      return element
-    },
-    addEventListener: () => true,
-    createTextNode: text => { const element = dom0(); element.innerText = text; return element },
-    querySelector: selector => {
-      return dom0()
-    }
-  }
-  global['document'] = document
-  // global.eventBus = new events.EventEmitter()
-
-  /* const prompt = (msg: string, block, nextBlock, options, completion) => new Promise(async (resolve, reject) => {
-    const rl = await import('readline')
-    const prompt = rl.createInterface({ input: process.stdin, output: process.stdout })
-    try {
-      prompt.question(`${msg} ${options.placeholder} `, answer => {
-        try {
-          log('ok'.green)
-          return completion(Object.assign({}, options, { field: answer }))
-            .then(resolve)
-            .catch(reject)
-        } catch (err) {
-          failure(quit)(err); reject(err)
-        }
-      })
-    } catch (err) {
-      failure(quit)(err); reject(err)
-    }
-  }) */
-}
 
 /** completion handlers for success and failure */
 const success = quit => async out => {
@@ -329,7 +203,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
   electronCreateWindowFn = mainFunctions.createWindow
 
   // set up the fake dom
-  mimicDom(app)
+  mimicDom()
 
   /**
    * Evaluate the given command

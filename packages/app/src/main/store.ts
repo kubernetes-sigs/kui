@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('main/localStorage')
+import * as Debug from 'debug'
+const debug = Debug('main/localStorage')
 debug('loading')
 
 import { readFileSync, writeFileSync } from 'fs'
@@ -28,7 +29,7 @@ debug('modules loaded')
  * This module implements a simple localStorage layer for headless mode
  *
  */
-export default app => {
+export default () => {
   debug('init')
 
   const userData = join(userDataDir(), 'kui-local-storage.json')
