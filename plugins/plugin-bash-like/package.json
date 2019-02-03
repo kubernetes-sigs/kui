@@ -24,7 +24,7 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+    "prepublish": "rm -rf build && mkdir build && tar -C ../../build/plugins/$(basename `pwd`) --exclude '*node_modules*' -cf - . | tar -C build -xf -"
   },
   "dependencies": {
     "ansi-to-html": "^0.6.9",
