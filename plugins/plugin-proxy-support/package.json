@@ -1,12 +1,16 @@
 {
-  "name": "plugin-proxy-support",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@kui-shell/plugin-proxy-support",
+  "version": "0.0.1",
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
+  "description": "Kui plugin that adds runtime support for proxied communication",
+  "keywords": ["kui", "plugin"],
   "main": "index.js",
+  "keywords": ["kui", "plugin"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "Nick Mitchell",
-  "license": "Apache-2.0"
+  "publishConfig": {
+    "access": "public"
+  }
 }

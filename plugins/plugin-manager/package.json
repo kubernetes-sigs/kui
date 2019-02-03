@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Support for field installation of plugins",
   "main": "plugin/plugin.js",
-  "keywords": [],
+  "keywords": ["kui", "plugin"],
   "author": "Nick Mitchell",
   "contributors": [
     "Lionel Villard"

@@ -5,6 +5,7 @@
   "main": "plugin.js",
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
+  "keywords": ["kui", "plugin"],
   "dependencies": {
     "pretty-ms": "^4.0.0",
     "uuid": "^3.3.2"
