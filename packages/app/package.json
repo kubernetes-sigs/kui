@@ -36,7 +36,7 @@
     "kubectl-kui": "bin/kubectl-kui"
   },
   "scripts": {
-    "prepublish": "rm -rf build/src && cp -r ../../build/packages/$(basename `pwd`)/src build"
+    "prepublishOnly": "rm -rf build/src && cp -r ../../build/packages/$(basename `pwd`)/src build"
   },
   "dependencies": {
     "app-module-path": "^2.2.0",
