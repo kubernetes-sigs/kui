@@ -4,6 +4,8 @@
   "description": "IBM Cloud shell plugin for tutorials",
   "main": "plugin/plugin.js",
   "keywords": [
+    "kui",
+    "plugin",
     "openwhisk",
     "composer",
     "tutorials"

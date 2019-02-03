@@ -4,6 +4,7 @@
   "license": "Apache-2.0",
   "main": "plugin.js",
   "version": "0.0.1",
+  "keywords": ["kui", "plugin"],
   "author": {
     "name": "Kerry Chang"
   },

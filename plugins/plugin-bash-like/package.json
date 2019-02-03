@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/diff.min.js",
   "author": "Nick Mitchell",
+  "keywords": ["kui", "plugin"],
   "contributors": [
     "Mengting Yan"
   ],

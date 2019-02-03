@@ -4,6 +4,7 @@
   "description": "",
   "main": "plugin/plugin.js",
   "author": "Nick Mitchell",
+  "keywords": ["kui", "plugin"],
   "contributors": [
     "Mengting Yan"
   ],

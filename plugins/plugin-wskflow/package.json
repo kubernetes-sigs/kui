@@ -8,9 +8,12 @@
     "@kui-shell/plugin/wskflow/webpack/post": "bin/restore-after-prune.sh"
   },
   "keywords": [
+    "kui",
+    "plugin",
     "OpenWhisk",
     "Apache Composer",
-    "kui",
+    "visualization",
+    "step functions",
     "flow",
     "wskflow"
   ],
