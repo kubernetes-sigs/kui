@@ -2,10 +2,15 @@
   "name": "@kui-shell/plugin-wskflow",
   "version": "0.0.2",
   "description": "Visualizations for Composer apps",
-  "main": "plugin/plugin.js",
-  "bin": {
-    "@kui-shell/plugin/wskflow/webpack/pre": "bin/prune-for-browser.sh",
-    "@kui-shell/plugin/wskflow/webpack/post": "bin/restore-after-prune.sh"
+  "license": "Apache-2.0",
+  "author": "Kerry Chang",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
   },
   "keywords": [
     "kui",
@@ -17,12 +22,21 @@
     "flow",
     "wskflow"
   ],
-  "author": "Kerry Chang",
   "contributors": [
     "Mengting Yan",
     "Nick Mitchell"
   ],
-  "license": "Apache-2.0",
+  "bin": {
+    "@kui-shell/plugin/wskflow/webpack/pre": "bin/prune-for-browser.sh",
+    "@kui-shell/plugin/wskflow/webpack/post": "bin/restore-after-prune.sh"
+  },
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "webpack-prune": [
     "chokidar"
   ],

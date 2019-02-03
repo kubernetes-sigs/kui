@@ -1,14 +1,28 @@
 {
   "name": "@kui-shell/plugin-grid",
   "version": "0.0.2",
-  "description": "",
-  "main": "plugin.js",
-  "author": "Nick Mitchell",
+  "description": "Kui plugin that offers a grid visualization of OpenWhisk function invocations",
   "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "kui",
     "plugin"
   ],
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "dependencies": {
     "pretty-ms": "^4.0.0",
     "uuid": "^3.3.2"

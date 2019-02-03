@@ -47,17 +47,6 @@ if [ -z "$REDIS_URL" ]; then
     REDIS_PID=$!
 fi
 
-# trap ctrl-c and call ctrl_c()
-trap finished INT
-
-function finished {
-    if [ -n "$REDIS_PID" ]; then
-        kill ${REDIS_PID} 2> /dev/null
-    fi
-
-    exit "${EXIT_CODE-0}"
-}
-
 if [ ! -d logs ]; then
     mkdir logs
 fi
@@ -65,14 +54,14 @@ fi
 rm logs/* 2> /dev/null
 
 # which tests to run; the default is every test
-if [ -n "$LAYERS" ]; then
-    # one or more layers, specified by env var
-    WHICH=tests/passes/$LAYERS
-elif [ $# -ne 0 ]; then
+if [ $# -ne 0 ]; then
     # one or more layers, specified on command line
     for i in $@; do
         WHICH=" $WHICH tests/passes/$i"
     done
+elif [ -n "$LAYERS" ]; then
+    # one or more layers, specified by env var
+    WHICH=tests/passes/$LAYERS
 else
     # all layers
     WHICH=tests/passes/*
@@ -127,4 +116,5 @@ if [ $? == 0 ]; then
     fi
 fi
 
-finished
+echo "runLocal finished with ${EXIT_CODE-0}"
+exit "${EXIT_CODE-0}"

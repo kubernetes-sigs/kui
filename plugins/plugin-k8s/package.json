@@ -1,16 +1,29 @@
 {
   "name": "@kui-shell/plugin-k8s",
   "version": "0.1.0",
-  "description": "IBM Cloud shell plugin for kubernetes",
-  "main": "plugin/plugin.js",
+  "description": "Kui plugin for kubernetes",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "kui",
     "plugin",
-    "openwhisk",
     "kubernetes"
   ],
-  "author": "Nick Mitchell",
-  "license": "Apache-2.0",
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "dependencies": {
     "archiver": "^3.0.0",
     "command-exists": "^1.2.8",

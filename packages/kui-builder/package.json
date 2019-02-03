@@ -1,8 +1,16 @@
 {
   "name": "@kui-shell/builder",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Kui plugin development helpers",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "bin": {
     "kui-shell-build-headless": "./dist/headless/build.sh",
     "kui-shell-build-electron": "./dist/electron/build.sh",
@@ -13,8 +21,6 @@
     "kui-shell-lint": "./bin/lint.sh",
     "kui-shell-watch": "./bin/watch.sh"
   },
-  "author": "Nick Mitchell",
-  "license": "Apache-2.0",
   "dependencies": {
     "@types/debug": "^0.0.31",
     "@types/mkdirp-promise": "^5.0.0",
@@ -30,10 +36,10 @@
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.2.2"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "devDependencies": {
     "lerna": "^3.10.7"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

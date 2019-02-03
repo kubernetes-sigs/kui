@@ -43,7 +43,6 @@ if [ -n "$SCRIPTS" ]; then
         children+=("$!")
     done
 fi
-if [ $? != 0 ]; then exit $?; fi
 
 if [ -n "$LAYERS" ]; then
     #
@@ -54,14 +53,21 @@ if [ -n "$LAYERS" ]; then
     export KEY=$TRAVIS_JOB_NUMBER
     echo "Using KEY=$KEY"
 
-    if [ "$LAYERS" != "HEADLESS" ]; then
-        (cd tests && ./bin/runLocal.sh $LAYERS)
+    # remove HEADLESS from the list, as we are handling in specially
+    # in the else clause below
+    NON_HEADLESS_LAYERS=${LAYERS#HEADLESS}
+    if [ -n "$NON_HEADLESS_LAYERS" ]; then
+        echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
+        (cd tests && ./bin/runLocal.sh $NON_HEADLESS_LAYERS)
+    fi
 
-    else
+    # is "HEADLESS" on the LAYERS list?
+    if [ "$NON_HEADLESS_LAYERS" != "$LAYERS" ]; then
         #
         # for now, the headless test suite (which is also a mocha suite)
         # is a bit of a special case
         #
+        echo "running HEADLESS layer"
 
         # When testing against build headless, we set TEST_SPACE manually
         # since we can't get the env var TEST_SPACE from the previous
@@ -74,7 +80,6 @@ if [ -n "$LAYERS" ]; then
         (cd packages/kui-builder/dist/builds/kui && npm run test)
     fi
 fi
-if [ $? != 0 ]; then exit $?; fi
 
 wait_and_get_exit_codes "${children[@]}"
 exit "$EXIT_CODE"

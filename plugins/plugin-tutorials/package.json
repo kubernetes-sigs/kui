@@ -2,20 +2,33 @@
   "name": "@kui-shell/plugin-tutorials",
   "version": "0.1.0",
   "description": "IBM Cloud shell plugin for tutorials",
-  "main": "plugin/plugin.js",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "kui",
     "plugin",
-    "openwhisk",
-    "composer",
+    "interactive",
     "tutorials"
   ],
-  "author": "Nick Mitchell",
   "contributors": [
     "Kerry Chang",
     "Zoë Barnswell"
   ],
-  "license": "Apache-2.0",
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "dependencies": {
     "jquery": "^3.3.1",
     "marked": "^0.6.0"

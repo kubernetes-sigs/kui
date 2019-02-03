@@ -1,21 +1,35 @@
 {
   "name": "@kui-shell/plugin-editor",
   "version": "0.0.2",
-  "description": "Monaco Editor plugin for Kui",
-  "main": "plugin.js",
-  "bin": {
-    "@kui-shell/plugins/editor/webpack/pre": "bin/prune-for-browser.sh",
-    "@kui-shell/plugins/editor/webpack/post": "bin/restore-after-prune.sh"
+  "description": "Kui plugin that integrates the monaco-editor component",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
   },
   "keywords": [
     "kui",
     "plugin"
   ],
-  "author": "Nick Mitchell",
   "contributors": [
     "Mengting Yan"
   ],
-  "license": "Apache-2.0",
+  "bin": {
+    "@kui-shell/plugins/editor/webpack/pre": "bin/prune-for-browser.sh",
+    "@kui-shell/plugins/editor/webpack/post": "bin/restore-after-prune.sh"
+  },
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "dependencies": {
     "monaco-editor": "^0.14.3",
     "tmp": "0.0.33"
