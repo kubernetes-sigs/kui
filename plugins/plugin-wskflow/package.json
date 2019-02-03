@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-wskflow",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Visualizations for Composer apps",
   "main": "plugin/plugin.js",
   "bin": {
