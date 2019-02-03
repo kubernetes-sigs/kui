@@ -1,19 +1,31 @@
 {
   "name": "@kui-shell/plugin-openwhisk-debug",
-  "description": "A Kui plugin that lets users run and debug actions locally in a docker container",
-  "license": "Apache-2.0",
-  "main": "plugin.js",
   "version": "0.0.2",
+  "description": "Kui plugin that lets users run and debug actions locally in a docker container",
+  "license": "Apache-2.0",
+  "author": "Kerry Chang",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "kui",
     "plugin"
   ],
-  "author": {
-    "name": "Kerry Chang"
-  },
   "contributors": [
     "Nick Mitchell"
   ],
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "dependencies": {
     "extract-zip": "^1.6.7",
     "fs-extra": "^7.0.1",

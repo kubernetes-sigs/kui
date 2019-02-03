@@ -1,16 +1,27 @@
 {
   "name": "@kui-shell/plugin-proxy-support",
   "version": "0.1.0",
-  "author": "Nick Mitchell",
-  "license": "Apache-2.0",
   "description": "Kui plugin that adds runtime support for proxied communication",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "kui",
     "plugin"
   ],
-  "main": "index.js",
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
   },
   "publishConfig": {
     "access": "public"

@@ -1,9 +1,17 @@
 {
   "name": "@kui-shell/plugin-apache-composer",
   "version": "0.6.0",
-  "description": "IBM Cloud shell plugin for the Apache Composer",
-  "main": "plugin/plugin.js",
+  "description": "Kui plugin for the Apache OpenWhisk Composer",
+  "license": "Apache-2.0",
   "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "kui",
     "plugin"
@@ -11,7 +19,13 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "license": "Apache-2.0",
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "dependencies": {
     "app-module-path": "^2.2.0",
     "expand-home-dir": "0.0.3",

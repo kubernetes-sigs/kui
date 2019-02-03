@@ -3,20 +3,10 @@
   "version": "2.1.0",
   "description": "An Electron-based shell for cloud-native development",
   "homepage": "https://github.com/IBM/kui#readme",
-  "main": "build/packages/app/src/main/main.js",
-  "files": [
-    "bin",
-    "build",
-    "config",
-    "content",
-    "docs",
-    "src",
-    "templates",
-    "tests"
-  ],
-  "bin": {
-    "kui": "bin/kui",
-    "kubectl-kui": "bin/kubectl-kui"
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
   },
   "repository": {
     "type": "git",
@@ -30,13 +20,23 @@
     "visualization",
     "serverless"
   ],
-  "author": "Nick Mitchell",
   "contributors": [
     "Mengting Yan"
   ],
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/IBM/kui/issues/new"
+  "files": [
+    "bin",
+    "build",
+    "web",
+    "templates",
+    "tests"
+  ],
+  "main": "build/packages/app/src/main/main.js",
+  "bin": {
+    "kui": "bin/kui",
+    "kubectl-kui": "bin/kubectl-kui"
+  },
+  "scripts": {
+    "prepublish": "rm -rf build/src && cp -r ../../build/packages/$(basename `pwd`)/src build"
   },
   "dependencies": {
     "app-module-path": "^2.2.0",

@@ -1,9 +1,17 @@
 {
   "name": "@kui-shell/plugin-bash-like",
   "version": "0.0.2",
-  "description": "",
-  "main": "dist/diff.min.js",
+  "description": "Kui plugin that offers local bash-like shell integrations",
+  "license": "Apache-2.0",
   "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
   "keywords": [
     "kui",
     "plugin"
@@ -11,7 +19,13 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "license": "Apache-2.0",
+  "main": "build/src/plugin.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "rm -rf build && cp -r ../../build/plugins/$(basename `pwd`) build"
+  },
   "dependencies": {
     "ansi-to-html": "^0.6.9",
     "diff2html": "^2.7.0",

@@ -21,7 +21,8 @@
     "compile": "./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
     "configure": "node packages/kui-builder/lib/configure.js && ./packages/kui-builder/dist/dev/build.sh && ./packages/kui-builder/bin/seticon.js",
-    "postinstall": "export CLOUDSHELL_INSTALL_UI=true; npx lerna bootstrap --hoist && (cd tests && ./bin/corral.sh && npm install --no-package-lock) && npm run configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done && (cd tests && ./bin/corral.sh)"
+    "hoist-deps": "npx lerna bootstrap --ignore-prepublish --hoist",
+    "postinstall": "export CLOUDSHELL_INSTALL_UI=true; npm run hoist-deps && (cd tests && ./bin/corral.sh && npm install --no-package-lock) && npm run configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done && (cd tests && ./bin/corral.sh)"
   },
   "dependencies": {},
   "repository": {
