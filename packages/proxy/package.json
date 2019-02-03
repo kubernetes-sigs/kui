@@ -1,10 +1,13 @@
 {
   "name": "@kui-shell/proxy",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
   "description": "Kui package that offers a proxy server",
-  "keywords": ["kui", "plugin"],
+  "keywords": [
+    "kui",
+    "plugin"
+  ],
   "scripts": {
     "start-local": "node ./bin/www",
     "preinstall": "rm -rf node_modules/@kui-shell",

@@ -1,10 +1,13 @@
 {
   "name": "@kui-shell/plugin-core-support",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "plugin/plugin.js",
   "author": "Nick Mitchell",
-  "keywords": ["kui", "plugin"],
+  "keywords": [
+    "kui",
+    "plugin"
+  ],
   "contributors": [
     "Mengting Yan"
   ],
