@@ -22,12 +22,12 @@
     "Kerry Chang",
     "Zoë Barnswell"
   ],
-  "main": "build/src/plugin.js",
+  "main": "dist/src/plugin.js",
   "files": [
-    "build"
+    "dist"
   ],
   "scripts": {
-    "prepublish": "rm -rf build && mkdir build && tar -C ../../build/plugins/$(basename `pwd`) --exclude '*node_modules*' -cf - . | tar -C build -xf -"
+    "prepublishOnly": "rm -rf dist && mkdir dist && tar -C ../../build/plugins/$(basename `pwd`) --exclude package.json --exclude 'tests' --exclude 'src/test'  --exclude '*node_modules*' -hcf - . | tar -C dist -xf -"
   },
   "dependencies": {
     "jquery": "^3.3.1",
