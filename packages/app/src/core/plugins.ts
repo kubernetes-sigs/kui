@@ -227,16 +227,23 @@ const loadPlugin = async (route, pluginPath) => {
 /**
  * Attempt to load the plugins during a plugin scan
  *
+ * @param lastError so we don't repeat making the same mistake 100 times!
+ *
  */
-const topologicalSortForScan = async (pluginPaths, iter) => {
+const topologicalSortForScan = async (pluginPaths, iter: number, lastError?: Error, lastErrorAlreadyEmitted?: boolean) => {
   debug('topologicalSortForScan', iter)
 
   if (iter >= 100) {
     debug('unable to resolve plugins')
-    throw new Error('Unable to resolve plugins')
+    if (lastError) {
+      if (!lastErrorAlreadyEmitted) {
+        throw lastError
+      } // fallthrough intentional
+
+      throw new Error('Unable to resolve plugins')
+    }
   }
 
-  let lastError // so we don't repeat making the same mistake 100 times!
   let nUnresolved = 0
   const unresolved = []
   for (let route in pluginPaths) {
@@ -247,7 +254,7 @@ const topologicalSortForScan = async (pluginPaths, iter) => {
       flat.push(module)
       delete pluginPaths[route]
     } catch (err) {
-      if ((err.message.indexOf('Module not found') < 0 || iter > 10) && (lastError && lastError.message === err.message)) {
+      if ((err.message.indexOf('Module not found') < 0 || iter > 10) && (lastError && lastError.message !== err.message)) {
         //
         // note how we do not print the error if any of three
         // conditions hold (but we still continue iterating)
@@ -260,6 +267,7 @@ const topologicalSortForScan = async (pluginPaths, iter) => {
         //
         debug('not retrying')
         console.error(err)
+        lastErrorAlreadyEmitted = true
       }
 
       //
@@ -276,7 +284,7 @@ const topologicalSortForScan = async (pluginPaths, iter) => {
 
   if (nUnresolved > 0) {
     debug('nUnresolved', nUnresolved, unresolved)
-    return topologicalSortForScan(pluginPaths, iter + 1)
+    return topologicalSortForScan(pluginPaths, iter + 1, lastError, lastErrorAlreadyEmitted)
   } else {
     debug('topologicalSortForScan done')
   }
