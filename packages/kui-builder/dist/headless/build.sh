@@ -17,34 +17,30 @@
 #
 
 shopt -s extglob
+set -e
+set -o pipefail
 
-if [ -z "$1" ] && [ -d node_modules/@kui-shell ]; then
-    TOPDIR=node_modules/@kui-shell/core
-    BUILDERDIR=node_modules/@kui-shell/builder
-    APPDIR="$TOPDIR"
-    STAGING="`pwd`"
-    export BUILDDIR="`pwd`/builds"
+if [ -d node_modules/@kui-shell ]; then
+    export TOPDIR=$(pwd)
+    BUILDER_HOME="$TOPDIR"/node_modules/@kui-shell/builder
+    STAGING="${1-`pwd`}"
+    APPDIR="$STAGING"/kui/packages/app
+    export BUILDDIR="`pwd`/dist/headless"
+    npx kui-compile
 else
+    export MONOREPO_MODE=true
     SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-    TOPDIR="$SCRIPTDIR/../../../../"
-    BUILDERDIR="$TOPDIR"/packages/kui-builder
+    export TOPDIR="$SCRIPTDIR/../../../../"
+    BUILDER_HOME="$TOPDIR"/packages/kui-builder
     APPDIR="$TOPDIR/packages/app"
     STAGING="${1-$TOPDIR}"
     export PATH="$SCRIPTDIR"/../bin:"$SCRIPTDIR"/../../bin:$PATH
-
-    if [ -n "$2" ]; then
-        export BUILDDIR="$2"
-    else
-        export BUILDDIR="$SCRIPTDIR"/../builds
-    fi
+    export BUILDDIR="$SCRIPTDIR"/../builds
 fi
 
-# product name
-export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/build/config.json | jq --raw-output .theme.productName`}"
-
-# targets
-DEST="${PRODUCT_NAME}-headless.zip"
-DEST_TGZ="${PRODUCT_NAME}-headless.tar.bz2"
+if [ -n "$2" ]; then
+    export BUILDDIR="$2"
+fi
 
 if [[ `uname` == Darwin ]]; then
     TAR=gtar
@@ -80,9 +76,6 @@ function init {
     #    exit 1
     #fi
     #echo "Done with uglify"
-
-    VERSION=`cat "$APPDIR"/package.json | jq --raw-output .version`
-    echo "$VERSION" > "$APPDIR"/.version
 
     # corral any module-specific tests
     #(cd $TOPDIR/tests && ./bin/corral.sh)
@@ -124,7 +117,75 @@ function cleanup {
     rm "$APPDIR"/.version
 }
 
+function tarCopy {
+    echo "tar copy to $STAGING"
+    (cd "$STAGING" && rm -rf kui && mkdir kui && mkdir kui/bin && \
+         "$TAR" -C "$TOPDIR" -cf - \
+                --exclude "./kui" \
+                --exclude "./builds" \
+                --exclude "./dist" \
+                --exclude ".git*" \
+                --exclude "./tools" \
+                --exclude ".travis*" \
+                --exclude "lerna-debug.log" \
+                --exclude "./docs" \
+                --exclude "./node_modules" \
+                --exclude "./packages/kui-builder" \
+                --exclude "./packages/proxy" \
+                --exclude "./build/*/node_modules/*" \
+                --exclude "./plugins/*/node_modules/*" \
+                --exclude "**/node_modules/electron*/*" \
+                --exclude "**/*~" \
+                --exclude "**/.bak" \
+                --exclude "**/*.map" \
+                --exclude "**/*.png" \
+                --exclude "**/*.icns" \
+                --exclude "**/*.ico" \
+                --exclude "./packages/app/dist/*" \
+                --exclude "./packages/app/build/webpack-stats.html" \
+                --exclude "node_modules/monaco-editor" \
+                --exclude "node_modules/fsevents" \
+                --exclude "node_modules/elkjs" \
+                --exclude "node_modules/d3" \
+                --exclude "node_modules/jquery" \
+                --exclude "node_modules/typescript" \
+                --exclude "./plugins/plugin-editor" \
+                --exclude "./plugins/plugin-manager" \
+                --exclude "./plugins/plugin-grid" \
+                --exclude "./plugins/plugin-openwhisk-debug" \
+                --exclude "./plugins/plugin-tutorials" \
+                --exclude "./plugins/plugin-wskflow" \
+                --exclude "**/*.ts" \
+                --exclude "./tests/node_modules/*" \
+                --exclude "node_modules/*.bak/*" \
+                --exclude "node_modules/**/*.md" \
+                --exclude "node_modules/**/*.DOCS" \
+                --exclude "node_modules/**/LICENSE" \
+                --exclude "node_modules/**/docs/**/*.html" \
+                --exclude "node_modules/**/docs/**/*.png" \
+                --exclude "node_modules/**/docs/**/*.js" \
+                --exclude "node_modules/**/test/*" . \
+             | "$TAR" -C kui -xf -)
+}
+
+function configure {
+    KUI_STAGE="$STAGING/kui" node "$BUILDER_HOME"/lib/configure.js
+}
+
 function build {
+    tarCopy
+    configure
+
+    VERSION=$(cat "$APPDIR"/build/package.json | jq --raw-output .version)
+    echo "$VERSION" > "$APPDIR"/.version
+
+    # product name
+    export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/build/config.json | jq --raw-output .theme.productName`}"
+
+    # targets
+    DEST="${PRODUCT_NAME}-headless.zip"
+    DEST_TGZ="${PRODUCT_NAME}-headless.tar.bz2"
+
     if [ -z "$NO_ZIPS" ]; then
         echo "Building headless dist to $BUILDDIR/$DEST and $BUILDDIR/$DEST_TGZ"
         rm -f "$BUILDDIR/$DEST" "$BUILDDIR/$DEST_TGZ"
@@ -135,82 +196,53 @@ function build {
     # word of warning for linux: in the TAR command below, the `-cf -` has
     # to come before the --exclude rules!
 
-    (cd "$STAGING" && rm -rf kui && mkdir kui && mkdir kui/bin && \
-         "$TAR" -C "$TOPDIR" -cf - \
-             --exclude "./kui" \
-             --exclude ".git*" \
-             --exclude "./tools" \
-             --exclude ".travis*" \
-             --exclude "lerna-debug.log" \
-             --exclude "./docs" \
-             --exclude "./node_modules" \
-             --exclude "./packages/kui-builder" \
-             --exclude "./packages/proxy" \
-             --exclude "./build/*/node_modules/*" \
-             --exclude "./plugins/*/node_modules/*" \
-             --exclude "**/node_modules/electron*/*" \
-             --exclude "./packages/app/content/icons/*" \
-             --exclude "./packages/app/content/images/*" \
-             --exclude "**/*~" \
-             --exclude "**/.bak" \
-             --exclude "**/*.map" \
-             --exclude "**/*.png" \
-             --exclude "**/*.icns" \
-             --exclude "**/*.ico" \
-             --exclude "./packages/app/build/webpack-stats.html" \
-             --exclude "node_modules/monaco-editor" \
-             --exclude "node_modules/fsevents" \
-             --exclude "node_modules/elkjs" \
-             --exclude "node_modules/d3" \
-             --exclude "node_modules/jquery" \
-             --exclude "node_modules/typescript" \
-             --exclude "./plugins/plugin-editor" \
-             --exclude "./plugins/plugin-manager" \
-             --exclude "./plugins/plugin-grid" \
-             --exclude "./plugins/plugin-openwhisk-debug" \
-             --exclude "./plugins/plugin-tutorials" \
-             --exclude "./plugins/plugin-wskflow" \
-             --exclude "**/*.ts" \
-             --exclude "./tests/node_modules/*" \
-             --exclude "node_modules/*.bak/*" \
-             --exclude "node_modules/**/*.md" \
-             --exclude "node_modules/**/*.DOCS" \
-             --exclude "node_modules/**/LICENSE" \
-             --exclude "node_modules/**/docs/**/*.html" \
-             --exclude "node_modules/**/docs/**/*.png" \
-             --exclude "node_modules/**/docs/**/*.js" \
-             --exclude "node_modules/**/test/*" . \
-             | "$TAR" -C kui -xf - && \
-         node -e 'const pjson = require("./kui/package.json"); delete pjson.devDepdencies; pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); cd tests && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true TEST_ROOT=$SCRIPTDIR/tests KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx mocha -c --exit --bail --recursive -t 60000 tests --grep "\$\{TEST_FILTER:-.*\}"`; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))' && \
-         (cd kui && cp package.json bak.json) && \
-         (cd kui && npx lerna link convert) && \
-         (node -e 'const pjson = require("./kui/package.json"); const pjson2 = require("./kui/bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./kui/package.json", JSON.stringify(pjson, undefined, 2))') && \
-         (cd kui && rm bak.json) && \
-         (cd kui && npm install --production --ignore-scripts --no-package-lock) && \
-         (cd kui && link-build-assets.sh) && \
-         trimDeps && \
-         cp "$BUILDERDIR"/dist/bin/kui.cmd kui/bin/kui.cmd && \
-         (find -L kui/tests/tests/passes/ -name '*headless*.js' -prune -o -type f -exec rm {} \; || true) && \
-         (find -L kui/tests/data -type d -name headless -prune -o -type f -exec rm {} \; || true) && \
-         if [ -z "$NO_ZIPS" ]; then "$TAR" -jcf "$BUILDDIR/$DEST_TGZ" \
-                --exclude "node_modules/@types" \
-                --exclude "node_modules/js-beautify" \
-                --exclude "node_modules/.bin" \
-                --exclude "**/*-debug.log" \
-                --exclude "**/.bak" \
-                --exclude "**/*.map" \
-                --exclude "**/*.png" \
-                --exclude "**/*.icns" \
-                --exclude "**/*.ico" \
-                --exclude "lerna.json" \
-                --exclude "**/yarn.lock" \
-                --exclude "**/*.debug.js" \
-                --exclude "**/package-lock.json" \
-                kui; fi)
+    pushd "$STAGING"
 
-    if [ $? != 0 ]; then
-        exit $?
+    PJSON=$(node -e 'const pjson = require("./kui/package.json"); delete pjson.dependencies["@kui-shell/builder"]; delete pjson.devDependencies; pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); cd tests && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true TEST_ROOT=$SCRIPTDIR/tests KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx mocha -c --exit --bail --recursive -t 60000 tests --grep "\$\{TEST_FILTER:-.*\}"`; console.log(JSON.stringify(pjson, undefined, 2))')
+    echo "$PJSON" > ./kui/package.json
+
+    (cd kui && cp package.json bak.json)
+    (cd kui && npx lerna link convert)
+
+    PJSON=$(node -e 'const pjson = require("./kui/package.json"); const pjson2 = require("./kui/bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; console.log(JSON.stringify(pjson, undefined, 2))')
+    echo "$PJSON" > ./kui/package.json
+    
+    (cd kui && rm bak.json)
+
+    (cd kui && npm install --production --ignore-scripts --no-package-lock)
+    (cd kui && link-build-assets.sh)
+    trimDeps
+
+    cp "$BUILDER_HOME"/dist/bin/kui.cmd kui/bin/kui.cmd
+    cp kui/node_modules/@kui-shell/core/bin/* kui/bin
+
+    if [ -d kui/tests/tests/passes/ ]; then
+        find -L kui/tests/tests/passes/ -name '*headless*.js' -prune -o -type f -exec rm {} \;
     fi
+
+    if [ -d kui/tests/data ]; then
+        find -L kui/tests/data -type d -name headless -prune -o -type f -exec rm {} \;
+    fi
+
+    if [ -z "$NO_ZIPS" ]; then
+        "$TAR" -jcf "$BUILDDIR/$DEST_TGZ" \
+               --exclude "node_modules/@types" \
+               --exclude "node_modules/js-beautify" \
+               --exclude "node_modules/.bin" \
+               --exclude "**/*-debug.log" \
+               --exclude "**/.bak" \
+               --exclude "**/*.map" \
+               --exclude "**/*.png" \
+               --exclude "**/*.icns" \
+               --exclude "**/*.ico" \
+               --exclude "lerna.json" \
+               --exclude "**/yarn.lock" \
+               --exclude "**/*.debug.js" \
+               --exclude "**/package-lock.json" \
+               kui;
+    fi
+
+    popd
 
     if [ -z "$NO_CLEAN" ] && [ -z "$NO_ZIPS" ]; then
         # if either

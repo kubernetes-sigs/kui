@@ -19,14 +19,28 @@
 shopt -s extglob
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR="$SCRIPTDIR/../../../../"
-STAGING="$SCRIPTDIR/kui"
+if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell ]; then
+    # then we are running in an npm install'd @kui-shell/builder
+    export TOPDIR="$SCRIPTDIR"/../..
+    CORE_HOME="$SCRIPTDIR"/../@kui-shell/core
+    BUILDER_HOME="$SCRIPTDIR"/../@kui-shell/builder
+    export BUILDDIR="$TOPDIR"/dist/builds
+    npx kui-compile
+else
+    export TOPDIR="$SCRIPTDIR"/../../../..
+    BUILDER_HOME="$SCRIPTDIR/../.."
+    CORE_HOME="$BUILDER_HOME"/../app
+    export BUILDDIR="$BUILDER_HOME"/dist/builds
+    export MONOREPO_MODE=true
+fi
+
+STAGING="$BUILDER_HOME/kui-electron-tmp" # needs to sit under a package.json that specifies electron dependence
+LERNA="$TOPDIR"/node_modules/.bin/lerna
 APPDIR="$STAGING/packages/app"
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../../examples/build-configs/default}
-export BUILDDIR=$SCRIPTDIR/../builds
+KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$BUILDER_HOME"/examples/build-configs/default}
 
 initialDirectory=`pwd`
-cd $SCRIPTDIR
+cd "$BUILDER_HOME/dist/electron"
 
 #
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
@@ -39,7 +53,10 @@ IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(lerna.json)|(node_modules/@kui-plugin)
 #
 PLATFORM=${1-all}
 
-VERSION=`git rev-parse master`
+VERSION=`git rev-parse master 2> /dev/null`
+if [ $? != 0 ]; then
+    VERSION=dev
+fi
 
 # we will manage devDep pruning ourselves
 NO_PRUNE=--no-prune
@@ -67,7 +84,7 @@ function init {
 
     (rm -rf "$STAGING" && mkdir "$STAGING" && cd $TOPDIR && \
          "$TAR" -C . -cf - \
-             --exclude "**/kui/*" \
+             --exclude "kui-electron-tmp" \
              --exclude "./bin" \
              --exclude "./tools" \
              --exclude "./dist" \
@@ -103,16 +120,25 @@ function init {
 
     (cd "$STAGING" && \
          cp package.json bak.json && \
-         npx lerna link convert && \
-         (node -e 'const pjson = require("./package.json"); const pjson2 = require("./bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./package.json", JSON.stringify(pjson, undefined, 2))') && \
+         "$LERNA" link convert && \
+         (node -e 'const pjson = require("./package.json"); const pjson2 = require("./bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; delete pjson.dependencies[`@kui-shell/builder`]; require("fs").writeFileSync("./package.json", JSON.stringify(pjson, undefined, 2))') && \
          npm install --production --ignore-scripts --no-package-lock && \
-         ("$TOPDIR"/packages/kui-builder/bin/link-build-assets.sh) && \
-         (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$TOPDIR"/packages/kui-builder/lib/configure.js) && \
+         NO_ARTIFACTS=true "$BUILDER_HOME"/bin/link-build-assets.sh && \
+         (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js) && \
+         ("$BUILDER_HOME"/bin/kui-link-artifacts.sh) && \
          rm bak.json)
     if [ $? != 0 ]; then
         exit $?
     fi
     echo "lerna magic done"
+
+    # product name
+    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
+
+    # filesystem icons
+    ICON_MAC="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
+    ICON_WIN32="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
+    ICON_LINUX="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
 
     if [ -d "$KUI_BUILD_CONFIG"/css ]; then
         echo "copying in theme css"
@@ -129,21 +155,8 @@ function init {
 
     if [ -n "$TARBALL_ONLY" ]; then exit; fi
 
-    # product name
-    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
-
-    # filesystem icons
-    ICON_MAC="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
-    ICON_WIN32="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
-    ICON_LINUX="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
-
     # make the build directory
-    if [ ! -d $BUILDDIR ]; then
-	mkdir $BUILDDIR
-	if [ $? != 0 ]; then
-	    exit 1
-	fi
-    fi
+    mkdir -p "$BUILDDIR"
 
     if [ ! -d node_modules ]; then
 	npm install
@@ -153,12 +166,20 @@ function init {
     # (cd "$STAGING" && "$SCRIPTDIR"/bin/compile.js
     # if [ $? -ne 0 ]; then exit 1; fi
 
-    # minify the css
-    cp $APPDIR/web/css/ui.css /tmp
-    npx minify /tmp/ui.css
-    cp /tmp/ui.min.css $APPDIR/web/css/ui.css
+    # minify the core css
+    CSS_SOURCE="$CORE_HOME"/web/css
+    CSS_TARGET="$APPDIR"/build/css
+    mkdir -p "$CSS_TARGET"
+    echo "Minifying core CSS to this directory: $CSS_TARGET"
+    for i in "$CSS_SOURCE"/*.css; do
+        css=`basename $i`
+        echo -n "Minifying $css... "
+        cp "$i" /tmp/"$css"
+        npx minify /tmp/"$css"
+        cp /tmp/"$css" "$CSS_TARGET"/"$css"
+    done
 
-    VERSION=`cat $APPDIR/package.json | jq --raw-output .version`
+    VERSION=`cat $APPDIR/build/package.json | jq --raw-output .version`
     echo "$VERSION" > $APPDIR/.version
     
     # (cd "$STAGING" && npm prune --production)
@@ -166,7 +187,7 @@ function init {
 
 function cleanup {
     if [ -z "$NO_CLEAN" ] && [ -z "$TARBALL_ONLY" ]; then
-        rm -rf "$SCRIPTDIR/kui"
+        rm -rf "$STAGING"
     fi
 }
 
@@ -341,7 +362,7 @@ fi
 wait
 cleanup
 
-echo "build.sh finished, here is what we think we built:"
+echo "build.sh finished, here is what we think we built (in $BUILDDIR):"
 ls -lh "$BUILDDIR" | grep -v headless
 
 exit $CODE

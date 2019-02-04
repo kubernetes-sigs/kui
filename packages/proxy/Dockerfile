@@ -19,7 +19,7 @@ FROM node:8-alpine
 ENV PORT 3000
 EXPOSE 3000/tcp
 
-WORKDIR /kui-proxy
+WORKDIR /kui-proxy/kui
 
 # the following from https://github.com/dtzar/helm-kubectl/blob/2.12.2/Dockerfile
 ###########
@@ -38,5 +38,6 @@ RUN apk add --no-cache ca-certificates bash git \
 ###########
 
 COPY . /kui-proxy
+RUN cd /kui-proxy/kui && npm link ../app --no-package-lock
 
-CMD ["bin/www"]
+CMD [ "npx", "start-proxy" ]

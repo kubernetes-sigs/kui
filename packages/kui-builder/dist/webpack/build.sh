@@ -31,9 +31,19 @@
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR="${SCRIPTDIR}/../../../../"
-STAGING="$SCRIPTDIR/kui"
-cd "$SCRIPTDIR"
+if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell ]; then
+    # then we are running in an npm install'd @kui-shell/builder
+    export TOPDIR="$SCRIPTDIR"/../..
+    BUILDER_HOME="$SCRIPTDIR"/../@kui-shell/builder
+    npx kui-compile
+else
+    export TOPDIR="${SCRIPTDIR}/../../../../"
+    BUILDER_HOME="$SCRIPTDIR/../.."
+    export MONOREPO_MODE=true
+fi
+
+STAGING="$BUILDER_HOME/dist/webpack/kui-webpack-tmp"
+cd "$BUILDER_HOME/dist/webpack"
 
 function trimTutorials {
     (cd "$TOPDIR" \
@@ -93,8 +103,8 @@ fi
 
 initialDirectory=`pwd`
 
-rm -rf kui && \
-    mkdir kui && \
+rm -rf "$STAGING" && \
+    mkdir "$STAGING" && \
     "$TAR" -C "$TOPDIR" -cf - \
            --exclude '.git*' \
            --exclude '*flycheck_*.js' \
@@ -109,15 +119,16 @@ rm -rf kui && \
            --exclude './packages/*/node_modules' \
            --exclude '*.ts' \
            --exclude './packages/kui-builder' \
-           --exclude './tests' . | "$TAR" -C kui -xf - && \
+           --exclude './tests' . | "$TAR" -C "$STAGING" -xf - && \
     echo "tar copy done" && \
     (cd "$STAGING" && \
          cp package.json bak.json && \
          npx lerna link convert && \
          (node -e 'const pjson = require("./package.json"); const pjson2 = require("./bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; require("fs").writeFileSync("./package.json", JSON.stringify(pjson, undefined, 2))') && \
          npm install --production --ignore-scripts --no-package-lock && \
-         (cd "$STAGING" && "$TOPDIR"/packages/kui-builder/bin/link-build-assets.sh) && \
-         (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$TOPDIR"/packages/kui-builder/lib/configure.js) && \
+         NO_ARTIFACTS=true "$BUILDER_HOME"/bin/link-build-assets.sh && \
+         (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js) && \
+         ("$BUILDER_HOME"/bin/kui-link-artifacts.sh) && \
          (rm -rf "$STAGING"/packages/app/web/css/css) && \
          rm bak.json) && \
     echo "lerna magic done" && \

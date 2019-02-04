@@ -19,6 +19,12 @@
  *
  */
 
+const usage = {
+  command: 'hello',
+  strict: 'hello',
+  docs: 'Say hello!'
+}
+
 /**
  * This is the command handler. Handlers can return plain strings,
  * which will then be printed in the CLI portion of the UI.
@@ -32,7 +38,6 @@
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
-
 const sayHello = ({ argv, command, argvNoOptions, parsedOptions }) => {
   return 'hello world'
 }
@@ -42,6 +47,6 @@ const sayHello = ({ argv, command, argvNoOptions, parsedOptions }) => {
  *
  */
 export default (commandTree, prequire) => {
-  const cmd = commandTree.listen('/sample/hello', sayHello, { docs: 'Say hello!' })
+  const cmd = commandTree.listen('/sample/hello', sayHello, { usage, noAuthOk: true })
   commandTree.synonym('/sample/hi', sayHello, cmd)
 }

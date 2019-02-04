@@ -16,18 +16,27 @@
 # limitations under the License.
 #
 
-# this will use place the build in ./kui
-NM="`pwd`/node_modules/@kui-shell"
-STAGING="$NM/staging"
+set -e
 
-npm install
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+
+if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell/builder ]; then
+    BUILDER_HOME="$SCRIPTDIR"/../../node_modules/@kui-shell/builder
+    PROXY_HOME="$BUILDER_HOME"/../proxy
+else
+    PROXY_HOME="$SCRIPTDIR"
+    BUILDER_HOME="$SCRIPTDIR/../kui-builder"
+fi
+
+STAGING="$PROXY_HOME" # temporary spot for the kui-headless build
+APP="$SCRIPTDIR"/app
+
+# this will use place the build in $STAGING/kui
+QUIET=true NO_ZIPS=true "$BUILDER_HOME"/dist/headless/build.sh "$STAGING"
 
 # ssl cert
-(cd ../kui-builder/dist/webpack && npm run http-allocate-cert)
-rm -rf .keys && cp -r ../kui-builder/dist/webpack/.keys .
+(cd "$STAGING"/kui && "$BUILDER_HOME"/dist/webpack/bin/ssl.sh)
 
-# this will use place the build in $STAGING
-QUIET=true NO_ZIPS=true ../kui-builder/dist/headless/build.sh "$STAGING" && \
-    rm -rf "$NM"/core && mv "$STAGING"/kui "$NM"/core && \
-    npm run build-docker && \
-    if [ -z "$NO_CLEAN" ]; then rm -rf "$STAGING"; fi
+(cd "$PROXY_HOME" && ./build-docker.sh)
+
+if [ -z "$NO_CLEAN" ]; then rm -rf "$STAGING/kui"; fi

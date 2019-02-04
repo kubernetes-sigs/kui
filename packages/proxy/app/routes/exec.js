@@ -22,8 +22,8 @@ const router = express.Router()
 process.env.KUI_HEADLESS = true
 process.env.KUI_REPL_MODE = true
 
-const { main } = require('@kui-shell/core')
-const { setValidCredentials } = require('@kui-shell/core/build/packages/app/src/core/capabilities')
+const { main } = require('../../kui/node_modules/@kui-shell/core')
+const { setValidCredentials } = require('../../kui/node_modules/@kui-shell/core/core/capabilities')
 
 const exec = (commandExtractor) => async function (req, res, next) {
   const { command, execOptions = {} } = commandExtractor(req)
