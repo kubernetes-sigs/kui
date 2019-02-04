@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Copyright 2017-18 IBM Corporation
+# Copyright 2017-19 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,11 +17,7 @@
 #
 
 if [ ! -e lerna.json ]; then
-    if [ -d plugins ] || [ -d packages ]; then
-        echo "Error: perhaps you forgot to run `lerna init`?"
-    else
-        echo "Error: execute this script from the top level of the kui project"
-    fi
+    echo "Error: perhaps you forgot to run "npx kui-dist-init""
     exit 1
 fi
 
@@ -59,7 +55,7 @@ fi
 # compile source
 echo ""
 echo "compiling source $TSCONFIG_HOME"
-"$TSCONFIG_HOME"/node_modules/.bin/tsc --build "$TSCONFIG"
+npx tsc --build "$TSCONFIG"
 if [ $? != 0 ]; then exit $?; fi
 
 "$SCRIPTDIR"/link-build-assets.sh

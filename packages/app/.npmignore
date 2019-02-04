@@ -1,4 +1,4 @@
 build
 dist
 src
-tests
+tests/data

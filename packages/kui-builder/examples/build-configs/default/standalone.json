@@ -3,6 +3,6 @@
   "bodyCss": "in-electron",
   "cssHome": "css/",
   "imageHome": "icons/ico/",
-  "jsHome": "../../../build/packages/app/src/webapp/bootstrap/"
+  "jsHome": "../../../node_modules/@kui-shell/core/webapp/bootstrap/"
 }
 

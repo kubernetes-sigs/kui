@@ -16,18 +16,28 @@
 # limitations under the License.
 #
 
-# this will use place the build in ./kui
-NM="`pwd`/node_modules/@kui-shell"
-STAGING="$NM/staging"
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell/builder ]; then
+    BUILDER_HOME="$SCRIPTDIR"/../../node_modules/@kui-shell/builder
+else
+    BUILDER_HOME="$SCRIPTDIR/../kui-builder"
+fi
+
+# temporary spot for the kui-headless build
+NM="$SCRIPTDIR"/node_modules/@kui-shell
+STAGING="$SCRIPTDIR"/kui-proxy-tmp
+
+cd "$SCRIPTDIR"
 npm install
 
 # ssl cert
-(cd ../kui-builder/dist/webpack && npm run http-allocate-cert)
-rm -rf .keys && cp -r ../kui-builder/dist/webpack/.keys .
+(cd "$BUILDER_HOME"/dist/webpack && npm run http-allocate-cert)
+rm -rf .keys && cp -r "$BUILDER_HOME"/dist/webpack/.keys .
 
 # this will use place the build in $STAGING
 QUIET=true NO_ZIPS=true ../kui-builder/dist/headless/build.sh "$STAGING" && \
+    mkdir -p "$NM" && \
     rm -rf "$NM"/core && mv "$STAGING"/kui "$NM"/core && \
     npm run build-docker && \
     if [ -z "$NO_CLEAN" ]; then rm -rf "$STAGING"; fi

@@ -1,9 +1,9 @@
-# Kui Plugins
+# Developing Kui Plugins
 
 The Kui commands are implemented via plugins. This repository
 includes a suite of plugins, located in the `plugins/` directory.
 
-   - [Sample Plugin](plugin-sample/)
+   - [Sample Plugin](../../packages/kui-builder/examples/plugin-sample/)
    - [Code Layout](#code-layout)
    - [Activating a New Plugin](#activating-a-new-plugin)
    - [Plugin API](#plugin-api)

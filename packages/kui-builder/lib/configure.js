@@ -19,6 +19,7 @@ const path = require('path')
 const fs = require('fs-extra')
 const colors = require('colors/safe')
 
+const { moduleExists } = require('./module-exists')
 const parseOptions = require('./parse-options')
 
 /**
@@ -108,7 +109,8 @@ const writeConfig = (settings) => new Promise((resolve, reject) => {
     } else {
       task('write package.json')
 
-      const topLevel = require(path.join(configDir, '../package.json'))
+      const packageAppPjson = path.join(configDir, '../package.json')
+      const topLevel = moduleExists(packageAppPjson) ? require(packageAppPjson) : require(path.join(process.env.TOPDIR, 'package.json'))
       const packageJson = Object.assign({}, topLevel, config)
 
       fs.writeFile(path.join(configDir, 'package.json'), JSON.stringify(packageJson, undefined, 4), err => {

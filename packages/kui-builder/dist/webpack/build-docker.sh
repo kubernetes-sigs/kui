@@ -22,7 +22,14 @@
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR="${SCRIPTDIR}/../../../../"
+if [ -d "$SCRIPTDIR"/../../../../../node_modules/\@kui-shell ]; then
+    # then we are running in an npm install'd @kui-shell/builder
+    CORE_HOME="$SCRIPTDIR"/../../../core
+else
+    BUILDER_HOME="$SCRIPTDIR/../.."
+    CORE_HOME="$BUILDER_HOME"/../app
+    export MONOREPO_MODE=true
+fi
 
 # the webpack and other build assets will be stored here
 TARGET=build
@@ -36,7 +43,7 @@ npm run http-allocate-cert
 # some of the assets are in sibling directories; let's copy them here
 # to our TARGET directory:
 cp "$TARGET"/index-webpack.html "$TARGET"/index.html
-cp -r "$TOPDIR"/packages/app/web/css/ "$TARGET" # !!! intentional trailing slash: css/
+cp -r "$CORE_HOME"/web/css/ "$TARGET" # !!! intentional trailing slash: css/
 
 # if we are using a build config override, then copy in its assets
 KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../../examples/build-configs/default}

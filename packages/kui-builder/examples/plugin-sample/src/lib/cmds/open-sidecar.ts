@@ -24,6 +24,12 @@ import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
+const usage = {
+  command: 'sidecar',
+  strict: 'sidecar',
+  docs: 'Open the sidecar'
+}
+
 /**
  * This is the command handler. Handlers can return plain strings,
  * which will then be printed in the CLI portion of the UI.
@@ -51,5 +57,5 @@ const openSidecar = ({ argv, command, argvNoOptions, parsedOptions }) => {
  *
  */
 export default (commandTree, prequire) => {
-  commandTree.listen('/sample/sidecar', openSidecar, { docs: 'Open the sidecar' })
+  commandTree.listen('/sample/sidecar', openSidecar, { usage, noAuthOk: true })
 }

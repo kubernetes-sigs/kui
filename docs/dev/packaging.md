@@ -25,8 +25,8 @@ for Windows, macOS, and Linux. When building an Electron distribution,
 the script by default will build for all three platforms.
 
 ```bash
-> cd dist/electron && ./build.sh [target]
-> ls dist/builds
+> (cd dist/electron && ./build.sh [target])
+> ls dist/packages
 Kui-darwin-x64.dmg Kui-darwin-x64.tar.bz2 Kui-win32-x64.zip Kui-linux-x64.tar.bz2
 ```
 

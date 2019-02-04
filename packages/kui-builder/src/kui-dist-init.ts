@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+
+/**
+ * Copyright 2019 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { join, dirname } from 'path'
+import * as colors from 'colors/safe'
+import { copy, exists, mkdir, mkdirp, writeFile } from 'fs-extra'
+
+import lernaJson = require('./defaults/lerna.json')
+
+/** simple message notifying the user that we are creating an asset */
+const creating = (what: string): void => {
+  console.log(colors.green('✓') + ' creating ' + what)
+}
+
+/** simple message notifying the user that we are NOT creating an asset */
+const notCreating = (what: string): void => {
+  console.log(colors.dim('-') + ' not creating ' + what)
+}
+
+export const main = async (argv: Array<string>) => {
+  const force = argv.find(_ => _ === '-f' || _ === '--force')
+
+  if (!(await exists('plugins'))) {
+    await mkdir('plugins')
+    creating('plugins directory')
+  } else {
+    notCreating('plugins directory')
+  }
+
+  if (!(await exists('packages/app/src'))) {
+    await mkdirp('packages/app/src')
+    creating('packages/app/src directory')
+  } else {
+    notCreating('packages/app/src directory')
+  }
+
+  if (!(await exists('packages/app/src/main.ts'))) {
+    await writeFile('packages/app/src/main.ts', '// intentionally blank')
+    creating('packages/app/src directory')
+  } else {
+    notCreating('packages/app/src directory')
+  }
+
+  if (!(await exists('lerna.json')) || force) {
+    await writeFile('lerna.json', JSON.stringify(lernaJson))
+    creating('lerna.json')
+  } else {
+    notCreating('lerna.json')
+  }
+
+  const target = 'plugins/plugin-sample'
+  const targetExists = await exists(target)
+  if (!targetExists || force) {
+    // note fs-extra's copy of directories copies the *contents*
+    if (!targetExists) {
+      await mkdir(target)
+    }
+
+    const source = dirname(require.resolve('@kui-shell/builder/examples/plugin-sample/package.json'))
+    await copy(source, target, {
+      preserveTimestamps: true
+    })
+
+    creating('plugins/plugin-sample')
+  } else {
+    notCreating('plugins/plugin-sample')
+  }
+
+  creating('main entry in package.json')
+  const pjson = require(join(__dirname, '../../../package.json'))
+  pjson.main = 'node_modules/@kui-shell/core/main/main.js'
+  writeFile('package.json', JSON.stringify(pjson, undefined, 2))
+}
+
+main(process.argv)
