@@ -323,7 +323,7 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
     // NOTE ON relativization: this is important so that webpack can
     // be instructed to pull in the plugins into the build see the
     // corresponding NOTE in ./plugins.ts and ./preloader.ts
-    return path.relative(pluginRoot, filepath)
+    return path.relative(pluginRoot, filepath).replace(/\/src/, '')
   }
   const fixupPaths = pluginList => pluginList.map(plugin => Object.assign(plugin, {
     path: fixupOnePath(plugin.path)

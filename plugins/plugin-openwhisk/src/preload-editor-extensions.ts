@@ -31,11 +31,11 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
   debug('initializing')
 
   if (!isHeadless()) {
-    const { lockIcon, edit } = await import('@kui-shell/plugin-editor/src/lib/readonly')
+    const { lockIcon, edit } = await import('@kui-shell/plugin-editor/lib/readonly')
     const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
     const getEntity = currentSelection
 
-    const { registerFetcher } = await import('@kui-shell/plugin-editor/src/lib/fetchers')
+    const { registerFetcher } = await import('@kui-shell/plugin-editor/lib/fetchers')
 
     const { addActionMode } = await import('./lib/models/modes')
     const { fetchAction } = await import('./lib/cmds/editor-extensions')

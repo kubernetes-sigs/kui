@@ -56,7 +56,7 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
   await initRequirePath()
 
   // give visibility to our @demos directory on the module path
-  addPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/lib/@demos/hello.js')))
+  addPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/samples/@demos/hello.js')))
 }
 
 export default registration

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { actions, activations, skipAndLimit } from '@kui-shell/plugin-openwhisk/src/lib/cmds/openwhisk-usage'
+import { actions, activations, skipAndLimit } from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-usage'
 import { sampleInputs } from './sample-inputs'
 
 const activationsUsage = {

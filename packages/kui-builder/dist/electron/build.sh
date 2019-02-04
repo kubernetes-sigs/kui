@@ -80,6 +80,9 @@ function init {
              --exclude "./packages/proxy" \
              --exclude "./build/*/node_modules" \
              --exclude "./plugins/*/node_modules" \
+             --exclude "./packages/*/dist" \
+             --exclude "./plugins/*/build" \
+             --exclude "./plugins/*/dist" \
              --exclude "**/*~" \
              --exclude "**/.bak" \
              --exclude "**/*.ts" \
@@ -113,7 +116,7 @@ function init {
 
     if [ -d "$KUI_BUILD_CONFIG"/css ]; then
         echo "copying in theme css"
-        cp -r "$KUI_BUILD_CONFIG"/css "$STAGING"/packages/app/build
+        cp -r "$KUI_BUILD_CONFIG"/css/ "$STAGING"/packages/app/build/css/
     fi
     if [ -d "$KUI_BUILD_CONFIG"/icons ]; then
         echo "copying in theme icons"
@@ -151,9 +154,9 @@ function init {
     # if [ $? -ne 0 ]; then exit 1; fi
 
     # minify the css
-    cp $APPDIR/content/css/ui.css /tmp
+    cp $APPDIR/web/css/ui.css /tmp
     npx minify /tmp/ui.css
-    cp /tmp/ui.min.css $APPDIR/content/css/ui.css
+    cp /tmp/ui.min.css $APPDIR/web/css/ui.css
 
     VERSION=`cat $APPDIR/package.json | jq --raw-output .version`
     echo "$VERSION" > $APPDIR/.version

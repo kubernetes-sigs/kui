@@ -562,7 +562,7 @@ export const prequire = async (route, options?) => {
             // NOTE ON @kui-shell relativization: this is important so that
             // webpack can be isntructed to pull in the plugins into the build
             // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
-            const registrationRef = await import('@kui-shell/' + module.path)
+            const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
             const registration: PluginRegistration = registrationRef.default || registrationRef
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 

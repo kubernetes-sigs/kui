@@ -20,7 +20,7 @@ debug('loading')
 
 import * as repl from '@kui-shell/core/core/repl'
 
-import * as astUtil from '@kui-shell/plugin-apache-composer/src/lib/utility/ast'
+import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
 
 import { flow as usage } from './usage'
 import { zoomToFitButtons } from './util'

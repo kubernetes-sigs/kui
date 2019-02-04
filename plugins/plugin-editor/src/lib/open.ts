@@ -58,15 +58,15 @@ export const openEditor = async (name, options, execOptions) => {
   }
 
   try {
-    injectCSS({ css: require('@kui-shell/plugin-editor/lib/mono-blue.css').toString(), key: 'editor.mono-blue' })
+    injectCSS({ css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(), key: 'editor.mono-blue' })
   } catch (err) {
-    injectCSS(path.join(ourRoot, 'lib/mono-blue.css'))
+    injectCSS(path.join(ourRoot, 'web/css/mono-blue.css'))
   }
 
   try {
-    injectCSS({ css: require('@kui-shell/plugin-editor/lib/editor.css').toString(), key: 'editor.editor' })
+    injectCSS({ css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(), key: 'editor.editor' })
   } catch (err) {
-    injectCSS(path.join(ourRoot, 'lib/editor.css'))
+    injectCSS(path.join(ourRoot, 'web/css/editor.css'))
   }
 
   const content = document.createElement('div')

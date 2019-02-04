@@ -48,14 +48,13 @@ function link {
 if [ -d "$BUILDDIR"/plugins ]; then
     for pluginPath in "$BUILDDIR"/plugins/* "$BUILDDIR"/packages/!(kui-builder|app); do
         plugin=`basename $pluginPath`
-        link "$pluginPath" "$plugin"
+        link "$pluginPath"/src "$plugin"
     done
 fi
 
 if [ -d "$BUILDDIR"/packages/app/src ]; then
     echo "linking build asset core"
     link "$BUILDDIR"/packages/app/src core
-    (cd core && link ../../"$BUILDDIR"/packages/app/tests tests)
     (cd core && link ../../"$BUILDDIR"/packages/app/package.json package.json)
 fi
 
@@ -65,5 +64,4 @@ link "$BUILDDIR"/.pre-scanned.json prescan.json
 if [ -d "$TOPDIR"/packages/app/build ]; then
     echo "linking config"
     link "$TOPDIR"/packages/app/build settings
-#    link "$TOPDIR"/packages/app/content content
 fi

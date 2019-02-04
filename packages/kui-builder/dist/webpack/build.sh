@@ -17,8 +17,17 @@
 #
 
 #
-# This script builds the webpack bundles. IT DOES NOT build the docker
-# image. You can use ./build-docker.sh for that.
+# This script builds two sets of artifacts:
+#
+#  1. the webpack bundles
+#
+#  2. at the tail end of this script, ./build-docker.sh is
+#  invoked. That script builds a docker image that can be used to
+#  serve up the webpack client. Try `npm start` when this script
+#  finishes; this will start the docker container, allowing you to
+#  debug your webpack client.
+#
+# Notes on build configuration: see /docs/dev/build-customization.md
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
@@ -62,7 +71,7 @@ function post {
 
 function build {
     rm -f ./build/*.js.br
-    npx webpack-cli --mode development --verbose
+    npx webpack-cli --mode development
 }
 
 if [ ! -d node_modules ]; then
@@ -109,6 +118,7 @@ rm -rf kui && \
          npm install --production --ignore-scripts --no-package-lock && \
          (cd "$STAGING" && "$TOPDIR"/packages/kui-builder/bin/link-build-assets.sh) && \
          (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$TOPDIR"/packages/kui-builder/lib/configure.js) && \
+         (rm -rf "$STAGING"/packages/app/web/css/css) && \
          rm bak.json) && \
     echo "lerna magic done" && \
     build && \

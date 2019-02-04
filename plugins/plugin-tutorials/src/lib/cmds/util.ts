@@ -19,7 +19,7 @@ const debug = require('debug')('tutorial.utils')
 import { join, basename, dirname } from 'path'
 
 /** enclosing directory for tutorials */
-export const contentDir = join(__dirname, '../../../lib/@tutorials')
+export const contentDir = join(__dirname, '../../../samples/@tutorials')
 
 /** enclosing directory for a given tutorial */
 export const projectHome = projectName => join(contentDir, projectName)
@@ -34,7 +34,7 @@ const readJSON = (projectHome: string, fileName: string): Promise<any> => new Pr
 
       // WARNING: webpack requires that the path prefix be an explicit string :(
       // DO NOT try to be clever here
-      resolve(require('@kui-shell/plugin-tutorials/lib/@tutorials/' + projectName + '/' + fileName))
+      resolve(require('@kui-shell/plugin-tutorials/samples/@tutorials/' + projectName + '/' + fileName))
     } else {
       debug('reading external', projectHome, fileName)
       resolve(join(projectHome, fileName))
