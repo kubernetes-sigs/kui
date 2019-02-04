@@ -1,0 +1,18 @@
+{
+  "name": "@kui-shell/plugin-sample",
+  "version": "1.0.0",
+  "description": "A sample plugin for the Kui",
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kui",
+    "plugin",
+    "sample",
+    "example"
+  ],
+  "main": "plugin.js",
+  "scripts": {
+    "prepublishOnly": "rm -rf dist && mkdir dist && tar -C ../../build/plugins/$(basename `pwd`)/src --exclude test --exclude node_modules -cf - . | tar -C dist -xf - && find dist -type l -exec rm {} \\; && cp -a dist/* .",
+    "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
+  }
+}

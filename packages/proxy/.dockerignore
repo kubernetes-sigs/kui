@@ -6,4 +6,4 @@ package-lock.json
 *.tmp
 *.bak
 *.log
-node_modules/@kui-shell/staging
+kui/tests

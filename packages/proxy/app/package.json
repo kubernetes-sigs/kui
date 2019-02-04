@@ -1,0 +1,29 @@
+{
+  "name": "@kui-shell/proxy-webapp",
+  "version": "0.0.1",
+  "description": "Web application for Kui proxy",
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "keywords": [
+    "kui",
+    "plugin"
+  ],
+  "bin": {
+    "start-proxy": "bin/www"
+  },
+  "main": "bin/www",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
+    "debug": "^4.1.1",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1"
+  }
+}

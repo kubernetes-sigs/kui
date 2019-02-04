@@ -18,10 +18,14 @@
 
 shopt -s extglob
 
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+
 grep name package.json | grep kui-shell >& /dev/null
 if [ $? == 1 ]; then
-    echo "Error: execute this script from the top level of the kui project"
-    exit 1
+    if [ ! -e lerna.json ]; then
+        echo "Error: execute this script from the top level of the kui project"
+        exit 1
+    fi
 fi
 
 cd node_modules
@@ -46,22 +50,28 @@ function link {
 }
 
 if [ -d "$BUILDDIR"/plugins ]; then
-    for pluginPath in "$BUILDDIR"/plugins/* "$BUILDDIR"/packages/!(kui-builder|app); do
+    for pluginPath in "$BUILDDIR"/plugins/*; do
         plugin=`basename $pluginPath`
         link "$pluginPath"/src "$plugin"
     done
 fi
 
-if [ -d "$BUILDDIR"/packages/app/src ]; then
-    echo "linking build asset core"
-    link "$BUILDDIR"/packages/app/src core
-    (cd core && link ../../"$BUILDDIR"/packages/app/package.json package.json)
+if [ -n "$MONOREPO_MODE" ] && [ -d "$BUILDDIR"/packages ]; then
+    for pluginPath in "$BUILDDIR"/packages/!(kui-builder|app); do
+        # ugh, i can't remember the bash magic right now to avoid empty expansion; set -u??
+        if [ "$pluginPath" == "$BUILDDIR/packages/!(kui-builder|app)" ]; then continue; fi
+
+        plugin=`basename $pluginPath`
+        link "$pluginPath"/src "$plugin"
+    done
+
+    if [ -d "$BUILDDIR"/packages/app/src ]; then
+        echo "linking build asset core"
+        link "$BUILDDIR"/packages/app/src core
+        (cd core && link ../../"$BUILDDIR"/packages/app/package.json package.json)
+    fi
 fi
 
-echo "linking prescan"
-link "$BUILDDIR"/.pre-scanned.json prescan.json
-
-if [ -d "$TOPDIR"/packages/app/build ]; then
-    echo "linking config"
-    link "$TOPDIR"/packages/app/build settings
+if [ -z "$NO_ARTIFACTS" ]; then
+    (cd "$TOPDIR" && "$SCRIPTDIR"/kui-link-artifacts.sh)
 fi

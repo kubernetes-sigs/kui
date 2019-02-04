@@ -221,6 +221,16 @@ type PrescanDiff = Array<string>
  */
 const makeTree = (map, docs) => {
   const keys = Object.keys(map)
+  if (keys.length === 0) {
+    debug('interesting, not a single command registered a usage model')
+    // this isn't the end of the world, but probably a sign of
+    // incomplete plugin design; so let's warn the developer (note
+    // that this command is executed as part of plugin precompilation
+    // so the user in this case is the plugin developer)
+    const colors = require('colors')
+    console.error(colors.yellow('Warning') + ': none of your commands registered a usage model')
+    return {}
+  }
 
   // sort the keys lexicographically
   keys.sort()

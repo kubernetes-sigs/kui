@@ -18,7 +18,7 @@
   "scripts": {
     "lint": "./packages/kui-builder/bin/lint.sh",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "./packages/kui-builder/bin/compile.sh",
+    "compile": "MONOREPO_MODE=true ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
     "configure": "node packages/kui-builder/lib/configure.js && ./packages/kui-builder/dist/dev/build.sh && ./packages/kui-builder/bin/seticon.js",
     "hoist-deps": "npx lerna bootstrap --ignore-prepublish --hoist",

@@ -20,10 +20,30 @@ const CompressionPlugin = require('brotli-webpack-plugin')
 // const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
-const stageDir = path.resolve(path.join(__dirname, 'kui'))
+const stageDir = path.join(__dirname, 'kui-webpack-tmp')
 
 /** point webpack to the output directory */
 const buildDir = path.join(__dirname, 'build')
+
+/**
+ * Define the set of bundle entry points; there is one default entry
+ * point (the main: entry below). On top of this, we scan the plugins,
+ * looking to see if they define a `webpack.entry` field in their
+ * package.json; if so, we add this to the mix. See plugin-editor for
+ * an example of this.
+ *
+ */
+const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/webpack')
+const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
+const pluginEntries = require('fs').readdirSync(pluginBase).map(dir => {
+  try {
+    const { webpack } = require(path.join(pluginBase, dir, 'package.json'))
+    return webpack && webpack.entry
+  } catch (err) {
+  }
+}).filter(x => x)
+const entry = Object.assign({ main }, ...pluginEntries)
+console.log('entry', entry)
 
 module.exports = {
   context: stageDir,
@@ -31,14 +51,7 @@ module.exports = {
     // while developing, you should set this to true
     warnings: false
   },
-  entry: {
-    main: './build/packages/app/src/webapp/bootstrap/webpack.js',
-    'editor.worker': './node_modules/monaco-editor/esm/vs/editor/editor.worker.js',
-    'json.worker': './node_modules/monaco-editor/esm/vs/language/json/json.worker',
-    'css.worker': './node_modules/monaco-editor/esm/vs/language/css/css.worker',
-    'html.worker': './node_modules/monaco-editor/esm/vs/language/html/html.worker',
-    'ts.worker': './node_modules/monaco-editor/esm/vs/language/typescript/ts.worker'
-  },
+  entry,
   target: 'web',
   node: {
     fs: 'empty',

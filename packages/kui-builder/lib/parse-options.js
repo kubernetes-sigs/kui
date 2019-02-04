@@ -17,12 +17,20 @@
 const debug = require('debug')('kui-builder/parse-options')
 const path = require('path')
 
+const { moduleExists } = require('./module-exists')
+
 /**
  * Parse options
  *
  */
 module.exports = (env, overrides) => new Promise((resolve, reject) => {
   debug('parsing options', env, overrides)
+
+  // the former is for npm install mode
+  // the latter is for monorepo mode
+  const templateDir = moduleExists('@kui-shell/core/templates/package.json')
+    ? path.dirname(require.resolve('@kui-shell/core/templates/package.json'))
+    : path.join(__dirname, '../../app/templates')
 
   // default value assignments for options
   const defaultOptions = {
@@ -37,7 +45,7 @@ module.exports = (env, overrides) => new Promise((resolve, reject) => {
 
     // build settings
     build: {
-      templateDir: path.join(__dirname, '../../app/templates'),
+      templateDir,
       buildDir: path.join(__dirname, '../../app/build'), // target for index.html
       configDir: path.join(__dirname, '../../app/build') // target for config.json and package.json
     }

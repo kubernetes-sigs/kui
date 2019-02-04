@@ -18,8 +18,10 @@
 
 grep name package.json | grep kui-shell >& /dev/null
 if [ $? == 1 ]; then
-    echo "Error: execute this script from the top level of the kui project"
-    exit 1
+    if [ ! -e lerna.json ]; then
+        echo "Error: execute this script from the top level of the kui project"
+        exit 1
+    fi
 fi
 
 TOPDIR=.
@@ -27,7 +29,7 @@ BUILDDIR="${TOPDIR}/build"
 
 for pluginPath in plugins/* packages/app; do
     plugin=`basename "$pluginPath"`
-    for subdir in bin tests samples web package.json; do
+    for subdir in bin tests samples templates web package.json; do
         if [ "$subdir" == "package.json" ] && [ "$plugin" == "app" ]; then continue; fi
 
         if [ -e "$pluginPath/$subdir" ]; then

@@ -21,13 +21,10 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, sidecar } = ui
 
 describe('sample plugin', function (this: common.ISuite) {
-  before(openwhisk.before(this))
-  // note: openwhisk.before eliminates all openwhisk entities under your auth before the test begins
-  //       you can change to common.before if you're not testing with openwhisk-related commands
+  before(common.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
