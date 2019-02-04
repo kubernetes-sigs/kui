@@ -20,8 +20,8 @@ import * as sidecar from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
 import { optionsToString } from '@kui-shell/core/core/utility'
 
-import * as astUtil from '@kui-shell/plugin-apache-composer/src/lib/utility/ast'
-import * as badges from '@kui-shell/plugin-apache-composer/src/lib/utility/badges'
+import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
+import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
 
 /**
  * Return some line-oriented statistics about the given code.

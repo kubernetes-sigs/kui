@@ -49,14 +49,14 @@ const doList = () => new Promise((resolve, reject) => {
       const nowPlaying = pane && pane.getAttribute('now-playing')
 
       const tutorials = (await Promise.all(files.map(async name => {
-        const { disabled, sort, description, level } = await import('@kui-shell/plugin-tutorials/lib/@tutorials/' + name + '/package.json')
+        const { disabled, sort, description, level } = await import('@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json')
 
         if (disabled) {
           // then this tutorial is currently disabled
           return
         }
 
-        const { skills } = await import('@kui-shell/plugin-tutorials/lib/@tutorials/' + name + '/tutorial.json')
+        const { skills } = await import('@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/tutorial.json')
         const attributes = []
 
         // add a "level" column

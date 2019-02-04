@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('plugins/tutorials/play')
+import * as Debug from 'debug'
+const debug = Debug('plugins/tutorials/play')
 
 import { dirname, join } from 'path'
 
@@ -69,8 +70,8 @@ const rowFilters = {
 const injectOurCSS = () => {
   try {
     // webpack style
-    injectCSS({ css: require('../../../web/css/main.css').toString(), key: 'tutorial.main' })
-    injectCSS({ css: require('../../../web/css/tutorials.css'), key: 'tutorial.tutorials' })
+    injectCSS({ css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(), key: 'tutorial.main' })
+    injectCSS({ css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css'), key: 'tutorial.tutorials' })
   } catch {
     // local file style
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
@@ -87,7 +88,7 @@ const injectHTML = () => {
   let loader
 
   try {
-    loader = loadHTML({ html: require('../../../web/html/index.html').toString() })
+    loader = loadHTML({ html: require('@kui-shell/plugin-tutorials/web/html/index.html').toString() })
     debug('webpack html inject')
   } catch {
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))

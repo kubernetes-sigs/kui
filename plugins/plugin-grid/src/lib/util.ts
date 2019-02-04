@@ -31,7 +31,7 @@ import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
-import * as namespace from '@kui-shell/plugin-openwhisk/src/lib/models/namespace'
+import * as namespace from '@kui-shell/plugin-openwhisk/lib/models/namespace'
 import { range as rangeParser } from './time'
 import * as usage from '../usage'
 import defaults from '../defaults'
@@ -106,7 +106,7 @@ const filterOutNonActionActivations = filter => activations => {
  *
  */
 const extractTasks = async app => {
-  const composer = await import('@kui-shell/plugin-apache-composer/src/lib/utility/ast')
+  const composer = await import('@kui-shell/plugin-apache-composer/lib/utility/ast')
   const { namespace, name, ast } = app
   return [ `/${namespace}/${name}` ].concat(!ast ? [] : composer.extractActionsFromAst(ast))
 }

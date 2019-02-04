@@ -26,7 +26,7 @@ function wait_and_get_exit_codes() {
        CODE=0;
        wait ${job} || CODE=$?
        if [[ "${CODE}" != "0" ]]; then
-           echo "At least one test failed with a non-zero exit code ${CODE}"
+           echo "At least one script.sh job failed with a non-zero exit code ${CODE}"
            EXIT_CODE=1;
        fi
    done
@@ -59,6 +59,9 @@ if [ -n "$LAYERS" ]; then
     if [ -n "$NON_HEADLESS_LAYERS" ]; then
         echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
         (cd tests && ./bin/runLocal.sh $NON_HEADLESS_LAYERS)
+        EC=$?
+        echo "script.sh thinks runLocal finished with $EC"
+        if [ $EC != 0 ]; then exit $EC; fi
     fi
 
     # is "HEADLESS" on the LAYERS list?
@@ -78,8 +81,12 @@ if [ -n "$LAYERS" ]; then
         export WSK_CONFIG_FILE=~/.wskprops_${KEY}
         (cd tests && ./bin/allocate.sh "$TEST_SPACE")
         (cd packages/kui-builder/dist/builds/kui && npm run test)
+        EC=$?
+        echo "script.sh thinks headless finished with $EC"
+        if [ $EC != 0 ]; then exit $EC; fi
     fi
 fi
 
 wait_and_get_exit_codes "${children[@]}"
+echo "script.sh exiting with $EXIT_CODE"
 exit "$EXIT_CODE"

@@ -19,6 +19,5 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="$SCRIPTDIR"/../../../../
 
-cd "$TOPDIR"/packages/kui-builder/dist/webpack
-
-./build.sh && ./build-docker.sh
+cd "$TOPDIR"/packages/kui-builder/dist/webpack && \
+    ./build.sh

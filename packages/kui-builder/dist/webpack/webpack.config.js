@@ -187,6 +187,9 @@ module.exports = {
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },
       { test: /monaco-editor\/min\/vs\/loader\.js/, use: 'raw-loader' },
+      { test: /^kubectl-kui$/, use: 'shebang-loader' },
+      { test: /^kubectl-wsk$/, use: 'shebang-loader' },
+      { test: /^kui$/, use: 'shebang-loader' },
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
     ]
   },
@@ -195,12 +198,12 @@ module.exports = {
     /* new Visualizer({ filename: './webpack-stats.html' }), */
     {
       apply: compiler => {
-        compiler.hooks.compilation.tap('CloudShellHtmlBuilder', compilation => {
-          compilation.hooks.afterHash.tap('CloudShellHtmlBuilder', () => {
+        compiler.hooks.compilation.tap('KuiHtmlBuilder', compilation => {
+          compilation.hooks.afterHash.tap('KuiHtmlBuilder', () => {
             // we need to inject the name of the main bundle into the configuration
             const hash = compilation.hash
             const main = `main.${hash}.bundle.js` // <-- this is the name of the main bundle
-            console.log('CloudShellHtmlBuilder using this build hash', hash)
+            console.log('KuiHtmlBuilder using this build hash', hash)
 
             const overrides = {
               build: { buildDir, writeConfig: false },

@@ -50,14 +50,17 @@ plugins will likely not be functional when serving Kui from a browser.
 
 ## How to serve the webpack assets
 
-After `build.sh` is done, you may choose to build a docker image that
-will serve up the webpack assets. This is helpful for test and
+After `build.sh` is done, you may choose to use the built docker image
+to serve up the webpack assets. This is helpful for test and
 debugging, and may also be helpful as a template for real
-deployments. First, build the docker image:
+deployments. If you only need to rebuild the docker image, using
+previously built webpack bundles:
 
 ```bash
 ./build-docker.sh
 ```
+
+> Note that `build.sh` calls `build-docker.sh`.
 
 This will create a docker image named `kui-webpack`. To run it:
 

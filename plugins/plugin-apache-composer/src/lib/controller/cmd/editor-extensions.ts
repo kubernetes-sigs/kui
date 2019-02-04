@@ -20,11 +20,11 @@ const debug = Debug('plugins/apache-composer/cmds/editor-extensions')
 import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 
-import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from '@kui-shell/plugin-openwhisk/src/lib/cmds/editor-extensions'
-import { extension, language } from '@kui-shell/plugin-editor/src/lib/file-types'
-import { respondToRepl } from '@kui-shell/plugin-editor/src/lib/util'
-import { openEditor } from '@kui-shell/plugin-editor/src/lib/open'
-import { loadComposition } from '@kui-shell/plugin-apache-composer/src/lib/utility/compile'
+import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from '@kui-shell/plugin-openwhisk/lib/cmds/editor-extensions'
+import { extension, language } from '@kui-shell/plugin-editor/lib/file-types'
+import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
+import { openEditor } from '@kui-shell/plugin-editor/lib/open'
+import { loadComposition } from '@kui-shell/plugin-apache-composer/lib/utility/compile'
 
 import { handleParseError, persister } from '../../model/editor/composition-persister'
 
@@ -224,8 +224,8 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
     // otherwise, we will open the editor showing a template file
     return new Promise((resolve, reject) => {
       const readViaImport = () => {
-        debug('readViaImport', findFile(template), findFile(template).replace(/^plugins\/plugin-apache-composer\/lib\/@demos/, ''))
-        resolve(require('raw-loader!@kui-shell/plugin-apache-composer/lib/@demos' + findFile(template).replace(/^plugins\/plugin-apache-composer\/lib\/@demos/, '')))
+        debug('readViaImport', findFile(template), findFile(template).replace(/^plugins\/plugin-apache-composer\/samples\/@demos/, ''))
+        resolve(require('raw-loader!@kui-shell/plugin-apache-composer/samples/@demos' + findFile(template).replace(/^plugins\/plugin-apache-composer\/samples\/@demos/, '')))
       }
 
       const readViaFilesystem = () => {
@@ -325,7 +325,7 @@ export const newAction = ({ prequire, cmd = 'new', type = 'actions', _kind = def
 
   // generate AST, if we were given a template
   const compile = () => type === 'compositions' && options.template
-    ? inBrowser() ? import('@kui-shell/plugin-apache-composer/lib/@demos' + findFile(options.template).replace(/^plugins\/plugin-apache-composer\/lib\/@demos/, ''))
+    ? inBrowser() ? import('@kui-shell/plugin-apache-composer/samples/@demos' + findFile(options.template).replace(/^plugins\/plugin-apache-composer\/samples\/@demos/, ''))
     : generateAST(code, options.template, options.kind || defaults.kind)
     : Promise.resolve()
 
