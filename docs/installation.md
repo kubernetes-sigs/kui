@@ -2,6 +2,9 @@
 
 This page will help you installing and configuring Kui. 
 
+## Prerequisites
+Node 8.15.0 or greater.  To install on your machine, consult the official [NodeJS documentation](https://nodejs.org) . 
+
 ## Downloading Kui
 
 We offer both a tarball and a zip download. Choose the one that works
