@@ -6,6 +6,6 @@ type(component?): message
 
 *type* is one of: feat, fix, docs, chore, style, refactor, perf, test
 
-*component* optionally is the name of the module you are fixing; either "core" or a named module in app/plugins/modules
+*component* optionally is the name of the module you are fixing; either "core" or a named module in `plugins/` directory. Note: Please specify the full name of the module (e.g. plugin-bash-like) instead of abbreviation. It helps us generate the correct CHANGELOG.md.
 
 Thanks!
