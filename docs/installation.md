@@ -1,54 +1,61 @@
-# Installion Guide
+# Kui Installion Guide
 
-This page will help you installing and configuring Kui.
+This page will help you to install and configure Kui. You have a few
+installation options; pick the one that best suits your environment.
 
-## Prerequisites
-**Kui Headless Builds** require Node 8.15.0 or greater.
-( To install on your machine, consult the official [NodeJS documentation](https://nodejs.org) .)
+## Option 1: Lightweight Download
 
-You are free to download **Kui Electron Builds** ( [Linux zip](https://linux-zip.kui-shell.org),
-[macOS tarball](https://macos-tarball.kui-shell.org),
-[win32 zip](https://win32-zip.kui-shell.org) ), which don't require Node.js.
+Kui offers a lightweight "headless" download option. The download is
+small (2-4 megabytes) and can be used in headless
+environments. Headless Kui will automatically download the graphical
+components, so will get a seamless transition to graphics, and a
+lightweight, platform-neutral initial download. 
 
-**Note**: Kui Electron Builds are unsigned builds, so you will probably see security warning. They are not as fast as headless builds, and also will result in a "dock bounce" every time you execute a headless build. We don't support terminal access for Kui Electron Builds for now.
+**Prerequisites** the headless client require that you have NodeJS
+8.15.0 or greater already installed on your system.
 
-## Downloading Kui
+[Kui-headless.tar.bz2](https://tarball.kui-shell.org) **|** [Kui-headless.zip](https://zip.kui-shell.org)
 
-We offer both a tarball and a zip download. Choose the one that works
-best for your platform; if you can use either, we suggest the tarball,
-as it is a smaller download. In either case, the initial download is
-small: 2-3 megabytes.
+## Option 2: Double-clickable app Download
 
-### Getting the tarball
+You may opt to download an double-clickable platform binary. With this
+option, you avoid having to worry about NodeJS dependencies.  However,
+currently, you will not be able to use Kui from your favorite terminal
+(support coming soon); you can still use Kui's own command line after
+launching the application.
 
-```bash
-curl -sL https://tarball.kui-shell.org | tar jxf -
-```
+[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org) **|** [Kui-Windows.zip](https://win32-zip.kui-shell.org)
 
-### Getting the zip
+*Coming soon: MacOS .dmg, Linux .deb, Linux .rpm*
 
-```bash
-curl -sL https://zip.kui-shell.org -o kui.zip
-unzip kui.zip
-```
+### Important Note on Unsigned Builds
 
-### Verifying your installation
+Currently, the Kui double-clickable application builds are not
+unsigned. Therefore, you will likely see a security warning the first
+time you launch these Kui builds. If this is a show-stopper for you,
+we understand! You may always choose to [git clone and
+build](./dev/README.md) Kui yourself.
+
+## Verifying your installation
+
+The following terminal commands help to verify that Kui is
+working. 
 
 ```bash
 export PATH=$PWD/kui/bin:$PATH
 kui version
-kui shell
+kui shell # <-- this should launch the graphical shell
 ```
 
-These commands validate that `kui` is installed properly: the second
-line should print a semver-like version, and the third line should
-open a graphical Electron window. The first time you open a graphical
-window, you should see a message indicating that the graphical bits
-are being downloaded. This is a one-time download of the Electron
-components.
+The `shell` command should open the graphical shell. The first time
+you open a graphical window, you should see a message indicating that
+the graphical bits are being downloaded. This is a one-time download
+of the Electron components. (*warning*: there is currently a
+superficial bug in the downloader; you may see the "downloading"
+message repeated twice)
 
-(warning: there is currently a superficial bug in the downloader; you
-may see the "downloading" message repeated twice)
+If you have downloaded the double-clickable application, you can try
+`version` from Kui's command line.
 
 ## Using Kui as a kubectl plugin
 
@@ -62,16 +69,6 @@ commands via:
 ```bash
 kubectl kui get pods --ui
 ```
-
-Compare this with the equivalent non-plugin usage of the Kui
-kubernetes commands:
-
-```bash
-kui kubectl get pods --ui
-```
-
-It is your choice. The two usage modes will, as far as kubernetes
-commands are concerned, cover the same set of functionality.
 
 ## Setting up Kubernetes Authorization
 

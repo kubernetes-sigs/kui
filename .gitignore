@@ -4,6 +4,9 @@
 # in case we have some leftover temporary build output
 /kui
 
+# webpack and electron staging directories
+kui-*-tmp
+
 packages/*/package-lock.json
 plugins/*/package-lock.json
 
