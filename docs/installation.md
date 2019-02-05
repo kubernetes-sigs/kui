@@ -1,9 +1,16 @@
 # Installion Guide
 
-This page will help you installing and configuring Kui. 
+This page will help you installing and configuring Kui.
 
 ## Prerequisites
-Node 8.15.0 or greater.  To install on your machine, consult the official [NodeJS documentation](https://nodejs.org) . 
+**Kui Headless Builds** require Node 8.15.0 or greater.
+( To install on your machine, consult the official [NodeJS documentation](https://nodejs.org) .)
+
+You are free to download **Kui Electron Builds** ( [Linux zip](https://linux-zip.kui-shell.org),
+[macOS tarball](https://macos-tarball.kui-shell.org),
+[win32 zip](https://win32-zip.kui-shell.org) ), which don't require Node.js.
+
+**Note**: Kui Electron Builds are unsigned builds, so you will probably see security warning. They are not as fast as headless builds, and also will result in a "dock bounce" every time you execute a headless build. We don't support terminal access for Kui Electron Builds for now.
 
 ## Downloading Kui
 
