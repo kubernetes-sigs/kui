@@ -529,7 +529,7 @@ export const getCommand = argv => {
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
 
   const isShell = argv.find(_ => _ === 'shell') || (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE)
-  argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color')
+  argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/))  // opening Kui from macOS Finder adds additional argv -psn, see: https://github.com/IBM/kui/issues/382
 
   debug('isShell', argv, isShell)
 
