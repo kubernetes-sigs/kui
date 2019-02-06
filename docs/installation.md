@@ -31,7 +31,7 @@ line after launching the application.
 ### Important Note on Unsigned Builds
 
 Currently, the Kui double-clickable application builds are not
-unsigned. Therefore, you will likely see a security warning the first
+signed. Therefore, you will likely see a security warning the first
 time you launch these Kui builds. If this is a show-stopper for you,
 we understand! You may always choose to [git clone and
 build](./dev/README.md) Kui yourself.
@@ -39,7 +39,7 @@ build](./dev/README.md) Kui yourself.
 ## Verifying your installation
 
 The following terminal commands help to verify that Kui is
-working. 
+working.
 
 ```bash
 export PATH=$PWD/kui/bin:$PATH
