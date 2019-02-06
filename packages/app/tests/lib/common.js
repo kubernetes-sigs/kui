@@ -142,7 +142,11 @@ exports.after = (ctx, f) => () => {
   // when we're done with a test suite, look for any important
   // SEVERE errors in the chrome console logs. try to ignore
   // intentional failures as much as possible!
-  if (ctx.app && ctx.app.client) {
+  const anyFailed = ctx.tests.some(test => test.state === 'failed')
+
+  // print out log messages from the electron app, if any of the tests
+  // failed
+  if (anyFailed && ctx.app && ctx.app.client) {
     ctx.app.client.getRenderProcessLogs().then(logs => logs.forEach(log => {
       if (log.level === 'SEVERE' && // only console.error messages
           log.message.indexOf('The requested resource was not found') < 0 && // composer file not found

@@ -323,9 +323,19 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
     if (!execOptions.noStatus) {
       debug('fetching status')
 
-      const finalState = `--final-state ${(verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike).toString()}`
+      const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
+      const finalState = `--final-state ${expectedState.toString()}`
       return repl.qexec(`{statusCommand} status ${repl.encodeComponent(options.f || options.file)} ${finalState}`,
                         undefined, undefined, { parameters: execOptions.parameters })
+        .catch(err => {
+          if (err.code === 404 && expectedState === FinalState.OfflineLike) {
+            // that's ok!
+            debug('resource not found after status check, but that is ok because that is what we wanted')
+            return result
+          } else {
+            throw err
+          }
+        })
     } else {
       return Promise.resolve(true)
     }
@@ -585,7 +595,8 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
   const status = async (command: string, code?: number, stderr?: string) => {
     if (options.f || options.file || verb === 'delete' || verb === 'create') {
       if (!execOptions.noStatus) {
-        const finalState = `--final-state ${(verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike).toString()}`
+        const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
+        const finalState = `--final-state ${expectedState.toString()}`
         const resourceNamespace = options.n || options.namespace
           ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
           : ''
@@ -593,6 +604,15 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
         debug('about to get status', options.f || options.file, entityType, entity)
         return repl.qexec(`${statusCommand} status ${options.f || options.file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
                           undefined, undefined, { parameters: execOptions.parameters })
+        .catch(err => {
+          if (err.code === 404 && expectedState === FinalState.OfflineLike) {
+            // that's ok!
+            debug('resource not found after status check, but that is ok because that is what we wanted')
+            return out
+          } else {
+            throw err
+          }
+        })
       } else {
         return Promise.resolve(true)
       }

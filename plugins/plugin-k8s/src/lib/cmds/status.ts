@@ -281,6 +281,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
   const file = argvNoOptions[idx]
   const name = argvNoOptions[idx + 1]
   const namespace = parsedOptions.namespace || 'default'
+  const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
   debug('getDirectReferences', file, name, namespace)
 
   /** format a --namespace cli option for the given kubeEntity */
@@ -333,7 +334,10 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     const command = `kubectl get "${kind}" "${name || ''}" ${ns()} -o json`
     debug('status by kind and name', command)
 
-    const kubeEntity = withRetryOn404(() => repl.qexec(command, undefined, undefined, raw), command)
+    // note: don't retry the getter on 404 if we're expecting the
+    // element (eventually) not to exist
+    const getter = () => repl.qexec(command, undefined, undefined, raw)
+    const kubeEntity = finalState === FinalState.OfflineLike ? getter() : withRetryOn404(getter, command)
 
     if (execOptions.raw) {
       return kubeEntity
@@ -377,7 +381,6 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
 
       // make a list of tables, recursively calling ourselves for
       // each yaml file in the given directory
-      const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
       return Promise.all(yamlsWithMainFirst.map(filepath => repl.qexec(`k8s status "${filepath}" --final-state ${finalState}`,
                                                                        undefined, undefined, execOptions)))
     } else if (isDir === undefined) {
