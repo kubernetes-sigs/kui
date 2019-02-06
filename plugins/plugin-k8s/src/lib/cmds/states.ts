@@ -197,6 +197,7 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
         kind === 'ConfigMap' ||
         kind === 'CustomResourceDefinition' ||
         kind === 'ClusterRoleBinding' ||
+        kind === 'VirtualService' ||
         kind === 'ServiceAccount') {
       // some resource types don't have a notion of deployment state :(
       return genericOnlineMessage
