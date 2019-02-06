@@ -66,7 +66,11 @@ export default () => {
       writeFileSync(userData, JSON.stringify(data))
       debug('flush done')
     } catch (err) {
-      console.error(err)
+      if (err.code === 'ENOENT') {
+        debug('we decided not to initialize the store, but a plugin is trying to write to it')
+      } else {
+        console.error(err)
+      }
     }
   }
 
