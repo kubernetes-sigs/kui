@@ -8,8 +8,8 @@ installation options; pick the one that best suits your environment.
 Kui offers a lightweight "headless" download option. The download is
 small (2-4 megabytes) and can be used in headless
 environments. Headless Kui will automatically download the graphical
-components, so will get a seamless transition to graphics, and a
-lightweight, platform-neutral initial download. 
+components, so this option provides seamless transition to graphics,
+and a lightweight, platform-neutral initial download.
 
 **Prerequisites** the headless client require that you have NodeJS
 8.15.0 or greater already installed on your system.
