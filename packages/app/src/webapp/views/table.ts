@@ -146,7 +146,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
               // update onclick
               if (onclick) {
                 // debug('updating onclick')
-                dom.onclick = entityNameClickable.onclick = onclick
+                entityNameClickable.onclick = onclick
                 entityNameClickable.classList.add('clickable')
               }
 
