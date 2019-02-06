@@ -69,13 +69,22 @@ fi
 
 echo "Running these layers: $# $WHICH"
 
+function kill_them_all() {
+    children=("$@")
+    for job in "${children[@]}"; do
+       echo "killing ${job}"
+       kill -9 ${job}
+    done
+    exit
+}
+trap kill_them_all INT
+
 idx=1
 children=()
 for i in $WHICH; do
     LAYER=`basename $i`
     echo "spawning mocha layer $LAYER"
     (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx ./bin/runTest.sh 2>&1 | tee logs/$LAYER.out) &
-
     children+=("$!")
     idx=$((idx+1))
 done

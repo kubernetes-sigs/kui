@@ -27,7 +27,7 @@
   "dependencies": {
     "app-module-path": "^2.2.0",
     "expand-home-dir": "0.0.3",
-    "openwhisk-composer": "git://github.com:tardieu/incubator-openwhisk-composer.git#parallel"
+    "openwhisk-composer": "git://github.com:apache/incubator-openwhisk-composer.git"
   },
   "publishConfig": {
     "access": "public"
