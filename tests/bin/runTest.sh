@@ -80,8 +80,7 @@ export RUNNING_SHELL_TEST=true
 
 NO_USAGE_TRACKING=true mocha -c --exit --bail --recursive --timeout ${TIMEOUT-60000} tests/$LAYER --grep "${TEST_FILTER:-.*}"
 
-
-if [ $? != 0 ]; then
+if [ -n "$TRAVIS_JOB_ID" ] && [ $? != 0 ]; then
     # oops, the test suite failed. we will restart, in the hopes that a second try works
     NO_USAGE_TRACKING=true mocha -c --bail --recursive --timeout ${TIMEOUT-60000} tests/$LAYER --grep "${TEST_FILTER:-.*}"
     if [ $? != 0 ]; then

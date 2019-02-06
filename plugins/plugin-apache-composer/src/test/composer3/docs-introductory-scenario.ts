@@ -161,21 +161,30 @@ const graph = {
    * Invariant: graph has a given number of task and total nodes
    *
    */
-  hasNodes: ({ tasks: expectedTasks = 0, total: expectedTotal = 0, deployed: expectedDeployed = 0, values: expectedValues = 0 }) => app => {
+  hasNodes: ({ tasks: expectedTasks = 0, total: expectedTotal = 0, deployed: expectedDeployed = 0, values: expectedValues = 0 }) => async app => {
     const { client } = app
     // here we intentionally use just expectedX, because undefined and 0 are treated the same
-    return client.waitUntil(() => Promise.all([!expectedTasks ? EMPTY : client.elements('#wskflowSVG .node.Task'),
-      !expectedTotal ? EMPTY : client.elements('#wskflowSVG .node.leaf'),
-      !expectedValues ? EMPTY : client.elements('#wskflowSVG .node.let'),
-      !expectedDeployed ? EMPTY : client.elements('#wskflowSVG .node.leaf[data-deployed="deployed"]')
-    ])
-      .then(([{ value: actualTasks }, { value: actualTotal }, { value: actualValues }, { value: actualDeployed }]) => {
-        return actualTasks.length === expectedTasks &&
-                                        actualTotal.length === expectedTotal &&
-                                        actualValues.length === expectedValues &&
-                                        actualDeployed.length === expectedDeployed
-      }))
-      .then(() => app) // allow for further composition
+    await client.waitUntil(async () => {
+      const [{ value: actualTasks }, { value: actualTotal }, { value: actualValues }, { value: actualDeployed }] = await Promise.all([
+        !expectedTasks ? EMPTY : client.elements('#wskflowSVG .node.Task'),
+        !expectedTotal ? EMPTY : client.elements('#wskflowSVG .node.leaf'),
+        !expectedValues ? EMPTY : client.elements('#wskflowSVG .node.let'),
+        !expectedDeployed ? EMPTY : client.elements('#wskflowSVG .node.leaf[data-deployed="deployed"]')
+      ])
+
+      console.error('actualTasks', actualTasks.length, expectedTasks)
+      console.error('actualTotal', actualTotal.length, expectedTotal)
+      console.error('actualValues', actualValues.length, expectedValues)
+      console.error('actualDeployed', actualDeployed.length, expectedDeployed)
+
+      return actualTasks.length === expectedTasks &&
+        actualTotal.length === expectedTotal &&
+        actualValues.length === expectedValues &&
+        actualDeployed.length === expectedDeployed
+    })
+
+    // allow for further composition
+    return app
   }
 }
 
@@ -199,30 +208,38 @@ const composer = {
   getSessions: (app, nDone, { cmd = 'session list', expect = [] }) => {
     return cli.do(cmd, app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N => {
+      .then(async N => {
         if (nDone > 0) {
-          return app.client.getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .entity-name .clickable`)
-            .then(done => !Array.isArray(done) ? [done] : done) // make sure we have an array
-            .then(async done => { // validate expect, which is a subset of the expected done list
-              return Promise.all(expect.map(e => assert.ok(done.find(d => d === e)))) // is each expected in the done list?
-                .then(() => done) // passthrough
-            })
-            .then(done => {
-              // validate nDone
-              if (done.length < nDone) {
-                return app.client.getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`)
-                  .then(activationIds => {
-                    // we have a fatal error, but first let's log some bits
-                    console.error(done)
-                    console.error(activationIds)
-                    assert.ok(done.length >= nDone)
-                  })
+          await app.client.waitUntil(async () => {
+            const done = await app.client.getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .entity-name .clickable`)
+              .then(done => !Array.isArray(done) ? [done] : done) // make sure we have an array
+
+            // validate `expect`, which is a subset of the expected done list
+            if (expect.length > 0) {
+              // is each expected in the done list?
+              const allAreThere = expect.every(expectThis => done.find(gotThis => gotThis === expectThis))
+              if (!allAreThere) {
+                // keep on going with the waitUntil
+                return false
               }
-            })
-            .then(() => N) // allow further composition using N, the command index
+            }
+
+            // validate `nDone`, which is the expected minimum number of completed sessions
+            if (done.length < nDone) {
+              const activationIds = await app.client.getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`)
+              console.error(`still waiting for ${nDone}, here is what we have so far: ${activationIds.length}`)
+              console.error(activationIds)
+
+              return false
+            }
+
+            // waitUntil is done!
+            return true
+          })
         }
 
-        return N // allow further composition using N, the command index
+        // allow further composition using N, the command index
+        return N
       })
   }
 }
