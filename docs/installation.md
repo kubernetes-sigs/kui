@@ -1,4 +1,4 @@
-# Kui Installion Guide
+# Kui Installation Guide
 
 This page will help you to install and configure Kui. You have a few
 installation options; pick the one that best suits your environment.
@@ -11,7 +11,7 @@ environments. Headless Kui will automatically download the graphical
 components, so this option provides seamless transition to graphics,
 and a lightweight, platform-neutral initial download.
 
-**Prerequisites** the headless client require that you have NodeJS
+**Prerequisites** the headless client require that you have Node.js
 8.15.0 or greater already installed on your system.
 
 [Kui-headless.tar.bz2](https://tarball.kui-shell.org) **|** [Kui-headless.zip](https://zip.kui-shell.org)
@@ -19,10 +19,10 @@ and a lightweight, platform-neutral initial download.
 ## Option 2: Double-clickable app Download
 
 You may opt to download an double-clickable platform binary. With this
-option, you avoid having to worry about NodeJS dependencies.  However,
-currently, you will not be able to use Kui from your favorite terminal
-(support coming soon); you can still use Kui's own command line after
-launching the application.
+option, you avoid having to worry about Node.js dependencies.
+However, currently, you will not be able to use Kui from your favorite
+terminal (support coming soon); you can still use Kui's own command
+line after launching the application.
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org) **|** [Kui-Windows.zip](https://win32-zip.kui-shell.org)
 
@@ -59,7 +59,7 @@ If you have downloaded the double-clickable application, you can try
 
 ## Using Kui as a kubectl plugin
 
-If you have a versin of kubectl newer than 1.12, then you have the
+If you have a version of kubectl newer than 1.12, then you have the
 option of using Kui as a [kubectl
 plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/).
 Adding `$PWD/kui/bin` to your PATH will enable `kubectl` to find the
