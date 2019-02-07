@@ -758,6 +758,18 @@ class InProcessExecutor implements IExecutor {
 
       }
     } catch (e) {
+      if (isHeadless()) {
+        try {
+          debug('attempting to run the command graphically')
+          const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
+          const argv = split(command)
+          await import('../main/spawn-electron').then(({ initElectron }) => initElectron(argv, { forceUI: true }, true, { fullscreen: true }))
+        } catch (err) {
+          debug('nope, we failed to run the command graphically')
+          console.error(err)
+        }
+      }
+
       if (execOptions && execOptions.failWithUsage) {
         return e
       } else if (isHeadless()) {

@@ -188,7 +188,7 @@ const doneWaitOrFetch = (notifyOfProgress = false) => (stagingAreaBase: string) 
         }
       })
     }
-  }))
+  })).catch(reject)
 })
 
 /**

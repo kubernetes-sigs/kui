@@ -55,7 +55,7 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
   try {
     if (require('electron-squirrel-startup')) return
   } catch (err) {
-    debug('electron components not installed')
+    debug('electron components not directly installed')
 
     const spawnGraphics = () => {
       debug('waiting for graphics')
@@ -100,8 +100,18 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
      * the best course of action
      */
     const maybeSpawnGraphics = async () => {
-      if (!app) {
+      if (!forceUI && !app) {
         await initHeadless(process.argv, true)
+      } else {
+        const { fetch, watch } = await import('../webapp/util/fetch-ui')
+        const { userDataDir } = await import('../core/userdata')
+        const stagingArea = userDataDir()
+        debug('initiating UI fetcher', stagingArea)
+
+        fetch(stagingArea)
+        app = {
+          graphics: watch(stagingArea)
+        }
       }
       if (app.graphics) {
         promise = spawnGraphics()
@@ -119,11 +129,10 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
         // _location will only be present for npm install'd assets
         // and the name is there to match our top-level package.json
         await maybeSpawnGraphics()
-        return Promise.resolve()
+      } else {
+        console.log('Graphical components are not installed.')
+        process.exit(126)
       }
-
-      console.log('Graphical components are not installed.')
-      process.exit(126)
     } catch (err) {
       // we couldn't find ../package.json; we're probably using a
       // headless.zip installation
