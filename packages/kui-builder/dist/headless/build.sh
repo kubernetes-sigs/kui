@@ -217,7 +217,7 @@ function build {
     cp kui/node_modules/@kui-shell/core/bin/* kui/bin
 
     if [ -d kui/tests/tests/passes/ ]; then
-        find -L kui/tests/tests/passes/ -name '*headless*.js' -prune -o -type f -exec rm {} \;
+        find -L kui/tests/tests/passes/ -name '*headless*' -d -prune -o -type d -exec rm {} \;
     fi
 
     if [ -d kui/tests/data ]; then

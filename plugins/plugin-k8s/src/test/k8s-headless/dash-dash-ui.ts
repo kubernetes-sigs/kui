@@ -40,10 +40,11 @@ const doTests = (ctx: common.ISuite, impl: CLI) => {
   })
 }
 
-describe('k8s with electron via bin/kui', function (this: common.ISuite) {
-  doTests(this, kuiElectron)
+/** TODO: we disable --ui tests until we refactor our electron boostrap code */
+describe('DISABLE TEST FOR NOW: k8s with electron via bin/kui', function (this: common.ISuite) {
+  /* doTests(this, kuiElectron) */
 })
 
-describe('k8s with electron via kubectl kui', function (this: common.ISuite) {
-  doTests(this, kubectlElectron)
+describe('DISABLE TEST FOR NOW: k8s with electron via kubectl kui', function (this: common.ISuite) {
+  /* doTests(this, kubectlElectron) */
 })
