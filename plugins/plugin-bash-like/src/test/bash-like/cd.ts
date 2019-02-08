@@ -28,39 +28,47 @@ describe('Change local shell directory', function (this: ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  const commands = [ 'cd', 'lcd' ]
-
   const root = path.normalize(process.env.TEST_ROOT)
   const rootRelative = dir => path.join(root, dir)
 
-  commands.forEach(cd => {
-    it(`should execute '${cd} data'`, () => cli.do(`${cd} data`, this.app)
-      .then(cli.expectOKWithString(rootRelative('data')))
-      .catch(common.oops(this)))
+  it(`should execute 'cd data'`, () => cli.do(`cd data`, this.app)
+    .then(cli.expectOKWithString(rootRelative('data')))
+    .catch(common.oops(this)))
 
-    it(`should execute '${cd} -' to change to previous dir`, () => cli.do(`${cd} -`, this.app)
-      .then(cli.expectOKWithString(root))
-      .catch(common.oops(this)))
+  it(`should execute 'cd -' to change to previous dir`, () => cli.do(`cd -`, this.app)
+    .then(cli.expectOKWithString(root))
+    .catch(common.oops(this)))
 
-    it(`should execute '${cd} -' again to change to previous-previous dir`, () => cli.do(`${cd} -`, this.app)
-      .then(cli.expectOKWithString(rootRelative('data')))
-      .catch(common.oops(this)))
+  it(`should execute 'cd -' again to change to previous-previous dir`, () => cli.do(`cd -`, this.app)
+    .then(cli.expectOKWithString(rootRelative('data')))
+    .catch(common.oops(this)))
 
-    it(`should execute '${cd} -' one more time to change to previous dir`, () => cli.do(`${cd} -`, this.app)
-      .then(cli.expectOKWithString(root))
-      .catch(common.oops(this)))
+  it(`should execute 'cd -' one more time to change to previous dir`, () => cli.do(`cd -`, this.app)
+    .then(cli.expectOKWithString(root))
+    .catch(common.oops(this)))
 
-    // now we should be able to change back to data
-    it(`should execute '${cd} data'`, () => cli.do(`${cd} data`, this.app)
-      .then(cli.expectOKWithString(rootRelative('data')))
-      .catch(common.oops(this)))
+  // now we should be able to change back to data
+  it(`should execute 'cd data'`, () => cli.do(`cd data`, this.app)
+    .then(cli.expectOKWithString(rootRelative('data')))
+    .catch(common.oops(this)))
 
-    it(`should execute ${cd} without arguments`, () => cli.do(cd, this.app)
-      .then(cli.expectOKWithString(expandHomeDir('~')))
-      .catch(common.oops(this)))
+  it(`should handle cd error`, () => cli.do(`cd notexist`, this.app)
+    .then(cli.expectError(500, 'cd: no such file or directory: notexist'))
+    .catch(common.oops(this)))
 
-    it(`should execute '${cd} ${path.resolve(process.env.TEST_ROOT)}`, () => cli.do(`${cd} ${path.resolve(process.env.TEST_ROOT)}`, this.app)
-      .then(cli.expectOKWithString(root))
-      .catch(common.oops(this)))
-  })
+  it(`should handle cd error`, () => cli.do(`cd ../notexist`, this.app)
+    .then(cli.expectError(500, 'cd: no such file or directory: ../notexist'))
+    .catch(common.oops(this)))
+
+  it(`should handle cd error`, () => cli.do(`cd -/..`, this.app)
+    .then(cli.expectError(499, 'Unsupported optional parameter /'))
+    .catch(common.oops(this)))
+
+  it(`should execute cd without arguments`, () => cli.do('cd', this.app)
+    .then(cli.expectOKWithString(expandHomeDir('~')))
+    .catch(common.oops(this)))
+
+  it(`should execute 'cd ${path.resolve(process.env.TEST_ROOT)}`, () => cli.do(`cd ${path.resolve(process.env.TEST_ROOT)}`, this.app)
+    .then(cli.expectOKWithString(root))
+    .catch(common.oops(this)))
 })
