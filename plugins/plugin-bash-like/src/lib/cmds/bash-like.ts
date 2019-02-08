@@ -60,7 +60,7 @@ const stripControlCharacters = (str: string): string => {
 
 export const doShell = (argv: Array<string>, options, execOptions?) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
-    reject('Local file access not supported when running in a browser')
+    reject(new Error('Local file access not supported when running in a browser'))
   }
 
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
@@ -78,13 +78,13 @@ export const doShell = (argv: Array<string>, options, execOptions?) => new Promi
   if (shell[cmd] && (inBrowser() || (cmd !== 'mkdir' && cmd !== 'echo'))) {
     const args = argv.slice(2)
 
-    // remember OLDPWD, so that `lcd -` works (shell issue #78)
+    // remember OLDPWD, so that `cd -` works (shell issue #78)
     if (process.env.OLDPWD === undefined) {
       process.env.OLDPWD = ''
     }
     const OLDPWD = shell.pwd() // remember it for when we're done
     if (cmd === 'cd' && args[0] === '-') {
-      // special case for "lcd -"
+      // special case for "cd -"
       args[0] = process.env.OLDPWD
     }
 
@@ -99,10 +99,15 @@ export const doShell = (argv: Array<string>, options, execOptions?) => new Promi
 
       const output = shell[cmd](args)
       if (cmd === 'cd') {
-        // special case: if the user asked to change working
-        // directory, respond with the new working directory
         process.env.OLDPWD = OLDPWD
-        resolve(shell.pwd().toString())
+
+        if (output.code === 0) {
+          // special case: if the user asked to change working
+          // directory, respond with the new working directory
+          resolve(shell.pwd().toString())
+        } else {
+          reject(new Error(output.stderr))
+        }
       } else {
         // otherwise, respond with the output of the command;
         if (output && output.length > 0) {
@@ -317,7 +322,7 @@ const cd = cmd => ({ command, execOptions, parsedOptions }) => {
   return doShell(['!', 'cd', ...repl.split(command, false).slice(1)],
     parsedOptions,
     Object.assign({}, execOptions, { nested: true }))
-    .catch(message => { throw new UsageError({ message, usage: usage.cd(cmd) }) })
+    .catch(err => { throw new UsageError({ message: err.message, usage: usage.cd(cmd) }) })
 }
 
 /**
@@ -328,9 +333,7 @@ export default (commandTree, prequire) => {
   const shellFn = ({ command, execOptions, parsedOptions }) => doShell(repl.split(command, false), parsedOptions, execOptions)
   commandTree.listen('/!', shellFn, { docs: 'Execute a UNIX shell command', requiresLocal: true })
 
-  // whenever we remove `lcd`, we can remove both of these lines
-  const cdCommand = commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true, requiresLocal: true })
-  commandTree.synonym('/lcd', cd('lcd'), cdCommand, { usage: usage.cd('lcd'), noAuthOk: true, requiresLocal: true })
+  commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true, requiresLocal: true })
 
   if (!inBrowser()) {
     //
