@@ -552,7 +552,7 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
       return _
     }
   }))
-  if (verb === 'delete' && !options.hasOwnProperty('wait')) {
+  if (verb === 'delete' && !options.hasOwnProperty('wait') && command === 'kubectl') {
     // by default, apparently, kubernetes treats finalizers as
     // synchronous, and --wait defaults to true
     argvWithFileReplacements.push('--wait=false')
