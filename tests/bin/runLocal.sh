@@ -1,5 +1,7 @@
+#!/usr/bin/env bash
+
 #
-# Copyright 2017 IBM Corporation
+# Copyright 2017-19 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +16,11 @@
 # limitations under the License.
 #
 
-#!/usr/bin/env bash
+set -e
+set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 export TEST_ROOT="$SCRIPTDIR/.."
-
-# the | tee should fail if runTest fails
-set -o pipefail
 
 if [ -z "$API_HOST" ]; then
     . ~/.wskprops
@@ -51,7 +51,7 @@ if [ ! -d logs ]; then
     mkdir logs
 fi
 
-rm logs/* 2> /dev/null
+rm -f logs/* 2> /dev/null
 
 # which tests to run; the default is every test
 if [ $# -ne 0 ]; then

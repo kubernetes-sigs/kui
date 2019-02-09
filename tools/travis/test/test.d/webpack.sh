@@ -16,8 +16,10 @@
 # limitations under the License.
 #
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR="$SCRIPTDIR"/../../../../
+set -e
+set -o pipefail
 
-cd "$TOPDIR"/packages/kui-builder/dist/webpack && \
-    ./build.sh
+echo "testing webpack build from $(pwd)"
+
+cd clients/default
+npm run build:webpack

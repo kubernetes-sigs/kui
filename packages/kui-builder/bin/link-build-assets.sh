@@ -22,7 +22,7 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 grep name package.json | grep kui-shell >& /dev/null
 if [ $? == 1 ]; then
-    if [ ! -e lerna.json ]; then
+    if [ ! -d packages ] && [ ! -d plugins ]; then
         echo "Error: execute this script from the top level of the kui project"
         exit 1
     fi
@@ -44,9 +44,11 @@ ABS=$(cd "$TOPDIR" && pwd)
 echo "Running under this absolute path: $ABS"
 
 function link {
-    echo "linking build asset $1 -> $2"
-    rm -f "$2"
-    ln -s "$1" "$2"
+    if [ "$2" != "*" ]; then
+        echo "linking build asset $1 -> $2"
+        rm -f "$2"
+        ln -s "$1" "$2"
+    fi
 }
 
 if [ -d "$BUILDDIR"/plugins ]; then

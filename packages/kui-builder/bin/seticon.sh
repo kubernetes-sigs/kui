@@ -19,9 +19,9 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../.."
 CONFDIR="$TOPDIR"/packages/app/build
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../examples/build-configs/default}
 
-cd "$SCRIPTDIR/.."
+CLIENT_HOME="$(pwd)/$CLIENT_HOME"
+echo "Using CLIENT_HOME=$CLIENT_HOME"
 
 # TODO this only handles MacOS right now
 
@@ -29,11 +29,11 @@ if [[ `uname` != Darwin ]]; then
     echo "Not setting icon"
     exit;
 else
-    if [ ! -d node_modules/fileicon ]; then
-        npm install --no-save fileicon
+    if [ ! -d "$SCRIPTDIR"/../node_modules/fileicon ]; then
+        (cd "$SCRIPTDIR"/.. && npm install --no-save fileicon)
     fi
 
-    ICON="$KUI_BUILD_CONFIG"/`cat "$CONFDIR"/config.json | jq --raw-output .theme.appIcon`
+    ICON="$CLIENT_HOME"/theme/`cat "$CONFDIR"/config.json | jq --raw-output .theme.appIcon`
     APPNAME=`cat "$CONFDIR"/config.json | jq --raw-output .theme.productName`
     echo "Using appName=${APPNAME} and appIcon=${ICON}"
 

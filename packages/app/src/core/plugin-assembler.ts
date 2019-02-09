@@ -43,7 +43,7 @@ const prescanned = (): string => require.resolve('@kui-shell/prescan')
  *
  */
 const writeToFile = async (modules): Promise<void> => {
-  debug('writeToFile')
+  debug('writeToFile', process.cwd(), prescanned())
 
   let str
   if (process.env.UGLIFY) {
@@ -137,7 +137,7 @@ interface IFile {
  *
  */
 const scanModules = (root: string): Array<IFile> => {
-  const { plugins: modules } = plugins.scanForModules(root, true) // eslint-disable-line
+  const { plugins: modules = {} } = plugins.scanForModules(root, true) // eslint-disable-line
 
   const files = []
 
@@ -171,9 +171,8 @@ const scanRoot = (root: string): Array<IFile> => {
  * Uglify the javascript
  *
  */
-const uglify = modules => modules.flat.map(module => new Promise((resolve, reject) => {
-  if (process.env.UGLIFY !== 'true') return resolve()
-
+const uglify = modules => modules.flat.map(module => Promise.resolve())
+const uglifyNope = modules => modules.flat.map(module => new Promise((resolve, reject) => {
   const src = module.root ? path.join(__dirname, '..', '..', module.path) : path.join(__dirname, '../../../plugins', module.path)
   const target = src // we'll copy it aside, and overwrite the original
   const tmpPath = module.root ? path.join(TMA, module.path) : path.join(path.join(TMA, TMP), module.path)
@@ -333,7 +332,10 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
     // NOTE ON relativization: this is important so that webpack can
     // be instructed to pull in the plugins into the build see the
     // corresponding NOTE in ./plugins.ts and ./preloader.ts
-    return path.relative(pluginRoot, filepath).replace(/\/src/, '')
+    return path
+      .relative(pluginRoot, filepath)
+      .replace(/\/src/, '') // client-hosted plugins
+      .replace(/^(.*\/)(plugin-.*)$/, '$2') // client-required plugins
   }
   const fixupPaths = pluginList => pluginList.map(plugin => Object.assign(plugin, {
     path: fixupOnePath(plugin.path)

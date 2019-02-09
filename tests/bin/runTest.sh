@@ -21,6 +21,9 @@
 # times for success.
 #
 
+set -e
+set -o pipefail
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../.."
 
@@ -78,13 +81,12 @@ echo "DISPLAY=$DISPLAY"
 NYC="${SCRIPTDIR}/../node_modules/.bin/nyc"
 export RUNNING_SHELL_TEST=true
 
-NO_USAGE_TRACKING=true mocha -c --exit --bail --recursive --timeout ${TIMEOUT-60000} tests/$LAYER --grep "${TEST_FILTER:-.*}"
+function go {
+    NO_USAGE_TRACKING=true mocha -c --exit --bail --recursive --timeout ${TIMEOUT-60000} tests/$LAYER --grep "${TEST_FILTER:-.*}"
+}
 
-if [ -n "$TRAVIS_JOB_ID" ] && [ $? != 0 ]; then
-    # oops, the test suite failed. we will restart, in the hopes that a second try works
-    NO_USAGE_TRACKING=true mocha -c --bail --recursive --timeout ${TIMEOUT-60000} tests/$LAYER --grep "${TEST_FILTER:-.*}"
-    if [ $? != 0 ]; then
-        # oops, the test suite failed, again! let's try one last time
-        NO_USAGE_TRACKING=true mocha -c --bail --recursive --timeout ${TIMEOUT-60000} tests/$LAYER --grep "${TEST_FILTER:-.*}"
-    fi
+if [ -n "$TRAVIS_JOB_ID" ]; then
+    go || go || go || go
+else
+    go
 fi

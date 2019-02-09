@@ -21,13 +21,13 @@ const { cli, selectors, sidecar } = ui
 
 import { normalize } from 'path'
 
-describe('Change shell directory via cd and lcd', function (this: common.ISuite) {
+describe('Change shell directory via cd', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it('should execute lcd data', () => cli.do(`lcd data`, this.app)
+  it('should execute lc data', () => cli.do(`cd data`, this.app)
     .then(cli.expectOKWithString('data')))
 
   it('should create an action in the data directory', () => cli.do(`action create long openwhisk/long.js`, this.app)
@@ -36,11 +36,11 @@ describe('Change shell directory via cd and lcd', function (this: common.ISuite)
     .then(sidecar.expectShowing('long'))
     .catch(common.oops(this)))
 
-  it('should execute lcd - to change to previous dir', () => cli.do(`cd -`, this.app)
+  it('should execute cd - to change to previous dir', () => cli.do(`cd -`, this.app)
     .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT))))
 
   // now we should be able to change back to data and re-do the action create
-  it('should execute lcd data', () => cli.do(`lcd data`, this.app)
+  it('should execute cd data', () => cli.do(`cd data`, this.app)
     .then(cli.expectOKWithString('data')))
 
   it('should create an action in the data directory', () => cli.do(`action create long2 openwhisk/long.js`, this.app)
@@ -49,6 +49,6 @@ describe('Change shell directory via cd and lcd', function (this: common.ISuite)
     .then(sidecar.expectShowing('long2'))
     .catch(common.oops(this)))
 
-  it('should execute lcd without arguments', () => cli.do(`lcd`, this.app)
+  it('should execute cd without arguments', () => cli.do(`cd`, this.app)
     .then(cli.expectOKWithString(normalize(process.env.HOME))))
 })

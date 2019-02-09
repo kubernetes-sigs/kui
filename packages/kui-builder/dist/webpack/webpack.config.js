@@ -20,10 +20,10 @@ const CompressionPlugin = require('brotli-webpack-plugin')
 // const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
-const stageDir = path.join(__dirname, 'kui-webpack-tmp')
+const stageDir = process.env.KUI_STAGE
 
 /** point webpack to the output directory */
-const buildDir = path.join(__dirname, 'build')
+const buildDir = process.env.KUI_BUILDDIR
 
 /**
  * Define the set of bundle entry points; there is one default entry
@@ -164,7 +164,6 @@ module.exports = {
       { test: /jquery\.map/, use: 'ignore-loader' },
       { test: /sizzle\.min\.map/, use: 'ignore-loader' },
       { test: /\/modules\/queue-view\//, use: 'ignore-loader' },
-      { test: /\/modules\/openwhisk-debug\/node_modules/, use: 'ignore-loader' }, // no need for openwhisk-debug plugin
       { test: /\/node_modules\/fsevents\//, use: 'ignore-loader' },
       { test: /\/node_modules\/nan\//, use: 'ignore-loader' },
       { test: /translation-demo\/composition.js$/, use: 'ignore-loader' },
@@ -189,6 +188,7 @@ module.exports = {
       // end of ignore-loader
       //
       // { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
+      { test: /samples\/.*\.js$/, use: 'raw-loader' }, // don't try to parse out sample input, e.g. for dependencies
       { test: /\.js.map$/, use: 'ignore-loader' },
       { test: /\.py$/, use: 'file-loader' },
       { test: /\.ico$/, use: 'file-loader' },
@@ -219,12 +219,12 @@ module.exports = {
             console.log('KuiHtmlBuilder using this build hash', hash)
 
             const overrides = {
-              build: { buildDir, writeConfig: false },
+              build: { writeConfig: false },
               env: { main }
             }
 
             // and this will inject it
-            const Builder = require('../../lib/configure')
+            const Builder = require(path.join(process.env.KUI_BUILDER_HOME, 'lib/configure'))
             new Builder().build('webpack', overrides)
           })
         })
