@@ -48,7 +48,8 @@ let prescan
  * Scan for plugins incorporated via app/plugins/package.json
  *
  */
-export const scanForModules = (dir: string, quiet = false) => {
+type Filter = (path: string) => boolean
+export const scanForModules = (dir: string, quiet = false, filter: Filter = _ => true) => {
   debug('scanForModules %s', dir)
 
   const fs = require('fs')
@@ -100,7 +101,7 @@ export const scanForModules = (dir: string, quiet = false) => {
     // scan the app/plugins/modules directory
     const moduleDir = dir // path.join(dir, 'modules')
     debug('moduleDir', moduleDir)
-    doScan({ modules: fs.readdirSync(moduleDir), moduleDir })
+    doScan({ modules: fs.readdirSync(moduleDir).filter(filter), moduleDir })
 
     // scan any modules in package.json
     const packageJsonPath = path.join(dir, 'package.json')
@@ -117,8 +118,11 @@ export const scanForModules = (dir: string, quiet = false) => {
     }
 
     return { plugins, preloads }
-  } catch (e) {
-    console.error('Error scanning for external plugins', e)
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error('Error scanning for external plugins', err)
+    }
+    return { }
   }
 }
 
@@ -254,7 +258,9 @@ const topologicalSortForScan = async (pluginPaths, iter: number, lastError?: Err
       flat.push(module)
       delete pluginPaths[route]
     } catch (err) {
-      if ((err.message.indexOf('Module not found') < 0 || iter > 10) && (lastError && lastError.message !== err.message)) {
+      const notFound = err.message.indexOf('Module not found') >= 0
+        || err.message.indexOf('Cannot find module') >= 0
+      if ((!notFound || iter > 10) && (lastError && lastError.message !== err.message)) {
         //
         // note how we do not print the error if any of three
         // conditions hold (but we still continue iterating)
@@ -297,14 +303,32 @@ const topologicalSortForScan = async (pluginPaths, iter: number, lastError?: Err
 interface ILocalOptions {
   pluginRootAbsolute?: string
 }
-const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}) => {
+const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}, quiet = false) => {
   debug('resolveFromLocalFilesystem')
 
-  const path = require('path')
+  const path = await import('path')
   const pluginRootAbsolute = process.env.PLUGIN_ROOT || path.join(__dirname, pluginRoot) // filesystem path for the plugins
   debug('pluginRootAbsolute', pluginRootAbsolute)
 
-  const { plugins, preloads } = scanForModules(opts.pluginRootAbsolute || pluginRootAbsolute)
+  // this scan looks for plugins offered by the client
+  const clientHosted = scanForModules(opts.pluginRootAbsolute || pluginRootAbsolute)
+
+  // this scan looks for plugins npm install'd by the client
+  let clientRequired
+  try {
+    const secondary = path.dirname(path.dirname(require.resolve('@kui-shell/core/package.json')))
+    clientRequired = scanForModules(secondary,
+                                    false,
+                                    (filename: string) => !!filename.match(/^plugin-/))
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error('error scanning for client-required plugins', err)
+    }
+  }
+
+  // we take the union of the client-provided plugins and the client-required plugins
+  const plugins = Object.assign({}, clientHosted.plugins, clientRequired.plugins)
+  const preloads = Object.assign({}, clientHosted.preloads, clientRequired.preloads)
 
   debug('availablePlugins %s', JSON.stringify(plugins))
 

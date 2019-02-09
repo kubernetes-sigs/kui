@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/openwhisk/loader')
+
 import cp from './lib/cmds/copy'
 import mv from './lib/cmds/mv'
 import rm from './lib/cmds/rm'
@@ -34,7 +37,6 @@ import every from './lib/cmds/rules/every'
 import modes from './lib/views/mode'
 import beautify from './lib/cmds/beautify'
 import core from './lib/cmds/openwhisk-core'
-import editorBits from './lib/cmds/editor-extensions'
 
 import activationList from './lib/cmds/activations/list'
 
@@ -54,7 +56,13 @@ export default async (commandTree, prequire) => {
   await loadTest(commandTree, wsk)
   await addParameter(commandTree, wsk)
   await beautify(commandTree, wsk)
-  await editorBits(commandTree, wsk)
+
+  try {
+    const editorBits = (await import('./lib/cmds/editor-extensions')).default
+    await editorBits(commandTree, wsk)
+  } catch (err) {
+    debug('it looks like we are running in a distribution that does not include the editor plugin')
+  }
 
   // action extensions
   await letCommand(commandTree, wsk)

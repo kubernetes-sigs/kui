@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-grid",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Kui plugin that offers a grid visualization of OpenWhisk function invocations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -18,12 +18,15 @@
   ],
   "main": "plugin.js",
   "scripts": {
-    "prepublishOnly": "rm -rf dist && mkdir dist && tar -C ../../build/plugins/$(basename `pwd`)/src --exclude test --exclude node_modules -cf - . | tar -C dist -xf - && find dist -type l -exec rm {} \\; && cp -a dist/* .",
+    "prepack": "rm -rf dist && mkdir dist && tar -C ../../build/plugins/$(basename `pwd`)/src --exclude node_modules -cf - . | tar -C dist -xf - && find dist -type l -exec rm {} \\; && cp -a dist/* .",
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
     "pretty-ms": "^4.0.0",
     "uuid": "^3.3.2"
+  },
+  "kui": {
+    "headless": false
   },
   "publishConfig": {
     "access": "public"

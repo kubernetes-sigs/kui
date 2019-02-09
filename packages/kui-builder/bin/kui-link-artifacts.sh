@@ -29,9 +29,6 @@ cd node_modules/@kui-shell
 TOPDIR=../..
 BUILDDIR="$TOPDIR/build"
 
-echo "linking prescan"
-link "$BUILDDIR"/.pre-scanned.json prescan.json
-
 if [ -d "$TOPDIR"/packages/app/build ]; then
     echo "linking application configuration"
     link "$TOPDIR"/packages/app/build settings

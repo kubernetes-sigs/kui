@@ -1,7 +1,27 @@
 #!/usr/bin/env bash
 
+#
+# Copyright 2018-2019 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+set -e
+set -o pipefail
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR="$SCRIPTDIR/../../../../../"
+TOPDIR="$SCRIPTDIR"/../../../../../
+BUILDDIR="$TOPDIR"/clients/default/builds
 
 BRANCH=${BRANCH-`git rev-parse --abbrev-ref HEAD`}
 echo "Building and deploying to this release stream: $BRANCH"
@@ -39,24 +59,20 @@ echo "Version after publish: $VERSION"
 echo "Storing builds in this bucket: $COS_BUCKET"
 
 # 2. build the platform binary bundles
-#     note that it is ok if PLATFORM isn't defined; build.sh will, in this case, build for all platforms
-"$TOPDIR"/packages/kui-builder/dist/electron/build.sh $PLATFORM &
-"$TOPDIR"/packages/kui-builder/dist/headless/build.sh
-if [ $? != 0 ]; then exit $?; fi
-wait
-if [ $? != 0 ]; then exit $?; fi
+(cd "$TOPDIR"/clients/default && npm run build:electron -- ${PLATFORM-all})
+(cd "$TOPDIR"/clients/default && npm run build:headless)
 
 echo "here is what we built:"
-ls -l "../../builds"
+ls -l "$BUILDDIR"
 
 # 3. push the builds to a new OS container
 # EXIST_OK means we're ok if the COS bucket already exists
 if [ -z "$NO_PUSH" ]; then
-    NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
+    BUILDDIR="$BUILDDIR" NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
 
     # deploy the local-proxy.html which lets us offer kui:// links in
     # unfriendly environs such as github markdown
-    EXIST_OK=true node ./push-file.js web-${COS_BUCKET} ../../local-proxy.html
+    EXIST_OK=true node ./push-file.js web-${COS_BUCKET} "$SCRIPTDIR"/../../local-proxy.html
 
     echo "win32: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-win32-x64.zip"
     echo "macOS: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui.dmg"

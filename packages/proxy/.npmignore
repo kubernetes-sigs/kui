@@ -1,3 +1,4 @@
-.keys
+build
+dist
 src
-*~
+tests/data.keys

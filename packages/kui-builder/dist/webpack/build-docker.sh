@@ -21,40 +21,36 @@
 # builds the webpack bundles; this script builds the docker image)
 #
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-if [ -d "$SCRIPTDIR"/../../../../../node_modules/\@kui-shell ]; then
-    # then we are running in an npm install'd @kui-shell/builder
-    CORE_HOME="$SCRIPTDIR"/../../../core
-else
-    BUILDER_HOME="$SCRIPTDIR/../.."
-    CORE_HOME="$BUILDER_HOME"/../app
-    export MONOREPO_MODE=true
-fi
+set -e
+set -o pipefail
 
-# the webpack and other build assets will be stored here
-TARGET=build
-if [ ! -d "$TARGET" ]; then
-    mkdir "$TARGET"
-fi
+CLIENT_HOME=${CLIENT_HOME-$(pwd)}
+BUILDDIR=${KUI_BUILDDIR-"$CLIENT_HOME"/dist/webpack}
+STAGING="${KUI_STAGE}"
+
+APPDIR="$STAGING"/packages/app
+CORE_HOME="$STAGING"/node_modules/@kui-shell/core
 
 # create the self-signed certificate
 npm run http-allocate-cert
 
+cp -a "$BUILDDIR" build
+
 # some of the assets are in sibling directories; let's copy them here
-# to our TARGET directory:
-cp "$TARGET"/index-webpack.html "$TARGET"/index.html
-cp -r "$CORE_HOME"/web/css/ "$TARGET" # !!! intentional trailing slash: css/
+# to our BUILDDIR directory:
+cp "$APPDIR"/build/index-webpack.html "$BUILDDIR"/index.html
+cp -r "$CORE_HOME"/web/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
 
 # if we are using a build config override, then copy in its assets
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../../examples/build-configs/default}
-if [ -d "$KUI_BUILD_CONFIG"/css ]; then
-    cp -r "$KUI_BUILD_CONFIG"/css/ "$TARGET" # !!! intentional trailing slash: css/
+THEME="$CLIENT_HOME"/theme
+if [ -d "$THEME"/css ]; then
+    cp -r "$THEME"/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
 fi
-if [ -d "$KUI_BUILD_CONFIG"/icons ]; then
-    cp -r "$KUI_BUILD_CONFIG"/icons "$TARGET" # !!! intentional NO trailing slash: icons
+if [ -d "$THEME"/icons ]; then
+    cp -r "$THEME"/icons "$BUILDDIR" # !!! intentional NO trailing slash: icons
 fi
-if [ -d "$KUI_BUILD_CONFIG"/images ]; then
-    cp -r "$KUI_BUILD_CONFIG"/images "$TARGET" # !!! intentional NO trailing slash: images
+if [ -d "$THEME"/images ]; then
+    cp -r "$THEME"/images "$BUILDDIR" # !!! intentional NO trailing slash: images
 fi
 
 # finally, build the docker image

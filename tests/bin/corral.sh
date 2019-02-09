@@ -40,11 +40,6 @@ if [ ! -d lib ]; then
     mkdir lib
 fi
 
-# are we setting up links or tearing them down (a.k.a. clean)?
-if [ "$1" == "clean" ]; then
-    CLEAN=true
-fi
-
 if [ -d bin ]; then
     ROOTDIR=..
 else
@@ -56,9 +51,17 @@ if [ ! -f $ROOTDIR/tests/bin/corral.sh ]; then
     exit 1
 fi
 
+# remove previous work
+rm -rf "$ROOTDIR"/tests/tests/passes/*
+rm -rf "$ROOTDIR"/tests/data/*
+rm -rf "$ROOTDIR"/tests/lib/*
+if [ "$1" == "clean" ]; then
+    exit
+fi
+
 # set up (or tear down) links
 function scan {
-    TESTS=`find -L "$ROOTDIR/$1" -maxdepth 2 -name tests`
+    TESTS=$(find -L "$1" -maxdepth 2 -name tests)
     for test in $TESTS; do
         echo
         echo "Scanning $test"
@@ -68,10 +71,7 @@ function scan {
 
             for data in "$test"/data/*; do
                 base=`basename $data`
-                if [ -n "$CLEAN" ]; then
-                    echo -e "    $CROSS unlinking data $base"
-                    (cd data && rm -f "$base")
-                elif [ ! -L "data/$base" ]; then
+                if [ ! -L "data/$base" ]; then
                     echo -e "    $CHECK linking data $base"
                     (cd data && ln -s "../$data" .)
                 else
@@ -86,10 +86,7 @@ function scan {
 
             for lib in "$test"/lib/*; do
                 base=`basename $lib`
-                if [ -n "$CLEAN" ]; then
-                    echo -e "    $CROSS unlinking lib $base"
-                    (cd lib && rm -f "$base")
-                elif [ ! -L "lib/$base" ]; then
+                if [ ! -L "lib/$base" ]; then
                     echo -e "    $CHECK linking lib $base"
                     (cd lib && ln -s "../$lib" .)
                 else
@@ -100,49 +97,35 @@ function scan {
     done
 }
 
-scan packages
-scan plugins
+for i in "$ROOTDIR"/packages "$ROOTDIR"/plugins "$ROOTDIR"/node_modules/@kui-shell/{core,plugin-*}; do
+    scan $i
+done
 
 # scan for typescript core tests
-if [ -d "$ROOTDIR/build/packages" ]; then
-    TESTS=`find -L "$ROOTDIR/build/packages" -maxdepth 3 -path '*/src/test'`                                   
-    for test in $TESTS; do
-        echo
-        echo "  - found typescript tests $test"
+function scanTest {
+    if [ -d "$1" ]; then
+        TESTS=$(find -L "$1" -maxdepth 3 -path '*/src/test')
+        TESTS2=$(find -L "$1" -maxdepth 1 -name test)
+        for test in $TESTS $TESTS2; do
+            echo
+            echo "  - found typescript tests $test"
 
-        for pass in "$test"/*; do
-            base=`basename $pass`
-            if [ -n "$CLEAN" ]; then
-                echo -e "    $CROSS unlinking pass $base"
-                (cd tests/passes && rm -f "$base")
-            elif [ ! -L "tests/passes/$base" ]; then
-                echo -e "    $CHECK linking pass $base"
-                (cd tests/passes && ln -s "../../$pass" .)
-            else
-                echo -e "    $DASH already linked pass $base"
-            fi
+            for pass in "$test"/*; do
+                base=`basename $pass`
+                if [ -n "$CLEAN" ]; then
+                    echo -e "    $CROSS unlinking pass $base"
+                    (cd tests/passes && rm -rf "$base")
+                elif [ ! -L "tests/passes/$base" ]; then
+                    echo -e "    $CHECK linking pass $base"
+                    (cd tests/passes && ln -s "../../$pass" .)
+                else
+                    echo -e "    $DASH already linked pass $base"
+                fi
+            done
         done
-    done
-fi
+    fi
+}
 
-# scan for typescript plugin tests
-if [ -d "$ROOTDIR/build/plugins" ]; then
-    TESTS=`find -L "$ROOTDIR/build/plugins" -maxdepth 3 -path '*/src/test'`
-    for test in $TESTS; do
-        echo
-        echo "  - found typescript tests $test"
-
-        for pass in "$test"/*; do
-            base=`basename $pass`
-            if [ -n "$CLEAN" ]; then
-                echo -e "    $CROSS unlinking pass $base"
-                (cd tests/passes && rm -f "$base")
-            elif [ ! -L "tests/passes/$base" ]; then
-                echo -e "    $CHECK linking pass $base"
-                (cd tests/passes && ln -s "../../$pass" .)
-            else
-                echo -e "    $DASH already linked pass $base"
-            fi
-        done
-    done
-fi
+for i in "$ROOTDIR"/build/packages "$ROOTDIR"/build/plugins "$ROOTDIR"/node_modules/@kui-shell/{core,plugin-*}; do
+    scanTest $i
+done

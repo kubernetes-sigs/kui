@@ -25,7 +25,6 @@ import appCreate from './lib/controller/cmd/app-create'
 import appGet from './lib/controller/cmd/app-get'
 import appList from './lib/controller/cmd/app-list'
 import appConfig from './lib/controller/cmd/app-config'
-import editorBits from './lib/controller/cmd/editor-extensions'
 import * as usage from './usage'
 
 export default async (commandTree, prequire) => {
@@ -48,7 +47,13 @@ export default async (commandTree, prequire) => {
   await appList(commandTree, prequire)
   await appGet(commandTree, prequire)
   await appConfig(commandTree, prequire)
-  await editorBits(commandTree, prequire)
+
+  try {
+    const editorBits = (await import('./lib/controller/cmd/editor-extensions')).default
+    await editorBits(commandTree, prequire)
+  } catch (err) {
+    debug('it looks like we are running in a distribution that does not include the editor plugin')
+  }
 
   debug('init done')
 }
