@@ -110,8 +110,8 @@ const writeConfig = (settings) => new Promise((resolve, reject) => {
       task('write package.json')
 
       const packageAppPjson = path.join(configDir, '../package.json')
-      const topLevel = moduleExists(packageAppPjson) ? require(packageAppPjson) : require(path.join(process.env.TOPDIR, 'package.json'))
-      const packageJson = Object.assign({}, topLevel, config)
+      const topLevel = moduleExists(packageAppPjson) ? require(packageAppPjson) : require(path.join(process.env.CLIENT_HOME, 'package.json'))
+      const packageJson = Object.assign({}, topLevel, config, { name: '@kui-shell/settings' })
 
       fs.writeFile(path.join(configDir, 'package.json'), JSON.stringify(packageJson, undefined, 4), err => {
         if (err) {
@@ -175,17 +175,13 @@ const main = (env, overrides = {}) => {
  *
  */
 const loadOverrides = (programmaticOverrides = {}) => {
-  const find = dir => {
-    if (dir) {
-      if (path.isAbsolute(dir)) {
-        return dir
-      } else {
-        return path.join(process.cwd(), dir)
-      }
+  let overrideDirectory = process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
+  if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
+    overrideDirectory = process.env.CLIENT_HOME && path.resolve(path.join(process.env.CLIENT_HOME, 'theme'))
+    if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
+      overrideDirectory = path.resolve(path.join(process.cwd(), 'theme'))
     }
   }
-
-  const overrideDirectory = find(process.env.KUI_BUILD_CONFIG)
   info('theme directory', overrideDirectory)
 
   const loadOverride = (file) => {

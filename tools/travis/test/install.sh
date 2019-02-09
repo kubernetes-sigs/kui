@@ -16,6 +16,9 @@
 # limitations under the License.
 #
 
+set -e
+set -o pipefail
+
 if [ ! -d bin ]; then
     mkdir bin
 fi
@@ -73,21 +76,21 @@ if [ -n "$LAYERS" ]; then
     # npm install
     echo "starting kui npm install"
     npm install
-    if [ $? != 0 ]; then exit $?; fi
 
     # create a dist build to test against
     if [ -n "$NEEDS_HEADLESS" ]; then
         # create a headless dist to test against
-        (cd packages/kui-builder/dist/headless && ./build.sh; cd ../builds && tar jxf "Kui-headless.tar.bz2") &
+        # note that we target the headless build to /tmp/kui; see ./script.sh for the use of it
+        # DO NOT DO IN PARALLEL with the electron build; link:init currently updates the client directory
+        (cd clients/default && npm run build:headless && tar -C /tmp -jxf dist/headless/Kui-headless.tar.bz2)
+        #children+=("$!")
     fi
-    if [ $? != 0 ]; then exit $?; fi
 
     if [ -n "$NEEDS_ELECTRON" ]; then
         # create an electron dist to test against
-        (cd packages/kui-builder/dist/electron && NO_INSTALLER=true ./build.sh linux) &
+        (cd clients/default && NO_INSTALLER=true npm run build:electron -- linux) &
         children+=("$!")
     fi
-    if [ $? != 0 ]; then exit $?; fi
 
     # wait for the openwhisk or kubernetes setup logic to complete
     wait_and_get_exit_codes "${children[@]}"

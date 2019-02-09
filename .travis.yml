@@ -44,7 +44,7 @@ env:
     - NO_MAC_DMG_INSTALLER=true # we can't build macOS DMG files in travis :(
     - WINDOW_WIDTH=1400                   # ! important ! so that clicks don't fail due to elements being off-viewport
     - WINDOW_HEIGHT=1050                  # ! ibid !
-    - TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/packages/kui-builder/dist/builds/Kui-linux-x64/Kui" # test against a specific dist build
+    - TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/clients/default/dist/electron/Kui-linux-x64/Kui" # test against a specific dist build
     - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
 
 install: ./tools/travis/test/install.sh

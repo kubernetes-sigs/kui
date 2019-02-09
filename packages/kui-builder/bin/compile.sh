@@ -16,8 +16,11 @@
 # limitations under the License.
 #
 
-if [ ! -e lerna.json ]; then
-    echo "Error: perhaps you forgot to run "npx kui-dist-init""
+set -e
+set -o pipefail
+
+if [ ! -d packages/app/src ] || [ ! -d plugins ]; then
+    echo "Error: perhaps you forgot to run "npx kui-init""
     exit 1
 fi
 
@@ -26,6 +29,7 @@ TOPDIR=.
 BUILDDIR="${TOPDIR}/build"
 
 # for compile.js below; give it an absolute path
+export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/build/plugins"
 
 if [ ! -d "$BUILDDIR" ]; then
@@ -39,8 +43,8 @@ touch "$BUILDDIR"/.pre-scanned.json
 
 # link lib and web files
 "$SCRIPTDIR"/link-source-assets.sh
-if [ $? != 0 ]; then exit $?; fi
 
+set +e
 TSCONFIG_HOME=`readlink $0`
 if [ $? == 1 ]; then
     TSCONFIG_HOME="$SCRIPTDIR/.."
@@ -52,15 +56,39 @@ else
     echo "following link to find build home ${TSCONFIG_HOME}"
 fi
 
+npx --no-install tsc -h >& /dev/null
+if [ $? == 0 ]; then
+    TSC="npx tsc"
+else
+    TSC="$TSCONFIG_HOME/node_modules/.bin/tsc"
+    echo "Using TSC=$TSC"
+fi
+set -e
+
 # compile source
 echo ""
 echo "compiling source $TSCONFIG_HOME"
-npx tsc --build "$TSCONFIG"
-if [ $? != 0 ]; then exit $?; fi
+$TSC --build "$TSCONFIG"
 
-"$SCRIPTDIR"/link-build-assets.sh
-if [ $? != 0 ]; then exit $?; fi
+# make typescript happy, until we have the real prescan model ready
+# (produced by kui-builder/lib/configure.js, but which cannot be run
+# until after we've compiled the source)
+mkdir -p ./node_modules/@kui-shell
+rm -f ./node_modules/@kui-shell/prescan.json
+touch ./node_modules/@kui-shell/prescan.json
 
 # pre-compile plugin registry
-echo "compiling plugin registry"
-(cd "$TSCONFIG_HOME"/dist/bin && ./compile.js)
+if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
+    echo "compiling plugin registry $CLIENT_HOME"
+
+    mkdir -p ./packages/app/build
+    (cd node_modules/@kui-shell && rm -f settings && ln -s ../../packages/app/build settings)
+    echo '{}' > ./packages/app/build/package.json
+    echo '{}' > ./packages/app/build/config.json
+
+    node ./node_modules/@kui-shell/builder/dist/bin/compile.js
+else
+    echo "compiling plugin registry (monorepo mode)"
+    "$SCRIPTDIR"/link-build-assets.sh
+    node ./packages/kui-builder/dist/bin/compile.js
+fi

@@ -23,7 +23,7 @@
  *
  */
 
-const minimist = require('minimist')
+const minimist = require('yargs-parser')
 
 import repl = require('@kui-shell/core/core/repl')
 

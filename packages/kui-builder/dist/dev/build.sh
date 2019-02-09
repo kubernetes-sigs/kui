@@ -22,7 +22,7 @@ STAGING="${TOPDIR}"/packages/app/build
 
 (cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/app/web/css)
 
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../../examples/build-configs/default}
+KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$TOPDIR"/clients/default/theme}
 if [ ! -d "$KUI_BUILD_CONFIG" ]; then
     KUI_BUILD_CONFIG="`pwd`/$KUI_BUILD_CONFIG"
     if [ ! -d "$KUI_BIULD_CONFIG" ]; then

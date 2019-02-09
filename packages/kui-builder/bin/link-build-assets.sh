@@ -44,9 +44,11 @@ ABS=$(cd "$TOPDIR" && pwd)
 echo "Running under this absolute path: $ABS"
 
 function link {
-    echo "linking build asset $1 -> $2"
-    rm -f "$2"
-    ln -s "$1" "$2"
+    if [ "$2" != "*" ]; then
+        echo "linking build asset $1 -> $2"
+        rm -f "$2"
+        ln -s "$1" "$2"
+    fi
 }
 
 if [ -d "$BUILDDIR"/plugins ]; then

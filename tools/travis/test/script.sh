@@ -80,7 +80,7 @@ if [ -n "$LAYERS" ]; then
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
         export WSK_CONFIG_FILE=~/.wskprops_${KEY}
         (cd tests && ./bin/allocate.sh "$TEST_SPACE")
-        (cd packages/kui-builder/dist/builds/kui && npm run test)
+        (cd /tmp/kui && npm run test) # see ./install.sh for the /tmp/kui target
         EC=$?
         echo "script.sh thinks headless finished with $EC"
         if [ $EC != 0 ]; then exit $EC; fi

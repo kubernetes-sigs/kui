@@ -35,7 +35,7 @@ module.exports = (env, overrides) => new Promise((resolve, reject) => {
   // default value assignments for options
   const defaultOptions = {
     // theme settings
-    theme: require('../examples/build-configs/default/theme'),
+    theme: {},
 
     // env settings, e.g. webpack versus standalone
     env: require('../examples/build-configs/default/' + env),

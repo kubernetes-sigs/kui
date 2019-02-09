@@ -24,9 +24,11 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 if [ -d "$SCRIPTDIR"/../../../../../node_modules/\@kui-shell ]; then
     # then we are running in an npm install'd @kui-shell/builder
+    TOPDIR="$SCRIPTDIR"/../../../../../
     CORE_HOME="$SCRIPTDIR"/../../../core
 else
-    BUILDER_HOME="$SCRIPTDIR/../.."
+    BUILDER_HOME="$SCRIPTDIR"/../..
+    TOPDIR="$BUIDER_HOME"/../../
     CORE_HOME="$BUILDER_HOME"/../app
     export MONOREPO_MODE=true
 fi
@@ -46,7 +48,7 @@ cp "$TARGET"/index-webpack.html "$TARGET"/index.html
 cp -r "$CORE_HOME"/web/css/ "$TARGET" # !!! intentional trailing slash: css/
 
 # if we are using a build config override, then copy in its assets
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$SCRIPTDIR"/../../examples/build-configs/default}
+KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$TOPDIR"/theme}
 if [ -d "$KUI_BUILD_CONFIG"/css ]; then
     cp -r "$KUI_BUILD_CONFIG"/css/ "$TARGET" # !!! intentional trailing slash: css/
 fi

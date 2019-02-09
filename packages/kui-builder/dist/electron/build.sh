@@ -16,60 +16,40 @@
 # limitations under the License.
 #
 
-shopt -s extglob
+set -e
+set -o pipefail
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell ]; then
-    # then we are running in an npm install'd @kui-shell/builder
-    export TOPDIR="$SCRIPTDIR"/../..
-    CORE_HOME="$SCRIPTDIR"/../@kui-shell/core
-    BUILDER_HOME="$SCRIPTDIR"/../@kui-shell/builder
-    export BUILDDIR="$TOPDIR"/dist/builds
-    npx kui-compile
-else
-    export TOPDIR="$SCRIPTDIR"/../../../..
-    BUILDER_HOME="$SCRIPTDIR/../.."
-    CORE_HOME="$BUILDER_HOME"/../app
-    export BUILDDIR="$BUILDER_HOME"/dist/builds
-    export MONOREPO_MODE=true
-fi
+#
+# @param $1 staging directory
+# @param $2 platform (optional) defaulting to all platforms
+#
+STAGING="${1-`pwd`}"
+PLATFORM=${2-all}
 
-STAGING="$BUILDER_HOME/kui-electron-tmp" # needs to sit under a package.json that specifies electron dependence
-LERNA="$TOPDIR"/node_modules/.bin/lerna
-APPDIR="$STAGING/packages/app"
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$BUILDER_HOME"/examples/build-configs/default}
+STAGING="$(cd $STAGING && pwd)/kui-electron-tmp"
+echo "staging directory: $STAGING"
 
-initialDirectory=`pwd`
-cd "$BUILDER_HOME/dist/electron"
+CLIENT_HOME="$(pwd)"
+APPDIR="$STAGING"/packages/app
+CORE_HOME="$STAGING"/node_modules/@kui-shell/core
+BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
+export BUILDDIR="$CLIENT_HOME"/dist/electron
+
+KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$CLIENT_HOME"/theme}
 
 #
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
 IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(lerna.json)|(node_modules/@kui-plugin)'
-      
-#
-# input params: choose a platform to build for (default: all)
-#
-PLATFORM=${1-all}
 
+set +e
 VERSION=`git rev-parse master 2> /dev/null`
-if [ $? != 0 ]; then
-    VERSION=dev
-fi
+if [ $? != 0 ]; then VERSION=dev; fi
+set -e
 
 # we will manage devDep pruning ourselves
-NO_PRUNE=--no-prune
-
-# if we're running a test against a dist build, then we need to tell
-# electron-packager to keep around devDependencies
-if [ -n "${TEST_FROM_BUILD}" ]; then
-    NO_INSTALLER=true
-else
-    # by default, we want to uglify the javascript
-    #    export UGLIFY=true
-    echo "uglify disabled"
-fi
+#NO_PRUNE=--no-prune
 
 if [[ `uname` == Darwin ]]; then
     # see bin/postinstall; we use brew to ensure we have gtar
@@ -78,59 +58,66 @@ else
     TAR=tar
 fi
 
-function init {
+function tarCopy {
     # word of warning for linux: in the TAR command below, the `-cf -` has
     # to come before the --exclude rules!
-
-    (rm -rf "$STAGING" && mkdir "$STAGING" && cd $TOPDIR && \
-         "$TAR" -C . -cf - \
-             --exclude "kui-electron-tmp" \
-             --exclude "./bin" \
-             --exclude "./tools" \
-             --exclude "./dist" \
-             --exclude "./tests" \
-             --exclude "./docs/dev" \
-             --exclude ".git*" \
-             --exclude ".travis*" \
-             --exclude "./node_modules" \
-             --exclude "./packages/kui-builder" \
-             --exclude "./packages/proxy" \
-             --exclude "./build/*/node_modules" \
-             --exclude "./plugins/*/node_modules" \
-             --exclude "./packages/*/dist" \
-             --exclude "./plugins/*/build" \
-             --exclude "./plugins/*/dist" \
-             --exclude "**/*~" \
-             --exclude "**/.bak" \
-             --exclude "**/*.ts" \
-             --exclude "**/yarn.lock" \
-             --exclude "**/*.debug.js" \
-             --exclude "**/package-lock.json" \
-	     --exclude "monaco-editor/esm" \
-             --exclude "node_modules/*.bak/*" \
-             --exclude "node_modules/**/*.md" \
-             --exclude "node_modules/**/*.DOCS" \
-             --exclude "node_modules/**/LICENSE" \
-             --exclude "node_modules/**/docs/**/*.html" \
-             --exclude "node_modules/**/docs/**/*.png" \
-             --exclude "node_modules/**/docs/**/*.js" \
-             --exclude "node_modules/**/test/*" . \
-             | "$TAR" -C "$STAGING" -xf -)
+    "$TAR" -C "$CLIENT_HOME" -cf - \
+           --exclude "./npm-packs" \
+           --exclude "kui-electron-tmp" \
+           --exclude "./bin" \
+           --exclude "./dist" \
+           --exclude "./tools" \
+           --exclude "./dist" \
+           --exclude "./builds" \
+           --exclude "./tests" \
+           --exclude "./docs/dev" \
+           --exclude "**/package-lock.json" \
+           --exclude "lerna-debug.log" \
+           --exclude ".git*" \
+           --exclude ".travis*" \
+           --exclude "./build/*/node_modules/*" \
+           --exclude "./packages/*/node_modules/*" \
+           --exclude "./plugins/*/node_modules/*" \
+           --exclude "./packages/*/dist" \
+           --exclude "./plugins/*/build" \
+           --exclude "./plugins/*/dist" \
+           --exclude "**/*~" \
+           --exclude "**/.bak" \
+           --exclude "**/yarn.lock" \
+           --exclude "**/*.debug.js" \
+	   --exclude "monaco-editor/esm" \
+           --exclude "node_modules/*.bak/*" \
+           --exclude "node_modules/**/*.md" \
+           --exclude "node_modules/**/*.DOCS" \
+           --exclude "node_modules/**/LICENSE" \
+           --exclude "node_modules/**/docs/**/*.html" \
+           --exclude "node_modules/**/docs/**/*.png" \
+           --exclude "node_modules/**/docs/**/*.js" \
+           --exclude "node_modules/**/test/*" . \
+        | "$TAR" -C "$STAGING" -xf -
     echo "tar copy done"
+}
 
-    (cd "$STAGING" && \
-         cp package.json bak.json && \
-         "$LERNA" link convert && \
-         (node -e 'const pjson = require("./package.json"); const pjson2 = require("./bak.json"); for (let k in pjson2.dependencies) pjson.dependencies[k] = pjson2.dependencies[k]; delete pjson.dependencies[`@kui-shell/builder`]; require("fs").writeFileSync("./package.json", JSON.stringify(pjson, undefined, 2))') && \
-         npm install --production --ignore-scripts --no-package-lock && \
-         NO_ARTIFACTS=true "$BUILDER_HOME"/bin/link-build-assets.sh && \
-         (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js) && \
-         ("$BUILDER_HOME"/bin/kui-link-artifacts.sh) && \
-         rm bak.json)
-    if [ $? != 0 ]; then
-        exit $?
-    fi
-    echo "lerna magic done"
+# TODO share this with headless/build.sh, as they are identical
+function configure {
+    UGLIFY=true npx --no-install kui-compile
+    CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
+
+    # we need to get @kui-shell/settings into the package
+    # dependencies, so that npm prune --production does not remove it;
+    # i.e. a self-managed symlink is not sufficient
+    (cd "$STAGING" && npm install --save ./packages/app/build)
+}
+
+function build {
+    rm -rf "$STAGING"
+    mkdir -p "$STAGING"
+    cd "$STAGING"
+
+    tarCopy
+    configure
+
+    export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "package.json")).dependencies.electron).replace(/^[^~]/, ""))')
 
     # product name
     export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
@@ -158,15 +145,8 @@ function init {
     # make the build directory
     mkdir -p "$BUILDDIR"
 
-    if [ ! -d node_modules ]; then
-	npm install
-    fi
-
-    # assemble plugins
-    # (cd "$STAGING" && "$SCRIPTDIR"/bin/compile.js
-    # if [ $? -ne 0 ]; then exit 1; fi
-
     # minify the core css
+    (cd "$BUILDER_HOME/dist/electron" && npm install) # to pick up `minify`
     CSS_SOURCE="$CORE_HOME"/web/css
     CSS_TARGET="$APPDIR"/build/css
     mkdir -p "$CSS_TARGET"
@@ -175,14 +155,14 @@ function init {
         css=`basename $i`
         echo -n "Minifying $css... "
         cp "$i" /tmp/"$css"
-        npx minify /tmp/"$css"
+        (cd "$BUILDER_HOME/dist/electron" && npx --no-install minify /tmp/"$css")
         cp /tmp/"$css" "$CSS_TARGET"/"$css"
     done
 
     VERSION=`cat $APPDIR/build/package.json | jq --raw-output .version`
     echo "$VERSION" > $APPDIR/.version
-    
-    # (cd "$STAGING" && npm prune --production)
+
+    rm -f "$STAGING"/packages/app/build/build
 }
 
 function cleanup {
@@ -196,10 +176,11 @@ function win32 {
         # create the bundles
         echo "Electron build for win32"
 
-        npx electron-packager \
+        (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
 	    "$STAGING" \
 	    "${PRODUCT_NAME}" \
             ${NO_PRUNE} \
+            --electron-version $ELECTRON_VERSION \
 	    --asar \
 	    --ignore="$IGNORE" \
             --build-version=$VERSION \
@@ -209,7 +190,7 @@ function win32 {
 	    --protocol=wsk --protocol-name="Execute ${PRODUCT_NAME} commands" \
 	    --overwrite \
 	    --win32metadata.CompanyName="Apache" \
-	    --win32metadata.ProductName="${PRODUCT_NAME}"
+	    --win32metadata.ProductName="${PRODUCT_NAME}")
 
         #
         # deal with win32 packaging
@@ -234,10 +215,11 @@ function mac {
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ]; then
         echo "Electron build darwin $STAGING"
 
-        npx electron-packager \
+        (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
 	    "$STAGING" \
 	    "${PRODUCT_NAME}" \
             ${NO_PRUNE} \
+            --electron-version $ELECTRON_VERSION \
 	    --asar \
 	    --ignore="$IGNORE" \
             --build-version=$VERSION \
@@ -245,7 +227,7 @@ function mac {
 	    --platform=darwin \
 	    --icon=$ICON_MAC \
 	    --protocol=wsk --protocol-name="Execute ${PRODUCT_NAME} commands" \
-	    --overwrite
+	    --overwrite)
 
         # use a custom icon for mac
         cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
@@ -257,13 +239,13 @@ function mac {
         if [ -z "$NO_INSTALLER" ]; then
             if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
                 echo "DMG build for darwin"
-                npx electron-installer-dmg \
+                (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
 	            "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app" \
 	            "${PRODUCT_NAME}" \
 	            --out="$BUILDDIR" \
 	            --icon="$ICON_MAC" \
 	            --icon-size=128 \
-	            --overwrite &
+	            --overwrite) &
                 MAC_DMG_PID=$!
             fi
 
@@ -281,10 +263,11 @@ function linux {
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "linux" ]; then
         echo "Electron build linux"
 
-        npx electron-packager \
+        (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
 	    "$STAGING" \
 	    "${PRODUCT_NAME}" \
             ${NO_PRUNE} \
+            --electron-version $ELECTRON_VERSION \
 	    --asar \
 	    --ignore="$IGNORE" \
             --build-version=$VERSION \
@@ -292,7 +275,7 @@ function linux {
 	    --platform=linux \
 	    --protocol=wsk --protocol-name="Execute ${PRODUCT_NAME} commands" \
             --icon=$ICON_LINUX \
-	    --overwrite
+	    --overwrite)
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
@@ -308,7 +291,7 @@ function linux {
 
 
 # line up the work
-init
+build
 win32
 mac
 linux
@@ -362,7 +345,8 @@ fi
 wait
 cleanup
 
-echo "build.sh finished, here is what we think we built (in $BUILDDIR):"
+PRETTY_BUILDDIR="$(node -e 'console.log(require("path").normalize(process.env.BUILDDIR))')"
+echo "electron client build finished, here is what we built in $PRETTY_BUILDDIR:"
 ls -lh "$BUILDDIR" | grep -v headless
 
 exit $CODE

@@ -27,6 +27,20 @@ fi
 TOPDIR=.
 BUILDDIR="${TOPDIR}/build"
 
+# special case for kui-builder for now
+if [ -d packages/kui-builder ]; then
+    pluginPath=packages/kui-builder
+    plugin=`basename "$pluginPath"`
+    target="$BUILDDIR"/$pluginPath/src
+    mkdir -p "$target"
+    (cd "$pluginPath/$subdir" && npm run tsconfig:prepack)
+    (cd "$target" && rm -f tsconfig.json && cp "../../../../$pluginPath/tsconfig.json" .)
+    (cd "$pluginPath/$subdir" && npm run tsconfig:postpack)
+    for subdir in bin lib examples dist package.json; do
+        (cd "$target" && rm -rf "$subdir" && ln -sf "../../../../$pluginPath/$subdir")
+    done
+fi
+
 for pluginPath in plugins/* packages/app; do
     plugin=`basename "$pluginPath"`
     for subdir in bin tests samples templates web package.json; do
@@ -34,10 +48,8 @@ for pluginPath in plugins/* packages/app; do
 
         if [ -e "$pluginPath/$subdir" ]; then
             echo "linking library $plugin/$subdir"
-            target="$BUILDDIR/$pluginPath/src"
-            if [ ! -d "$target" ]; then
-                mkdir -p "$target"
-            fi
+            target="$BUILDDIR"/$pluginPath/src
+            mkdir -p "$target"
             (cd "$target" && rm -rf "$subdir" && ln -sf "../../../../$pluginPath/$subdir")
         fi
     done

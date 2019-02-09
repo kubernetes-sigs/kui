@@ -158,7 +158,7 @@ describe('Headless mode', function (this: common.ISuite) {
     it('should set host to us-south', () => cli.do('host set us-south')
        .then(cli.expectOK())
        .then(() => cli.do('host get'))
-       .then(cli.expectOK('https://openwhisk.ng.bluemix.net'))
+       .then(cli.expectOK('https://us-south.functions.cloud.ibm.com'))
        .catch(common.oops(this)))
 
     const { apihostIsLocal } = openwhisk
