@@ -65,12 +65,13 @@ export default (entity, options: IShowOptions) => {
     // the guard helps with: rule activations don't have an end time
     const duration = entity.end - entity.start
     element('.activation-duration', sidecar).innerText = prettyPrintDuration(duration)
+  }
 
-    if (entityLimitsAnnotation) {
-      // if we have BOTH a duration and limits data, then also show estimated cost
-      const roughCostEstimate = ((entityLimitsAnnotation.value.memory / 1024) * (Math.ceil(duration / 100) / 10) * 0.000017 * 1000000).toFixed(2)
-      element('.activation-estimated-cost', sidecar).innerText = roughCostEstimate
-    }
+  // estimated cost
+  if (entity.duration && entityLimitsAnnotation) {
+    // if we have BOTH a raw duration and limits data, then also show estimated cost
+    const roughCostEstimate = ((entityLimitsAnnotation.value.memory / 1024) * (Math.ceil(entity.duration / 100) / 10) * 0.000017 * 1000000).toFixed(2)
+    element('.activation-estimated-cost', sidecar).innerText = roughCostEstimate
   }
 
   // the entity.namespace and entity.name of activation records don't include the package name :/
