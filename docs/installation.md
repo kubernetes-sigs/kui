@@ -5,24 +5,26 @@ installation options; pick the one that best suits your environment.
 
 ## Option 1: Lightweight Download
 
-Kui offers a lightweight "headless" download option. The download is
-small (2-4 megabytes) and can be used in headless
-environments. Headless Kui will automatically download the graphical
-components, so this option provides seamless transition to graphics,
-and a lightweight, platform-neutral initial download.
+Kui offers a lightweight download option. The download is small (2-4
+megabytes) and can be used in headless environments. Headless Kui will
+automatically download the graphical components, so this option
+provides a seamless transition to graphics, and a lightweight,
+platform-neutral initial download.
 
-**Prerequisites** the headless client require that you have Node.js
+**Prerequisites** the headless clients require that you have Node.js
 8.15.0 or greater already installed on your system.
 
 [Kui-headless.tar.bz2](https://tarball.kui-shell.org) **|** [Kui-headless.zip](https://zip.kui-shell.org)
+
+> For example: curl -sL https://tarball.kui-shell.org | tar jxf -
 
 ## Option 2: Double-clickable app Download
 
 You may opt to download an double-clickable platform binary. With this
 option, you avoid having to worry about Node.js dependencies.
 However, currently, you will not be able to use Kui from your favorite
-terminal (support coming soon); you can still use Kui's own command
-line after launching the application.
+terminal (such support should come soon); Kui's graphical shell offers
+a command line experience.
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org) **|** [Kui-Windows.zip](https://win32-zip.kui-shell.org)
 
