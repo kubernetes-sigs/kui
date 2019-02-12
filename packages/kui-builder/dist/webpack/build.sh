@@ -73,6 +73,7 @@ function post {
     # npm install
 }
 
+# copy the core bits to the staging area
 function tarCopy {
     # word of warning for linux: in the TAR command below, the `-cf -` has
     # to come before the --exclude rules!
@@ -97,7 +98,7 @@ function tarCopy {
     echo "tar copy done"
 }
 
-# TODO share this with headless/build.sh, as they are identical
+# TODO share this with headless/build.sh, as they should eventually be identical
 function configure {
     UGLIFY=true npx --no-install kui-compile
 
@@ -126,13 +127,11 @@ function init {
 function initWebpack {
     pushd "$STAGING_DIR" > /dev/null
     cp -a "$BUILDER_HOME"/dist/webpack/{package.json,webpack.config.js,build-docker.sh,Dockerfile,bin,conf.d} .
-    if [ -d "$BUILDER_HOME"/dist/webpack/.keys ]; then
-        (cp -a "$BUILDER_HOME"/dist/webpack/.keys . || true) # it's ok if this does not exist; we will create some keys, later (in build-docker)
-    fi
     npm install --no-package-lock
     popd > /dev/null
 }
 
+# build the webpack bundles
 function webpack {
     pushd "$STAGING_DIR" > /dev/null
     rm -f "$BUILDDIR"/*.js*
@@ -140,6 +139,7 @@ function webpack {
     popd > /dev/null
 }
 
+# build a docker image that can serve the webpack client
 function docker {
     pushd "$STAGING_DIR" > /dev/null
     CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
@@ -165,12 +165,14 @@ function assembleHTMLPieces {
     fi
 }
 
+# remove the staging area
 function clean {
     if [ -z "$NO_CLEAN" ]; then
         rm -rf "$STAGING"
     fi
 }
 
+# this is the main routine
 function build {
     init
     tarCopy
@@ -183,12 +185,3 @@ function build {
 }
 
 build
-
-
-
-#         NO_ARTIFACTS=true "$BUILDER_HOME"/bin/link-build-assets.sh && \
-#         (cd "$initialDirectory" && KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js) && \
-#         ("$BUILDER_HOME"/bin/kui-link-artifacts.sh) && \
-#         (rm -rf "$STAGING"/packages/app/web/css/css) && \
-#         rm bak.json) && \
-

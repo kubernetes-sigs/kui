@@ -1,4 +1,6 @@
 build.sh
+build-docker.sh
+Dockerfile
 package.json
 package-lock.json
 *~
