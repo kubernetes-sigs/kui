@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/builder",
-  "version": "0.5.42",
+  "version": "0.5.46",
   "description": "Kui plugin development helpers",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -12,10 +12,10 @@
     "url": "git+https://github.com/IBM/kui.git"
   },
   "bin": {
-    "kui-webpack-client": "./dist/webpack/bin/webpack-client.sh",
     "kui-build-headless": "./dist/headless/build.sh",
     "kui-build-electron": "./dist/electron/build.sh",
     "kui-build-webpack": "./dist/webpack/build.sh",
+    "kui-run-webpack": "./dist/webpack/bin/webpack-client.sh",
     "kui-init": "./kui-dist-init.js",
     "kui-compile": "./bin/compile.sh",
     "kui-link-artifacts.sh": "./bin/kui-link-artifacts.sh",

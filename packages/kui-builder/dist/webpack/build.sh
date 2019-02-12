@@ -46,6 +46,15 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
 BUILDDIR="$CLIENT_HOME"/dist/webpack
 
+APPDIR="$STAGING"/packages/app
+CORE_HOME="$STAGING"/node_modules/@kui-shell/core
+
+echo "build-webpack CLIENT_HOME=$CLIENT_HOME"
+echo "build-webpack BUILDDIR=$BUILDDIR"
+echo "build-webpack STAGING=$STAGING"
+echo "build-webpack CORE_HOME=$CORE_HOME"
+echo "build-webpack APPDIR=$APPDIR"
+
 if [[ `uname` == Darwin ]]; then
     # see bin/postinstall; we use brew to ensure we have gtar
     TAR=gtar
@@ -132,7 +141,28 @@ function webpack {
 }
 
 function docker {
-    (cd "$STAGING_DIR" && CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh)
+    pushd "$STAGING_DIR" > /dev/null
+    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
+    popd > /dev/null
+}
+
+# some of the assets are in sibling directories; let's copy them here
+# to our BUILDDIR directory:
+function assembleHTMLPieces {
+    cp "$APPDIR"/build/index-webpack.html "$BUILDDIR"/index.html
+    cp -r "$CORE_HOME"/web/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
+
+    # if we are using a build config override, then copy in its assets
+    THEME="$CLIENT_HOME"/theme
+    if [ -d "$THEME"/css ]; then
+        cp -r "$THEME"/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
+    fi
+    if [ -d "$THEME"/icons ]; then
+        cp -r "$THEME"/icons "$BUILDDIR" # !!! intentional NO trailing slash: icons
+    fi
+    if [ -d "$THEME"/images ]; then
+        cp -r "$THEME"/images "$BUILDDIR" # !!! intentional NO trailing slash: images
+    fi
 }
 
 function clean {
@@ -147,6 +177,7 @@ function build {
     initWebpack
     configure
     webpack
+    assembleHTMLPieces
     docker
     clean
 }
