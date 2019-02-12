@@ -57,13 +57,6 @@ export default async (commandTree, prequire) => {
   await addParameter(commandTree, wsk)
   await beautify(commandTree, wsk)
 
-  try {
-    const editorBits = (await import('./lib/cmds/editor-extensions')).default
-    await editorBits(commandTree, wsk)
-  } catch (err) {
-    debug('it looks like we are running in a distribution that does not include the editor plugin')
-  }
-
   // action extensions
   await letCommand(commandTree, wsk)
   await invoke(commandTree, wsk)

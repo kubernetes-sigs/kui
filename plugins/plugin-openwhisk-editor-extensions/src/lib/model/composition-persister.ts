@@ -15,12 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/model/editor/composition-persister')
-
-import { pexec } from '@kui-shell/core/core/repl'
+const debug = Debug('plugins/openwhisk-editor-extensions/model/composition-persister')
 
 import { basename } from 'path'
 
+import { pexec } from '@kui-shell/core/core/repl'
 import { extension } from '@kui-shell/plugin-editor/lib/file-types'
 
 /**

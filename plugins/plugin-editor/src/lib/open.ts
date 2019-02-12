@@ -142,11 +142,14 @@ export const openEditor = async (name, options, execOptions) => {
       status.className = 'editor-status'
 
       if (options.readOnly) {
+        debug('staus:is-read-only')
         status.classList.add('is-read-only')
       }
       if (entity.isNew) {
+        debug('status:is-new')
         status.classList.add('is-new')
       } else {
+        debug('status:is-up-to-date')
         status.classList.add('is-up-to-date')
       }
       isNew.className = 'is-new'
@@ -156,17 +159,20 @@ export const openEditor = async (name, options, execOptions) => {
 
       // even handlers for saved and content-changed
       const editsInProgress = () => {
+        debug('editsInProgress')
         sidecar.classList.add('is-modified')
         editor.clearDecorations() // for now, don't try to be clever; remove decorations on any edit
         eventBus.emit('/editor/change', {})
       }
       const editsCommitted = entity => {
+        debug('editsCommited')
         const lockIcon = sidecar.querySelector('[data-mode="lock"]')
 
         sidecar.classList.remove('is-modified')
         status.classList.remove('is-new')
         if (lockIcon) lockIcon.classList.remove('is-new')
         sidecar.entity = entity
+        debug('status:is-up-to-date')
 
         // update the version badge to reflect the update
         addVersionBadge(entity, { clear: true })

@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/preload-editor-extensions')
+const debug = Debug('plugins/openwhisk-editor-extensions/preload')
 debug('loading')
 
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
@@ -37,8 +37,8 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
 
     const { registerFetcher } = await import('@kui-shell/plugin-editor/lib/fetchers')
 
-    const { addActionMode } = await import('./lib/models/modes')
-    const { fetchAction } = await import('./lib/cmds/editor-extensions')
+    const { addActionMode } = await import('@kui-shell/plugin-openwhisk/lib/models/modes')
+    const { fetchAction } = await import('./lib/cmds/new')
 
     registerFetcher(fetchAction())
 
