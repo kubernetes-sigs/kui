@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/client')
 
 import * as path from 'path'
-import * as Conductor from 'openwhisk-composer/conductor'
+import * as Client from 'openwhisk-composer/client'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -38,7 +38,7 @@ const options = {
 export const deploy = ({ composition, overwrite }) => {
   // deploys the JSON-encoded composition
   debug('deploying composition', composition)
-  return Conductor(options).compositions.deploy(composition, overwrite)
+  return Client(options).compositions.deploy(composition, overwrite)
     .then(entity => {
       // delploy returns [{...}]
       return Object.assign(entity[0], { name: entity[0].id, verb: 'update', type: 'composition' })
