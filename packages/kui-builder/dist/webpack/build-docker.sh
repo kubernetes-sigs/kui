@@ -26,32 +26,17 @@ set -o pipefail
 
 CLIENT_HOME=${CLIENT_HOME-$(pwd)}
 BUILDDIR=${KUI_BUILDDIR-"$CLIENT_HOME"/dist/webpack}
-STAGING="${KUI_STAGE}"
 
-APPDIR="$STAGING"/packages/app
-CORE_HOME="$STAGING"/node_modules/@kui-shell/core
+echo "build-docker CLIENT_HOME=$CLIENT_HOME"
+echo "build-docker BUILDDIR=$BUILDDIR"
 
 # create the self-signed certificate
-npm run http-allocate-cert
+CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
+cp -a "$CLIENT_HOME"/.keys .
 
+# this directory will contain the webpack bundles, CSS, images,
+# index.html, etc.
 cp -a "$BUILDDIR" build
-
-# some of the assets are in sibling directories; let's copy them here
-# to our BUILDDIR directory:
-cp "$APPDIR"/build/index-webpack.html "$BUILDDIR"/index.html
-cp -r "$CORE_HOME"/web/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
-
-# if we are using a build config override, then copy in its assets
-THEME="$CLIENT_HOME"/theme
-if [ -d "$THEME"/css ]; then
-    cp -r "$THEME"/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
-fi
-if [ -d "$THEME"/icons ]; then
-    cp -r "$THEME"/icons "$BUILDDIR" # !!! intentional NO trailing slash: icons
-fi
-if [ -d "$THEME"/images ]; then
-    cp -r "$THEME"/images "$BUILDDIR" # !!! intentional NO trailing slash: images
-fi
 
 # finally, build the docker image
 docker build . -t kui-webpack
