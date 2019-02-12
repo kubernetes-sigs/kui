@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Copyright 2017-2018 IBM Corporation
+# Copyright 2019 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,18 +16,11 @@
 # limitations under the License.
 #
 
-set -e
-
 docker images | grep kui-proxy >& /dev/null
 if [ $? != 0 ]; then
-    echo "no kui-proxy image found, building..."
-    if [ ! -d ../../node_modules/@kui-shell ]; then
-        npx kui-build-proxy
-    else
-        npm run build-docker
-    fi
+    echo "no kui-proxy image found; try `npx kui-build-proxy`"
+    exit 1
 fi
 
 echo 'starting proxy'
-
 docker run -e DEBUG=$DEBUG --name kui-proxy --rm -p 8081:3000 kui-proxy

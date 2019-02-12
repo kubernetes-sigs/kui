@@ -1,5 +1,5 @@
 #
-# Copyright 2018 IBM Corporation
+# Copyright 2019 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,6 +38,9 @@ RUN apk add --no-cache ca-certificates bash git \
 ###########
 
 COPY . /kui-proxy
+
+# hmm.. sometimes the npm link command hangs without this extra npm config gset
+RUN npm config set registry https://registry.npmjs.org
 RUN cd /kui-proxy/kui && npm link ../app --no-package-lock
 
 CMD [ "npx", "start-proxy" ]

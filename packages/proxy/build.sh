@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Copyright 2018 IBM Corporation
+# Copyright 2019 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,26 +17,70 @@
 #
 
 set -e
+set -o pipefail
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+STAGING="${1-`pwd`}"
+STAGING_DIR="$(cd $STAGING && pwd)/kui-proxy-tmp"
+STAGING="$STAGING_DIR"/kui
+echo "staging directory: $STAGING"
 
-if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell/builder ]; then
-    BUILDER_HOME="$SCRIPTDIR"/../../node_modules/@kui-shell/builder
-    PROXY_HOME="$BUILDER_HOME"/../proxy
-else
-    PROXY_HOME="$SCRIPTDIR"
-    BUILDER_HOME="$SCRIPTDIR/../kui-builder"
-fi
+CLIENT_HOME="$(pwd)"
+BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
+PROXY_HOME="$BUILDER_HOME"/../proxy
 
-STAGING="$PROXY_HOME" # temporary spot for the kui-headless build
-APP="$SCRIPTDIR"/app
+# prep the staging area
+function init {
+    rm -rf "$STAGING_DIR"
+    mkdir -p "$STAGING"
+    cd "$STAGING"
+}
 
-# this will use place the build in $STAGING/kui
-QUIET=true NO_ZIPS=true "$BUILDER_HOME"/dist/headless/build.sh "$STAGING"
+# install the proxy-specific build bits
+function initProxy {
+    pushd "$STAGING_DIR" > /dev/null
+    cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,.dockerignore,app} .
+    npm install --no-package-lock
+    popd > /dev/null
+}
 
-# ssl cert
-(cd "$STAGING"/kui && "$BUILDER_HOME"/dist/webpack/bin/ssl.sh)
+# build a headless distribution
+function headless {
+    # this will place the build in $STAGING/kui
+    pushd "$CLIENT_HOME" > /dev/null
+    QUIET=true NO_ZIPS=true npx kui-build-headless "$STAGING_DIR"
+    popd > /dev/null
+}
 
-(cd "$PROXY_HOME" && ./build-docker.sh)
+# create the self-signed certificate
+function cert {
+    pushd "$BUILDER_HOME/dist/webpack" > /dev/null
+    CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
+    cp -a "$CLIENT_HOME"/.keys .
+    popd
+}
 
-if [ -z "$NO_CLEAN" ]; then rm -rf "$STAGING/kui"; fi
+# create a docker image that can host the proxy
+function docker {
+    pushd "$STAGING_DIR" > /dev/null
+    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
+    popd > /dev/null
+}
+
+# clean up the staging area
+function clean {
+    if [ -z "$NO_CLEAN" ]; then
+        rm -rf "$STAGING_DIR";
+    fi
+}
+
+# this is the main routine
+function build {
+    init
+    initProxy
+    headless
+    cert
+    docker
+    clean
+}
+
+build
