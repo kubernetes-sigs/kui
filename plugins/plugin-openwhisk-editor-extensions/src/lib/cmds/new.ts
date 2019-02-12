@@ -15,20 +15,19 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/cmds/editor-extensions')
+const debug = Debug('plugins/openwhisk-editor-extensions/cmds/new')
 
 import * as repl from '@kui-shell/core/core/repl'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
-import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
-import { fetchFile, registerFetcher } from '@kui-shell/plugin-editor/lib/fetchers'
-import { language } from '@kui-shell/plugin-editor/lib/file-types'
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
+import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
+import { language } from '@kui-shell/plugin-editor/lib/file-types'
+import { fetchFile, registerFetcher } from '@kui-shell/plugin-editor/lib/fetchers'
 
-import strings from '../../i18n/strings'
-import * as placeholders from '../editor-placeholders'
-
-import { persister as compositionPersister } from '@kui-shell/plugin-apache-composer/lib/model/editor/composition-persister'
+import strings from '../i18n/strings'
+import * as placeholders from '../placeholders'
+import { persister as compositionPersister } from '../model/composition-persister'
 
 /**
  * Default settings
@@ -240,7 +239,7 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
     return betterNotExist(name, options)
       .then(() => Promise.all([makeAction(), openEditor(name, options, execOptions)]))
       .then(prepareEditorWithAction)
-      .then(respondToRepl())
+      .then(respondToRepl(undefined, ['is-modified']))
   }
 }
 

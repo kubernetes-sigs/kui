@@ -48,12 +48,5 @@ export default async (commandTree, prequire) => {
   await appGet(commandTree, prequire)
   await appConfig(commandTree, prequire)
 
-  try {
-    const editorBits = (await import('./lib/controller/cmd/editor-extensions')).default
-    await editorBits(commandTree, prequire)
-  } catch (err) {
-    debug('it looks like we are running in a distribution that does not include the editor plugin')
-  }
-
   debug('init done')
 }

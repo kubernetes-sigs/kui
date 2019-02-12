@@ -15,18 +15,18 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmds/editor-extensions')
+const debug = Debug('plugins/openwhisk-editor-extensions/cmds/compose')
 
 import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 
-import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from '@kui-shell/plugin-openwhisk/lib/cmds/editor-extensions'
+import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from './new'
 import { extension, language } from '@kui-shell/plugin-editor/lib/file-types'
 import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
 import { loadComposition } from '@kui-shell/plugin-apache-composer/lib/utility/compile'
 
-import { handleParseError, persister } from '../../model/editor/composition-persister'
+import { handleParseError, persister } from '../model/composition-persister'
 
 export const composeUsage = {
   strict: 'compose',
@@ -360,7 +360,7 @@ export const newAction = ({ prequire, cmd = 'new', type = 'actions', _kind = def
       .then(() => Promise.all([makeAction(), openEditor(name, options, execOptions)]))
       .then(prepareEditorWithAction)
       .then(addWskflow(prequire))
-      .then(respondToRepl())
+      .then(respondToRepl(undefined, ['is-modified']))
   }
 }
 

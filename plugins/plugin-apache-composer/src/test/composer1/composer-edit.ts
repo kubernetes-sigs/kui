@@ -45,7 +45,7 @@ describe('edit compositions', function (this: common.ISuite) {
   /** deploy the changes */
   const deploy = (app, action) => () => {
     return app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))
-      .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`))
+      .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new)`))
       .then(() => app)
       .catch(err => {
         console.error('Ouch, something bad happened, let us clean up the action before retrying')
