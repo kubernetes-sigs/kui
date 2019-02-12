@@ -86,6 +86,7 @@ function tarCopy {
     (cd "$STAGING" && \
          "$TAR" -C "$CLIENT_HOME" -cf - \
                 --exclude "./npm-packs" \
+                --exclude "./theme" \
                 --exclude "./kui" \
                 --exclude "./kui-*-tmp" \
                 --exclude "./bin" \

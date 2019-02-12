@@ -22,27 +22,24 @@ STAGING="${TOPDIR}"/packages/app/build
 
 (cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/app/web/css)
 
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$TOPDIR"/clients/default/theme}
-if [ ! -d "$KUI_BUILD_CONFIG" ]; then
-    KUI_BUILD_CONFIG="`pwd`/$KUI_BUILD_CONFIG"
-    if [ ! -d "$KUI_BIULD_CONFIG" ]; then
-        echo "Cannot find KUI_BUILD_CONFIG"
-        exit 1
-    fi
+THEME=$(cd "$CLIENT_HOME"/theme && pwd)
+if [ ! -d "$THEME" ]; then
+    echo "Cannot find THEME"
+    exit 1
 fi
 
-if [ -d "$KUI_BUILD_CONFIG"/css/themes ]; then
+if [ -d "$THEME"/css/themes ]; then
     echo "linking in theme css"
     rm -f "$STAGING"/css/themes && \
-        (cd "$STAGING"/css && ln -s "$KUI_BUILD_CONFIG"/css/themes)
+        (cd "$STAGING"/css && ln -s "$THEME"/css/themes)
 fi
-if [ -d "$KUI_BUILD_CONFIG"/icons ]; then
+if [ -d "$THEME"/icons ]; then
     echo "linking in theme icons"
     rm -f "$STAGING"/icons && \
-        (cd "$STAGING" && ln -s "$KUI_BUILD_CONFIG"/icons)
+        (cd "$STAGING" && ln -s "$THEME"/icons)
 fi
-if [ -d "$KUI_BUILD_CONFIG"/images ]; then
+if [ -d "$THEME"/images ]; then
     echo "linking in theme images"
     rm -f "$STAGING"/images && \
-        (cd "$STAGING" && ln -s "$KUI_BUILD_CONFIG"/images)
+        (cd "$STAGING" && ln -s "$THEME"/images)
 fi

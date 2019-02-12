@@ -35,17 +35,18 @@ CORE_HOME="$STAGING"/node_modules/@kui-shell/core
 BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME"/dist/electron
 
-KUI_BUILD_CONFIG=${KUI_BUILD_CONFIG-"$CLIENT_HOME"/theme}
-
 #
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
 IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(lerna.json)|(node_modules/@kui-plugin)'
 
+#
+# client version; note rcedit.exe fails if the VERSION is "dev"
+#
 set +e
 VERSION=`git rev-parse master 2> /dev/null`
-if [ $? != 0 ]; then VERSION=dev; fi
+if [ $? != 0 ]; then VERSION=0.0.1; fi
 set -e
 
 # we will manage devDep pruning ourselves
@@ -63,6 +64,7 @@ function tarCopy {
     # to come before the --exclude rules!
     "$TAR" -C "$CLIENT_HOME" -cf - \
            --exclude "./npm-packs" \
+           --exclude "./theme" \
            --exclude "./kui" \
            --exclude "./kui-*-tmp" \
            --exclude "./bin" \
@@ -129,21 +131,22 @@ function build {
     export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
 
     # filesystem icons
-    ICON_MAC="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
-    ICON_WIN32="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
-    ICON_LINUX="$KUI_BUILD_CONFIG"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
+    THEME="$CLIENT_HOME"/theme
+    ICON_MAC="$THEME"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
+    ICON_WIN32="$THEME"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
+    ICON_LINUX="$THEME"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
 
-    if [ -d "$KUI_BUILD_CONFIG"/css ]; then
+    if [ -d "$THEME"/css ]; then
         echo "copying in theme css"
-        cp -r "$KUI_BUILD_CONFIG"/css/ "$STAGING"/packages/app/build/css/
+        cp -r "$THEME"/css/ "$STAGING"/packages/app/build/css/
     fi
-    if [ -d "$KUI_BUILD_CONFIG"/icons ]; then
+    if [ -d "$THEME"/icons ]; then
         echo "copying in theme icons"
-        cp -r "$KUI_BUILD_CONFIG"/icons "$STAGING"/packages/app/build
+        cp -r "$THEME"/icons "$STAGING"/packages/app/build
     fi
-    if [ -d "$KUI_BUILD_CONFIG"/images ]; then
+    if [ -d "$THEME"/images ]; then
         echo "copying in theme images"
-        cp -r "$KUI_BUILD_CONFIG"/images "$STAGING"/packages/app/build
+        cp -r "$THEME"/images "$STAGING"/packages/app/build
     fi
 
     if [ -n "$TARBALL_ONLY" ]; then exit; fi
