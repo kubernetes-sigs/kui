@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "MONOREPO_MODE=true CLIENT_HOME=./clients/default ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
-    "build:configure": "CLIENT_HOME=./clients/default node packages/kui-builder/lib/configure.js && ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/default ./packages/kui-builder/bin/seticon.js",
+    "build:configure": "CLIENT_HOME=./clients/default node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/default ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/default ./packages/kui-builder/bin/seticon.js",
     "build:electron-for-development": "(cd tests && ./bin/corral.sh && npm install --no-package-lock) && npm run build:configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done && (cd tests && ./bin/corral.sh)",
     "build:hoist": "npx lerna bootstrap --ignore-prepublish --hoist",
     "postinstall": "npm run build:hoist && npm run build:electron-for-development"

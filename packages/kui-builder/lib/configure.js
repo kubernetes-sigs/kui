@@ -213,7 +213,6 @@ const loadOverrides = (programmaticOverrides = {}) => {
   }
 
   debug('overrides', overrides)
-  console.log('overrides', overrides)
   return overrides
 }
 

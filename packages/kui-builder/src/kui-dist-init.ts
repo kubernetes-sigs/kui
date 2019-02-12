@@ -32,8 +32,35 @@ const notCreating = (what: string): void => {
   console.log(colors.dim('-') + ' not creating ' + what)
 }
 
+/**
+ * Copy a directory
+ *
+ * @param breadcrumb specifies a require-able breadcrumb within the
+ * directory to the copied
+ * @param target the path to the target directory
+ *
+ */
+const copyDirectory = async (breadcrumb: string, target: string, force: boolean) => {
+  const targetExists = await exists(target)
+  if (!targetExists || force) {
+    // note fs-extra's copy of directories copies the *contents*
+    if (!targetExists) {
+      await mkdir(target)
+    }
+
+    const source = dirname(require.resolve(breadcrumb))
+    await copy(source, target, {
+      preserveTimestamps: true
+    })
+
+    creating(target)
+  } else {
+    notCreating(target)
+  }
+}
+
 export const main = async (argv: Array<string>) => {
-  const force = argv.find(_ => _ === '-f' || _ === '--force')
+  const force = !!argv.find(_ => _ === '-f' || _ === '--force')
 
   if (!(await exists('plugins'))) {
     await mkdir('plugins')
@@ -56,30 +83,8 @@ export const main = async (argv: Array<string>) => {
     notCreating('packages/app/src directory')
   }
 
-  if (!(await exists('lerna.json')) || force) {
-    await writeFile('lerna.json', JSON.stringify(lernaJson))
-    creating('lerna.json')
-  } else {
-    notCreating('lerna.json')
-  }
-
-  const target = 'plugins/plugin-sample'
-  const targetExists = await exists(target)
-  if (!targetExists || force) {
-    // note fs-extra's copy of directories copies the *contents*
-    if (!targetExists) {
-      await mkdir(target)
-    }
-
-    const source = dirname(require.resolve('@kui-shell/builder/examples/plugin-sample/package.json'))
-    await copy(source, target, {
-      preserveTimestamps: true
-    })
-
-    creating('plugins/plugin-sample')
-  } else {
-    notCreating('plugins/plugin-sample')
-  }
+  copyDirectory('@kui-shell/builder/examples/plugin-sample/package.json', 'plugins/plugin-sample', force)
+  copyDirectory('@kui-shell/builder/examples/build-configs/default/theme/theme.json', 'theme', force)
 
   creating('main entry in package.json')
   const pjson = require(join(__dirname, '../../../package.json'))
