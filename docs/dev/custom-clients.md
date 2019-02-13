@@ -56,9 +56,9 @@ npx kui-build-webpack
 As above, you needn't build all three flavors of clients; this example
 is intended to enumerate the commands.
 
-## Next Steps: Customize!
+## Next Step: Customize!
 
 Now that you have made a decision on how to develop a custom Kui
 client, you are ready to begin making customization choices. For more
 information on customizing your client, please consult the
-[customization guide](customization-guide).
+[customization guide](customization-guide.md).
