@@ -1,33 +1,36 @@
-# Kui webpack builds
+# Serving Kui to Browsers via webpack
 
-This directory will help you to create and publish a
-[webpack](https://webpack.js.org/) distribution. The intention is for
-creating a hosted version of Kui, for use within any reasonably
-compliant browser.
+Please note: the scripts in this directory are not intended for direct
+consumption. Please consult the [custom client
+guide](../../../../docs/dev/custom-clients.md) for more information on
+developing and building a custom Kui client.
 
-## Configuring and Customizing the Build
+The rest of this file is intended to describe the general concepts of
+[webpack](https://webpack.js.org/), and its relation to Kui.  The
+intention is for creating a hosted version of Kui to be served to web
+browsers; this in contrast to the [Kui Electron](../electron)
+distributions which are intended to be run locally from a
+double-clickable application.
 
-If you wish to customize the build, e.g. by using a custom theme,
-consult the [build customization
-guide](../../../../docs/dev/build-customization.md).
+The core views of Kui, and the plugins shipped with this repository
+are currently compatible with any reasonably compliant browser.
 
-## Building for webpack
+## webpack bundles
 
-This command will generate the webpack bundles:
+The [build.sh](./build.sh) script (again: not intended for direct use,
+see above) will generate the webpack bundles. For clients developed
+within the Kui monorepo, your interface to this script is `npm run
+build:webpack`. For clients developed as external repositories, your
+interface to it will be `npx kui-build-webpack`; please see the
+[custom client guide](../../../../docs/dev/custom-clients.md) for more
+information on these alternatives.
 
-```bash
-export KUI_BUILD_CONFIG=/optional/path/to/my/build/config
-./build.sh
-```
-
-When it is done (which may take 2-3 minutes), you should see a
-collection of `*.br` files generated in the enclosed `build/`
-directory. These are the webpack bundles.
-
-The bundles are compressed using the
+When the build is done (which may take 2-3 minutes), you should see a
+collection of `*.br` files generated in your `my-client/dist/webpack`
+directory. These are the webpack bundles, compressed using the
 [brotli](https://en.wikipedia.org/wiki/Brotli) encoding. Brotli
-provides fast decompression combined with higher compression ratios
-than most other approaches out there.
+provides fast decompression combined with generally much higher
+compression ratios than gzip.
 
 ### Warning on https verus brotli
 
@@ -50,22 +53,15 @@ plugins will likely not be functional when serving Kui from a browser.
 
 ## How to serve the webpack assets
 
-After `build.sh` is done, you may choose to use the built docker image
-to serve up the webpack assets. This is helpful for test and
-debugging, and may also be helpful as a template for real
-deployments. If you only need to rebuild the docker image, using
-previously built webpack bundles:
+When the build process completes, you will also have a docker image
+`kui-webpack` that can serve up your custom client. This docker image
+includes `nginx`, the `brotli` plugin for nginx, along with the
+webpack bundles and other HTML assets that constitute your Kui client.
+
+To run it from your custom client directory:
 
 ```bash
-./build-docker.sh
-```
-
-> Note that `build.sh` calls `build-docker.sh`.
-
-This will create a docker image named `kui-webpack`. To run it:
-
-```bash
-npm start
+npx kui-run-webpack
 ```
 
 This npm script makes sure that the self-signed SSL certificates have
@@ -81,11 +77,6 @@ This example docker image uses self-signed certificates.  Therefore,
 the first time you execute this command, you will be prompted to
 generate a self-signed certificate. When the http-server process is
 ready, you will see a URL to visit.
-
-### Configuring the local webpack environment
-
-To change the build settings for a local build, consult
-[webpack.json](../../app/config/envs/webpack.json).
 
 ## Serving from S3
 
