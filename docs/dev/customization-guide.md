@@ -1,10 +1,13 @@
-# Crafting Custom Kui Clients
+# Crafting a Custom Kui Client
 
 To develop a client, you have two choices. First, you may fork this
 repository and populate `clients/my-client`, using [the default
 client](../../clients/default) as a starting point. Second, you may
-develop your client externally to this repository. For 
+develop your client externally to this repository. For more
+information on development choice, please consult the [custom client
+guide](custom-clients.md).
 
+The remainder of this document describes how to customize your client.
 You may customize the configuration of your clients in several ways:
 
 - choose a subset of previously published plugins to incorporate

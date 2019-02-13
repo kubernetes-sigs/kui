@@ -77,3 +77,4 @@ workflows.
 - [More Kubernetes Examples](docs/readme/examples/kubernetes.md)
 - [Apache OpenWhisk Examples](docs/readme/examples/openwhisk.md)
 - [Apache Composer Examples](docs/readme/examples/composer.md)
+- [Creating your own Custom Kui Client](docs/dev/custom-clients.md)
