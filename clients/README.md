@@ -1,15 +1,13 @@
-# Kui Client Definitions for Development
+# Kui Custom Clients
 
-A Kui "custom client":
+This directory is intended for development of custom clients via a
+fork of the main Kui repository. The [default](./default) directory
+houses the custom client that Kui uses for its continuous integration
+and delivery pipeline.
 
-1. defines a theme, in the `themes` subdirectory
-2. may introduce plugins, by placing them in the `plugins` subdirectory
-3. may leverage existing plugins, by `npm install` of published assets
-
-This directory holds custom client definitions that help with
-development of the Kui core. They may also be helpful as examples of
-how custom clients are structured. Just be cautious, as there is some
-setup logic (namely in the [link-universe
-script](./bin/link-universe.sh)) that bootstraps the core files in
-such a way that avoids having to publish the core assets to a remote
-registry.
+Please consult the [custom client
+documentation](../docs/dev/custom-clients) for more information on
+developing a Kui client, including your development options, the
+customization opportunities, how to extend Kui by adding custom
+plugins, and how to build headless, electron, and webpack
+distributions.
