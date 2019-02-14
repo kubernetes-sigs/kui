@@ -103,7 +103,7 @@ export const decorateAsApp = async ({ action, viewName = 'composition', commandP
     }
 
     const visualize = require('./visualize').default
-    const { view, controller } = await wskflow(visualize, viewName, Object.assign({}, action, { viewOptions }))
+    const { view, controller } = await wskflow(visualize, Object.assign({}, action, { viewOptions }))
 
     const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
     if (sourceAnnotation) {
@@ -129,7 +129,7 @@ export const decorateAsApp = async ({ action, viewName = 'composition', commandP
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (visualize, viewName, { ast, input, name, packageName, namespace, viewOptions, container }) => {
+export const wskflow = async (visualize, { ast, input, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = await repl.qexec('wsk rule list')
@@ -139,15 +139,7 @@ export const wskflow = async (visualize, viewName, { ast, input, name, packageNa
     }))
     .catch(() => [])
 
-  const result = await visualize(ast, container, undefined, undefined, undefined, viewOptions, isPartOfRule)
-
-  if (!viewOptions || !viewOptions.noHeader) {
-    const onclick = undefined
-    sidecar.addNameToSidecarHeader(undefined, name, packageName, onclick, viewName,
-      'This is a preview of your app, it is not yet deployed')
-  }
-
-  return result
+  return visualize(ast, container, undefined, undefined, undefined, viewOptions, isPartOfRule)
 }
 
 /**

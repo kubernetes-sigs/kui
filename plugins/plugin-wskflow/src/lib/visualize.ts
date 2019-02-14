@@ -21,7 +21,7 @@ debug('loading')
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
-type GraphRenderer = (ir, containerElement, acts, options, rule) => void
+type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
 
 import fsm2graph from './fsm2graph'
 import { dirname, join } from 'path'
