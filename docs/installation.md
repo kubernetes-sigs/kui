@@ -16,7 +16,9 @@ platform-neutral initial download.
 
 [Kui-headless.tar.bz2](https://tarball.kui-shell.org) **|** [Kui-headless.zip](https://zip.kui-shell.org)
 
-> For example: curl -sL https://tarball.kui-shell.org | tar jxf -
+##### Example Download for MacOS headless
+
+> curl -sL https://tarball.kui-shell.org | tar jxf -
 
 ## Option 2: Double-clickable app Download
 
@@ -29,6 +31,11 @@ a command line experience.
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org) **|** [Kui-Windows.zip](https://win32-zip.kui-shell.org)
 
 *Coming soon: MacOS .dmg, Linux .deb, Linux .rpm*
+
+##### Example Download for MacOS double-clickable
+
+> curl -L https://macos-tarball.kui-shell.org/ | tar jxf -  
+open Kui-darwin-x64/Kui.app
 
 ### Important Note on Unsigned Builds
 
