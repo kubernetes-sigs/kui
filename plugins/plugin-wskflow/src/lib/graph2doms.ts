@@ -337,11 +337,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         } else {
           // only for preview graphs, not for session graphs
           if (d.type === 'action') {
-            if (d.deployed) {
-              return 'deployed'
-            } else {
-              return 'not-deployed'
-            }
+            return d.deployStatus
           }
         }
       })
@@ -585,7 +581,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
             if (d.type === 'try') $(this).css('stroke', wfColor.Try.normal)
             else if (d.type === 'handler') $(this).css('stroke', wfColor.handler.normal)
             else if (d.type === 'try_catch') $(this).css('stroke', wfColor.try_catch.normal)
-          } else if (d.type === 'action' && $('#' + d.id).attr('data-deployed') !== 'not-deployed') {
+          } else if (d.type === 'action' && $('#' + d.id).attr('data-deployed') === 'deployed') {
             $(this).css('fill', wfColor.Task.normal)
           }
           $('.link').not('.forwardingLink').css('stroke', 'grey')

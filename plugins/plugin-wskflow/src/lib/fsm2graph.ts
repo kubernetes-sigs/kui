@@ -88,6 +88,7 @@ interface INode {
   visited?: Array<string>
   children?: Array<INode>
   edges?: Array<IEdge>
+  deployStatus?: string
 }
 
 interface INodeOptions {
@@ -636,7 +637,7 @@ function ir2graph (ir, gm, id: string, prevId: Array<string>, options = {}) { //
   }
 }
 
-export default function fsm2graph (ir, containerElement, acts, options, rule): void {
+export default async function fsm2graph (ir, containerElement, acts, options, rule): Promise<void> {
   // console.log(ir, containerElement, acts);
   taskIndex = 0
   activations = acts
@@ -719,31 +720,21 @@ export default function fsm2graph (ir, containerElement, acts, options, rule): v
     names.forEach(name => {
       array.push(repl.qexec(`wsk action get "${name}"`))
     })
-    Promise.all(array.map(p => p.catch(e => e)))
+    await Promise.all(array.map(p => p.catch(e => e)))
       .then(result => {
         const notDeployed = []
         result.forEach((r, index) => {
           if (r.type === 'actions' && r.name) {
             debug(`action ${r.name} is deployed`)
             actions[names[index]].forEach(id => {
-              let t = setInterval(e => {
-                if ($('#' + id).length > 0) {
-                  clearInterval(t)
-                  $('#' + id).attr('data-deployed', 'deployed')
-                }
-              }, 20)
+              graphData.children.find((children: INode) => children.id === id).deployStatus = 'deployed'
             })
           } else {
             debug(`action ${names[index]} is not deployed`, r, names)
             if (actions[names[index]]) {
               notDeployed.push(names[index])
               actions[names[index]].forEach(id => {
-                let t = setInterval(e => {
-                  if ($('#' + id).length > 0) {
-                    clearInterval(t)
-                    $('#' + id).attr('data-deployed', 'not-deployed')
-                  }
-                }, 20)
+                graphData.children.find((children: INode) => children.id === id).deployStatus = 'not-deployed'
               })
             }
           }
