@@ -100,6 +100,8 @@ function tarCopy {
         | "$TAR" -C "$STAGING" -xf -
 
     echo "tar copy done"
+
+    if [ -n "$TARBALL_ONLY" ]; then exit; fi
 }
 
 # TODO share this with headless/build.sh, as they are identical
@@ -118,14 +120,21 @@ function init {
     rm -rf "$STAGING"
     mkdir -p "$STAGING"
     cd "$STAGING"
+
+    # make the build directory
+    mkdir -p "$BUILDDIR"
 }
 
-function build {
-    init
-    tarCopy
-    configure
+# check for prerequisites
+function prereq {
+    if [ ! -d theme ]; then
+        echo "Your client directory does not define a theme/ subdirectory"
+        exit 1
+    fi
+}
 
-    export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "package.json")).dependencies.electron).replace(/^[^~]/, ""))')
+function assembleHTMLPieces {
+        export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "package.json")).dependencies.electron).replace(/^[^~]/, ""))')
 
     # product name
     export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
@@ -148,11 +157,6 @@ function build {
         echo "copying in theme images"
         cp -r "$THEME"/images "$STAGING"/packages/app/build
     fi
-
-    if [ -n "$TARBALL_ONLY" ]; then exit; fi
-
-    # make the build directory
-    mkdir -p "$BUILDDIR"
 
     # minify the core css
     (cd "$BUILDER_HOME/dist/electron" && npm install) # to pick up `minify`
@@ -289,67 +293,78 @@ function linux {
             LINUX_ZIP_PID=$!
 
             echo "DEB build for linux"
-            ./builders/deb.sh &
+            "$BUILDER_HOME"/dist/electron/builders/deb.sh &
             LINUX_DEB_PID=$!
         fi
     fi
 }
 
+function tarball {
+    # exit code; we'll check the builders in a second, and possibly alter
+    # the exit code based on their exit codes
+    CODE=0
+
+    # check to see if any of the builders failed; we backgrounded them, so
+    # this is a bit convulated, in bash
+    if [ -n "$WIN_ZIP_PID" ]; then
+        wait $WIN_ZIP_PID
+        if [ $? != 0 ]; then
+            echo "Error with windows zip build"
+            CODE=1
+        fi
+    fi
+
+    if [ -n "$MAC_DMG_PID" ]; then
+        wait $MAC_DMG_PID
+        if [ $? != 0 ]; then
+            echo "Error with mac dmg build"
+            CODE=1
+        fi
+    fi
+
+    if [ -n "$MAC_TAR_PID" ]; then
+        wait $MAC_TAR_PID
+        if [ $? != 0 ]; then
+            echo "Error with mac tar build"
+            CODE=1
+        fi
+    fi
+
+    if [ -n "$LINUX_ZIP_PID" ]; then
+        wait $LINUX_ZIP_PID
+        if [ $? != 0 ]; then
+            echo "Error with linux zip build"
+            CODE=1
+        fi
+    fi
+
+    if [ -n "$LINUX_DMG_PID" ]; then
+        wait $LINUX_DMG_PID
+        if [ $? != 0 ]; then
+            echo "Error with linux dmg build"
+            CODE=1
+        fi
+    fi
+
+    wait
+}
+
+# this is the main routine
+function build {
+    echo "prereq" && prereq
+    echo "init" && init
+    echo "tarCopy" && tarCopy
+    echo "configure" && configure
+    echo "assembleHTMLPieces" && assembleHTMLPieces
+    echo "win32" && win32
+    echo "mac" && mac
+    echo "linux" && linux
+    echo "tarball" && tarball
+    echo "cleanup" && cleanup
+}
 
 # line up the work
 build
-win32
-mac
-linux
-
-# exit code; we'll check the builders in a second, and possibly alter
-# the exit code based on their exit codes
-CODE=0
-
-# check to see if any of the builders failed; we backgrounded them, so
-# this is a bit convulated, in bash
-if [ -n "$WIN_ZIP_PID" ]; then
-    wait $WIN_ZIP_PID
-    if [ $? != 0 ]; then
-        echo "Error with windows zip build"
-        CODE=1
-    fi
-fi
-
-if [ -n "$MAC_DMG_PID" ]; then
-    wait $MAC_DMG_PID
-    if [ $? != 0 ]; then
-        echo "Error with mac dmg build"
-        CODE=1
-    fi
-fi
-
-if [ -n "$MAC_TAR_PID" ]; then
-    wait $MAC_TAR_PID
-    if [ $? != 0 ]; then
-        echo "Error with mac tar build"
-        CODE=1
-    fi
-fi
-
-if [ -n "$LINUX_ZIP_PID" ]; then
-    wait $LINUX_ZIP_PID
-    if [ $? != 0 ]; then
-        echo "Error with linux zip build"
-        CODE=1
-    fi
-fi
-
-if [ -n "$LINUX_DMG_PID" ]; then
-    wait $LINUX_DMG_PID
-    if [ $? != 0 ]; then
-        echo "Error with linux dmg build"
-        CODE=1
-    fi
-fi
-
-wait
-cleanup
 
 PRETTY_BUILDDIR="$(node -e 'console.log(require("path").normalize(process.env.BUILDDIR))')"
 echo "electron client build finished, here is what we built in $PRETTY_BUILDDIR:"
