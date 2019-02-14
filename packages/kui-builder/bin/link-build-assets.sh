@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-#
-# Copyright 2017-18 IBM Corporation
+
+# Copyright 2017-19 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 #
 
 shopt -s extglob
+set -e
+set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 

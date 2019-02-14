@@ -19,4 +19,28 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 cd "$SCRIPTDIR/.."
 
-npx tsc --watch
+set +e
+TSCONFIG_HOME=`readlink $0`
+if [ $? == 1 ]; then
+    TSCONFIG_HOME="$SCRIPTDIR/.."
+    TSCONFIG="$TSCONFIG_HOME/tsconfig.json"
+    echo "it looks like we are not working off a symlink ${TSCONFIG_HOME}"
+else
+    TSCONFIG_HOME=$(dirname "$SCRIPTDIR/`dirname $TSCONFIG_HOME`")
+    TSCONFIG="$TSCONFIG_HOME/tsconfig.json"
+    echo "following link to find build home ${TSCONFIG_HOME}"
+fi
+
+npx --no-install tsc -h >& /dev/null
+if [ $? == 0 ]; then
+    TSC="npx tsc"
+else
+    TSC="$TSCONFIG_HOME/node_modules/.bin/tsc"
+    echo "Using TSC=$TSC"
+fi
+set -e
+
+# compile source
+echo ""
+echo "compiling source $TSCONFIG_HOME"
+$TSC --project "$TSCONFIG" --watch

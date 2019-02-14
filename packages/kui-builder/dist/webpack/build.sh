@@ -116,6 +116,14 @@ function configure {
     npm prune --production
 }
 
+# check for prerequisites
+function prereq {
+    if [ ! -d theme ]; then
+        echo "Your client directory does not define a theme/ subdirectory"
+        exit 1
+    fi
+}
+
 # prep the staging area
 function init {
     rm -rf "$STAGING_DIR"
@@ -174,6 +182,7 @@ function clean {
 
 # this is the main routine
 function build {
+    prereq
     init
     tarCopy
     initWebpack
