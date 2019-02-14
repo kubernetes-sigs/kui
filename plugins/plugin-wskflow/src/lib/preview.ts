@@ -147,10 +147,10 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       }
 
       const visualize = require('./visualize').default
-      const { view, controller } = await wskflowUtil.wskflow(visualize, viewName, { ast, input, name, viewOptions, container: execOptions.container, packageName: undefined, namespace: undefined })
+      const { view, controller } = await wskflowUtil.wskflow(visualize, { ast, input, name, viewOptions, container: execOptions.container, namespace: undefined })
       extraModes = extraModes.concat(wskflowUtil.zoomToFitButtons(controller))
 
-      const entity = {
+      let entity = {
         isEntity: true,
         type: mode === 'visualization' ? 'custom' : 'actions',
         prettyType: viewName,
@@ -173,6 +173,10 @@ const registration: PluginRegistration = (commandTree, prequire) => {
           { key: 'code', value: code },
           { key: 'file', value: input }
         ]
+      }
+
+      if (!viewOptions.noHeader) {
+        entity = Object.assign(entity, { controlHeaders: ['sidecar-header-secondary-content'], subtext: 'This is a preview of your composition, it is not yet deployed' })
       }
 
       if (options.ast || mode === 'ast') {

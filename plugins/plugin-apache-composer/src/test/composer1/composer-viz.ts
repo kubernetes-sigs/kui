@@ -53,6 +53,12 @@ const fsRead = composerInput('fs-read.js')
 const addSubscription = composerErrorInput('addSubscription.js')
 const owComposerErr = composerErrorInput('openwhisk-composer-throw-err.js')
 
+const verifyPreviewNoticeExist = (checkExist = true) => app => {
+  return app.client.waitUntil(() => {
+    return app.client.getText('.sidecar-header-secondary-content .custom-header-content')
+        .then(expectedText => expectedText.match(/^This is a preview of your composition, it is not yet deployed/) || !checkExist)
+  }, 2000)
+}
 /**
  * Here starts the test
  *
@@ -70,6 +76,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   it('should preview an empty composition', () => cli.do(`app preview data/composer/composer-source/empty.js`, this.app)
     .then(verifyTheBasicStuff('empty.js', 'composerLib'))
     .then(verifyEdgeExists('Entry', 'Exit'))
+    .then(verifyPreviewNoticeExist)
     .catch(common.oops(this)))
 
   /** test: @demos/seq.js file */
@@ -82,6 +89,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
        .then(verifyEdgeExists('Entry', 'date'))
        .then(verifyOutgoingEdgeExists('date'))
        .then(verifyEdgeExists('echo', 'Exit'))
+       .then(verifyPreviewNoticeExist)
        .catch(common.oops(this)))
   }
 
@@ -97,6 +105,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
       .then(verifyEdgeExists('foo1', 'foo2'))
       .then(verifyEdgeExists('foo2', 'foo3'))
       .then(verifyEdgeExists('foo3', 'Exit'))
+      .then(verifyPreviewNoticeExist)
       .catch(common.oops(this)))
   })
 
@@ -130,6 +139,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
       .then(verifyNodeExists('RandomError', false)) // is not deployed
       .then(verifyEdgeExists('Entry', 'Try-Catch'))
       .then(verifyEdgeExists('Try-Catch', 'Exit'))
+      .then(verifyPreviewNoticeExist)
       .catch(common.oops(this)))
   })
   //
@@ -155,6 +165,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(verifyNodeExists('seq3', false)) // not deployed
     .then(verifyEdgeExists('seq1', 'seq2'))
     .then(verifyEdgeExists('seq2', 'seq3'))
+    .then(verifyPreviewNoticeExist(false))
     .catch(common.oops(this)))
 
   /** test: preview wookiechat */
@@ -172,6 +183,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(verifyEdgeExists('report-empty', 'dummy_0'))
     .then(verifyEdgeExists('dummy_0', 'dummy_1'))
     .then(verifyEdgeExists('dummy_1', 'Exit'))
+    .then(verifyPreviewNoticeExist)
     .catch(common.oops(this)))
 
   /** test: viz, then create with -r, testing for handling of implicit entity and auto-deploy */
@@ -184,6 +196,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(verifyNodeExists('report-swapi', false)) // expect not to be deployed
     .then(verifyNodeExists('report-stapi', false)) // expect not to be deployed
     .then(verifyNodeExists('report-empty', false)) // expect not to be deployed
+    .then(verifyPreviewNoticeExist(false))
     .catch(common.oops(this)))
 
   // /** test: if js file */
@@ -201,6 +214,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(verifyEdgeExists('seq3', 'dummy_0'))
     .then(verifyEdgeExists('seq5', 'dummy_0'))
     .then(verifyEdgeExists('dummy_0', 'Exit'))
+    .then(verifyPreviewNoticeExist)
     .catch(common.oops(this)))
 
   /** test: while with nested sequence, from js file */
@@ -276,6 +290,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(verifyNodeExists('echo1'))
     .then(verifyNodeExists('echo2'))
     .then(verifyEdgeExists('echo1', 'echo2'))
+    .then(verifyPreviewNoticeExist)
     .catch(common.oops(this)))
 
   /** test: from the openwhisk-composer/samples directory */
@@ -285,6 +300,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   it(`fail to show visualization for addSubscription without -e for env var assignment`, () => cli.do(`preview ${addSubscription.path}`, this.app)
     .then(cli.expectError(0, 'SLACK_TOKEN required in environment'))
+    .then(verifyPreviewNoticeExist)
     .catch(common.oops(this)))
 
   it(`fail to show visualization for addSubscription with partial -e for env var assignment`, () => cli.do(`preview ${addSubscription.path} -e SLACK_TOKEN yo`, this.app)

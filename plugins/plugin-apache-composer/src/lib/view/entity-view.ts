@@ -99,7 +99,8 @@ export const visualizeComposition = async (response, execOptions) => {
         viewName: action.type,
         content,
         input,
-        isEntity: true
+        isEntity: true,
+        controlHeaders: ['sidecar-header-secondary-content']
       })
     } else {
       return response

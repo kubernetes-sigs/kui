@@ -24,6 +24,7 @@ import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 
 import graph2doms from './graph2doms'
 import { textualPropertiesOfCode } from './util'
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
 const maxWidth = 100
 // const defaultWidth = 40
@@ -88,6 +89,7 @@ interface INode {
   visited?: Array<string>
   children?: Array<INode>
   edges?: Array<IEdge>
+  deployed?: boolean
 }
 
 interface INodeOptions {
@@ -636,7 +638,7 @@ function ir2graph (ir, gm, id: string, prevId: Array<string>, options = {}) { //
   }
 }
 
-export default function fsm2graph (ir, containerElement, acts, options, rule): void {
+export default async function fsm2graph (ir, containerElement, acts, options, rule): Promise<void> {
   // console.log(ir, containerElement, acts);
   taskIndex = 0
   activations = acts
@@ -648,8 +650,6 @@ export default function fsm2graph (ir, containerElement, acts, options, rule): v
     children: [],
     edges: []
   }
-
-  $('.wskflowWarning').remove()
 
   if (activations) {
     // parse the activations to get a list of states that was visted
@@ -719,31 +719,29 @@ export default function fsm2graph (ir, containerElement, acts, options, rule): v
     names.forEach(name => {
       array.push(repl.qexec(`wsk action get "${name}"`))
     })
-    Promise.all(array.map(p => p.catch(e => e)))
+    await Promise.all(array.map(p => p.catch(e => e)))
       .then(result => {
         const notDeployed = []
+
+        const graphChildrenStatus = (childrens: Array<INode>, id: string, deployed: boolean) => {
+          return childrens.forEach((children: INode) => {
+            if (children.id === id) children.deployed = deployed
+            else if (children.children) return graphChildrenStatus(children.children, id, deployed)
+          })
+        }
+
         result.forEach((r, index) => {
           if (r.type === 'actions' && r.name) {
             debug(`action ${r.name} is deployed`)
             actions[names[index]].forEach(id => {
-              let t = setInterval(e => {
-                if ($('#' + id).length > 0) {
-                  clearInterval(t)
-                  $('#' + id).attr('data-deployed', 'deployed')
-                }
-              }, 20)
+              graphChildrenStatus(graphData.children, id, true)
             })
           } else {
             debug(`action ${names[index]} is not deployed`, r, names)
             if (actions[names[index]]) {
               notDeployed.push(names[index])
               actions[names[index]].forEach(id => {
-                let t = setInterval(e => {
-                  if ($('#' + id).length > 0) {
-                    clearInterval(t)
-                    $('#' + id).attr('data-deployed', 'not-deployed')
-                  }
-                }, 20)
+                graphChildrenStatus(graphData.children, id, false)
               })
             }
           }
@@ -753,6 +751,7 @@ export default function fsm2graph (ir, containerElement, acts, options, rule): v
         if (notDeployed.length > 0 && !activations) {
           const container = document.querySelector(sidecarSelector('.sidecar-header .sidecar-header-secondary-content .custom-header-content'))
           if (container && (!options || !options.noHeader)) {
+            removeAllDomChildren(container)
             const css = {
               message: 'wskflow-undeployed-action-warning',
               text: 'wskflow-undeployed-action-warning-text',
