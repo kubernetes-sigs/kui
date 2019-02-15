@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/cmds/kubectl')
 debug('loading')
 
+import { delimiter } from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
@@ -568,6 +569,16 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
 
   const { spawn } = require('child_process')
   delete env.DEBUG // don't pass this through to kubectl or helm; helm in particular emits crazy output
+
+  // on macOS, double-clicked and dock-launched processes do not have
+  // /usr/local/bin on PATH; unfortunately this is the common location
+  // of kubectl and helm
+  if (!env.PATH.match(/\/usr\/local\/bin/)) {
+    debug('adding /usr/local/bin to PATH')
+    process.env.PATH = env.PATH = `${env.PATH}${delimiter}/usr/local/bin`
+    // ^^^ note how we remember this in process.env
+  }
+
   const child = spawn(command,
                       argvWithFileReplacements,
                       { env, shell: true })
