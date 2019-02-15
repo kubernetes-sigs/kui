@@ -81,24 +81,96 @@ interface IOptions {
   asJSON?: boolean
 }
 
+const cloudLensPattern = /^(?=[IEF][0-9]+)/m
+const zaprPattern = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(DEBUG|INFO|ERROR)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/m
+
+interface IZaprEntry {
+  timestamp: string
+  logType: string
+  provider: string
+  origin: string
+  rest: string
+}
+
+/**
+ * sigh...
+ *
+ * Array.prorotype.findIndex does not accept a start index;
+ * and Array.prototype.indexOf does not accept a pattern
+ *
+ */
+const findIndex = (A, pattern, startIdx) => {
+  for (let idx = startIdx; idx < A.length; idx++) {
+    if (A[idx].match(pattern)) {
+      return idx
+    }
+  }
+  return -1
+}
+
+/** zapr log format splitter */
+const zaprSplit = (raw: string): Array<IZaprEntry> => {
+  const records = raw.split(zaprPattern).filter(x => x !== '\n')
+  const lines = []
+
+  let idx = 0
+  while (true) {
+    const nextIdx = findIndex(records, /(DEBUG|INFO|ERROR)/, idx)
+    if (nextIdx >= idx + 1) {
+      const startIdx = nextIdx - 1
+      for (let preIdx = idx; preIdx < startIdx; preIdx++) {
+        const maybe = records[preIdx].match(/^\n?(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})\s+(.*)\n$/)
+        if (maybe) {
+          lines.push({
+            timestamp: maybe[1],
+            logType: 'INFO',
+            provider: '',
+            origin: '',
+            rest: maybe[2]
+          })
+        } else {
+          lines.push({
+            timestamp: '',
+            logType: 'INFO',
+            provider: '',
+            origin: '',
+            rest: records[preIdx].replace(/^\n(.*)\n$/, '$1')
+          })
+        }
+      }
+      lines.push({
+        timestamp: records[startIdx],
+        logType: records[startIdx + 1],
+        provider: records[startIdx + 2],
+        origin: records[startIdx + 3],
+        rest: records[startIdx + 4]
+      })
+
+      idx = startIdx + 5
+    } else {
+      break
+    }
+  }
+
+  // return undefined if we don't have any log entries so that the `||
+  // linesByCloudLens` below works
+  return lines.length > 0 && lines
+}
+
 /**
  * Format the kubectl access logs
  *
  */
 export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) => {
-  const linesByCloudLens = raw.split(/^(?=[IEF][0-9]+)/m)
-  const isNotCloudLens = linesByCloudLens.length === 1 && raw.indexOf('\n') >= 0
+  const linesByCloudLens = raw.split(cloudLensPattern)
 
-  const lines = isNotCloudLens
-    ? raw.split(/[\n\r]/)
-    : linesByCloudLens
-
-  const logEntries = lines
-    .slice(Math.max(0, lines.length - 1000)) // display no more than 1000 lines
+  const logEntries = zaprSplit(raw) ||
+    linesByCloudLens
+    .slice(Math.max(0, linesByCloudLens.length - 1000)) // display no more than 1000 lines
     .filter(x => x)
     .filter(x => x.indexOf('Watch close') < 0)
     .reverse()
-    .reduce(squashLogRuns(isNotCloudLens, options), [])
+    .reduce(squashLogRuns(false, options), [])
 
   if (!options.asHTML) {
     return logEntries
@@ -106,16 +178,16 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
     const container = document.createElement('div')
     container.classList.add('log-lines')
 
-    logEntries.forEach(({ logType= '', timestamp= '', origin= '', rest, runLength }) => {
+    logEntries.forEach(({ logType = '', timestamp = '', origin = '', rest, runLength = 1 }) => {
       // dom for the log line
       const logLine = document.createElement('div')
       logLine.classList.add('log-line')
       container.appendChild(logLine)
 
       // stdout or stderr?
-      if (logType.match(/^I/)) {
+      if (logType.match(/^I/) || logType.match(/^INFO$/)) {
         logLine.classList.add('logged-to-stdout')
-      } else if (logType.match(/^[EF]/)) { // errors or failures
+      } else if (logType.match(/^[EF]/) || logType.match(/^(ERROR|WARN)/)) { // errors or failures
         logLine.classList.add('logged-to-stderr')
       }
 
@@ -155,6 +227,14 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
       logLine.appendChild(restDom)
     })
 
-    return container
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('padding-content')
+    wrapper.classList.add('scrollable')
+    wrapper.classList.add('scrollable-auto')
+    wrapper.classList.add('monospace')
+    wrapper.classList.add('smaller-text')
+    wrapper.appendChild(container)
+
+    return wrapper
   }
 }
