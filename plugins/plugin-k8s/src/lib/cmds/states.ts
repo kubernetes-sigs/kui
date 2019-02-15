@@ -160,7 +160,9 @@ const genericOnlineMessage = {
  *
  */
 const kindForQuery = (apiVersion: string, kind: string): string => {
-  return kind === 'Service' && apiVersion !== 'v1' ? 'cc' : kind
+  debug('apiVersion', apiVersion)
+  const api = apiVersion.replace(/^(.*)\/.*$/, '$1').replace(/^v.*/, '')
+  return `${kind}.${api}`
 }
 
 /**
@@ -188,8 +190,8 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
   try {
     const cmd = `kubectl get ${contextOption(context)} ${kindForQuery(apiVersion, kind)} ${name} ${ns(namespace)} -o json`
     // debug('getStatus', cmd);
-    const rawState = await repl.qexec(cmd)
-    debug('getStatus rawState', rawState)
+    const rawState = await repl.qexec(cmd, undefined, undefined, { raw: true })
+    debug('getStatus rawState', apiVersion, rawState)
 
     const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
 

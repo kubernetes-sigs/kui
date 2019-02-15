@@ -512,11 +512,9 @@ export const showCustom = async (custom, options) => {
 
   if (custom.content.then) {
     container.appendChild(await custom.content)
-  } else if (custom.content.nodeName) {
-    container.appendChild(custom.content)
-  } else if (custom.contentTypeProjection) {
+  } else if (custom.contentType || custom.contentTypeProjection) {
     // we were asked ot project out one specific field
-    const projection = custom.content[custom.contentTypeProjection]
+    const projection = custom.contentTypeProjection ? custom.content[custom.contentTypeProjection] : custom.content
 
     if (projection.nodeName) {
       // then its already a DOM
@@ -529,9 +527,16 @@ export const showCustom = async (custom, options) => {
       container.appendChild(scrollWrapper)
       scrollWrapper.appendChild(pre)
       pre.appendChild(code)
-      code.innerText = projection
+
+      if (typeof projection === 'string') {
+        code.innerText = projection
+      } else {
+        const beautify = require('js-beautify')
+        code.innerText = beautify(JSON.stringify(projection), { wrap_line_length: 80, indent_size: 2 })
+      }
 
       scrollWrapper.style.flex = '1'
+      scrollWrapper.classList.add('scrollable')
       scrollWrapper.classList.add('scrollable-auto')
 
       if (custom.contentType) {
@@ -547,6 +552,8 @@ export const showCustom = async (custom, options) => {
         }, 0)
       }
     }
+  } else if (custom.content.nodeName) {
+    container.appendChild(custom.content)
   } else {
     container.appendChild(document.createTextNode(custom.content))
   }

@@ -714,22 +714,24 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
 
       const result = output === 'json'
         ? JSON.parse(out)
-        : {
-          result: output === 'accesslog' ? formatLogs(out)
-            : output === 'yaml' ? redactYAML(out, options)
-            : redactJSON(out, options)
-        }
+        : output === 'accesslog' ? formatLogs(out)
+        : output === 'yaml' ? redactYAML(out, options)
+        : redactJSON(out, options)
+
+      debug('structured output', result)
 
       if (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied) {
+        debug('directing resolving', isHeadless())
         return resolve(result)
       }
 
-      const modes = [
-        { mode: 'result',
-          direct: () => repl.pexec(rawCommand),
-          label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
-          defaultMode: true }
-      ]
+      const modes = [{
+        mode: 'result',
+        direct: () => repl.pexec(rawCommand),
+        label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
+        defaultMode: true
+      }]
+
       if (verb === 'get') {
         const resource: IResource = { kind: command !== 'helm' && entityType, name: entity }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike)),
@@ -737,26 +739,21 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
         modes.push(deleteResourceButton())
       }
 
+      const content = result
+
       const record = {
-        type: 'activations',
-        annotations: [],
+        type: 'custom',
+        isEntity: true,
+        name: entity || verb,
+        packageName: cmdlineForDisplay,
         namespace: options.namespace || options.n,
         prettyType: entityTypeForDisplay || command,
-        activationId: cmdlineForDisplay,
-        name: entity || verb,
         noCost: true, // don't display the cost in the UI
         modes,
-        response: {
-          success: true,
-          status: 'success',
-          result
-        }
+        content
       }
 
-      if (output !== 'json') {
-        record['contentType'] = output
-        record['contentTypeProjection'] = 'result'
-      }
+      record['contentType'] = output
 
       debug('exec output json', record)
       resolve(record)
