@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/editor/readonly')
+
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
 
@@ -21,17 +24,22 @@ import * as repl from '@kui-shell/core/core/repl'
  * Enter read-only mode
  *
  */
-export const readonly = ({ getEntity }) => () => Promise.resolve(getEntity())
-  .then(({ namespace, name }) => repl.qexec(`action get "/${namespace}/${name}"`))
-  .then(showEntity)
+export const gotoReadonlyLocalFile = ({ getEntity }) => async () => {
+  const entity = await getEntity()
+  debug('readonly', entity.name, entity)
+  return repl.pexec(`open ${repl.encodeComponent(entity.name)}`)
+}
 
 /**
  * Enter edit mode
  *
  */
-export const edit = ({ getEntity }) => () => Promise.resolve(getEntity())
-  .then(({ namespace, name }) => repl.qexec(`edit "/${namespace}/${name}"`))
-  .then(entity => showCustom(entity, {}))
+export const edit = ({ getEntity, lock = undefined }) => async () => {
+  const { namespace, name } = await getEntity()
+
+  return repl.qexec(`edit "/${namespace}/${name}"`, undefined, undefined, { custom: { getEntity, lock } })
+    .then(entity => showCustom(entity, {}))
+}
 
 /**
  * Render a lock/unlock icon as a mode button
@@ -41,13 +49,15 @@ export const lockIcon = ({ getEntity,
   mode = 'lock', // doesn't need to be translated, as we use an icon
   icon = 'fas fa-unlock-alt',
   tooltip = 'You are in edit mode.\u000aClick to return to view mode.', // TODO externalize string
-  direct = exports.readonly({ getEntity })
+  direct = gotoReadonlyLocalFile({ getEntity })
 }) => ({
   mode,
   actAsButton: true,
   fontawesome: icon,
-  data: { 'data-balloon': tooltip,
+  data: {
+    'data-balloon': tooltip,
     'data-balloon-break': true,
-    'data-balloon-pos': 'up-left' },
+    'data-balloon-pos': 'up-left'
+  },
   direct
 })

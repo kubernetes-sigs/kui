@@ -20,7 +20,7 @@ const debug = Debug('plugins/editor/cmds/edit-amd')
 import { respondToRepl } from '../util'
 import { fetchEntity } from '../fetchers'
 import * as usage from '../../usage'
-import { lockIcon } from '../readonly'
+import { lockIcon as defaultLock } from '../readonly'
 import { applyOverrides } from '../overrides'
 import { openEditor } from '../open'
 
@@ -53,7 +53,9 @@ const edit = (prequire) => async ({ argvNoOptions, parsedOptions, execOptions })
   const model = await injectEntityIntoView(entity)
 
   // respond with a repl-compatible data model
-  return respondToRepl([ lockIcon ])(model)
+  const custom = execOptions.custom
+  const lock = (custom && custom.lock) || entity.gotoReadonlyView || defaultLock
+  return respondToRepl([ lock ])(model)
 }
 
 export default async (commandTree, prequire) => {

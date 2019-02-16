@@ -68,6 +68,7 @@ export const save = ({ getEntity, editor, eventBus }) => {
     direct: () => {
       const entity = getEntity()
       const persister = entity.persister
+      debug('persister', persister, entity)
       const { save } = entity.persister
 
       // transfer the latest code from the editor into the entity
@@ -78,6 +79,7 @@ export const save = ({ getEntity, editor, eventBus }) => {
           entity.persister = persister
           eventBus.emit('/editor/save', entity, { event: 'save' })
           globalEventBus.emit('/editor/save', entity, { event: 'save' })
+          return entity
         })
     }
   }

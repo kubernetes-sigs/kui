@@ -45,7 +45,8 @@ export const openEditor = async (name, options, execOptions) => {
   const sidecar = getSidecar()
 
   /** returns the current entity */
-  const getEntity = currentSelection
+  const custom = execOptions.custom
+  const getEntity = (custom && custom.getEntity) || currentSelection
 
   const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
 

@@ -23,6 +23,7 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import { findFile } from '@kui-shell/core/core/find-file'
 import { persisters } from './persisters'
+import { gotoReadonlyLocalFile } from './readonly'
 
 /** allows us to reassign a string code to a numeric one */
 interface IErrorWithAnyCode extends Error {
@@ -39,12 +40,17 @@ interface IKeyValuePair {
   value: string
 }
 
+interface Getter {
+  getEntity: () => object
+}
+
 export interface IEntity {
   type: string
   name: string
   filepath?: string
   exec: IExecSpec
   persister: any
+  gotoReadonlyView?: (Getter) => any
   annotations: Array<IKeyValuePair>
 }
 
