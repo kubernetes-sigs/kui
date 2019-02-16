@@ -1409,7 +1409,6 @@ const makeInit = (commandTree) => async (isReinit = false) => {
 
           const handler = executor(commandTree, eee.name || api, verb, verb)
           const entityAliasMaster = commandTree.listen(`/wsk/${eee.nickname || eee}/${verb}`, handler, { usage: docs(api, verb) })
-          if (verb === 'invoke') console.error('IIIIIIIIIIIIIIOOOOOOOO', eee, verb)
 
           // register e.g. wsk action help; we delegate to
           // "wsk action", which will print out usage (this
