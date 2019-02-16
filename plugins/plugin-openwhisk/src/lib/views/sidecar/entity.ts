@@ -283,13 +283,15 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
               // render the textual source code
               //
 
-              code.className = `action-source ${uiNameForKind(entity.exec.kind.substring(0, entity.exec.kind.indexOf(':')))}`
-              code.innerText = beautify(entity.exec.kind, entity.exec.code)
+              const lang = uiNameForKind(entity.exec.kind.substring(0, entity.exec.kind.indexOf(':')))
+              const codeText = beautify(entity.exec.kind, entity.exec.code)
 
               // apply the syntax highlighter to the code; there is some but in higlightjs w.r.t. comments;
               // we need to repeat in order to assure that the whole block isn't rendered as a giant comment
-              hljs.highlightBlock(code)
-              setTimeout(() => { code.innerText = beautify(entity.exec.kind, entity.exec.code); hljs.highlightBlock(code) }, 100) // HACK HACK to work around highlightjs bug v0.9.12
+              // WARNING: hljs.highlightBlock is buggy, at least as of 9.14.2 (same with 9.12.0)
+              // but hljs.highlight seems better
+              code.innerHTML = hljs.highlight(lang, codeText).value
+              code.className = `action-source ${lang}`
             } else {
               // TODO what do we do with binary actions?
               code.innerText = 'This is a binary action'
