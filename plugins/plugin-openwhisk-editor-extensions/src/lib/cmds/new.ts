@@ -268,7 +268,7 @@ const persisters = {
         action: entity
       })
 
-      return wsk.ow.actions.update(owOpts)
+      return wsk.client({}).actions.update(owOpts)
     }
   }
 }
