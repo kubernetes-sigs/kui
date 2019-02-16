@@ -23,7 +23,8 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
 import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
 import { language } from '@kui-shell/plugin-editor/lib/file-types'
-import { fetchFile, registerFetcher } from '@kui-shell/plugin-editor/lib/fetchers'
+import { IEntity, fetchFile, registerFetcher } from '@kui-shell/plugin-editor/lib/fetchers'
+import { lockIcon } from '@kui-shell/plugin-editor/lib/readonly'
 
 import strings from '../i18n/strings'
 import * as placeholders from '../placeholders'
@@ -131,7 +132,20 @@ const failIfNot404 = err => {
         err.statusCode !== 'ENOTFOUND') {
     console.error(err)
     throw err
+  } else {
+    return true
   }
+}
+
+/**
+ * Enter read-only mode
+ *
+ */
+export const gotoReadonlyView = ({ getEntity }) => async () => {
+  const { namespace, name } = await getEntity()
+  const fqn = `/${namespace}/${name}`
+  debug('readonly', fqn)
+  return repl.pexec(`wsk action get ${repl.encodeComponent(fqn)}`)
 }
 
 /**
@@ -139,12 +153,12 @@ const failIfNot404 = err => {
  * compatible with the editor
  *
  */
-export const fetchAction = (check = checkForConformance, tryLocal = true) => (name: string, parsedOptions?, execOptions?) => {
+export const fetchAction = (check = checkForConformance, tryLocal = true) => (name: string, parsedOptions?, execOptions?): Promise<IEntity> => {
   if (name.charAt(0) === '!') {
     const parameterName = name.substring(1)
     const source = execOptions.parameters && execOptions.parameters[parameterName]
     if (source) {
-      return {
+      return Promise.resolve({
         type: 'source',
         name: execOptions.parameters.name,
         exec: {
@@ -152,12 +166,16 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (na
           code: source.toString()
         },
         annotations: [],
-        persister: execOptions.parameters.persister
-      }
+        persister: execOptions.parameters.persister,
+        gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+      })
     }
   }
   return repl.qexec(`wsk action get "${name}"`)
     .then(check)
+    .then(entity => Object.assign({}, entity, {
+      gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+    }))
     .catch(err => {
       if (tryLocal && err.code !== 406) { // 406 means that this is a valid action, but lacking composer source
         return fetchFile(name)
@@ -172,11 +190,11 @@ const fetchActionFailingIfExists = fetchAction(failWith409, false)
  * Confirm that the given named action does not already exist
  *
  */
-export const betterNotExist = (name: string, options) => {
+export const betterNotExist = (name: string, options): Promise<boolean> => {
   if (options.readOnly) {
     return Promise.resolve(true)
   } else {
-    return fetchActionFailingIfExists(name).catch(failIfNot404)
+    return fetchActionFailingIfExists(name).then(() => true).catch(failIfNot404)
   }
 }
 
@@ -243,12 +261,15 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   }
 }
 
-const persisters = {
+export const persisters = {
   // persisters for regular actions
   actions: {
     getCode: entity => entity,
     revert: (entity, { editor }) => {
-      return repl.qexec(`wsk action get "/${entity.namespace}/${entity.name}"`)
+      debug('revert', entity)
+      const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
+
+      return repl.qexec(`wsk action get "${namespacePart}${entity.name}"`)
         .then(persisters.actions.getCode)
         .then(entity => {
           entity.persister = persisters.actions
@@ -257,27 +278,21 @@ const persisters = {
         .then(() => true)
 
     },
-    save: (entity, editor) => {
+    save: (action, editor) => {
+      debug('save', action)
+      const namespacePart = action.namespace ? `/${action.namespace}/` : ''
+
       // odd: if we don't delete this, the backend will not perform its default version tagging behavior
       // https://github.com/apache/incubator-openwhisk/issues/3237
-      delete entity.version
+      delete action.version
 
-      const owOpts = wsk.owOpts({
-        name: entity.name,
-        namespace: entity.namespace,
-        action: entity
-      })
-
-      return wsk.client({}).actions.update(owOpts)
+      return repl.qexec(`wsk action update "${namespacePart}${action.name}"`,
+                        undefined, undefined, { entity: { action } })
     }
   }
 }
 
-let wsk
 export default async (commandTree, _wsk) => {
-  // FIXME, this isn't great :(
-  wsk = _wsk
-
   // command registration: create new action
   commandTree.listen('/editor/new', newAction(), { usage: newUsage, noAuthOk: true })
 }

@@ -17,6 +17,7 @@
 import { ExecType } from '../core/command-tree'
 
 export interface IExecOptions {
+  custom?: any
   rawResponse?: boolean
   isDrilldown?: boolean
   block?: HTMLElement
