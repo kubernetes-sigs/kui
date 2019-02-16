@@ -1259,7 +1259,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
 /** these are the module's exported functions */
 let self = {}
 
-const makeInit = (commandTree) => async () => {
+const makeInit = (commandTree) => async (isReinit = false) => {
   debug('init')
 
   // exported API
@@ -1291,7 +1291,7 @@ const makeInit = (commandTree) => async () => {
     auth: Object.assign({}, authModel, {
       set: (newAuthKey: string): Promise<boolean> => {
         if (authModel.set(newAuthKey)) {
-          initSelf()
+          initSelf(true)
         }
         self['ow'] = globalOW
         return Promise.resolve(true)
@@ -1360,6 +1360,8 @@ const makeInit = (commandTree) => async () => {
     }
   }
 
+  if (isReinit) return
+
   // for each entity type
   commandTree.subtree(`/wsk`, { usage: usage.wsk })
 
@@ -1407,6 +1409,7 @@ const makeInit = (commandTree) => async () => {
 
           const handler = executor(commandTree, eee.name || api, verb, verb)
           const entityAliasMaster = commandTree.listen(`/wsk/${eee.nickname || eee}/${verb}`, handler, { usage: docs(api, verb) })
+          if (verb === 'invoke') console.error('IIIIIIIIIIIIIIOOOOOOOO', eee, verb)
 
           // register e.g. wsk action help; we delegate to
           // "wsk action", which will print out usage (this
@@ -1591,5 +1594,5 @@ const makeInit = (commandTree) => async () => {
 let initSelf
 export default function (commandTree) {
   initSelf = makeInit(commandTree)
-  return initSelf()
+  return initSelf(false)
 }
