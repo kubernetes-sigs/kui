@@ -23,6 +23,8 @@ STAGING="${1-`pwd`}"
 STAGING="$(cd "$STAGING" && pwd)"
 echo "staging directory $STAGING"
 
+PRESCAN_OVERRIDE="$2"
+
 CLIENT_HOME="$(pwd)"
 APPDIR="$STAGING"/kui/packages/app
 BUILDER_HOME="$STAGING"/kui/node_modules/@kui-shell/builder
@@ -42,6 +44,14 @@ function init {
     rm -rf "$STAGING"/kui
     mkdir -p "$STAGING/kui/bin"
     mkdir -p $BUILDDIR
+
+    # override prescan
+    if [ -f "$PRESCAN_OVERRIDE" ]; then
+        echo "prescan override"
+        cp "$PRESCAN_OVERRIDE" "$STAGING"/prescan.json
+    else
+        echo "no prescan override"
+    fi
 
     cd "$STAGING/kui"
 }
@@ -127,6 +137,12 @@ function configure {
 function build {
     tarCopy
     configure
+
+    # override prescan
+    if [ -n "$PRESCAN_OVERRIDE" ]; then
+        echo "prescan override move"
+        mv "$STAGING/prescan.json" "$STAGING"/kui/node_modules/@kui-shell/prescan.json
+    fi
 
     # product name
     export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/build/config.json | jq --raw-output .theme.productName`}"
