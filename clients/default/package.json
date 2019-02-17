@@ -5,7 +5,7 @@
   "scripts": {
     "link:init": "../bin/link-universe.sh",
     "link:done": "mv bak.json package.json; rm -f tests",
-    "build:headless": "npm run link:init -- headless && npx --no-install kui-build-headless /tmp; npm run link:done",
+    "build:headless": "npm run link:init -- headless && npx --no-install kui-build-headless /tmp ../../node_modules/@kui-shell/prescan.json; npm run link:done",
     "build:electron": "build() { npm run link:init -- electron && npx --no-install kui-build-electron /tmp $1; npm run link:done; }; build",
     "build:webpack": "npm run link:init -- webpack && npx --no-install kui-build-webpack /tmp; npm run link:done"
   },
