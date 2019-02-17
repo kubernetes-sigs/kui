@@ -573,8 +573,9 @@ export const renderActivationListView = (activations: Array<Object>, container: 
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)
-  delete subset._
-  delete subset['User-Agent']
+  delete subset._ // this comes from yargs-parser
+  delete subset['User-Agent'] // see openwhisk-core, we add the user-agent fields there
+  delete subset['noUserAgent'] // ibid
 
   // these are from owOpts isLinxu in openwhisk-core
   delete subset.timeout
