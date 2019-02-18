@@ -21,7 +21,7 @@ set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="$SCRIPTDIR"/../../../../../
-BUILDDIR="$TOPDIR"/clients/default/builds
+DISTDIR="$TOPDIR"/clients/default/dist
 
 BRANCH=${BRANCH-`git rev-parse --abbrev-ref HEAD`}
 echo "Building and deploying to this release stream: $BRANCH"
@@ -62,13 +62,16 @@ echo "Storing builds in this bucket: $COS_BUCKET"
 (cd "$TOPDIR"/clients/default && npm run build:electron -- ${PLATFORM-all})
 (cd "$TOPDIR"/clients/default && npm run build:headless)
 
-echo "here is what we built:"
-ls -l "$BUILDDIR"
+echo "confirming what we built for headless:"
+ls "$DISTDIR/headless"
+echo "confirming what we built for electron:"
+ls "$DISTDIR/electron"
 
 # 3. push the builds to a new OS container
 # EXIST_OK means we're ok if the COS bucket already exists
 if [ -z "$NO_PUSH" ]; then
-    BUILDDIR="$BUILDDIR" NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
+    BUILDDIR="$DISTDIR/headless" NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
+    BUILDDIR="$DISTDIR/electron" NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
 
     # deploy the local-proxy.html which lets us offer kui:// links in
     # unfriendly environs such as github markdown
