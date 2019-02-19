@@ -45,9 +45,10 @@ IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(lerna.json)|(node_modules/@kui-plugin)
 # client version; note rcedit.exe fails if the VERSION is "dev"
 #
 set +e
-VERSION=`git rev-parse master 2> /dev/null`
+VERSION=$(cat "$CLIENT_HOME"/package.json | jq --raw-output .version)
 if [ $? != 0 ]; then VERSION=0.0.1; fi
 set -e
+echo "Using VERSION=$VERSION"
 
 # we will manage devDep pruning ourselves
 #NO_PRUNE=--no-prune
@@ -193,6 +194,7 @@ function win32 {
             --electron-version $ELECTRON_VERSION \
 	    --asar \
 	    --ignore="$IGNORE" \
+            --app-version=$VERSION \
             --build-version=$VERSION \
 	    --out=$BUILDDIR \
 	    --platform=win32 \
@@ -232,6 +234,7 @@ function mac {
             --electron-version $ELECTRON_VERSION \
 	    --asar \
 	    --ignore="$IGNORE" \
+            --app-version=$VERSION \
             --build-version=$VERSION \
 	    --out=$BUILDDIR \
 	    --platform=darwin \
@@ -280,6 +283,7 @@ function linux {
             --electron-version $ELECTRON_VERSION \
 	    --asar \
 	    --ignore="$IGNORE" \
+            --app-version=$VERSION \
             --build-version=$VERSION \
 	    --out=$BUILDDIR \
 	    --platform=linux \
