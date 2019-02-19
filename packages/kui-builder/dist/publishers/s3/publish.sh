@@ -36,8 +36,9 @@ if [ "$BRANCH" != "master" ]; then
     # then this is a prerelease distribution; fancy up the version stamp
     DATE=`date '+%Y%m%d%H%M%S'`                   # this is the current date
     VERSION="${BASE_VERSION}-${BRANCH}.${DATE}"   # add the branch and date to the base version stamp
-    (cd "$TOPDIR/packages/app" && npm version $VERSION)   # smash this into ../app/package.json
-    (cd "$TOPDIR/packages/app/build" && npm version $VERSION)   # smash this into ../app/build/package.json
+    (cd "$TOPDIR/packages/app" && npm version $VERSION)   # smash this into packages/app/package.json
+    (cd "$TOPDIR/packages/app/build" && npm version $VERSION)   # smash this into packages/app/build/package.json
+    (cd "$TOPDIR/clients/default" && npm version $VERSION)   # smash this into clients/default/package.json
 
     COS_BUCKET=$BRANCH                            # stash the builds in a bucket named by the branch
 
@@ -90,4 +91,5 @@ fi
 if [ "$BRANCH" != "master" ]; then
     (cd "$TOPDIR"/packages/app && npm version $BASE_VERSION)
     (cd "$TOPDIR"/packages/app/build && npm version $BASE_VERSION)
+    (cd "$TOPDIR/clients/default" && npm version $BASE_VERSION)
 fi
