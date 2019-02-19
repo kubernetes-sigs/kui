@@ -496,8 +496,16 @@ const prepareUsage = async (command: string) => {
  */
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
-} */
-const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand }) => new Promise(async (resolveBase, reject) => {
+  } */
+interface IOpts {
+  argv: Array<string>
+  argvNoOptions: Array<string>
+  execOptions
+  parsedOptions
+  command: string
+}
+const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (resolveBase, reject) => {
+  const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
   debug('exec', command)
 
   const verb = argv[1]
@@ -525,7 +533,7 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
   const cmdlineForDisplay = argv.slice(1).join(' ')
 
   // replace @seed/yo.yaml with full path
-  const argvWithFileReplacements = await Promise.all(rawArgv.slice(1).map(async _ => {
+  const argvWithFileReplacements: Array<string> = await Promise.all(rawArgv.slice(1).map(async (_: string): Promise<string> => {
     if (_.match(/^!.*/)) {
       // !foo params mean they flow programatically via execOptions.parameters.foo
       // we will pass this via stdin, which kubectl represents with a '-'
@@ -567,7 +575,7 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
     resolveBase(val)
   }
 
-  const { spawn } = require('child_process')
+  const { spawn, execSync } = await import('child_process')
   delete env.DEBUG // don't pass this through to kubectl or helm; helm in particular emits crazy output
 
   // on macOS, double-clicked and dock-launched processes do not have
@@ -577,6 +585,25 @@ const executeLocally = (command: string) => ({ argv: rawArgv, argvNoOptions: arg
     debug('adding /usr/local/bin to PATH')
     process.env.PATH = env.PATH = `${env.PATH}${delimiter}/usr/local/bin`
     // ^^^ note how we remember this in process.env
+  }
+
+  // same, but this also holds for the KUBECONFIG env var :(
+  if (!env.KUBECONFIG) {
+    debug('attempting to find KUBECONFIG env var')
+    let maybe = execSync('echo $(. ~/.bash_profile && echo $KUBECONFIG)')
+    debug('maybe KUBECONFIG from .bash_profile?', maybe)
+    if (maybe.length === 0) {
+      maybe = execSync('echo $(. ~/.profile && echo $KUBECONFIG)')
+      debug('maybe KUBECONFIG from .profile?', maybe)
+    }
+    if (maybe.length === 0) {
+      maybe = execSync('echo $(. ~/.zshrc && echo $KUBECONFIG)')
+      debug('maybe KUBECONFIG from .zshrc?', maybe)
+    }
+    if (maybe.length === 0) {
+      maybe = execSync('echo $(. ~/.zsh_profile && echo $KUBECONFIG)')
+      debug('maybe KUBECONFIG from .zsh_profile?', maybe)
+    }
   }
 
   const child = spawn(command,
