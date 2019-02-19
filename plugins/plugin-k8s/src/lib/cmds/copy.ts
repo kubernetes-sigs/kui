@@ -27,16 +27,13 @@ const debug = Debug('k8s/cmds/copy')
 debug('loading')
 
 import * as fs from 'fs'
-debug('1')
 import { exists, lstat, ensureDir, remove, writeFile } from 'fs-extra'
-debug('2')
 import { basename, join } from 'path'
-debug('3')
 import { dir as tmpDir, file as tmpFile } from 'tmp'
-debug('4')
 
 import { isDirectory } from './util'
-debug('5')
+
+type CopyOutHandler = (src: string) => string
 
 /**
  * Copy one file
@@ -99,7 +96,7 @@ export const copy = async (src, target) => new Promise(async (resolve, reject) =
  * function as fn(T). If fn is not defined, then return T.
  *
  */
-export const copyOutDirectory = (srcDir: string, fn?) => new Promise((resolve, reject) => {
+export const copyOutDirectory = (srcDir: string, fn?: CopyOutHandler): Promise<string> => new Promise<string>((resolve, reject) => {
   debug('copyOutDirectory', srcDir)
 
   tmpDir(async (err, path, cleanupCallback) => {
@@ -136,7 +133,7 @@ export const copyOutDirectory = (srcDir: string, fn?) => new Promise((resolve, r
  * Copy the src file to a non-asar directory, and return that filepath.
  *
  */
-export const copyOutFile = (src: string) => new Promise((resolve, reject) => {
+export const copyOutFile = (src: string): Promise<string> => new Promise((resolve, reject) => {
   debug('copyOutFile', src)
 
   tmpFile(async (err, path, fd, cleanupCallback) => {
@@ -150,7 +147,7 @@ export const copyOutFile = (src: string) => new Promise((resolve, reject) => {
   })
 })
 
-export const copyOut = async (src, fn?) => {
+export const copyOut = async (src: string, fn?: CopyOutHandler): Promise<string> => {
   if (await isDirectory(src)) {
     return copyOutDirectory(src, fn)
   } else {
