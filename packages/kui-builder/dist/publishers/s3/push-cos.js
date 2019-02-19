@@ -14,7 +14,7 @@ const version = process.argv[2]
 
 const Bucket = process.env.S3_BUCKET || `kui-${version}`
 
-const buildHome = process.env.BUILDDIR || '../../builds'
+const buildHome = process.env.BUILDDIR || path.join(__dirname, '../../builds')
 
 const platformBuilds = [
   `${productName}-linux-x64.deb`,
@@ -60,7 +60,7 @@ const platformBuilds = [
 const putObject = (cos, Bucket) => Key => new Promise((resolve, reject) => {
   debug('putObject', Bucket, Key)
 
-  const filepath = path.join(__dirname, buildHome, Key)
+  const filepath = path.join(buildHome, Key)
 
   fs.readFile(filepath, (err, Body) => {
     if (err) {
