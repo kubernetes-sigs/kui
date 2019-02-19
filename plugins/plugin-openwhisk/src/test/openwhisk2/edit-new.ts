@@ -58,17 +58,70 @@ describe('create new actions in editor', function (this: common.ISuite) {
       })
   }
 
-  it('should successfully open editor for unused name', () => cli.do('new foo2', this.app)
+  /** set the monaco editor text */
+  const setValue = (client, text, codeStatus) => {
+    const status1 = codeStatus
+    const status2 = status1 === 'new' ? '' : '.is-modified'
+
+    client.execute(text => {
+      document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
+    }, text)
+
+    return this.app.client.waitForExist(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-${status1} ${status2}`)
+  }
+
+  it('should successfully open editor for unused name, edit the action content and deploy', () => cli.do('new foo2', this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('foo2'))
+    .then(() => setValue(this.app.client, 'let main = x => x', 'new')) // edit the action content
     .then(deploy(this.app, 'foo2'))
     .catch(common.oops(this)))
 
-  it('should get the new action', () => cli.do('action get foo2', this.app)
+  it('should get the new action, edit the action content but not deployed', () => cli.do('action get foo2', this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('foo2'))
+    .then(() => this.app.client.waitUntil(async () => {
+      console.log('get: Expected action content: "let main = x => x"')
+      const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
+      return actionSrc.trim() === 'let main = x => x'
+    }))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))  // go to the edit mode
+    .then(() => this.app.client.waitForExist(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`))
+    .then(() => setValue(this.app.client, 'let main = y => y', 'up-to-date')) // modify the content
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock')))  // go to the view mode
+    .then(() => this.app.client.waitUntil(async () => {  // expect the action content not to be changed
+      console.log('lock: Expected action content: "let main = x => x"')
+      const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
+      return actionSrc.trim() === 'let main = x => x'
+    }))
+    .catch(common.oops(this)))
+
+  it('should get the new action, edit the action content and deployed', () => cli.do('action get foo2', this.app)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('foo2'))
+    .then(() => this.app.client.waitUntil(async () => {
+      console.log('get: Expected action content: "let main = x => x"')
+      const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
+      return actionSrc.trim() === 'let main = x => x'
+    }))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))  // go to the edit mode
+    .then(() => this.app.client.waitForExist(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`))
+    .then(() => setValue(this.app.client, 'let main = y => y', 'up-to-date')) // modify the content
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Deploy')))
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))) // deploy
+    .then(() => this.app.client.waitForExist(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock')))  // go to the view mode
+    .then(() => this.app.client.waitUntil(async () => {  // expect the action content to be changed
+      console.log('lock: Expected action content "let main = y => y"')
+      const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
+      return actionSrc.trim() === 'let main = y => y'
+    }))
     .catch(common.oops(this)))
 
   it('should invoke the new action', () => cli.do('invoke foo2', this.app)

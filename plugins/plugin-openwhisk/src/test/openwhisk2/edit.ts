@@ -54,7 +54,7 @@ describe('edit actions', function (this: common.ISuite) {
     .then(cli.expectError(499)) // unsupported optional parameter
     .catch(common.oops(this)))
 
-  it('should edit with implicit entity', () => cli.do('edit', this.app)
+  it('should edit with implicit entity and shows correct sidecar mode buttons', () => cli.do('edit', this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('foo'))
@@ -63,8 +63,15 @@ describe('edit actions', function (this: common.ISuite) {
     // mode
     .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('code')))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('limits')))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('parameters')))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('annotations')))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('raw')))
     .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Deploy')))
+    .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Revert')))
     .catch(common.oops(this)))
 
   it('should create an second action', () => cli.do('let foo2 = x=>x', this.app)
