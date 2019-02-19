@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.0.11 (2019-02-19)
+
+
+### Bug Fixes
+
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **plugin-bash-like:** when cd fails, throw stderr ([85cb737](https://github.com/IBM/kui/commit/85cb737)), closes [#415](https://github.com/IBM/kui/issues/415)
+
+
+
+
+
 ## 0.0.10 (2019-02-13)
 
 
