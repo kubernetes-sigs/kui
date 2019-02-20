@@ -34,19 +34,6 @@ fi
 
 export PATH=./node_modules/.bin:$PATH
 
-if [ -z "$REDIS_URL" ]; then
-    REDIS_IP=`netstat -rn | awk '$NF=="lo0" && $3=="UGSc" { print substr($1, 1, index($1, "/") - 1)}'`
-    if [ $? == 0 ]; then
-        export REDIS_URL="redis://${REDIS_IP}:6379"
-    fi
-fi
-
-if [ -z "$REDIS_URL" ]; then
-    # do we need to start redis ourselves?
-    redis-server > /dev/null &
-    REDIS_PID=$!
-fi
-
 if [ ! -d logs ]; then
     mkdir logs
 fi
