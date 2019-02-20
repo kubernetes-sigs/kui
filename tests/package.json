@@ -28,11 +28,11 @@
   },
   "devDependencies": {
     "expand-home-dir": "0.0.3",
-    "mocha": "^5.2.0",
+    "mocha": "^6.0.0",
     "promise-retry": "^1.1.1",
     "properties-parser": "^0.3.1",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2",
+    "request-promise": "^4.2.4",
     "tmp": "0.0.33"
   },
   "dependencies": {

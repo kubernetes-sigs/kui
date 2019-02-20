@@ -26,7 +26,7 @@
     "archiver": "^3.0.0",
     "command-exists": "^1.2.8",
     "fs-extra": "^7.0.1",
-    "js-yaml": "^3.12.0",
+    "js-yaml": "^3.12.1",
     "needle": "^2.2.4",
     "tmp": "0.0.33"
   },

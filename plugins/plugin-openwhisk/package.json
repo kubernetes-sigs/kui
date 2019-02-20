@@ -30,7 +30,7 @@
     "archiver": "^3.0.0",
     "debug": "^4.1.1",
     "expand-home-dir": "0.0.3",
-    "htmlparser2": "^3.10.0",
+    "htmlparser2": "^3.10.1",
     "needle": "^2.2.4",
     "openwhisk": "^3.11.0",
     "parse-duration": "^0.1.1",
