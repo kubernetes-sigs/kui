@@ -46,11 +46,14 @@ const addClickHandlers = execOptions => table => {
 
     nameAttr.outerCSS += ' entity-name-group-narrow'
 
-    row.onclick = async () => {
+    const onclick = async () => {
       await repl.qexec(`kubectl config use-context ${repl.encodeComponent(contextName)}`,
                        undefined, undefined, Object.assign({}, execOptions, { raw: true }))
       row.setSelected()
     }
+
+    row.onclick = onclick
+    nameAttr.onclick = onclick
 
     return row
   }))
