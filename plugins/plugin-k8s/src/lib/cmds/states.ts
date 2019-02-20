@@ -162,7 +162,7 @@ const genericOnlineMessage = {
 const kindForQuery = (apiVersion: string, kind: string): string => {
   debug('apiVersion', apiVersion)
   const api = apiVersion.replace(/^(.*)\/.*$/, '$1').replace(/^v.*/, '')
-  return `${kind}.${api}`
+  return `${kind}${api.length > 0 ? '.' + api : ''}`
 }
 
 /**

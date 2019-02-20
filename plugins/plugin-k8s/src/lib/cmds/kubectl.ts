@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/cmds/kubectl')
 debug('loading')
 
-import { delimiter } from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
@@ -35,6 +34,7 @@ import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
 import { preprocessTable, formatTable } from '../formatters/formatTable'
 import { registry as formatters } from '../formatters/registry'
+import { fillInTheBlanks } from '../kubeconfig-discovery'
 
 import { redactJSON, redactYAML } from '../formatters/redact'
 
@@ -575,36 +575,10 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
     resolveBase(val)
   }
 
-  const { spawn, execSync } = await import('child_process')
+  const { spawn } = await import('child_process')
   delete env.DEBUG // don't pass this through to kubectl or helm; helm in particular emits crazy output
 
-  // on macOS, double-clicked and dock-launched processes do not have
-  // /usr/local/bin on PATH; unfortunately this is the common location
-  // of kubectl and helm
-  if (!env.PATH.match(/\/usr\/local\/bin/)) {
-    debug('adding /usr/local/bin to PATH')
-    process.env.PATH = env.PATH = `${env.PATH}${delimiter}/usr/local/bin`
-    // ^^^ note how we remember this in process.env
-  }
-
-  // same, but this also holds for the KUBECONFIG env var :(
-  if (!env.KUBECONFIG) {
-    debug('attempting to find KUBECONFIG env var')
-    let maybe = execSync('echo $(. ~/.bash_profile && echo $KUBECONFIG)')
-    debug('maybe KUBECONFIG from .bash_profile?', maybe)
-    if (maybe.length === 0) {
-      maybe = execSync('echo $(. ~/.profile && echo $KUBECONFIG)')
-      debug('maybe KUBECONFIG from .profile?', maybe)
-    }
-    if (maybe.length === 0) {
-      maybe = execSync('echo $(. ~/.zshrc && echo $KUBECONFIG)')
-      debug('maybe KUBECONFIG from .zshrc?', maybe)
-    }
-    if (maybe.length === 0) {
-      maybe = execSync('echo $(. ~/.zsh_profile && echo $KUBECONFIG)')
-      debug('maybe KUBECONFIG from .zsh_profile?', maybe)
-    }
-  }
+  fillInTheBlanks(env)
 
   const child = spawn(command,
                       argvWithFileReplacements,

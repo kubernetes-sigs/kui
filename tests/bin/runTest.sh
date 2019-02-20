@@ -68,10 +68,11 @@ if [ -n "$LAYER" ]; then
     LAYER="passes/${LAYER}"
 fi
 
-#IDX=$((PORT_OFFSET-1))
-#export KUI_POSITION_X="$((IDX*$WINDOW_WIDTH))"
-#echo "KUI_POSITION_X=$KUI_POSITION_X"
-echo "DISPLAY=$DISPLAY"
+if [ -n "$TRAVIS_JOB_ID" ]; then
+    echo "DISPLAY=$DISPLAY"
+else
+    export DISPLAY=:0
+fi
 
 #
 # note that, in the following, passing --bail to mocha means we fail
