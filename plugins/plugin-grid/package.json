@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-grid",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "Kui plugin that offers a grid visualization of OpenWhisk function invocations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -30,5 +30,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "23f5b4527bbb37d1853c0bf29b2f7e75a1a17f4e"
 }
