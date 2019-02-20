@@ -57,7 +57,7 @@ describe('screenshot', function (this: ISuite) {
   it('should take screenshot last-full', () => takeScreenshot(this, 'last-full'))
 
   // create an entity, so we can open the sidecar
-  it('should open README.md', () => cli.do(`open ../README.md`, this.app)
+  it('should open README.md', () => cli.do(`open ../../README.md`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('Kui Shell', undefined, undefined, 'README.md'))

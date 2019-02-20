@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Copyright 2018 IBM Corporation
+# Copyright 2018-19 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 #
 # Find plugin-hosted tests
 #
+
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 CROSS='\033[21m\033[31m\xE2\x9C\x98\033[0m' # red heavy ballot x
 CHECK='\033[21m\033[32m\xE2\x9C\x93\033[0m' # green check
@@ -41,20 +43,25 @@ if [ ! -d lib ]; then
 fi
 
 if [ -d bin ]; then
-    ROOTDIR=..
+    ROOTDIR=../..
 else
-    ROOTDIR=../../
+    ROOTDIR=../../..
 fi
+TESTDIR="$SCRIPTDIR"/..
 
-if [ ! -f $ROOTDIR/tests/bin/corral.sh ]; then
-    echo "Please execute this script from tests/bin"
-    exit 1
+if [ ! -f $ROOTDIR/packages/tests/bin/corral.sh ]; then
+    if [ -d ../../../node_modules/@kui-shell ]; then
+        ROOTDIR=../../..
+    else
+        echo "Please execute this script from packages/tests"
+        exit 1
+    fi
 fi
 
 # remove previous work
-rm -rf "$ROOTDIR"/tests/tests/passes/*
-rm -rf "$ROOTDIR"/tests/data/*
-rm -rf "$ROOTDIR"/tests/lib/*
+rm -rf "$TESTDIR"/tests/passes/*
+rm -rf "$TESTDIR"/data/*
+rm -rf "$TESTDIR"/lib/*
 if [ "$1" == "clean" ]; then
     exit
 fi

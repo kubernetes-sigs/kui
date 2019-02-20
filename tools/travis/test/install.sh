@@ -105,10 +105,6 @@ if [ -n "$LAYERS" ]; then
         Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac >& /dev/null &
         idx=$((idx+1))
     done
-
-    # corral the tests that plugins might offer
-    echo "Test corral"
-    (cd tests && ./bin/corral.sh)
 fi
 
 if [ -z "$LAYERS" ] && [ -n "$SCRIPTS" ]; then

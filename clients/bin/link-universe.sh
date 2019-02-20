@@ -29,7 +29,8 @@ rm -rf node_modules
 
 cp package.json bak.json
 
-for pkg in ../../packages/{app,kui-builder,proxy} ../../plugins/*; do
+# create npm packs
+for pkg in ../../packages/{app,kui-builder,proxy,tests} ../../plugins/*; do
     # check for inclusion constraints; e.g. package.json -> .kui.headless == false
     if [ -n "$1" ]; then
         OK=$(cat $pkg/package.json | jq --raw-output .kui.$1)
@@ -45,15 +46,12 @@ for pkg in ../../packages/{app,kui-builder,proxy} ../../plugins/*; do
 done
 wait
 
+# npm install those npm packs
 npm install --save --no-package-lock "$target"/!(*builder*)
 npm install --save-dev --no-package-lock "$target"/*builder*
 
+#
+# make absolute path refs to the npm packs we just created (in the for pkg loop above)
+#
 PJSON=$(node -e 'const pjson = require("./package.json"); function abs(deps) { for (let key in deps) { const abs = require("path").resolve(deps[key].substring(5)); deps[key] = `file:${abs}`; } } abs(pjson.dependencies); abs(pjson.devDependencies); console.log(JSON.stringify(pjson, undefined, 2))')
 echo "$PJSON" > package.json
-
-# absolute path link to the test helpers
-# this is needed so that `npm run test` works within a headless build
-if [ "$1" == "headless" ]; then
-    TOPDIR=$(cd ../../ && pwd)
-    rm -f tests && ln -s "$TOPDIR"/tests
-fi

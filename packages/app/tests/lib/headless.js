@@ -21,11 +21,11 @@ const { fileSync: makeTempFile } = require('tmp')
 const { readFile } = require('fs')
 const { exec } = require('child_process')
 
-const { join } = require('path')
+const { dirname, join } = require('path')
 
 const ROOT = process.env.TEST_ROOT
-const kui = process.env.KUI || join(ROOT, '../bin/kui')
-const bindir = join(ROOT, '../bin') // should contain kubectl-kui
+const kui = process.env.KUI || join(ROOT, '../../bin/kui')
+const bindir = process.env.KUI ? dirname(process.env.KUI) : join(ROOT, '../../bin') // should contain kubectl-kui
 const { expectStruct, expectSubset } = require('./ui')
 
 /**

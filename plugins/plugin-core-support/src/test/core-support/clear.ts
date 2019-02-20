@@ -77,14 +77,14 @@ describe('Clear the console', function (this: ISuite) {
   }))
 
   // get something on the screen
-  it(`should list files`, () => cli.do('ls ..', this.app).then(cli.expectOKWith('README.md')))
+  it(`should list files`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
 
   it('should clear the console', () => cli.do('clear', this.app)
     .then(expectConsoleToBeClear)
     .catch(common.oops(this)))
 
   // get something on the screen
-  it(`should list files again`, () => cli.do('ls ..', this.app).then(cli.expectOKWith('README.md')))
+  it(`should list files again`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
 
   const JUNK = 'junk text that should stay'
   it('should clear the console with ctrl+l', () => cli.do(JUNK, this.app, true)
@@ -103,7 +103,7 @@ describe('Clear the console', function (this: ISuite) {
   })
 
   // get something on the screen
-  it(`should list files yet again`, () => cli.do('ls ..', this.app)
+  it(`should list files yet again`, () => cli.do('ls ../..', this.app)
     .then(cli.expectOKWith('README.md'))
     .catch(common.oops(this)))
 

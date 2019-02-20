@@ -31,7 +31,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { cli } from '@kui-shell/core/tests/lib/headless'
 const ROOT = process.env.TEST_ROOT
-const kui = process.env.KUI || join(ROOT, '../bin/kui')
+const kui = process.env.KUI || join(ROOT, '../../bin/kui')
 
 export const { version: expectedVersion } = require('@kui-shell/settings/package.json')
 

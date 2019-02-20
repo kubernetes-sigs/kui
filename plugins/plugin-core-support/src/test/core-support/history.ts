@@ -25,7 +25,7 @@ describe('History', function (this: ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  const listCommand = 'ls ..'
+  const listCommand = 'ls ../..'
   it('should list local files', () => cli.do(listCommand, this.app)
     .then(cli.expectOKWith('README.md'))
     .catch(common.oops(this)))
