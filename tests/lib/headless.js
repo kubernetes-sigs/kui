@@ -1,1 +1,0 @@
-../../packages/app/tests/lib/headless.js

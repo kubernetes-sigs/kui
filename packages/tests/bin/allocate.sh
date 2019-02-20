@@ -17,14 +17,14 @@
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-ROOTDIR="$SCRIPTDIR/../.."
+ROOTDIR="$SCRIPTDIR/../../.."
 
 if [ -z "$WHISKDIR" ]; then
     WHISKDIR="$ROOTDIR/openwhisk"
 fi
 
 if [ ! -d "$WHISKDIR" ]; then
-    echo "Please set $WHISKDIR"
+    echo "Cannot find openwhisk installation"
     exit 1
 fi
 

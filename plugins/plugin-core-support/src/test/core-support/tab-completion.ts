@@ -167,7 +167,7 @@ describe('Tab completion', function (this: ISuite) {
 
   it('should tab complete the data directory', () => tabby(this.app, 'lls da', 'lls data/'))
   it('should tab complete the data/core/empty.js file', () => tabby(this.app, 'lls data/core/empty.js', 'lls data/core/empty.json'))
-  it('should tab complete the ../packages/app directory', () => tabby(this.app, 'lls ../packages/ap', 'lls ../packages/app/'))
+  it('should tab complete the ../../packages/app directory', () => tabby(this.app, 'lls ../../packages/ap', 'lls ../../packages/app/'))
 
   // same, but this time tab to cycle through the options
   it('should tab complete local file path', () => tabbyWithOptions(this.app,

@@ -60,7 +60,7 @@ if [ -n "$LAYERS" ]; then
     NON_HEADLESS_LAYERS=${LAYERS#HEADLESS}
     if [ -n "$NON_HEADLESS_LAYERS" ]; then
         echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
-        (cd tests && ./bin/runLocal.sh $NON_HEADLESS_LAYERS)
+        (cd packages/tests && ./bin/runLocal.sh $NON_HEADLESS_LAYERS)
         EC=$?
         echo "script.sh thinks runLocal finished with $EC"
         if [ $EC != 0 ]; then exit $EC; fi
@@ -81,7 +81,7 @@ if [ -n "$LAYERS" ]; then
 
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
         export WSK_CONFIG_FILE=~/.wskprops_${KEY}
-        (cd tests && ./bin/allocate.sh "$TEST_SPACE")
+        (cd packages/tests && ./bin/allocate.sh "$TEST_SPACE")
         (cd /tmp/kui && npm run test) # see ./install.sh for the /tmp/kui target
         EC=$?
         echo "script.sh thinks headless finished with $EC"
