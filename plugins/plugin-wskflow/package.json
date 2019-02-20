@@ -39,7 +39,7 @@
     "chokidar"
   ],
   "dependencies": {
-    "chokidar": "^2.0.4",
+    "chokidar": "^2.1.2",
     "d3": "^3.5.17",
     "elkjs": "0.3.0",
     "es6-promise-pool": "^2.5.0",

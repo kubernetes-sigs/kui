@@ -15,7 +15,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^3.10.8"
+    "lerna": "^3.13.0"
   },
   "repository": {
     "type": "git",
