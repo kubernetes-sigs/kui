@@ -53,9 +53,10 @@ terminal directly; you will observe that the output is identical to
 that of `kubectl`, with the possible addition of syntax
 coloration. With Kui, you have the power to navigate between these
 modes in a graceful and flexible manner.
+
 <a href="https://ibm.box.com/shared/static/55gasbz9fc40qrg43iq4b8t1uckupft4.gif">
-    <img align="right" alt="kubectl get pods drilldown animated gif" src="https://ibm.box.com/shared/static/2y3yhwbol7jaixvitdp59wl29zc5onaw.gif"></img>
-<a>
+    <img align="right" alt="kubectl get pods drilldown animated gif" src="docs/readme/images/kubectl-get-pods-thumbnail.gif"></img>
+</a>
 
 Now try clicking on a row. You should see the "sidecar" sweep in from
 the right. This split screen mode allows you to drill down to the
