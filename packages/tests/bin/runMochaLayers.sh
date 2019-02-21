@@ -20,7 +20,14 @@ set -e
 set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-export TEST_ROOT="$SCRIPTDIR/.."
+
+if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell ]; then
+    echo "running as external custom client"
+    export TEST_ROOT="$SCRIPTDIR/../../node_modules/@kui-shell/test"
+else
+    echo "running in monorepo"
+    export TEST_ROOT="$SCRIPTDIR/.."
+fi
 
 if [ -z "$API_HOST" ]; then
     . ~/.wskprops
@@ -71,7 +78,7 @@ children=()
 for i in $WHICH; do
     LAYER=`basename $i`
     echo "spawning mocha layer $LAYER"
-    (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx ./bin/runTest.sh 2>&1 | tee logs/$LAYER.out) &
+    (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1 | tee logs/$LAYER.out) &
     children+=("$!")
     idx=$((idx+1))
 done
@@ -112,5 +119,5 @@ if [ $? == 0 ]; then
     fi
 fi
 
-echo "runLocal finished with ${EXIT_CODE-0}"
+echo "runMochaLayers finished with ${EXIT_CODE-0}"
 exit "${EXIT_CODE-0}"

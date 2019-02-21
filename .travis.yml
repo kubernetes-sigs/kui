@@ -28,8 +28,12 @@ env:
       NEEDS_ELECTRON=true
       NEEDS_OPENWHISK=true
 
-    - LAYERS="HEADLESS k8s"
+    - LAYERS="k8s"
       NEEDS_ELECTRON=true
+      NEEDS_HEADLESS=true
+      NEEDS_KUBERNETES=true
+
+    - LAYERS="HEADLESS"
       NEEDS_HEADLESS=true
       NEEDS_OPENWHISK=true
       NEEDS_KUBERNETES=true

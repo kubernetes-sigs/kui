@@ -2,6 +2,8 @@
   "name": "@kui-shell/test",
   "version": "0.0.5",
   "description": "",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
   "main": "index.js",
   "scripts": {
     "nope__instrument": "if [ -d ../app.orig ]; then rm -rf ../app.orig; fi; cp -a ../app ../app.orig && nyc instrument ../app ../app && rm -rf ../app/plugins/modules/composer/\\@demos && cp -r ../app.orig/plugins/modules/composer/\\@demos ../app/plugins/modules/composer/\\@demos && rm -rf ../app/plugins/modules/composer/tests && cp -r ../app.orig/plugins/modules/composer/tests ../app/plugins/modules/composer/tests",
@@ -10,10 +12,11 @@
     "_instrument": "echo disabled",
     "instrument": "echo disabled",
     "deinstrument": "echo disabled",
-    "test": "cd test && ./bin/corral.sh && ./bin/runLocal.sh && ./bin/corral.sh clean"
+    "test": "./bin/runMochaLayers.sh"
   },
-  "author": "",
-  "license": "Apache-2.0",
+  "bin": {
+    "kui-test": "./bin/runMochaLayers.sh"
+  },
   "nyc": {
     "exclude": [
       "**/tests/lib/**",
@@ -26,17 +29,19 @@
       "app/plugins/node_modules/@ibm-functions/**/*.js"
     ]
   },
-  "devDependencies": {
+  "kui": {
+    "electron": false,
+    "webpack": false
+  },
+  "dependencies": {
+    "colors": "^1.3.3",
     "expand-home-dir": "0.0.3",
     "mocha": "^6.0.0",
     "promise-retry": "^1.1.1",
     "properties-parser": "^0.3.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "tmp": "0.0.33"
-  },
-  "dependencies": {
-    "colors": "^1.3.3",
+    "tmp": "0.0.33",
     "uuid": "^3.3.2"
   },
   "publishConfig": {
