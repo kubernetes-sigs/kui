@@ -258,7 +258,7 @@ const _listen = (model, route, handler, options: IOptions = new DefaultOptions()
     leaf.route = route
 
     // update the disambiguator map
-    if (!(options && options.synonymFor) && // leaf is NOT a synonym
+    if (/*!(options && options.synonymFor) &&*/ // leaf is NOT a synonym
             !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
       let resolutions = disambiguator[leaf.key]
       if (!resolutions) {

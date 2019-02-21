@@ -827,7 +827,9 @@ const dispatchViaDelegationTo = delegate => opts => {
  *
  */
 export default async (commandTree, prequire) => {
-  await commandTree.listen('/k8s/kubectl', kubectl, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
+  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
+  await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
+
   await commandTree.listen('/k8s/helm', helm, { usage: usage('helm'), noAuthOk: [ 'openwhisk' ] })
 
   //
