@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 
+const synonyms = ['kubectl', 'k']
+
 describe('electron create pod', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
@@ -30,30 +32,34 @@ describe('electron create pod', function (this: common.ISuite) {
     return cli.waitForRepl(this.app, { noAuthOk: true }) // no openwhisk auth ok!
   })
 
-  it('should create sample pod from URL', () => {
-    return cli.do(`kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-      .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`), 20000)
-      .catch(common.oops(this))
-  })
+  // repeat the tests for kubectl, k, etc. i.e. any built-in
+  // synonyms/aliases we have for "kubectl"
+  synonyms.forEach(kubectl => {
+    it(`should create sample pod from URL via ${kubectl}`, () => {
+      return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`), 20000)
+        .catch(common.oops(this))
+    })
 
-  it('should delete the sample pod from URL', () => {
-    return cli.do('kubectl delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod', this.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-      .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`), 20000)
-      .catch(common.oops(this))
-  })
+    it(`should delete the sample pod from URL via ${kubectl}`, () => {
+      return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`), 20000)
+        .catch(common.oops(this))
+    })
 
-  it('should create sample pod from local file', () => {
-    return cli.do('kubectl create -f ./data/k8s/headless/pod.yaml', this.app)
-      .then(cli.expectOKWith('nginx'))
-      .catch(common.oops(this))
-  })
+    it(`should create sample pod from local file via ${kubectl}`, () => {
+      return cli.do(`${kubectl} create -f ./data/k8s/headless/pod.yaml`, this.app)
+        .then(cli.expectOKWith('nginx'))
+        .catch(common.oops(this))
+    })
 
-  it('should delete the sample pod by name', () => {
-    return cli.do('kubectl delete pod nginx', this.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-      .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`), 20000)
-      .catch(common.oops(this))
+    it(`should delete the sample pod by name via ${kubectl}`, () => {
+      return cli.do(`${kubectl} delete pod nginx`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`), 20000)
+        .catch(common.oops(this))
+    })
   })
 })
