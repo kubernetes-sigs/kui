@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { join } from 'path'
+
+const assert = require('assert')
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const assert = require('assert')
 const cli = ui.cli
 const sidecar = ui.sidecar
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+
 const seqName1 = 'seq1'
 
 describe('kill composer invocation', function (this: common.ISuite) {
@@ -73,7 +76,7 @@ describe('kill composer invocation', function (this: common.ISuite) {
            .catch(common.oops(this)))
     } */
 
-  it('should create a composer sequence', () => cli.do(`app update ${seqName1} ./data/composer/composer-source/echo-sequence.js`, this.app)
+  it('should create a composer sequence', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))

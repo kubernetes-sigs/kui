@@ -19,6 +19,9 @@ import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@kui-shell/core/tests/lib/headless'
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+
 const doTests = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))
   after(common.after(ctx))
@@ -28,7 +31,7 @@ const doTests = (ctx: common.ISuite, impl: CLI) => {
   })
 
   it('should create sample pod from local file', () => {
-    return kui.do('kubectl create -f ./data/k8s/headless/pod.yaml', ctx.app)
+    return kui.do(`kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml`, ctx.app)
       .then(kui.expectOK('nginx'))
       .catch(common.oops(ctx))
   })

@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2017 IBM Corporation
  *
@@ -19,6 +20,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName = 'foo'
 const packageName = 'ppp'
 
@@ -29,7 +33,7 @@ describe('Add parameters to packages', function (this: common.ISuite) {
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // create an action, using the implicit entity type
-  it('should create a packaged action', () => cli.do(`let ${packageName}/${actionName} = ./data/openwhisk/foo.js`, this.app)
+  it('should create a packaged action', () => cli.do(`let ${packageName}/${actionName} = ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName, undefined, undefined, packageName)))

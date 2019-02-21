@@ -27,8 +27,7 @@ const ruleName = `on_${triggerName}_do_${actionName}`
 const ruleName2 = `on_${triggerName}_do_${actionName2}`
 const ruleName3 = `on_${triggerName2}_do_${actionName2}`
 
-import { join } from 'path'
-const { expectRule } = require(join(process.env.TEST_ROOT, 'lib/composer-viz-util'))
+import { expectRule } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 
 describe('Create a rule via on', function (this: common.ISuite) {
   before(openwhisk.before(this))

@@ -32,9 +32,9 @@ const actionName2 = 'foo2'
 // so we can compare the content of code mode
 import { readFileSync } from 'fs'
 import * as path from 'path'
-const root = path.dirname(require.resolve('@kui-shell/plugin-openwhisk/package.json'))
-const fooSrc = readFileSync(path.join(root, 'tests/data/openwhisk/foo.js')).toString()
-const foo2Src = readFileSync(path.join(root, 'tests/data/openwhisk/foo2.js')).toString()
+const ROOT = path.dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const fooSrc = readFileSync(path.join(ROOT, 'data/openwhisk/foo.js')).toString()
+const foo2Src = readFileSync(path.join(ROOT, 'data/openwhisk/foo2.js')).toString()
 
 describe('Sidecar bottom stripe interactions for actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
@@ -73,14 +73,14 @@ describe('Sidecar bottom stripe interactions for actions', function (this: commo
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // create an action, using the implicit entity type
-  it(`should create an action ${actionName}`, () => cli.do(`create ${actionName} ./data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
+  it(`should create an action ${actionName}`, () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
     .catch(common.oops(this)))
 
   // create an action, using the implicit entity type
-  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ./data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`, this.app)
+  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2))

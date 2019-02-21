@@ -24,6 +24,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName = 'foo'
 const actionName2 = 'foo2'
 const packageName = 'ppp'
@@ -34,7 +37,7 @@ describe('Test synchronous action invocation', function (this: common.ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it('should create an action', () => cli.do(`create ${actionName} ./data/openwhisk/foo.js`, this.app)
+  it('should create an action', () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
@@ -50,7 +53,7 @@ describe('Test synchronous action invocation', function (this: common.ISuite) {
     .then(ui.expectStruct({ 'name': 'Step1 openwhisk' }))
     .catch(common.oops(this)))
 
-  it('should create a packaged action', () => cli.do(`let ${packageName}/${actionName2} = ./data/openwhisk/foo.js`, this.app)
+  it('should create a packaged action', () => cli.do(`let ${packageName}/${actionName2} = ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName))

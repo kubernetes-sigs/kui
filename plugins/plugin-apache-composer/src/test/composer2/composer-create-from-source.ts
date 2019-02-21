@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs'
-import * as path from 'path'
+import { readdirSync } from 'fs'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const srcDir = './data/composer/composer-source' // inputs for create-from-source
+
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+
+const srcDir = `${ROOT}/data/composer/composer-source` // inputs for create-from-source
 
 describe('composer create from source', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // create from source
-  fs.readdirSync(srcDir).forEach((file, idx) => {
+  readdirSync(srcDir).forEach((file, idx) => {
     const name = `sourceTest-${idx}`
 
     // echo.js is used by require-relative.js, it isn't a composition on its own
     if (file.endsWith('.js') && file !== 'echo.js') {
-      it(`should create a composer sequence from source ${file}`, () => cli.do(`app create ${name} ${path.join(srcDir, file)}`, this.app)
+      it(`should create a composer sequence from source ${file}`, () => cli.do(`app create ${name} ${join(srcDir, file)}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name))

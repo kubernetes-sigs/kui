@@ -24,6 +24,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName1 = `foo1-${new Date().getTime()}`
 const actionName2 = `foo2-${new Date().getTime()}`
 
@@ -34,7 +37,7 @@ describe('wsk activation get --last', function (this: common.ISuite) {
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // create an action
-  it(`should create an action ${actionName1}`, () => cli.do(`create ${actionName1} ./data/openwhisk/foo.js`, this.app)
+  it(`should create an action ${actionName1}`, () => cli.do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName1))
@@ -47,7 +50,7 @@ describe('wsk activation get --last', function (this: common.ISuite) {
     .catch(common.oops(this)))
 
   // create another action
-  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ./data/openwhisk/foo.js`, this.app)
+  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2))

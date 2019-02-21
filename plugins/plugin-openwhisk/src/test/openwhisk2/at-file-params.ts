@@ -26,6 +26,9 @@ const { cli, rp, selectors, sidecar } = ui
 
 const paramsFileContent = require('@kui-shell/plugin-openwhisk/tests/data/openwhisk/params.json')
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName = 'foo'
 const actionName2 = 'foo2'
 const actionName3 = 'foo3'
@@ -38,7 +41,7 @@ describe('@file params and annotations', function (this: common.ISuite) {
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // action via wsk action create
-  it('should create an action with --param-file', () => cli.do(`wsk action create ${actionName2} ./data/openwhisk/foo.js --param-file ./data/openwhisk/params.json`, this.app)
+  it('should create an action with --param-file', () => cli.do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js --param-file ${ROOT}/data/openwhisk/params.json`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2)))
@@ -50,7 +53,7 @@ describe('@file params and annotations', function (this: common.ISuite) {
     .then(ui.expectStruct(paramsFileContent)))
 
   // action via wsk action create -P
-  it('should create an action with -P', () => cli.do(`wsk action create ${actionName3} ./data/openwhisk/foo.js -P ./data/openwhisk/params.json`, this.app)
+  it('should create an action with -P', () => cli.do(`wsk action create ${actionName3} ${ROOT}/data/openwhisk/foo.js -P ${ROOT}/data/openwhisk/params.json`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName3)))
@@ -62,7 +65,7 @@ describe('@file params and annotations', function (this: common.ISuite) {
     .then(ui.expectStruct(paramsFileContent)))
 
   // action via let
-  it('should create an action via let with @file parameters', () => cli.do(`let ${actionName} = x=>x -p xxx @./data/openwhisk/params.json`, this.app)
+  it('should create an action via let with @file parameters', () => cli.do(`let ${actionName} = x=>x -p xxx @${ROOT}/data/openwhisk/params.json`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName)))
@@ -74,7 +77,7 @@ describe('@file params and annotations', function (this: common.ISuite) {
     .then(ui.expectStruct({ 'xxx': paramsFileContent })))
 
   // sequence
-  it('should create a sequence via let with @file annotations', () => cli.do(`let ${seqName} = x=>x -> x=>x -a xxx @./data/openwhisk/params.json`, this.app)
+  it('should create a sequence via let with @file annotations', () => cli.do(`let ${seqName} = x=>x -> x=>x -a xxx @${ROOT}/data/openwhisk/params.json`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName)))

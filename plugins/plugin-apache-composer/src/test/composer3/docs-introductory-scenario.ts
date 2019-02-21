@@ -17,8 +17,6 @@
 // tests to cover the introductory scenario laid out in the docs
 //
 
-const ROOT = process.env.TEST_ROOT
-
 import * as path from 'path'
 import * as fs from 'fs'
 import * as assert from 'assert'

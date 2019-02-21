@@ -20,13 +20,15 @@ const ui = require('@kui-shell/core/tests/lib/ui')
 const cli = ui.cli
 const sidecar = ui.sidecar
 
+const ROOT = path.dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+
 /**
  * Helper to find an input file
  *
  */
 const input = (file, subdir = '.') => ({
   file,
-  path: path.join('data/composer', subdir, file)
+  path: path.join(ROOT, 'data/composer', subdir, file)
 })
 const composerInput = file => input(file, 'composer-source')
 const composerErrorInput = file => input(file, 'composer-source-expect-errors')

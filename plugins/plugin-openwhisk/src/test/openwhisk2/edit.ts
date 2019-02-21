@@ -24,13 +24,16 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 describe('edit actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it('should open a file with spaces', () => cli.do(`open "data/openwhisk/file with spaces.yaml"`, this.app)
+  it('should open a file with spaces', () => cli.do(`open "${ROOT}/data/openwhisk/file with spaces.yaml"`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('file with spaces.yaml'))
@@ -106,7 +109,7 @@ describe('edit actions', function (this: common.ISuite) {
     .then(cli.expectError(406))
     .catch(common.oops(this)))
 
-  it('should create a zip action', () => cli.do('let zippy.zip = data/openwhisk/zip', this.app)
+  it('should create a zip action', () => cli.do(`let zippy.zip = ${ROOT}/data/openwhisk/zip`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('zippy'))

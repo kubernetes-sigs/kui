@@ -18,6 +18,9 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+
 const synonyms = ['kubectl', 'k']
 
 describe('electron create pod', function (this: common.ISuite) {
@@ -50,7 +53,7 @@ describe('electron create pod', function (this: common.ISuite) {
     })
 
     it(`should create sample pod from local file via ${kubectl}`, () => {
-      return cli.do(`${kubectl} create -f ./data/k8s/headless/pod.yaml`, this.app)
+      return cli.do(`${kubectl} create -f ${ROOT}/data/k8s/headless/pod.yaml`, this.app)
         .then(cli.expectOKWith('nginx'))
         .catch(common.oops(this))
     })

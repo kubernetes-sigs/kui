@@ -24,8 +24,11 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const args = {
-  action: './data/openwhisk/foo.js',
+  action: `${ROOT}/data/openwhisk/foo.js`,
   trigger: '',
   rule: 'foo-trigger foo-action',
   package: ''

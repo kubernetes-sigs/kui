@@ -20,7 +20,8 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
 const { cli, selectors, sidecar } = ui
 
-import { join } from 'path'
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
 /** set the monaco editor text */
 const setValue = (client, text) => {
@@ -82,7 +83,7 @@ describe('editor', function (this: ISuite) {
 
   const TMP = '/tmp' // FIXME
   const initialFile = 'edit-file.txt'
-  const initialFilepath = join('./data/core', initialFile)
+  const initialFilepath = join(ROOT, 'data', initialFile)
   const tmpFilepath = join(TMP, initialFile)
 
   const initialContent = 'hello world'

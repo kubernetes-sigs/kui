@@ -15,7 +15,6 @@
  */
 import * as fs from 'fs'
 import * as assert from 'assert'
-import { join } from 'path'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
@@ -23,12 +22,15 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 const keys = ui.keys
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+
 import {
   verifyNodeExists,
   verifyNodeStatusExists,
   verifyTheBasicStuff
 } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /**
  * Here starts the test
@@ -41,7 +43,7 @@ describe('bring up the composer visualization when the sidecar is minimized', fu
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it('should show the if composition graph', () => cli.do('preview data/composer/composer-source/if.js', this.app)
+  it('should show the if composition graph', () => cli.do(`preview ${ROOT}/data/composer/composer-source/if.js`, this.app)
     .then(verifyTheBasicStuff('if.js', 'composerLib')) // verify basic things
     .catch(common.oops(this)))
 
@@ -49,7 +51,7 @@ describe('bring up the composer visualization when the sidecar is minimized', fu
     .then(() => sidecar.expectClosed(this.app))
     .catch(common.oops(this)))
 
-  it('should show the if composition graph again', () => cli.do('app preview data/composer/composer-source/if.js', this.app)
+  it('should show the if composition graph again', () => cli.do(`app preview ${ROOT}/data/composer/composer-source/if.js`, this.app)
     .then(() => sidecar.expectOpen(this.app))
     .catch(common.oops(this)))
 
@@ -139,7 +141,7 @@ describe('create a if composition, invoke, verify session flow is shown correctl
   before(openwhisk.before(this))
   after(common.after(this))
   const appName = 'test-if'
-  const appFile = 'data/composer/composer-source/if-session.js'
+  const appFile = `${ROOT}/data/composer/composer-source/if-session.js`
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it(`should create an app with ${appFile}`, () => cli.do(`app create ${appName} ${appFile}`, this.app)
@@ -217,7 +219,7 @@ describe('test if pressing a node, dragging and releasing triggers the clicking 
   after(common.after(this))
 
   const appName = 'test-if'
-  const appFile = 'data/composer/composer-source/if-session.js'
+  const appFile = `${ROOT}/data/composer/composer-source/if-session.js`
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it(`should create an app with ${appFile}`, () => cli.do(`app create ${appName} ${appFile}`, this.app)

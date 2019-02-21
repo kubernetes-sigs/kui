@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 //
 // tests that create an action and test that it shows up in the list UI
 //    this test also covers toggling the sidecar
 //
-import { join } from 'path'
+
+import { v4 as uuid } from 'uuid'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const uuid = require('uuid/v4')
 const cli = ui.cli
 const sidecar = ui.sidecar
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+
 const actionName1 = `bottom-bar-back-button-test-${uuid()}`
 const actionName2 = `bottom-bar-back-button-test-${uuid()}`
 const seqName1 = 'seq1'
@@ -47,13 +51,13 @@ describe('Bottom bar back button functionality', function (this: common.ISuite) 
            .catch(common.oops(this)))
     } */
 
-  it('should create an echo action', () => cli.do('let echo = ./data/composer/echo.js', this.app)
+  it('should create an echo action', () => cli.do(`let echo = ${ROOT}/data/composer/echo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('echo'))
     .catch(common.oops(this)))
 
-  it('should create a composer sequence', () => cli.do(`app update ${seqName1} ./data/composer/composer-source/echo-sequence2.js`, this.app)
+  it('should create a composer sequence', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence2.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))

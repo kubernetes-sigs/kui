@@ -21,6 +21,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName1 = 'foo1'
 
 describe('Create jar actions', function (this: common.ISuite) {
@@ -29,7 +32,7 @@ describe('Create jar actions', function (this: common.ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it('should create a jar action', () => cli.do(`action create ${actionName1} ./data/openwhisk/jar/echo.jar --main echo`, this.app)
+  it('should create a jar action', () => cli.do(`action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName1))

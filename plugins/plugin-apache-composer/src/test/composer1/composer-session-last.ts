@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
 const sidecar = ui.sidecar
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+
 const seqName1 = 'seq1'
 const seqName2 = 'seq2'
 const seqName3 = 'seq3'
@@ -36,7 +37,7 @@ describe('session get --last and --last-failed', function (this: common.ISuite) 
         .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
        .catch(common.oops(this))) */
 
-  it('create sequence that invokes without error', () => cli.do(`app update ${seqName1} ./data/composer/composer-source/echo-sequence.js`, this.app)
+  it('create sequence that invokes without error', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
@@ -51,7 +52,7 @@ describe('session get --last and --last-failed', function (this: common.ISuite) 
     .then(ui.expectStruct({ xxx: 333 }))
     .catch(common.oops(this)))
 
-  it('create sequence that invokes WITH ERROR', () => cli.do(`app update ${seqName2} ./data/composer/composer-source/error-sequence.js`, this.app)
+  it('create sequence that invokes WITH ERROR', () => cli.do(`app update ${seqName2} ${ROOT}/data/composer/composer-source/error-sequence.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName2))
@@ -68,7 +69,7 @@ describe('session get --last and --last-failed', function (this: common.ISuite) 
       .catch(common.oops(this))
   }))
 
-  it('create another sequence that invokes without error', () => cli.do(`app update ${seqName3} ./data/composer/composer-source/echo-sequence.js`, this.app)
+  it('create another sequence that invokes without error', () => cli.do(`app update ${seqName3} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName3))

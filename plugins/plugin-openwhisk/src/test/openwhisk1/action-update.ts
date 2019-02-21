@@ -19,6 +19,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName = 'foo'
 
 describe('wsk action update without input file', function (this: common.ISuite) {
@@ -81,7 +84,7 @@ describe('wsk action update without input file', function (this: common.ISuite) 
     .then(ui.expectStruct({ 'y': 4 })) // note that the original parameter binding is expected to be overwritten
     .catch(common.oops(this)))
 
-  it('should update the action, this time with a file', () => cli.do(`wsk action update ${actionName} -p name updater ./data/openwhisk/foo.js`, this.app)
+  it('should update the action, this time with a file', () => cli.do(`wsk action update ${actionName} -p name updater ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))

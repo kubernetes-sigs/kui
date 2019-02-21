@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
 import { readFile } from 'fs'
 import * as assert from 'assert'
 
@@ -24,13 +23,16 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 const { cli, normalizeHTML, selectors, sidecar } = ui
 const { rp } = common
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const REMOTE1 = {
   url: 'https://ibm.box.com/shared/static/8eraoo66gza7rbd7xxi2nal7v9jav8wf.html',
-  local: 'data/openwhisk/hello.html'
+  local: `${ROOT}/data/openwhisk/hello.html`
 }
 const REMOTE2 = {
   url: 'https://ibm.box.com/shared/static/zsye0mwai0kce2p6wssltpsi5bfj9dy0.html',
-  local: 'data/openwhisk/openwhisk-shell-demo-html'
+  local: `${ROOT}/data/openwhisk/openwhisk-shell-demo-html`
 }
 const actionName = 'foo'
 const actionName2 = 'foo2'
@@ -51,7 +53,7 @@ describe('Create an action via let from a remote resource', function (this: comm
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: href, rejectUnauthorized: false }))
-      .then(content => readFile(join(process.env.TEST_ROOT, remote.local), (err, data) => {
+      .then(content => readFile(remote.local, (err, data) => {
         if (err) {
           throw err
         } else {

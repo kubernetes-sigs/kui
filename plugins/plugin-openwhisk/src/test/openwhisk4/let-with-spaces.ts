@@ -19,10 +19,13 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
-const fileWithSpaces = './data/openwhisk/dir with spaces/foo.js'
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
+const fileWithSpaces = `${ROOT}/data/openwhisk/dir with spaces/foo.js`
 const fileWithSpacesAndQuotes = [
-  './data/openwhisk/"dir with spaces"/foo.js',
-  '"./data/openwhisk/dir with spaces"/foo.js'
+  `${ROOT}/data/openwhisk/"dir with spaces"/foo.js`,
+  `"${ROOT}/data/openwhisk/dir with spaces"/foo.js`
 ]
 const actionName1 = 'foo'
 const actionName2 = 'foo2 fun'

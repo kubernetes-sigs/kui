@@ -21,6 +21,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 describe('blackbox actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
@@ -41,13 +44,13 @@ describe('blackbox actions', function (this: common.ISuite) {
     .then(sidecar.expectShowing('bb2'))
     .catch(common.oops(this)))
 
-  it('should create a blackbox action variant 3', () => cli.do(`wsk action create --docker openwhisk/example bb3 ./data/openwhisk/echo.js`, this.app)
+  it('should create a blackbox action variant 3', () => cli.do(`wsk action create --docker openwhisk/example bb3 ${ROOT}/data/openwhisk/echo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('bb3'))
     .catch(common.oops(this)))
 
-  it('should create a blackbox action variant 4', () => cli.do(`wsk action create bb4 ./data/openwhisk/echo.js --docker openwhisk/example`, this.app)
+  it('should create a blackbox action variant 4', () => cli.do(`wsk action create bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('bb4'))
@@ -60,7 +63,7 @@ describe('blackbox actions', function (this: common.ISuite) {
     .then(sidecar.expectShowing('ppp'))
     .catch(common.oops(this)))
 
-  it('should create a blackbox action variant 5', () => cli.do(`wsk action create ppp/bb4 ./data/openwhisk/echo.js --docker openwhisk/example`, this.app)
+  it('should create a blackbox action variant 5', () => cli.do(`wsk action create ppp/bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('bb4', undefined, undefined, 'ppp'))

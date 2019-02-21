@@ -19,6 +19,9 @@ import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import { kubectl, cli as kui, CLI } from '@kui-shell/core/tests/lib/headless'
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+
 const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))
 
@@ -27,7 +30,7 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   })
 
   it('should create sample pod from local file', () => {
-    return impl.do('kubectl create -f ./data/k8s/headless/pod.yaml', ctx.app)
+    return impl.do(`kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml`, ctx.app)
       .then(impl.expectOK('nginx'))
       .catch(common.oops(ctx))
   })
@@ -39,7 +42,7 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   })
 
   it('should delete the new pod by yaml', () => {
-    return impl.do('kubectl delete -f ./data/k8s/headless/pod.yaml', ctx.app)
+    return impl.do(`kubectl delete -f ${ROOT}/data/k8s/headless/pod.yaml`, ctx.app)
       .then(impl.expectOK('pod "nginx" deleted'))
       .then(waitTillNone('pods', impl))
       .catch(common.oops(ctx))

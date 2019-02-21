@@ -18,14 +18,14 @@
 
 #
 # This script runs a given test suite "layer". We try at most three
-# times for success.
+# times for success. It is intended to be called from
+# ./runMochaLayers.sh.
 #
 
 set -e
 set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-ROOTDIR="$SCRIPTDIR/../.."
 
 if [ -n "$LAYER" ]; then
     # user asked to run tests in just one specified layer, e.g. "07"
@@ -50,7 +50,7 @@ if [ -n "$LAYER" ]; then
         export WSK_CONFIG_FILEb=~/.wskpropsb_${KEY}_${PORT_OFFSET}
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}"
         export TEST_SPACE2="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}b"
-        "$SCRIPTDIR"/allocate.sh "$TEST_SPACE" "$TEST_SPACE2"
+        "$SCRIPTDIR"/allocateOpenWhiskAuth.sh "$TEST_SPACE" "$TEST_SPACE2"
 
         if [ -f "$WSK_CONFIG_FILEb" ]; then
             . "$WSK_CONFIG_FILEb"
@@ -65,9 +65,15 @@ if [ -n "$LAYER" ]; then
         echo "Key from layer '$TEST_SPACE' '${AUTH}'"
     fi
 
-    LAYER="passes/${LAYER}"
+    TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test/$LAYER" -maxdepth 5)
+else
+    TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test" -maxdepth 4)
 fi
 
+echo "Running these test suites: $TEST_SUITES"
+
+# when running on a laptop, we aren't using multiple X displays; only
+# in travis
 if [ -n "$TRAVIS_JOB_ID" ]; then
     echo "DISPLAY=$DISPLAY"
 else
@@ -83,7 +89,7 @@ NYC="${SCRIPTDIR}/../node_modules/.bin/nyc"
 export RUNNING_SHELL_TEST=true
 
 function go {
-    NO_USAGE_TRACKING=true mocha -c --exit --bail --recursive --timeout ${TIMEOUT-60000} tests/$LAYER --grep "${TEST_FILTER:-.*}"
+    NO_USAGE_TRACKING=true mocha -c --exit --bail --recursive --timeout ${TIMEOUT-60000} $TEST_SUITES --grep "${TEST_FILTER:-.*}"
 }
 
 if [ -n "$TRAVIS_JOB_ID" ]; then

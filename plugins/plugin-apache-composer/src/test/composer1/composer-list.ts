@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+
 const seqName1 = 'seq1'
 const seqName2 = 'seq2'
 
@@ -39,7 +40,7 @@ describe('Use the app list command to list the invokeable compositions', functio
     } */
 
   // make an app
-  it('should create a composer sequence', () => cli.do(`app create ${seqName1} ./data/composer/fsm.json`, this.app)
+  it('should create a composer sequence', () => cli.do(`app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
@@ -53,7 +54,7 @@ describe('Use the app list command to list the invokeable compositions', functio
     .catch(common.oops(this)))
 
   // make a second app
-  it('should create a second composer sequence', () => cli.do(`app create ${seqName2} ./data/composer/fsm.json`, this.app)
+  it('should create a second composer sequence', () => cli.do(`app create ${seqName2} ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName2))
@@ -77,7 +78,7 @@ describe('Use the app list command to list the invokeable compositions', functio
     .catch(common.oops(this)))
 
   // make a packaged app
-  it('should create a second composer sequence', () => cli.do(`app create ppp/${seqName2} ./data/composer/fsm.json`, this.app)
+  it('should create a second composer sequence', () => cli.do(`app create ppp/${seqName2} ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName2, undefined, undefined, 'ppp'))

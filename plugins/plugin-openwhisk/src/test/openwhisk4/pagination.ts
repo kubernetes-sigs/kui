@@ -19,6 +19,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName = `paginator-test-${new Date().getTime()}`
 const actionName2 = `test-paginator-${new Date().getTime()}` // intentionally jumbled w.r.t. actionName
 
@@ -101,12 +104,12 @@ describe('Activation list paginator', function (this: common.ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it(`should create an action ${actionName}`, () => cli.do(`create ${actionName} ./data/openwhisk/foo.js`, this.app)
+  it(`should create an action ${actionName}`, () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName)))
 
-  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ./data/openwhisk/foo.js`, this.app)
+  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2)))

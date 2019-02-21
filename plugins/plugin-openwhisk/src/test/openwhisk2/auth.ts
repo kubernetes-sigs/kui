@@ -24,6 +24,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 describe('auth tests', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
@@ -35,7 +38,7 @@ describe('auth tests', function (this: common.ISuite) {
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // create an action, using the implicit entity type
-  it('should create an action foo', () => cli.do(`create foo ./data/openwhisk/foo.js`, this.app)
+  it('should create an action foo', () => cli.do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('foo')))
@@ -57,7 +60,7 @@ describe('auth tests', function (this: common.ISuite) {
   it(`should NOT find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectJustOK))
 
   // create the second action
-  it('should create an action foo2', () => cli.do(`create foo2 ./data/openwhisk/foo.js`, this.app)
+  it('should create an action foo2', () => cli.do(`create foo2 ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('foo2')))
