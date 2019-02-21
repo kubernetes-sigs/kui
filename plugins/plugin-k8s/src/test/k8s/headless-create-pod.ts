@@ -74,6 +74,7 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
     it(`should delete the new pod by name via ${kubectl}`, () => {
       return impl.do(`${kubectl} delete pod nginx`, ctx.app)
         .then(impl.expectOK('pod "nginx" deleted'))
+        .then(waitTillNone('pods', impl))
         .catch(common.oops(ctx))
     })
   })
