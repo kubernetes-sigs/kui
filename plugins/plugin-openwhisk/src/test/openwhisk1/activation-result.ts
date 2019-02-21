@@ -23,6 +23,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName1 = `foo1-${new Date().getTime()}`
 
 describe('wsk activation result and wsk activation logs', function (this: common.ISuite) {
@@ -32,7 +35,7 @@ describe('wsk activation result and wsk activation logs', function (this: common
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // create an action
-  it(`should create an action ${actionName1}`, () => cli.do(`create ${actionName1} ./data/openwhisk/foo.js`, this.app)
+  it(`should create an action ${actionName1}`, () => cli.do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName1))

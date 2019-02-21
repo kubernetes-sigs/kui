@@ -33,7 +33,7 @@
     "electron": false,
     "webpack": false
   },
-  "dependencies": {
+  "devDependencies": {
     "colors": "^1.3.3",
     "expand-home-dir": "0.0.3",
     "mocha": "^6.0.0",

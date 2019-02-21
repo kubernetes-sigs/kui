@@ -19,6 +19,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName = 'foo'
 const actionNameWithSpaces = 'foo foo'
 const actionName2 = 'foo2'
@@ -38,14 +41,14 @@ describe('Delete multiple actions using rimraf', function (this: common.ISuite) 
     .catch(common.oops(this)))
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`create ${actionName} ./data/openwhisk/foo.js`, this.app)
+  it('should create an action', () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
     .catch(common.oops(this)))
 
   // create an action, using the implicit entity type
-  it('should create another action', () => cli.do(`create ${actionName2} ./data/openwhisk/foo2.js`, this.app)
+  it('should create another action', () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2))
@@ -117,12 +120,12 @@ describe('Delete multiple actions using rimraf', function (this: common.ISuite) 
   //
   // recursive removal of anonymous inline functions
   //
-  it('should create an action', () => cli.do(`create ${actionName} ./data/openwhisk/foo.js`, this.app)
+  it('should create an action', () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
     .catch(common.oops(this)))
-  it('should create another action', () => cli.do(`create ${actionName2} ./data/openwhisk/foo2.js`, this.app)
+  it('should create another action', () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2))

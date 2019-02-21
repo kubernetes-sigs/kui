@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
 import * as fs from 'fs'
 import * as assert from 'assert'
 
@@ -22,6 +21,9 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
+
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = 'foo1'
 const actionName2 = 'foo2'
@@ -151,14 +153,14 @@ function main(args) {
       .catch(common.oops(this)))
   }
 
-  makeActionFromZip(`let ${actionName1} = data/openwhisk/zip/sendmail.zip`, actionName1)
-  makeActionFromZip(`action update ${actionName2} data/openwhisk/zip/sendmail.zip --kind nodejs:6`, actionName2)
+  makeActionFromZip(`let ${actionName1} = ${ROOT}/data/openwhisk/zip/sendmail.zip`, actionName1)
+  makeActionFromZip(`action update ${actionName2} ${ROOT}/data/openwhisk/zip/sendmail.zip --kind nodejs:6`, actionName2)
 
   //
   // zip action without npm install, with params and annotations
   //
-  const src = file => fs.readFileSync(join(process.env.TEST_ROOT, 'data', file)).toString()
-  it('should create a zip action via let with params and annotations', () => cli.do(`let ${actionName16b}.zip = ./data/openwhisk/zip -p yy 33 -a aa yoyo`, this.app)
+  const src = file => fs.readFileSync(join(ROOT, 'data', file)).toString()
+  it('should create a zip action via let with params and annotations', () => cli.do(`let ${actionName16b}.zip = ${ROOT}/data/openwhisk/zip -p yy 33 -a aa yoyo`, this.app)
     .then(cli.expectContext('/wsk/actions', actionName16b))
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName16b))
@@ -182,7 +184,7 @@ function main(args) {
   //
   // python zip action
   //
-  it('should create a python zip ', () => cli.do(`let ${actionName16c}.zip = ./data/openwhisk/zip-python --kind python`, this.app)
+  it('should create a python zip ', () => cli.do(`let ${actionName16c}.zip = ${ROOT}/data/openwhisk/zip-python --kind python`, this.app)
     .then(cli.expectContext('/wsk/actions', actionName16c))
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName16c))
@@ -194,11 +196,11 @@ function main(args) {
   //
   // zip action without npm install
   //
-  it('should create a zip action via let', () => cli.do(`let ${actionName16}.zip = ./data/openwhisk/zip`, this.app)
+  it('should create a zip action via let', () => cli.do(`let ${actionName16}.zip = ${ROOT}/data/openwhisk/zip`, this.app)
     .then(cli.expectContext('/wsk/actions', actionName16))
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName16))
-    .then(sidecar.expectSource(fs.readFileSync(join(process.env.TEST_ROOT, './data/openwhisk/zip/index.js')).toString())) // sidecar should display the source to index.js
+    .then(sidecar.expectSource(fs.readFileSync(join(ROOT, 'data/openwhisk/zip/index.js')).toString())) // sidecar should display the source to index.js
     .then(sidecar.expectBadge('zip')))
   // invoke it
   it('should do an async of the action, using implicit context', () => cli.do(`async -p y 3`, this.app)
@@ -217,9 +219,9 @@ function main(args) {
   // zip action WITH npm install
   //     first we delete the node_modules subdirectory using the del npm
   //
-  it('should create a zip action with npm install via let', () => rimraf([join(process.env.TEST_ROOT, 'data/openwhisk/zip-action/src/node_modules/**')])
-    .then(() => assert.ok(!fs.existsSync(join(process.env.TEST_ROOT, 'data/openwhisk/zip-action/src/node_modules'))))
-    .then(() => cli.do(`let ${actionName18}.zip = data/openwhisk/zip-action/src`, this.app))
+  it('should create a zip action with npm install via let', () => rimraf([`${ROOT}/data/openwhisk/zip-action/src/node_modules/**`])
+    .then(() => assert.ok(!fs.existsSync(`${ROOT}/data/openwhisk/zip-action/src/node_modules`)))
+    .then(() => cli.do(`let ${actionName18}.zip = ${ROOT}/data/openwhisk/zip-action/src`, this.app))
     .then(cli.expectContext('/wsk/actions', actionName18))
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName18)))

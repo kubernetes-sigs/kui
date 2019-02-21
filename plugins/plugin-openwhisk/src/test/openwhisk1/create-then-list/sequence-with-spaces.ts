@@ -24,6 +24,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const actionName1 = 'foo bar'
 const actionName2 = 'bam'
 const sequenceName1 = 'sss'
@@ -35,14 +38,14 @@ describe('Create a sequence with whitespacey names', function (this: common.ISui
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`create "${actionName1}" ./data/openwhisk/foo.js`, this.app)
+  it('should create an action', () => cli.do(`create "${actionName1}" ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName1))
     .catch(common.oops(this)))
 
   // create the second action
-  it('should create an action', () => cli.do(`create ${actionName2} ./data/openwhisk/foo2.js`, this.app)
+  it('should create an action', () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName2))

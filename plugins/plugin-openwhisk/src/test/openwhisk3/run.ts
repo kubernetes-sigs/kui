@@ -16,7 +16,6 @@
 
 import * as assert from 'assert'
 import { readFile } from 'fs'
-import { dirname, join } from 'path'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
@@ -24,10 +23,11 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 const { cli, normalizeHTML, selectors, sidecar } = ui
 const { rp } = common
 
-const root = dirname(require.resolve('@kui-shell/plugin-openwhisk/package.json'))
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
-const commandFile = 'data/openwhisk/commandFile.wsk'
-const local = join(root, 'tests/data/openwhisk/openwhisk-shell-demo-html')
+const commandFile = `${ROOT}/data/openwhisk/commandFile.wsk`
+const local = join(ROOT, 'data/openwhisk/openwhisk-shell-demo-html')
 
 const API_HOST = process.env.API_HOST || 'openwhisk.ng.bluemix.net'
 const ns = ui.expectedNamespace()

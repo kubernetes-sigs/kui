@@ -19,7 +19,8 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
-import { normalize } from 'path'
+import { dirname, normalize } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 describe('Change shell directory via cd', function (this: common.ISuite) {
   before(openwhisk.before(this))
@@ -27,10 +28,10 @@ describe('Change shell directory via cd', function (this: common.ISuite) {
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  it('should execute lc data', () => cli.do(`cd data`, this.app)
+  it('should execute cd data', () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString('data')))
 
-  it('should create an action in the data directory', () => cli.do(`action create long openwhisk/long.js`, this.app)
+  it('should create an action in the data directory', () => cli.do(`wsk action create long openwhisk/long.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('long'))
@@ -40,10 +41,10 @@ describe('Change shell directory via cd', function (this: common.ISuite) {
     .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT))))
 
   // now we should be able to change back to data and re-do the action create
-  it('should execute cd data', () => cli.do(`cd data`, this.app)
+  it('should execute cd data', () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString('data')))
 
-  it('should create an action in the data directory', () => cli.do(`action create long2 openwhisk/long.js`, this.app)
+  it('should create an action in the data directory', () => cli.do(`wsk action create long2 openwhisk/long.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('long2'))

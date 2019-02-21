@@ -17,19 +17,21 @@
 //
 // test the edit actionName command for compositions
 //
-import { join } from 'path'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
 const sidecar = ui.sidecar
+
 import {
   verifyTheBasicStuff,
   verifyNodeExists,
   verifyEdgeExists,
   verifyNodeAbsence
 } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /** set the monaco editor text */
 const setValue = (client, text) => {
@@ -115,7 +117,7 @@ describe('edit compositions', function (this: common.ISuite) {
        .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
        .catch(common.oops(this))) */
 
-  it('should create an app from FSM', () => cli.do(`app create compFromFSM ./data/composer/fsm.json`, this.app)
+  it('should create an app from FSM', () => cli.do(`app create compFromFSM ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('compFromFSM'))
@@ -125,7 +127,7 @@ describe('edit compositions', function (this: common.ISuite) {
     .then(cli.expectError(406))
     .catch(common.oops(this)))
 
-  it('should create an app from source', () => cli.do('app create compFromSrc ./data/composer/composer-source/seq.js', this.app)
+  it('should create an app from source', () => cli.do(`app create compFromSrc ${ROOT}/data/composer/composer-source/seq.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('compFromSrc'))

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import * as path from 'path'
 import * as assert from 'assert'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const cli = ui.cli
 const sidecar = ui.sidecar
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+
 const actionName1 = 'foo1'
 const actionName2 = 'foo2'
 const actionName3 = 'foo3'
@@ -162,11 +164,11 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(cli.expectError(497)) // 497 insufficient required parameters
     .catch(common.oops(this)))
 
-  it('should throw a usage message for incomplete app create v3', () => cli.do(`app create ./data/composer/fsm.json`, this.app)
+  it('should throw a usage message for incomplete app create v3', () => cli.do(`app create ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectError(497)) // 497 insufficient required parameters
     .catch(common.oops(this)))
 
-  it('should create a composer sequence', () => cli.do(`app create ${seqName1} ./data/composer/fsm.json`, this.app)
+  it('should create a composer sequence', () => cli.do(`app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
@@ -176,14 +178,14 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(cli.expectOK)
     .catch(common.oops(this)))
 
-  it('should create a packaged composer sequence', () => cli.do(`app create ${packageName1}/${seqName1} ./data/composer/fsm.json`, this.app)
+  it('should create a packaged composer sequence', () => cli.do(`app create ${packageName1}/${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1, undefined, undefined, packageName1))
     .catch(common.oops(this)))
   invoke({ package: packageName1, action: seqName1 }, 'x', 3, { aa: 11, bb: 22, cc: 22 })
 
-  it('should create a composer sequence via app update', () => cli.do(`app update ${seqName1} ./data/composer/fsm.json`, this.app)
+  it('should create a composer sequence via app update', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))

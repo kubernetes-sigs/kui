@@ -169,7 +169,7 @@ function build {
     pushd "$STAGING" > /dev/null
 
     # hack in an `npm run test`
-    PJSON=$(node -e 'const pjson = require("./kui/package.json"); pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); cd node_modules/@kui-shell/test && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true TEST_ROOT=\"$SCRIPTDIR\"/node_modules/@kui-shell/test KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx mocha -c --exit --bail --recursive -t 60000 tests --grep "\$\{TEST_FILTER:-.*\}"`; console.log(JSON.stringify(pjson, undefined, 2))')
+    PJSON=$(node -e 'const pjson = require("./kui/package.json"); pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); cd node_modules/@kui-shell/test && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true TEST_ROOT=\"$SCRIPTDIR\"/node_modules/@kui-shell/test KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx mocha -c --exit --bail --recursive -t 60000 ../*/test --grep "\$\{TEST_FILTER:-.*\}"`; console.log(JSON.stringify(pjson, undefined, 2))')
     echo "$PJSON" > ./kui/package.json
 
     #(cd kui && cp package.json bak.json)
@@ -200,11 +200,6 @@ function build {
     find -L kui/node_modules/@kui-shell/!(test) -type f -path '*/test/*headless*.js' -prune -o -path '*/test/*' -type f -exec rm {} \;
     find -L kui/node_modules/@kui-shell/!(test) -type d -path '*/tests/data/*/headless' -prune -o -path '*/tests/data/*' -type f -exec rm {} \;
     set -e
-
-    # if there are any associated tests
-    if [ -d kui/node_modules/@kui-shell/test ]; then
-       (cd kui/node_modules/@kui-shell/test && ./bin/corral.sh)
-    fi
 
     "$TAR" -jcf "$BUILDDIR/$DEST_TGZ" \
            --exclude ".pre-scanned.json" \

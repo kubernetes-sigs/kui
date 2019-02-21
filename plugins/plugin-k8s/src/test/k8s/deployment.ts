@@ -18,6 +18,9 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+
 describe('electron deployment CRUD', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
@@ -31,7 +34,7 @@ describe('electron deployment CRUD', function (this: common.ISuite) {
   })
 
   it('should create deployment from local file', () => {
-    return cli.do('kubectl create -f ./data/k8s/deployment.yaml', this.app)
+    return cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
       .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`), 20000)
       .catch(common.oops(this))

@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as fs from 'fs'
-import { join } from 'path'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+
 import {
   input,
   composerInput,
@@ -31,6 +31,9 @@ import {
   verifyOutgoingEdgeExists,
   verifyTheBasicStuff
 } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /**
  * Define the input files
@@ -73,7 +76,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(cli.expectError(0, `no such file or directory, open 'doesnotexist.js'`))
     .catch(common.oops(this)))
 
-  it('should preview an empty composition', () => cli.do(`app preview data/composer/composer-source/empty.js`, this.app)
+  it('should preview an empty composition', () => cli.do(`app preview ${ROOT}/data/composer/composer-source/empty.js`, this.app)
     .then(verifyTheBasicStuff('empty.js', 'composerLib'))
     .then(verifyEdgeExists('Entry', 'Exit'))
     .then(verifyPreviewNoticeExist)

@@ -19,6 +19,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, keys, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 describe('wipe command', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
@@ -33,7 +36,7 @@ describe('wipe command', function (this: common.ISuite) {
     .then(cli.expectOK)
     .catch(common.oops(this)))
 
-  it('should create an action', () => cli.do('wsk action create aaa ./data/openwhisk/foo.js', this.app)
+  it('should create an action', () => cli.do(`wsk action create aaa ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .catch(common.oops(this)))
 
@@ -58,7 +61,7 @@ describe('wipe command', function (this: common.ISuite) {
   // make sure we can still execute repl commands after cancelling the wipe
   // here we intentionally reuse the aaa name we did before, with a CREATE
   // to double check that aaa is truly gone
-  it('should create another action after cancelling wipe', () => cli.do('wsk action create aaa ./data/openwhisk/foo.js', this.app)
+  it('should create another action after cancelling wipe', () => cli.do(`wsk action create aaa ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .catch(common.oops(this)))
 
@@ -69,13 +72,13 @@ describe('wipe command', function (this: common.ISuite) {
 
   // try to create action aaa one more time, this time expect 409,
   // i.e. conflict, because we didn't wipe anything
-  it('should create another action after cancelling wipe', () => cli.do('wsk action create aaa ./data/openwhisk/foo.js', this.app)
+  it('should create another action after cancelling wipe', () => cli.do(`wsk action create aaa ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectError(409))
     .catch(common.oops(this)))
 
   // create a bunch of actions
   for (let idx = 0; idx < 10; idx++) {
-    it(`should create action ${idx}`, () => cli.do(`wsk action create aaa${idx} ./data/openwhisk/foo.js`, this.app)
+    it(`should create action ${idx}`, () => cli.do(`wsk action create aaa${idx} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectOK)
       .catch(common.oops(this)))
   }

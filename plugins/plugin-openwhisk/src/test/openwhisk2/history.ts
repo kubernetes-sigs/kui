@@ -19,12 +19,15 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, rp, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 describe('History', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   const entityName = 'foo'
-  const createCommand = `create ${entityName} ./data/openwhisk/foo.js`
+  const createCommand = `create ${entityName} ${ROOT}/data/openwhisk/foo.js`
   const listCommand = 'list'
 
   it('should have an active repl', () => cli.waitForRepl(this.app))

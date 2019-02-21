@@ -15,13 +15,15 @@
  */
 
 import * as fs from 'fs'
-import * as path from 'path'
 import * as assert from 'assert'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
+
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const flip = 'flip'
 
@@ -33,11 +35,10 @@ describe('blackbox actions from a shell script', function (this: common.ISuite) 
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  const root = path.dirname(require.resolve('@kui-shell/plugin-openwhisk/package.json'))
-  const flipSourcePath = path.join(root, 'tests/data/openwhisk/flip.sh')
+  const flipSourcePath = `${ROOT}/data/openwhisk/flip.sh`
   const expectedFlipSource = removeWhitespace(fs.readFileSync(flipSourcePath).toString())
 
-  it('should create a blackbox action', () => cli.do(`wsk action create --native ${flip} ./data/openwhisk/flip.sh`, this.app)
+  it('should create a blackbox action', () => cli.do(`wsk action create --native ${flip} ${ROOT}/data/openwhisk/flip.sh`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(flip))
@@ -66,7 +67,7 @@ describe('blackbox actions from a shell script', function (this: common.ISuite) 
     }))
     .catch(common.oops(this)))
 
-  it('should update a blackbox action variant 1', () => cli.do(`wsk action update --native ${flip} ./data/openwhisk/flip.sh`, this.app)
+  it('should update a blackbox action variant 1', () => cli.do(`wsk action update --native ${flip} ${ROOT}/data/openwhisk/flip.sh`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(flip))
@@ -75,7 +76,7 @@ describe('blackbox actions from a shell script', function (this: common.ISuite) 
     .then(txt => assert.strictEqual(txt, expectedFlipSource))
     .catch(common.oops(this)))
 
-  it('should update a blackbox action variant 2', () => cli.do(`wsk action update ${flip} --native ./data/openwhisk/flip.sh`, this.app)
+  it('should update a blackbox action variant 2', () => cli.do(`wsk action update ${flip} --native ${ROOT}/data/openwhisk/flip.sh`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(flip))
@@ -84,7 +85,7 @@ describe('blackbox actions from a shell script', function (this: common.ISuite) 
     .then(txt => assert.strictEqual(txt, expectedFlipSource))
     .catch(common.oops(this)))
 
-  it('should update a blackbox action variant 3', () => cli.do(`wsk action update ${flip} ./data/openwhisk/flip.sh --native`, this.app)
+  it('should update a blackbox action variant 3', () => cli.do(`wsk action update ${flip} ${ROOT}/data/openwhisk/flip.sh --native`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(flip))

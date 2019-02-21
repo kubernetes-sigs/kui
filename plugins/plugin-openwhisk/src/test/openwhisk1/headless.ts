@@ -25,13 +25,16 @@ import { Application } from 'spectron'
 interface ISuite extends Suite {
   app: Application
 }
-import { join } from 'path'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { cli } from '@kui-shell/core/tests/lib/headless'
-const ROOT = process.env.TEST_ROOT
-const kui = process.env.KUI || join(ROOT, '../../bin/kui')
+
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
+const kui = process.env.KUI || join(process.env.TEST_ROOT, '../../bin/kui')
 
 export const { version: expectedVersion } = require('@kui-shell/settings/package.json')
 

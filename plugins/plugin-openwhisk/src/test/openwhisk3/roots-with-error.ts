@@ -21,6 +21,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
 const goodSeqName = '59E47471-F64B-4235-8FF0-00896DDB3AFB'
 const errorSeqName = 'C6F15AE8-0DE7-4C6E-8695-CDF4B9544B13'
 // MAKE SURE THESE ARE UNIQUE TO THIS TEST!!!
@@ -44,12 +47,12 @@ describe('List root-most non-erroring activations with $$!', function (this: com
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
   // create the component actions
-  it('should create an good action', () => cli.do(`update ${goodActionName} ./data/openwhisk/foo.js`, this.app)
+  it('should create an good action', () => cli.do(`wsk action update ${goodActionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(goodActionName))
     .catch(common.oops(this)))
-  it('should create an erroring action', () => cli.do(`update ${errorActionName} ./data/openwhisk/error.js`, this.app)
+  it('should create an erroring action', () => cli.do(`update ${errorActionName} ${ROOT}/data/openwhisk/error.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(errorActionName))

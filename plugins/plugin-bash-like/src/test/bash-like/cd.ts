@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as path from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
 import { ISuite } from '@kui-shell/core/tests/lib/common'
@@ -22,21 +21,22 @@ import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-lin
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
+import { dirname, join, normalize } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
+const rootRelative = dir => join(ROOT, dir)
+
 describe('Change local shell directory', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   it('should have an active repl', () => cli.waitForRepl(this.app))
 
-  const root = path.normalize(process.env.TEST_ROOT)
-  const rootRelative = dir => path.join(root, dir)
-
-  it(`should execute 'cd data'`, () => cli.do(`cd data`, this.app)
+  it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
     .catch(common.oops(this)))
 
   it(`should execute 'cd -' to change to previous dir`, () => cli.do(`cd -`, this.app)
-    .then(cli.expectOKWithString(root))
+    .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
     .catch(common.oops(this)))
 
   it(`should execute 'cd -' again to change to previous-previous dir`, () => cli.do(`cd -`, this.app)
@@ -44,11 +44,11 @@ describe('Change local shell directory', function (this: ISuite) {
     .catch(common.oops(this)))
 
   it(`should execute 'cd -' one more time to change to previous dir`, () => cli.do(`cd -`, this.app)
-    .then(cli.expectOKWithString(root))
+    .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
     .catch(common.oops(this)))
 
   // now we should be able to change back to data
-  it(`should execute 'cd data'`, () => cli.do(`cd data`, this.app)
+  it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
     .catch(common.oops(this)))
 
@@ -68,7 +68,7 @@ describe('Change local shell directory', function (this: ISuite) {
     .then(cli.expectOKWithString(expandHomeDir('~')))
     .catch(common.oops(this)))
 
-  it(`should execute 'cd ${path.resolve(process.env.TEST_ROOT)}`, () => cli.do(`cd ${path.resolve(process.env.TEST_ROOT)}`, this.app)
-    .then(cli.expectOKWithString(root))
+  it(`should execute cd ${ROOT}`, () => cli.do(`cd ${ROOT}`, this.app)
+    .then(cli.expectOKWithString(ROOT))
     .catch(common.oops(this)))
 })
