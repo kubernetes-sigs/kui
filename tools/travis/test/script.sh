@@ -60,9 +60,9 @@ if [ -n "$LAYERS" ]; then
     NON_HEADLESS_LAYERS=${LAYERS#HEADLESS}
     if [ -n "$NON_HEADLESS_LAYERS" ]; then
         echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
-        (cd packages/tests && ./bin/runLocal.sh $NON_HEADLESS_LAYERS)
+        (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS)
         EC=$?
-        echo "script.sh thinks runLocal finished with $EC"
+        echo "script.sh thinks runMochaLayers finished with $EC"
         if [ $EC != 0 ]; then exit $EC; fi
     fi
 
@@ -76,7 +76,7 @@ if [ -n "$LAYERS" ]; then
 
         # When testing against build headless, we set TEST_SPACE manually
         # since we can't get the env var TEST_SPACE from the previous
-        # runLocal.sh => runTest.sh process. Namespace Current tests will
+        # runMochaLayers.sh => runTest.sh process. Namespace Current tests will
         # fail if we don't have TEST_SPACE.
 
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
