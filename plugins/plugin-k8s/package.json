@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-k8s",
-  "version": "0.8.1",
+  "version": "0.9.2",
   "description": "Kui plugin for kubernetes",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -33,5 +33,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "23f5b4527bbb37d1853c0bf29b2f7e75a1a17f4e"
+  "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32"
 }

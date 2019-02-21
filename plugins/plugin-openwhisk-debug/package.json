@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-openwhisk-debug",
-  "version": "0.0.12",
+  "version": "0.0.15",
   "description": "Kui plugin that lets users run and debug actions locally in a docker container",
   "license": "Apache-2.0",
   "author": "Kerry Chang",
@@ -39,5 +39,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "23f5b4527bbb37d1853c0bf29b2f7e75a1a17f4e"
+  "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32"
 }
