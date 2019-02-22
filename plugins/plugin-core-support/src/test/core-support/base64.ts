@@ -23,8 +23,6 @@ describe('base64 command', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should base64 decode variant 1', () => cli.do('base64 --decode ZGVHZkZBdFM0dA==', this.app)
     .then(cli.expectOKWithString('deGfFAtS4t'))
     .catch(common.oops(this)))

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const ui = require('@kui-shell/core/tests/lib/ui')
+const common = require('@kui-shell/core/tests/lib/common')
 
 // read and cache local ~/.wskprops
 let wskprops
@@ -148,20 +150,16 @@ exports.before = (ctx, { fuzz, noApp = false } = {}) => {
   ctx.retries(10)
 
   return function () {
-    if (!noApp) {
-      ctx.app = require('@kui-shell/core/tests/lib/common').prepareElectron(fuzz)
-    }
+    const { cli } = ui
 
-    // start the app, if requested
-    const start = noApp ? x => x : () => {
-      return ctx.app.start() // this will launch electron
-      // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
-        // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
-        .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
-    }
+    const addWskAuth = !process.env.WEBPACK_TEST || fuzz ? x => x
+      : () => cli.do(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
+        .then(cli.expectOK)
+        .catch(common.oops(ctx))
 
     // clean openwhisk assets from previous runs, then start the app
     return Promise.all([ cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), cleanAll(true, process.env.AUTH2) ])
-      .then(start)
+      .then(common.before(ctx, { fuzz, noApp }))
+      .then(addWskAuth)
   }
 }

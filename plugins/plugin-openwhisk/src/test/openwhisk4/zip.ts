@@ -53,8 +53,6 @@ describe('Create zip actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const makeActionFromZip = (cmd, name) => {
     it(cmd, () => cli.do(cmd, this.app)
       .then(cli.expectOK)

@@ -33,8 +33,6 @@ describe('Delete multiple actions using rimraf', function (this: common.ISuite) 
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should fail with 404 to delete non-existent numeric name', () => cli.do(`rimraf 3`, this.app)
     .then(cli.expectError(404))
     .then(sidecar.expectClosed)

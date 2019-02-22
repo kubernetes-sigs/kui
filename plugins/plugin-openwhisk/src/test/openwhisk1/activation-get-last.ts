@@ -34,8 +34,6 @@ describe('wsk activation get --last', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action
   it(`should create an action ${actionName1}`, () => cli.do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)

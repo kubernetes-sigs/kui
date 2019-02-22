@@ -28,8 +28,6 @@ describe('Create anonymous actions via let', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create an anonymous function with () param', () => cli.do(`let ${actionName1} = () => ({x:3})`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)

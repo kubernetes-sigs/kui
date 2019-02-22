@@ -37,8 +37,6 @@ describe('Use copy to copy openwhisk entities', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const cp = (a, b, aPackage?, bPackage?, cmd = CMD) => {
     // pass this key-value pair to the invocation
     const key = 'name'

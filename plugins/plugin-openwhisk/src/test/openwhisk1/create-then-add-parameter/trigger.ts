@@ -25,8 +25,6 @@ describe('Add parameters to triggers', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create a trigger', () => cli.do(`wsk trigger update ${triggerName}`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

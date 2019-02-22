@@ -30,8 +30,6 @@ describe('shell commands', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should give 404 for unknown outer command', () => cli.do(`ibmcloudo target`, this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))

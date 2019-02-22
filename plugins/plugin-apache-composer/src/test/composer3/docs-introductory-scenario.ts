@@ -246,8 +246,6 @@ describe('Intro demo scenario', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // app init
   /* {
         const cmd = `app init --url ${sharedURL}`

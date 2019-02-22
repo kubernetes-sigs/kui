@@ -31,8 +31,6 @@ describe('Create a sequence, list it, delete it', function (this: common.ISuite)
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const rm = ui.aliases.remove[0]
 
   // create an action, using the implicit entity type

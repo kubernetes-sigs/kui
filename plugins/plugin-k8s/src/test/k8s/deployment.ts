@@ -29,10 +29,6 @@ describe('electron deployment CRUD', function (this: common.ISuite) {
     return wipe(this)
   })
 
-  it('should have an active repl', () => {
-    return cli.waitForRepl(this.app, { noAuthOk: true }) // no openwhisk auth ok!
-  })
-
   it('should create deployment from local file', () => {
     return cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))

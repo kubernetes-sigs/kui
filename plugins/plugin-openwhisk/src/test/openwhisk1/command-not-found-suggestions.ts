@@ -27,8 +27,6 @@ describe('Suggestions for command not found', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should present suggestions for "ws" -> wsk', () => {
     const opts = {
       click: 0, // click on it

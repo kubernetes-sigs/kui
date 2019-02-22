@@ -28,8 +28,6 @@ describe('blackbox actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create a blackbox action variant 1', () => cli.do(`wsk action create bb1 --docker openwhisk/example`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

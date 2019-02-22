@@ -29,8 +29,6 @@ describe('no .wskprops tests', function (this: common.ISuite) {
     before(openwhisk.before(this))
     after(common.after(this))
 
-    it('should have an active repl', () => cli.waitForRepl(this.app))
-
     it('shoule see empty action list', () => cli.do('action list', this.app)
       .then(cli.expectJustOK)
       .catch(common.oops(this)))

@@ -41,8 +41,6 @@ describe('show the composer visualization with no wskauth', function (this: comm
   before(openwhisk.before(this, fuzz)) // fuzz testing: eliminate authentication bits
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app, fuzz.fuzz.prefs))
-
   const cmd = 'app preview'
   const hello = { file: 'hello.js', path: '@demos/hello.js' }
   const If = composerInput('if.js')

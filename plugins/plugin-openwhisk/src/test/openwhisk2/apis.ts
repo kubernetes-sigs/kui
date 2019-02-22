@@ -24,8 +24,6 @@ describe('Create api gateway', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should fail to create the api for a non-existent action', () => cli.do(`wsk api create /hello /world get echo`, this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))

@@ -31,8 +31,6 @@ describe('Click on action part of activation sidecar', function (this: common.IS
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it('should create an action', () => cli.do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
@@ -76,7 +74,6 @@ describe('Click on action part of activation sidecar', function (this: common.IS
     .catch(common.oops(this)))
 
   // a bit of a race here
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it('should click on name part of activation', () => this.app.client.click(ui.selectors.SIDECAR_TITLE)
     .then(() => this.app)

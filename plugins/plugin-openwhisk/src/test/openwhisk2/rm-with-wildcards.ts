@@ -69,8 +69,6 @@ describe('Delete using rimraf with wildcards', function (this: common.ISuite) {
     verifyDeleted(listToBeDeleted)
   }
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   create(actions)
 
   it('should delete nothing with rimraf zzz*', () => cli.do(`rimraf zzz*`, this.app)

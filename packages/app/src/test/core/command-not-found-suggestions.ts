@@ -85,8 +85,6 @@ describe('Suggestions for command not found', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should present suggestions for "ne" -> new', () => {
     return expectSuggestionsFor.call(this,
                                      'ne', // type this

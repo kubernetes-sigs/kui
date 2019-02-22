@@ -25,8 +25,6 @@ describe('parameter parsing with quotes', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const createWith = params => {
     return it(`should create package with -p creds ${params}`, () => cli.do(`package update ppp -p creds ${params}`, this.app)
       .then(cli.expectOK)

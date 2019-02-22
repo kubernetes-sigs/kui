@@ -61,8 +61,6 @@ describe('Create an action via let core tests', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create a sequence via let with annotations', () => cli.do(`let ${seqName5} = x=>x -> x=>x -a foo bar -a xxx 333`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)

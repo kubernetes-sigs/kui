@@ -69,8 +69,6 @@ describe('Create an action via let from a remote resource', function (this: comm
   const doCreate1 = doCreate(REMOTE1)
   const doCreate2 = doCreate(REMOTE2)
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create an action from a remote resource', doCreate1(actionName))
   it('should create an action from a remote resource, with extension', doCreate1(actionName2, '.html'))
   it('should create an action from a remote resource, with extension and package name', doCreate1(actionName3, '.html', packageName))

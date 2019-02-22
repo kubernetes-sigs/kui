@@ -30,8 +30,6 @@ describe('host tests', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should command not found on hosts set', () => cli.do('wsk hosts set', this.app)
     .then(cli.expectError(0, 'Command not found'))
     .catch(common.oops(this)))

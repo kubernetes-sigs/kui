@@ -70,8 +70,6 @@ describe('show the composer visualization without creating openwhisk assets', fu
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should show error thrown by openwhisk-composer node_module', () => cli.do(`preview ${owComposerErr.path}`, this.app)
     .then(cli.expectError(0, `no such file or directory, open 'doesnotexist.js'`))
     .catch(common.oops(this)))

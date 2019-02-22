@@ -29,8 +29,6 @@ describe('Change local shell directory', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
     .catch(common.oops(this)))

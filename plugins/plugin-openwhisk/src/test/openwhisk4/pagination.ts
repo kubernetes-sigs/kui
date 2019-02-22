@@ -102,8 +102,6 @@ describe('Activation list paginator', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it(`should create an action ${actionName}`, () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)

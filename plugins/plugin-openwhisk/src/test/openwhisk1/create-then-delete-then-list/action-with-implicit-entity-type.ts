@@ -31,8 +31,6 @@ describe('Create an action, list it, delete it, then list nothing (implicit enti
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   ui.aliases.remove.forEach(cmd => {
     // create an action, using the implicit entity type
     it('should create an action', () => cli.do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)

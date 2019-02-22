@@ -32,8 +32,6 @@ describe('Execute commands via paste', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should paste a single line and enter the newline manually', () => Promise.resolve(this.app.electron.clipboard.writeText(`let ${actionName} = x=>x`))
     .then(() => this.app.client.execute(() => document.execCommand('paste')))
     .then(() => cli.do(ui.keys.ENTER, this.app))

@@ -25,8 +25,6 @@ describe('Check error handling for invoking a non-existent action', function (th
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('invoke a non-existent action', () => cli.do(`invoke xxxxxx`, this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))

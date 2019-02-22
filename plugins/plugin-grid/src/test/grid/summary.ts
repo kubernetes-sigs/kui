@@ -126,8 +126,6 @@ describe('summary visualization', function (this: common.ISuite) {
            .catch(common.oops(this)))
     } */
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it(`should create the action that bombs if the input value is negative ${actionName}`, () => cli.do(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

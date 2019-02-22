@@ -34,8 +34,6 @@ describe('wsk package list tests', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it(`should create ${action} in ${pckage}`, () => cli.do(`let ${pckage}/${action} = x=>x`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

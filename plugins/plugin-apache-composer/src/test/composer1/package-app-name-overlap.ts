@@ -26,8 +26,6 @@ describe('app create where app name is also a package name', function (this: com
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create a package named foo', () => cli.do('wsk package create foo', this.app)
     .then(cli.expectOK)
     .catch(common.oops(this)))

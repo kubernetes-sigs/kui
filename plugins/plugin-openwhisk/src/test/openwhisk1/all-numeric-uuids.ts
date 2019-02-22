@@ -24,8 +24,6 @@ describe('Confirm proper handling of all-numeric uuids', function (this: common.
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should present 404-type error with activation get on all-numeric uuid', () => cli.do(`activation get 00000000000000000000000000000000`, this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))

@@ -25,8 +25,6 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const cancel = (app, cmd = '') => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))

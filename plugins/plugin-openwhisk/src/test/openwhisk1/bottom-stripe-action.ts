@@ -70,8 +70,6 @@ describe('Sidecar bottom stripe interactions for actions', function (this: commo
       .catch(common.oops(this)))
   }
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it(`should create an action ${actionName}`, () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
     .then(cli.expectOK)

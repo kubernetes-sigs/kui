@@ -31,8 +31,6 @@ describe('edit actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should open a file with spaces', () => cli.do(`open "${ROOT}/data/openwhisk/file with spaces.yaml"`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

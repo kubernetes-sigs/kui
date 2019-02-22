@@ -23,8 +23,6 @@ describe('echo command', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should echo nothing variant 1', () => cli.do('echo', this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))

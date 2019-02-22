@@ -113,6 +113,7 @@ exports.before = (ctx, { fuzz, noApp = false } = {}) => {
       // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
         // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
         .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
+        .then(() => ui.cli.waitForRepl(ctx.app)) // should have an active repl
     }
 
     return start()

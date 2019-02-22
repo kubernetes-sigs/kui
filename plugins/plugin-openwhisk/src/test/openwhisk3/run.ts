@@ -49,8 +49,6 @@ describe('Execute a command file', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('execute commands from a file', () => cli.do(`run ${commandFile}`, this.app)
     .then(cli.expectOKWithCustom({ selector: '.entity:not(.header-row)' }))
     .then(selector => this.app.client.waitUntil(async () => {

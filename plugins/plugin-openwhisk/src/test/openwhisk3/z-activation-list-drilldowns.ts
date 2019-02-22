@@ -28,8 +28,6 @@ describe('List activations, then drill down to summary views', function (this: c
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const drilldownWith = command => {
     return it(`should list activations and click on ${command}`, () => cli.do(`$ list`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))

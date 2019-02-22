@@ -33,8 +33,6 @@ describe('Rename actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const mv = (task, a, b, aPackage?, bPackage?) => {
     // pass this key-value pair to the invocation
     const key = 'name'
