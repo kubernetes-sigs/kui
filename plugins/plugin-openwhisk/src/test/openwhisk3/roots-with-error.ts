@@ -44,8 +44,6 @@ describe('List root-most non-erroring activations with $$!', function (this: com
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create the component actions
   it('should create an good action', () => cli.do(`wsk action update ${goodActionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)

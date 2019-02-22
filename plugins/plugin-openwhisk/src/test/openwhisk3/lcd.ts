@@ -26,8 +26,6 @@ describe('Change shell directory via cd', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should execute cd data', () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString('data')))
 

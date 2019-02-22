@@ -24,8 +24,6 @@ describe('timeline visualization', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // disabled for now shell issue #794
   /* const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
     it('should open timeline', () => cli.do('timeline', this.app)

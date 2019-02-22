@@ -79,8 +79,6 @@ describe('Sidecar bottom stripe interactions for activations', function (this: c
       .catch(common.oops(this)))
   }
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it(`should create an action ${actionName}`, () => cli.do(`let ${actionName} = x => { console.log(x); return x } -p x 5 -p y 10`, this.app)
     .then(cli.expectOK)

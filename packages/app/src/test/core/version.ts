@@ -33,8 +33,6 @@ describe('Version command', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should report proper version', () => cli.do('version', this.app)
     .then(cli.expectOKWithCustom({ expected: expectedVersion }))
     .catch(common.oops(this)))

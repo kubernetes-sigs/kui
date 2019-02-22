@@ -25,8 +25,6 @@ if (false) {
     before(openwhisk.before(this))
     after(common.after(this))
 
-    it('should have an active repl', () => cli.waitForRepl(this.app))
-
     it('should create an action', () => cli.do(`update ${actionName} ./data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)

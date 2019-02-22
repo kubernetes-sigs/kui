@@ -70,8 +70,6 @@ describe('session list --scan-limit --skip', function (this: common.ISuite) {
     return sessionArray
   }
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it(`should create app ${appName}`, () => cli.do(`app create ${appName} @demos/hello.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

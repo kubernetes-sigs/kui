@@ -127,8 +127,6 @@ describe('Tab completion', function (this: ISuite) {
     .then(() => this.app.client.execute('repl.doCancel()')) // clear the line
     .catch(common.oops(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/']
 
   const fileOptions = ['empty1.js', 'empty2.js']

@@ -48,7 +48,6 @@ describe('Help command', function (this: ISuite) {
   //
   // and now here come the tests...
   //
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   doHelp.call(this, 'help', { expect: header('Getting Started') })
   doHelp.call(this, 'editor')

@@ -30,8 +30,6 @@ describe('Create jar actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create a jar action', () => cli.do(`action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

@@ -23,8 +23,6 @@ describe('Error handling', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('bind with no args', () => cli.do('bind', this.app)
     .then(cli.expectError(497))
     .catch(common.oops(this)))

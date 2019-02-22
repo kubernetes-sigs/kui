@@ -30,8 +30,6 @@ describe('History', function (this: common.ISuite) {
   const createCommand = `create ${entityName} ${ROOT}/data/openwhisk/foo.js`
   const listCommand = 'list'
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create an action', () => cli.do(createCommand, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)

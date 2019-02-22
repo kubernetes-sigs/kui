@@ -29,8 +29,6 @@ describe('Use the app delete command to delete an invokeable composition', funct
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   /** expected return value */
   const expect = (key, value, extraExpect, expectIsIt) => {
     if (expectIsIt) {

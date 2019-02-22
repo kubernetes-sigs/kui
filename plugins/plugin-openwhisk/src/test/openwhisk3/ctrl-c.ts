@@ -28,8 +28,6 @@ describe('Cancel via Ctrl+C', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // note that this action resolves with its input parameter; we'll check this in the await step below
   it('should create an action that completes with some delay', () => cli.do(`let ${actionName} = x=> new Promise((resolve, reject) => setTimeout(() => resolve(x), ${delay}))`, this.app)
     .then(cli.expectJustOK)

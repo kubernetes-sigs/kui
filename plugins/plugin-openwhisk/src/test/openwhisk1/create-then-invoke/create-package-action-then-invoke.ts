@@ -31,8 +31,6 @@ describe('Create a packaged action then invoke with implicit entity', function (
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it('should create a packaged action', () => cli.do(`let ppp/foo = ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)

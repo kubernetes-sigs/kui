@@ -34,8 +34,6 @@ describe('Clear the console', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   interface IPromptOptions {
     enteredString?: string
     enteredPlaceholder?: string

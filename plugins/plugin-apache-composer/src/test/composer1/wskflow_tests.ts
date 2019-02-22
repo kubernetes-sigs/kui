@@ -41,8 +41,6 @@ describe('bring up the composer visualization when the sidecar is minimized', fu
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should show the if composition graph', () => cli.do(`preview ${ROOT}/data/composer/composer-source/if.js`, this.app)
     .then(verifyTheBasicStuff('if.js', 'composerLib')) // verify basic things
     .catch(common.oops(this)))
@@ -64,7 +62,6 @@ describe('app preview should actively watching an external file', function (this
   after(common.after(this))
 
   let tempFileName = 'testtemp.js'
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it('should write composer.sequence("a", "b") to a temp file', () => {
     return new Promise((resolve, reject) => {
@@ -142,7 +139,6 @@ describe('create a if composition, invoke, verify session flow is shown correctl
   after(common.after(this))
   const appName = 'test-if'
   const appFile = `${ROOT}/data/composer/composer-source/if-session.js`
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it(`should create an app with ${appFile}`, () => cli.do(`app create ${appName} ${appFile}`, this.app)
     .then(cli.expectOK)
@@ -190,7 +186,6 @@ describe('drilldown to action from wskflow', function (this: common.ISuite) {
   const appFile = '@demos/if.js'
   const actionName = 'authenticate'
   const actionFile = '@demos/authenticate.js'
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it(`should deploy action ${actionName}`, () => cli.do(`action create ${actionName} ${actionFile}`, this.app)
     .then(cli.expectOK)
@@ -220,7 +215,6 @@ describe('test if pressing a node, dragging and releasing triggers the clicking 
 
   const appName = 'test-if'
   const appFile = `${ROOT}/data/composer/composer-source/if-session.js`
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it(`should create an app with ${appFile}`, () => cli.do(`app create ${appName} ${appFile}`, this.app)
     .then(cli.expectOK)

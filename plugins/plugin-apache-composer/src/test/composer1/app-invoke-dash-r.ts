@@ -29,8 +29,6 @@ describe('app invoke -r', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   for (let idx = 1; idx <= 3; idx++) {
     const name = `foo${idx}`
     it(`should create an action ${name} via let`, () => cli.do(`let ${name} = x=>x`, this.app)

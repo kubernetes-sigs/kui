@@ -25,8 +25,6 @@ describe('Load tester', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('create an action', () => cli.do(`let ${actionName} = x=>x`, this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))

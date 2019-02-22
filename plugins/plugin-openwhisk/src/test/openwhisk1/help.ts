@@ -36,7 +36,6 @@ describe('Help command', function (this: common.ISuite) {
   //
   // and now here come the tests...
   //
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   doHelp.call(this, 'wsk', { expect: header('OpenWhisk') })
   doHelp.call(this, 'wsk action', { expect: actionHelpHeader })

@@ -97,8 +97,6 @@ describe('grid visualization', function (this: common.ISuite) {
     })
   }
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it(`should create an action ${actionName} that bombs if the input value is negative`, () => cli.do(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

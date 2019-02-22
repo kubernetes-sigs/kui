@@ -28,8 +28,6 @@ describe('app init --reset', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   /** app config; v1 validates the redis URL; v2 validates the type (private versus shared) */
   // const assertConfig = (v1, v2) => it(`should show valid app configuration`, () => cli.do('app config', this.app)
   //   .then(cli.expectOKWithCustom({ selector: 'code' })) // extract the JSON bit

@@ -26,8 +26,6 @@ describe('wipe command', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create a package', () => cli.do('wsk package create ppp', this.app)
     .then(cli.expectOK)
     .catch(common.oops(this)))

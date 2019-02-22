@@ -124,8 +124,6 @@ describe('Tab completion', function (this: common.ISuite) {
     .then(() => this.app.client.execute('repl.doCancel()')) // clear the line
     .catch(common.oops(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create an action foo', () => cli.do('let foo = x=>x', this.app)
     .then(cli.expectOK)
     .catch(common.oops(this)))

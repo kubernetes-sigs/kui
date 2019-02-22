@@ -48,8 +48,6 @@ describe('editor', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   /* not yet implemented
   it('should create a new file when editing a non-existing file', () => cli.do('edit editNonExistTest.txt', this.app)
     .then(cli.expectJustOK)

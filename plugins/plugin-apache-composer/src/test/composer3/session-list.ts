@@ -62,8 +62,6 @@ describe('session list and name filter', function (this: common.ISuite) {
       })
   }
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it(`should create app ${appName}`, () => cli.do(`app create ${appName} @demos/hello.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

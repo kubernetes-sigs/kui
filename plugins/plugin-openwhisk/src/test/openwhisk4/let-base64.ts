@@ -33,8 +33,6 @@ describe('Invoke an action with a binary-formatted parameter', function (this: c
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // this action reverses the base64 decoding, and returns the
   // result as a string; our input isn't really binary, we're just
   // testing the auto-base64 support

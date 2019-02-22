@@ -158,7 +158,7 @@ exports.cli = {
       .then(() => ({ app: app, count: parseInt(count) + nLines - 1 }))),
 
   /** wait for the repl to be active */
-  waitForRepl: async (app, prefs = {}) => {
+  waitForRepl: async (app) => {
     await app.client.waitForEnabled(selectors.CURRENT_PROMPT, timeout)
     return app
   },

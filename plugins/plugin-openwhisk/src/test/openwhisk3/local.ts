@@ -30,8 +30,6 @@ describe('local plugin', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const LOG_ENTRY = 'hi'
   const LOG_ENTRY2 = 'munchies'
 

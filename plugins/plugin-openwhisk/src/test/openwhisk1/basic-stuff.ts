@@ -41,8 +41,6 @@ describe('openwhisk namespace display', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('execute wsk namespace current', () => {
     return cli.do('wsk namespace current', this.app)
       .then(cli.expectOKWithString(expectedNamespace()))

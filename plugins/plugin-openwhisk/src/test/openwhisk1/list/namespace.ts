@@ -28,8 +28,6 @@ describe('Namespaces list', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // implicit entity type
   ui.aliases.list.forEach(cmd => {
     it(`should list namespaces with "namespaces ${cmd}"`, () => cli.do(`namespaces ${cmd}`, this.app)

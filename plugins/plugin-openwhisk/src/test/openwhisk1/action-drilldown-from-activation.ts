@@ -25,8 +25,6 @@ describe('activation list, activation get, click on header', function (this: com
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create an action', () => cli.do(`let ${actionName} = x=>x -p x 3`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

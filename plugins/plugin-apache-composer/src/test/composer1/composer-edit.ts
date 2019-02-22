@@ -59,8 +59,6 @@ describe('edit compositions', function (this: common.ISuite) {
       })
   }
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // test wskflow and wskflow undeloyed actions warning
   it(`should open the editor to a new composition and expect wskflow`, () => cli.do('compose compSimple', this.app)
     .then(verifyTheBasicStuff('compSimple'))

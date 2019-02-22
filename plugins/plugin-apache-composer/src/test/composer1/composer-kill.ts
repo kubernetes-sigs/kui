@@ -38,7 +38,7 @@ describe('killing and purging composer invocations', function (this: ISuite) {
   //
   //
   //
-  // it('should have an active repl', () => cli.waitForRepl(this.app))
+  //
   //
   // /** expected return value */
   // const expect = (key, value, extraExpect, expectIsIt) => {

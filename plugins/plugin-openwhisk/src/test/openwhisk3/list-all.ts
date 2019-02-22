@@ -34,8 +34,6 @@ describe('List all OpenWhisk entities', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this, () => cli.do(`wsk rule rm ${ruleName}`, this.app)))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create action
   it('should create a packaged action', () => cli.do(`let ${actionNameInPackage} = x=>x`, this.app)
     .then(cli.expectJustOK)

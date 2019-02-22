@@ -33,8 +33,6 @@ describe('Create a rule via on', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create an action via let without extension', () => cli.do(`let ${actionName2} = x=>({y:x.y})`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)

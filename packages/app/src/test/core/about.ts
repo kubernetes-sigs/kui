@@ -25,8 +25,6 @@ describe('About command', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should open the about window', () => cli.do('about', this.app)
     .then(cli.expectOK)
     .then(() => this.app.client.getWindowCount())

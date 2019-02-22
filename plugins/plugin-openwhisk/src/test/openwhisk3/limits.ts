@@ -41,8 +41,6 @@ describe('Create an action with limits', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should create an action with -m 129', () => cli.do(`action update ${actionName1} ${ROOT}/data/openwhisk/foo.js -m 129`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)

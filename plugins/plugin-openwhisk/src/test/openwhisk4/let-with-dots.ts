@@ -38,8 +38,6 @@ describe('Create an action via let with dots', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   for (let idx = 0; idx < fileWithSpacesAndQuotes.length; idx++) {
     const actionName1 = `foobar.${idx}`
     const actionName2 = `foobar.2.${idx}`

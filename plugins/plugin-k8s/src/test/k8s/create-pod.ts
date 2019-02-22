@@ -31,10 +31,6 @@ describe('electron create pod', function (this: common.ISuite) {
     return wipe(this)
   })
 
-  it('should have an active repl', () => {
-    return cli.waitForRepl(this.app, { noAuthOk: true }) // no openwhisk auth ok!
-  })
-
   // repeat the tests for kubectl, k, etc. i.e. any built-in
   // synonyms/aliases we have for "kubectl"
   synonyms.forEach(kubectl => {

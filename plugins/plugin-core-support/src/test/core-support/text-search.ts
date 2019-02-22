@@ -25,8 +25,6 @@ describe('Text search', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should open the search bar when cmd+f is pressed', () => this.app.client.keys([ui.ctrlOrMeta, 'f'])
     .then(() => this.app.client.isVisible('#search-bar'))
     .then(r => assert.ok(r, 'search-bar visible'))

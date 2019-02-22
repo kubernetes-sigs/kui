@@ -33,8 +33,6 @@ describe('Create a javascript web action via let', function (this: common.ISuite
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   //
   // javascript web action: NO LONGER NEEDED, the html let should create the javascript action for us
   //

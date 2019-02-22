@@ -28,8 +28,6 @@ describe('Comments and blank line handling', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should handle blank lines', () => cli.do('', this.app)
     .then(cli.expectBlank))
 

@@ -31,8 +31,6 @@ describe('kill composer invocation', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   /** expected return value */
   const expect = (key, value, extraExpect, expectIsIt) => {
     if (expectIsIt) {

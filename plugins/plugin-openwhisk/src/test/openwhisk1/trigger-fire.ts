@@ -30,8 +30,6 @@ describe('wsk trigger fire tests', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it('should create trigger', () => cli.do(`wsk trigger create ttt -p tvar 2`, this.app)
     .then(cli.expectOK)

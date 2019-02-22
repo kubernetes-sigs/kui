@@ -35,8 +35,6 @@ describe('auth tests', function (this: common.ISuite) {
   const ns2 = ui.expectedNamespace(process.env.TEST_SPACE2)
   const reload = () => this.app.client.execute('window.location.reload()')
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it('should create an action foo', () => cli.do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)

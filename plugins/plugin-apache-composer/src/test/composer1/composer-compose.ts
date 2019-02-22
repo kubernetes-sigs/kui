@@ -26,8 +26,6 @@ describe('try using "shell" to open the graphical shell, when already in the gra
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should fail when executing "shell"', () => cli.do('shell', this.app)
     .then(cli.expectError(0, expectedError))
     .catch(common.oops(this)))

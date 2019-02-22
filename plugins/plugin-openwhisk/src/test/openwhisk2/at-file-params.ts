@@ -38,8 +38,6 @@ describe('@file params and annotations', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // action via wsk action create
   it('should create an action with --param-file', () => cli.do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js --param-file ${ROOT}/data/openwhisk/params.json`, this.app)
     .then(cli.expectJustOK)

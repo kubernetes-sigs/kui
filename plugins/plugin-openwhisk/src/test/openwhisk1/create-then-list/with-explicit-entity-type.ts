@@ -38,8 +38,6 @@ describe('Create with explicit entity type, then list', function (this: common.I
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   openwhisk.entities.forEach(entity => {
     const name = `foo-${entity}`
 

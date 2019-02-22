@@ -27,7 +27,7 @@ describe('sample plugin', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
+  
 
   it('should open sidecar', () => cli.do(`sample sidecar`, this.app)
     .then(cli.expectJustOK)

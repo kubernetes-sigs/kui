@@ -30,8 +30,6 @@ describe('Create a sequence via let', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create the component actions
   actionNames.forEach(actionName => {
     it('should create an action via let', () => cli.do(`let ${actionName}.js = x=>x`, this.app)

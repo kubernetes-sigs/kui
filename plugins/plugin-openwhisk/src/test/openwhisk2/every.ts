@@ -39,7 +39,6 @@ describe('Create a rule using every', function () {
   before(openwhisk.before(this))
   after(common.after(this), () => cli.do(`wsk rule delete ${ruleName}`))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 */
   /** keep track of activations, and whether new activations show up */
   /*  let priorActivations

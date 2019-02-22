@@ -40,8 +40,6 @@ describe('screenshot', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should fail take screenshot last as the first command', () => cli.do(`screenshot last`, this.app)
     .then(cli.expectError(0, 'You requested to screenshot the last REPL output, but this is the first command')))
 

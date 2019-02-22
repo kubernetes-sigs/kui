@@ -35,8 +35,6 @@ describe('Create a sequence with whitespacey names', function (this: common.ISui
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it('should create an action', () => cli.do(`create "${actionName1}" ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)

@@ -31,8 +31,6 @@ describe('Create action with implicit entity type, then list it', function (this
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // create an action, using the implicit entity type
   it('should create an action', () => cli.do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)

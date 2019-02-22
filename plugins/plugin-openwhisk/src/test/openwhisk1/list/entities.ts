@@ -28,8 +28,6 @@ describe('List entities with a clean slate', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   // implicit entity type
   it(`should list actions with "list"`, () => cli.do(`list`, this.app).then(cli.expectJustOK))
 

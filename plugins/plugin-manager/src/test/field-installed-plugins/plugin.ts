@@ -29,14 +29,10 @@ describe('Install and remove plugins', function () {
   // const reload = N => this.app.client.click(`${ui.selectors.OUTPUT_N(N)} .clickable`)
   const reload = () => this.app.restart()
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   it('should remove shell-sample-plugin', () => cli.do('plugin remove shell-sample-plugin', this.app)
     .then(cli.expectOKWithCustom({ passthrough: true }))
     .then(reload)
     .catch(common.oops(this)))
-
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it('should try "sample hi" and fail', () => cli.do('sample hi', this.app)
     .then(cli.expectError(0, 'Command not found'))
@@ -46,8 +42,6 @@ describe('Install and remove plugins', function () {
     .then(cli.expectOKWithCustom({ passthrough: true }))
     .then(reload) // reload the app, to pick up the plugin model changes
     .catch(common.oops(this)))
-
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it('should try "sample hi" and succeed', () => cli.do('sample hi', this.app)
     .then(cli.expectOK)
@@ -72,8 +66,6 @@ describe('Install and remove plugins', function () {
   it('should show an error with "plugin commands shell-sample-plugin"', () => cli.do('plugin commands shell-sample-plugin', this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))
-
-  it('should have an active repl', () => cli.waitForRepl(this.app))
 
   it('should try "sample hi" and fail', () => cli.do('sample hi', this.app)
     .then(cli.expectError(0, 'Command not found'))

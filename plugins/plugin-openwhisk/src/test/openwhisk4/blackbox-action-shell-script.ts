@@ -33,8 +33,6 @@ describe('blackbox actions from a shell script', function (this: common.ISuite) 
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should have an active repl', () => cli.waitForRepl(this.app))
-
   const flipSourcePath = `${ROOT}/data/openwhisk/flip.sh`
   const expectedFlipSource = removeWhitespace(fs.readFileSync(flipSourcePath).toString())
 
