@@ -19,6 +19,7 @@ const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
 import * as expandHomeDir from 'expand-home-dir'
+import { safeLoad as parseYAML } from 'js-yaml'
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -38,8 +39,10 @@ import { FinalState } from '../model/states'
 import { redactJSON, redactYAML } from '../view/redact'
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
-import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
+import { conditionsButton } from '../view/modes/conditions'
+import { containersButton } from '../view/modes/containers'
+import { statusButton, renderAndViewStatus } from '../view/modes/status'
 
 /** add the user's option to the command line */
 const dashify = str => {
@@ -140,12 +143,11 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
       //
       // here is where we hunt for the CA by inspecting the kubeconfig
       //
-      const { safeLoadAll: parseYAML } = require('js-yaml')
       const kubeconfig = parseYAML(kubeconfigContents)
       debug('kubeconfig contents', kubeconfig)
 
       // the ca is located in the same directory as the kubeconfig file
-      const caFileBase = kubeconfig[0].clusters[0].cluster['certificate-authority']
+      const caFileBase = kubeconfig.clusters[0].cluster['certificate-authority']
       CA_FILE = join(dirname(kubeconfigFile), caFileBase)
     }
 
@@ -525,7 +527,17 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
     (options.output || options.o
      || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
      || (command === 'kubectl' && verb === 'describe' && 'yaml')
-     || (command === 'kubectl' && verb === 'logs' && 'accesslog'))
+     || (command === 'kubectl' && verb === 'logs' && 'logs'))
+
+  //
+  // the default log limit is... unlimited? let's make sure we don't
+  // cause chaos here by requesting too many log lines
+  //
+  if (verb === 'logs' && !options.tail && !options.since) {
+    debug('limiting log lines')
+    rawArgv.push('--tail')
+    rawArgv.push('1000')
+  }
 
   // strip trailing e.g. .app
   const entityTypeWithoutTrailingSuffix = entityType && entityType.replace(/\..*$/, '').replace(/-[a-z0-9]{9}-[a-z0-9]{5}$/, '')
@@ -721,7 +733,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       } else {
         resolve(out.trim())
       }
-    } else if (output === 'json' || output === 'yaml' || output === 'accesslog') {
+    } else if (output === 'json' || output === 'yaml' || output === 'logs') {
       //
       // return a sidecar entity
       //
@@ -729,11 +741,11 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
 
       const result = output === 'json'
         ? JSON.parse(out)
-        : output === 'accesslog' ? formatLogs(out)
+        : output === 'logs' ? formatLogs(out)
         : output === 'yaml' ? redactYAML(out, options)
         : redactJSON(out, options)
 
-      debug('structured output', result)
+      // debug('structured output', result)
 
       if (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied) {
         debug('directing resolving', isHeadless())
@@ -748,8 +760,16 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       }]
 
       if (verb === 'get') {
-        const resource: IResource = { kind: command !== 'helm' && entityType, name: entity }
-        modes.push(statusButton(command, resource, FinalState.NotPendingLike)),
+        const yaml = parseYAML(out)
+
+        const resource: IResource = { kind: command !== 'helm' && entityType, name: entity, yaml }
+        modes.push(statusButton(command, resource, FinalState.NotPendingLike))
+        modes.push(conditionsButton(command, resource))
+
+        if (yaml.spec.containers) {
+          modes.push(containersButton(command, resource))
+        }
+
         deleteResourceButton(() => renderAndViewStatus(command, resource, FinalState.OfflineLike))
         modes.push(deleteResourceButton())
       }

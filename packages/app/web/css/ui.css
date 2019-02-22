@@ -454,9 +454,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .result-table .entity {
     display: table-row-group;
 }
-.result-table .entity:not(.log-line) .entity-attributes:not(.header-row):hover {
-    cursor: pointer;
-}
 .entity-attributes {
     display: table-row;
     height: 3em;
@@ -532,6 +529,13 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .entity-name-group:not(.header-cell) .entity-name, .result-as-table .bold {
     font-weight: 500;
+}
+.log-field .entity-name {
+    direction: rtl;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 15em;
 }
 .repl-result .entity.activations .entity-name {
     margin-left: 2em;
@@ -1139,6 +1143,9 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+.fixed-table-layout {
+    table-layout: fixed;
+}
 .text-center {
     text-align: center;
 }
@@ -1237,6 +1244,9 @@ code.fancy-code {
 .min-width-date-like {
     min-width: 15em !important;
     display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .max-width-id-like {
     max-width: 8em;

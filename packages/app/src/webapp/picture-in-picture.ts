@@ -88,7 +88,7 @@ const restore = (pippedContainer, sidecarClass, capturedHeaders, highlightThis, 
  *
  *
  */
-const pip = (container, capturedHeaders, highlightThis, returnTo, options?) => {
+const pip = (container, capturedHeaders, highlightThis, returnTo?: string, options?) => {
   try {
     if (container !== true) {
       container.parentNode.removeChild(container)
@@ -105,6 +105,8 @@ const pip = (container, capturedHeaders, highlightThis, returnTo, options?) => {
   const restoreFn = restore(container, sidecarClass, capturedHeaders, highlightThis, escapeHandler, options)
 
   if (returnTo) {
+    debug('returnTo', returnTo)
+
     removeAllDomChildren(backLabel)
     const backButton = document.createElement('div')
     backButton.className = 'sidecar-bottom-stripe-back-button'
@@ -171,7 +173,7 @@ const capture = (selector: string, redraw?) => {
  * populate the new view.
  *
  */
-export default (command, highlightThis, container: string | Element, returnTo?, options?) => (event?) => {
+export default (command, highlightThis, container: string | Element, returnTo?: string, options?) => (event?: Event) => {
   if (event) event.stopPropagation()
 
   if (typeof container === 'string') {
@@ -191,9 +193,14 @@ export default (command, highlightThis, container: string | Element, returnTo?, 
   const modeButtons = document.querySelector(bottomStripe.css.modeContainer)['capture']
   const capturedFooter = capture(bottomStripe.css.buttons, modeButtons && modeButtons())
 
+  debug('container', container)
+  debug('alreadyPipped', alreadyPipped)
+
+  const capturedHeaders = [ capturedHeader, capturedHeader2, capturedHeader3, capturedHeader4, capturedHeader5, capturedFooter ]
+
   // make the transition
   const restoreFn = container && !alreadyPipped
-    ? pip(container, [capturedHeader, capturedHeader2, capturedHeader3, capturedHeader4, capturedHeader5, capturedFooter], highlightThis, returnTo, options)
+    ? pip(container, capturedHeaders, highlightThis, returnTo, options)
     : () => true
 
   highlight(highlightThis)
@@ -202,7 +209,7 @@ export default (command, highlightThis, container: string | Element, returnTo?, 
   debug('executing command', command)
 
   if (typeof command === 'string') {
-    return repl.pexec(command, {
+    return repl[(options && options.exec) || 'pexec'](command, {
       isDrilldown: true,
       preserveBackButton: true,
       rethrowErrors: true,

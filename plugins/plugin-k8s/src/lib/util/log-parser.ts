@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/util/log-parser')
+import * as Debug from 'debug'
+const debug = Debug('k8s/util/log-parser')
+
+import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
 /**
  * Squash runs of the same log entry
@@ -81,15 +84,13 @@ interface IOptions {
   asJSON?: boolean
 }
 
-const cloudLensPattern = /^(?=[IEF][0-9]+)/m
-const zaprPattern = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(DEBUG|INFO|ERROR)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/m
-
 interface IZaprEntry {
   timestamp: string
   logType: string
   provider: string
   origin: string
   rest: string
+  runLength?: number
 }
 
 /**
@@ -108,9 +109,16 @@ const findIndex = (A, pattern, startIdx) => {
   return -1
 }
 
-/** zapr log format splitter */
-const zaprSplit = (raw: string): Array<IZaprEntry> => {
-  const records = raw.split(zaprPattern).filter(x => x !== '\n')
+/**
+ * Parser for zapr-formatted logs
+ *
+ * @return undefined if we don't have any log entries
+ *
+ */
+const parseZapr = (raw: string): Array<IZaprEntry> => {
+  const pattern = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(DEBUG|INFO|ERROR)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/m
+
+  const records = raw.split(pattern).filter(x => x !== '\n')
   const lines = []
 
   let idx = 0
@@ -152,9 +160,79 @@ const zaprSplit = (raw: string): Array<IZaprEntry> => {
     }
   }
 
-  // return undefined if we don't have any log entries so that the `||
-  // linesByCloudLens` below works
+  // return undefined if we don't have any log entries
+  debug('zapr?', lines.length > 0, lines)
   return lines.length > 0 && lines
+}
+
+/**
+ * Parser for CloudLens-formatted logs
+ *
+ * @return undefined if we don't have any log entries
+ *
+ */
+const parseCloudLens = (raw: string, options: IOptions): Array<any> => {
+  const pattern = /^(?=[IEF][0-9]+)/m
+  const linesByCloudLens = raw.split(pattern)
+
+  return linesByCloudLens
+    .slice(Math.max(0, linesByCloudLens.length - 1000)) // display no more than 1000 lines
+    .filter(x => x)
+    .filter(x => x.indexOf('Watch close') < 0)
+    .reverse()
+    .reduce(squashLogRuns(false, options), [])
+}
+
+/**
+ * Parser for istio logs
+ *
+ */
+const parseIstio = (raw: string): Array<IZaprEntry> => {
+  // [2019-02-22 15:22:54.048][16][info][upstream] external/envoy/source/common/upstream/cluster_manager_impl.cc:494] add/update cluster outbound|9093||istio-telemetry.istio-system.svc.cluster.local during init
+  // [2019-02-22 15:22:52.882][16][info][main] external/envoy/source/server/server.cc:190] initializing epoch 0 (hot restart version=10.200.16384.256.options=capacity=16384, num_slots=8209 hash=228984379728933363 size=4882536)
+  const pattern = /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)\]\[(\d+)\]\[(.*)\]\[(.*)\]\s+(.*:\d+)\]\s+(.*)$/mg
+
+  // 2019-02-22T15:22:52.837196Z     info    Monitored certs: []envoy.CertSource{envoy.CertSource{Directory:"/etc/certs/", Files:[]string{"cert-chain.pem", "key.pem", "root-cert.pem"}}}
+  const pattern2Split = /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)/
+  const pattern2Rest = /^\s+([^\s]+)\s+([\s\S]*)/
+  const rest = raw.replace(pattern, '')
+  const lines2 = rest
+    .split(pattern2Split)
+    .slice(1)
+    .reduce((lines, line, idx, A) => {
+      if (idx % 2 === 0) {
+        const restOfLine = A[idx + 1].match(pattern2Rest)
+        debug('rest', A[idx + 1], restOfLine)
+        lines.push({
+          timestamp: prettyPrintTime(A[idx]),
+          logType: restOfLine[1],
+          rest: restOfLine[2].replace(/[\n\r]*$/, '')
+        })
+      }
+
+      return lines
+    }, []).filter(x => x !== '\n')
+  debug('lines2', lines2)
+
+  const records = raw.split(pattern).slice(1).filter(x => x !== '\n')
+  const lines = records.reduce((lines, line, idx, A) => {
+    if (idx % 6 === 0) {
+      lines.push({
+        timestamp: prettyPrintTime(A[idx]),
+        logType: A[idx + 2],
+        provider: A[idx + 3],
+        origin: A[idx + 4],
+        rest: A[idx + 5].trim()
+      })
+    }
+
+    return lines
+  }, [])
+  debug('lines', lines)
+
+  return lines.concat(lines2).sort((a,b) => {
+    return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+  })
 }
 
 /**
@@ -162,21 +240,15 @@ const zaprSplit = (raw: string): Array<IZaprEntry> => {
  *
  */
 export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) => {
-  const linesByCloudLens = raw.split(cloudLensPattern)
-
-  const logEntries = zaprSplit(raw) ||
-    linesByCloudLens
-    .slice(Math.max(0, linesByCloudLens.length - 1000)) // display no more than 1000 lines
-    .filter(x => x)
-    .filter(x => x.indexOf('Watch close') < 0)
-    .reverse()
-    .reduce(squashLogRuns(false, options), [])
+  const logEntries = parseZapr(raw) || parseIstio(raw) || parseCloudLens(raw, options)
+  debug('logEntries', logEntries)
 
   if (!options.asHTML) {
     return logEntries
   } else {
     const container = document.createElement('div')
     container.classList.add('log-lines')
+    container.classList.add('fixed-table-layout')
 
     logEntries.forEach(({ logType = '', timestamp = '', origin = '', rest, runLength = 1 }) => {
       // dom for the log line
@@ -194,7 +266,11 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
       // timestamp rendering
       const timestampDom = document.createElement('div')
       timestampDom.className = 'log-field log-date entity-name-group'
-      timestampDom.innerText = timestamp
+      if (typeof timestamp === 'string') {
+        timestampDom.innerText = timestamp
+      } else {
+        timestampDom.appendChild(timestamp)
+      }
       logLine.appendChild(timestampDom)
 
       // origin, e.g. filename and line number, rendering
@@ -214,7 +290,7 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
 
       // log message rendering
       const restDom = document.createElement('div')
-      restDom.className = 'log-field log-message'
+      restDom.className = 'log-field log-message smaller-text'
       if (typeof rest === 'object') {
         const pre = document.createElement('pre')
         const code = document.createElement('code')
@@ -222,7 +298,11 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
         pre.appendChild(code)
         restDom.appendChild(pre)
       } else {
-        restDom.innerText = rest
+        const pre = document.createElement('pre')
+        const code = document.createElement('code')
+        code.innerText = rest
+        pre.appendChild(code)
+        restDom.appendChild(pre)
       }
       logLine.appendChild(restDom)
     })
