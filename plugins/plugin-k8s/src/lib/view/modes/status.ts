@@ -14,45 +14,21 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/modes')
+import * as Debug from 'debug'
+const debug = Debug('k8s/view/modes/status')
 
-import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 import repl = require('@kui-shell/core/core/repl')
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 
-import { FinalState } from './states'
+import { FinalState } from '../../model/states'
+import IResource from '../../model/resource'
 
-const makeButton = (overrides, fn?) => Object.assign({}, {
-  direct: async ({ prettyType: kind = '-f', name, resourceName = name, namespace }) => {
-    const response = await repl.pexec(`kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
-                                          { noStatus: !!fn })
-    return fn ? fn(response) : response
-  },
-  echo: true,
-  noHistory: false,
-  replSilence: false,
-  balloonLength: 'medium',
-  actAsButton: true,
-  flush: 'right'
-}, overrides)
+import insertView from '../insert-view'
 
-/**
- * Insert the given view
- *
- */
-export const insertView = view => {
-  debug('insertView', view)
-
-  const sidecar = getSidecar()
-  const activeView = sidecar.getAttribute('data-active-view')
-  const container = sidecar.querySelector(`${activeView} .activation-content .activation-result`)
-  debug('insertView.container', activeView, container)
-
-  removeAllDomChildren(container)
-  debug('insertView.container', container)
-  container.appendChild(view)
-}
+export const statusButton = (command: string, resource: IResource, finalState: FinalState, overrides?) => Object.assign({}, {
+  mode: 'status',
+  direct: () => renderAndViewStatus(command, resource, finalState)
+}, overrides || {})
 
 /**
  * Render the multi-table status view. This just wraps some doms
@@ -100,12 +76,6 @@ export const renderStatus = async (command: string, resource: IResource, finalSt
   return resultDomOuter
 }
 
-export interface IResource {
-  filepathForDrilldown?: string
-  kind?: string
-  name?: string
-}
-
 /**
  * Render status table, and then place it in a DOM
  *
@@ -113,18 +83,3 @@ export interface IResource {
 export const renderAndViewStatus = (command: string, resource: IResource, finalState: FinalState) => {
   renderStatus(command, resource, finalState).then(insertView)
 }
-
-export const statusButton = (command: string, resource: IResource, finalState: FinalState, overrides?) => Object.assign({}, {
-  mode: 'status',
-  direct: () => renderAndViewStatus(command, resource, finalState)
-}, overrides || {})
-
-export const createResourceButton = (fn?) => makeButton({ mode: 'create',
-  fontawesome: 'fas fa-plus-circle',
-  balloon: 'Create this resource'
-}, fn)
-
-export const deleteResourceButton = (fn?) => makeButton({ mode: 'delete',
-  fontawesome: 'fas fa-trash',
-  balloon: 'Delete this resource'
-}, fn)

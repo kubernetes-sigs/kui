@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/k8s/preload')
-
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
-
-import { restoreAuth } from './lib/model/auth'
-
-/**
- * This is the module
- *
- */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  if (inBrowser()) {
-    debug('preload for browser')
-    restoreAuth()
-  }
+interface IResource {
+  filepathForDrilldown?: string
+  kind?: string
+  name?: string
 }
 
-export default registration
+export default IResource

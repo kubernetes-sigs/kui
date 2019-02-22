@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/cmds/auth')
+const debug = Debug('k8s/controller/auth')
 
-import { setAuth } from '../models/auth'
+import { setAuth } from '../model/auth'
 
 const usage = {
   add: {

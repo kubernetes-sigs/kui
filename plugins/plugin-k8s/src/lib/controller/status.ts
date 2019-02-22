@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/cmds/status')
+const debug = Debug('k8s/controller/status')
 debug('loading')
 
 import { basename, join } from 'path'
@@ -23,10 +23,12 @@ import { basename, join } from 'path'
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
 
-import { flatten, isDirectory, toOpenWhiskFQN } from './util'
-import { States, FinalState } from './states'
-import { formatContextAttr, formatEntity } from '../util/formatEntity'
 import { withRetryOn404 } from '../util/retry'
+import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
+
+import { States, FinalState } from '../model/states'
+
+import { formatContextAttr, formatEntity } from '../view/formatEntity'
 
 /** icon to indicate "is a cluster" */
 const fontawesome = 'fas fa-network-wired'

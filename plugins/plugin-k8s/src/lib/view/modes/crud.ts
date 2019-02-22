@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/k8s/preload')
+import makeButton from './button'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+export const createResourceButton = (fn?) => makeButton({ mode: 'create',
+  fontawesome: 'fas fa-plus-circle',
+  balloon: 'Create this resource'
+}, fn)
 
-import { restoreAuth } from './lib/model/auth'
-
-/**
- * This is the module
- *
- */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  if (inBrowser()) {
-    debug('preload for browser')
-    restoreAuth()
-  }
-}
-
-export default registration
+export const deleteResourceButton = (fn?) => makeButton({ mode: 'delete',
+  fontawesome: 'fas fa-trash',
+  balloon: 'Delete this resource'
+}, fn)
