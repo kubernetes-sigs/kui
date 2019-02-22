@@ -15,10 +15,6 @@ data.
 - [Install a prebuilt version](docs/installation.md)
 - [Clone and contribute!](docs/dev/README.md)
 
-When running locally (the first and second options), we suggest that
-you add the `bin` directory to your PATH; the above links provide the
-specifics. This will enable `kubectl kui` to work.
-
 ## The Kui Experience
 
 [![Kui screenshot](docs/readme/images/kubectl-examples.jpg)](https://youtu.be/jcV0csyzGdY)
