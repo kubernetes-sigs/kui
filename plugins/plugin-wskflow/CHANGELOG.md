@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.0.17 (2019-02-22)
+
+
+### Bug Fixes
+
+* **apache-composer:** compose yoyo -t @demos/if.js broken in webpack mode ([14ac816](https://github.com/IBM/kui/commit/14ac816)), closes [#332](https://github.com/IBM/kui/issues/332)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **plugin-wskflow:** add preview notice to sidecar header ([a65cae5](https://github.com/IBM/kui/commit/a65cae5)), closes [#455](https://github.com/IBM/kui/issues/455) [#386](https://github.com/IBM/kui/issues/386)
+* **wskflow:** fix for preview [@demos](https://github.com/demos) in webpack mode ([adc685f](https://github.com/IBM/kui/commit/adc685f)), closes [#329](https://github.com/IBM/kui/issues/329)
+
+
+
+
+
 ## 0.0.16 (2019-02-21)
 
 
