@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/cmds/contexts')
+const debug = require('debug')('k8s/controller/contexts')
 
 import repl = require('@kui-shell/core/core/repl')
 import { isHeadless } from '@kui-shell/core/core/capabilities'

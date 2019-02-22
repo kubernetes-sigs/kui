@@ -15,22 +15,24 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/k8s/preload')
+const debug = Debug('k8s/view/insert-view')
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
-
-import { restoreAuth } from './lib/model/auth'
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 /**
- * This is the module
+ * Insert the given view into the sidecar
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  if (inBrowser()) {
-    debug('preload for browser')
-    restoreAuth()
-  }
-}
+export default view => {
+  debug('insertView', view)
 
-export default registration
+  const sidecar = getSidecar()
+  const activeView = sidecar.getAttribute('data-active-view')
+  const container = sidecar.querySelector(`${activeView} .activation-content .activation-result`)
+  debug('insertView.container', activeView, container)
+
+  removeAllDomChildren(container)
+  debug('insertView.container', container)
+  container.appendChild(view)
+}

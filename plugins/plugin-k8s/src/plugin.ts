@@ -18,13 +18,13 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/loader')
 debug('loading')
 
-import auth from './lib/cmds/auth'
+import auth from './lib/controller/auth'
 debug('auth loaded')
-import contexts from './lib/cmds/contexts'
+import contexts from './lib/controller/contexts'
 debug('contexts loaded')
-import kubectl from './lib/cmds/kubectl'
+import kubectl from './lib/controller/kubectl'
 debug('kubectl loaded')
-import status from './lib/cmds/status'
+import status from './lib/controller/status'
 debug('status loaded')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
@@ -42,7 +42,7 @@ export default async (commandTree, prequire: PluginRequire) => {
   debug('kubectl')
 
   if (!inBrowser()) {
-    const kedit: PluginRegistration = (await import('./lib/cmds/kedit')).default
+    const kedit: PluginRegistration = (await import('./lib/controller/kedit')).default
     await kedit(commandTree, prequire)
     debug('kedit')
   }

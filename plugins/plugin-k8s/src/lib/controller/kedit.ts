@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/cmds/kedit')
+const debug = require('debug')('k8s/controller/kedit')
 debug('loading')
 
 import { basename, dirname, join } from 'path'
@@ -26,12 +26,12 @@ import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
 
-import { IFormGroup, IFormElement, generateForm } from './form'
-import { formatEntity } from '../util/formatEntity'
-import { FinalState } from './states'
-import { statusButton } from './modes'
+import { FinalState } from '../model/states'
 
-import { redactYAML } from '../formatters/redact'
+import { redactYAML } from '../view/redact'
+import { statusButton } from '../view/modes/status'
+import { formatEntity } from '../view/formatEntity'
+import { IFormGroup, IFormElement, generateForm } from '../view/form'
 
 const usage = {
   kedit: {

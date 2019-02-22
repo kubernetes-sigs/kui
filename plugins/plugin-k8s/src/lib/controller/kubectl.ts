@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/cmds/kubectl')
+const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
 import * as expandHomeDir from 'expand-home-dir'
@@ -27,16 +27,19 @@ import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { ExecType } from '@kui-shell/core/core/command-tree'
 
-import { FinalState } from './states'
 import abbreviations from './abbreviations'
-import { IResource, statusButton, deleteResourceButton, renderAndViewStatus } from './modes'
 import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
-import { preprocessTable, formatTable } from '../formatters/formatTable'
-import { registry as formatters } from '../formatters/registry'
-import { fillInTheBlanks } from '../kubeconfig-discovery'
+import { fillInTheBlanks } from '../util/kubeconfig-discovery'
 
-import { redactJSON, redactYAML } from '../formatters/redact'
+import IResource from '../model/resource'
+import { FinalState } from '../model/states'
+
+import { redactJSON, redactYAML } from '../view/redact'
+import { registry as formatters } from '../view/registry'
+import { preprocessTable, formatTable } from '../view/formatTable'
+import { statusButton, renderAndViewStatus } from '../view/modes/status'
+import { deleteResourceButton } from '../view/modes/crud'
 
 /** add the user's option to the command line */
 const dashify = str => {
@@ -543,7 +546,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       // know what to do with this, so copy it out
       debug('copying out of asar', _)
 
-      const { copyOut } = await import('./copy') // why the dynamic import? being browser friendly here
+      const { copyOut } = await import('../util/copy') // why the dynamic import? being browser friendly here
       return copyOut(_)
     } else if (_.match(/^(@.*$)/)) {
       // then this is a cloudshell-hosted file
@@ -552,7 +555,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         // then this is an in-asar filepath. kubectl won't
         // know what to do with this, so copy it out
         debug('copying @ file out of asar', filepath)
-        const { copyOut } = await import('./copy') // why the dynamic import? being browser friendly here
+        const { copyOut } = await import('../util/copy') // why the dynamic import? being browser friendly here
         return copyOut(filepath)
       } else {
         return filepath
