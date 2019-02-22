@@ -98,6 +98,18 @@ export const maybeHideEntity = entity => {
   }
 }
 
+/**
+ * Return the container of the current active sidecar view
+ *
+ */
+export const getActiveView = () => {
+  const sidecar = getSidecar()
+  const activeView = sidecar.getAttribute('data-active-view')
+  const container = sidecar.querySelector(activeView)
+
+  return container
+}
+
 const tryParseDate = s => {
   try {
     return new Date(s).getTime()

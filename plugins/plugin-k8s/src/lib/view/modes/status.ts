@@ -18,13 +18,18 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/status')
 
 import repl = require('@kui-shell/core/core/repl')
-import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 
 import { FinalState } from '../../model/states'
 import IResource from '../../model/resource'
 
 import insertView from '../insert-view'
+import { formatTable } from '../formatMultiTable'
 
+/**
+ * Return a sidecar mode button model that shows a status table for
+ * the given resource
+ *
+ */
 export const statusButton = (command: string, resource: IResource, finalState: FinalState, overrides?) => Object.assign({}, {
   mode: 'status',
   direct: () => renderAndViewStatus(command, resource, finalState)
@@ -47,33 +52,12 @@ export const renderStatus = async (command: string, resource: IResource, finalSt
   const fetchModels = `${commandForRepl} status ${repl.encodeComponent(resource.filepathForDrilldown || resource.kind)} ${repl.encodeComponent(resource.name)} ${final}`
   debug('issuing command', fetchModels)
 
-  const models = await repl.qexec(fetchModels)
+  const model = await repl.qexec(fetchModels)
   // debug('renderStatus.models', models);
 
-  const resultDomOuter = document.createElement('div')
+  const view = formatTable(model)
 
-  if (models.length > 0) {
-    const resultDom = document.createElement('div')
-
-    resultDomOuter.classList.add('result-vertical')
-    resultDomOuter.classList.add('padding-content')
-    resultDomOuter.classList.add('scrollable-auto')
-    resultDomOuter.appendChild(resultDom)
-
-    resultDom.classList.add('result-as-table')
-    resultDom.classList.add('result-as-fixed-tables')
-    resultDom.classList.add('repl-result')
-    resultDom.classList.add('monospace')
-
-    if (Array.isArray(models[0])) {
-      formatMultiListResult(models, resultDom)
-    } else {
-      formatMultiListResult([ models ], resultDom)
-            // formatListResult(models).forEach(row => resultDom.appendChild(row));
-    }
-  }
-
-  return resultDomOuter
+  return view
 }
 
 /**

@@ -87,7 +87,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       }, document.createElement('div'))
 
       inner.appendChild(container)
-    } else if (value) {
+    } else if (value !== undefined) {
       Promise.resolve(value)
             .then(value => inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString())))
     } else {
@@ -139,7 +139,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
               // debug('watch update', done)
 
               // are we done polling for updates?
-              if (!value || done) {
+              if (value === null || value === undefined || done) {
                 stopWatching(interval)
               }
 

@@ -18,21 +18,19 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/view/insert-view')
 
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
 
 /**
- * Insert the given view into the sidecar
+ * Update the current view into the sidecar; this is helpful for tab
+ * mode switching.
  *
  */
-export default view => {
+export default (view: HTMLElement) => {
   debug('insertView', view)
 
-  const sidecar = getSidecar()
-  const activeView = sidecar.getAttribute('data-active-view')
-  const container = sidecar.querySelector(`${activeView} .activation-content .activation-result`)
-  debug('insertView.container', activeView, container)
+  const container = getActiveView()
+  debug('insertView.container', container)
 
   removeAllDomChildren(container)
-  debug('insertView.container', container)
   container.appendChild(view)
 }

@@ -116,7 +116,7 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   push('Data Values', 'data')
 
   // add our mode buttons
-  const resource = { kind: yaml.kind, filepathForDrilldown: filepath }
+  const resource = { kind: yaml.kind, filepathForDrilldown: filepath, yaml }
   const addModeButtons = (defaultMode: string) => response => {
     response['modes'] = [
       { mode: 'edit', direct: openInEditor },

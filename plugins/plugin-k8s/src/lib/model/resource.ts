@@ -14,10 +14,38 @@
  * limitations under the License.
  */
 
+interface IKubeStatusCondition {
+  lastProbeTime?: string
+  lastTransitionTime: string
+  status: string
+  type: string
+}
+
+interface IKubeContainerStatus {
+  name: string
+  restartCount: number
+  ready: boolean
+  state: any
+}
+
+interface IKubeStatus {
+  message: string
+  containerStatuses?: Array<IKubeContainerStatus>
+  conditions?: Array<IKubeStatusCondition>
+}
+
+interface IKubeResource {
+  kind: string
+  name: string
+  status?: IKubeStatus
+  spec?: any
+}
+
 interface IResource {
   filepathForDrilldown?: string
   kind?: string
   name?: string
+  yaml: IKubeResource
 }
 
 export default IResource
