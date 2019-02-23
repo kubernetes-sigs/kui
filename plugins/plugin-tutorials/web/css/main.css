@@ -215,7 +215,6 @@
     height: 2.5rem;
     min-width: 10rem;
     padding: 0 1rem;
-    color: var(--color-stripe-01);
     background-color: rgba(61, 112, 178, 0.1);
     border: 1px solid transparent;
 }
@@ -321,9 +320,6 @@ button.bx--btn {
 }
 .bx--structured-list-th:last-child {
     padding-right: 0;
-}
-.bx--structured-list-th, .bx--structured-list-td {
-    color: var(--color-stripe-01);
 }
 .bx--structured-list-th {
     padding-left: 0;

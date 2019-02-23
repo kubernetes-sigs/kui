@@ -265,7 +265,7 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
 
       // timestamp rendering
       const timestampDom = document.createElement('div')
-      timestampDom.className = 'log-field log-date entity-name-group'
+      timestampDom.className = 'log-field log-date entity-name-group hljs-attribute'
       if (typeof timestamp === 'string') {
         timestampDom.innerText = timestamp
       } else {
@@ -290,7 +290,7 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
 
       // log message rendering
       const restDom = document.createElement('div')
-      restDom.className = 'log-field log-message smaller-text'
+      restDom.className = 'log-field log-message slightly-smaller-text'
       if (typeof rest === 'object') {
         const pre = document.createElement('pre')
         const code = document.createElement('code')

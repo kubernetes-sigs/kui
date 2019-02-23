@@ -1,0 +1,57 @@
+/* color variables */
+body {
+    --color-hover-primary-text: #294c86;
+    --color-content-divider: #4E5B6A;
+    --color-tag-beta-fill: #dfe3e6;
+    --color-tag-beta-text: #394b54;
+    --color-tag-ibm-fill: #4B5866;
+    --color-tag-ibm-text: var(--color-text-01);
+    --color-stripe-01: hsl(210, 23%, 5%);
+    --color-stripe-02: hsl(210, 23%, 9%);
+    --color-text-01: hsl(210, 10%, 62%);
+    --color-text-02: hsl(210, 15%, 50%);
+    --color-text-against-dark-bg: var(--color-text-01);
+    --color-support-01: hsla(355, 23%, 50%, 1);
+    --color-support-01-lighter: hsla(355, 23%, 50%, 0.75);
+    --color-support-02: hsla(121, 35%, 45%, 1);
+    --color-support-03: hsl(40, 81%, 70%);
+    --color-support-03-darker: hsl(40, 81%, 40%);
+    --color-support-04: #5aaafa;
+    --color-brand-01: hsla(210, 64%, 40%, 1);
+    --color-brand-01-10: hsla(210, 64%, 40%, 0.1);
+    --color-brand-02: hsla(208, 60%, 63%, 1);
+    --color-brand-03: #de935f;
+    --color-ui-01: hsl(210, 6%, 12%);
+    --color-ui-02: hsl(210, 6%, 14%);
+    --color-ui-03: hsl(210, 10%, 15%);
+    --color-ui-04: hsl(210, 10%, 23%);
+    --color-ui-05: hsl(210, 10%, 45%);
+    --color-ok: var(--color-support-02);
+    --color-ok-lighter: hsla(121, 35%, 45%, 0.75);
+    --color-error: var(--color-support-01);
+    --color-error-lighter: var(--color-support-01-lighter);
+    --color-scrollbar-thumb: #0E0F10;
+    --color-scrollbar-track: transparent;
+    --color-selection-background: #373b41;
+    --color-selection-color: var(--color-text-01);
+    --color-carbon-components-h3: #3057d5;
+    --color-ui-06: hsl(210, 15%, 11%);
+    --color-field-01: hsl(210, 15%, 11%);
+    --font-sans-serif: "IBM Plex Sans", sans-serif;
+    --font-monospace: "IBM Plex Mono","DejaVu Sans Mono","Bitstream Vera Sans Mono",Courier,monospace;
+    --color-tab-01: #666666;
+    --color-tab-02: #fdc086;
+    --color-tab-03: #386cb0;
+    --color-tab-04: #7fc97f;
+    --color-tab-05: #ffff99;
+    --color-tab-06: #beaed4;
+    --color-tab-07: #f0027f;
+    --color-tab-08: #bf5b17;
+}
+
+body[kui-theme="Dark"] .sidecar-bottom-stripe {
+    color: var(--color-text-01);
+}
+
+/* tomorrow-night hightlightjs theme */
+body[kui-theme="Dark"] .hljs-comment,body[kui-theme="Dark"] .hljs-quote{color:#969896}body[kui-theme="Dark"] .hljs-variable,body[kui-theme="Dark"] .hljs-template-variable,body[kui-theme="Dark"] .hljs-tag,body[kui-theme="Dark"] .hljs-name,body[kui-theme="Dark"] .hljs-selector-id,body[kui-theme="Dark"] .hljs-selector-class,body[kui-theme="Dark"] .hljs-regexp,body[kui-theme="Dark"] .hljs-deletion{color:#cc6666}body[kui-theme="Dark"] .hljs-number,body[kui-theme="Dark"] .hljs-built_in,body[kui-theme="Dark"] .hljs-builtin-name,body[kui-theme="Dark"] .hljs-literal,body[kui-theme="Dark"] .hljs-type,body[kui-theme="Dark"] .hljs-params,body[kui-theme="Dark"] .hljs-meta,body[kui-theme="Dark"] .hljs-link{color:#de935f}body[kui-theme="Dark"] .hljs-attribute{color:var(--color-support-03)}body[kui-theme="Dark"] .hljs-string,body[kui-theme="Dark"] .hljs-symbol,body[kui-theme="Dark"] .hljs-bullet,body[kui-theme="Dark"] .hljs-addition{color:#b5bd68}body[kui-theme="Dark"] .hljs-title,body[kui-theme="Dark"] .hljs-section{color:#81a2be}body[kui-theme="Dark"] .hljs-keyword,body[kui-theme="Dark"] .hljs-selector-tag{color:#b294bb}body[kui-theme="Dark"] .hljs{display:block;overflow-x:auto;background:transparent;color:#c5c8c6;padding:0.5em}body[kui-theme="Dark"] .hljs-emphasis{font-style:italic}body[kui-theme="Dark"] .hljs-strong{font-weight:bold}

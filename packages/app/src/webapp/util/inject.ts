@@ -20,19 +20,26 @@ debug('loading')
 
 import { isHeadless } from '../../core/capabilities'
 
-interface IStylesheetContent {
+interface IStylesheetDirect {
   css: string
   key: string
 }
-function isAStylesheet (object: any): object is IStylesheetContent {
-  return typeof object !== 'string' && 'css' in object
+interface IStylesheetFile {
+  path: string
+  key: string
+}
+function isAStylesheetDirect (object: any): object is IStylesheetDirect {
+  return typeof object !== 'string' && 'css' in object && 'key' in object
+}
+function isAStylesheetFile (object: any): object is IStylesheetFile {
+  return typeof object !== 'string' && 'path' in object && 'key' in object
 }
 
 /**
  * Inject a stylesheet
  *
  */
-export const injectCSS = (file: IStylesheetContent | string): void => {
+export const injectCSS = (file: IStylesheetDirect | IStylesheetFile | string): void => {
   if (isHeadless()) {
     return
   }
@@ -42,7 +49,7 @@ export const injectCSS = (file: IStylesheetContent | string): void => {
   const contentType = 'text/css'
   const rel = 'stylesheet'
 
-  const id = isAStylesheet(file)
+  const id = isAStylesheetDirect(file) || isAStylesheetFile(file)
     ? `injected-css-${file.key}`
     : `injected-css-${file}`
 
@@ -52,7 +59,7 @@ export const injectCSS = (file: IStylesheetContent | string): void => {
     // or an href
     let link
 
-    if (isAStylesheet(file)) {
+    if (isAStylesheetDirect(file)) {
       // then we have the content, not a filename
       debug('injecting stylesheet from given content')
       link = document.createElement('style')
@@ -60,8 +67,12 @@ export const injectCSS = (file: IStylesheetContent | string): void => {
     } else {
       debug('injecting stylesheet from file ref')
       link = document.createElement('link')
-      link.href = file
       link.rel = rel
+      if (isAStylesheetFile(file)) {
+        link.href = file.path
+      } else {
+        link.href = file
+      }
     }
 
     link.id = id
@@ -69,6 +80,24 @@ export const injectCSS = (file: IStylesheetContent | string): void => {
     document.getElementsByTagName('head')[0].appendChild(link)
   }
 
+}
+
+/**
+ * Remove a stylesheet
+ *
+ */
+export const uninjectCSS = (file: IStylesheetDirect | IStylesheetFile): void => {
+  if (isHeadless()) {
+    return
+  } else {
+    const id = `injected-css-${file.key}`
+    debug('uninjectCSS', id)
+
+    const link = document.getElementById(id)
+    if (link && link.parentNode) {
+      link.parentNode.removeChild(link)
+    }
+  }
 }
 
 /**

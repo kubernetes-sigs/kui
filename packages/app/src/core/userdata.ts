@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('core/userdata')
+
+import { join } from 'path'
+import { readFileSync, writeFileSync, unlinkSync, mkdirp } from 'fs-extra'
+
 import { inBrowser, inElectron } from '../core/capabilities'
+
+type Preferences = { [key: string]: string }
 
 /**
  * Get the userdata directory
@@ -23,9 +31,6 @@ import { inBrowser, inElectron } from '../core/capabilities'
 export const userDataDir = (): string => {
   if (inBrowser()) {
     throw new Error('Unsupported operation')
-  } else if (inElectron()) {
-    const { app } = require('electron').remote
-    return app.getPath('userData')
   } else {
     // headless
     const { join } = require('path')
@@ -41,4 +46,95 @@ export const userDataDir = (): string => {
         return join(process.env.APPDATA, name)
     }
   }
+}
+
+/** filepath to persisted preference model */
+const preferencesFilepath = () => join(userDataDir(), 'prefs.json')
+
+/**
+ * Read the preference model
+ *
+ */
+const preferences = (): Preferences => {
+  try {
+    const filepath = preferencesFilepath()
+    debug('reading persisted preference model', filepath)
+    const raw = readFileSync(filepath).toString()
+    try {
+      return JSON.parse(raw)
+    } catch (err) {
+      debug('error parsing preference model', raw)
+      console.error('error parsing preference model', err)
+      return {}
+    }
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return fsyncPreferences({})
+    } else {
+      throw err
+    }
+  }
+}
+
+/**
+ * Sync the preferences to disk
+ *
+ * @return passes through the preference model
+ *
+ */
+const fsyncPreferences = (prefs: Preferences): Preferences => {
+  mkdirp(userDataDir())
+  writeFileSync(preferencesFilepath(), JSON.stringify(prefs))
+  return prefs
+}
+
+/**
+ * Purge the preference model
+ *
+ */
+const purgePreferences = (): void => {
+  debug('purgePreferences')
+  unlinkSync(preferencesFilepath())
+}
+
+/**
+ * Remove the preference associated with the given key
+ *
+ * @return the prior value
+ *
+ */
+export const clearPreference = (key: string): string => {
+  debug('clearPreference', key)
+  const prefs = preferences()
+  const value = prefs[key]
+  delete prefs[key]
+  fsyncPreferences(prefs)
+  return value
+}
+
+/**
+ * Get a persisted preference
+ *
+ * @return the preference value
+ *
+ */
+export const getPreference = (key: string): string => {
+  const prefs = preferences()
+  const value = prefs[key]
+  debug('getPreference', key, value)
+  return value
+}
+
+/**
+ * Set a persisted preference
+ *
+ * @return the preference value
+ *
+ */
+export const setPreference = (key: string, value: string): string => {
+  debug('setPreference', key, value)
+  const prefs = preferences()
+  prefs[key] = value
+  fsyncPreferences(prefs)
+  return value
 }

@@ -72,8 +72,13 @@ export default (editorWrapper: HTMLElement, options) => {
         initDone = true
       }
 
+      // see if we are in dark mode
+      const theme = {
+        theme: document.querySelector('body').getAttribute('kui-theme') === 'Dark' ? 'vs-dark' : 'vs'
+      }
+
       // here we instantiate an editor widget
-      editor = monaco.editor.create(editorWrapper, Object.assign(defaultMonacoOptions(options), options))
+      editor = monaco.editor.create(editorWrapper, Object.assign(defaultMonacoOptions(options), theme, options))
 
       editor.clearDecorations = () => {
         debug('clearing decorations', editor.__cloudshell_decorations)

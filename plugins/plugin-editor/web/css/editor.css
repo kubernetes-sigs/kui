@@ -87,7 +87,7 @@
     max-height: 70%; /* ugh, wskflow also uses pixel dimensions */
     flex: 7;
     border-top: 1px solid var(--color-ui-04);
-    background: white;
+    background: var(--color-ui-01);
 
     /* see shell issue #885 */
     display: flex;

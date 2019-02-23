@@ -25,6 +25,7 @@ import prompt from './lib/cmds/prompt'
 import window from './lib/cmds/window'
 import history from './lib/cmds/history/history'
 import screenshot from './lib/cmds/screenshot'
+import { plugin as theme } from './lib/cmds/theme'
 
 // import updater from './lib/admin/updater'
 
@@ -45,7 +46,8 @@ export default async (commandTree, prequire, options) => {
     base64(commandTree, prequire),
     prompt(commandTree, prequire),
     history(commandTree, prequire),
-    screenshot(commandTree, prequire)
+    screenshot(commandTree, prequire),
+    theme(commandTree, prequire)
 
     // updater(commandTree, prequire) <-- disabled for now
   ])
