@@ -10,6 +10,7 @@ body {
     --color-stripe-02: #0f212e; /* 205 67 18 */
     --color-text-01: #152934;
     --color-text-02: #5a6872;
+    --color-text-against-dark-bg: var(--color-ui-02);
     --color-support-01: #e71d32;
     --color-support-01-lighter: rgba(227, 26, 28, 0.8);
     --color-support-02: #5aa700;

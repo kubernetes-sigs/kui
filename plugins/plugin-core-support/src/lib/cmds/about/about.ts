@@ -51,7 +51,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     package_json_dir: settingsDir,
     // use_inner_html: true,
     css_path: [
-      path.join(settingsDir, 'css/themes/', settings.cssTheme),
+      path.join(settingsDir, 'css/themes/', settings.defaultTheme),
       path.join(ourRootDir, 'web/css/about.css')
     ],
     win_options: { width: 600, height: 600 }

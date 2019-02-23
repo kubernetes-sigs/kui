@@ -63,23 +63,26 @@ body.os-darwin .left-tab-stripe {
     color: var(--color-text-01);
     transition: color 600ms ease-in-out;
 }
-.new-tab-button.left-tab-stripe-button:hover i {
+.left-tab-stripe-button:not([data-tab-button-index]) {
+    margin-top: 0.25em;
+}
+.left-tab-stripe-button:not([data-tab-button-index]):hover i {
     color: rgba(255,255,255,0.5) !important;
 }
-.new-tab-button.left-tab-stripe-button i {
+.left-tab-stripe-button:not([data-tab-button-index]) i {
     filter: none;
     color: rgba(255,255,255,0.1) !important;
 }
-.new-tab-button.left-tab-stripe-button:after {
+.left-tab-stripe-button:not([data-tab-button-index]):after {
     content: ''
 }
 .left-tab-stripe-button i {
     display: flex;
     align-items: center;
     justify-content: center;
-    filter: blur(1px) grayscale(0.5) brightness(0.75);
+    filter: blur(0.5px) grayscale(0.5) brightness(0.75);
     font-size: 2.75em;
-    transition: filter 600ms ease-in-out, color 600ms ease-in-out;
+    transition: filter 300ms ease-in-out, color 300ms ease-in-out;
     /* border-radius: 3px / 6px;
     border: 9px solid transparent; */
 }
@@ -116,6 +119,9 @@ body.os-darwin .left-tab-stripe {
     font-weight: bold;
     font-size: 0.6875em;
     transition: font-size 150ms ease-in-out;
+}
+.left-tab-stripe-button.smaller-button i {
+    font-size: 2em;
 }
 .left-tab-stripe-button.left-tab-stripe-button-selected:after {
     font-size: 0.875em;
@@ -177,17 +183,14 @@ body.subwindow .repl .horizontal-landing-zone {
     margin: 0em 1em 0 1.8125em;
 }
 
-#help-button {
+#help-button.left-tab-stripe-button {
     display: flex;
     align-items: center;
     justify-content: center;
 }
-#help-button i {
-    font-size: 2em;
-    color: var(--color-text-02);
-    transition: color 300ms ease-in-out;
+#help-button.left-tab-stripe-button i {
+    color: var(--color-text-02) !important;
 }
-#help-button:hover i {
-    cursor: pointer;
-    color: var(--color-brand-02);
+#help-button.left-tab-stripe-button:hover i {
+    color: var(--color-brand-02) !important;
 }

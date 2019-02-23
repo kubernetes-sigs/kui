@@ -105,8 +105,11 @@ break {
     font-weight: 300;
     font-variant: small-caps;
 }
-#wskflowSVG .node .atom, #wskflowSVG .node .atom {
+#wskflowSVG .node .atom {
     fill: var(--color-ui-05);
+}
+#wskflowSVG .node .atom ~ text {
+    fill: var(--color-text-01);
 }
 #wskflowSVG path[data-visited="true"] {
     /* visited edges */
@@ -128,7 +131,7 @@ break {
 
 #wskflowSVG .node.leaf.function .atom, #wskflowSVG .node.leaf.Dummy .atom, #wskflowSVG .node.leaf.retain .atom {
     /* these are represented as smaller boxes, so use a lighter stroke */
-    stroke-width: 0.75; /* 1.25; with non-scaling stroke */
+    stroke-width: 0.5; /* 1.25; with non-scaling stroke */
 }
 
 #wskflowSVG marker#end {
@@ -163,7 +166,7 @@ break {
     stroke: var(--color-text-01) !important;
 }
 #wskflowSVG .action[data-deployed="deployed"] .atom {
-    fill: var(--color-ui-02) !important;
+    fill: var(--color-ui-03) !important;
 }
 #wskflowSVG .action[data-deployed="deployed"] text:not(.edge-label) {
     fill: var(--color-text-01) !important;

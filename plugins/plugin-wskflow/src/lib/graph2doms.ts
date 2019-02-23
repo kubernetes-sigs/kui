@@ -391,10 +391,10 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           if (d.type === 'try_catch') return wfColor.try_catch.normal
           else if (d.type === 'try') return wfColor.Try.normal
           else if (d.type === 'handler') return wfColor.handler.normal
-          else if (d.id !== 'root') return 'black'
+          else if (d.id !== 'root') return 'var(--color-text-01)'
           else return 'transparent'
         } else {
-          if (activations && d.visited === undefined) { return wfColorAct.inactiveBorder } else { return 'black' }
+          if (activations && d.visited === undefined) { return wfColorAct.inactiveBorder } else { return 'var(--color-text-01)' }
         }
       })
       .style('cursor', function (d) {
@@ -741,15 +741,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       })
       .attr('font-size', function (d) {
         if (d.children) { return '6px' } else if (d.type === 'Entry' || d.type === 'Exit') { return '6px' } else { return '7px' }
-      })
-      .style('fill', function (d) {
-        /* if(d.children) return "black";
-                                else return "white"; */
-        if (d.children) {
-          if ($('body').hasClass('theme-dark')) { return 'white' } else { return 'black' }
-        } else {
-          return 'black'
-        }
       })
       .style('text-anchor', function (d) {
         if (!d.children && !d.multiLineLabel) { return 'middle' }

@@ -1143,6 +1143,9 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+.display-inline {
+    display: inline;
+}
 .fixed-table-layout {
     table-layout: fixed;
 }
@@ -1495,8 +1498,8 @@ sidecar .result-as-table .big-top-pad:first-child {
 }
 .log-lines .log-line .log-field.log-message {
     vertical-align: middle;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    /* padding-top: 1em;
+    padding-bottom: 1em; */
 }
 sidecar .activation-result .log-line .log-field code {
     font-size: 1em;
@@ -1571,12 +1574,14 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 .log-lines .log-line .log-field.log-date {
     /* the date part of log lines */
     vertical-align: middle;
-    color: var(--color-text-02);
     font-size: 0.875em;
     width: 15em;
     padding-top: 1em;
     padding-bottom: 1em;
     white-space: pre-wrap;
+}
+.log-lines .log-line .log-field.log-date:not(.hljs-attribute) {
+    color: var(--color-text-02);
 }
 .log-lines .log-line .log-message {
     /* the message part of log lines */
@@ -1907,11 +1912,11 @@ body.oops-total-catastrophe #restart-needed-warning {
     position: relative;
     left: 3px;
     top: 1px;
-    color: #2E4053
+    color: var(--color-stripe-02);
 }
 #qtipContent {
-    background-color: #2E4053;
-    color: white; 
+    background-color: var(--color-stripe-02);
+    color: var(--color-text-against-dark-bg); 
     font-size: 0.75em;
     padding: 1ex;
     /*display: flex;
@@ -2270,6 +2275,7 @@ badge {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-weight: 600;
 }
 badge.green-background {
     background: var(--color-support-02);
@@ -2368,7 +2374,7 @@ badge.clickable:hover {
 
 /* sidecar bottom stripe */
 .sidecar-bottom-stripe {
-    color: hsla(240, 2%, 90%, 1);
+    color: var(--color-ui-02);
     background: var(--color-stripe-02);
     box-shadow: 0 -1px 3px rgba(0,0,0,0.25);
 }
@@ -2467,6 +2473,9 @@ sidecar .sidecar-header-name .package-prefix {
     /* special display for messages of error log lines */
     color: hsla(12, 78%, 25%, 1);
     /*border-color: hsl(12, 78%, 45%);*/
+}
+.log-lines .log-line .log-message pre code {
+    white-space: pre-wrap;
 }
 
 body.subwindow .repl-block {

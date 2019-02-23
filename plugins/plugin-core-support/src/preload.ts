@@ -20,6 +20,7 @@ import newTab from './lib/new-tab'
 import textSearch from './lib/text-search'
 import tabCompletion from './lib/tab-completion'
 import reverseISearch from './lib/cmds/history/reverse-i-search'
+import { preload as theme } from './lib/cmds/theme'
 
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
@@ -33,6 +34,7 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
     zoom(commandTree, prequire),
     newTab(commandTree, prequire),
     reverseISearch(),
+    theme(),
     textSearch(),
     tabCompletion()
   ])

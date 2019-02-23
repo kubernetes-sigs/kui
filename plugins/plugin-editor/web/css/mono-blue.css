@@ -7,11 +7,20 @@
   padding: 0.5em;
   background: #eaeef3;
 }
+body[kui-theme="dark"] .monaco-editor {
+    background: transparent;
+}
 
 .monaco-editor {
   color: #00193a;
 }
+body[kui-theme="dark"] .monaco-editor {
+    color: #c5c8c6;
+}
 
+.monaco-editor .current-line ~ .line-numbers {
+    color: var(--color-brand-02);
+}
 .monaco-editor .line-numbers {
     color: var(--color-brand-01);
 }
@@ -33,14 +42,22 @@
     color: var(--color-brand-03);
 }
 
+.monaco-editor .mtk1 {
+    /* map keys */
+    color: var(--color-text-02);
+}
 .monaco-editor .mtk5 {
     /* map values */
-    color: inherit;
+    color: var(--color-text-01);
 }
 
 .monaco-editor .mti20,
 .monaco-editor .comment {
   color: #738191;
+}
+body[kui-theme="dark"] .monaco-editor .mti20,
+body[kui-theme="dark"] .monaco-editor .comment {
+    color: #969896;
 }
 
 .monaco-editor .mtk20,
@@ -59,6 +76,22 @@
 .monaco-editor .selector-class {
   color: #0048ab;
 }
+body[kui-theme="dark"] .monaco-editor .mtk20,
+body[kui-theme="dark"] .monaco-editor .mtk7,
+body[kui-theme="dark"] .monaco-editor .string,
+body[kui-theme="dark"] .monaco-editor .title,
+body[kui-theme="dark"] .monaco-editor .section,
+body[kui-theme="dark"] .monaco-editor .built_in,
+body[kui-theme="dark"] .monaco-editor .literal,
+body[kui-theme="dark"] .monaco-editor .type,
+body[kui-theme="dark"] .monaco-editor .addition,
+body[kui-theme="dark"] .monaco-editor .tag,
+body[kui-theme="dark"] .monaco-editor .quote,
+body[kui-theme="dark"] .monaco-editor .name,
+body[kui-theme="dark"] .monaco-editor .selector-id,
+body[kui-theme="dark"] .monaco-editor .selector-class {
+    color: #cc6666
+}
 
 .monaco-editor .meta,
 .monaco-editor .subst,
@@ -71,6 +104,18 @@
 .monaco-editor .link,
 .monaco-editor .bullet {
   color: #4c81c9;
+}
+body[kui-theme="dark"] .monaco-editor .meta,
+body[kui-theme="dark"] .monaco-editor .subst,
+body[kui-theme="dark"] .monaco-editor .symbol,
+body[kui-theme="dark"] .monaco-editor .regexp,
+body[kui-theme="dark"] .monaco-editor .attribute,
+body[kui-theme="dark"] .monaco-editor .deletion,
+body[kui-theme="dark"] .monaco-editor .variable,
+body[kui-theme="dark"] .monaco-editor .template-variable,
+body[kui-theme="dark"] .monaco-editor .link,
+body[kui-theme="dark"] .monaco-editor .bullet {
+    color: de935f
 }
 
 .monaco-editor .emphasis {

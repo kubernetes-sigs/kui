@@ -48,7 +48,7 @@ const open = async (filepath, hljs) => {
       suffix === 'json') {
     // open json and javascript files in the editor
     return qexec(`edit "${filepath}"`)
-  } else if (suffix === 'yaml') {
+  } else if (suffix === 'yaml' || suffix === 'yml') {
     // use the k8s plugin to edit yamls
     return qexec(`kedit "${filepath}"`)
   } else if (suffix === 'png' || suffix === 'jpg' || suffix === 'jpeg' || suffix === 'tiff' ||

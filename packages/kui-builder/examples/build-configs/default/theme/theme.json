@@ -14,7 +14,12 @@
   "productSubName": "Kui",
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
-  "cssTheme": "kui.css",
+  "highlightTheme": "mono-blue",
+  "defaultTheme": "Light",
+  "themes": [
+    { "name": "Light", "css": "themes/light.css", "description": "the default light theme" },
+    { "name": "Dark", "css": "themes/dark.css", "description": "the default light theme" }
+  ],
   "fonts": "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,600",
   "appIcon": "icons/png/kui.png",
   "largeIcon": "icons/svg/kui.svg",

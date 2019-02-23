@@ -19,6 +19,7 @@ const debug = Debug('main/spawn-electron')
 debug('loading')
 
 import { IExecOptions } from '../models/execOptions'
+import { switchToPersistedThemeChoice } from '@kui-shell/plugin-core-support/lib/cmds/theme'
 
 import * as colors from 'colors/safe'
 
@@ -222,7 +223,7 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', () => {
+  app.once('ready', () => {
     debug('opening primary window', command)
     createWindow(true, command.length > 0 && command, subwindowPlease, subwindowPrefs)
   })
@@ -416,6 +417,8 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       if (mainWindow) {
         mainWindow.setTitle(productName)
       }
+
+      switchToPersistedThemeChoice(mainWindow.webContents)
     })
 
     /** jump in and manage the way popups create new windows */

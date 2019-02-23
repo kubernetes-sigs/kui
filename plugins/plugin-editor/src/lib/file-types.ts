@@ -50,6 +50,8 @@ export const language = kind => {
     return 'typescript'
   } else if (base === 'sh') {
     return 'shell'
+  } else if (base === 'yml') {
+    return 'yaml'
   } else {
     return base
   }
