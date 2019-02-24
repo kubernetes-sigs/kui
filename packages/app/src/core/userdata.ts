@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 const debug = Debug('core/userdata')
 
 import { join } from 'path'
-import { readFileSync, writeFileSync, unlinkSync, mkdirp } from 'fs-extra'
 
 import { inBrowser, inElectron } from '../core/capabilities'
 
@@ -56,7 +55,26 @@ const preferencesFilepath = () => join(userDataDir(), 'prefs.json')
  *
  */
 const preferences = (): Preferences => {
+  if (inBrowser()) {
+    debug('reading preferences from browser localStorage')
+
+    const prefs = localStorage.getItem('kui.userprefs')
+    if (!prefs) {
+      return {}
+    } else {
+      try {
+        return JSON.parse(prefs)
+      } catch (err) {
+        debug('error parsing preference model', prefs)
+        console.error('error parsing preference model', err)
+        return {}
+      }
+    }
+  }
+
   try {
+    const { readFileSync } = require('fs-extra')
+
     const filepath = preferencesFilepath()
     debug('reading persisted preference model', filepath)
     const raw = readFileSync(filepath).toString()
@@ -83,8 +101,14 @@ const preferences = (): Preferences => {
  *
  */
 const fsyncPreferences = (prefs: Preferences): Preferences => {
-  mkdirp(userDataDir())
-  writeFileSync(preferencesFilepath(), JSON.stringify(prefs))
+  if (inBrowser()) {
+    localStorage.setItem('kui.userprefs', JSON.stringify(prefs))
+  } else {
+    const { mkdirp, writeFileSync } = require('fs-extra')
+    mkdirp(userDataDir())
+    writeFileSync(preferencesFilepath(), JSON.stringify(prefs))
+  }
+
   return prefs
 }
 
@@ -94,7 +118,13 @@ const fsyncPreferences = (prefs: Preferences): Preferences => {
  */
 const purgePreferences = (): void => {
   debug('purgePreferences')
-  unlinkSync(preferencesFilepath())
+
+  if (inBrowser()) {
+    localStorage.removeItem('kui.userprefs')
+  } else {
+    const { unlinkSync } = require('fs-extra')
+    unlinkSync(preferencesFilepath())
+  }
 }
 
 /**

@@ -37,7 +37,7 @@ const readIndex = options => new Promise((resolve, reject) => {
   const { templateDir } = options.build
 
   debug('read template', templateDir)
-  task('read index.html template')
+  task(`read index.html template from ${templateDir}`)
 
   fs.readFile(path.join(templateDir, 'index.html'), (err, data) => {
     if (err) {
@@ -73,7 +73,7 @@ const writeIndex = (settings) => str => new Promise((resolve, reject) => {
   }
 
   const indexHtml = `index${settings.env.nameSuffix || ''}.html`
-  task(`write ${indexHtml}`)
+  task(`write ${indexHtml} to ${settings.build.buildDir}`)
 
   fs.writeFile(path.join(settings.build.buildDir, indexHtml), str, err => {
     if (err) {
@@ -91,13 +91,13 @@ const writeIndex = (settings) => str => new Promise((resolve, reject) => {
  *
  */
 const writeConfig = (settings) => new Promise((resolve, reject) => {
-  task('write config')
-
   if (settings.build.writeConfig === false) {
     return resolve()
   }
 
   const { configDir } = settings.build
+
+  task(`write config to ${configDir}`)
 
   const config = Object.assign({}, settings)
   delete config.build
@@ -141,6 +141,9 @@ const doBuild = (settings) => () => Promise.all([
  *
  */
 const doWork = (settings) => {
+  info('env.main', settings.env.main)
+  info('env.cssHome', settings.env.cssHome)
+  info('env.imageHome', settings.env.imageHome)
   info('theme', settings.theme.cssTheme)
   info('buildDir', settings.build.buildDir)
 
@@ -217,9 +220,9 @@ const loadOverrides = (programmaticOverrides = {}) => {
 }
 
 if (require.main === module) {
-  debug('called directly')
-
-  main('standalone', loadOverrides())
+  const env = process.argv[2] || 'standalone'
+  debug('called directly', env)
+  main(env, loadOverrides())
 } else {
   debug('required as a module')
 
