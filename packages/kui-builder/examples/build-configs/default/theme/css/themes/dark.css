@@ -55,3 +55,7 @@ body[kui-theme="Dark"] .sidecar-bottom-stripe {
 
 /* tomorrow-night hightlightjs theme */
 body[kui-theme="Dark"] .hljs-comment,body[kui-theme="Dark"] .hljs-quote{color:#969896}body[kui-theme="Dark"] .hljs-variable,body[kui-theme="Dark"] .hljs-template-variable,body[kui-theme="Dark"] .hljs-tag,body[kui-theme="Dark"] .hljs-name,body[kui-theme="Dark"] .hljs-selector-id,body[kui-theme="Dark"] .hljs-selector-class,body[kui-theme="Dark"] .hljs-regexp,body[kui-theme="Dark"] .hljs-deletion{color:#cc6666}body[kui-theme="Dark"] .hljs-number,body[kui-theme="Dark"] .hljs-built_in,body[kui-theme="Dark"] .hljs-builtin-name,body[kui-theme="Dark"] .hljs-literal,body[kui-theme="Dark"] .hljs-type,body[kui-theme="Dark"] .hljs-params,body[kui-theme="Dark"] .hljs-meta,body[kui-theme="Dark"] .hljs-link{color:#de935f}body[kui-theme="Dark"] .hljs-attribute{color:var(--color-support-03)}body[kui-theme="Dark"] .hljs-string,body[kui-theme="Dark"] .hljs-symbol,body[kui-theme="Dark"] .hljs-bullet,body[kui-theme="Dark"] .hljs-addition{color:#b5bd68}body[kui-theme="Dark"] .hljs-title,body[kui-theme="Dark"] .hljs-section{color:#81a2be}body[kui-theme="Dark"] .hljs-keyword,body[kui-theme="Dark"] .hljs-selector-tag{color:#b294bb}body[kui-theme="Dark"] .hljs{display:block;overflow-x:auto;background:transparent;color:#c5c8c6;padding:0.5em}body[kui-theme="Dark"] .hljs-emphasis{font-style:italic}body[kui-theme="Dark"] .hljs-strong{font-weight:bold}
+
+.application-icon {
+    background-image: url('../../icons/svg/kui.svg');
+}

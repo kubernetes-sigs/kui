@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/theme')
 
 import { dirname, join } from 'path'
-import { readFile } from 'fs-extra'
 import { WebContents } from 'electron'
 
 import repl = require('@kui-shell/core/core/repl')
@@ -105,7 +104,7 @@ const getDefaultTheme = () => {
  * Switch to the last user choice, if the user so indicated
  *
  */
-export const switchToPersistedThemeChoice = async (webContents: WebContents): Promise<void> => {
+export const switchToPersistedThemeChoice = async (webContents?: WebContents): Promise<void> => {
   const theme = getPersistedThemeChoice()
   if (theme) {
     debug('switching to persisted theme choice')
@@ -129,20 +128,22 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
     throw error
   }
 
-  debug('switching to theme %s', theme)
+  debug('switching to theme %s', theme, env)
 
   try {
     const prefix = inBrowser() ? '' : dirname(require.resolve('@kui-shell/settings/package.json'))
     const cssFilepath = join(prefix, env.cssHome, themeModel.css)
 
     if (webContents) {
+      const { readFile } = await import('fs-extra')
       const css = (await readFile(cssFilepath)).toString()
       debug('using electron to pre-inject CSS before the application loads, from the main process')
       webContents.insertCSS(css)
       webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${theme}')`)
     } else {
       debug('using kui to inject CSS after the application has loaded, from the renderer process')
-      const css = { key: 'kui-theme-css', path: cssFilepath }
+      const key = 'kui-theme-css'
+      const css = { key, path: cssFilepath }
       uninjectCSS(css)
       injectCSS(css)
       document.body.setAttribute('kui-theme', theme)
@@ -183,13 +184,13 @@ const resetToDefault = async () => {
 export const plugin = (commandTree, prequire) => {
   debug('plugin')
 
-  commandTree.listen('/theme/list', list, { usage: usage.list, noAuthOk: true })
-  commandTree.listen('/theme/set', set, { usage: usage.set, noAuthOk: true })
+  commandTree.listen('/theme/list', list, { usage: usage.list, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/theme/set', set, { usage: usage.set, noAuthOk: true, inBrowserOk: true })
 
   // returns the current persisted theme choice; helpful for debugging
-  commandTree.listen('/theme/current', () => getPersistedThemeChoice() || 'You are using the default theme', { noAuthOk: true, hidden: true }) // for debugging
+  commandTree.listen('/theme/current', () => getPersistedThemeChoice() || 'You are using the default theme', { noAuthOk: true, inBrowserOk: true, hidden: true }) // for debugging
 
-  commandTree.listen('/theme/reset', resetToDefault, { usage: usage.reset, noAuthOk: true })
+  commandTree.listen('/theme/reset', resetToDefault, { usage: usage.reset, noAuthOk: true, inBrowserOk: true })
 }
 
 /**
@@ -200,5 +201,10 @@ export const preload = () => {
   debug('preload')
   if (!isHeadless()) {
     document.getElementById('theme-button').onclick = () => repl.pexec('theme list')
+
+    if (inBrowser()) {
+      debug('loading theme for webpack client')
+      switchToPersistedThemeChoice()
+    }
   }
 }

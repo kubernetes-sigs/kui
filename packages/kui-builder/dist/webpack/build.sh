@@ -106,7 +106,7 @@ function configure {
     # wait until we have the webpack build hash but, for now, we need
     # to do it here, too, at least so that the next line (npm install
     # --save) works
-    CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
+    CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js webpack
 
     # we need to get @kui-shell/settings into the package
     # dependencies, so that npm prune --production does not remove it;
