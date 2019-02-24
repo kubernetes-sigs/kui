@@ -34,9 +34,14 @@ interface IKubeStatus {
   conditions?: Array<IKubeStatusCondition>
 }
 
-interface IKubeResource {
+interface IKubeMetadata {
   kind: string
   name: string
+  namespace?: string
+}
+
+interface IKubeResource {
+  metadata?: IKubeMetadata
   status?: IKubeStatus
   spec?: any
 }

@@ -171,11 +171,19 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
               }
 
               // any other cells to update?
-              others.forEach(({ key, value }) => {
+              others.forEach(({ key, value, css, fontawesome }) => {
                 const otherInner = parent.querySelector(`.cell-inner[data-key="${key}"]`) as HTMLElement
                 if (otherInner) {
-                  otherInner.innerText = ''
-                  otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
+                  otherInner.setAttribute('data-value', value)
+                  if (css) {
+                    otherInner.className = `cell-inner ${css}`
+                  }
+                  if (fontawesome) {
+                    otherInner.querySelector('i').className = fontawesome
+                  } else {
+                    otherInner.innerText = ''
+                    otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
+                  }
                 }
               })
             })
