@@ -1187,6 +1187,9 @@ code.fancy-code {
 .smaller-text {
     font-size: 0.875em;
 }
+.somewhat-smaller-text {
+    font-size: 0.925em;
+}
 .sub-text {
     color: var(--color-text-02);
 }

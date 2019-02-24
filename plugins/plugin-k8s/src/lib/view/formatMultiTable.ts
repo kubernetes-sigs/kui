@@ -33,10 +33,13 @@ export const formatTable = (model: Array<any>): HTMLElement => {
   if (model.length > 0) {
     const resultDom = document.createElement('div')
 
-    resultDomOuter.setAttribute(attr, attr)
+    // e.g. establish an attribute [k8s-table="Containers"]
+    resultDomOuter.setAttribute(attr, (model[0] && model[0][0] && model[0][0].title) || model[0] && model[0].title)
+
     resultDomOuter.classList.add('result-vertical')
     resultDomOuter.classList.add('padding-content')
     resultDomOuter.classList.add('scrollable-auto')
+    resultDomOuter.classList.add('somewhat-smaller-text')
     resultDomOuter.appendChild(resultDom)
 
     resultDom.classList.add('result-as-table')

@@ -101,6 +101,9 @@ const bodyModel = (resource: IResource): Array<any> => {
   const pod = resource.yaml
   const statuses = pod.status && pod.status.containerStatuses
 
+  const podName = repl.encodeComponent(pod.metadata.name)
+  const ns = repl.encodeComponent(pod.metadata.namespace)
+
   const bodyModel = pod.spec.containers.map(container => {
     const status = statuses && statuses.find(_ => _.name === container.name)
     debug('container status', container.name, status.restartCount, status)
@@ -125,7 +128,38 @@ const bodyModel = (resource: IResource): Array<any> => {
         value: stateKey,
         tag: 'badge',
         outerCSS: 'capitalize',
-        css: stateKey === 'running' ? TrafficLight.Green : stateKey === 'terminated' ? TrafficLight.Red : TrafficLight.Yellow
+        css: stateKey === 'running' ? TrafficLight.Green : stateKey === 'terminated' ? TrafficLight.Red : TrafficLight.Yellow,
+        watch: async (idx: number) => {
+          // { value, done = false, css, onclick, others = [], unchanged = false, outerCSS }
+          const pod = await repl.qexec(`kubectl get pod ${podName} -n ${ns} -o json`, undefined, undefined, { raw: true })
+
+          const statuses = pod.status && pod.status.containerStatuses
+          const status = statuses && statuses.find(_ => _.name === container.name)
+          const stateKey = Object.keys(status.state)[0]
+          const stateBody = status.state[stateKey]
+          debug('watch', status, stateKey, pod)
+
+          const done = status.ready || stateKey === 'terminated'
+          const value = stateKey
+          const css = stateKey === 'running' ? TrafficLight.Green : stateKey === 'terminated' ? TrafficLight.Red : TrafficLight.Yellow
+          const others = [
+            {
+              key: 'ready',
+              value: status.ready,
+              css: status.ready ? 'green-text' : 'yellow-text',
+              fontawesome: status.ready ? 'fas fa-check-circle' : 'far fa-dot-circle'
+            },
+            {
+              key: 'message',
+              value: stateBody.startedAt || stateBody.reason
+            }
+          ]
+          debug('watch update', done, value, css, others)
+
+          return {
+            done, value, css, others
+          }
+        }
       },
       {
         key: 'message',

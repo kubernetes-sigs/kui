@@ -89,7 +89,17 @@ NYC="${SCRIPTDIR}/../node_modules/.bin/nyc"
 export RUNNING_SHELL_TEST=true
 
 function go {
-    NO_USAGE_TRACKING=true mocha -c --exit --bail --recursive --timeout ${TIMEOUT-60000} $TEST_SUITES --grep "${TEST_FILTER:-.*}"
+    # flycheck is an emacs module that integrates with tslint; it creates temporary files in-directory :(
+    # we use a mocha exclude pattern to ensure we aren't executing tests in these temp files
+    NO_USAGE_TRACKING=true mocha \
+                     -c \
+                     --exit \
+                     --bail \
+                     --recursive \
+                     --timeout ${TIMEOUT-60000} \
+                     --grep "${TEST_FILTER:-.*}" \
+                     --exclude "**/*flycheck*" \
+                     $TEST_SUITES
 }
 
 if [ -n "$TRAVIS_JOB_ID" ]; then

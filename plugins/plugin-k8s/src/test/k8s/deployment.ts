@@ -32,7 +32,7 @@ describe('electron deployment CRUD', function (this: common.ISuite) {
   it('should create deployment from local file', () => {
     return cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
-      .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`), 20000)
+      .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`, 20000))
       .catch(common.oops(this))
   })
 
