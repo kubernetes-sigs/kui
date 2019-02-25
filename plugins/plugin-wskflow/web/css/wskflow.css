@@ -72,10 +72,10 @@ break {
 #wskflowSVG marker#greenEnd {
     fill: #81C784;
 }
-#wskflowSVG marker#trueEnd, #wskflowSVG .edge-label.true-branch {
+#wskflowSVG marker#trueEnd, #wskflowSVG .node .edge-label.true-branch {
     fill: orange;
 }
-#wskflowSVG marker#falseEnd, #wskflowSVG .edge-label.false-branch {
+#wskflowSVG marker#falseEnd, #wskflowSVG .node .edge-label.false-branch {
     fill: #DC7633;
 }
 #wskflowSVG marker > path {
