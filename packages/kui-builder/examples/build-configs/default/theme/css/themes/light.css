@@ -36,7 +36,6 @@ body {
     --color-scrollbar-track: var(--color-ui-05);
 
     --color-selection-background: rgba(140, 155, 165, 0.40); /* color-ui-05 at reduced alpha */
-    --color-selection-color: var(--color-text-01);
 
     --color-carbon-components-h3: #3057d5;
 

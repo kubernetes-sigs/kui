@@ -58,10 +58,19 @@ export const openEditor = async (name, options, execOptions) => {
     injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
   }
 
+  const isDark = document.querySelector('body').getAttribute('kui-theme') === 'Dark'
   try {
-    injectCSS({ css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(), key: 'editor.mono-blue' })
+    if (isDark) {
+      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/tomorrow-night.css').toString(), key: 'editor.tomorrow-night' })
+    } else {
+      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(), key: 'editor.mono-blue' })
+    }
   } catch (err) {
-    injectCSS(path.join(ourRoot, 'web/css/mono-blue.css'))
+    if (isDark) {
+      injectCSS(path.join(ourRoot, 'web/css/tomorrow-night.css'))
+    } else {
+      injectCSS(path.join(ourRoot, 'web/css/mono-blue.css'))
+    }
   }
 
   try {
