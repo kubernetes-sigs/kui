@@ -753,7 +753,7 @@ sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-maximize {
     width: 0;
     height: 0;
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-as-button) {
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button-return-to::first-letter, .sidecar-bottom-stripe .sidecar-bottom-stripe-button[data-mode] {
     /* for bottom mode-switching buttons, capitalize the text; for actual buttons, keep the capitalization as it was given */
     text-transform: capitalize;
 }
@@ -2175,7 +2175,12 @@ sidecar .usage-error-wrapper .hideable {
 /* markdown */
 .page-content {
     flex: 1;
-    color: var(--color-stripe-01);
+}
+.page-content img {
+    max-width: 100%;
+}
+.page-content img[align="right"] {
+    padding-left: 20px;
 }
 .page-content p {
     font-weight: 400;
@@ -2276,6 +2281,15 @@ badge {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 600;
+
+    /* in tandem with the ::first-letter rule immediately below, this gives us DEPLOYED -> Deployed */
+    text-transform: lowercase;
+    display: inline-block; /* <-- the trick requires block or inline-block */
+    vertical-align: middle; /* <-- then, inline-block requires this */
+}
+badge::first-letter {
+    /* see the "in tandem" note immediately above */
+    text-transform: uppercase;
 }
 badge.green-background {
     background: var(--color-support-02);
@@ -2374,9 +2388,8 @@ badge.clickable:hover {
 
 /* sidecar bottom stripe */
 .sidecar-bottom-stripe {
-    color: var(--color-ui-02);
+    color: var(--color-ui-01);
     background: var(--color-stripe-02);
-    box-shadow: 0 -1px 3px rgba(0,0,0,0.25);
 }
 
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button.sidecar-bottom-stripe-button-active {

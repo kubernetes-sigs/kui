@@ -62,7 +62,7 @@ const open = async (filepath, hljs) => {
     throw new Error('Opening of binary files not supported')
   } else {
     return new Promise((resolve, reject) => {
-      readFile(fullpath, (err, fileContent) => {
+      readFile(fullpath, async (err, fileContent) => {
         if (err) {
           reject(err)
         } else {
@@ -73,7 +73,7 @@ const open = async (filepath, hljs) => {
           let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
           if (suffix === 'md' && !isHeadless()) {
-            const { title, body } = markdownify(data, fullpath, hljs)
+            const { title, body } = await markdownify(data, fullpath, hljs)
 
             data = body
 

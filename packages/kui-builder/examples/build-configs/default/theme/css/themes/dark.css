@@ -1,25 +1,25 @@
 /* color variables */
 body {
     --color-hover-primary-text: #294c86;
-    --color-content-divider: #4E5B6A;
+    --color-content-divider: hsl(208, 25%, 23%);
     --color-tag-beta-fill: #dfe3e6;
     --color-tag-beta-text: #394b54;
     --color-tag-ibm-fill: #4B5866;
     --color-tag-ibm-text: var(--color-text-01);
-    --color-stripe-01: hsl(210, 23%, 5%);
-    --color-stripe-02: hsl(210, 23%, 9%);
+    --color-stripe-01: hsl(210, 33%, 6%);
+    --color-stripe-02: hsl(216, 8%, 24%);
     --color-text-01: hsl(210, 10%, 62%);
     --color-text-02: hsl(210, 15%, 50%);
     --color-text-against-dark-bg: var(--color-text-01);
-    --color-support-01: hsla(355, 23%, 50%, 1);
-    --color-support-01-lighter: hsla(355, 23%, 50%, 0.75);
-    --color-support-02: hsla(121, 35%, 45%, 1);
+    --color-support-01: hsl(0, 50%, 60%);
+    --color-support-01-lighter: hsl(0, 50%, 75%);
+    --color-support-02: hsl(66, 39%, 57%);
     --color-support-03: hsl(40, 81%, 70%);
     --color-support-03-darker: hsl(40, 81%, 40%);
     --color-support-04: #5aaafa;
-    --color-brand-01: hsla(210, 64%, 40%, 1);
-    --color-brand-01-10: hsla(210, 64%, 40%, 0.1);
-    --color-brand-02: hsla(208, 60%, 63%, 1);
+    --color-brand-01: hsl(208, 32%, 63%);
+    --color-brand-01-10: hsla(210, 64%, 40%, 10%);
+    --color-brand-02: hsl(208, 48%, 63%);
     --color-brand-03: #de935f;
     --color-ui-01: hsl(210, 6%, 12%);
     --color-ui-02: hsl(210, 6%, 14%);
@@ -27,14 +27,14 @@ body {
     --color-ui-04: hsl(210, 10%, 23%);
     --color-ui-05: hsl(210, 10%, 45%);
     --color-ok: var(--color-support-02);
-    --color-ok-lighter: hsla(121, 35%, 45%, 0.75);
+    --color-ok-lighter: hsla(66, 39%, 57%, 75%);
     --color-error: var(--color-support-01);
     --color-error-lighter: var(--color-support-01-lighter);
     --color-scrollbar-thumb: #0E0F10;
     --color-scrollbar-track: transparent;
     --color-selection-background: #373b41;
     --color-selection-color: var(--color-text-01);
-    --color-carbon-components-h3: #3057d5;
+    --color-carbon-components-h3: hsl(208, 85%, 63%);
     --color-ui-06: hsl(210, 15%, 11%);
     --color-field-01: hsl(210, 15%, 11%);
     --font-sans-serif: "IBM Plex Sans", sans-serif;
@@ -51,6 +51,9 @@ body {
 
 body[kui-theme="Dark"] .sidecar-bottom-stripe {
     color: var(--color-text-01);
+}
+body[kui-theme="Dark"] #screenshot-captured {
+    color: var(--color-ui-01);
 }
 
 /* tomorrow-night hightlightjs theme */

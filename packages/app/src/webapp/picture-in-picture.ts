@@ -109,8 +109,12 @@ const pip = (container, capturedHeaders, highlightThis, returnTo?: string, optio
 
     removeAllDomChildren(backLabel)
     const backButton = document.createElement('div')
+    const backButtonReturnTo = document.createElement('span')
     backButton.className = 'sidecar-bottom-stripe-back-button'
-    backButton.innerText = `Back to ${returnTo}`
+    backButtonReturnTo.className = 'sidecar-bottom-stripe-back-button-return-to'
+    backButton.innerText = `Back to `
+    backButtonReturnTo.innerText = returnTo
+    backButton.appendChild(backButtonReturnTo)
     backLabel.appendChild(backButton)
     backContainer.classList.add('has-back-button')
 

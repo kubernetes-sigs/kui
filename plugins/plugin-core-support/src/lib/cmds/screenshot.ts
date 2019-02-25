@@ -200,7 +200,7 @@ export default async (commandTree, prequire) => {
 
           const img = nativeImage.createFromBuffer(buf)
           const snapDom = document.createElement('div')
-          const snapHeader = document.createElement('header')
+          // const snapHeader = document.createElement('header')
           const snapFooter = document.createElement('div')
           const snapImg = document.createElement('img')
           const message = document.createElement('div')
@@ -212,7 +212,7 @@ export default async (commandTree, prequire) => {
           const height = heightPx + 'px'
 
           document.body.appendChild(snapDom)
-          snapDom.appendChild(snapHeader)
+          // snapDom.appendChild(snapHeader)
           snapDom.appendChild(snapImg)
           snapDom.appendChild(snapFooter)
           snapDom.appendChild(check)
@@ -222,7 +222,7 @@ export default async (commandTree, prequire) => {
           snapDom.classList.add('go-away-able')
           snapDom.classList.add('go-away') // initially hidden
           setTimeout(() => snapDom.classList.remove('go-away'), 0)
-          snapDom.style.background = 'rgba(0,0,0,0.85)'
+          snapDom.style.background = 'rgba(0,0,0,0.75)'
           snapDom.style.position = 'absolute'
           snapDom.style.width = '100%'
           snapDom.style.height = '100%'
@@ -234,15 +234,16 @@ export default async (commandTree, prequire) => {
           snapDom.style.alignItems = 'center'
           snapDom.style.zIndex = '5'
 
-          snapHeader.classList.add('header')
+          /* snapHeader.classList.add('header')
           snapHeader.style.paddingLeft = '1.5em'
+          snapHeader.style.flexBasis = '2.75em'
           snapHeader.style.width = width
           snapHeader.style.maxWidth = '100%'
           snapHeader.style.border = 'none'
           const headerTitle = document.createElement('div')
           headerTitle.classList.add('application-name')
           headerTitle.innerText = 'Screenshot'
-          snapHeader.appendChild(headerTitle)
+          snapHeader.appendChild(headerTitle) */
 
           snapFooter.classList.add('sidecar-bottom-stripe')
           snapFooter.style.width = width
@@ -276,19 +277,19 @@ export default async (commandTree, prequire) => {
           // width and height (but fake it with padding), the
           // border goes away: https://stackoverflow.com/a/14709695
           snapImg.style.background = `url(${img.resize({ width: parseInt(width, 10), height: parseInt(height, 10) }).toDataURL()}) no-repeat center bottom/contain`
-          snapImg.style.backgroundColor = 'white'
+          snapImg.style.backgroundColor = 'var(--color-ui-01)'
           snapImg.style.maxWidth = '100%'
           snapImg.style.minHeight = '300px' // we need some min space to fit the green check and Screenshot copied to clipboard
           snapImg.style.maxHeight = '100%'
-          snapImg.style.filter = 'blur(1px) grayscale(0.5) contrast(0.5)'
+          snapImg.style.filter = 'blur(1px) grayscale(0.5) contrast(0.4)'
           snapImg.style.width = '0px'
           snapImg.style.height = '0px'
           snapImg.style.padding = `${heightPx / 2}px ${widthPx / 2}px`
 
           message.style.position = 'absolute'
-          message.style.fontSize = '2.25em'
+          message.style.fontSize = '2.5em'
           message.style.fontWeight = '600'
-          message.style.top = 'calc(50% + 2em)'
+          message.style.top = 'calc(50% + 1.5em)'
           message.innerText = 'Screenshot copied to clipboard'
 
           check.classList.add('go-away-button')
