@@ -17,30 +17,56 @@
 import * as path from 'path'
 
 import { pexec } from '@kui-shell/core/core/repl'
+import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
 /**
  * Render a markdown file as HTML
  *
  */
-export default (source, fullpath, hljs) => {
+export default async (source, fullpath, hljs) => {
   // use marked, but render links specially
-  const Marked = require('marked')
+  const url = await import('url')
+  const Marked = await import('marked')
   const renderer = new Marked.Renderer()
 
-  renderer.image = (href, title, text) => {
-    const parsedUrl = require('url').parse(href)
-    const isRemote = parsedUrl.protocol
+  const transformHref = (href: string): string => {
+    const parsedUrl = url.parse(href)
+    const isRemote = !!parsedUrl.protocol
 
     if (!isRemote && parsedUrl.pathname) {
-      href = href.charAt(0) === '!' ? href : path.join(path.dirname(fullpath), parsedUrl.pathname)
+      const newHref = href.charAt(0) === '!' ? href : path.join(path.dirname(fullpath), parsedUrl.pathname)
+      return newHref
+    } else {
+      return href
     }
-
-    return `<div style='float:right'><img src='${href}'` + (title ? ' title="' + title + '"' : '') + ` alt="${text}"></img></div>`
   }
 
+  /** transform links embedded in raw html in markdown */
+  renderer.html = (html: string): string => {
+    const tmp = document.createElement('div')
+    tmp.style.position = 'absolute'
+    tmp.style.top = '-10000'
+    tmp.style.left = '-10000'
+    tmp.innerHTML = html
+    const images = tmp.querySelectorAll('img')
+    for (let idx = 0; idx < images.length; idx++) {
+      const image = images[idx] as HTMLImageElement
+      if (image.src) {
+        image.setAttribute('src', transformHref(image.getAttribute('src')))
+      }
+    }
+    return tmp.innerHTML
+  }
+
+  /** transform the src attribute of images */
+  renderer.image = (href, title, text) => {
+    return `<img src='${transformHref(href)}'` + (title ? ' title="' + title + '"' : '') + ` alt="${text}"></img>`
+  }
+
+  /** transform the href attribute of links */
   renderer.link = (href, title, text) => {
-    const parsedUrl = require('url').parse(href)
-    const isRemote = parsedUrl.protocol
+    const parsedUrl = url.parse(href)
+    const isRemote = !!parsedUrl.protocol
     const target = isRemote ? `target='_blank'` : ''
     let dataUrl = ''
 
@@ -48,15 +74,21 @@ export default (source, fullpath, hljs) => {
       const url = href.charAt(0) === '!' ? href : path.relative(
         process.cwd(),
         path.normalize(path.join(path.dirname(fullpath), parsedUrl.pathname)))
-
       href = '#'
       dataUrl = `data-url="${url}"`
     }
 
-    return `<a class='bx--link repl-pexec-link' ${dataUrl} ${target} href='${href}'` + (title ? ' title="' + title + '"' : '') + `}>${text}</a>`
+    // we add the `repl-pexec-link` breadcrumb so that we can fix up
+    // the onclick handlers below, in the "hello!" loop; we can't do
+    // this here, because we need the doms to be instantiated (not
+    // necessarily attached) before we can add the onclick handlers in
+    // the form we need
+    const pexec = !isRemote ? 'repl-pexec-link' : '' // don't pexec external links
+    return `<a class='bx--link ${pexec}' ${dataUrl} ${target} href='${href}'` + (title ? ' title="' + title + '"' : '') + `}>${text}</a>`
   }
-  const marked = _ => Marked(_, { renderer })
 
+  // now we invoke marked with our renderer
+  const marked = _ => Marked(_, { renderer })
   const htmlString = marked(source)
 
   const wrapper = document.createElement('div')
@@ -66,16 +98,23 @@ export default (source, fullpath, hljs) => {
   wrapper.classList.add('padding-content')
   wrapper.classList.add('scrollable')
 
+  // hello! here we fix up the onclick handlers; see the
+  // "repl-pexec-link" note above
   const pexecs = wrapper.querySelectorAll('a.repl-pexec-link')
   for (let idx = 0; idx < pexecs.length; idx++) {
     const exec = pexecs[idx] as HTMLElement
     const url = exec.getAttribute('data-url')
     if (url && url.charAt(0) === '!') {
       // NOTE: please keep the 'new RegExp' (rather than /.../) form
-      // below; some browsers don't (yet?) support <!
+      // below; some browsers don't (yet?) support <!  hopefully they
+      // will all, at some point, and we can restore that commented
+      // out part
       exec.onclick = () => pexec(url.substring(1)/*.replace(new RegExp('(?<!\\)\/', 'g'), ' ')*/.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
     } else {
-      exec.onclick = () => pexec(`open ${url}`)
+      exec.onclick = drilldown(`open ${url}`,
+                               undefined,
+                               wrapper,
+                               path.basename(fullpath))
     }
   }
 

@@ -47,6 +47,7 @@ const outerCSSForKey = {
   'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
+  'APP VERSION': 'pre-wrap', // helm ls
   AGE: 'entity-name-group-extra-narrow', // helm status
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
   SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
