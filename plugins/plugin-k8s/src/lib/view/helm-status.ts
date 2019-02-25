@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/formatters/helm-status')
+import * as Debug from 'debug'
+const debug = Debug('k8s/view/helm-status')
 
 import { preprocessTable, formatTable } from './formatTable'
 
@@ -34,16 +35,35 @@ const width = (table: Array<any>): number => {
  *
  */
 export const format = (command: string, verb: string, entityType: string, options, response: string) => {
+  debug('command', command)
+  debug('verb', verb)
+  debug('entityType', entityType)
+
   const [ headerString, resourcesString, notesString ] = response.split(/RESOURCES:|NOTES:/)
 
+  const namespaceMatch = response.match(/^NAMESPACE:\s+(.*)$/m) || []
+  const namespaceFromHelmStatusOutput = namespaceMatch[1]
+  debug('namespace', namespaceFromHelmStatusOutput)
+
   const resources = resourcesString
-        .split(/==>/)
-        .map(_ => _.split(/[\n\r]/))
-        .filter(A => A.length > 0 && A[0])
-        .map(A => ({
-          kind: A[0].trim(),
-          table: formatTable(command, verb, entityType, options, preprocessTable([A.slice(1).join('\n')]))[0]
-        }))
+    .split(/==>/)
+    .map(_ => _.split(/[\n\r]/))
+    .filter(A => A.length > 0 && A[0])
+    .map(A => {
+      const kind = A[0].trim()
+
+      // "v1/pod(related)" => "pod"
+      const entityType = kind.replace(/(v\w+\/)?([^()]*)(\s*\(.*\))?/, '$2')
+
+      return {
+        kind,
+        table: formatTable(command,
+                           verb,
+                           entityType,
+                           Object.assign({}, options, { namespace: namespaceFromHelmStatusOutput }), // use helm status output as authority
+                           preprocessTable([A.slice(1).join('\n')]))[0]
+      }
+    })
   debug('resources', resources)
 
   return resources

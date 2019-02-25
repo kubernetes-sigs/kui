@@ -182,19 +182,27 @@ export const preprocessTable = (raw: Array<string>) => {
 }
 
 export const formatTable = (command: string, verb: string, entityType: string, options, tables: Array<any>): Array<any> => {
-  const drilldownVerb = verb === 'get' ? 'get'
-  // : verb === 'config' ? verb
-    : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
-    : undefined
+  // for helm status, table clicks should dispatch to kubectl;
+  // otherwise, stay with the command (kubectl or helm) that we
+  // started with
+  const isHelmStatus = command === 'helm' && verb === 'status'
+  const drilldownCommand = isHelmStatus ? 'kubectl' : command
+
+  const drilldownVerb = (
+    verb === 'get' ? 'get'
+      : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
+      : isHelmStatus ? 'get' : undefined
+  ) || undefined
 
   // helm doesn't support --output
-  const drilldownFormat = command === 'kubectl' && drilldownVerb === 'get' ? '--output=yaml' : ''
+  const drilldownFormat = drilldownCommand === 'kubectl' && drilldownVerb === 'get' ? '--output=yaml' : ''
 
   const drilldownNamespace = options.n || options.namespace
     ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
     : ''
 
   const drilldownKind = nameSplit => {
+    debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
       const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
       return kind ? ' ' + kind : ''
@@ -236,7 +244,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
 
       // idx === 0: don't click on header row
       const onclick = idx === 0 ? false
-        : drilldownVerb ? () => repl.pexec(`${command} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`)
+        : drilldownVerb ? () => repl.pexec(`${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`)
         : false
 
       const header = idx === 0 ? 'header-cell' : ''
