@@ -1,13 +1,13 @@
 /* color variables */
 body {
     --color-hover-primary-text: #294c86;
-    --color-content-divider: hsl(208, 25%, 23%);
+    --color-content-divider: hsl(208, 25%, 36%);
     --color-tag-beta-fill: #dfe3e6;
     --color-tag-beta-text: #394b54;
     --color-tag-ibm-fill: #4B5866;
     --color-tag-ibm-text: var(--color-text-01);
-    --color-stripe-01: hsl(210, 33%, 6%);
-    --color-stripe-02: hsl(216, 8%, 24%);
+    --color-stripe-01: hsl(216, 24%, 8%);
+    --color-stripe-02: hsl(216, 8%, 23%);
     --color-text-01: hsl(210, 10%, 62%);
     --color-text-02: hsl(210, 15%, 50%);
     --color-text-against-dark-bg: var(--color-text-01);
@@ -21,21 +21,25 @@ body {
     --color-brand-01-10: hsla(210, 64%, 40%, 10%);
     --color-brand-02: hsl(208, 48%, 63%);
     --color-brand-03: #de935f;
-    --color-ui-01: hsl(210, 6%, 12%);
-    --color-ui-02: hsl(210, 6%, 14%);
-    --color-ui-03: hsl(210, 10%, 15%);
-    --color-ui-04: hsl(210, 10%, 23%);
-    --color-ui-05: hsl(210, 10%, 45%);
+    --color-ui-01: hsl(216, 6%, 16%);
+    --color-ui-02: hsl(216, 6%, 18%);
+    --color-ui-03: hsl(216, 10%, 17%);
+    --color-ui-04: hsl(216, 10%, 24%);
+    --color-ui-05: hsl(216, 10%, 49%);
+
     --color-ok: var(--color-support-02);
     --color-ok-lighter: hsla(66, 39%, 57%, 75%);
     --color-error: var(--color-support-01);
     --color-error-lighter: var(--color-support-01-lighter);
+
     --color-scrollbar-thumb: #0E0F10;
     --color-scrollbar-track: transparent;
-    --color-selection-background: #373b41;
-    --color-selection-color: var(--color-text-01);
+
+    --color-selection-background: hsla(220, 7%, 39%, 0.4);
+
     --color-carbon-components-h3: hsl(208, 85%, 63%);
-    --color-ui-06: hsl(210, 15%, 11%);
+
+    --color-ui-06: hsl(216, 15%, 14%);
     --color-field-01: hsl(210, 15%, 11%);
     --font-sans-serif: "IBM Plex Sans", sans-serif;
     --font-monospace: "IBM Plex Mono","DejaVu Sans Mono","Bitstream Vera Sans Mono",Courier,monospace;

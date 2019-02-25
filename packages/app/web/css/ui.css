@@ -3,7 +3,6 @@
 }
 ::selection {
     background: var(--color-selection-background);
-    color: var(--color-selection-color);
 }
 html, body, .page, .main, .repl, sidecar {
     height: 100%;
