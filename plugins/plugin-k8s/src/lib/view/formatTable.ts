@@ -48,6 +48,8 @@ const outerCSSForKey = {
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
   'APP VERSION': 'pre-wrap', // helm ls
+  UPDATED: 'min-width-date-like', // helm ls
+  REVISION: 'hide-with-sidecar', // helm ls
   AGE: 'entity-name-group-extra-narrow', // helm status
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
   SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
@@ -253,7 +255,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
           key,
           tag: idx > 0 && tagForKey[key],
           outerCSS: header + ' ' + outerCSSForKey[key] +
-            (colIdx <= 1 || colIdx === nameColumnIdx - 1 ? '' : ' hide-with-sidecar'), // nCI - 1 beacuse of columns.slice(1)
+            (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of columns.slice(1)
           css: css
             + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
           value: column
