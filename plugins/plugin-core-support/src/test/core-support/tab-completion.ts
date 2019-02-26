@@ -145,6 +145,10 @@ describe('Tab completion', function (this: ISuite) {
   it('should complete on the single-entry directory', () => tabby(this.app, `ls ${ROOT}/data/core/core_single_entry_directory/`,
     `ls ${ROOT}/data/core/core_single_entry_directory/only_one_file_here_please.js`))
 
+  // tab completion of a dot file
+  it('should complete on a dot file', () => tabby(this.app, `ls ${ROOT}/data/core/.dot-file-for-`,
+    `ls ${ROOT}/data/core/.dot-file-for-tests`))
+
   // tab completion with options, then click on the second (idx=1) entry of the expected cmpletion list
   it('should tab complete local file path with options', () => tabbyWithOptions(this.app,
     `lls ${ROOT}/data/core/core_`,

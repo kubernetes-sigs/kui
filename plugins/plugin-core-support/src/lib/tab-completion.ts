@@ -431,7 +431,7 @@ const suggestLocalFile = (last, block, prompt, temporaryContainer, lastIdx) => {
 
         const partial = path.basename(last)
         const matches = files.filter(f => (lastIsDir || f.indexOf(partial) === 0) &&
-                                             !f.endsWith('~') && !f.startsWith('.'))
+                                     !f.endsWith('~') && f !== '.' && f !== '..')
 
         if (matches.length === 1) {
           //
