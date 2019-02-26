@@ -150,7 +150,6 @@ body.still-loading .repl {
     opacity: 0;
 }
 .repl {
-    font-size: 0.925em;
     opacity: 1;
     display: flex;
     flex-direction: column;
@@ -179,7 +178,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .repl, .repl input {
     font-family: var(--font-monospace);
 }
-.result-vertical .repl-result, .repl-result .ok {
+.repl-result {
     font-size: 0.925em;
 }
 .result-as-table .result-table, .result-as-table.result-table {
@@ -373,7 +372,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .repl input:focus {
     outline: none;
 }
-.repl-block.valid-response .ok-for-list {
+.repl-block.valid-response .ok-for-list, .repl-result .oops {
     margin-top: 0.75em;
 }
 .repl-block.valid-response .ok, .green-text, .dragover .ok-text-on-dragover {
@@ -2295,11 +2294,11 @@ badge.green-background {
     color: var(--color-ui-01);
 }
 badge.yellow-background, button.yellow-background {
-    background: var(--color-support-03);
-    color: var(--color-text-01);
+    background: var(--color-support-03-darker);
+    color: var(--color-ui-01);
 }
 badge.red-background {
-    background: var(--color-support-03-darker);
+    background: var(--color-support-01);
     color: var(--color-ui-01);
 }
 badge.gray-background {
