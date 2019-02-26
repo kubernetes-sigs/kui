@@ -116,6 +116,25 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents): P
 }
 
 /**
+ * @return the path to the given theme's css
+ *
+ */
+const getCssFilepathForGivenTheme = (themeModel): string => {
+  const prefix = inBrowser() ? '' : dirname(require.resolve('@kui-shell/settings/package.json'))
+  return join(prefix, env.cssHome, themeModel.css)
+}
+
+/**
+ * @return the path to the currently selected theme's css
+ *
+ */
+export const getCssFilepathForCurrentTheme = (): string => {
+  const theme = getPersistedThemeChoice() || getDefaultTheme()
+  const themeModel = (settings.themes || []).find(_ => _.name === theme)
+  return getCssFilepathForGivenTheme(themeModel)
+}
+
+/**
  * Internal logic to switch themes
  *
  */
@@ -131,19 +150,16 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
   debug('switching to theme %s', theme, env)
 
   try {
-    const prefix = inBrowser() ? '' : dirname(require.resolve('@kui-shell/settings/package.json'))
-    const cssFilepath = join(prefix, env.cssHome, themeModel.css)
-
     if (webContents) {
       const { readFile } = await import('fs-extra')
-      const css = (await readFile(cssFilepath)).toString()
+      const css = (await readFile(getCssFilepathForGivenTheme(themeModel))).toString()
       debug('using electron to pre-inject CSS before the application loads, from the main process')
       webContents.insertCSS(css)
       webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${theme}')`)
     } else {
       debug('using kui to inject CSS after the application has loaded, from the renderer process')
       const key = 'kui-theme-css'
-      const css = { key, path: cssFilepath }
+      const css = { key, path: getCssFilepathForGivenTheme(themeModel) }
       uninjectCSS(css)
       injectCSS(css)
       document.body.setAttribute('kui-theme', theme)
