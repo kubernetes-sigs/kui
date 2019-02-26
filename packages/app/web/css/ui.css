@@ -2323,8 +2323,8 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
 }
 
 .repl-result-prefix, badge {
-    background-color: hsl(203, 43%, 15%);
-    color: rgba(255,255,255,0.8);
+    background-color: var(--color-tag-beta-fill);
+    color: var(--color-tag-beta-text);
     font-family: var(--font-sans-serif);
 }
 
