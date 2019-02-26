@@ -27,6 +27,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import usage from './usage'
 import { version } from '@kui-shell/settings/package.json'
 import { theme as settings } from '@kui-shell/core/core/settings'
+import { getCssFilepathForCurrentTheme } from '@kui-shell/plugin-core-support/lib/cmds/theme'
 
 /** path to app/ directory */
 const ourRootDir = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
@@ -51,7 +52,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     package_json_dir: settingsDir,
     // use_inner_html: true,
     css_path: [
-      path.join(settingsDir, 'css/themes/', settings.defaultTheme),
+      getCssFilepathForCurrentTheme(),
       path.join(ourRootDir, 'web/css/about.css')
     ],
     win_options: { width: 600, height: 600 }
@@ -59,7 +60,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 
   // remove the click handler from the title element
   about.webContents.on('did-finish-load', () => {
-    about.webContents.executeJavaScript("const t = document.querySelector('.title'), c=t.cloneNode(false); while (t.hasChildNodes()) c.appendChild(t.firstChild); t.parentNode.replaceChild(c, t);")
+    about.webContents.executeJavaScript(`document.body.setAttribute("kui-theme", "${document.body.getAttribute('kui-theme')}"); const t = document.querySelector('.title'), c=t.cloneNode(false); while (t.hasChildNodes()) c.appendChild(t.firstChild); t.parentNode.replaceChild(c, t);`)
   })
 }
 
