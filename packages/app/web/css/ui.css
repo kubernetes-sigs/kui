@@ -2300,7 +2300,7 @@ badge.yellow-background, button.yellow-background {
     color: var(--color-text-01);
 }
 badge.red-background {
-    background: var(--color-support-01);
+    background: var(--color-support-03-darker);
     color: var(--color-ui-01);
 }
 badge.gray-background {
