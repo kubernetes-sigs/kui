@@ -64,7 +64,12 @@ const open = async (filepath, hljs) => {
     return new Promise((resolve, reject) => {
       readFile(fullpath, async (err, fileContent) => {
         if (err) {
-          reject(err)
+          if (err.code === 'EISDIR') {
+            debug('trying to open a directory; delegating to ls')
+            qexec(`ls "${filepath}"`).then(resolve, reject)
+          } else {
+            reject(err)
+          }
         } else {
           const enclosingDirectory = dirname(filepath)
 

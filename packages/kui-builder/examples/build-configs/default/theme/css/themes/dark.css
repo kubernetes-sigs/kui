@@ -22,9 +22,9 @@ body {
     --color-brand-02: hsl(208, 48%, 63%);
     --color-brand-03: #de935f;
     --color-ui-01: hsl(216, 6%, 16%);
-    --color-ui-02: hsl(216, 6%, 18%);
+    --color-ui-02: hsl(216, 6%, 14.5%);
     --color-ui-03: hsl(216, 10%, 17%);
-    --color-ui-04: hsl(216, 10%, 24%);
+    --color-ui-04: hsl(216, 12%, 13%);
     --color-ui-05: hsl(216, 10%, 49%);
 
     --color-ok: var(--color-support-02);

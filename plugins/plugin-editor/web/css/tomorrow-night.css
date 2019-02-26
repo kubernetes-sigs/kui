@@ -16,14 +16,19 @@ body[kui-theme="dark"] .monaco-editor {
 }
 
 .monaco-editor .current-line ~ .line-numbers {
-    color: var(--color-brand-02);
+    color: var(--color-brand-02) !important;
 }
 .monaco-editor .line-numbers {
-    color: var(--color-brand-01);
+    color: var(--color-text-02) !important;
+    font-weight: 300;
+}
+
+.monaco-editor .mtk8,
+.monaco-editor .keyword {
+    color: #b294bb;
 }
 
 .monaco-editor .mtk6,
-.monaco-editor .keyword,
 .monaco-editor .selector-tag,
 .monaco-editor .title,
 .monaco-editor .section,
@@ -41,7 +46,7 @@ body[kui-theme="dark"] .monaco-editor {
 
 .monaco-editor .mtk1 {
     /* map keys */
-    color: var(--color-text-02);
+    color: var(--color-text-01);
 }
 .monaco-editor .mtk5 {
     /* map values */
