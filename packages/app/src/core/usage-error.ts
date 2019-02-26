@@ -158,7 +158,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
     if (messageString) {
       // then the repl wrapped around the usage model, adding an extra message string
-      const messageDom = div(undefined, 'normal-size', 'h3')
+      const messageDom = div(undefined, '', 'div')
       const prefacePart = span('')
       const messagePart = span(messageString, 'red-text')
 
