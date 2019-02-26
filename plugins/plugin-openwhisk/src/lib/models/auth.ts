@@ -60,7 +60,7 @@ const localStorageKey = {
  *
  *
  */
-export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || window.localStorage.getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost') || 'https://openwhisk.ng.bluemix.net'
+export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || window.localStorage.getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost')
 
 let authKey = process.env.__OW_API_KEY || wskprops.AUTH || window.localStorage.getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 

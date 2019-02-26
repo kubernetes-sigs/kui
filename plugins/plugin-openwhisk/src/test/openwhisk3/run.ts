@@ -29,7 +29,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.
 const commandFile = `${ROOT}/data/openwhisk/commandFile.wsk`
 const local = join(ROOT, 'data/openwhisk/openwhisk-shell-demo-html')
 
-const API_HOST = process.env.API_HOST || 'openwhisk.ng.bluemix.net'
+const API_HOST = process.env.API_HOST
 const ns = ui.expectedNamespace()
 
 /**

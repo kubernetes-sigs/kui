@@ -2,7 +2,7 @@ const common = require('./common')
 const assert = require('assert')
 const timeout = process.env.TIMEOUT || 60000
 const constants = {
-  API_HOST: process.env.API_HOST || 'openwhisk.ng.bluemix.net',
+  API_HOST: process.env.API_HOST,
   // CLI_PLACEHOLDER: process.env.CLI_PLACEHOLDER || 'enter your command',
   OK: process.env.OK || 'ok'
 }

@@ -29,7 +29,7 @@ const { validateNamespace } = ui
 
 const timeout = parseInt(process.env.TIMEOUT, 10) || 60000
 
-const API_HOST = process.env.API_HOST || 'openwhisk.ng.bluemix.net'
+const API_HOST = process.env.API_HOST
 const APP_TITLE = process.env.APP_TITLE || 'Kui Shell'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
 
