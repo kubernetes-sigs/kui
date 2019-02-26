@@ -45,6 +45,13 @@ export const format = (command: string, verb: string, entityType: string, option
   const namespaceFromHelmStatusOutput = namespaceMatch[1]
   debug('namespace', namespaceFromHelmStatusOutput)
 
+  const namespaceFor = (entityType: string) => {
+    if (/ConfigMap(s?)|cm/i.test(entityType)) {
+      return 'default'
+    } else {
+      return namespaceFromHelmStatusOutput
+    }
+  }
   const resources = resourcesString
     .split(/==>/)
     .map(_ => _.split(/[\n\r]/))
@@ -60,7 +67,7 @@ export const format = (command: string, verb: string, entityType: string, option
         table: formatTable(command,
                            verb,
                            entityType,
-                           Object.assign({}, options, { namespace: namespaceFromHelmStatusOutput }), // use helm status output as authority
+                           Object.assign({}, options, { namespace: namespaceFor(entityType) }),
                            preprocessTable([A.slice(1).join('\n')]))[0]
       }
     })

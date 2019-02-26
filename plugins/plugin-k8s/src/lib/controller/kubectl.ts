@@ -766,7 +766,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
         modes.push(conditionsButton(command, resource))
 
-        if (yaml.spec.containers) {
+        if (yaml.spec && yaml.spec.containers) {
           modes.push(containersButton(command, resource))
         }
 
