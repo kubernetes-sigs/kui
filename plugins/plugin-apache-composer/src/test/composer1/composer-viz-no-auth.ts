@@ -31,7 +31,7 @@ import {
 //          a static default, hard-coded into openwhisk-core.js
 const fuzz = { fuzz: { rules: ['noAuth'],
   prefs: { noAuthOk: true,
-    API_HOST: 'openwhisk.ng.bluemix.net' } } }
+    API_HOST: process.env.API_HOST } } }
 
 /**
  * Here starts the test

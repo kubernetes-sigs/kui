@@ -44,7 +44,7 @@ const localWskProps = () => {
  */
 exports.entities = ['action', 'trigger', 'rule', 'package']
 
-const apihost = process.env.__OW_API_HOST || process.env.API_HOST || process.env.APIHOST || localWskProps().APIHOST || 'openwhisk.ng.bluemix.net'
+const apihost = process.env.__OW_API_HOST || process.env.API_HOST || process.env.APIHOST || localWskProps().APIHOST
 const apihostIsLocal = apihost.indexOf('localhost') >= 0 ||
       apihost.startsWith('192.') ||
       apihost.startsWith('172.') ||
