@@ -274,6 +274,10 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.repl-result[data-stream] {
+    /* streaming output of stdout; make sure stderr occurs below */
+    flex-direction: column;
+}
 .repl.sidecar-visible p {
     white-space: normal;
 }
