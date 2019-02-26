@@ -62,7 +62,7 @@ const span = (str?: string, css?: string) => div(str, css, 'span')
  *
  */
 const prefix = str => {
-  return div(str, 'usage-error-title', 'h2')
+  return div(str, 'usage-error-title', 'h4')
 }
 
 /** A part of the main body of the usage message */
@@ -144,7 +144,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
     // those fields now; `body` is the flex-wrap portion of the
     // content
     const resultWrapper = div(undefined, 'fade-in usage-error-wrapper')
-    const result = div(undefined, options.noHide ? '' : 'hideable')
+    const result = div(undefined, options.noHide ? '' : ['hideable', 'page-content'])
     const body = div()
     const left = div() // usage and detailedExample
     const right = div() // required and optional parameters
@@ -158,7 +158,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
     if (messageString) {
       // then the repl wrapped around the usage model, adding an extra message string
-      const messageDom = div(undefined, 'normal-size', 'h1')
+      const messageDom = div(undefined, 'normal-size', 'h3')
       const prefacePart = span('')
       const messagePart = span(messageString, 'red-text')
 
@@ -201,7 +201,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
     if (options.noBreadcrumb) {
       breadcrumbPromise = Promise.resolve()
     } else {
-      const container = div(undefined, 'bx--breadcrumb bx--breadcrumb--no-trailing-slash', 'h1')
+      const container = div(undefined, 'bx--breadcrumb bx--breadcrumb--no-trailing-slash', 'h2')
       result.appendChild(container)
 
       /** make a single breadcrumb for the UI; defaultCommand means use the string as a command */
@@ -411,8 +411,8 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           cmdCell.className = 'log-field'
           docsCell.className = 'log-field'
 
-          cmdCell.style.background = 'white'
-          docsCell.style.background = 'white'
+          cmdCell.style.background = 'var(--color-ui-02)'
+          docsCell.style.background = 'var(--color-ui-02)'
 
           cmdPart.style.fontWeight = '500'
           wrap(smaller(sans(docsPart)))
