@@ -2103,23 +2103,19 @@ sidecar.minimized [data-balloon]:before, sidecar.minimized [data-balloon]:after 
 
 /* usage */
 .usage-error-wrapper .hideable {
-    margin: 1em 0;
-    border: 1px solid var(--color-ui-04);
-    padding: 1em 2em;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-    background: var(--color-ui-02);
-    color: initial;
+    margin: 2em 0;
+    color: var(--color-text-01);
 }
 sidecar .usage-error-wrapper .hideable {
     background: var(--color-ui-03);
 }
-.usage-error-wrapper h2, .usage-error-wrapper h4 {
+.usage-error-wrapper h3, .usage-error-wrapper h4 {
     font-weight: 300;
     font-size: 1.125em;
     color: var(--color-brand-01);
     font-family: var(--font-sans-serif);
 }
-.usage-error-wrapper h2 {
+.usage-error-wrapper h4 {
     text-transform: capitalize;
     margin: 0 0 0.375em;
 }
@@ -2214,6 +2210,7 @@ sidecar .usage-error-wrapper .hideable {
     width: 5rem;
 }
 .page-content h3:first-child, .page-content h2:first-child, .page-content hr + h3 {
+    margin-top: 0;
     padding-top: 0;
 }
 .page-content h3, .page-h3 {
