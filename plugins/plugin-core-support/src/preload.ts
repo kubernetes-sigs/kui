@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
+import { isHeadless } from '@kui-shell/core/core/capabilities'
+
 import help from './lib/cmds/help'
-import zoom from './lib/cmds/zoom'
-import newTab from './lib/new-tab'
-import textSearch from './lib/text-search'
-import tabCompletion from './lib/tab-completion'
-import reverseISearch from './lib/cmds/history/reverse-i-search'
-import { preload as theme } from './lib/cmds/theme'
 
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
@@ -30,14 +26,19 @@ import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugi
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
   await Promise.all([
-    help(commandTree, prequire, options),
-    zoom(commandTree, prequire),
-    newTab(commandTree, prequire),
-    reverseISearch(),
-    theme(),
-    textSearch(),
-    tabCompletion()
+    help(commandTree, prequire, options)
   ])
+
+  if (!isHeadless()) {
+    await Promise.all([
+      import('./lib/cmds/zoom').then(_ => _.default(commandTree, prequire)),
+      import('./lib/new-tab').then(_ => _.default(commandTree, prequire)),
+      import('./lib/cmds/history/reverse-i-search').then(_ => _.default()),
+      import('./lib/cmds/theme').then(_ => _.preload()),
+      import('./lib/text-search').then(_ => _.default()),
+      import('./lib/tab-completion').then(_ => _.default())
+    ])
+  }
 }
 
 export default registration
