@@ -76,11 +76,40 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
     }
 
     if (fontawesome) {
-      const icon = document.createElement('i')
-      inner.appendChild(icon)
-      icon.className = fontawesome
-      icon.classList.add('cell-inner')
-      inner.setAttribute('data-value', value) // in case tests need the actual value, not the icon
+      const addIcon = ({ fontawesome, onclick = undefined, balloon = undefined, balloonLength = undefined, balloonPos = 'right' }) => {
+        const icon = document.createElement('i')
+        icon.className = fontawesome
+        icon.classList.add('cell-inner')
+
+        if (onclick) {
+          icon.onclick = onclick
+          icon.classList.add('clickable')
+        }
+
+        if (balloon) {
+          // tooltip; careful: both balloon and fontawesome want to
+          // use :before and :after; so we need a wrapper
+          const iconWrapper = document.createElement('span')
+          iconWrapper.setAttribute('data-balloon', balloon)
+          iconWrapper.setAttribute('data-balloon-pos', balloonPos)
+          if (balloonLength) {
+            iconWrapper.setAttribute('data-balloon-length', balloonLength)
+          }
+          iconWrapper.appendChild(icon)
+          inner.appendChild(iconWrapper)
+        } else {
+          inner.appendChild(icon)
+        }
+      }
+      if (Array.isArray(fontawesome)) {
+        // for an array of icons, keep them centered
+        cell.classList.add('text-center')
+        cell.classList.add('larger-text')
+        fontawesome.forEach(addIcon)
+      } else {
+        addIcon({ fontawesome })
+        inner.setAttribute('data-value', value) // in case tests need the actual value, not the icon
+      }
     } else if (Array.isArray(value) && value[0] && value[0].nodeName) {
       // array of dom elements
       const container = value.reduce((container, node) => {
@@ -123,7 +152,9 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
         cell.classList.remove(pulse)
       }
 
-      const interval = setInterval(() => {
+      /** the watch interval handler */
+      let interval
+      const watchIt = () => {
         if (--count < 0) {
           debug('watchLimit exceeded', value)
           stopWatching(interval)
@@ -132,13 +163,14 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
 
         try {
           Promise.resolve(watch(watchLimit - count - 1))
-            .then(({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS }) => {
+            .then(({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll }) => {
               if (unchanged) {
                 // nothing to do, yet
                 return
               }
 
               // debug('watch update', done)
+              // stopWatching(interval)
 
               // are we done polling for updates?
               if (value === null || value === undefined || done) {
@@ -187,6 +219,13 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
                     otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
                   }
                 }
+
+                if (slowPoll) {
+                  // user requested a new, "slow polling" watch
+                  debug('updating watch interval', slowPoll)
+                  stopWatching(interval) // this will remove the "pulse" effect, which is what we want
+                  interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
+                }
               })
             })
         } catch (err) {
@@ -194,7 +233,10 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
           clearInterval(interval)
           cell.classList.remove(pulse)
         }
-      }, 1000 + ~~(1000 * Math.random()))
+      }
+
+      // establish the initial watch interval
+      interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
     }
 
     return cell

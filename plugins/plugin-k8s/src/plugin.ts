@@ -19,13 +19,11 @@ const debug = Debug('k8s/loader')
 debug('loading')
 
 import auth from './lib/controller/auth'
-debug('auth loaded')
 import contexts from './lib/controller/contexts'
-debug('contexts loaded')
 import kubectl from './lib/controller/kubectl'
-debug('kubectl loaded')
 import status from './lib/controller/status'
-debug('status loaded')
+import istio from './lib/controller/istio'
+import kiali from './lib/controller/kiali'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin'
@@ -33,13 +31,11 @@ import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin
 export default async (commandTree, prequire: PluginRequire) => {
   debug('init')
   await auth(commandTree, prequire)
-  debug('auth')
   await contexts(commandTree, prequire)
-  debug('contexts')
   await status(commandTree, prequire)
-  debug('status')
   await kubectl(commandTree, prequire)
-  debug('kubectl')
+  await istio(commandTree, prequire)
+  await kiali(commandTree, prequire)
 
   if (!inBrowser()) {
     const kedit: PluginRegistration = (await import('./lib/controller/kedit')).default

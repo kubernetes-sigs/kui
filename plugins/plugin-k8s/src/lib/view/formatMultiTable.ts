@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('k8s/view/formatMultiTable')
+
+import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 
@@ -25,16 +29,57 @@ export const getActiveView = () => {
 }
 
 /**
+ * Update table for picture-in-picture style drilldowns
+ *
+ */
+const updateTableForPip = (viewName: string) => (table: Array<any>) => {
+  debug('pip update for table', table)
+
+  table.forEach(row => {
+    if (row.onclick) {
+      const command = row.onclick
+      row.onclick = (evt: Event) => {
+        return drilldown(command, undefined, getActiveView(), viewName)(evt)
+      }
+    }
+
+    if (row.attributes) {
+      row.attributes.forEach(attr => {
+        if (attr.onclick) {
+          const command = attr.onclick
+          attr.onclick = (evt: Event) => {
+            return drilldown(command, undefined, getActiveView(), viewName)(evt)
+          }
+        }
+      })
+    }
+  })
+}
+
+/**
  * Return a multi-table view for the given table model
  *
  */
-export const formatTable = (model: Array<any>): HTMLElement => {
+export const formatTable = (model: Array<any>, { usePip = false, viewName = 'previous view' } = {}): HTMLElement => {
+  debug('formatTable', model)
+
   const resultDomOuter = document.createElement('div')
   if (model.length > 0) {
     const resultDom = document.createElement('div')
 
     // e.g. establish an attribute [k8s-table="Containers"]
     resultDomOuter.setAttribute(attr, (model[0] && model[0][0] && model[0][0].title) || model[0] && model[0].title)
+
+    // modify onclick links to use the "picture in picture" drilldown module
+    if (usePip) {
+      debug('pip update')
+
+      if (Array.isArray(model[0])) {
+        model.forEach(updateTableForPip(viewName))
+      } else {
+        updateTableForPip(viewName)(model)
+      }
+    }
 
     resultDomOuter.classList.add('result-vertical')
     resultDomOuter.classList.add('padding-content')

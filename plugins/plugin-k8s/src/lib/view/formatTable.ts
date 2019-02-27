@@ -30,8 +30,8 @@ const fillTo = (length, maxColumns) => {
 /** decorate certain columns specially */
 const outerCSSForKey = {
   NAME: 'entity-name-group',
-  READY: 'entity-narrow',
-  STATUS: 'entity-kind',
+  READY: 'a-few-numbers-wide',
+  STATUS: 'badge-width',
   KIND: 'max-width-id-like',
 
   CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
@@ -44,13 +44,15 @@ const outerCSSForKey = {
   CURRENT: 'entity-name-group entity-name-group-extra-narrow text-center',
   DESIRED: 'entity-name-group entity-name-group-extra-narrow text-center',
 
+  RESTARTS: 'very-narrow',
+
   'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
   'APP VERSION': 'pre-wrap', // helm ls
   UPDATED: 'min-width-date-like', // helm ls
   REVISION: 'hide-with-sidecar', // helm ls
-  AGE: 'entity-name-group-extra-narrow', // helm status
+  AGE: 'very-narrow', // helm status
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
   SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
 }
@@ -60,7 +62,7 @@ const cssForKey = {
   NAME: 'entity-name',
   SOURCE: 'deemphasize',
   SUBOBJECT: 'deemphasize',
-  'CREATED AT': 'slightly-deemphasize',
+  'CREATED AT': 'slightly-deemphasize smaller-text',
 
   STATUS: 'even-smaller-text',
   UPDATED: 'deemphasize'

@@ -32,6 +32,17 @@ import { getActiveView, formatTable } from '../formatMultiTable'
 const viewName = 'Containers'
 
 /**
+ * Add a Containers mode button to the given modes model, if called
+ * for by the given resource.
+ *
+ */
+export const addContainers = (modes: Array<any>, command: string, resource: IResource) => {
+  if (resource.yaml.spec && resource.yaml.spec.containers) {
+    modes.push(containersButton(command, resource))
+  }
+}
+
+/**
  * Return a sidecar mode button model that shows a containers table
  * for the given resource
  *
@@ -200,8 +211,8 @@ const showLogs = ({ pod, container }, exec = 'pexec') => {
   const ns = repl.encodeComponent(pod.metadata.namespace)
 
   // a bit convoluted, so we can delay the call to getActiveView
-  return evt => {
-    return drilldown(`kubectl logs ${podName} ${containerName} -n ${ns}`,
+  return (evt: Event) => {
+    return drilldown(`kubectl logs "${podName}" "${containerName}" -n "${ns}"`,
                      undefined,
                      getActiveView(),
                      viewName,

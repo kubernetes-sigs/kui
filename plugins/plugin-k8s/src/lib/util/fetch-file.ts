@@ -25,16 +25,22 @@ import expandHomeDir = require('expand-home-dir')
  * Either fetch a remote file or read a local one
  *
  */
-export const fetchFile = async (url: string): Promise<Buffer> => {
-  if (url.match(/http(s)?:\/\//)) {
-    debug('fetch remote', url)
-    return needle('get', url).then(_ => _.body)
-  } else {
-    debug('fetch local', url)
+export const fetchFile = (url: string): Promise<Array<Buffer>> => {
+  debug('fetchFile', url)
 
-    // why the dynamic import? being browser friendly here
-    const { readFile } = await import('fs-extra')
+  const urls = url.split(/,/)
 
-    return readFile(findFile(expandHomeDir(url)))
-  }
+  return Promise.all(urls.map(async url => {
+    if (url.match(/http(s)?:\/\//)) {
+      debug('fetch remote', url)
+      return needle('get', url).then(_ => _.body)
+    } else {
+      debug('fetch local', url)
+
+      // why the dynamic import? being browser friendly here
+      const { readFile } = await import('fs-extra')
+
+      return readFile(findFile(expandHomeDir(url)))
+    }
+  }))
 }

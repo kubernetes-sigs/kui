@@ -25,6 +25,17 @@ import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
 /**
+ * Add a Conditions mode button to the given modes model, if called
+ * for by the given resource.
+ *
+ */
+export const addConditions = (modes: Array<any>, command: string, resource: IResource) => {
+  if (resource.yaml.spec && resource.yaml.status.conditions) {
+    modes.push(conditionsButton(command, resource))
+  }
+}
+
+/**
  * Return a sidecar mode button model that shows a conditions table
  * for the given resource
  *

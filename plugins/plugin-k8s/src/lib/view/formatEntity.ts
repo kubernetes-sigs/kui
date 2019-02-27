@@ -89,8 +89,8 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
       value: States.Pending,
       placeholderValue: true, // allows headless to make an informed rendering decision
       tag: 'badge',
-      watch: !doWatch ? undefined : (count: number) => {
-        const watchResponse = watchStatus(watch, finalState, count)
+      watch: !doWatch ? undefined : (iter: number) => {
+        const watchResponse = watchStatus(watch, finalState, iter)
         watchResponse.then(({ done }) => {
           if (done) {
             eventBus.removeListener(eventType, listener)

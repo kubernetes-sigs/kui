@@ -201,7 +201,7 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
     .slice(1)
     .reduce((lines, line, idx, A) => {
       if (idx % 2 === 0) {
-        const restOfLine = A[idx + 1].match(pattern2Rest)
+        const restOfLine = A[idx + 1].match(pattern2Rest) || A[idx + 1]
         debug('rest', A[idx + 1], restOfLine)
         lines.push({
           timestamp: prettyPrintTime(A[idx]),
@@ -222,7 +222,7 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         logType: A[idx + 2],
         provider: A[idx + 3],
         origin: A[idx + 4],
-        rest: A[idx + 5].trim()
+        rest: A[idx + 5] && A[idx + 5].trim()
       })
     }
 

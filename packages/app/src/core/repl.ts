@@ -141,6 +141,14 @@ export const qexec = (command: string, block?, contextChangeOK?, execOptions?: I
 }
 
 /**
+ * "raw" exec, where we want the data model back directly
+ *
+ */
+export const rexec = (command: string, execOptions = emptyExecOptions()) => {
+  return qexec(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
+}
+
+/**
  * Programmatic exec, as opposed to human typing and hitting enter
  *
  */
