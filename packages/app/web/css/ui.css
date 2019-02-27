@@ -523,6 +523,9 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .result-table .entity-name-group-extra-narrow {
     max-width: 10em;
 }
+.repl.sidecar-visible .log-lines {
+    table-layout: fixed;
+}
 .repl.sidecar-visible .result-table .entity-name-group-extra-narrow {
     width: 9em;
 }
