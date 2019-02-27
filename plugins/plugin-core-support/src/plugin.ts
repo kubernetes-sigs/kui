@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isHeadless } from '@kui-shell/core/core/capabilities'
+
 import run from './lib/cmds/run'
 import echo from './lib/cmds/echo'
 import quit from './lib/cmds/quit'
@@ -24,8 +26,6 @@ import openui from './lib/cmds/open-ui-from-terminal'
 import prompt from './lib/cmds/prompt'
 import window from './lib/cmds/window'
 import history from './lib/cmds/history/history'
-import screenshot from './lib/cmds/screenshot'
-import { plugin as theme } from './lib/cmds/theme'
 
 // import updater from './lib/admin/updater'
 
@@ -37,18 +37,23 @@ export default async (commandTree, prequire, options) => {
   await window(commandTree, prequire)
   await openui(commandTree, prequire)
 
-  return Promise.all([
+  await Promise.all([
     run(commandTree, prequire),
     echo(commandTree, prequire),
     quit(commandTree, prequire),
     clear(commandTree, prequire),
-    about(commandTree, prequire),
     base64(commandTree, prequire),
     prompt(commandTree, prequire),
     history(commandTree, prequire),
-    screenshot(commandTree, prequire),
-    theme(commandTree, prequire)
-
-    // updater(commandTree, prequire) <-- disabled for now
+    about(commandTree, prequire)
   ])
+
+  if (!isHeadless()) {
+    await Promise.all([
+      import('./lib/cmds/screenshot').then(_ => _.default(commandTree, prequire)),
+      import('./lib/cmds/theme').then(_ => _.plugin(commandTree, prequire))
+    ])
+  }
+
+  // updater(commandTree, prequire) <-- disabled for now
 }
