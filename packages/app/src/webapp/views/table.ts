@@ -369,6 +369,7 @@ export const formatMultiListResult = (response, resultDom) => {
 
       if (table[0].flexWrap) {
         const tableScroll = document.createElement('div')
+        tableScroll.classList.add('scrollable')
         tableScroll.classList.add('scrollable-auto')
         tableScroll.setAttribute('data-table-max-rows', typeof table[0].flexWrap === 'number' ? table[0].flexWrap : 4)
         tableScroll.appendChild(tableDom)

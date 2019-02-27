@@ -38,6 +38,7 @@ export const formatTable = (model: Array<any>): HTMLElement => {
 
     resultDomOuter.classList.add('result-vertical')
     resultDomOuter.classList.add('padding-content')
+    resultDomOuter.classList.add('scrollable')
     resultDomOuter.classList.add('scrollable-auto')
     resultDomOuter.classList.add('somewhat-smaller-text')
     resultDomOuter.appendChild(resultDom)
