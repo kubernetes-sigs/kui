@@ -49,7 +49,7 @@ class ProxyEvaluator implements IEvaluator {
     debug('apply', evaluator)
 
     if (evaluator.options && (evaluator.options.inBrowserOK || evaluator.options.inBrowserOk || evaluator.options.needsUI)) {
-      debug('delgating to direct evaluator')
+      debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
       debug('delegating to proxy evaluator', getValidCredentials())

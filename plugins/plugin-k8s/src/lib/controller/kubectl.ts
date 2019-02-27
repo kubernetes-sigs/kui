@@ -31,7 +31,8 @@ import { ExecType } from '@kui-shell/core/core/command-tree'
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
-import { fillInTheBlanks } from '../util/kubeconfig-discovery'
+import { fillInTheBlanks } from '../util/discovery/kubeconfig'
+import pickHelmClient from '../util/discovery/helm-client'
 
 import IResource from '../model/resource'
 import { FinalState } from '../model/states'
@@ -598,7 +599,8 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
 
   debug('kubeconfig', env.KUBECONFIG)
 
-  const child = spawn(command,
+  const commandForSpawn = command === 'helm' ? await pickHelmClient(env) : command
+  const child = spawn(commandForSpawn,
                       argvWithFileReplacements,
                       { env, shell: true })
 

@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/kubeconfig-discovery')
+const debug = Debug('k8s/discovery/kubeconfig')
 
 import { delimiter } from 'path'
 import { execSync } from 'child_process'
