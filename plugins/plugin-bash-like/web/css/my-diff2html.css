@@ -41,7 +41,40 @@
     background-color: var(--color-ui-01);
 }
 
+.d2h-ins {
+    /* inserts */
+    background-color: var(--color-very-light-green);
+    border-color: transparent;
+}
+
+.d2h-del {
+    /* deletes */
+    background-color: var(--color-very-light-red);
+    color: var(--color-white);
+    border-color: var(--color-red);
+}
+
+.d2h-code-line ins, .d2h-code-side-line ins {
+    /* character-level inserts */
+    background-color: var(--color-light-green);
+    color: var(--color-white);
+    padding: 0.25em 0.5em;
+}
+
+.d2h-code-line del, .d2h-code-side-line del {
+    /* character-level deletes */
+    background-color: var(--color-light-red);
+    color: var(--color-white);
+    padding: 0.25em 0.5em;
+}
+
+.d2h-file-diff .d2h-ins.d2h-change, .d2h-file-diff .d2h-del.d2h-change {
+    background-color: var(--color-very-light-yellow);
+    color: var(-color-black);
+}
+
 .line-num1, .line-num2 {
+    color: var(--color-text-02);
     vertical-align: middle;
     display: inline-flex;
     height: 100%;
@@ -70,6 +103,7 @@
 
 .d2h-info {
     background-color: var(--color-ui-02);
+    color: var(--color-text-02);
 }
 
 .d2h-code-line ins, .d2h-code-side-line ins, .d2h-code-line del, .d2h-code-side-line del {
@@ -81,7 +115,9 @@
 }
 
 .d2h-changed {
-    color: var(--color-support-03-darker);
+    color: var(--color-yellow);
+    background-color: var(--color-ui-02);
+    border-color: var(--color-light-yellow);
 }
 
 .d2h-file-stats-wrapper {
