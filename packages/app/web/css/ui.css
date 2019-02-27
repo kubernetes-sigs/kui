@@ -1402,7 +1402,7 @@ sidecar .result-as-table .big-top-pad:first-child {
 /* Track */
 .scrollable::-webkit-scrollbar-track, .scrollable-x::-webkit-scrollbar-track, .scrollable-auto::-webkit-scrollbar-track { box-shadow: inset 0 0 8px var(--color-scrollbar-track); border-radius: 10px; border-radius: 10px; }
 /* Handle */
-.scrollable::-webkit-scrollbar-thumb, .scrollable-x::-webkit-scrollbar-thumb, .scrollable-auto::-webkit-scrollbar-thumb { border-radius: 10px; background: var(--color-scrollbar-thumb); box-shadow: inset 0 0 2px var(--color-brand-01); }
+.scrollable::-webkit-scrollbar-thumb, .scrollable-x::-webkit-scrollbar-thumb, .scrollable-auto::-webkit-scrollbar-thumb { border-radius: 10px; background: var(--color-scrollbar-thumb); box-shadow: inset 0 0 2px var(--color-scrollbar-thumb-border); }
 .scrollable::-webkit-scrollbar, .scrollable-auto::-webkit-scrollbar { width: 8px; }
 .scrollable-x::-webkit-scrollbar { height: 8px; }
 

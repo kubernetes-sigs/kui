@@ -32,7 +32,8 @@ body {
     --color-error: var(--color-support-01);
     --color-error-lighter: var(--color-support-01-lighter);
 
-    --color-scrollbar-thumb: #0E0F10;
+    --color-scrollbar-thumb: hsla(216, 7%, 6%, 0.25);
+    --color-scrollbar-thumb-border: hsla(216, 7%, 48%, 0.75);
     --color-scrollbar-track: transparent;
 
     --color-selection-background: hsla(220, 7%, 39%, 0.4);

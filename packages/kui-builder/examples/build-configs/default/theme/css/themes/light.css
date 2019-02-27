@@ -33,6 +33,7 @@ body {
     --color-error-lighter: rgba(231, 29, 50, 0.75); /* support-01 at reduced alpha */
 
     --color-scrollbar-thumb: rgba(21, 41, 52, 0.35); /* color-text-01 at reduced alpha */
+    --color-scrollbar-thumb-border: var(--color-brand-01);
     --color-scrollbar-track: var(--color-ui-05);
 
     --color-selection-background: rgba(140, 155, 165, 0.40); /* color-ui-05 at reduced alpha */
