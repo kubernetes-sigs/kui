@@ -39,11 +39,17 @@ const promiseEach = async function (arr, fn) { // take an array and a function
 }
 
 /** Create an HTML DIV to wrap around the given string */
-const div = (str?: string | Promise<string>, css: string | Array<string> = undefined, tag = 'div'): HTMLElement => {
+const div = (str?: string | Promise<string> | Element, css: string | Array<string> = undefined, tag = 'div'): HTMLElement => {
   const result = document.createElement(tag)
 
   if (str) {
-    Promise.resolve(str).then(str => { result.innerText = str })
+    if (typeof str === 'string') {
+      Promise.resolve(str).then(str => {
+        result.innerText = str
+      })
+    } else {
+      result.appendChild(str as Element)
+    }
   }
 
   if (css) {
@@ -55,7 +61,7 @@ const div = (str?: string | Promise<string>, css: string | Array<string> = undef
   }
   return result
 }
-const span = (str?: string, css?: string) => div(str, css, 'span')
+const span = (str?: string | Element, css?: string) => div(str, css, 'span')
 
 /**
  * The start of every section, e.g. Usage:
@@ -160,7 +166,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       // then the repl wrapped around the usage model, adding an extra message string
       const messageDom = div(undefined, '', 'div')
       const prefacePart = span('')
-      const messagePart = span(messageString, 'red-text')
+      const messagePart = span(messageString, 'red-text usage-error-message-string')
 
       if (!options.noHide) {
         result.classList.add('hidden')
@@ -186,8 +192,6 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           usagePart.classList.add('hidden')
         }
       }
-
-      // return resultWrapper
     }
 
     resultWrapper.appendChild(result)

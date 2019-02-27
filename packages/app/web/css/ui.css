@@ -1341,7 +1341,7 @@ sidecar .result-as-table .big-top-pad:first-child {
 }
 .clickable-blatant {
     text-decoration: underline;
-    text-decoration-color: rgba(0,0,0,0.15);
+    text-decoration-color: var(--color-gray);
 }
 .clickable:hover, .entity-name-group:not(.header-cell) .entity.actions:hover .entity-name {
     cursor: pointer;
