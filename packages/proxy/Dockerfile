@@ -28,18 +28,28 @@ WORKDIR /kui-proxy/kui
 ENV KUBE_LATEST_VERSION="v1.13.2"
 # Note: Latest version of helm may be found at:
 # https://github.com/kubernetes/helm/releases
-ENV HELM_VERSION="v2.12.2"
+
+# we will download a gamut of helm clients and place them here
+# see plugins/plugin-k8s/src/lib/util/discovery/helm-client.ts
+ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
+ENV HELM_LATEST_VERSION="${KUI_HELM_CLIENTS_DIR}"/helm-2.12
 
 RUN apk add --no-cache ca-certificates bash git \
     && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl \
-    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm
+    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.9 \
+    && chmod +x /usr/local/bin/helm-2.9 \
+    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.10 \
+    && chmod +x /usr/local/bin/helm-2.10 \
+    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.11 \
+    && chmod +x /usr/local/bin/helm-2.11 \
+    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.12.2-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.12 \
+    && chmod +x /usr/local/bin/helm-2.12
 ###########
 
 COPY . /kui-proxy
 
-# hmm.. sometimes the npm link command hangs without this extra npm config gset
+# hmm.. sometimes the npm link command hangs without this extra npm config set
 RUN npm config set registry https://registry.npmjs.org
 RUN cd /kui-proxy/kui && npm link ../app --no-package-lock
 
