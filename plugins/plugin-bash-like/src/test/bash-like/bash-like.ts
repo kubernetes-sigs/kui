@@ -19,6 +19,7 @@ import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-lin
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
+import * as assert from 'assert'
 import { unlinkSync, rmdirSync } from 'fs'
 
 /** expect the given folder within the help tree */
@@ -44,8 +45,43 @@ describe('shell commands', function (this: ISuite) {
     .catch(common.oops(this)))
 
   if (!process.env.LOCAL_OPENWHISK) {
-    it('should give ok for known outer command', () => cli.do(`ibmcloud target`, this.app)
+    it('should give ok for known outer command: ibmcloud target', () => cli.do(`ibmcloud target`, this.app)
        .then(cli.expectOK)
+       .catch(common.oops(this)))
+  }
+
+  if (process.env.NEEDS_KUBERNETES) {
+    it('should give help for known outer command: kubectl', () => cli.do('kubectl', this.app)
+       .then(cli.expectError(500, undefined, { passthrough: true }))
+       .then(N => Promise.all([
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Usage"]`),
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
+       ]))
+       .catch(common.oops(this)))
+
+    it('should give help for known outer command: kubectl get -h', () => cli.do('kubectl get -h', this.app)
+       .then(cli.expectError(500, undefined, { passthrough: true }))
+       .then(N => Promise.all([
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Options:"]`),
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="get"]`),
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
+       ]))
+       .catch(common.oops(this)))
+
+    it('should give ok for known outer command: ibmcloud config', () => cli.do(`ibmcloud config`, this.app)
+       .then(cli.expectError(2, undefined, { passthrough: true }))
+       .then(N => Promise.all([
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .click-here-for-usage-container`),
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .usage-error-message-string`)
+       ])
+             .then(() => this.app.client.getText(`${selectors.OUTPUT_N(N)} .usage-error-message-string`))
+             .then(txt => assert.ok(/Incorrect Usage/i.test(txt)))
+             .then(() => this.app.client.click(`${selectors.OUTPUT_N(N)} .click-here-for-usage`))
+             .then(() => Promise.all([
+               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Options:"]`),
+               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="config"]`),
+               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`)
+             ])))
        .catch(common.oops(this)))
   }
 

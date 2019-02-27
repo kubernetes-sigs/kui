@@ -183,6 +183,7 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
     stream: true // save state across calls
   })
 
+  let pendingUsage = false
   proc.stdout.on('data', async data => {
     const handleANSI = () => {
       const span = document.createElement('span')
@@ -191,12 +192,15 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
       return span
     }
 
+    const out = data.toString()
+
     if (execOptions.stdout) {
-      const out = data.toString()
       const strippedOut = stripControlCharacters(out)
       const maybeUsage = formatUsage(cmdLine, strippedOut, { drilldownWithPip: true })
       if (maybeUsage) {
-        execOptions.stdout(maybeUsage)
+        pendingUsage = true
+        rawOut += out
+        // no, in case the usage comes in several batches: execOptions.stdout(maybeUsage)
       } else {
         const maybeKeyValue = formatKeyValue(strippedOut)
         if (maybeKeyValue) {
@@ -207,7 +211,7 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
       }
     } else {
       parentNode.appendChild(handleANSI())
-      rawOut += data.toString()
+      rawOut += out
     }
   })
 
@@ -282,7 +286,7 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
           const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true })
 
           if (maybeUsage) {
-            const message = await maybeUsage.message
+            // const message = await maybeUsage.message
             // debug('maybeUsage', message)
             // const commandWithoutOptions = cmdLineOrig.replace(/\s--?\w+/g, '')
             // return resolve(asSidecarEntity(commandWithoutOptions, message, {}, undefined, 'usage'))
@@ -310,7 +314,14 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
       debug('non-zero exit code', exitCode)
 
       try {
-        resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, rawErr, execOptions, parentNode))
+        const noControlCharacters = stripControlCharacters(rawOut)
+        const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true, stderr: rawErr && parentNode })
+        if (maybeUsage) {
+          maybeUsage['code'] = exitCode
+          reject(maybeUsage)
+        } else {
+          resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, rawErr, execOptions, parentNode))
+        }
       } catch (err) {
         reject(err)
       }

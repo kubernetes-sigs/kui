@@ -25,6 +25,7 @@ const matcher = /\n([A-Z ]+:)/
 
 interface IOptions {
   drilldownWithPip?: boolean
+  stderr?: string | Element
 }
 class DefaultOptions implements IOptions {
   constructor () {
@@ -63,6 +64,7 @@ const asciiToOptionsTable = (rows: Array<string>): Array<IPair> => {
 }
 
 export const formatUsage = (command: string, str: string, options: IOptions = new DefaultOptions()) => {
+  debug('raw', str)
   const rows = `\n${str}`.split(matcher)
   debug('rows', rows)
 
@@ -115,7 +117,7 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
       // NOTE: please keep the 'new RegExp' (rather than /.../) form
       // below; some browsers don't (yet?) support <=
 
-      return new UsageError(Object.assign({
+      const model = Object.assign({
         command: breadcrumbs.pop(),
         parents: breadcrumbs,
         commandPrefix: command.replace(new RegExp('(?<=\s)--?\w+'), ''),
@@ -124,7 +126,9 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
         example,
         sections: rest,
         preserveCase: true
-      }, options))
+      }, options)
+
+      return new UsageError(options.stderr ? { message: options.stderr, usage: model } : model)
     }
   }
 }
