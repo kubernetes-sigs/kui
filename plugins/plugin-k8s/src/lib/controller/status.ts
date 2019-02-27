@@ -410,7 +410,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
       }
     } else {
       // then the user has pointed us to a yaml file
-      debug('status by file')
+      debug('status by file', file)
 
       // handle !spec
       const passedAsParameter = !isURL && filepath.match(/\/(!.*$)/)
@@ -419,7 +419,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
       const { fetchFile } = await import('../util/fetch-file')
       const specs = (passedAsParameter
                      ? parseYAML(execOptions.parameters[passedAsParameter[1].slice(1)]) // yaml given programatically
-                     : parseYAML(await fetchFile(file)))
+                     : flatten((await fetchFile(file)).map(parseYAML)))
         .filter(_ => _) // in case there are empty paragraphs;
       debug('specs', specs)
 

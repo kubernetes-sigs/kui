@@ -639,7 +639,8 @@ sidecar .sidecar-header badge.version {
     /* badge for action version */
     font-size: 0.75em;
 }
-badge.clickable:hover {
+i.clickable:hover, badge.clickable:hover {
+    /* no underline effect for icons (i) and badges */
     text-decoration: none;
 }
 
@@ -1270,6 +1271,9 @@ code.fancy-code, code.fancy-code.hljs {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.badge-width {
+    width: 10em;
+}
 .pretty-narrow {
     /* please note: used in tandem with not-too-wide */
     width: 7em;
@@ -1277,6 +1281,9 @@ code.fancy-code, code.fancy-code.hljs {
 .very-narrow {
     /* please note: used in tandem with not-too-wide */
     width: 6em;
+}
+.a-few-numbers-wide {
+    width: 5em;
 }
 .icon-width {
     /* intended for fontawesome table cells */

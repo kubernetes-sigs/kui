@@ -41,8 +41,9 @@ import { redactJSON, redactYAML } from '../view/redact'
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
 import { deleteResourceButton } from '../view/modes/crud'
-import { conditionsButton } from '../view/modes/conditions'
-import { containersButton } from '../view/modes/containers'
+import { addConditions } from '../view/modes/conditions'
+import { addPods } from '../view/modes/pods'
+import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 
 /** add the user's option to the command line */
@@ -529,7 +530,15 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
     (options.output || options.o
      || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
      || (command === 'kubectl' && verb === 'describe' && 'yaml')
-     || (command === 'kubectl' && verb === 'logs' && 'logs'))
+     || (command === 'kubectl' && verb === 'logs' && 'logs')
+     || (command === 'kubectl' && verb === 'get' && execOptions.raw && 'json'))
+
+  // for "raw" execution, force json output
+  if (command === 'kubectl' && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
+    debug('forcing json output for raw mode execution', options)
+    rawArgv.push('-o')
+    rawArgv.push('json')
+  }
 
   //
   // the default log limit is... unlimited? let's make sure we don't
@@ -769,11 +778,10 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
 
         const resource: IResource = { kind: command !== 'helm' && entityType, name: entity, yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
-        modes.push(conditionsButton(command, resource))
 
-        if (yaml.spec && yaml.spec.containers) {
-          modes.push(containersButton(command, resource))
-        }
+        addConditions(modes, command, resource)
+        addPods(modes, command, resource)
+        addContainers(modes, command, resource)
 
         deleteResourceButton(() => renderAndViewStatus(command, resource, FinalState.OfflineLike))
         modes.push(deleteResourceButton())

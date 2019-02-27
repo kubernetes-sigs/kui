@@ -178,6 +178,8 @@ const capture = (selector: string, redraw?) => {
  *
  */
 export default (command, highlightThis, container: string | Element, returnTo?: string, options?) => (event?: Event) => {
+  debug('drilldown', command)
+
   if (event) event.stopPropagation()
 
   if (typeof container === 'string') {
@@ -213,6 +215,8 @@ export default (command, highlightThis, container: string | Element, returnTo?: 
   debug('executing command', command)
 
   if (typeof command === 'string') {
+    debug('drilling down with string command')
+
     return repl[(options && options.exec) || 'pexec'](command, {
       isDrilldown: true,
       preserveBackButton: true,
