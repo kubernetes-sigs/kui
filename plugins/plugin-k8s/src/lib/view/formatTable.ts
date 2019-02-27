@@ -244,7 +244,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
 
       // idx === 0: don't click on header row
       const onclick = idx === 0 ? false
-        : drilldownVerb ? () => repl.pexec(`${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`)
+        : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`
         : false
 
       const header = idx === 0 ? 'header-cell' : ''

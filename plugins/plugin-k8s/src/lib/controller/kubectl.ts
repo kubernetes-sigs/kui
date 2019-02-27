@@ -71,6 +71,7 @@ const possiblyExportCredentials = (execOptions, env): Promise<CleanupFunction> =
         const { join } = await import('path')
         const { writeFile, remove } = await import('fs-extra')
         const { kubeconfig, ca, cafile } = execOptions.credentials.k8s
+
         try {
           const kubeconfigFilepath = join(path, 'kubeconfig.yml')
 
@@ -594,6 +595,8 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
   delete env.DEBUG // don't pass this through to kubectl or helm; helm in particular emits crazy output
 
   fillInTheBlanks(env)
+
+  debug('kubeconfig', env.KUBECONFIG)
 
   const child = spawn(command,
                       argvWithFileReplacements,

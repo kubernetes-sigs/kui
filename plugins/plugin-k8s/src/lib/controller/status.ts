@@ -525,13 +525,13 @@ const status = command => async args => {
 export default (commandTree, prequire) => {
   const cmd = commandTree.listen('/k8s/status', status('status'), {
     usage: usage('status'),
-    inBrowserOK: true,
+    inBrowserOk: true,
     noAuthOk: [ 'openwhisk' ]
   })
 
   commandTree.synonym('/k8s/list', status('list'), cmd, {
     usage: usage('list'),
-    inBrowserOK: true,
+    inBrowserOk: true,
     noAuthOk: [ 'openwhisk' ]
   })
 }
