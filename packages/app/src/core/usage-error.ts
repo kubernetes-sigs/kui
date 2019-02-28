@@ -68,7 +68,9 @@ const span = (str?: string | Element, css?: string) => div(str, css, 'span')
  *
  */
 const prefix = str => {
-  return div(str, 'usage-error-title', 'h4')
+  const prefix = div(str, 'usage-error-title', 'h4')
+  prefix.setAttribute('data-title', str)
+  return prefix
 }
 
 /** A part of the main body of the usage message */
@@ -177,9 +179,9 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       resultWrapper.appendChild(messageDom)
 
       if (!isHeadless() && !options.noHide) {
-        const usagePart = div(undefined, 'small-top-pad hideable')
+        const usagePart = div(undefined, 'small-top-pad hideable click-here-for-usage-container')
         const frontPart = span('Click ')
-        const clickyPart = span('here', 'clickable clickable-blatant')
+        const clickyPart = span('here', 'clickable clickable-blatant click-here-for-usage')
         const restPart = span(' for usage information.')
 
         usagePart.appendChild(frontPart)
@@ -224,6 +226,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
             }
 
             const dom = span(label, 'bx--no-link')
+            dom.setAttribute('data-label', label)
             item.appendChild(dom)
 
             if (!options.noSlash) {

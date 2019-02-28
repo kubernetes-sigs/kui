@@ -20,12 +20,21 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 import * as assert from 'assert'
+import { exec } from 'child_process'
 import { unlinkSync, rmdirSync } from 'fs'
 
 /** expect the given folder within the help tree */
 export const header = folder => `Shell Docs
 /
 ${folder}`
+
+/**
+ * Check to see if the given executable is available
+ *
+ */
+const hasExe = (exe: string): Promise<boolean> => new Promise(resolve => {
+  exec(exe, err => resolve(!err))
+})
 
 describe('shell commands', function (this: ISuite) {
   before(common.before(this))
@@ -50,25 +59,8 @@ describe('shell commands', function (this: ISuite) {
        .catch(common.oops(this)))
   }
 
-  if (process.env.NEEDS_KUBERNETES) {
-    it('should give help for known outer command: kubectl', () => cli.do('kubectl', this.app)
-       .then(cli.expectError(500, undefined, { passthrough: true }))
-       .then(N => Promise.all([
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Usage"]`),
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
-       ]))
-       .catch(common.oops(this)))
-
-    it('should give help for known outer command: kubectl get -h', () => cli.do('kubectl get -h', this.app)
-       .then(cli.expectError(500, undefined, { passthrough: true }))
-       .then(N => Promise.all([
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Options:"]`),
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="get"]`),
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
-       ]))
-       .catch(common.oops(this)))
-
-    it('should give ok for known outer command: ibmcloud config', () => cli.do(`ibmcloud config`, this.app)
+  if (hasExe('ibmcloud')) {
+    it('should give usage for ibmcloud config', () => cli.do(`ibmcloud config`, this.app)
        .then(cli.expectError(2, undefined, { passthrough: true }))
        .then(N => Promise.all([
          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .click-here-for-usage-container`),
@@ -78,10 +70,19 @@ describe('shell commands', function (this: ISuite) {
              .then(txt => assert.ok(/Incorrect Usage/i.test(txt)))
              .then(() => this.app.client.click(`${selectors.OUTPUT_N(N)} .click-here-for-usage`))
              .then(() => Promise.all([
-               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Options:"]`),
+               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="options"]`),
                this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="config"]`),
                this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`)
              ])))
+       .catch(common.oops(this)))
+
+    it('should give usage for ibmcloud app', () => cli.do(`ibmcloud app`, this.app)
+       .then(cli.expectError(500, undefined, { passthrough: true }))
+       .then(N => Promise.all([
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`),
+         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`)
+       ]))
        .catch(common.oops(this)))
   }
 
