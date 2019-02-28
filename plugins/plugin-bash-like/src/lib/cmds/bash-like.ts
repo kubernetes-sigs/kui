@@ -164,8 +164,8 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
   let rawErr = ''
 
   const ansi2HTML = new Ansi2Html({
-    bg: 'var(--color-black)',
-    fg: 'var(--color-white)',
+    bg: 'var(--color-ui-01)',
+    fg: 'var(--color-text-01)',
     colors: {
       0: 'var(--color-black)',
       1: 'var(--color-red)',
