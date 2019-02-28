@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/discovery/helm-client-version')
 
 import { join } from 'path'
-import { exists } from 'fs-extra'
 import { major, minor } from 'semver'
 
 /**
@@ -28,6 +27,8 @@ import { major, minor } from 'semver'
  */
 export default async (env): Promise<string> => {
   if (process.env.KUI_HELM_CLIENTS_DIR) {
+    const { exists } = await import('fs-extra')
+
     debug('attempting to infer a matching helm client', env.KUBECONFIG, env.PATH)
     const { exec } = await import('child_process')
 
