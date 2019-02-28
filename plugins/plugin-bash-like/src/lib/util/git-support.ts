@@ -21,7 +21,7 @@ import { dirname, join } from 'path'
 import { exec, spawn } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { injectCSS as inject } from '@kui-shell/core/webapp/util/inject'
+import { injectCSS as inject, injectScript } from '@kui-shell/core/webapp/util/inject'
 
 /**
  * Load the CSS for diff2html

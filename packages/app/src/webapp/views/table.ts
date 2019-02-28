@@ -343,10 +343,10 @@ export const formatListResult = response => {
  * Format a table of tables view
  *
  */
-export const formatMultiListResult = (response, resultDom) => {
+export const formatMultiListResult = async (response, resultDom) => {
   debug('formatMultiListResult', response)
 
-  response.filter(x => x.length > 0).forEach(async (table, idx, tables) => {
+  return Promise.all(response.filter(x => x.length > 0).map(async (table, idx, tables) => {
     const tableDom = document.createElement('div')
     tableDom.classList.add('result-table')
 
@@ -426,5 +426,5 @@ export const formatMultiListResult = (response, resultDom) => {
     if (rowSelection) {
       tableDom.classList.add('has-row-selection')
     }
-  })
+  }))
 }

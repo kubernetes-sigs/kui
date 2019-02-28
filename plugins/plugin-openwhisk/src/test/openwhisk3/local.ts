@@ -38,7 +38,7 @@ describe('local plugin', function (this: common.ISuite) {
     .catch(common.oops(this)))
 
   it('should remove the nodejs image', () => cli.do('local clean', this.app)
-    .then(cli.expectOK)
+    .then(cli.expectJustOK)
     .catch(common.oops(this)))
 
   it('should create an action', () => cli.do(`let foo = x=> { console.log("${LOG_ENTRY}"); return x }`, this.app)
