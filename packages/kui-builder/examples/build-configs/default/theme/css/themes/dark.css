@@ -6,7 +6,7 @@ body {
     --color-green: hsl(66, 39%, 57%);
     --color-light-green: hsla(66, 39%, 57%, 75%);
     --color-very-light-green: hsla(66, 39%, 57%, 25%);
-    --color-yellow: hsl(40, 81%, 40%)
+    --color-yellow: hsl(40, 81%, 40%);
     --color-light-yellow: hsl(40, 81%, 70%);
     --color-very-light-yellow: hsla(40, 81%, 70%, 0.1);
     --color-blue: hsl(208, 32%, 63%);
