@@ -91,7 +91,14 @@ export const setStatus = (block: Element, status: string) => {
  *
  */
 export const ok = (parentNode: Element, suffix?: string | Element) => {
+  console.trace()
   const okLine = document.createElement('div')
+
+  const replResultBlock = parentNode.parentNode.querySelector('.repl-result')
+  const resultHasContent = replResultBlock.children.length > 0
+  if (resultHasContent) {
+    (replResultBlock.parentNode as Element).classList.add('repl-result-has-content')
+  }
 
   const ok = document.createElement('span')
   okLine.appendChild(ok)
@@ -281,11 +288,12 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
     }
   }
 
+  let promise
   if (Array.isArray(response) && Array.isArray(response[0])) {
     // multi-table output
-    formatMultiListResult(response, resultDom)
+    promise = formatMultiListResult(response, resultDom)
   } else {
-    render(response, { echo, resultDom })
+    promise = render(response, { echo, resultDom })
   }
 
   if (Array.isArray(response)) {
@@ -303,7 +311,11 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
 
     // say "ok"
     (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-    if (echo) ok(resultDom.parentNode as Element).className = 'ok-for-list'
+    if (echo) {
+      promise.then(() => {
+        ok(resultDom.parentNode as Element).className = 'ok-for-list'
+      })
+    }
   }
 
   return Promise.resolve()

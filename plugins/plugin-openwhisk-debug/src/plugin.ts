@@ -427,23 +427,28 @@ const flatten = arrays => [].concat.apply([], arrays)
  * Remove the locally pulled copy of the image
  *
  */
-const clean = (spinnerDiv) => {
+const clean = async (spinnerDiv: Element) => {
   debug('clean')
-  return kill(spinnerDiv)
-    .then(() => debug('kill done'))
-    .then(() => getImageDir())
+
+  await kill(spinnerDiv)
+  debug('kill done')
+
+  const images = await getImageDir()
     .then(imageDir => Object.keys(imageDir).map(_ => imageDir[_]))
     .then(flatten)
-    .then(x => { console.error(x); return x })
-    .then(images => Promise.all(images.map(({ image }) => {
-      debug(`cleaning ${image}`)
-      return docker.image.get(image).status().catch(squash) // catch here in case the container doesn't exist
-        .then(image => {
-          if (image) {
-            return image.remove({ force: true }).catch(squash)
-          }
-        })
-    })))
+
+  await Promise.all(images.map(({ image }) => {
+    debug(`cleaning ${image}`)
+    return docker.image.get(image).status().catch(squash) // catch here in case the container doesn't exist
+      .then(image => {
+        if (image) {
+          return image.remove({ force: true }).catch(squash)
+        }
+      })
+  }))
+  debug('clean done')
+
+  return true
 }
 
 /**

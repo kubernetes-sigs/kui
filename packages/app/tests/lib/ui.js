@@ -4,7 +4,8 @@ const timeout = process.env.TIMEOUT || 60000
 const constants = {
   API_HOST: process.env.API_HOST,
   // CLI_PLACEHOLDER: process.env.CLI_PLACEHOLDER || 'enter your command',
-  OK: process.env.OK || 'ok'
+  OK: process.env.OK || '<span class="ok">ok</span>',
+  JUST_OK: process.env.OK || 'ok'
 }
 
 const keys = {
@@ -80,7 +81,7 @@ const expectOK = (appAndCount, opt) => {
     .then(() => app.client.getValue(selectors.PROMPT_N(N), timeout)) // it should have an empty value
     .then(promptValue => { if (promptValue.length !== 0) { console.error(`Expected prompt value to be empty: ${promptValue}`) } return promptValue })
     .then(promptValue => assert.strictEqual(promptValue.length, 0)) //      ... verify that
-    .then(() => opt && opt.expectError ? false : app.client.getText(selectors.OK_N(N - 1), timeout)) // get the "ok" part of the current command
+    .then(() => opt && opt.expectError ? false : app.client.getHTML(selectors.OK_N(N - 1), timeout)) // get the "ok" part of the current command
     .then(ok => opt && opt.expectError ? false : assert.strictEqual(ok, constants.OK)) // make sure it says "ok" !
     .then(() => {
       // validate any expected list entry
@@ -116,7 +117,7 @@ const expectOK = (appAndCount, opt) => {
         // ensure that there is nothing other than "ok"
         return app.client.waitUntil(async () => {
           const txt = await app.client.getText(selectors.OUTPUT_N(N - 1))
-          return txt.length === 0 || txt === 'ok'
+          return txt.length === 0 || txt === constants.JUST_OK
         })
       } else {
         // nothing to validate with the "console" results of the command
