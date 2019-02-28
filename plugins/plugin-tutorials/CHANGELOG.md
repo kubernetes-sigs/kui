@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.14.0 (2019-02-28)
+
+
+### Bug Fixes
+
+* **apache-composer:** remove app create -r ([af0a428](https://github.com/IBM/kui/commit/af0a428)), closes [#316](https://github.com/IBM/kui/issues/316) [#318](https://github.com/IBM/kui/issues/318)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **plugins/plugin-tutorial:** tutorials versus dark mode fixes ([8f842ab](https://github.com/IBM/kui/commit/8f842ab)), closes [#531](https://github.com/IBM/kui/issues/531)
+
+
+### Features
+
+* kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+
+
+
+
+
 # 0.13.0 (2019-02-28)
 
 
