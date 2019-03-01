@@ -258,9 +258,6 @@ body.tutorial-in-progress.tutorial-is-fullscreen tab {
 #tutorialPane:not([tutorial-is-fullscreen]) .tutorial-bottom {
     display: none;
 }
-#tutorialPane:not([tutorial-is-fullscreen]) .bx--link:not(:hover) {
-    filter: brightness(0.5);
-}
 #tutorialPane:not([tutorial-is-fullscreen]) .bx--structured-list-row:last-child .bx--structured-list-td {
     padding-bottom: 0;
 }

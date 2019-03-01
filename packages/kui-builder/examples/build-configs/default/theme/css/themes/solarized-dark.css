@@ -8,8 +8,8 @@ body[kui-theme="Solarized Dark"] {
     --color-base01: #073642;
     --color-base02: #586e75;
     --color-base03: hsla(196, 13%, 45%, 0.2); /* versus #657b83 from the theme; dialed down opacity to bring it closer to base02 */
-    --color-base04: #839496;
-    --color-base05: #93a1a1;
+    --color-base04: hsl(186, 8%, 64%); /* dialed up to L=64% from 55% versus #839496 */
+    --color-base05: hsl(180, 7%, 72%); /* dialed up to L=72% from 60% versus: #93a1a1 */
     --color-base06: #eee8d5;
     --color-base07: #fdf6e3;
     --color-base08: #dc322f;
@@ -17,15 +17,13 @@ body[kui-theme="Solarized Dark"] {
     --color-base0A: #b58900;
     --color-base0B: #859900;
     --color-base0C: #2aa198;
-    --color-base0D: #268bd2;
+    --color-base0D: hsl(205, 69%, 58%); /* dialed up to L=58% from 49% versus: #268bd2 */
     --color-base0E: #6c71c4;
     --color-base0F: #d33682;
 
     --color-light-red: hsla(1, 71%, 52%, 0.75);
     --color-light-green: hsla(68, 100%, 30%, 0.75);
-    --color-very-light-green: hsla(68, 100%, 30%, 0.1);
     --color-light-yellow: hsla(45, 100%, 35%, 0.75);
-    --color-very-light-yellow: hsla(45, 100%, 35%, 0.1);
 
     --color-ui-06: hsla(194, 20%, 20%, 0.8);
 }

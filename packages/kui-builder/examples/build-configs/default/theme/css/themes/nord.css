@@ -26,9 +26,7 @@ body[kui-theme="Nord"] {
 
     --color-light-red: hsla(354, 42%, 56%, 0.75);
     --color-light-green: hsla(92, 28%, 65%, 0.75);
-    --color-very-light-green: hsla(92, 28%, 65%, 0.1);
     --color-light-yellow: hsla(40, 71%, 73%, 0.75);
-    --color-very-light-yellow: hsla(40, 71%, 73%, 0.1);
 }
 
 /* nord hightlightjs theme */

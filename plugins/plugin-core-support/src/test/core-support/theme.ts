@@ -30,18 +30,23 @@ const resetTheme = (ctx: ISuite) => {
      .catch(common.oops(ctx)))
 }
 
+interface Theme {
+  name: string
+  display: string
+}
+
 /**
  * Switch to the given theme and verify
  *
  */
-const go = (theme: string) => (ctx: ISuite) => {
-  it(`should switch to ${theme} theme via command`, () => cli.do(`theme set ${theme}`, ctx.app)
+const go = (theme: Theme) => (ctx: ISuite) => {
+  it(`should switch to ${theme.name} theme via command`, () => cli.do(`theme set "${theme.name}"`, ctx.app)
      .then(cli.expectJustOK)
-     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme}"]`))
+     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
      .catch(common.oops(ctx)))
 
-  it(`should show that we are using the ${theme} theme`, () => cli.do('theme current', ctx.app)
-     .then(cli.expectOKWithString(theme))
+  it(`should show that we are using the ${theme.name} theme`, () => cli.do('theme current', ctx.app)
+     .then(cli.expectOKWithString(theme.name))
      .catch(common.oops(ctx)))
 }
 
@@ -50,9 +55,9 @@ const go = (theme: string) => (ctx: ISuite) => {
  * be set
  *
  */
-const restartAndThen = (theme: string) => (ctx: ISuite) => {
-  it(`should still be using ${theme} theme after a restart`, () => ctx.app.restart()
-     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme}"]`))
+const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
+  it(`should still be using ${theme.name} theme after a restart`, () => ctx.app.restart()
+     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
      .catch(common.oops(ctx)))
 }
 
@@ -60,18 +65,18 @@ const restartAndThen = (theme: string) => (ctx: ISuite) => {
  * Click on the theme button and expect the theme list
  *
  */
-const clickOnThemeButtonThenClickOnTheme = (clickOn: string) => (ctx: ISuite) => {
+const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite) => {
   it('should click on theme button and present theme list', async () => {
     try {
       ctx.app.client.click('#theme-button')
 
-      const light = `.entity.theme[data-name="${Light}"] .clickable`
-      const dark = `.entity.theme[data-name="${Dark}"] .clickable`
+      const light = `.entity.theme[data-name="${Light.name}"] .clickable`
+      const dark = `.entity.theme[data-name="${Dark.name}"] .clickable`
 
       await ctx.app.client.waitForExist(light)
       await ctx.app.client.waitForExist(dark)
 
-      if (clickOn === Light) {
+      if (clickOn.name === Light.name) {
         ctx.app.client.click(light)
       } else {
         ctx.app.client.click(dark)
@@ -85,8 +90,8 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: string) => (ctx: ISuite) =>
 }
 
 /** some helpers */
-const Dark = 'Dark'
-const Light = 'Light'
+const Dark = { name: 'Dark', display: 'Default Dark' }
+const Light = { name: 'Light', display: 'Default Light' }
 const goLight = go(Light)
 const goDark = go(Dark)
 const restartAndThenLight = restartAndThen(Light)
@@ -102,11 +107,11 @@ describe('theme switching', function (this: ISuite) {
   clickOnThemeButtonThenClickOnDark(this)
 
   it('should list built-in Light theme', () => cli.do('theme list', this.app)
-     .then(cli.expectOKWith(Light))
+     .then(cli.expectOKWithCustom({ selector: `.entity-name[data-value="${Light.name}"]` }))
      .catch(common.oops(this)))
 
   it('should list built-in Dark theme', () => cli.do('theme list', this.app)
-     .then(cli.expectOKWith(Dark))
+     .then(cli.expectOKWithCustom({ selector: `.entity-name[data-value="${Dark.name}"]` }))
      .catch(common.oops(this)))
 
   resetTheme(this)

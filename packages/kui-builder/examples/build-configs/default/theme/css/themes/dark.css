@@ -20,13 +20,10 @@ body[kui-theme="Dark"] {
     --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
     --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
-    --color-light-red: hsl(0, 50%, 75%);
+    --color-light-red: hsla(0, 50%, 75%, 0.75);
     --color-light-green: hsla(66, 39%, 57%, 75%);
-    --color-very-light-green: hsla(66, 39%, 57%, 25%);
     --color-light-yellow: hsl(40, 81%, 70%);
-    --color-very-light-yellow: hsla(40, 81%, 70%, 0.1);
 
-    --color-hover-primary-text: #294c86;
     --color-content-divider: hsl(208, 25%, 36%);
     --color-tag-beta-fill: #dfe3e6;
     --color-tag-beta-text: #394b54;
@@ -44,8 +41,8 @@ body[kui-theme="Dark"] {
 
     --color-carbon-components-h3: hsl(208, 85%, 63%);
 
-    --color-ui-06: hsl(216, 15%, 14%);
-    --color-field-01: hsl(210, 15%, 11%);
+    --color-ui-06: hsl(216, 15%, 17%);
+    --color-field-01: hsl(216, 15%, 17%);
     --color-tab-01: #666666;
     --color-tab-02: #fdc086;
     --color-tab-03: #386cb0;

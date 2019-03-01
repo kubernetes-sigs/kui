@@ -472,9 +472,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     transition: all 150ms ease-in-out;
 }
 .row-selection-context:not(.selected-row) .selected-entity {
-    color: var(--color-ui-05);
-    font-weight: 300;
-    opacity: 0.5;
+    opacity: 0.1;
 }
 
 .entity:first-child .entity-attributes > span {
@@ -2396,6 +2394,9 @@ badge.clickable:hover {
     color: var(--color-ui-01);
     background: var(--color-stripe-02);
 }
+body[kui-theme-style="dark"] .sidecar-bottom-stripe {
+    color: var(--color-text-01);
+}
 
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button.sidecar-bottom-stripe-button-active {
     border-bottom-color: var(--color-brand-02);
@@ -2552,6 +2553,7 @@ body {
     --color-ui-05: var(--color-base04);
     --color-ui-06: var(--color-base02);
     --color-brand-01: var(--color-blue);
+    --color-brand-02: var(--color-cyan);
     --color-text-against-dark-bg: var(--color-text-01);
     --color-support-01: var(--color-red);
     --color-support-01-lighter: var(--color-light-red);
@@ -2581,4 +2583,9 @@ body {
     --font-monospace: "IBM Plex Mono","DejaVu Sans Mono","Bitstream Vera Sans Mono",Courier,monospace;
 
     --color-carbon-components-h3: var(--color-cyan);
+    --color-hover-primary-text: var(--color-cyan);
+    --color-content-divider: var(--color-cyan);
+
+    --color-tag-beta-fill: var(--color-base05);
+    --color-tag-beta-text: var(--color-base01);
 }

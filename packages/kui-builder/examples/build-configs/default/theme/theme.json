@@ -17,12 +17,12 @@
   "highlightTheme": "mono-blue",
   "defaultTheme": "Light",
   "themes": [
-    { "name": "Light", "css": "themes/light.css", "description": "the default light theme" },
-    { "name": "Dark", "css": "themes/dark.css", "description": "the default dark theme" },
-    { "name": "Dracula", "css": "themes/dracula.css", "description": "Dracula dark color theme" },
-    { "name": "Nord", "css": "themes/nord.css", "description": "Nord dark theme" },
-    { "name": "Solarized Dark", "css": "themes/solarized-dark.css", "description": "Solarized dark theme" },
-    { "name": "Zenburn", "css": "themes/zenburn.css", "description": "Zenburn midtone color theme" }
+    { "name": "Light", "css": "themes/light.css", "description": "Default Light", "style": "light" },
+    { "name": "Dark", "css": "themes/dark.css", "description": "Default Dark", "style": "dark" },
+    { "name": "Dracula", "css": "themes/dracula.css", "style": "dark" },
+    { "name": "Nord", "css": "themes/nord.css", "style": "dark" },
+    { "name": "Solarized Dark", "css": "themes/solarized-dark.css", "style": "dark" },
+    { "name": "Zenburn", "css": "themes/zenburn.css", "style": "dark" }
   ],
   "fonts": "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,600",
   "appIcon": "icons/png/kui.png",
