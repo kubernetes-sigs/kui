@@ -1,0 +1,32 @@
+/**
+ * scheme: "Solarized Dark"
+ * author: "Ethan Schoonover (modified by aramisgithub)"
+ *
+ */
+body[kui-theme="Solarized Dark"] {
+    --color-base00: #002b36;
+    --color-base01: #073642;
+    --color-base02: #586e75;
+    --color-base03: #657b83;
+    --color-base04: #839496;
+    --color-base05: #93a1a1;
+    --color-base06: #eee8d5;
+    --color-base07: #fdf6e3;
+    --color-base08: #dc322f;
+    --color-base09: #cb4b16;
+    --color-base0A: #b58900;
+    --color-base0B: #859900;
+    --color-base0C: #2aa198;
+    --color-base0D: #268bd2;
+    --color-base0E: #6c71c4;
+    --color-base0F: #d33682;
+
+    --color-light-red: hsla(1, 71%, 52%, 0.75);
+    --color-light-green: hsla(68, 100%, 30%, 0.75);
+    --color-very-light-green: hsla(68, 100%, 30%, 0.1);
+    --color-light-yellow: hsla(45, 100%, 35%, 0.75);
+    --color-very-light-yellow: hsla(45, 100%, 35%, 0.1);
+}
+
+/* solarized-dark highglightjs theme */
+.hljs{display:block;overflow-x:auto;padding:0.5em;background:#002b36;color:#839496}.hljs-comment,.hljs-quote{color:#586e75}.hljs-keyword,.hljs-selector-tag,.hljs-addition{color:#859900}.hljs-number,.hljs-string,.hljs-meta .hljs-meta-string,.hljs-literal,.hljs-doctag,.hljs-regexp{color:#2aa198}.hljs-title,.hljs-section,.hljs-name,.hljs-selector-id,.hljs-selector-class{color:#268bd2}.hljs-attribute,.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-class .hljs-title,.hljs-type{color:#b58900}.hljs-symbol,.hljs-bullet,.hljs-subst,.hljs-meta,.hljs-meta .hljs-keyword,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-link{color:#cb4b16}.hljs-built_in,.hljs-deletion{color:#dc322f}.hljs-formula{background:#073642}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}
