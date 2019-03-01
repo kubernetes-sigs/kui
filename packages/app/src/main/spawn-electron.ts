@@ -418,7 +418,9 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
         mainWindow.setTitle(productName)
       }
 
-      switchToPersistedThemeChoice(mainWindow.webContents)
+      if (mainWindow) {
+        switchToPersistedThemeChoice(mainWindow.webContents)
+      }
     })
 
     /** jump in and manage the way popups create new windows */

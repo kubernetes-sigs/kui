@@ -35,6 +35,7 @@ import { streamTo as headlessStreamTo } from '../main/headless-support'
 import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
+import { element } from '../webapp/util/dom' // FIXME
 
 debug('finished loading modules')
 
@@ -345,7 +346,9 @@ class InProcessExecutor implements IExecutor {
     try {
       if (block && !nested && echo) {
         block.className = `${block.getAttribute('data-base-class')} processing`
-        cli.scrollIntoView({ when: 0, which: '.processing .repl-result' })
+        if (!isHeadless()) {
+          cli.scrollIntoView({ when: 0, element: element('.repl-result-spinner', block) })
+        }
         prompt.readOnly = true
       }
 
@@ -760,7 +763,7 @@ class InProcessExecutor implements IExecutor {
     } catch (e) {
       if (isHeadless()) {
         try {
-          debug('attempting to run the command graphically')
+          debug('attempting to run the command graphically', e)
           const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
           const argv = split(command)
           await import('../main/spawn-electron').then(({ initElectron }) => initElectron(argv, { forceUI: true }, true, { fullscreen: true }))

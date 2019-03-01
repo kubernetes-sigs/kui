@@ -2317,6 +2317,7 @@ badge.gray-background {
 }
 .repl-block.valid-response .oops, sidecar.rule-enabled-false .sidecar-header-icon, .repl-block.error .oops, .clickable.oops, .oops .oops-text-on-oops, .red-text {
     color: var(--color-support-01);
+    font-weight: 500;
 }
 .yellow-text {
     color: var(--color-support-03-darker);
@@ -2564,7 +2565,7 @@ body {
     --color-text-01: var(--color-base05);
     --color-text-02: var(--color-base04);
 
-    --color-selection-background: var(--color-base02);
+    --color-selection-background: var(--color-base04);
 
     --color-tag-ibm-text: var(--color-text-01);
     --color-ok: var(--color-green);
@@ -2572,6 +2573,12 @@ body {
     --color-error: var(--color-red);
     --color-error-lighter: var(--color-support-01-lighter);
 
+    --color-scrollbar-thumb: var(--color-ui-04);
+    --color-scrollbar-thumb-border: var(--color-brand-01);
+    --color-scrollbar-track: var(--color-ui-05);
+
     --font-sans-serif: "IBM Plex Sans", sans-serif;
     --font-monospace: "IBM Plex Mono","DejaVu Sans Mono","Bitstream Vera Sans Mono",Courier,monospace;
+
+    --color-carbon-components-h3: var(--color-cyan);
 }
