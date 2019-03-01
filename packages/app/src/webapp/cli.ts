@@ -91,7 +91,6 @@ export const setStatus = (block: Element, status: string) => {
  *
  */
 export const ok = (parentNode: Element, suffix?: string | Element) => {
-  console.trace()
   const okLine = document.createElement('div')
 
   const replResultBlock = parentNode.parentNode.querySelector('.repl-result')

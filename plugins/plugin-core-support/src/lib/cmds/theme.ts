@@ -77,7 +77,7 @@ const list = () => {
   return header.concat((settings.themes || []).map(theme => ({
     type: 'theme',
     name: theme.name,
-    attributes: [ { value: theme.description } ],
+    attributes: [ { value: theme.description, css: 'not-too-wide' } ],
     onclick: () => repl.pexec(`theme set ${repl.encodeComponent(theme.name)}`)
   })))
 }
@@ -141,7 +141,7 @@ export const getCssFilepathForCurrentTheme = (): string => {
 const switchTo = async (theme: string, webContents?: WebContents): Promise<void> => {
   const themeModel = (settings.themes || []).find(_ => _.name === theme)
   if (!themeModel) {
-    debug('could not find theme', theme, theme)
+    debug('could not find theme', theme, settings)
     const error = new Error('Unknown theme')
     error['code'] = 404
     throw error

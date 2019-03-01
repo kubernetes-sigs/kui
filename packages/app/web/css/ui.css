@@ -1211,11 +1211,10 @@ code.fancy-code, code.fancy-code.hljs {
     white-space: nowrap;
 }
 .slightly-deemphasize {
-    font-weight: 300;
     color: var(--color-text-02);
 }
 .deemphasize {
-    font-weight: 300;
+    color: var(--color-text-02);
     font-size: 0.75em;
     opacity: 0.6;
     vertical-align: middle;
@@ -2343,7 +2342,7 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
 }
 body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) td, body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
     /* table row striping in sidecar (when not full screen) */
-    background:var(--color-ui-03);
+    background:var(--color-ui-04);
 }
 
 sidecar .sidecar-header {
@@ -2449,20 +2448,20 @@ sidecar .sidecar-header-name .package-prefix {
 .log-lines .log-line .log-line-bar.is-initTime.is-success-true, .legend-icon.is-initTime {
     /*background: var(--color-support-04);*/
     background: repeating-linear-gradient(
-      -45deg,
-      var(--color-support-02),
-      var(--color-support-02) 2px,
-      #bee195 2px,
-      #bee195 4px
+        -45deg,
+        var(--color-green),
+        var(--color-green) 2px,
+        var(--color-ui-02) 3px,
+        var(--color-ui-02) 4px
     );
-    filter: grayscale(0.25) saturate(0.75);
+    filter: grayscale(0.5) saturate(0.75);
 }
 .log-lines .log-line .log-line-bar.is-initTime.is-success-false{
     /*background: var(--color-support-04);*/
     background: repeating-linear-gradient(
       to right,
-      var(--color-support-01),
-      var(--color-support-01) 4px,
+      var(--color-red),
+      var(--color-red) 4px,
       white 4px,
       white 8px
     );
@@ -2531,4 +2530,48 @@ body.subwindow sidecar {
 }
 .bx--link:hover {
     color: var(--color-hover-primary-text);
+}
+
+body {
+    /* define theme bindings; mapping color names to the base16 scheme */
+    --color-black: var(--color-base01);
+    --color-red: var(--color-base08);
+    --color-green: var(--color-base0B);
+    --color-yellow: var(--color-base0A);
+    --color-cyan: var(--color-base0C);
+    --color-blue: var(--color-base0D);
+    --color-magenta: var(--color-base0E);
+    --color-white: var(--color-base07);
+    --color-light-gray: var(--color-base04);
+    --color-dark-gray: var(--color-base03);
+    --color-ui-01: var(--color-base00);
+    --color-ui-02: var(--color-base01);
+    --color-ui-03: var(--color-base03);
+    --color-ui-04: var(--color-base02);
+    --color-ui-05: var(--color-base04);
+    --color-ui-06: var(--color-base02);
+    --color-brand-01: var(--color-blue);
+    --color-text-against-dark-bg: var(--color-text-01);
+    --color-support-01: var(--color-red);
+    --color-support-01-lighter: var(--color-light-red);
+    --color-support-02: var(--color-green);
+    --color-support-03: var(--color-light-yellow);
+    --color-support-03-darker: var(--color-yellow);
+
+    --color-stripe-01: var(--color-base01);
+    --color-stripe-02: var(--color-base03);
+
+    --color-text-01: var(--color-base05);
+    --color-text-02: var(--color-base04);
+
+    --color-selection-background: var(--color-base02);
+
+    --color-tag-ibm-text: var(--color-text-01);
+    --color-ok: var(--color-green);
+    --color-ok-lighter: var(--color-light-green);
+    --color-error: var(--color-red);
+    --color-error-lighter: var(--color-support-01-lighter);
+
+    --font-sans-serif: "IBM Plex Sans", sans-serif;
+    --font-monospace: "IBM Plex Mono","DejaVu Sans Mono","Bitstream Vera Sans Mono",Courier,monospace;
 }

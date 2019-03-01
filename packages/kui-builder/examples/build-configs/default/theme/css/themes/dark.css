@@ -1,65 +1,51 @@
-/* color variables */
-body {
-    --color-black: hsl(120, 3%, 73%);
-    --color-red: hsl(0, 50%, 60%);
+/**
+ * scheme: "Tomorrow Night"
+ * author: "Chris Kempson (http://chriskempson.com)"
+ */
+body[kui-theme="Dark"] {
+    --color-base00: #1d1f21; /* Default Background */
+    --color-base01: #282a2e; /* Lighter Background (Used for status bars) */
+    --color-base02: #373b41; /* Selection Background */
+    --color-base03: #969896; /* Comments, Invisibles, Line Highlighting */
+    --color-base04: #b4b7b4; /* Dark Foreground (Used for status bars) */
+    --color-base05: #c5c8c6; /* Default Foreground, Caret, Delimiters, Operators */
+    --color-base06: #e0e0e0; /* Light Foreground (Not often used) */
+    --color-base07: #ffffff; /* Light Background (Not often used) */
+    --color-base08: #cc6666; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+    --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+    --color-base0A: #f0c674; /* YELLOW: Classes, Markup Bold, Search Text Background */
+    --color-base0B: #b5bd68; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+    --color-base0C: #8abeb7; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+    --color-base0D: #81a2be; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+    --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+    --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
     --color-light-red: hsl(0, 50%, 75%);
-    --color-green: hsl(66, 39%, 57%);
     --color-light-green: hsla(66, 39%, 57%, 75%);
     --color-very-light-green: hsla(66, 39%, 57%, 25%);
-    --color-yellow: hsl(40, 81%, 40%);
     --color-light-yellow: hsl(40, 81%, 70%);
     --color-very-light-yellow: hsla(40, 81%, 70%, 0.1);
-    --color-blue: hsl(208, 32%, 63%);
-    --color-magenta: #b294bb;
-    --color-cyan: #8abeb7;
-    --color-white: hsl(216, 6%, 16%);
-    --color-light-gray: hsl(216, 12%, 13.5%);
-    --color-dark-gray: hsl(216, 10%, 49%);
 
     --color-hover-primary-text: #294c86;
     --color-content-divider: hsl(208, 25%, 36%);
     --color-tag-beta-fill: #dfe3e6;
     --color-tag-beta-text: #394b54;
     --color-tag-ibm-fill: #4B5866;
-    --color-tag-ibm-text: var(--color-text-01);
     --color-stripe-01: hsl(216, 24%, 8%);
     --color-stripe-02: hsl(216, 8%, 23%);
-    --color-text-01: var(--color-black);
-    --color-text-02: hsl(120, 4%, 44%);
-    --color-text-against-dark-bg: var(--color-text-01);
-    --color-support-01: var(--color-red);
-    --color-support-01-lighter: var(--color-light-red);
-    --color-support-02: var(--color-green);
-    --color-support-03: var(--color-light-yellow);
-    --color-support-03-darker: var(--color-yellow);
     --color-support-04: #5aaafa;
-    --color-brand-01: var(--color-blue);
     --color-brand-01-10: hsla(210, 64%, 40%, 10%);
     --color-brand-02: hsl(208, 48%, 63%);
     --color-brand-03: #de935f;
-    --color-ui-01: var(--color-white);
-    --color-ui-02: hsl(216, 6%, 14.5%);
-    --color-ui-03: hsl(216, 10%, 17%);
-    --color-ui-04: var(--color-light-gray);
-    --color-ui-05: var(--color-dark-gray);
-
-    --color-ok: var(--color-green);
-    --color-ok-lighter: var(--color-light-green);
-    --color-error: var(--color-red);
-    --color-error-lighter: var(--color-support-01-lighter);
 
     --color-scrollbar-thumb: hsla(216, 7%, 6%, 0.25);
     --color-scrollbar-thumb-border: hsla(216, 7%, 48%, 0.75);
     --color-scrollbar-track: transparent;
 
-    --color-selection-background: hsla(220, 7%, 39%, 0.4);
-
     --color-carbon-components-h3: hsl(208, 85%, 63%);
 
     --color-ui-06: hsl(216, 15%, 14%);
     --color-field-01: hsl(210, 15%, 11%);
-    --font-sans-serif: "IBM Plex Sans", sans-serif;
-    --font-monospace: "IBM Plex Mono","DejaVu Sans Mono","Bitstream Vera Sans Mono",Courier,monospace;
     --color-tab-01: #666666;
     --color-tab-02: #fdc086;
     --color-tab-03: #386cb0;
@@ -78,7 +64,7 @@ body[kui-theme="Dark"] #screenshot-captured {
 }
 
 /* tomorrow-night hightlightjs theme */
-body[kui-theme="Dark"] .hljs-comment,body[kui-theme="Dark"] .hljs-quote{color:#969896}body[kui-theme="Dark"] .hljs-variable,body[kui-theme="Dark"] .hljs-template-variable,body[kui-theme="Dark"] .hljs-tag,body[kui-theme="Dark"] .hljs-name,body[kui-theme="Dark"] .hljs-selector-id,body[kui-theme="Dark"] .hljs-selector-class,body[kui-theme="Dark"] .hljs-regexp,body[kui-theme="Dark"] .hljs-deletion{color:#cc6666}body[kui-theme="Dark"] .hljs-number,body[kui-theme="Dark"] .hljs-built_in,body[kui-theme="Dark"] .hljs-builtin-name,body[kui-theme="Dark"] .hljs-literal,body[kui-theme="Dark"] .hljs-type,body[kui-theme="Dark"] .hljs-params,body[kui-theme="Dark"] .hljs-meta,body[kui-theme="Dark"] .hljs-link{color:#de935f}body[kui-theme="Dark"] .hljs-attribute{color:var(--color-support-03)}body[kui-theme="Dark"] .hljs-string,body[kui-theme="Dark"] .hljs-symbol,body[kui-theme="Dark"] .hljs-bullet,body[kui-theme="Dark"] .hljs-addition{color:#b5bd68}body[kui-theme="Dark"] .hljs-title,body[kui-theme="Dark"] .hljs-section{color:#81a2be}body[kui-theme="Dark"] .hljs-keyword,body[kui-theme="Dark"] .hljs-selector-tag{color:#b294bb}body[kui-theme="Dark"] .hljs{display:block;overflow-x:auto;background:transparent;color:#c5c8c6;padding:0.5em}body[kui-theme="Dark"] .hljs-emphasis{font-style:italic}body[kui-theme="Dark"] .hljs-strong{font-weight:bold}
+.hljs-comment,.hljs-quote{color:#969896}.hljs-variable,.hljs-template-variable,.hljs-tag,.hljs-name,.hljs-selector-id,.hljs-selector-class,.hljs-regexp,.hljs-deletion{color:#cc6666}.hljs-number,.hljs-built_in,.hljs-builtin-name,.hljs-literal,.hljs-type,.hljs-params,.hljs-meta,.hljs-link{color:#de935f}.hljs-attribute{color:var(--color-support-03)}.hljs-string,.hljs-symbol,.hljs-bullet,.hljs-addition{color:#b5bd68}.hljs-title,.hljs-section{color:#81a2be}.hljs-keyword,.hljs-selector-tag{color:#b294bb}.hljs{display:block;overflow-x:auto;background:transparent;color:#c5c8c6;padding:0.5em}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}
 
 .application-icon {
     background-image: url('../../icons/svg/kui.svg');
