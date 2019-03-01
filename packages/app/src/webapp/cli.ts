@@ -48,6 +48,7 @@ export const scrollIntoView = ({ when = 305, which = '.repl-active', element = d
       element['scrollIntoViewIfNeeded'](center)
     } catch (e) {
         // ok
+      element['scrollIntoView'](center)
     }
   }
 

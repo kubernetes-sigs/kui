@@ -7,7 +7,7 @@ body[kui-theme="Solarized Dark"] {
     --color-base00: #002b36;
     --color-base01: #073642;
     --color-base02: #586e75;
-    --color-base03: #657b83;
+    --color-base03: hsla(196, 13%, 45%, 0.2); /* versus #657b83 from the theme; dialed down opacity to bring it closer to base02 */
     --color-base04: #839496;
     --color-base05: #93a1a1;
     --color-base06: #eee8d5;
@@ -26,6 +26,8 @@ body[kui-theme="Solarized Dark"] {
     --color-very-light-green: hsla(68, 100%, 30%, 0.1);
     --color-light-yellow: hsla(45, 100%, 35%, 0.75);
     --color-very-light-yellow: hsla(45, 100%, 35%, 0.1);
+
+    --color-ui-06: hsla(194, 20%, 20%, 0.8);
 }
 
 /* solarized-dark highglightjs theme */
