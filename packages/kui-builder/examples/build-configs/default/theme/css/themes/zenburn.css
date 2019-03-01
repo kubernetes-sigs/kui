@@ -20,11 +20,9 @@ body[kui-theme="Zenburn"] {
     --color-base0E: #dc8cc3;
     --color-base0F: #000000;
 
-    --color-light-red: hsl(0, 50%, 75%);
+    --color-light-red: hsla(0, 50%, 75%, 0.75);
     --color-light-green: hsla(66, 39%, 57%, 75%);
-    --color-very-light-green: hsla(66, 39%, 57%, 25%);
     --color-light-yellow: hsl(40, 81%, 70%);
-    --color-very-light-yellow: hsla(40, 81%, 70%, 0.1);
 }
 
 /* zenburn hljs theme */

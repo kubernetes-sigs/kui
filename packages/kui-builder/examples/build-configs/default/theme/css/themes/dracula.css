@@ -22,9 +22,7 @@ body[kui-theme="Dracula"] {
 
     --color-light-red: hsla(322, 78%, 62%, 0.75);
     --color-light-green: hsla(146, 100%, 48%, 0.75);
-    --color-very-light-green: hsla(146, 100%, 48%, 0.1);
     --color-light-yellow: hsla(70, 100%, 76%, 0.75);
-    --color-very-light-yellow: hsla(70, 100%, 76%, 0.1);
 }
 
 /* dracula highlightjs theme */

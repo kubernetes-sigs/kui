@@ -1,20 +1,24 @@
 /* color variables */
-body {
-    --color-black: #152934;
-    --color-red: #e71d32;
+body[kui-theme="Light"] {
+    --color-base00: #152934;
+    --color-base01: #f5f7fa;
+    --color-base02: #8c9ba5;
+    --color-base03: #f0f3f6;
+    --color-base04: #dfe3e6;
+    --color-base05: var(--color-base00);
+    --color-base07: #fff;
+    --color-base08: #e71d32;
+    --color-base0A: hsl(48, 100%, 38%);
+    --color-base0B: #5aa700;
+    --color-base0C: #00b4a0;
+    --color-base0D: #3d70b2;
+    --color-base0E: #beaed4;
+
+    --color-text-02: #5a6872;
+
     --color-light-red: rgba(231, 29, 50, 0.75);
-    --color-green: #5aa700;
     --color-light-green: rgba(97, 164, 38, 0.75);
-    --color-very-light-green: rgba(97, 164, 38, 0.25);
-    --color-yellow: hsl(48, 100%, 38%);
     --color-light-yellow: #efc100;
-    --color-very-light-yellow: hsla(48, 100%, 47%, 0.1);
-    --color-blue: #3d70b2;
-    --color-magenta: #beaed4;
-    --color-cyan: #00b4a0;
-    --color-white: #fff;
-    --color-light-gray: #dfe3e6;
-    --color-dark-gray: #8c9ba5;
 
     --color-hover-primary-text: #294c86;
     --color-content-divider: #4173AF;
@@ -24,8 +28,6 @@ body {
     --color-tag-ibm-text: #325c80;
     --color-stripe-01: #152935; /* 202 60 21 */
     --color-stripe-02: #0f212e; /* 205 67 18 */
-    --color-text-01: var(--color-black);
-    --color-text-02: #5a6872;
     --color-text-against-dark-bg: var(--color-ui-02);
     --color-support-01: var(--color-red);
     --color-support-01-lighter: var(--color-light-red);
@@ -38,8 +40,6 @@ body {
     --color-brand-02: #5596e6;
     --color-brand-03: var(--color-cyan);
     --color-ui-01: var(--color-white);
-    --color-ui-02: #f5f7fa; /* 216 2 98 */
-    --color-ui-03: #f0f3f6; /* 210 2 96 */
     --color-ui-04: var(--color-light-gray); /* 206 3 90 */
     --color-ui-05: var(--color-dark-gray); /* 204 15 65 */
 

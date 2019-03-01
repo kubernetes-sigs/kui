@@ -45,6 +45,11 @@ const getPersistedThemeChoice = (): string => {
  *
  */
 const usage = {
+  themes: {
+    command: 'themes',
+    strict: 'themes',
+    docs: 'List available themes'
+  },
   list: {
     command: 'list',
     strict: 'list',
@@ -71,15 +76,44 @@ const usage = {
  */
 const list = () => {
   const header: Array<any> = [
-    { type: 'theme', noSort: true, outerCSS: 'header-cell', name: 'THEME', attributes: [ { value: 'DESCRIPTION', outerCSS: 'header-cell' } ] }
+    { type: 'theme',
+      noSort: true,
+      outerCSS: 'header-cell',
+      name: 'CURRENT',
+      attributes: [
+        { value: 'THEME', outerCSS: 'header-cell' },
+        { value: 'STYLE', outerCSS: 'header-cell' }
+      ]
+    }
   ]
 
-  return header.concat((settings.themes || []).map(theme => ({
-    type: 'theme',
-    name: theme.name,
-    attributes: [ { value: theme.description, css: 'not-too-wide' } ],
-    onclick: () => repl.pexec(`theme set ${repl.encodeComponent(theme.name)}`)
-  })))
+  const currentTheme = getPersistedThemeChoice() || getDefaultTheme()
+
+  return [header.concat((settings.themes || []).map(theme => {
+    const row = {
+      type: 'theme',
+      name: theme.name,
+      fontawesome: 'fas fa-check',
+      css: 'selected-entity',
+      rowCSS: theme.name === currentTheme && 'selected-row',
+      attributes: [
+        { value: theme.description || theme.name, css: 'not-too-wide', onclick: undefined },
+        { value: theme.style, css: 'pretty-narrow' }
+      ],
+      onclick: undefined,
+      setSelected: undefined
+    }
+
+    const onclick = async () => {
+      await repl.qexec(`theme set ${repl.encodeComponent(theme.name)}`)
+      row.setSelected()
+    }
+
+    row.onclick = onclick
+    row.attributes[0].onclick = onclick
+
+    return row
+  }))]
 }
 
 /**
@@ -153,9 +187,10 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
     if (webContents) {
       const { readFile } = await import('fs-extra')
       const css = (await readFile(getCssFilepathForGivenTheme(themeModel))).toString()
-      debug('using electron to pre-inject CSS before the application loads, from the main process')
+      debug('using electron to pre-inject CSS before the application loads, from the main process', css)
       webContents.insertCSS(css)
       webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${theme}')`)
+      webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
     } else {
       debug('using kui to inject CSS after the application has loaded, from the renderer process')
       const key = 'kui-theme-css'
@@ -163,6 +198,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
       uninjectCSS(css)
       injectCSS(css)
       document.body.setAttribute('kui-theme', theme)
+      document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
     }
   } catch (err) {
     debug('error loading theme')
@@ -177,6 +213,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
  */
 const set = async ({ argvNoOptions }) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
+  debug('set', theme)
   await switchTo(theme)
   setPreference(persistedThemePreferenceKey, theme)
   return true
@@ -201,6 +238,8 @@ export const plugin = (commandTree, prequire) => {
   debug('plugin')
 
   commandTree.listen('/theme/list', list, { usage: usage.list, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/themes', list, { usage: usage.themes, noAuthOk: true, inBrowserOk: true })
+
   commandTree.listen('/theme/set', set, { usage: usage.set, noAuthOk: true, inBrowserOk: true })
 
   // returns the current persisted theme choice; helpful for debugging
@@ -214,9 +253,9 @@ export const plugin = (commandTree, prequire) => {
  *
  */
 export const preload = () => {
-  debug('preload')
   if (!isHeadless()) {
-    document.getElementById('theme-button').onclick = () => repl.pexec('theme list')
+    debug('preload')
+    document.getElementById('theme-button').onclick = () => repl.pexec('themes')
 
     if (inBrowser()) {
       debug('loading theme for webpack client')
