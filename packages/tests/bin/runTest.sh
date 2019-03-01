@@ -65,6 +65,26 @@ if [ -n "$LAYER" ]; then
         echo "Key from layer '$TEST_SPACE' '${AUTH}'"
     fi
 
+    if [ -n "$NEEDS_KUBERNETES" ]; then
+      #
+      # allocate kube auth for webpack test
+      #
+
+      #DEBUG: suppose KUBECONFIG is defined and we could find config in it
+      echo "here1"
+      echo $KUBECONFIG
+      cat $KUBECONFIG
+
+      #DEBUG: suppose we could find config in ~/.kube/config
+      echo "here2"
+      cat ~/.kube/config
+
+      #DEBUG: suppose we could find config in /etc/kubernetes/admin.conf
+      echo "here3"
+      cat /etc/kubernetes/admin.conf
+
+    fi
+
     TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test/$LAYER" -maxdepth 5)
 else
     TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test" -maxdepth 4)
