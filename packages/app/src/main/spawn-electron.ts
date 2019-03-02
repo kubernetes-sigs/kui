@@ -19,7 +19,6 @@ const debug = Debug('main/spawn-electron')
 debug('loading')
 
 import { IExecOptions } from '../models/execOptions'
-import { switchToPersistedThemeChoice } from '@kui-shell/plugin-core-support/lib/cmds/theme'
 
 import * as colors from 'colors/safe'
 
@@ -419,7 +418,29 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       }
 
       if (mainWindow) {
-        switchToPersistedThemeChoice(mainWindow.webContents)
+        try {
+          const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support/lib/cmds/theme')
+          switchToPersistedThemeChoice(mainWindow.webContents)
+        } catch (err) {
+          debug('theme support not found', err)
+          const { theme, env } = await import('@kui-shell/core/core/settings')
+          const { readFile } = await import('fs')
+          const { join, dirname } = await import('path')
+          const themeModel = theme.themes.find(_ => _.name === theme.defaultTheme)
+          const filepath = join(dirname(require.resolve('@kui-shell/settings/package.json')),
+                                env.cssHome,
+                                themeModel.css)
+          debug('default theme filepath', filepath)
+          readFile(filepath, (err, data) => {
+            if (err) {
+              throw err
+            } else {
+              mainWindow.webContents.insertCSS(data.toString())
+              mainWindow.webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${themeModel.name}')`)
+              mainWindow.webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
+            }
+          })
+        }
       }
     })
 
