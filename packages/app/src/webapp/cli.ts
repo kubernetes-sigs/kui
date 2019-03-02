@@ -334,10 +334,10 @@ export const getCurrentProcessingBlock = () => {
 export const getPrompt = (block, noFakes = false) => {
   return (block && block.querySelector && block.querySelector('input')) || (!noFakes && { focus: () => true })
 }
-export const getInitialPrompt = () => {
+export const getInitialPrompt = (): HTMLInputElement => {
   return getPrompt(getInitialBlock())
 }
-export const getCurrentPrompt = (noFakes = false) => {
+export const getCurrentPrompt = (noFakes = false): HTMLInputElement => {
   return getPrompt(getCurrentBlock(), noFakes)
 }
 export const getPromptLeft = (block: Element) => {
@@ -574,7 +574,7 @@ export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExec
   if (prompt) {
     debug('applying partial', cmd)
     prompt.value = cmd
-    prompt.execOptions = execOptions
+    prompt['execOptions'] = execOptions
     prompt.classList.add('repl-partial')
     prompt.focus()
     setTimeout(() => prompt.classList.remove('repl-partial'), 1000)

@@ -78,7 +78,7 @@ const list = () => {
   const header: Array<any> = [
     { type: 'theme',
       noSort: true,
-      outerCSS: 'header-cell',
+      outerCSS: 'header-cell very-narrow',
       name: 'CURRENT',
       attributes: [
         { value: 'THEME', outerCSS: 'header-cell' },
@@ -95,6 +95,7 @@ const list = () => {
       name: theme.name,
       fontawesome: 'fas fa-check',
       css: 'selected-entity',
+      outerCSS: 'very-narrow',
       rowCSS: theme.name === currentTheme && 'selected-row',
       attributes: [
         { value: theme.description || theme.name, css: 'not-too-wide', onclick: undefined },
@@ -109,8 +110,8 @@ const list = () => {
       row.setSelected()
     }
 
-    row.onclick = onclick
-    row.attributes[0].onclick = onclick
+    row.onclick = onclick // <-- clicks on the "check mark"
+    row.attributes[0].onclick = onclick // <-- clicks on the theme name
 
     return row
   }))]

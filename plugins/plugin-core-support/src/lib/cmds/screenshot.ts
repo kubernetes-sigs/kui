@@ -299,7 +299,7 @@ export default async (commandTree, prequire) => {
           check.style.fontSize = '7em'
 
           // temporarily disable the repl
-          cli.getCurrentPrompt().readonly = true
+          cli.getCurrentPrompt().readOnly = true
 
           // temporarily override escape
           const oldHandler = document.onkeyup
@@ -307,7 +307,7 @@ export default async (commandTree, prequire) => {
           // when we're done, re-enable the things we messed with and hide the snapDom
           const finish = () => {
             document.onkeyup = oldHandler
-            cli.getCurrentPrompt().readonly = false
+            cli.getCurrentPrompt().readOnly = false
             snapDom.classList.add('go-away')
             setTimeout(() => document.body.removeChild(snapDom), 1000) // match go-away-able transition-duration; see ui.css
           }

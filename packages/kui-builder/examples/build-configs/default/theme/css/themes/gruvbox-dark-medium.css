@@ -8,7 +8,7 @@ body[kui-theme="Gruvbox Medium"] {
     --color-base02: #504945;
     --color-base03: #665c54;
     --color-base04: #bdae93;
-    --color-base05: #d5c4a1;
+    --color-base05: hsl(40, 38%, 80%); /* dialed L from 73% to 80% from #d5c4a1 */
     --color-base06: #ebdbb2;
     --color-base07: #fbf1c7;
     --color-base08: #fb4934;
@@ -23,6 +23,13 @@ body[kui-theme="Gruvbox Medium"] {
     --color-light-red: hsla(6, 96%, 59%, 0.75);
     --color-light-green: hsla(61, 66%, 44%, 0.75);
     --color-light-yellow: hsla(42, 95%, 58%, 0.75)
+
+    --color-latency-0: #1b7837;
+    --color-latency-1: #7fbf7b;
+    --color-latency-2: #d9f0d3;
+    --color-latency-3: #e7d4e8;
+    --color-latency-4: #af8dc3;
+    --color-latency-5: #762a83;
 }
 
 /* gruvox-dark highlightjs theme */

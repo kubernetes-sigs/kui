@@ -27,6 +27,13 @@ body[kui-theme="Nord"] {
     --color-light-red: hsla(354, 42%, 56%, 0.75);
     --color-light-green: hsla(92, 28%, 65%, 0.75);
     --color-light-yellow: hsla(40, 71%, 73%, 0.75);
+
+    --color-latency-0: #4575b4;
+    --color-latency-1: #91bfdb;
+    --color-latency-2: #e0f3f8;
+    --color-latency-3: #fee090;
+    --color-latency-4: #fc8d59;
+    --color-latency-5: #d73027;
 }
 
 /* nord hightlightjs theme */

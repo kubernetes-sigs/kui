@@ -129,7 +129,7 @@ const addCommandEvaluationListeners = (): void => {
  *
  */
 const oneTimeInit = (): void => {
-  // focus the current prompt no matter where the user clicks
+  // focus the current prompt no matter where the user clicks in the left tab stripe
   (document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = evt => {
     getCurrentPrompt().focus()
   }

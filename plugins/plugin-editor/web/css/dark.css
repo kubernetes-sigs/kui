@@ -25,7 +25,7 @@ body[kui-theme="dark"] .monaco-editor {
 
 .monaco-editor .mtk8,
 .monaco-editor .keyword {
-    color: #b294bb;
+    color: var(--color-base0E);
 }
 
 .monaco-editor .mtk6,
@@ -55,7 +55,7 @@ body[kui-theme="dark"] .monaco-editor {
 
 .monaco-editor .mti20,
 .monaco-editor .comment {
-    color: #969896;
+    color: var(--color-base03);
 }
 
 .monaco-editor .mtk20,
@@ -72,7 +72,7 @@ body[kui-theme="dark"] .monaco-editor {
 .monaco-editor .name,
 .monaco-editor .selector-id,
 .monaco-editor .selector-class {
-    color: #81a2be;
+    color: var(--color-base0D);
 }
 
 .monaco-editor .meta,
@@ -85,7 +85,7 @@ body[kui-theme="dark"] .monaco-editor {
 .monaco-editor .template-variable,
 .monaco-editor .link,
 .monaco-editor .bullet {
-    color: #969896;
+    color: var(--color-base03);
 }
 
 .monaco-editor .emphasis {

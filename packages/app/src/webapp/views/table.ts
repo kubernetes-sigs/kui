@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('webapp/views/table')
 
+import { getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 
 /**
@@ -35,6 +36,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       currentSelection.classList.remove('selected-row')
     }
     dom.querySelector('.row-selection-context').classList.add('selected-row')
+    getCurrentPrompt().focus()
   }
   entity.setUnselected = () => {
     dom.querySelector('.row-selection-context').classList.remove('selected-row')

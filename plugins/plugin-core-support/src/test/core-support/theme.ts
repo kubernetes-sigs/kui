@@ -66,7 +66,7 @@ const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
  *
  */
 const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite) => {
-  it('should click on theme button and present theme list', async () => {
+  it(`should click on theme button and present theme list, then click on ${clickOn.name}`, async () => {
     try {
       ctx.app.client.click('#theme-button')
 
@@ -77,10 +77,12 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite) => 
       await ctx.app.client.waitForExist(dark)
 
       if (clickOn.name === Light.name) {
-        ctx.app.client.click(light)
+        await ctx.app.client.click(light)
       } else {
-        ctx.app.client.click(dark)
+        await ctx.app.client.click(dark)
       }
+
+      await ctx.app.client.waitForExist(`body[kui-theme="${clickOn.name}"]`)
     } catch (err) {
       common.oops(ctx)(err)
     }
