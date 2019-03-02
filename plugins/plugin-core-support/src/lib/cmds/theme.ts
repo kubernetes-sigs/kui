@@ -194,12 +194,14 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
       webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
     } else {
       debug('using kui to inject CSS after the application has loaded, from the renderer process')
-      const key = 'kui-theme-css'
-      const css = { key, path: getCssFilepathForGivenTheme(themeModel) }
-      uninjectCSS(css)
-      injectCSS(css)
+      const previousKey = document.body.getAttribute('kui-theme-key')
+      const newKey = `kui-theme-css-${theme}`
+      const css = { key: newKey, path: getCssFilepathForGivenTheme(themeModel) }
+      document.body.setAttribute('kui-theme-key', newKey)
       document.body.setAttribute('kui-theme', theme)
       document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
+      await injectCSS(css)
+      await uninjectCSS({ key: previousKey, css: 'dont-care' })
     }
   } catch (err) {
     debug('error loading theme')

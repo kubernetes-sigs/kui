@@ -33,6 +33,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     display: flex;
     flex-direction: column;
     -webkit-app-region: drag;
+    transition: background-color 300ms ease-in-out;
 }
 body.os-darwin .left-tab-stripe {
     padding-top: 2em;
