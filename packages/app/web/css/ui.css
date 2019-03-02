@@ -427,7 +427,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     /* more invocation results */
     /* here, we override the highlight.js theme, when rendering in the repl */
     background: transparent;
-    color: black;
+    color: var(--color-text-01);
 }
 .fifty-fifty:first-child {
     max-width: calc(50% - 3em);
@@ -2552,8 +2552,11 @@ body {
     --color-ui-04: var(--color-base02);
     --color-ui-05: var(--color-base04);
     --color-ui-06: var(--color-base02);
+
     --color-brand-01: var(--color-blue);
-    --color-brand-02: var(--color-cyan);
+    --color-brand-02: var(--color-magenta);
+    --color-brand-03: var(--color-cyan);
+
     --color-text-against-dark-bg: var(--color-text-01);
     --color-support-01: var(--color-red);
     --color-support-01-lighter: var(--color-light-red);

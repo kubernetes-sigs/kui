@@ -3,7 +3,7 @@
  * author: "Ethan Schoonover (modified by aramisgithub)"
  *
  */
-body[kui-theme="Solarized Dark"] {
+body[kui-theme="Solarized"] {
     --color-base00: #002b36;
     --color-base01: #073642;
     --color-base02: #586e75;

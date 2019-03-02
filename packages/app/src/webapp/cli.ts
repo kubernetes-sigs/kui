@@ -47,8 +47,9 @@ export const scrollIntoView = ({ when = 305, which = '.repl-active', element = d
       // document.querySelector('tab.visible .repl .repl-active').scrollIntoView(true)
       element['scrollIntoViewIfNeeded'](center)
     } catch (e) {
-        // ok
-      element['scrollIntoView'](center)
+      if (element) {
+        element.scrollIntoView(center)
+      }
     }
   }
 
