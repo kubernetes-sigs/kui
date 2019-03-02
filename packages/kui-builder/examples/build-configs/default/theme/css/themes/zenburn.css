@@ -23,6 +23,13 @@ body[kui-theme="Zenburn"] {
     --color-light-red: hsla(0, 50%, 75%, 0.75);
     --color-light-green: hsla(66, 39%, 57%, 75%);
     --color-light-yellow: hsl(40, 81%, 70%);
+
+    --color-latency-0: #1a9850;
+    --color-latency-1: #91cf60;
+    --color-latency-2: #d9ef8b;
+    --color-latency-3: #fee08b;
+    --color-latency-4: #fc8d59;
+    --color-latency-5: #d73027;
 }
 
 /* zenburn hljs theme */

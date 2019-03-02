@@ -26,6 +26,13 @@ body[kui-theme="Solarized"] {
     --color-light-yellow: hsla(45, 100%, 35%, 0.75);
 
     --color-ui-06: hsla(194, 20%, 20%, 0.8);
+
+    --color-latency-0: #4575b4;
+    --color-latency-1: #91bfdb;
+    --color-latency-2: #e0f3f8;
+    --color-latency-3: #fee090;
+    --color-latency-4: #fc8d59;
+    --color-latency-5: #d73027;
 }
 
 /* solarized-dark highglightjs theme */

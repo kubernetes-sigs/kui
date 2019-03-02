@@ -73,6 +73,23 @@ export default () => {
     if (noCurrentTextSelection()) {
       clearTimeout(currentFinishAsync)
     }
+  });
+
+  // horizontal landing zone clicks should keep the repl prompt focused
+  (repl.querySelector('.horizontal-landing-zone') as HTMLElement).addEventListener('click', evt => {
+    getCurrentPrompt().focus()
+  })
+
+  // sidecar header clicks should keep the repl prompt focused
+  const sidecar = document.querySelector('tab.visible sidecar') as HTMLElement
+  let promptHasFocusBeforeClick = false;
+  (sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener('mousedown', evt => {
+    promptHasFocusBeforeClick = document.activeElement === getCurrentPrompt()
+  });
+  (sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener('click', evt => {
+    if (promptHasFocusBeforeClick) {
+      getCurrentPrompt().focus()
+    }
   })
 }
 

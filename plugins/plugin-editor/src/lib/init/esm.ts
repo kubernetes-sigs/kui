@@ -74,7 +74,7 @@ export default (editorWrapper: HTMLElement, options) => {
 
       // see if we are in dark mode
       const theme = {
-        theme: document.querySelector('body').getAttribute('kui-theme') === 'Dark' ? 'vs-dark' : 'vs'
+        theme: document.querySelector('body').getAttribute('kui-theme-style') === 'dark' ? 'vs-dark' : 'vs'
       }
 
       // here we instantiate an editor widget
