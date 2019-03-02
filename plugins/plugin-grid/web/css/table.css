@@ -381,13 +381,13 @@ body {
 
 /* grid cell colors */
 .activation-viz-plugin .cell-container[color-by="duration"] .grid-cell-occupied.latency-0 .grid-cell-content {
-    background: var(--color-latency-0);
+    background-color: var(--color-latency-0);
 }
 .activation-viz-plugin .cell-container[color-by="duration"] .grid-cell-occupied.latency-1 .grid-cell-content {
-    background: var(--color-latency-1);
+    background-color: var(--color-latency-1);
 }
 .activation-viz-plugin .cell-container[color-by="duration"] .grid-cell-occupied.latency-2 .grid-cell-content {
-    background: var(--color-latency-2);
+    background-color: var(--color-latency-2);
 }
 .activation-viz-plugin .cell-container[color-by="duration"] .grid-cell-occupied .grid-cell-content span {
     /* increase contrast on hover; see shell issue #875 */
@@ -400,13 +400,13 @@ body {
     color: black;
 }
 .activation-viz-plugin .cell-container[color-by="duration"] .grid-cell-occupied.latency-3 .grid-cell-content {
-    background: var(--color-latency-3);
+    background-color: var(--color-latency-3);
 }
 .activation-viz-plugin .cell-container[color-by="duration"] .grid-cell-occupied.latency-4 .grid-cell-content {
-    background: var(--color-latency-4);
+    background-color: var(--color-latency-4);
 }
 .activation-viz-plugin .cell-container[color-by="duration"] .grid-cell-occupied.latency-5 .grid-cell-content {
-    background: var(--color-latency-5);
+    background-color: var(--color-latency-5);
 }
 
 .activation-viz-plugin .data-table .oops {
@@ -481,7 +481,7 @@ body {
     align-items: center;
     width: 2.5vw !important;
     height: 100%;
-    background: var(--color-ui-02);
+    background-color: var(--color-ui-02);
     /*margin: 0 0.2vw;*/
     background-image: repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(0,0,0,.01) 2px, rgba(0,0,0,0.01) 8px), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.02) 2px, rgba(0,0,0,0.02) 17px);
 }
@@ -581,6 +581,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: background-color 300ms ease-in-out;
 }
 
 /* innerLabel for cells; see cell.js: const innerLabel */
@@ -613,75 +614,8 @@ body {
     display: none;
 }
 .activation-viz-plugin .grid /*.color-group-0*/  .grid-cell-occupied .grid-cell-content {
-    background: rgba(31,120,180,1);
-    /*background: #33a02c; ok color*/
+    background-color: rgba(31,120,180,1);
 }
-/*.activation-viz-plugin .grid .color-group-1 {
-    background: rgba(166,206,227,1);
-}
-.activation-viz-plugin .grid .color-group-2 {
-    background: rgba(178,223,138,1);
-}
-.activation-viz-plugin .grid .color-group-3 {
-    background: rgba(51,160,44,1);
-}
-.activation-viz-plugin .grid .color-group-4 {
-    background: rgba(251,154,153,1);
-}
-.activation-viz-plugin .grid .color-group-5 {
-    background: rgba(251,154,153,0.8);
-    bbackground: rgba(253,191,111,1);
-}
-.activation-viz-plugin .grid .color-group-6 {
-    background: rgba(251,154,153,0.6);
-    bbackground: rgba(255,127,0,1);
-}
-.activation-viz-plugin .grid .color-group-7 {
-    background: rgba(251,154,153,0.4);
-    bbackground: rgba(202,178,214,1);
-}
-.activation-viz-plugin .grid .color-group-8 {
-    background: rgba(251,154,153,0.2);
-    bbackground: rgba(106,61,154,1);
-}
-.activation-viz-plugin .grid .color-group-9 {
-    background: rgba(253,191,111,1);
-    bbackground: rgba(255,255,153,1);
-}
-.activation-viz-plugin .grid .color-group-10 {
-    background: rgba(253,191,111,0.8);
-    bbackground: rgba(177,89,40,1);
-}
-.activation-viz-plugin .grid .color-group-11 {
-    background: rgba(253,191,111,0.6);
-    bbackground: rgba(177,89,40,1);
-}
-.activation-viz-plugin .grid .color-group-12 {
-    background: rgba(253,191,111,0.4);
-    bbackground: rgba(177,89,40,1);
-}
-.activation-viz-plugin .grid .color-group-13 {
-    background: rgba(253,191,111,0.2);
-    bbackground: rgba(177,89,40,1);
-}
-.activation-viz-plugin .grid .color-group-14 {
-    background: rgba(255,127,0,1);
-}
-.activation-viz-plugin .grid .color-group-15 {
-    background: rgba(255,127,0,0.8);
-}
-.activation-viz-plugin .grid .color-group-16 {
-    background: rgba(255,127,0,0.6);
-}
-.activation-viz-plugin .grid .color-group-17 {
-    background: rgba(255,127,0,0.4);
-}
-.activation-viz-plugin .grid .color-group-18 {
-    background: rgba(255,127,0,0.2);
-}*/
-/*red, looks too much like failure .activation-viz-plugin .grid .color-group-11 {
-    background: rgba(227,26,28,1)
-}*/
 .activation-viz-plugin .grid-oops-overlay {
     position: absolute;
     top: 0;
