@@ -97,14 +97,23 @@ break {
 #wskflowSVG path.forwarding-edge.hover {
     marker-end: url(#forwardingEnd);
 }
+
 #wskflowSVG .node.leaf.Entry .atom, #wskflowSVG .node.leaf.Exit .atom {
     fill: var(--color-text-01);
+}
+body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry .atom, body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Exit .atom {
+    fill: var(--color-ui-01);
+    stroke: var(--color-ui-02) !important;
 }
 #wskflowSVG .node.leaf.Entry text, #wskflowSVG .node.leaf.Exit text {
     fill: var(--color-ui-02) !important;
     font-weight: 300;
     font-variant: small-caps;
 }
+body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry text, body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Exit text {
+    fill: var(--color-text-02) !important;
+}
+
 #wskflowSVG .node .atom {
     fill: var(--color-ui-05);
 }
@@ -213,12 +222,17 @@ break {
     font-weight: bold;
     letter-spacing: 2px;
 }
+
 #wskflowSVG .node.leaf.function text:not(.edge-label) {
     /* function nodes; use code font */
     fill: var(--color-text-01) !important;
     font-family: var(--font-monospace);
     font-size: 5px;
 }
+body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-label) {
+    fill: var(--color-ui-01) !important;
+}
+
 #wskflowSVG .node.compound:not(.root) .atom {
     stroke-dasharray: 0.5,0.75;
     stroke-width: 0.5;
