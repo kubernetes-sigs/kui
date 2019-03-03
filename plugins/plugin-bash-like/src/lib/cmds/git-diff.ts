@@ -71,7 +71,7 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
 
       // note: no sidecar header if this launched from the command line ("subwindow mode")
       resolve(asSidecarEntity(filePart, Diff2Html.getPrettyHtml(rawOut, {
-        showFiles, matching: 'lines' /* outputFormat: 'side-by-side' */
+        showFiles, matching: 'lines', outputFormat: 'side-by-side'
       }), { sidecarHeader: !document.body.classList.contains('subwindow') },
                               undefined, commandPart, currentBranch))
     } else {

@@ -1044,7 +1044,7 @@ sidecar:not(.entity-is-triggers) .trigger-content {
 sidecar.entity-is-actions:not(.entity-is-sequence) .action-source, sidecar .activation-result, code.hljs, .code-highlighting pre {
     font-family: var(--font-monospace);
     font-weight: 400;
-    font-size: 90%;
+    font-size: 0.925em;
     white-space: pre-wrap;
     background: transparent;
 }
