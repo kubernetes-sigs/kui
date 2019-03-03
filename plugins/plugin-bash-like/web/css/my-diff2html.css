@@ -1,15 +1,45 @@
 .d2h-wrapper, .d2h-file-list-wrapper, .d2h-file-list-header, .d2h-file-list, .d2h-file-wrapper, .d2h-file-header, .d2h-file-diff, .d2h-code-wrapper {
     display: flex;
     flex-direction: column;
+    white-space: normal;
+}
+
+/* side-by-side */
+.d2h-files-diff {
+    display: flex;
+    align-items: flex-start;
+}
+.d2h-code-side-linenumber {
+    border-color: transparent;
+    color: var(--color-text-02);
+    width: 5em;
+}
+td > .d2h-code-side-linenumber {
+    display: flex;
+}
+.d2h-file-side-diff {
+    flex: 1;
+    width: unset;
+    margin-right: 0;
+    margin-bottom: 0;
+}
+.d2h-code-side-line {
+    display: flex;
+}
+.d2h-code-side-emptyplaceholder, .d2h-emptyplaceholder {
+    background: transparent;
+    border: none;
 }
 
 .d2h-diff-table, .d2h-file-name-wrapper, .d2h-file-stats {
     font-family: var(--font-monospace);
-    font-size: 0.875em;
+    font-size: 1em;
 }
 
 .d2h-file-wrapper {
     border: 1px solid var(--color-ui-04);
+    border-radius: 0;
+    margin-bottom: 1.5em;
 }
 
 .d2h-diff-table {
@@ -34,27 +64,27 @@
 
 .d2h-diff-tbody>tr>td {
     padding: 0;
-    height: 0.4em;
-    line-height: 0.4em;
+    height: 1.5em;
 }
 .d2h-diff-tbody>tr>td:not(.d2h-info) {
     background-color: var(--color-ui-01);
 }
 
+.d2h-ins, .d2h-del {
+    /* inserts and deletes */
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+}
+
 .d2h-ins {
     /* inserts */
-    background-color: transparent;
     color: var(--color-green);
-    border-color: var(--color-green);
-    border-width: 3px;
 }
 
 .d2h-del {
     /* deletes */
-    background-color: transparent;
     color: var(--color-red);
-    border-color: var(--color-red);
-    border-width: 3px;
 }
 
 .d2h-code-line ins, .d2h-code-side-line ins {
@@ -101,7 +131,7 @@
 }
 
 .d2h-file-list>li {
-    border-bottom-color: var(--color-ui-03);
+    border: none;
 }
 
 .d2h-info {
@@ -115,6 +145,7 @@
 
 .d2h-file-list-wrapper a, .d2h-file-list-wrapper a:visited {
     color: var(--color-brand-01);
+    text-decoration: underline;
 }
 
 .d2h-changed {
