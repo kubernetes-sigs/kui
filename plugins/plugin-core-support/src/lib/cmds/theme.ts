@@ -21,6 +21,7 @@ import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
 import repl = require('@kui-shell/core/core/repl')
+import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
@@ -210,6 +211,9 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
         // warning: don't blindly uninject! only if we are actually changing themes
         await uninjectCSS({ key: previousKey, css: 'dont-care' })
       }
+
+      // let others know that the theme has changed
+      setTimeout(() => eventBus.emit('/theme/change', { theme }))
     }
   } catch (err) {
     debug('error loading theme')

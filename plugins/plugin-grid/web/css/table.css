@@ -1,12 +1,3 @@
-body {
-    --color-latency-0: #2166ac;
-    --color-latency-1: #67a9cf;
-    --color-latency-2: hsla(201, 51%, 78%, 1); /* #d1e5f0 with lightness reduced from 88% to 78% */
-    --color-latency-3: #fddbc7;
-    --color-latency-4: #ef8a62;
-    --color-latency-5: #b2182b;
-}
-
 .activation-viz-plugin {
     flex: 1;
     display: flex;

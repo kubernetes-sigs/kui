@@ -148,20 +148,28 @@ export const streamTo = (block: Element) => {
   // so we can scroll this into view as streaming output arrives
   const spinner = element('.repl-result-spinner', block)
 
-  return async response => {
+  let previousLine
+  return async (response, killLine = false) => {
     //
     debug('stream', response)
 
+    if (killLine && previousLine) {
+      previousLine.parentNode.removeChild(previousLine)
+      previousLine = undefined
+    }
+
     if (response.isUsageError) {
-      pre.appendChild(await response.message)
+      previousLine = await response.message
+      pre.appendChild(previousLine)
       pre.classList.add('oops')
       pre.setAttribute('data-status-code', response.statusCode || response.code || 500)
     } else if (response.nodeName) {
-      pre.appendChild(response)
+      previousLine = response
+      pre.appendChild(previousLine)
     } else {
-      const line = document.createElement('div')
-      line.innerText = response.message || response
-      pre.appendChild(line)
+      previousLine = document.createElement('div')
+      previousLine.innerText = response.message || response
+      pre.appendChild(previousLine)
     }
 
     scrollIntoView({ when: 0, element: spinner })
