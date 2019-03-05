@@ -20,6 +20,7 @@ body[kui-theme="Nord"] {
     --color-base0E: #A3BE8C;
     --color-base0F: #B48EAD;
 
+    --color-cyan: var(--color-base08);
     --color-red: var(--color-base0B);
     --color-green: var(--color-base0E);
     --color-yellow: var(--color-base0D);
