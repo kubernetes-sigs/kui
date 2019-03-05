@@ -2344,7 +2344,7 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
 }
 body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) td, body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
     /* table row striping in sidecar (when not full screen) */
-    background:var(--color-ui-04);
+    background:var(--color-ui-03);
 }
 
 sidecar .sidecar-header {
