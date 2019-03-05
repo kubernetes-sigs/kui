@@ -1340,7 +1340,7 @@ sidecar .result-as-table .big-top-pad:first-child {
 }
 .clickable-blatant {
     text-decoration: underline;
-    text-decoration-color: var(--color-gray);
+    text-decoration-color: var(--color-base04);
 }
 .clickable:hover, .entity-name-group:not(.header-cell) .entity.actions:hover .entity-name {
     cursor: pointer;
