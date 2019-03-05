@@ -4,6 +4,9 @@
 language: node_js
 node_js: 8
 dist: trusty
+os:
+  - linux
+  - osx
 
 env:
   matrix:
@@ -52,11 +55,10 @@ env:
     - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
 
 matrix:
-  include:
-  - os: osx
-    if: repo = ibm/kui
+  exclude:
+    - os: osx
+      env: LAYERS="k8s" NEEDS_ELECTRON=true NEEDS_HEADLESS=true NEEDS_KUBERNETES=true
 
-before_install: echo $TRAVIS_REPO_SLUG
 install: ./tools/travis/test/install.sh
 script: ./tools/travis/test/script.sh
 after_success: ./tools/travis/publishers/cos.sh
