@@ -72,7 +72,7 @@ td > .d2h-code-side-linenumber {
 
 .d2h-ins, .d2h-del {
     /* inserts and deletes */
-    font-weight: bold;
+    font-weight: 500;
     border: none;
     background-color: transparent;
 }
