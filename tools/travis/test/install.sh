@@ -63,6 +63,7 @@ if [ -n "$LAYERS" ]; then
         # ./tools/travis/installers/kubectl.sh &
 
         # set up a local cluster, using kubeadm-dind
+        # NOTE: doesn't work in osx
         ./tools/travis/installers/kubeadm-dind/start-cluster.sh &
         children+=("$!")
     fi
@@ -88,7 +89,7 @@ if [ -n "$LAYERS" ]; then
 
     if [ -n "$NEEDS_ELECTRON" ]; then
         # create an electron dist to test against
-        (cd clients/default && NO_INSTALLER=true npm run build:electron -- linux) &
+        (cd clients/default && NO_INSTALLER=true npm run build:electron -- ${TRAVIS_OS_NAME}) &
         children+=("$!")
     fi
 

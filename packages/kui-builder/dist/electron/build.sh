@@ -224,7 +224,7 @@ function win32 {
 # deal with darwin/macOS packaging
 #
 function mac {
-    if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ]; then
+    if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ] || [ "$PLATFORM" == "osx" ]; then
         echo "Electron build darwin $STAGING"
 
         (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
