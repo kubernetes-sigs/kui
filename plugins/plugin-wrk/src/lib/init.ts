@@ -44,14 +44,17 @@ const usage = {
       { name: '--details', alias: '-d', docs: 'Show the location of the wrk executable' }
     ]
   },
+  clean: {
+    command: 'clean',
+    strict: 'clean',
+    docs: 'Remove the compiled wrk platform artifacts',
+    example: 'wrk clean'
+  },
   init: {
     command: 'init',
     strict: 'init',
     docs: 'Compile the wrk executable',
-    example: 'wrk init',
-    optional: [
-      { name: '--force', alias: '-f', docs: 'Force a re-compilation' }
-    ]
+    example: 'wrk init'
   }
 }
 
@@ -63,10 +66,7 @@ export const compileWrk = ({ parsedOptions, createOutputStream }) => new Promise
   const stdout = createOutputStream()
 
   try {
-    if (parsedOptions.force) {
-      debug('force-cleaning out prior builds')
-      await remove(wrkExec())
-    }
+    await cleanWrk()
 
     const tmp = '/tmp'
     const wrkTmp = join(tmp, 'wrk')
@@ -74,13 +74,6 @@ export const compileWrk = ({ parsedOptions, createOutputStream }) => new Promise
 
     debug('cleaning out tmp dir')
     await remove(wrkTmp)
-
-    if (!(await exists(wrkExec()))) {
-      debug('no wrkExec')
-
-      debug('cleaning out prior build')
-      await remove(wrkExec())
-    }
 
     debug('cloning from git')
     stdout('cloning from git', true)
@@ -101,7 +94,13 @@ export const compileWrk = ({ parsedOptions, createOutputStream }) => new Promise
         debug('compiling')
         stdout('compiling wrk', true)
 
-        const make = spawn('make', ['-j'], {
+        // compute the "N" for make -j N; we could use fancier logic
+        // to get the number of physical CPUs, but this is probably
+        // good enough
+        const numJobs = Math.max(1, require('os').cpus().length / 2)
+        debug('numJobs', numJobs)
+
+        const make = spawn('make', ['-j', numJobs.toString()], {
           cwd: wrkTmp,
           env: {
             PATH: '/usr/local/bin:/usr/bin:/bin',
@@ -176,7 +175,18 @@ const checkWrk = async ({ parsedOptions }) => {
   }
 }
 
+/**
+ * Clean up our compiled binary artifacts
+ *
+ */
+const cleanWrk = async () => {
+  debug('cleaning out prior build')
+  await remove(wrkExec())
+  return true
+}
+
 export default (commandTree) => {
   commandTree.listen('/wrk/init', compileWrk, { usage: usage.init, requiresLocal: true })
   commandTree.listen('/wrk/check', checkWrk, { usage: usage.check, requiresLocal: true })
+  commandTree.listen('/wrk/clean', cleanWrk, { usage: usage.clean, requiresLocal: true })
 }
