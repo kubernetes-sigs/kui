@@ -197,11 +197,19 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
       const previousKey = document.body.getAttribute('kui-theme-key')
       const newKey = `kui-theme-css-${theme}`
       const css = { key: newKey, path: getCssFilepathForGivenTheme(themeModel) }
+
+      // set the theme attributes on document.body
       document.body.setAttribute('kui-theme-key', newKey)
       document.body.setAttribute('kui-theme', theme)
       document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
+
+      // inject the new css
       await injectCSS(css)
-      await uninjectCSS({ key: previousKey, css: 'dont-care' })
+
+      if (previousKey !== newKey) {
+        // warning: don't blindly uninject! only if we are actually changing themes
+        await uninjectCSS({ key: previousKey, css: 'dont-care' })
+      }
     }
   } catch (err) {
     debug('error loading theme')
