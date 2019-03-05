@@ -82,6 +82,6 @@ const help = (usage, docs) => ({ argvNoOptions: args }) => {
  *
  */
 export default async (commandTree, prequire, { usage, docs }) => {
-  const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true })
-  commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true })
+  const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true, inBrowserOK: true })
+  commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true, inBrowserOK: true })
 }
