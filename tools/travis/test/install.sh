@@ -25,7 +25,8 @@ fi
 
 # install jq
 # (doing an apt-get update to install jq takes forever; often 80-90 seconds)
-(cd bin && curl -L -O https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && mv jq-linux64 jq && chmod +x jq)
+JQ_PLATFROM=$(case $TRAVIS_OS_NAME in "linux" ) echo "jq-linux64";; "osx" ) echo "jq-osx-amd64.dms";; esac)
+(cd bin && curl -L -O https://github.com/stedolan/jq/releases/download/jq-1.6/${JQ_PLATFROM} && mv ${JQ_PLATFROM} jq && chmod +x jq)
 
 function wait_and_get_exit_codes() {
     children=("$@")
