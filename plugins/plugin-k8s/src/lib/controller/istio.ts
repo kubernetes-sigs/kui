@@ -19,7 +19,6 @@ const debug = Debug('k8s/controller/istio')
 
 import { join } from 'path'
 import { exec } from 'child_process'
-import { remove as rm } from 'fs-extra'
 
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
 
@@ -42,6 +41,7 @@ const installIstio = async ({ parsedOptions }) => {
   const version = parsedOptions.version || '1.0.6'
 
   const installDir = join(tmp, `istio-${version}`)
+  const { remove: rm } = await import('fs-extra') // dynamic load for webpack
   await rm(installDir)
 
   debug('downloading release', version)
