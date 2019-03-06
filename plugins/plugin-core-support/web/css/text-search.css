@@ -50,6 +50,8 @@ body.search-bar-is-visible .header .application-icon {
     flex: 1;
     border: none;
     font-size: inherit;
+    background: transparent;
+    color: var(--color-text-01);
 }
 #search-input:focus {
     outline:none;
