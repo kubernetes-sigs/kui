@@ -272,7 +272,7 @@ export const preload = () => {
     debug('preload')
     document.getElementById('theme-button').onclick = () => repl.pexec('themes')
 
-    if (inBrowser()) {
+    if (inBrowser() || !document.body.hasAttribute('kui-theme')) {
       debug('loading theme for webpack client')
       switchToPersistedThemeChoice()
     }
