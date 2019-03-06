@@ -106,7 +106,7 @@ describe('Tab completion', function (this: common.ISuite) {
           return app
         }
       })
-      .catch(err => this.app.client.execute('repl.doCancel()') // clear the line
+      .catch(err => this.app.client.keys(ui.ctrlC) // clear the line
         .then(() => common.oops(this)(err)))
   }
 
@@ -121,7 +121,7 @@ describe('Tab completion', function (this: common.ISuite) {
       .then(ui.expectArray(expected))
       .then(() => app.client.keys('ffffff')) // type something random
       .then(() => app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 20000, true))) // wait for non-existence of the temporary
-    .then(() => this.app.client.execute('repl.doCancel()')) // clear the line
+    .then(() => this.app.client.keys(ui.ctrlC)) // clear the line
     .catch(common.oops(this))
 
   it('should create an action foo', () => cli.do('let foo = x=>x', this.app)
@@ -168,7 +168,7 @@ describe('Tab completion', function (this: common.ISuite) {
       if (!err.failedAsExpected) {
         throw err
       } else {
-        return this.app.client.execute('repl.doCancel()') // clear the line
+        return this.app.client.keys(ui.ctrlC) // clear the line
       }
     }))
 

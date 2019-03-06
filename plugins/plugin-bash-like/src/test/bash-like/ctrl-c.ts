@@ -29,7 +29,7 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
     .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count => app.client.keys(cmd)
-      .then(() => app.client.execute('repl.doCancel()'))
+      .then(() => app.client.keys(ui.ctrlC))
       .then(() => ({ app: app, count: count }))
       .then(cli.expectBlank)
       .then(() => app.client.getValue(ui.selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
@@ -42,7 +42,7 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
   const echoThisString = 'hi'
   it('should initiate a command that completes with some delay', async () => {
     const res = await cli.do(`sleep 3; echo ${echoThisString}`, this.app)
-    await this.app.client.execute('repl.doCancel()')
+    await this.app.client.keys(ui.ctrlC)
     return this.app.client.waitUntil(async () => {
       const actualText = await this.app.client.getText(selectors.OUTPUT_N(res.count))
       return actualText === echoThisString

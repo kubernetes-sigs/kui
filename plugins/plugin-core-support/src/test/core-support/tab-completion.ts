@@ -109,7 +109,7 @@ describe('Tab completion', function (this: ISuite) {
           return app
         }
       })
-      .catch(err => this.app.client.execute('repl.doCancel()') // clear the line
+      .catch(err => this.app.client.keys(ui.ctrlC) // clear the line
         .then(() => common.oops(this)(err)))
   }
 
@@ -124,7 +124,7 @@ describe('Tab completion', function (this: ISuite) {
       .then(ui.expectArray(expected))
       .then(() => app.client.keys('ffffff')) // type something random
       .then(() => app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 20000, true))) // wait for non-existence of the temporary
-    .then(() => this.app.client.execute('repl.doCancel()')) // clear the line
+    .then(() => this.app.client.keys(ui.ctrlC)) // clear the line
     .catch(common.oops(this))
 
   const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/']
