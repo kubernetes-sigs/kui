@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "ansi-to-html": "^0.6.10",
+    "debug": "^4.1.1",
     "diff2html": "^2.7.0",
     "expand-home-dir": "0.0.3",
     "marked": "^0.6.1",
