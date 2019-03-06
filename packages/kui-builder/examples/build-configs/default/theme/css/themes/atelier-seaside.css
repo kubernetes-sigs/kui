@@ -5,10 +5,10 @@
 body[kui-theme="Atelier Seaside"] {
     --color-base00: #131513;
     --color-base01: #242924;
-    --color-base02: #5e6e5e;
-    --color-base03: #687d68;
+    --color-base02: hsl(120, 8%, 30%); /* dialed L from 40% #5e6e5e */
+    --color-base03: hsl(120, 9%, 20%); /* dialed L from 45% #687d68 */
     --color-base04: #809980;
-    --color-base05: hsl(120, 13%, 80%); /* dialed L from 60% to 80% originally #8ca68c */
+    --color-base05: hsl(120, 13%, 80%); /* dialed L from 60% #8ca68c */
     --color-base06: #cfe8cf;
     --color-base07: #f4fbf4;
     --color-base08: #e6193c;

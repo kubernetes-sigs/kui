@@ -6,7 +6,7 @@ body[kui-theme="Monokai"] {
     --color-base00: #272822;
     --color-base01: #383830;
     --color-base02: #49483e;
-    --color-base03: #75715e;
+    --color-base03: hsl(50, 11%, 23%); /* dialed L down from 45% #75715e */
     --color-base04: #a59f85;
     --color-base05: #f8f8f2;
     --color-base06: #f5f4f1;
