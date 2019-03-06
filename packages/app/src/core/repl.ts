@@ -852,9 +852,6 @@ export const encodeComponent = (component: string, quote = '"') => {
   }
 }
 
-/** temporary hack: two tests depend on repl.doCancel */
-export const doCancel = () => cli.doCancel()
-
 /**
  * How to handle errors in command execution? Headless might want to
  * override the graphical default

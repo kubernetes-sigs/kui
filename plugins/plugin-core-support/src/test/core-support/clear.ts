@@ -50,7 +50,7 @@ describe('Clear the console', function (this: ISuite) {
         return placeholder === expectedPlaceholder
       })
       if (cancel) {
-        await this.app.client.execute('repl.doCancel()')
+        await this.app.client.keys(ui.ctrlC)
         return cli.expectBlank(res)
       } else {
         this.app.client.keys(`${enteredString}${keys.ENTER}`)

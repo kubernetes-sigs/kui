@@ -142,7 +142,7 @@ exports.cli = {
       .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => app.client.getValue(selectors.CURRENT_PROMPT)
         .then(currentValue => app.client.setValue(selectors.CURRENT_PROMPT, `${currentValue}${cmd}`))
-        .then(() => { if (noNewline !== true) app.client.execute('repl.doEval()') })
+        .then(() => { if (noNewline !== true) app.client.keys(keys.ENTER) })
         .then(() => ({ app: app, count: parseInt(count) })))
   },
 
@@ -451,6 +451,7 @@ exports.validateNamespace = observedNamespace => {
  */
 exports.ctrlOrMeta = process.platform === 'darwin' ? '\uE03D' : '\uE009'
 
+exports.ctrlC = ['\uE009', 'c', 'NULL'] // Send NULL to release Control key at the end of the call, otherwise the state of Control is kept between calls
 /**
  * Wait till activation list shows the given activationId. Optionally,
  * use an action name filter
