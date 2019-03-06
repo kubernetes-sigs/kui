@@ -177,6 +177,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (na
       gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
     }))
     .catch(err => {
+      debug('fetchAction error', err.statusCode, err.code, err.message)
       if (tryLocal && err.code !== 406) { // 406 means that this is a valid action, but lacking composer source
         return fetchFile(name)
       } else {
@@ -294,5 +295,5 @@ export const persisters = {
 
 export default async (commandTree, _wsk) => {
   // command registration: create new action
-  commandTree.listen('/editor/new', newAction(), { usage: newUsage, noAuthOk: true })
+  commandTree.listen('/editor/new', newAction(), { usage: newUsage, noAuthOk: true, needsUI: true, inBrowserOk: true })
 }

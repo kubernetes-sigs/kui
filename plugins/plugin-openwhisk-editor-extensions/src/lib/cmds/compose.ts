@@ -367,5 +367,5 @@ export const newAction = ({ prequire, cmd = 'new', type = 'actions', _kind = def
 export default async (commandTree, prequire) => {
   // command registration: create new app/composition
   commandTree.listen('/editor/compose', newAction(compositionOptions({ prequire, cmd: 'compose' })),
-    { usage: composeUsage, noAuthOk: true })
+    { usage: composeUsage, noAuthOk: true, needsUI: true, inBrowserOk: true })
 }
