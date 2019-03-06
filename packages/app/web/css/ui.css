@@ -2297,6 +2297,7 @@ badge {
     text-transform: lowercase;
     display: inline-block; /* <-- the trick requires block or inline-block */
     vertical-align: middle; /* <-- then, inline-block requires this */
+    text-align: center; /* <-- and this, though chrome seems happy without it */
 }
 badge::first-letter {
     /* see the "in tandem" note immediately above */
