@@ -62,27 +62,45 @@ const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
 }
 
 /**
+ * Reload (versus restart) the electron application and then expect
+ * the given theme to be set
+ *
+ */
+const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
+  it(`should still be using ${theme.name} theme after a reload`, () => ctx.app.client.refresh()
+     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
+     .catch(common.oops(ctx)))
+}
+
+/**
  * Click on the theme button and expect the theme list
  *
  */
-const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite) => {
+const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nClicks = 1) => {
   it(`should click on theme button and present theme list, then click on ${clickOn.name}`, async () => {
     try {
       ctx.app.client.click('#theme-button')
 
-      const light = `.entity.theme[data-name="${Light.name}"] .clickable`
-      const dark = `.entity.theme[data-name="${Dark.name}"] .clickable`
+      const checkMarkCell = `.entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
+      const nameCell = `.entity.theme[data-name="${clickOn.name}"] > div > .clickable`
 
-      await ctx.app.client.waitForExist(light)
-      await ctx.app.client.waitForExist(dark)
+      await ctx.app.client.waitForExist(checkMarkCell)
+      await ctx.app.client.waitForExist(nameCell)
 
-      if (clickOn.name === Light.name) {
-        await ctx.app.client.click(light)
-      } else {
-        await ctx.app.client.click(dark)
+      for (let idx = 0; idx < nClicks; idx++) {
+        if (idx === 0) {
+          await ctx.app.client.click(checkMarkCell)
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          await ctx.app.client.click(nameCell)
+        }
+
+        await ctx.app.client.waitForExist(`body[kui-theme="${clickOn.name}"]`)
+
+        if (idx > 2) {
+          await reloadAndThen(clickOn)
+        }
       }
-
-      await ctx.app.client.waitForExist(`body[kui-theme="${clickOn.name}"]`)
     } catch (err) {
       common.oops(ctx)(err)
     }
@@ -98,6 +116,8 @@ const goLight = go(Light)
 const goDark = go(Dark)
 const restartAndThenLight = restartAndThen(Light)
 const restartAndThenDark = restartAndThen(Dark)
+const reloadAndThenLight = reloadAndThen(Light)
+const reloadAndThenDark = reloadAndThen(Dark)
 const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
 const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
 
@@ -107,6 +127,8 @@ describe('theme switching', function (this: ISuite) {
 
   clickOnThemeButtonThenClickOnLight(this)
   clickOnThemeButtonThenClickOnDark(this)
+  clickOnThemeButtonThenClickOnLight(this, 3) // click on Light 3 times in a row
+  clickOnThemeButtonThenClickOnDark(this, 4) // click on Dark 4 times in a row
 
   it('should list built-in Light theme', () => cli.do('theme list', this.app)
      .then(cli.expectOKWithCustom({ selector: `.entity-name[data-value="${Light.name}"]` }))
@@ -117,11 +139,13 @@ describe('theme switching', function (this: ISuite) {
      .catch(common.oops(this)))
 
   resetTheme(this)
+  reloadAndThenLight(this)
 
   goDark(this)
   restartAndThenDark(this)
 
   resetTheme(this)
+  reloadAndThenLight(this)
   restartAndThenLight(this)
 
   // switch back and forth without restart
@@ -132,6 +156,25 @@ describe('theme switching', function (this: ISuite) {
   goDark(this)
   goLight(this)
 
-  // finally we should be Light after that switching back and forth
+  // after that switching around, we should be Light after that
+  // switching back and forth
+  reloadAndThenLight(this)
+
+  // try clicking on the current theme a bunch of times, to make sure
+  // we stick with it
+  goLight(this)
+  goLight(this)
+  goLight(this)
+  reloadAndThenLight(this)
+
+  goDark(this)
+  reloadAndThenDark(this)
+
+  goLight(this)
+  goLight(this)
+
+  // finally we should be Light even after clicking on Light a bunch
+  // of times in a row
   restartAndThenLight(this)
+  reloadAndThenLight(this)
 })
