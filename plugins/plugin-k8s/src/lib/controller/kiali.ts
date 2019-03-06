@@ -183,6 +183,8 @@ export default async (commandTree, prequire) => {
 
   const getAppsCmd = commandTree.listen('/kiali/get/apps', getApps, { noAuthOk: true })
   commandTree.synonym('/kiali/get/app', getApps, getAppsCmd, { noAuthOk: true })
+  const getAppsCmd2 = commandTree.listen('/k/get/apps', getApps, { noAuthOk: true })
+  commandTree.synonym('/k/get/app', getApps, getAppsCmd2, { noAuthOk: true })
 
   commandTree.listen('/kiali/console', () => client.kialiConsole(), { noAuthOk: true })
 }
