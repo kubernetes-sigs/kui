@@ -38,6 +38,7 @@ const viewName = 'Grid'
 
 const css = {
   content: 'activation-viz-plugin',
+  useDarkTooltips: 'use-dark-tooltips',
   gridGrid: 'grid-grid'
 }
 
@@ -168,7 +169,9 @@ const drawGrid = (options: IOptions, header: IHeader, uuid: string, redraw = fal
   const existingContent = document.querySelector(sidecarSelector(`.custom-content .${css.content}`))
   const content = (redraw && existingContent) || document.createElement('div')
 
-  content.className = css.content
+  content.classList.add(css.content)
+  content.classList.add(css.useDarkTooltips)
+
   _drawGrid(options, header, content,
     groupByAction(activations, options),
     undefined, undefined, redraw)

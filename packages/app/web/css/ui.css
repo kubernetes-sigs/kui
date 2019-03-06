@@ -535,6 +535,11 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .entity-name-group:not(.header-cell) .entity-name, .result-as-table .bold {
     font-weight: 500;
 }
+body[kui-theme-style="dark"] .entity-name-group:not(.header-cell) .entity-name, .result-as-table .bold {
+    /* in dark mode, emphasize the entity name */
+    font-weight: 600;
+    color: var(--color-base0C);
+}
 .log-field .entity-name {
     direction: rtl;
     white-space: nowrap;
@@ -1274,6 +1279,9 @@ code.fancy-code, code.fancy-code.hljs {
 .badge-width {
     width: 10em;
 }
+.sidecar-visible .badge-width {
+    width: 7em;
+}
 .pretty-narrow {
     /* please note: used in tandem with not-too-wide */
     width: 7em;
@@ -1585,6 +1593,7 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
     /* the date part of log lines */
     vertical-align: middle;
     font-size: 0.875em;
+    font-weight: bold;
     width: 15em;
     padding-top: 1em;
     padding-bottom: 1em;
@@ -1592,6 +1601,9 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 }
 .log-lines .log-line .log-field.log-date:not(.hljs-attribute) {
     color: var(--color-text-02);
+}
+.log-lines .log-line .log-field.log-date.hljs-attribute {
+    color: var(--color-base0D);
 }
 .log-lines .log-line .log-message {
     /* the message part of log lines */
@@ -1894,6 +1906,47 @@ body.oops-total-catastrophe #restart-needed-warning {
     width: 13em;
     white-space: normal !important;
     text-align: center;
+}
+body[kui-theme-style="dark"] .use-dark-tooltips [data-balloon]:after {
+    background-color: rgba(17,17,17,0.9);
+    color: var(--color-white) !important;
+}
+body[kui-theme-style="dark"] .use-dark-tooltips [data-balloon]:before {
+    background-color: var(--color-base00);
+}
+body[kui-theme-style="dark"] [data-balloon]:after {
+    background-color: var(--color-base05);
+    color: var(--color-base01) !important;
+}
+body[kui-theme-style="dark"] [data-balloon]:before {
+    background-image: none;
+    background-color: var(--color-base05);
+    mask-repeat: no-repeat;
+
+    mask-position: 50% 100%;
+    -webkit-mask-position: 50% 100%;
+    mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(0)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(0)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
+}
+body[kui-theme-style="dark"] [data-balloon][data-balloon-pos='left']:before {
+    mask-position: 100% 50%;
+    -webkit-mask-position: 100% 50%;
+    mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(-90 18 18)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(-90 18 18)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
+}
+body[kui-theme-style="dark"] [data-balloon][data-balloon-pos='down']:before,
+body[kui-theme-style="dark"] [data-balloon][data-balloon-pos='down-left']:before,
+body[kui-theme-style="dark"] [data-balloon][data-balloon-pos='down-right']:before{
+    mask-position: 50% 0%;
+    -webkit-mask-position: 50% 0%;
+    mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(180 18 6)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(180 18 6)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
+}
+body[kui-theme-style="dark"] [data-balloon][data-balloon-pos='right']:before {
+    mask-position: 0% 50%;
+    -webkit-mask-position: 0% 50%;
+    mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(90 6 6)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(90 6 6)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
 }
 .main [data-balloon]:after {
     font-size: 0.875rem !important;
