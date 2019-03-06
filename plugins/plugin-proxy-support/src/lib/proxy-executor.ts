@@ -76,7 +76,7 @@ class ProxyEvaluator implements IEvaluator {
           debug('rethrowing non-200 response', response)
           // to trigger the catch just below
           const err = new Error(response.body)
-          err['code'] = response.statusCode
+          err['code'] = err['statusCode'] = response.statusCode
           throw err
         } else {
           return response.body
@@ -85,7 +85,8 @@ class ProxyEvaluator implements IEvaluator {
         debug('proxy execution resulted in an error, recasting to local exception', err.code, err.message, err.body, err)
 
         const error = new Error((err.body && err.body.message) || (typeof err.body === 'string' ? err.body : err.message || 'Internal error'))
-        err['code'] = (err.body && err.body.code) || err.code || err.statusCode
+        error['code'] = error['statusCode'] = (err.body && err.body.code) || err.code || err.statusCode
+        debug('using this code', error['code'])
         throw error
       }
     }
