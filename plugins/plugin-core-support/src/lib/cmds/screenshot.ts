@@ -66,9 +66,9 @@ const selectors = {
   'default': 'body > .page', // everything but header
   sidecar: sidecarSelector(), // entire sidecar region
   repl: 'tab.visible .repl', // entire REPL region
-  nth: n => `tab.visible .repl .repl-block:nth-child(${n}) .repl-result`, // this will include only the non-ok region
-  'last-full': 'tab.visible .repl .repl-block:nth-last-child(2) .repl-output', // this will include the 'ok' part
-  last: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-result' // this will include only the non-ok region
+  nth: n => `tab.visible .repl .repl-block:nth-child(${n}) .repl-output`, // this will include only the non-ok region
+  'last-full': 'tab.visible .repl .repl-block:nth-last-child(2)', // this will include the 'ok' part
+  last: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-output' // this will include only the non-ok region
 }
 
 /**

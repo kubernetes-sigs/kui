@@ -180,8 +180,8 @@ body.subwindow .repl .horizontal-landing-zone {
 .repl-block:first-child {
     padding-top: 0;
 }
-.repl-block {
-    margin: 0em 1em 0 1.8125em;
+.repl-input, .repl-output {
+    padding: 0 1em 0 1.8125em;
 }
 
 #help-button.left-tab-stripe-button {
