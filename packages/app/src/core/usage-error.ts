@@ -157,7 +157,10 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
     const left = div() // usage and detailedExample
     const right = div() // required and optional parameters
 
-    if (sections && sections.length > 1) {
+    // if we have a great many detailed examples, place them in a scroll region
+    const scrollableDetailedExamples = detailedExample && detailedExample.length > 4
+
+    if ((sections && sections.length > 1) || scrollableDetailedExamples) {
       left.classList.add('fifty-fifty')
       right.classList.add('fifty-fifty')
     } else {
@@ -305,7 +308,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       if (example) {
         const examplePart = bodyPart()
         const prePart = prefix('Usage')
-        const textPart = div(example)
+        const textPart = div(example.replace(/^\s+/, ''))
 
         left.appendChild(examplePart)
         examplePart.appendChild(prePart)
@@ -323,12 +326,19 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         left.appendChild(examplePart)
         examplePart.appendChild(prePart)
 
+        const rowsPart = examples.length > 4 ? div(undefined, 'scrollable') : examplePart
+        if (examples.length > 4) {
+          const nRowsInViewport = 5
+          examplePart.appendChild(rowsPart)
+          rowsPart.style.maxHeight = `calc(5 * 3em + 1px)`
+        }
+
         examples.forEach(({ command, docs }, idx) => {
           const textPart = div(command)
           const docPart = sans(div(docs))
 
-          examplePart.appendChild(textPart)
-          examplePart.appendChild(smaller(docPart))
+          rowsPart.appendChild(textPart)
+          rowsPart.appendChild(smaller(docPart))
 
           textPart.style.color = 'var(--color-support-02)'
 
@@ -369,7 +379,8 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         // ui.css; nRowsInViewport = true means disable inner scrolling
         if (rows.length > nRowsInViewport && nRowsInViewport !== true) {
           const tableScrollable = div(undefined, 'scrollable')
-          tableScrollable.style.maxHeight = `calc(${nRowsInViewport} * 3em + 1px)`
+          const nRows = (sections && (sections.length === 2 || (sections.length === 1 && scrollableDetailedExamples))) ? 8 : nRowsInViewport
+          tableScrollable.style.maxHeight = `calc(${nRows} * 3em + 1px)`
           tableScrollable.appendChild(table)
           wrapper.appendChild(tableScrollable)
         } else {
@@ -389,7 +400,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
             command = outerCommand,
             name = command, label = name,
             noclick = false,
-            synonyms, alias, numeric, aliases = synonyms || [alias], hidden = false, advanced = false,
+            synonyms, alias, numeric, aliases = (synonyms || [alias]).filter(x => x), hidden = false, advanced = false,
             available,
             example = numeric && 'N', dir: isDir = available || false,
             title, header, docs = header || title, partial = false, allowed, defaultValue } = rowData
@@ -406,7 +417,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           const cmdPart = span(label)
           const dirPart = isDir && label && span('/')
           const examplePart = example && span(example, label || dirPart ? 'left-pad' : '') // for -p key value, "key value"
-          const aliasesPart = aliases && span(undefined, 'deemphasize small-left-pad')
+          const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'deemphasize small-left-pad')
           const docsPart = span(docs)
           const allowedPart = allowed && smaller(span(undefined))
 

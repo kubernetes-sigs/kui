@@ -37,4 +37,14 @@ describe('k8s usage', function (this: common.ISuite) {
        this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
      ]))
      .catch(common.oops(this)))
+
+  it('should give help for known outer command: kubectl logs -h', () => cli.do('kubectl logs -h', this.app)
+     .then(cli.expectError(500, undefined, { passthrough: true }))
+     .then(N => Promise.all([
+       this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Options:"]`),
+       this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Examples"]`),
+       this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="logs"]`),
+       this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
+     ]))
+     .catch(common.oops(this)))
 })

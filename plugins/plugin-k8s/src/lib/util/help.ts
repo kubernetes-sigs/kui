@@ -38,7 +38,7 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
   const header = rawSections[0] // the first section is the top-level doc string
 
   // form the detailedExample model from the use part we stripped out
-  const detailedExample = usePart && usePart.filter(x => x).map(line => {
+  const detailedExampleFromUsePart = usePart && usePart.filter(x => x).map(line => {
     const [ _, command, docs ] = line.split(/^Use "([^"]+)"\s+(.*)\s*$/)
     return { command, docs }
   })
@@ -54,37 +54,71 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
 
     return S
   }, [])
-  const allSections = [_allSections[0]].concat(_allSections.slice(1).sort((a, b) => -a.title.localeCompare(b.title)))
+
+  interface Section {
+    title: string
+    content: string
+  }
+  const allSections: Array<Section> = [_allSections[0]].concat(_allSections.slice(1).sort((a, b) => -a.title.localeCompare(b.title)))
 
   // sometimes, the first section is extra intro docs; sometimes it
   // is a legitimate command/usage section
-  const firstSectionIsCommandLike = allSections[0].title.match(/command/i) && !allSections[0].title.match(/to begin/i)
-  const intro = !firstSectionIsCommandLike && allSections[0]
+  // const firstSectionIsCommandLike = /command/i.test(allSections[0].title) && !/to begin/i.test(allSections[0].title)
+  const intro = undefined // !firstSectionIsCommandLike && allSections[0]
 
   // pull off the Usage section and place it into our usage model
   const usageSection = allSections.filter(({ title }) => title === 'Usage:')
 
-  const sections = allSections
-    .slice(firstSectionIsCommandLike ? 0 : 1)
-    .filter(({ title }) => title !== 'Usage:')
-    .map(({ title, content }) => ({
-      title,
-      nRowsInViewport: title.match(/Available Commands/i) ? 8 : undefined,
-      rows: content
-        .split(/\n/)
-        .filter(x => x)
-        .map(line => line.split(/(\t|(\s\s)+\s?)|(?=:\s)/)
-             .filter(x => x && !x.match(/(\t|\s\s)/)))
-        .map(([ thisCommand, docs ]) => ({
-          command: thisCommand
-            .replace(/^\s*-\s+/, '')
-            .replace(/:\s*$/, ''),
-          docs: docs && docs.replace(/^\s*:\s*/, ''),
-          commandPrefix: title.match(/Available Commands/i) && command,
-          noclick: !title.match(/Common actions/i) &&
-            !title.match(/Available Commands/i)
-        }))
-    }))
+  // pull off the Examples section
+  const examplesSection = allSections.find(({ title }) => title === 'Examples:')
+
+  const remainingSections = allSections
+    // .slice(firstSectionIsCommandLike ? 0 : 1)
+    .filter(({ title }) => title !== 'Usage:' && title !== 'Examples:')
+
+  const sections = remainingSections
+    .map(({ title, content }) => {
+      return {
+        title,
+        nRowsInViewport: title.match(/Available Commands/i) ? 8 : undefined,
+        rows: content
+          .split(/[\n\r]/)
+          .filter(x => x)
+          .map(line => line
+               .split(/(\t|(\s\s)+\s?)|(?=:\s)/)
+               .filter(x => x && !/(\t|\s\s)/.test(x)))
+          .map(([ thisCommand, docs ]) => {
+            if (thisCommand) {
+              return {
+                command: thisCommand
+                  .replace(/^\s*-\s+/, '')
+                  .replace(/:\s*$/, ''),
+                docs: docs && docs.replace(/^\s*:\s*/, ''),
+                commandPrefix: title.match(/Available Commands/i) && command,
+                noclick: !title.match(/Common actions/i) &&
+                  !title.match(/Available Commands/i)
+              }
+            }
+          })
+          .filter(x => x)
+      }
+    })
+
+  const detailedExample = (detailedExampleFromUsePart || [])
+    .concat((examplesSection ? examplesSection.content : '')
+            .split(/[\n\r]/)
+            .map(x => x.trim())
+            .filter(x => x)
+            .map((line, idx, lines) => {
+              if (idx % 2 === 0) {
+                return {
+                  command: lines[idx + 1],
+                  docs: lines[idx].replace(/^\s*#\s+/, '')
+                }
+              }
+            })
+            .filter(x => x)
+           )
 
   return new UsageError({
     breadcrumb: verb || command,

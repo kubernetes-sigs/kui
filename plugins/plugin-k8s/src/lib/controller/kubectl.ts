@@ -747,6 +747,13 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       } else {
         resolve(out.trim())
       }
+    } else if (options.help || options.h || argv.length === 1 || isUsage) {
+      try {
+        resolve(renderHelp(out, command, verb, entityType))
+      } catch (err) {
+        console.error('error rendering help', err)
+        reject(out)
+      }
     } else if (output === 'json' || output === 'yaml' || output === 'logs') {
       //
       // return a sidecar entity
@@ -811,8 +818,6 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       //
       debug('status after success')
       status(command).then(resolve).catch(reject)
-    } else if (options.help || options.h || argv.length === 1 || isUsage) {
-      resolve(renderHelp(out, command, verb, entityType))
     } else if (formatters[command] && formatters[command][verb]) {
       debug('using custom formatter')
       resolve(formatters[command][verb].format(command, verb, entityType, options, out))
