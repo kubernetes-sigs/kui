@@ -179,6 +179,7 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
     type: 'file',
     onclick: false,
     noSort: true,
+    noEntityColors: true,
     outerCSS,
     attributes: [
       { key: 'owner', value: 'OWNER', outerCSS: outerCSSSecondary },

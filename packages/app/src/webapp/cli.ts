@@ -309,6 +309,11 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
     // decorate it as a table
     (resultDom.parentNode as HTMLElement).classList.add('result-as-table')
 
+    if (response.length > 0 && response[0].noEntityColors) {
+      // client wants control over entity-cell coloring
+      resultDom.classList.add('result-table-with-custom-entity-colors')
+    }
+
     if (!Array.isArray(response[0]) && response.length > 0) {
       resultDom.classList.add('result-table')
     } else {
