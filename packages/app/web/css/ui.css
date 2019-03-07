@@ -185,9 +185,10 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     display: table;
     border-spacing: 0;
     border-collapse: collapse;
-    border: 1px solid;
+    border: 1px solid var(--color-ui-04);
     margin-top: 0.75em;
-    transition: border-color 300ms ease-in-out;
+    /* this causes odd flickering on chrome: transition: border-color 300ms ease-in-out; */
+    background: transparent;
 }
 .result-as-fixed-tables .result-table, .result-as-fixed-tables.result-table {
     table-layout: fixed;
@@ -2433,12 +2434,6 @@ badge.clickable:hover {
     background: hsl(203, 43%, 25%);
     text-decoration: none;
     /*var(--color-ui-01);*/
-}
-
-.result-as-table .result-table, .result-as-table.result-table {
-    border-color: var(--color-ui-04);
-    background: transparent;
-    /* box-shadow: 0 0 1px var(--color-ui-04); */
 }
 
 .entity.actions.app .repl-result-prefix {
