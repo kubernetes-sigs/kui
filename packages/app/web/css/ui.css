@@ -474,6 +474,10 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .row-selection-context:not(.selected-row) .selected-entity {
     opacity: 0.1;
+    transition: opacity 300ms ease-in-out;
+}
+.row-selection-context:not(.selected-row):hover .selected-entity {
+    opacity: 0.5;
 }
 
 .entity:first-child .entity-attributes > span {
