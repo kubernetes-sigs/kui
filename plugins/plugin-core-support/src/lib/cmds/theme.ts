@@ -209,7 +209,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
 
       if (previousKey !== newKey) {
         // warning: don't blindly uninject! only if we are actually changing themes
-        await uninjectCSS({ key: previousKey, css: 'dont-care' })
+        await uninjectCSS({ key: previousKey })
       }
 
       // let others know that the theme has changed
