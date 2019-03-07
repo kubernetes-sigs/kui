@@ -532,6 +532,32 @@ export const showCustom = async (custom, options) => {
       // then its already a DOM
       container.appendChild(projection)
     } else {
+      const tryToUseEditor = true
+      if (tryToUseEditor) {
+        try {
+          const { edit /*, IEditorEntity */ } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
+          debug('successfully loaded editor', custom)
+
+          const entity /*: IEditorEntity */ = {
+            type: custom.prettyType,
+            name: custom.name,
+            persister: () => true,
+            annotations: [],
+            exec: {
+              kind: custom.contentType,
+              code: typeof projection !== 'string' ? JSON.stringify(projection, undefined, 2) : projection
+            }
+          }
+
+          const { content } = await edit(entity, { readOnly: true })
+          container.appendChild(content)
+          return
+        } catch (err) {
+          debug('erroring in loading editor', err)
+          // intentional fall-through
+        }
+      }
+
       const scrollWrapper = document.createElement('div')
       const pre = document.createElement('pre')
       const code = document.createElement('code')
@@ -834,7 +860,7 @@ export const showEntity = (entity, options: IShowOptions = new DefaultShowOption
 
   const renderer = registeredEntityViews[entity.type || entity.kind]
   if (renderer) {
-    debug('dispatching to registered view handler %s', entity.type || entity.kind)
+    debug('dispatching to registered view handler %s', entity.type || entity.kind, renderer)
     return renderer(entity, sidecar, options)
   } else {
     try {

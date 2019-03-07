@@ -26,5 +26,5 @@ export default (commandTree, prequire) => {
   commandTree.subtree('/editor', { usage })
 
   // register editing commands
-  return edit(commandTree, prequire)
+  return edit(commandTree)
 }

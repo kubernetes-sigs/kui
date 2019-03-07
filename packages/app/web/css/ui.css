@@ -2657,6 +2657,8 @@ body {
 
     --color-tag-beta-fill: var(--color-base05);
     --color-tag-beta-text: var(--color-base01);
+    --color-tag-ibm-fill: var(--color-base0D);
+    --color-tag-ibm-text: var(--color-base01);
 
     /* default latency color spectrum */
     --color-latency-0: #2166ac;

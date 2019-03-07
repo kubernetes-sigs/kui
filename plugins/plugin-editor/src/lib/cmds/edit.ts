@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/editor/cmds/edit-amd')
 
 import { respondToRepl } from '../util'
-import { fetchEntity } from '../fetchers'
+import { IEntity as IEditorEntity, fetchEntity } from '../fetchers'
 import * as usage from '../../usage'
 import { lockIcon as defaultLock } from '../readonly'
 import { applyOverrides } from '../overrides'
@@ -26,14 +26,44 @@ import { openEditor } from '../open'
 
 import * as repl from '@kui-shell/core/core/repl'
 
+// so that users of the exported `edit` command have access to our
+// IEntity model
+export type IEditorEntity = IEditorEntity
+
+class DefaultCustomization {
+  lock: object = undefined
+}
+
+class DefaultExecOptions {
+  noSidecarHeader = false
+  parameters: IEditorEntity = undefined
+  custom = new DefaultCustomization()
+}
+
+/**
+ * Open editor to a given entity, passed programmatically
+ *
+ */
+export const edit = (entity: IEditorEntity, options) => editCmd({
+  parsedOptions: options,
+  execOptions: {
+    parameters: entity,
+    custom: undefined,
+    noSidecarHeader: true
+  }
+})
+
 /**
  * Command handler for `edit <entity>`
  *
  */
-const edit = (prequire) => async ({ argvNoOptions, parsedOptions, execOptions }) => {
-  debug('edit command execution started')
+const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }) => {
+  debug('edit command execution started', execOptions)
 
-  const name = argvNoOptions[argvNoOptions.indexOf('edit') + 1]
+  // maybe the caller is passing us the name and entity programmatically?
+  const { parameters: programmaticArgs } = execOptions
+
+  const name = (programmaticArgs && programmaticArgs.name) || argvNoOptions[argvNoOptions.indexOf('edit') + 1]
 
   //
   // fetch the entity and open the editor in parallel
@@ -42,7 +72,7 @@ const edit = (prequire) => async ({ argvNoOptions, parsedOptions, execOptions })
   //
   debug('name', name)
   const [entity, injectEntityIntoView] = await Promise.all([
-    fetchEntity(name, parsedOptions, execOptions), // fetch the entity model
+    programmaticArgs || fetchEntity(name, parsedOptions, execOptions), // fetch the entity model
     openEditor(name, parsedOptions, execOptions) // prepare the editor view
   ])
 
@@ -58,7 +88,7 @@ const edit = (prequire) => async ({ argvNoOptions, parsedOptions, execOptions })
   return respondToRepl([ lock ])(model)
 }
 
-export default async (commandTree, prequire) => {
+export default async (commandTree) => {
   // command registration: edit an existing entity
-  commandTree.listen('/editor/edit', edit(prequire), { usage: usage.editUsage('edit'), noAuthOk: true, needsUI: true })
+  commandTree.listen('/editor/edit', editCmd, { usage: usage.editUsage('edit'), noAuthOk: true, needsUI: true })
 }

@@ -7,7 +7,7 @@ body[kui-theme="Gruvbox Medium"] {
     --color-base01: #3c3836;
     --color-base02: #504945;
     --color-base03: hsl(27, 10%, 25%); /* dialed L from 36% #665c54 */
-    --color-base04: #bdae93;
+    --color-base04: hsl(39, 24%, 45%); /* dialed L from 66% #bdae93 */
     --color-base05: hsl(40, 38%, 80%); /* dialed L from 73% #d5c4a1 */
     --color-base06: #ebdbb2;
     --color-base07: #fbf1c7;

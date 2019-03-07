@@ -38,9 +38,10 @@ const save = (app, action) => () => {
     .catch(err => { throw err })
 }
 
+/** for some reason, monaco inserts a trailing view-line even for one-line files :( */
 const verifyTextExist = (selector, expectedText) => app => {
   return app.client.waitUntil(() => app.client.getText(selector)
-    .then(actualText => actualText === expectedText))
+    .then(actualText => actualText.replace(/\s+$/, '') === expectedText))
     .then(() => app)
 }
 
@@ -100,7 +101,7 @@ describe('editor', function (this: ISuite) {
   it('should re-open the file and see the unchanged content', () => cli.do(`open ${tmpFilepath}`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
-    .then(verifyTextExist(`${ui.selectors.SIDECAR} .language-txt`, initialContent))
+    .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
      .catch(common.oops(this)))
 
   it('should edit and save the content', () => cli.do('edit /tmp/edit-file.txt', this.app)
@@ -113,12 +114,12 @@ describe('editor', function (this: ISuite) {
   it('should re-open the initial file and see the unchanged content', () => cli.do(`open ${initialFilepath}`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
-    .then(verifyTextExist(`${ui.selectors.SIDECAR} .language-txt`, initialContent))
+    .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
      .catch(common.oops(this)))
 
   it('should re-open the edited file and see the updated content', () => cli.do(`open ${tmpFilepath}`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
-    .then(verifyTextExist(`${ui.selectors.SIDECAR} .language-txt`, updatedText))
+    .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
      .catch(common.oops(this)))
 })

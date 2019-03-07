@@ -86,14 +86,14 @@ export const injectCSS = (file: IStylesheetDirect | IStylesheetFile | string): v
  * Remove a stylesheet
  *
  */
-export const uninjectCSS = (file: IStylesheetDirect | IStylesheetFile): void => {
+export const uninjectCSS = ({ key }): void => {
   if (isHeadless()) {
     return
   } else {
-    const id = `injected-css-${file.key}`
-    debug('uninjectCSS', id)
-
+    const id = `injected-css-${key}`
     const link = document.getElementById(id)
+
+    debug('uninjectCSS', id, link)
     if (link && link.parentNode) {
       link.parentNode.removeChild(link)
     }

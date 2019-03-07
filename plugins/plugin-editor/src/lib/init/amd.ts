@@ -64,7 +64,8 @@ export default (editorWrapper: HTMLElement, options) => {
           }
 
           // workaround monaco-css not understanding the environment
-          // self.module = undefined
+          self['module'] = undefined
+
           // workaround monaco-typescript not understanding the environment
           // self.process.browser = true
         }

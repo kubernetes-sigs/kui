@@ -23,7 +23,7 @@ import * as events from 'events'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { injectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
+import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
 import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
 
 import strings from '../i18n/strings'
@@ -48,7 +48,13 @@ export const openEditor = async (name, options, execOptions) => {
   const custom = execOptions.custom
   const getEntity = (custom && custom.getEntity) || currentSelection
 
-  const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
+  // for certain content types, always show folding controls, rather
+  // than on mouse over (which is the default behavior for monaco)
+  const entityRightNow = getEntity()
+  const kind = entityRightNow && ((entityRightNow.exec && entityRightNow.exec.kind) || entityRightNow.contentType)
+  if (kind === 'yaml' || kind === 'json') {
+    options.showFoldingControls = 'always'
+  }
 
   if (inBrowser()) {
     // const mp = require('./edit-webpack')
@@ -58,24 +64,10 @@ export const openEditor = async (name, options, execOptions) => {
     injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
   }
 
-  const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
-  try {
-    if (isDark) {
-      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/dark.css').toString(), key: 'editor.dark-theme' })
-    } else {
-      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(), key: 'editor.mono-blue-theme' })
-    }
-  } catch (err) {
-    if (isDark) {
-      injectCSS(path.join(ourRoot, 'web/css/tomorrow-night.css'))
-    } else {
-      injectCSS(path.join(ourRoot, 'web/css/mono-blue.css'))
-    }
-  }
-
   try {
     injectCSS({ css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(), key: 'editor.editor' })
   } catch (err) {
+    const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
     injectCSS(path.join(ourRoot, 'web/css/editor.css'))
   }
 
@@ -92,6 +84,9 @@ export const openEditor = async (name, options, execOptions) => {
   content.onclick = evt => {
     evt.stopPropagation()
   }
+
+  injectTheme(editorWrapper) // inject right now
+  globalEventBus.on('/theme/change', () => injectTheme(editorWrapper)) // and re-inject when the theme changes
 
   /**
    * Given an editor instance, return a function that can update
@@ -114,7 +109,7 @@ export const openEditor = async (name, options, execOptions) => {
     editorWrapper['editor'] = editor
 
     return entity => {
-      debug('updater', entity)
+      debug('updater', typeof entity === 'string' ? entity.substring(0, 20) : entity)
       const eventBus = new events.EventEmitter()
 
       const kind = sidecar.querySelector('.action-content .kind') as HTMLElement
@@ -139,8 +134,10 @@ export const openEditor = async (name, options, execOptions) => {
       const upToDate = document.createElement('div')
       const modified = document.createElement('div')
 
-      removeAllDomChildren(subtext)
-      subtext.appendChild(status)
+      if (!execOptions.noSidecarHeader) {
+        removeAllDomChildren(subtext)
+        subtext.appendChild(status)
+      }
       status.appendChild(isNew)
       status.appendChild(isNewReadOnly)
       status.appendChild(upToDate)
@@ -152,7 +149,7 @@ export const openEditor = async (name, options, execOptions) => {
       status.className = 'editor-status'
 
       if (options.readOnly) {
-        debug('staus:is-read-only')
+        debug('status:is-read-only')
         status.classList.add('is-read-only')
       }
       if (entity.isNew) {
@@ -169,7 +166,7 @@ export const openEditor = async (name, options, execOptions) => {
 
       // even handlers for saved and content-changed
       const editsInProgress = () => {
-        debug('editsInProgress')
+        // debug('editsInProgress')
         sidecar.classList.add('is-modified')
         editor.clearDecorations() // for now, don't try to be clever; remove decorations on any edit
         eventBus.emit('/editor/change', {})
@@ -190,25 +187,27 @@ export const openEditor = async (name, options, execOptions) => {
       eventBus.on('/editor/save', editsCommitted)
       editor.getModel().onDidChangeContent(editsInProgress)
 
-      // make a wrapper around the entity name to house the "is
-      // modified" indicator
-      const nameDiv = document.createElement('div')
-      const namePart = document.createElement('span')
-      const isModifiedPart = document.createElement('span')
-      const isModifiedIcon = document.createElement('i')
+      if (!execOptions.noSidecarHeader) {
+        // make a wrapper around the entity name to house the "is
+        // modified" indicator
+        const nameDiv = document.createElement('div')
+        const namePart = document.createElement('span')
+        const isModifiedPart = document.createElement('span')
+        const isModifiedIcon = document.createElement('i')
 
-      nameDiv.appendChild(namePart)
-      nameDiv.appendChild(isModifiedPart)
-      isModifiedPart.appendChild(isModifiedIcon)
-      namePart.innerText = entity.name
-      nameDiv.className = 'is-modified-wrapper'
-      isModifiedPart.className = 'is-modified-indicator'
-      isModifiedIcon.className = 'fas fa-asterisk'
-      isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
-      isModifiedPart.setAttribute('data-balloon-pos', 'left')
+        nameDiv.appendChild(namePart)
+        nameDiv.appendChild(isModifiedPart)
+        isModifiedPart.appendChild(isModifiedIcon)
+        namePart.innerText = entity.name
+        nameDiv.className = 'is-modified-wrapper'
+        isModifiedPart.className = 'is-modified-indicator'
+        isModifiedIcon.className = 'fas fa-asterisk'
+        isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
+        isModifiedPart.setAttribute('data-balloon-pos', 'left')
 
-      addNameToSidecarHeader(sidecar, nameDiv, entity.packageName)
-      addVersionBadge(entity, { clear: true })
+        addNameToSidecarHeader(sidecar, nameDiv, entity.packageName)
+        addVersionBadge(entity, { clear: true })
+      }
 
       /** call editor.layout */
       const relayout = editor.relayout = () => {
@@ -245,7 +244,7 @@ export const openEditor = async (name, options, execOptions) => {
 const setText = (editor, execOptions?) => ({ code, kind }) => {
   const lang = execOptions && execOptions.language || language(kind)
   debug('setText language', kind, lang)
-  debug('setText code', code)
+  debug('setText code', code.substring(0, 20))
 
   const oldModel = editor.getModel()
   const newModel = global['monaco'].editor.createModel(code, lang)
@@ -264,4 +263,41 @@ const setText = (editor, execOptions?) => ({ code, kind }) => {
   setTimeout(() => editor.focus(), 500)
 
   return code
+}
+
+/**
+ * Inject the current theme into the editor
+ *
+ */
+const injectTheme = (editorWrapper: Element) => {
+  const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
+  const currentTheme = document.querySelector('body').getAttribute('kui-theme')
+
+  const previousKey = editorWrapper.getAttribute('kui-theme-key')
+  const key = `editor.theme-${currentTheme}`
+  editorWrapper.setAttribute('kui-theme-key', key)
+
+  // dangit: in webpack we can require the CSS; but in plain nodejs,
+  // we cannot, so have to use filesystem operations to acquire the
+  // CSS content
+  try {
+    // try webpack style
+    if (isDark) {
+      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/dark.css').toString(), key })
+    } else {
+      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(), key })
+    }
+  } catch (err) {
+    // oh well, try filesystem style
+    const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
+    if (isDark) {
+      injectCSS({ key, path: path.join(ourRoot, 'web/css/dark.css') })
+    } else {
+      injectCSS({ key, path: path.join(ourRoot, 'web/css/mono-blue.css') })
+    }
+  }
+
+  // remove previous theme; for some reason, if we don't do this as an
+  // async, chrome flashes as we change themes!
+  setTimeout(() => uninjectCSS({ key: previousKey }), 0)
 }
