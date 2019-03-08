@@ -336,7 +336,7 @@ repl .repl-prompt-righty > i {
 .repl-prompt-right-elements .repl-prompt-right-element-icon {
     margin-left: 1ex;
     color: var(--color-ui-05);
-    font-size: 1.25em;
+    font-size: 1.5em;
     transition: all 300ms ease-in-out;
 }
 .repl-prompt-right-elements .repl-prompt-right-element-icon:hover {
@@ -2680,4 +2680,56 @@ body {
     /* two-color charts; yellow versus cyan should be a pretty good default */
     --color-chart-0: var(--color-yellow);
     --color-chart-1: var(--color-cyan);
+}
+
+@-webkit-keyframes flip {
+    0% {
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
+    transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
+    }
+    50% {
+    transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
+    }
+    75% {
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
+    transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
+    }
+    100% {
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
+    transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
+    }
+}
+
+.repl-result-spinner {
+    opacity: 0;
+}
+.repl-block.processing .repl-prompt-right-element-icon {
+    animation: 3s flip ease-in-out infinite;
+}
+@keyframes flip {
+    0% {
+        -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+        transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+        -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
+        transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
+    }
+    50% {
+        transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
+        -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
+    }
+    75% {
+        -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
+        transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
+    }
+    100% {
+        -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
+        transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
+    }
 }
