@@ -35,18 +35,11 @@ body[kui-theme="Light"] {
     --color-support-03: var(--color-light-yellow);
     --color-support-03-darker: var(--color-yellow);  /* dialed down from 47% lightness */
     --color-support-04: #5aaafa;
-    --color-brand-01: var(--color-blue);
     --color-brand-01-10: hsla(214, 49%, 47%, 0.1); /* 10% opacity */
     --color-brand-02: #5596e6;
-    --color-brand-03: var(--color-cyan);
     --color-ui-01: var(--color-white);
     --color-ui-04: var(--color-light-gray); /* 206 3 90 */
     --color-ui-05: var(--color-dark-gray); /* 204 15 65 */
-
-    --color-ok: var(--color-green);
-    --color-ok-lighter: var(--color-light-green); /* support-02 at reduced alpha */
-    --color-error: var(--color-red);
-    --color-error-lighter: var(--color-light-red); /* support-01 at reduced alpha */
 
     --color-scrollbar-thumb: rgba(21, 41, 52, 0.35); /* color-text-01 at reduced alpha */
     --color-scrollbar-thumb-border: var(--color-brand-01);

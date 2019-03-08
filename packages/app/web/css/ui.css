@@ -1169,6 +1169,11 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+.do-not-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 .display-inline {
     display: inline;
 }
@@ -2590,7 +2595,7 @@ body.subwindow sidecar {
 
 /* directory listing coloring */
 .dir-listing-is-directory {
-    color: var(--color-brand-01);
+    color: var(--color-base0C);
 }
 .dir-listing-is-executable {
     color: var(--color-support-01);
@@ -2649,9 +2654,7 @@ body {
 
     --color-tag-ibm-text: var(--color-text-01);
     --color-ok: var(--color-green);
-    --color-ok-lighter: var(--color-light-green);
     --color-error: var(--color-red);
-    --color-error-lighter: var(--color-support-01-lighter);
 
     --color-scrollbar-thumb: var(--color-ui-04);
     --color-scrollbar-thumb-border: var(--color-brand-01);

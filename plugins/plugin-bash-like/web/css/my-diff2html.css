@@ -156,6 +156,7 @@ td > .d2h-code-side-linenumber {
 
 .d2h-file-stats-wrapper {
     font-size: 0.875em;
+    width: 5em;
 }
 .d2h-file-stats {
     justify-content: flex-end;
@@ -167,10 +168,10 @@ td > .d2h-code-side-linenumber {
     font-size: 0.875em;
 }
 .d2h-lines-added {
-    background: var(--color-ok-lighter);
+    background: var(--color-ok);
 }
 .d2h-lines-deleted {
-    background: var(--color-error-lighter);
+    background: var(--color-error);
 }
 
 /* + prefix text for insert */
