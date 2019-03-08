@@ -223,19 +223,42 @@ const list = async () => {
 
   const type = 'namespaces'
   const list = await namespace.list()
+  const current = await repl.qexec('wsk namespace current')
 
   const headerRow = {
     type,
     noSort: true,
-    name: 'NAMESPACE',
-    outerCSS: 'header-cell'
+    name: 'CURRENT',
+    outerCSS: 'header-cell very-narrow',
+    attributes: [
+      { value: 'NAMESPACE', outerCSS: 'header-cell' }
+    ]
   }
 
-  const body = list.map(ns => Object.assign({}, ns, {
-    type,
-    name: ns.namespace,
-    onclick: () => repl.pexec(`auth switch ${ns.namespace}`)
-  }))
+  const body = list.map(ns => {
+    const row = Object.assign({}, ns, {
+      type,
+      name: ns.namespace,
+      fontawesome: 'fas fa-check',
+      outerCSS: 'very-narrow',
+      css: 'selected-entity',
+      rowCSS: ns.namespace === current && 'selected-row',
+      onclick: undefined,
+      attributes: [
+        { value: ns.namespace, onclick: undefined }
+      ]
+    })
+
+    const onclick = async () => {
+      await repl.qexec(`auth switch ${repl.encodeComponent(ns.namespace)}`)
+      row.setSelected()
+    }
+
+    row.onclick = onclick // <-- clicks on the "check mark"
+    row.attributes[0].onclick = onclick // <-- clicks on the theme name
+
+    return row
+  })
 
   return [headerRow].concat(body)
 }
