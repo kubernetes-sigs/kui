@@ -2,7 +2,7 @@
  * scheme: "Atelier Seaside"
  * author: "Bram de Haan (http://atelierbramdehaan.nl)"
  */
-body[kui-theme="Atelier Seaside"] {
+body[kui-theme="Atelier"] {
     --color-base00: #131513;
     --color-base01: #242924;
     --color-base02: hsl(120, 8%, 30%); /* dialed L from 40% #5e6e5e */

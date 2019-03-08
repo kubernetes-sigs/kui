@@ -2,7 +2,7 @@
  * scheme: "Gruvbox dark, medium"
  * author: "Dawid Kurek (dawikur@gmail.com), morhetz (https://github.com/morhetz/gruvbox)"
  */
-body[kui-theme="Gruvbox Medium"] {
+body[kui-theme="Gruvbox"] {
     --color-base00: #282828;
     --color-base01: #3c3836;
     --color-base02: #504945;
