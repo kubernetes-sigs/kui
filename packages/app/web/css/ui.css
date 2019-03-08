@@ -167,9 +167,13 @@ body.still-loading .repl {
     background: transparent;
 }
 .repl-block {
-    padding: 0.5em 0;
+    padding: 0.5em 0 0;
     display: flex;
     flex-direction: column;
+}
+.repl-block.repl-active {
+    /* for the bottom-most block, add a bit of bottom padding, to avoid smashing into the bottom of the viewport */
+    padding-bottom: 0.5em;
 }
 body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl .repl-block {
     border-color: transparent;
@@ -179,7 +183,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     font-family: var(--font-monospace);
 }
 .repl-result {
-    font-size: 0.925em;
+    font-size: 0.875em;
 }
 .result-as-table .result-table, .result-as-table.result-table {
     display: table;
@@ -366,7 +370,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     font-weight: 500; /* make it a bit more substantial; IBM Plex Mono 400 is too light */
     color: var(--color-text-01);
     background: transparent;
-    font-size: 0.925em;
+    font-size: 0.875em;
     border: none;
     flex: 1;
     caret-color: var(--color-support-01);
@@ -388,8 +392,14 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     font-weight: 900;
 }
 .repl-block.valid-response .ok, .repl-block.valid-response > .oops {
-    padding-top: 0.5em;
-    font-size: 0.925em;
+    display: block;
+    padding: 0.5em 0;
+    font-size: 0.875em;
+}
+.repl-block.valid-response .repl-result .ok {
+    /* oof, sometimes the .ok is nested under a repl-result, which would
+   result in a double 0.875em reduction */
+    font-size: 1em;
 }
 .repl-block.valid-response .oops {
     /* oops output often times doesn't word wrap nicely on its own, e.g. help/usage; issue #396 */
@@ -904,7 +914,7 @@ sidecar .sidecar-header-icon {
     transform-origin: center;
     width: 100%;
     height: 100%;
-    font-size: 0.925rem;
+    font-size: 0.875rem;
     font-weight: 400;
     letter-spacing: 1px;
     pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
@@ -1057,7 +1067,7 @@ sidecar:not(.entity-is-triggers) .trigger-content {
 sidecar.entity-is-actions:not(.entity-is-sequence) .action-source, sidecar .activation-result, code.hljs, .code-highlighting pre {
     font-family: var(--font-monospace);
     font-weight: 400;
-    font-size: 0.925em;
+    font-size: 0.875em;
     white-space: pre-wrap;
     background: transparent;
 }
