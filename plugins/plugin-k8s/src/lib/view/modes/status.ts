@@ -32,7 +32,12 @@ import { formatTable } from '../formatMultiTable'
  */
 export const statusButton = (command: string, resource: IResource, finalState: FinalState, overrides?) => Object.assign({}, {
   mode: 'status',
-  direct: () => renderAndViewStatus(command, resource, finalState)
+  direct: {
+    plugin: 'k8s',
+    module: 'lib/view/modes/status',
+    operation: 'renderAndViewStatus',
+    parameters: { command, resource, finalState }
+  }
 }, overrides || {})
 
 /**
@@ -64,6 +69,12 @@ export const renderStatus = async (command: string, resource: IResource, finalSt
  * Render status table, and then place it in a DOM
  *
  */
-export const renderAndViewStatus = (command: string, resource: IResource, finalState: FinalState) => {
+interface IParameters {
+  command: string
+  resource: IResource
+  finalState: FinalState
+}
+export const renderAndViewStatus = (parameters: IParameters) => {
+  const { command, resource, finalState } = parameters
   renderStatus(command, resource, finalState).then(insertView)
 }

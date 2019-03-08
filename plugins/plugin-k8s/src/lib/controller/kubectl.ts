@@ -790,7 +790,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         addPods(modes, command, resource)
         addContainers(modes, command, resource)
 
-        deleteResourceButton(() => renderAndViewStatus(command, resource, FinalState.OfflineLike))
+        deleteResourceButton(() => renderAndViewStatus({ command, resource, finalState: FinalState.OfflineLike }))
         modes.push(deleteResourceButton())
       }
 
