@@ -1299,6 +1299,9 @@ code.fancy-code, code.fancy-code.hljs {
 }
 .badge-width {
     width: 10em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .sidecar-visible .badge-width {
     width: 7em;
