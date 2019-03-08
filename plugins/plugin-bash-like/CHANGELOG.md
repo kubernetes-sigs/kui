@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.7.0 (2019-03-08)
+
+
+### Bug Fixes
+
+* add missing debug deps ([0bc5ef9](https://github.com/IBM/kui/commit/0bc5ef9)), closes [#646](https://github.com/IBM/kui/issues/646)
+* allow clients to take control over entity name table cell coloring ([77b99d9](https://github.com/IBM/kui/commit/77b99d9)), closes [#675](https://github.com/IBM/kui/issues/675)
+* ansi-to-html color definition updates ([74d7678](https://github.com/IBM/kui/commit/74d7678)), closes [#578](https://github.com/IBM/kui/issues/578)
+* color contrast issues with dark mode ([15afe23](https://github.com/IBM/kui/commit/15afe23)), closes [#605](https://github.com/IBM/kui/issues/605)
+* git diff should use side-by-side ([4fe215b](https://github.com/IBM/kui/commit/4fe215b)), closes [#617](https://github.com/IBM/kui/issues/617)
+* improve handling of non-zero exit codes in bash-like usage formatting ([98bb8b3](https://github.com/IBM/kui/commit/98bb8b3)), closes [#582](https://github.com/IBM/kui/issues/582)
+* more dark mode tweaks, including for editor text ([1d353ae](https://github.com/IBM/kui/commit/1d353ae)), closes [#554](https://github.com/IBM/kui/issues/554)
+* **plugins/plugin-bash-like:** improve markdown rendering ([fd37be5](https://github.com/IBM/kui/commit/fd37be5)), closes [#159](https://github.com/IBM/kui/issues/159)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **packages/app:** make annoying 'ok' invisible ([0a0f7f7](https://github.com/IBM/kui/commit/0a0f7f7)), closes [#597](https://github.com/IBM/kui/issues/597)
+* **packages/kui-builder:** theming fixes for webpack ([5254b73](https://github.com/IBM/kui/commit/5254b73)), closes [#524](https://github.com/IBM/kui/issues/524)
+* **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com/IBM/kui/commit/1f7c263)), closes [#510](https://github.com/IBM/kui/issues/510) [#425](https://github.com/IBM/kui/issues/425)
+* **plugin-bash-like:** when cd fails, throw stderr ([85cb737](https://github.com/IBM/kui/commit/85cb737)), closes [#415](https://github.com/IBM/kui/issues/415)
+* **plugins/plugin-bash-like:** ansi color bg/fg bug fix ([4d6265f](https://github.com/IBM/kui/commit/4d6265f)), closes [#591](https://github.com/IBM/kui/issues/591)
+* switch to base16 theme scheme ([5c6a88a](https://github.com/IBM/kui/commit/5c6a88a)), closes [#600](https://github.com/IBM/kui/issues/600)
+* **plugins/plugin-bash-like:** avoid use of bold fonts in git diff ([2dbe103](https://github.com/IBM/kui/commit/2dbe103)), closes [#636](https://github.com/IBM/kui/issues/636)
+* **test:** refactor /tests ([98f6096](https://github.com/IBM/kui/commit/98f6096)), closes [#496](https://github.com/IBM/kui/issues/496)
+
+
+### Features
+
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+
+
+
+
+
 # 0.6.0 (2019-03-06)
 
 

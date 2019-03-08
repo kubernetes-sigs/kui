@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.18.0 (2019-03-08)
+
+
+### Bug Fixes
+
+* **apache-composer:** compose yoyo -t @demos/if.js broken in webpack mode ([14ac816](https://github.com/IBM/kui/commit/14ac816)), closes [#332](https://github.com/IBM/kui/issues/332)
+* **openwhisk:** add expandHomeDir when reading process.env.WSK_CONFIG_FILE ([c441c1c](https://github.com/IBM/kui/commit/c441c1c)), closes [#253](https://github.com/IBM/kui/issues/253)
+* **openwhisk:** fix for misplaced test file ([5d3286f](https://github.com/IBM/kui/commit/5d3286f)), closes [#263](https://github.com/IBM/kui/issues/263)
+* **packages/app:** make annoying 'ok' invisible ([0a0f7f7](https://github.com/IBM/kui/commit/0a0f7f7)), closes [#597](https://github.com/IBM/kui/issues/597)
+* **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com/IBM/kui/commit/1f7c263)), closes [#510](https://github.com/IBM/kui/issues/510) [#425](https://github.com/IBM/kui/issues/425)
+* **plugin-openwhisk:** code highlight race bugs ([717b563](https://github.com/IBM/kui/commit/717b563)), closes [#475](https://github.com/IBM/kui/issues/475)
+* **plugin-openwhisk:** fix for activation pagination in webpack ([379fb0e](https://github.com/IBM/kui/commit/379fb0e)), closes [#474](https://github.com/IBM/kui/issues/474)
+* **plugin-openwhisk:** openwhisk action invoke not always blocking ([865cb4e](https://github.com/IBM/kui/commit/865cb4e)), closes [#419](https://github.com/IBM/kui/issues/419)
+* **plugin-openwhisk:** openwhisk cost calculator should use duration field in activations ([e6d084e](https://github.com/IBM/kui/commit/e6d084e)), closes [#420](https://github.com/IBM/kui/issues/420)
+* **plugin-openwhisk:** remove debugging output from openwhisk-core ([eac7a13](https://github.com/IBM/kui/commit/eac7a13)), closes [#470](https://github.com/IBM/kui/issues/470)
+* **plugin-openwhisk:** separate out the editor parts from plugin-openwhisk ([8195220](https://github.com/IBM/kui/commit/8195220)), closes [#437](https://github.com/IBM/kui/issues/437) [#441](https://github.com/IBM/kui/issues/441)
+* **plugins/plugin-openwhisk:** eliminate use of tiny fonts in activation list ([ae1fd6e](https://github.com/IBM/kui/commit/ae1fd6e)), closes [#684](https://github.com/IBM/kui/issues/684)
+* fixes for auth in browser+proxy mode ([a441c33](https://github.com/IBM/kui/commit/a441c33)), closes [#287](https://github.com/IBM/kui/issues/287) [#286](https://github.com/IBM/kui/issues/286) [#289](https://github.com/IBM/kui/issues/289)
+* **proxy:** improve support for building proxy server from an external custom client ([177fac8](https://github.com/IBM/kui/commit/177fac8)), closes [#438](https://github.com/IBM/kui/issues/438)
+* **test:** refactor /tests ([98f6096](https://github.com/IBM/kui/commit/98f6096)), closes [#496](https://github.com/IBM/kui/issues/496)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+
+
+### Features
+
+* kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
+* **plugins/plugin-openwhisk:** update wsk auth list to use row selection UI ([13eeb8d](https://github.com/IBM/kui/commit/13eeb8d)), closes [#690](https://github.com/IBM/kui/issues/690)
+* **webpack:** dockerized webpack build ([bc65dc2](https://github.com/IBM/kui/commit/bc65dc2)), closes [#274](https://github.com/IBM/kui/issues/274)
+
+
+
+
+
 # 0.17.0 (2019-03-06)
 
 
