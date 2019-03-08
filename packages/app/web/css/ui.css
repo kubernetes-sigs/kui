@@ -544,7 +544,6 @@ body[kui-theme-style="dark"] .result-table:not(.result-table-with-custom-entity-
     /* in dark mode, emphasize the entity name, unless
    (.result-table-with-custom-entity-colors) the client has requested
    control over entity colors */
-    font-weight: 600;
     color: var(--color-base0C);
 }
 .log-field .entity-name {
