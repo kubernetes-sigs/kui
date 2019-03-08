@@ -563,8 +563,11 @@ export const getCommand = argv => {
   const dashDash = argv.lastIndexOf('--')
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
 
-  const isShell = argv.find(_ => _ === 'shell') || (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE)
-  argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/))  // opening Kui from macOS Finder adds additional argv -psn, see: https://github.com/IBM/kui/issues/382
+  // re: the -psn bit, opening Kui from macOS Finder adds additional argv -psn; see: https://github.com/IBM/kui/issues/382
+  argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/))
+
+  // re: argv.length === 0, this should happen for double-click launches
+  const isShell = argv.length === 0 || argv.find(_ => _ === 'shell') || (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE)
 
   debug('isShell', argv, isShell)
 
