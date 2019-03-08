@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 
 import help from './lib/cmds/help'
 
@@ -35,10 +35,11 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
       import('./lib/new-tab').then(_ => _.default(commandTree, prequire)),
       import('./lib/cmds/history/reverse-i-search').then(_ => _.default()),
       import('./lib/cmds/theme').then(_ => _.preload()),
-      import('./lib/text-search').then(_ => _.default()),
       import('./lib/tab-completion').then(_ => _.default())
     ])
   }
+
+  if (!inBrowser()) await import('./lib/text-search').then(_ => _.default())  // in webpack, use the default text-search bar of browser
 }
 
 export default registration

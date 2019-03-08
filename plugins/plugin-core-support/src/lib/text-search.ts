@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/text-search')
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as cli from '@kui-shell/core/webapp/cli'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
@@ -43,15 +42,8 @@ export default () => {
 function registerListener () {
   if (typeof document === 'undefined') return // return if no document
 
-  // inject css
-  if (inBrowser()) {
-    // try webpack style
-    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/text-search.css').toString(), key: 'text-search' })
-  } else {
-    // fall back to raw file style
-    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(path.join(root, 'web/css/text-search.css'))
-  }
+  const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+  injectCSS(path.join(root, 'web/css/text-search.css'))
 
   const app = require('electron')
 
