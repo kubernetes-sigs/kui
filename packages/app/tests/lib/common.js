@@ -67,7 +67,11 @@ const prepareElectron = (fuzz) => {
     opts.port = 9515 + parseInt(process.env.PORT_OFFSET)
   }
 
-  if (process.env.TEST_FROM_BUILD) {
+  if (process.env.MOCHA_RUN_TARGET === 'webpack') {
+    console.log(`Testing Webpack against chromium`)
+    opts.path = electron // this means spectron will use electron located in node_modules
+    opts.args = [ '../app/tests/lib/main.js' ] // relative to the tests/ directory
+  } else if (process.env.TEST_FROM_BUILD) {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
     opts.path = process.env.TEST_FROM_BUILD
   } else {
@@ -199,4 +203,19 @@ exports.oops = ctx => err => {
   // swap these two if you want to debug failures locally
   // return new Promise((resolve, reject) => setTimeout(() => { reject(err) }, 100000))
   throw err
+}
+
+// only execute the test in local
+exports.localIt = (msg, func) => {
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack') return it(msg, func)
+}
+
+// only execute the test suite in local
+exports.localDescribe = (msg, func) => {
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack') return describe(msg, func)
+}
+
+// only execute the test in non-proxy browser
+exports.remoteIt = (msg, func) => {
+  if (process.env.MOCHA_RUN_TARGET === 'webpack') return it(msg, func)
 }

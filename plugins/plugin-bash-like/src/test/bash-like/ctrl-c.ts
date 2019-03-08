@@ -20,6 +20,7 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
+const { localIt } = common
 
 describe('Cancel via Ctrl+C', function (this: ISuite) {
   before(common.before(this))
@@ -40,7 +41,7 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
   it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
 
   const echoThisString = 'hi'
-  it('should initiate a command that completes with some delay', async () => {
+  localIt('should initiate a command that completes with some delay', async () => {
     const res = await cli.do(`sleep 3; echo ${echoThisString}`, this.app)
     await this.app.client.keys(ui.ctrlC)
     return this.app.client.waitUntil(async () => {

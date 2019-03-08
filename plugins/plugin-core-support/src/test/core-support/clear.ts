@@ -20,6 +20,7 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, keys } = ui
+const { localIt, remoteIt } = common
 
 const expectConsoleToBeClear = ({ app }) => {
   return app.client.waitUntil(() => {
@@ -75,18 +76,18 @@ describe('Clear the console', function (this: ISuite) {
   }))
 
   // get something on the screen
-  it(`should list files`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
+  localIt(`should list files`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
 
   it('should clear the console', () => cli.do('clear', this.app)
     .then(expectConsoleToBeClear)
     .catch(common.oops(this)))
 
   // get something on the screen
-  it(`should list files again`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
+  localIt(`should list files again`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
 
   const JUNK = 'junk text that should stay'
   it('should clear the console with ctrl+l', () => cli.do(JUNK, this.app, true)
-    .then(() => this.app.client.keys([ui.ctrlOrMeta, 'l'])) // use control-l to clear
+    .then(() => this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL'])) // use control-l to clear
     .then(() => ({ app: this.app }))
     .then(expectConsoleToBeClear)
     .then(() => this.app.client.getValue(selectors.CURRENT_PROMPT))
@@ -101,12 +102,12 @@ describe('Clear the console', function (this: ISuite) {
   })
 
   // get something on the screen
-  it(`should list files yet again`, () => cli.do('ls ../..', this.app)
+  localIt(`should list files yet again`, () => cli.do('ls ../..', this.app)
     .then(cli.expectOKWith('README.md'))
     .catch(common.oops(this)))
 
   it('should clear properly despite existing prompt', () => cli.do('prompt', this.app) // wipe will change the placeholder text
-    .then(() => this.app.client.keys([ui.ctrlOrMeta, 'l'])) // use control-l to clear
+    .then(() => this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL'])) // use control-l to clear
     .then(() => ({ app: this.app }))
     .then(expectConsoleToBeClear)
     .catch(common.oops(this)))

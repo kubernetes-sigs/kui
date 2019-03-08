@@ -18,8 +18,9 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
-describe('echo command', function (this: ISuite) {
+localDescribe('echo command', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 

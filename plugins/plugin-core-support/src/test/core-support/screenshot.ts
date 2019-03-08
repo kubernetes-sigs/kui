@@ -18,6 +18,7 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
 /**
  * Take a screenshot with the given "which" specification (e.g. "full"
@@ -36,7 +37,7 @@ const takeScreenshot = function (ctx, which = '') {
     .catch(common.oops(ctx))
 }
 
-describe('screenshot', function (this: ISuite) {
+localDescribe('screenshot', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 

@@ -23,3 +23,6 @@ echo "testing webpack build from $(pwd)"
 
 cd clients/default
 npm run build:webpack
+
+echo "run webpack"
+nohup npx kui-run-webpack >/dev/null 2>&1  &

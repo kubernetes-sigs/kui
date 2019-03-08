@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HookFunction, Context, Suite } from 'mocha'
+import { HookFunction, Context, Suite, TestFunction, SuiteFunction } from 'mocha'
 import { Application } from 'spectron'
 
 interface ISuite extends Suite {
@@ -28,5 +28,8 @@ interface IBeforeOptions {
 declare function before (ctx: Suite, options?: IBeforeOptions): HookFunction
 declare function after (ctx: Suite, f?: () => void): HookFunction
 declare function oops (ctx: Suite): ((err: Error) => void)
+declare function localIt (msg: String, f: Function): TestFunction
+declare function localDescribe (msg: String, f: Function): SuiteFunction
+declare function remoteIt (msg: String, f: Function): TestFunction
 
 declare function rp (opts: Object): any

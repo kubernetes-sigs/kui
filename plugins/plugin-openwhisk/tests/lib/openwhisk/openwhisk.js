@@ -152,7 +152,7 @@ exports.before = (ctx, { fuzz, noApp = false } = {}) => {
   return function () {
     const { cli } = ui
 
-    const addWskAuth = !process.env.WEBPACK_TEST || fuzz ? x => x
+    const addWskAuth = process.env.MOCHA_RUN_TARGET !== 'webpack' || fuzz ? x => x
       : () => cli.do(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
         .then(cli.expectOK)
         .catch(common.oops(ctx))
