@@ -515,15 +515,9 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     width: 5em;
 }
 .repl.sidecar-visible .repl-result .entity-name-group .entity-name {
-    /* notes: 1) block display needed for max-width; 2) max-width cannot
-       be a property of entity-name-group, as it is a table-cell, and max-width
-       is undefined for table-cell; some browsers seem to support max-width on
-       table-cell, but not all */
-    display: inline-block;
-    vertical-align: middle;
-    max-width: 18em;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .result-table .entity-name-group {
     padding-left: 0.75em;
