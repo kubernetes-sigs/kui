@@ -794,4 +794,21 @@ export const init = async (prefs = {}) => {
   document.body.onpaste = evt => {
     getCurrentPrompt().focus()
   }
+
+  /**
+   * If the user clicks on a blank region, the browser may refocus on
+   * document.body; this isn't particularly helpful. This bit of logic
+   * is an attempt to keep the current CLI prompt in focus in the face
+   * of this condition. Note that we check not only that there is no
+   * meaningful `activeElement`, but also that, after the click event
+   * is done, there is no text selection.
+   *
+   */
+  document.body.addEventListener('click', evt => {
+    if (document.activeElement === document.body && window.getSelection().toString().length === 0) {
+      // refocus current prompt, because there is no active element
+      // and no text selection
+      getCurrentPrompt().focus()
+    }
+  })
 }
