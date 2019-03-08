@@ -19,6 +19,7 @@ import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-lin
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
 const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
@@ -45,7 +46,7 @@ const verifyTextExist = (selector, expectedText) => app => {
     .then(() => app)
 }
 
-describe('editor', function (this: ISuite) {
+localDescribe('editor', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 

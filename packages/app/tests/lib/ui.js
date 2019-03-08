@@ -13,6 +13,7 @@ const keys = {
   TAB: '\uE004',
   ENTER: '\uE007',
   DELETE: '\uE017',
+  CONTROL: '\uE009',
   ESCAPE: '\uE00C'
 }
 

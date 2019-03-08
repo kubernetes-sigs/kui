@@ -31,7 +31,7 @@ import ProxyEvaluator from './lib/proxy-executor'
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
   debug('config', config)
 
-  if (inBrowser() && !config['disableProxy']) {
+  if (inBrowser() && config['needsProxy']) {
     debug('attempting to establish our proxy executor')
     setEvaluatorImpl(new ProxyEvaluator())
     assertLocalAccess()

@@ -17,7 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
-
+const { localDescribe } = common
 import { copyFile, unlink, writeFile } from 'fs'
 import { dirname, join, normalize } from 'path'
 
@@ -65,7 +65,7 @@ const restoreTopLevelReadme = () => new Promise((resolve, reject) => {
   })
 })
 
-describe('git diff', function (this: common.ISuite) {
+localDescribe('git diff', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

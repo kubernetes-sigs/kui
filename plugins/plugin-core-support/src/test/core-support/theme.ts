@@ -18,6 +18,7 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
+const { localIt, remoteIt } = common
 
 const resetTheme = (ctx: ISuite) => {
   it('should reset theme preference', () => cli.do('theme reset', ctx.app)
@@ -56,7 +57,12 @@ const go = (theme: Theme) => (ctx: ISuite) => {
  *
  */
 const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
-  it(`should still be using ${theme.name} theme after a restart`, () => ctx.app.restart()
+  localIt(`should still be using ${theme.name} theme after an electron restart`, () => ctx.app.restart()
+     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
+     .catch(common.oops(ctx)))
+
+  // refresh electron's current page rather than restart the app to prevent clearing browser's local storage
+  remoteIt(`should still be using ${theme.name} theme after a browser restart`, () => ctx.app.client.refresh()
      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
      .catch(common.oops(ctx)))
 }

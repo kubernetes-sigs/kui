@@ -87,10 +87,11 @@ if [ -n "$LAYERS" ]; then
         #children+=("$!")
     fi
 
-    if [ -n "$NEEDS_ELECTRON" ]; then
-        # create an electron dist to test against
-        (cd clients/default && NO_INSTALLER=true npm run build:electron -- linux) &
-        children+=("$!")
+    if [ -n "$MOCHA_TARGETS" ]; then
+        # create mocha targets to test aginst
+        for MOCHA_TARGET in $MOCHA_TARGETS; do
+          ./tools/travis/test/target.d/$MOCHA_TARGET.sh # DO NOT DO WEBPACK and ELECTRON BUILD IN PARALLEL; link:init updates the client directory
+        done
     fi
 
     # wait for the openwhisk or kubernetes setup logic to complete

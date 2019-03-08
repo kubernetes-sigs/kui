@@ -20,12 +20,13 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
 import { dirname, join, normalize } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = dir => join(ROOT, dir)
 
-describe('Change local shell directory', function (this: ISuite) {
+localDescribe('Change local shell directory', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 

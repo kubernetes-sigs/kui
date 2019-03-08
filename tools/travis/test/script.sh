@@ -16,35 +16,20 @@
 # limitations under the License.
 #
 
+set -e
+set -o pipefail
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
-function wait_and_get_exit_codes() {
-    children=("$@")
-    EXIT_CODE=0
-    for job in "${children[@]}"; do
-       echo "waiting on ${job}"
-       CODE=0;
-       wait ${job} || CODE=$?
-       if [[ "${CODE}" != "0" ]]; then
-           echo "At least one script.sh job failed with a non-zero exit code ${CODE}"
-           EXIT_CODE=1;
-       fi
-   done
-}
-
-children=()
 if [ -n "$SCRIPTS" ]; then
     #
     # then we were asked to run one or more test.d/ scripts
     #
     for script in $SCRIPTS; do
         echo "spawning test script: $script"
-        "$SCRIPTDIR"/test.d/$script &
-        children+=("$!")
+        "$SCRIPTDIR"/test.d/$script
     done
 fi
-# for now, wait, as webpack build conflicts with electron build
-wait_and_get_exit_codes "${children[@]}"
 
 if [ -n "$LAYERS" ]; then
     #
@@ -58,12 +43,14 @@ if [ -n "$LAYERS" ]; then
     # remove HEADLESS from the list, as we are handling in specially
     # in the else clause below
     NON_HEADLESS_LAYERS=${LAYERS#HEADLESS}
-    if [ -n "$NON_HEADLESS_LAYERS" ]; then
-        echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
-        (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS)
-        EC=$?
-        echo "script.sh thinks runMochaLayers finished with $EC"
-        if [ $EC != 0 ]; then exit $EC; fi
+
+    if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
+        for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
+          echo "mocha target: $MOCHA_RUN_TARGET"
+          echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
+          export MOCHA_RUN_TARGET
+          (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS)
+        done
     fi
 
     # is "HEADLESS" on the LAYERS list?
@@ -83,12 +70,5 @@ if [ -n "$LAYERS" ]; then
         export WSK_CONFIG_FILE=~/.wskprops_${KEY}
         (cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
         (cd /tmp/kui && npm run test) # see ./install.sh for the /tmp/kui target
-        EC=$?
-        echo "script.sh thinks headless finished with $EC"
-        if [ $EC != 0 ]; then exit $EC; fi
     fi
 fi
-
-wait_and_get_exit_codes "${children[@]}"
-echo "script.sh exiting with $EXIT_CODE"
-exit "$EXIT_CODE"

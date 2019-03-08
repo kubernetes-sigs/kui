@@ -7,17 +7,17 @@ dist: trusty
 
 env:
   matrix:
-    - SCRIPTS="lint.sh webpack.sh"
+    - SCRIPTS="lint.sh"
       LAYERS="core bash-like core-support field-installed-plugins editor"
-      NEEDS_ELECTRON=true
+      MOCHA_TARGETS="webpack electron"
       NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
 
     - LAYERS="openwhisk1 openwhisk3 grid"
-      NEEDS_ELECTRON=true
+      MOCHA_TARGETS="electron"
       NEEDS_OPENWHISK=true
 
     - LAYERS="openwhisk2 openwhisk4"
-      NEEDS_ELECTRON=true
+      MOCHA_TARGETS="electron"
       NEEDS_OPENWHISK=true
       NEEDS_OPENWHISK_API_GATEWAY=true
       NEEDS_OPENWHISK_NODEJS8=true
@@ -25,11 +25,11 @@ env:
       NEEDS_SECOND_OPENWHISK_AUTH=true # see plugins/plugin-openwhisk/src/test/openwhisk2/auth.ts
 
     - LAYERS="composer1 composer2 composer3"
-      NEEDS_ELECTRON=true
+      MOCHA_TARGETS="electron"
       NEEDS_OPENWHISK=true
 
     - LAYERS="k8s"
-      NEEDS_ELECTRON=true
+      MOCHA_TARGETS="electron"
       NEEDS_HEADLESS=true
       NEEDS_KUBERNETES=true
 
@@ -40,6 +40,7 @@ env:
 
   global:
     - TRAVIS_KUBE_VERSION=1.12 # kubeadm-dind
+    - WEBPACK_CLIENT_URL="https://localhost:9080/"
     - TEST_ORG=testorg
     - TEST_SPACE=testspace
     - LOCAL_OPENWHISK=true # allows e.g. openwhisk/src/test/openwhisk1/headless to avoid trying to host set <not-local>
