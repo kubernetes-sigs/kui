@@ -352,8 +352,9 @@ repl .repl-prompt-righty > i {
 repl.sidecar-visible .repl-prompt-right-elements, .repl-active .repl-prompt-right-elements {
     opacity: 0;
     width: 0;
-    height: 0;
-    display: none;
+    padding: 0;
+    margin: 0;
+    /* important: keep height, otherwise when .repl-active goes away, the height of the repl-line line may change */
 }
 
 body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-prompt-lefty, body/*.sidecar-full-screen*/ repl .repl-prompt-lefty {
