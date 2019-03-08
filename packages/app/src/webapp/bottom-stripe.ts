@@ -130,7 +130,7 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
 
   // insert the command handler
   if (command || direct) {
-    button.onclick = () => {
+    button.onclick = async () => {
       // change the active button
       if (!actAsButton) {
         const currentActive = bottomStripe.querySelector(`.${css.active}`)
@@ -164,7 +164,7 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
 
       // execute the command
       if (direct) {
-        const view = direct(entity)
+        const view = await callDirect(direct, entity)
         if (view && view.then && !actAsButton) {
           view.then(custom => showCustom(custom, { leaveBottomStripeAlone }))
         } else if (actAsButton && view && view.toggle) {
@@ -186,6 +186,39 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
   }
 
   return button
+}
+
+/**
+ * A mode button provider can, via direct, as to take charge of view
+ * insertion (otherwise, the button stripe will use the normal REPL
+ * view dispatching logic, e.g. opening entities in sidecar, tuples as
+ * tables, etc.)
+ *
+ * A direct view controller is either a function from entity to view,
+ * or a specification of such; the latter allows for serialization
+ * across remote proxies, and thus is preferable to the former.
+ *
+ */
+type DirectViewController = DirectViewControllerFunction | IDirectViewControllerSpec
+type DirectViewControllerFunction = (entity: object) => object
+interface IDirectViewControllerSpec {
+  plugin: string,
+  module: string,
+  operation: string,
+  parameters: object
+}
+
+/**
+ * Call a "direct" impl
+ *
+ */
+const callDirect = async (makeView: DirectViewController, entity) => {
+  if (typeof makeView === 'function') {
+    return Promise.resolve(makeView(entity))
+  } else {
+    const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
+    return provider[makeView.operation](makeView.parameters)
+  }
 }
 
 export const addModeButton = (mode, entity) => {
