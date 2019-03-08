@@ -803,7 +803,7 @@ class InProcessExecutor implements IExecutor {
           e.message = message
           oops(block, nextBlock)(e)
         } else {
-          const cmd = cli.showHelp(blockForError, nextBlock, message || 'Unknown command')
+          const cmd = cli.showHelp(blockForError, nextBlock, e)
           const resultDom = blockForError.querySelector('.repl-result')
           return Promise.resolve(cmd)
             .then(cli.printResults(blockForError, nextBlock, resultDom))

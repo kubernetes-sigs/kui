@@ -656,13 +656,12 @@ export const oops = (block?: Element, nextBlock?: Element) => err => {
   return false
 }
 
-export const showHelp = (block: Element, nextBlock: Element, msg) => {
+export const showHelp = (block: Element, nextBlock: Element, error) => {
+  // if the message says command not found, then add on the "enter help to see your options" as a suffix
   const baseMessage = 'Enter help to see your options.'
+  if (error.message && error.message === 'Command not found') error.message += `\n${baseMessage}`
 
-  return oops(block, nextBlock)(msg.isUsageError ? msg : {
-        // if the message says command not found, then add on the "enter help to see your options" as a suffix
-    error: msg || baseMessage
-  }) && false
+  return oops(block, nextBlock)(error) && false
 }
 
 /**

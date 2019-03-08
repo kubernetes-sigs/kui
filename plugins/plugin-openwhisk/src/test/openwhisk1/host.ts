@@ -31,7 +31,7 @@ describe('host tests', function (this: common.ISuite) {
   after(common.after(this))
 
   it('should command not found on hosts set', () => cli.do('wsk hosts set', this.app)
-    .then(cli.expectError(0, 'Command not found'))
+    .then(cli.expectError(404, 'Command not found'))
     .catch(common.oops(this)))
 
   it('bogus host from default context', () => cli.do(`wsk host set xxx`, this.app)
