@@ -330,14 +330,14 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       if (entity.kind || entity.prettyKind) {
         addCell('entity-kind green-text',
                 entity.prettyKind || entity.kind,
-                'deemphasize deemphasize-partial')
+                'smaller-text lighter-text')
       }
     }
     const addStatus = () => {
       if (entity.status) {
         const cell = addCell(`entity-rule-status`,
                              entity.status,
-                             'deemphasize deemphasize-partial')
+                             'smaller-text lighter-text')
 
         Promise.resolve(entity.status).then(status => {
           cell.classList.add(status === 'active' ? 'green-text' : 'red-text')
@@ -348,7 +348,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       if (entity.version || entity.prettyVersion) {
         addCell('entity-version hide-with-sidecar',
                 entity.prettyVersion || entity.version,
-                'deemphasize')
+                'smaller-text lighter-text')
       }
     }
 
