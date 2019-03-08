@@ -356,6 +356,13 @@ exports.expectArray = (expected, failFast = true) => actual => {
 const sameStruct = (struct1, struct2, subset = false) => {
   if (struct1 === struct2) {
     return true
+  } else if (typeof struct1 !== typeof struct2) {
+    return false
+  } else if (Array.isArray(struct1) && subset) {
+    // array subset check has to ignore ordering within the array
+    const map1 = Object.keys(struct1).reduce((M, key, idx, A) => { M[key] = A[idx]; return M }, {})
+    const map2 = Object.keys(struct2).reduce((M, key, idx, A) => { M[key] = A[idx]; return M }, {})
+    return sameStruct(map1, map2, subset)
   }
 
   for (let key in struct1) {
