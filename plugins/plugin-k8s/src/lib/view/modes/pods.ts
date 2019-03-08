@@ -51,14 +51,24 @@ export const addPods = (modes: Array<any>, command: string, resource: IResource)
  */
 export const podsButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
   mode: 'pods',
-  direct: () => renderAndViewPods(command, resource)
+  direct: {
+    plugin: 'k8s',
+    module: 'lib/view/modes/pods',
+    operation: 'renderAndViewPods',
+    parameters: { command, resource }
+  }
 }, overrides || {})
 
 /**
  * Render the tabular pods view
  *
  */
-export const renderAndViewPods = async (command: string, resource: IResource) => {
+interface IParameters {
+  command: string
+  resource: IResource
+}
+export const renderAndViewPods = async (parameters: IParameters) => {
+  const { command, resource } = parameters
   debug('renderAndViewPods', command, resource)
 
   const { selector } = resource.yaml.spec

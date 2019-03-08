@@ -17,9 +17,16 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/view/util/selectors')
 
-type Selector = { [ key: string ]: string }
+type Selector = { [ key: string ]: string | Selector }
 
 export const selectorToString = (selector: Selector): string => {
+  if (selector.matchLabels) {
+    return selectorToString(selector.matchLabels as Selector)
+  } else if (selector.matchExpressions) {
+    // TODO
+    return ''
+  }
+
   const stringified = Object
     .keys(selector)
     .map(key => `-l ${key}=${selector[key]}`)
@@ -28,4 +35,15 @@ export const selectorToString = (selector: Selector): string => {
   debug('selectorToString', stringified, selector)
 
   return stringified
+}
+
+const valueToString = (value: Selector | string): string => {
+  if (typeof value === 'string') {
+    return value
+  } else {
+    return Object
+      .keys(value)
+      .map(key => `${key}=${value[key]}`)
+      .join(',')
+  }
 }

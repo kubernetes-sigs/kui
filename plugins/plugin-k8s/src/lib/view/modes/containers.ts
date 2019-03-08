@@ -38,7 +38,8 @@ const viewName = 'Containers'
  */
 export const addContainers = (modes: Array<any>, command: string, resource: IResource) => {
   if (resource.yaml.spec && resource.yaml.spec.containers) {
-    modes.push(containersButton(command, resource))
+    const button = containersButton(command, resource)
+    modes.push(button)
   }
 }
 
@@ -49,7 +50,12 @@ export const addContainers = (modes: Array<any>, command: string, resource: IRes
  */
 export const containersButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
   mode: 'containers',
-  direct: () => renderAndViewContainers(command, resource)
+  direct: {
+    plugin: 'k8s',
+    module: 'lib/view/modes/containers',
+    operation: 'renderAndViewContainers',
+    parameters: { command, resource }
+  }
 }, overrides || {})
 
 /**
@@ -90,7 +96,7 @@ const headerModel = (resource: IResource): Array<any> => {
   const statusAttrs = !statuses ? [] : [
     { value: 'RESTARTS', outerCSS: 'header-cell very-narrow' },
     { value: 'READY', outerCSS: 'header-cell very-narrow' },
-    { value: 'STATE', outerCSS: 'header-cell very-narrow' },
+    { value: 'STATE', outerCSS: 'header-cell pretty-narrow' },
     { value: 'MESSAGE', outerCSS: 'header-cell' }
   ]
 
@@ -224,6 +230,10 @@ const showLogs = ({ pod, container }, exec = 'pexec') => {
  * Render a containers table and show it in the sidecar
  *
  */
-export const renderAndViewContainers = (command: string, resource: IResource) => {
-  renderContainers(command, resource).then(insertView)
+interface IParameters {
+  command: string
+  resource: IResource
+}
+export const renderAndViewContainers = (parameters: IParameters) => {
+  renderContainers(parameters.command, parameters.resource).then(insertView)
 }
