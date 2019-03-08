@@ -259,7 +259,7 @@ const _render = args => {
         // column 2: name cell
         const name = nextCell()
         const nameClick = newLine ? document.createElement('span') : name.querySelector('.clickable')
-        name.className = 'deemphasize log-field entity-name'
+        name.className = 'smaller-text lighter-text log-field entity-name'
         nameClick.className = 'clickable'
         nameClick.innerText = activation.name
         if (newLine) name.appendChild(nameClick)
@@ -311,7 +311,7 @@ const _render = args => {
 
         // column 3: duration cell
         const duration = nextCell()
-        duration.className = 'deemphasize log-field log-field-right-align duration-field'
+        duration.className = 'smaller-text lighter-text log-field log-field-right-align duration-field'
         if (activation.end) {
           duration.innerText = prettyPrintDuration(activation.end - activation.start)
         } else {
@@ -321,7 +321,7 @@ const _render = args => {
 
         // column 4: success cell
         const success = nextCell()
-        success.className = 'deemphasize log-field success-field'
+        success.className = 'smaller-text lighter-text log-field success-field'
         success.classList.add(isSuccess ? 'green-text' : 'red-text')
         success.innerText = isSuccess ? 'ok' : 'failed'
 
@@ -331,7 +331,7 @@ const _render = args => {
           const code = document.createElement('code')
           code.classList.add('json')
           result.appendChild(code)
-          result.className = 'deemphasize log-field activation-result'
+          result.className = 'smaller-text lighter-text log-field activation-result'
           if (activation.response) {
             code.innerText = JSON.stringify(activation.response.result || {}).substring(0, 40)
             setTimeout(() => global['hljs'].highlightBlock(code), 0)
@@ -433,7 +433,7 @@ const _render = args => {
           const previous = activations[idx - 1]
           const previousStart = previous && (previous.start - findItemInAnnotations('waitTime', previous))
           const time = prettyPrintTime(activation.start - findItemInAnnotations('waitTime', activation), 'short', previousStart)
-          start.className = 'deemphasize log-field log-field-right-align start-time-field'
+          start.className = 'smaller-text lighter-text log-field log-field-right-align start-time-field'
           if (newLine) start.appendChild(startInner)
           if (typeof time === 'string') {
             startInner.innerText = time
