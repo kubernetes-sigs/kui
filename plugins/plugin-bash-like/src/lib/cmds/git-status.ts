@@ -39,9 +39,9 @@ export const status2Html = (rawOut: string, stats: Promise<Stats> = numstat()): 
 
   const mods = rawOut
     .replace(/^\s*\(use .*\)$/mg, '___nope___')
-    .replace(/^(\s+)([^:\s]+)$/mg, `<div class='entity'><div class='entity-attributes'><span class='repl-pexec-link clickable clickable-blatant smaller-text small-bottom-pad' data-file='$2' data-partial data-command='git add'>$2</span></div></div>`)
+    .replace(/^(\s+)([^:\s]+)$/mg, `<div class='entity'><div class='entity-attributes'><span class='repl-pexec-link do-not-overflow clickable clickable-blatant small-bottom-pad' data-file='$2' data-partial data-command='git add'>$2</span></div></div>`)
     .replace(/^(\s+)(modified:|new file:|deleted:)(\s+)(.*)$/mg,
-             `<div class='entity'><div class='entity-attributes'>$2<span class='repl-pexec-link clickable clickable-blatant smaller-text small-bottom-pad' data-file='$4'>$4</span><span class='d2h-file-stats-wrapper'><span class='d2h-file-stats double-icon-width' data-file='$4'><span class='d2h-lines-added'></span><span class='d2h-lines-deleted'></span></span></span></div></div>`)
+             `<div class='entity'><div class='entity-attributes'>$2<span class='repl-pexec-link do-not-overflow clickable clickable-blatant small-bottom-pad' data-file='$4'>$4</span><span class='d2h-file-stats-wrapper'><span class='d2h-file-stats double-icon-width' data-file='$4'><span class='d2h-lines-added'></span><span class='d2h-lines-deleted'></span></span></span></div></div>`)
     .replace(/(On branch\s+)(.*)\n/, '') // $1<strong>$2</strong>
     .replace(/(Changes to be committed:|Changes not staged for commit:)/g, `</div></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><div class='result-table'>`)
     .replace(/(Untracked files:)/g, `</div></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><div class='result-table'>`)
@@ -144,14 +144,17 @@ const doStatus = async ({ command, execOptions }) => new Promise(async (resolve,
   })
 })
 
-/** git diff --numstat row; we will consume these numbers as strings, so no need to parseInt them */
+/**
+ * git diff --numstat row; we will consume these numbers as strings, so no need to parseInt them
+ *
+ */
 interface IStat {
   added: string
   deleted: string
 }
 type Stats = { [key: string]: IStat }
 const numstat = (): Promise<Stats> => new Promise<Stats>((resolve, reject) => {
-  const child = spawn('git', ['diff', '--numstat', `--relative=${path.basename(process.cwd())}`])
+  const child = spawn('git', ['diff', '--numstat']) // `--relative=${path.basename(process.cwd())}`])
 
   let rawOut = ''
   child.stdout.on('data', data => {
