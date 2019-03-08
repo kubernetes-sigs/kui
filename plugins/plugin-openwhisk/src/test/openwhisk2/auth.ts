@@ -88,8 +88,22 @@ describe('auth tests', function (this: common.ISuite) {
 
   // wsk auth list should so both installed namespaces
   ui.aliases.list.forEach(cmd => {
-    it(`should list first namespace with "wsk auth ${cmd}"`, () => cli.do(`wsk auth ${cmd}`, this.app).then(cli.expectOKWith(ns1)))
-    it(`should list second namespace with "wsk auth ${cmd}"`, () => cli.do(`wsk auth ${cmd}`, this.app).then(cli.expectOKWith(ns2)))
+    const checkMarkCell = (ns: string) => `.entity.namespaces[data-name="${ns}"] .entity-name.clickable`
+    const nameCell = (ns: string) => `.entity.namespaces[data-name="${ns}"] > div > .clickable`
+
+    const ok = (ns: string) => {
+      it(`should list namespace ${ns} and find checkmark cell with "wsk auth ${cmd}"`, async () => {
+        return cli.do(`wsk auth ${cmd}`, this.app)
+          .then(cli.expectOKWithCustom({ selector: checkMarkCell(ns) }))
+      })
+      it(`should list namespace ${ns} and find name cell with "wsk auth ${cmd}"`, async () => {
+        return cli.do(`wsk auth ${cmd}`, this.app)
+          .then(cli.expectOKWithCustom({ selector: nameCell(ns) }))
+      })
+    }
+
+    ok(ns1)
+    ok(ns2)
   })
 
   // switch back to first namespace
