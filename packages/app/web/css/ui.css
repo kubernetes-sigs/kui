@@ -471,7 +471,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .entity-attributes {
     display: table-row;
-    height: 3em;
+    /* height: 3em; */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -498,7 +498,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .entity-attributes > span {
     display: table-cell;
     vertical-align: middle;
-    padding: 0 0.375rem;
+    padding: 0.85em 0.375em;
     border-top: 1px solid var(--color-ui-04);
     transition: all 300ms ease-in-out;
 }
@@ -1521,12 +1521,12 @@ sidecar .result-as-table .big-top-pad:first-child {
 .log-lines .log-line {
     /* every row in the log table */
     display: table-row;
-    height: 3em;
+    /* height: 3em; */
 }
 .log-lines .log-line .log-field {
     /* every field in the log table */
     display: table-cell;
-    padding: 0 0.375rem;
+    padding: 0.8em 0.375em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -2140,7 +2140,7 @@ sidecar.minimized .sidecar-bottom-stripe-left-bits, sidecar.minimized .header-ri
 }
 sidecar.minimized .sidecar-bottom-stripe {
     align-items: flex-end;
-    padding: 0 0.375rem;
+    padding: 0.8em 0.375em;
     box-shadow: none;
 }
 sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
