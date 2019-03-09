@@ -82,13 +82,13 @@ const bodyPart = (noMargin = false) => {
 
 /** render the given div with the default san serif font */
 const sans = div => {
-  div.style.fontFamily = 'var(--font-sans-serif)'
+  div.classList.add('sans-serif')
   return div
 }
 
 /** render the given div a bit smaller */
 const smaller = div => {
-  div.style.fontSize = '0.875em'
+  div.classList.add('somewhat-smaller-text')
   return div
 }
 /** render the given div with white space line wrapping */
@@ -160,7 +160,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
     // if we have a great many detailed examples, place them in a scroll region
     const scrollableDetailedExamples = detailedExample && detailedExample.length > 4
 
-    if ((sections && sections.length > 1) || scrollableDetailedExamples) {
+    if ((sections && sections.length > 1) || (scrollableDetailedExamples && sections && sections.length > 0)) {
       left.classList.add('fifty-fifty')
       right.classList.add('fifty-fifty')
     } else {
@@ -314,7 +314,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         examplePart.appendChild(prePart)
         examplePart.appendChild(textPart)
 
-        textPart.style.color = 'var(--color-support-02)'
+        textPart.style.color = 'var(--color-base0C)'
       }
 
       // detailed example command
@@ -326,25 +326,28 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         left.appendChild(examplePart)
         examplePart.appendChild(prePart)
 
-        const rowsPart = examples.length > 4 ? div(undefined, 'scrollable') : examplePart
-        if (examples.length > 4) {
-          const nRowsInViewport = 5
+        // only if we there are other sections to show, render the
+        // detailed examples in a scroll region
+        const examplesInScrollRegion = examples.length > 4 && sections && sections.length > 0
+
+        const rowsPart = examplesInScrollRegion ? div(undefined, 'scrollable') : examplePart
+        if (examplesInScrollRegion) {
+          const nRowsInViewport = 6
           examplePart.appendChild(rowsPart)
-          rowsPart.style.maxHeight = `calc(5 * 3em + 1px)`
+          rowsPart.style.maxHeight = `calc(${nRowsInViewport} * 3em + 1px)`
         }
 
         examples.forEach(({ command, docs }, idx) => {
+          const exampleContainer = div(undefined, 'present-as-quotation')
+          rowsPart.appendChild(exampleContainer)
+
           const textPart = div(command)
-          const docPart = sans(div(docs))
+          const docPart = sans(div(docs, 'lighter-text'))
 
-          rowsPart.appendChild(textPart)
-          rowsPart.appendChild(smaller(docPart))
+          exampleContainer.appendChild(textPart)
+          exampleContainer.appendChild(docPart)
 
-          textPart.style.color = 'var(--color-support-02)'
-
-          if (idx > 0) {
-            textPart.style.marginTop = '1em'
-          }
+          textPart.style.color = 'var(--color-base0C)'
         })
       }
 
@@ -417,7 +420,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           const cmdPart = span(label)
           const dirPart = isDir && label && span('/')
           const examplePart = example && span(example, label || dirPart ? 'left-pad' : '') // for -p key value, "key value"
-          const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'deemphasize small-left-pad')
+          const aliasesPart = aliases && aliases.length > 0 && div(undefined, 'lighter-text smaller-text small-top-pad')
           const docsPart = span(docs)
           const allowedPart = allowed && smaller(span(undefined))
 
@@ -433,13 +436,13 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           docsCell.style.background = 'var(--color-ui-02)'
 
           cmdPart.style.fontWeight = '500'
-          wrap(smaller(sans(docsPart)))
+          wrap(sans(docsPart))
 
           // command aliases
           if (aliases) {
             aliases.filter(x => x).forEach(alias => {
               const cmdCell = span()
-              const cmdPart = span(alias, noclick ? '' : 'clickable clickable-blatant')
+              const cmdPart = span(alias /* noclick ? '' : 'clickable clickable-blatant' */) // don't make aliases clickable
               const dirPart = isDir && span('/')
 
               if (!noclick) {
@@ -473,7 +476,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
             if (!isDir) cmdPart.style.fontWeight = 'bold'
             if (!noclick) {
               cmdPart.classList.add('clickable')
-              cmdPart.classList.add('clickable-blatant')
+              // cmdPart.classList.add('clickable-blatant')
               cmdPart.onclick = async event => {
                 if (partial) {
                   const cli = await import('../webapp/cli')
