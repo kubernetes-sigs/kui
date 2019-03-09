@@ -94,9 +94,9 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
                   .replace(/^\s*-\s+/, '')
                   .replace(/:\s*$/, ''),
                 docs: docs && docs.replace(/^\s*:\s*/, ''),
-                commandPrefix: title.match(/Available Commands/i) && command,
+                commandPrefix: /Commands/i.test(title) && command,
                 noclick: !title.match(/Common actions/i) &&
-                  !title.match(/Available Commands/i)
+                  !title.match(/Commands/i)
               }
             }
           })
@@ -106,21 +106,64 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
 
   const detailedExample = (detailedExampleFromUsePart || [])
     .concat((examplesSection ? examplesSection.content : '')
-            .split(/[\n\r]/)
+            .split(/^\s*(?:#\s+)/mg)
             .map(x => x.trim())
             .filter(x => x)
-            .map((line, idx, lines) => {
-              if (idx % 2 === 0) {
+            .map((group, idx, A) => {
+              //
+              // Explanation: compare `kubectl completion -h` to `kubectl get -h`
+              // The former Examples section has a structure of (Summary, MultiLineDetail)
+              // while the latter is shaped like (DescriptionLine, CommandLine).
+              //
+              // The lack of symmetry is a bit odd (detail/description
+              // is second versus first), but understandable, given
+              // that the former's Detail takes up multiple lines
+              // whereas the latter has a pair of lines. Let's
+              // introduce some symmetry here.
+              //
+              const match = group.match(/(.*)[\n\r]([\s\S]+)/)
+              if (match && match.length === 3) {
+                const [_, firstPartFull, secondPartFull] = match
+
+                const firstPart = removeSolitaryAndTrailingPeriod(firstPartFull)
+                const secondPart = removeSolitaryAndTrailingPeriod(secondPartFull)
+
+                const secondPartIsMultiLine = secondPart.split(/[\n\r]/).length > 1
+
+                const command = secondPartIsMultiLine ? firstPart : secondPart
+                const docs = secondPartIsMultiLine ? secondPart : firstPart
+
                 return {
-                  command: lines[idx + 1],
-                  docs: lines[idx].replace(/^\s*#\s+/, '')
+                  command,
+                  docs
+                }
+              } else {
+                // see kubectl label -h for an example of a multi-line "firstPart"
+                return {
+                  copyToNextLine: group
                 }
               }
             })
+            .reduce((lines, lineRecord, idx, A) => {
+              for (let jdx = idx - 1; jdx >= 0; jdx--) {
+                if (A[jdx].copyToNextLine) {
+                  lineRecord.docs = `${A[jdx].copyToNextLine}\n${lineRecord.docs}`
+                } else {
+                  break
+                }
+              }
+
+              if (!lineRecord.copyToNextLine) {
+                lines.push(lineRecord)
+              }
+              return lines
+            }, [])
             .filter(x => x)
            )
 
   return new UsageError({
+    commandPrefix: command, // for onclick handlers, e.g. when clicking on "get", we want to exec "kubectl get"
+    commandSuffix: '-h', // we really want "kubectl get -h"
     breadcrumb: verb || command,
     parents: verb ? [command] : [],
     header,
@@ -129,64 +172,12 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
     detailedExample,
     example: usageSection && usageSection[0] && usageSection[0].content.replace(/\s+$/, '')
   })
-
-  /*const outer = document.createElement('div');
-    outer.className = 'usage-error-wrapper';
-
-    const dom = document.createElement('div');
-    dom.className = 'hideable'; // hideable: to work with the usage error styling
-    dom.style.whiteSpace = 'normal';
-    outer.appendChild(dom);
-
-    const title = document.createElement('h1');
-    title.className = 'bx--breadcrumb bx--breadcrumb--no-trailing-slash';
-    dom.appendChild(title);
-    const commandCrumb = document.createElement('span');
-    commandCrumb.className = 'bx--breadcrumb-item capitalize';
-    const commandCrumbLink = document.createElement('span');
-    commandCrumbLink.className = 'bx--no-link bx--link';
-    commandCrumbLink.innerText = command;
-    const commandCrumbLinkSlash = document.createElement('span');
-    commandCrumbLinkSlash.className = 'bx--breadcrumb-item--slash';
-    commandCrumbLinkSlash.innerText = '/';
-    commandCrumb.appendChild(commandCrumbLink);
-    commandCrumb.appendChild(commandCrumbLinkSlash);
-    title.appendChild(commandCrumb);
-    if (verb) {
-    const verbCrumb = document.createElement('div');
-    verbCrumb.className = 'bx--breadcrumb-item capitalize';
-    verbCrumb.innerText = verb;
-    title.appendChild(verbCrumb);
-    }
-
-    const introDom = document.createElement('div');
-    dom.appendChild(introDom);
-
-    const titlePart = introPart[0];
-    const titleDom = document.createElement('div');
-    titleDom.innerText = titlePart;
-    introDom.appendChild(titleDom);
-
-    introPart.slice(1).forEach(paragraph => {
-    const paraDom = document.createElement('p');
-    paraDom.classList.add('pre-wrap');
-    paraDom.innerText = paragraph;
-    introDom.appendChild(paraDom);
-    });
-
-    for (let idx = 1; idx < sections.length; idx += 2) {
-    const sectionDom = document.createElement('div');
-    dom.appendChild(sectionDom);
-
-    const title = document.createElement('h4');
-    title.innerText = sections[idx];
-    sectionDom.appendChild(title);
-
-    const content = document.createElement('div');
-    content.classList.add('pre-wrap');
-    content.innerText = sections[idx + 1].replace(/^\n/, '');
-    sectionDom.appendChild(content);
-    }
-
-    return outer;*/
 }
+
+/**
+ * Some of the kubectl doc strings try to be polite have form
+ * sentences with a trailing period. In a visual form, as long as it
+ * is a single sentence, this is less necessary.
+ *
+ */
+const removeSolitaryAndTrailingPeriod = (str: string) => str.replace(/^\s*([^.]+)[.]\s*$/, '$1').trim()

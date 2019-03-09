@@ -471,7 +471,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .entity-attributes {
     display: table-row;
-    /* height: 3em; */
+    height: 3em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -498,7 +498,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .entity-attributes > span {
     display: table-cell;
     vertical-align: middle;
-    padding: 0.85em 0.375em;
+    padding: 0 0.375em;
     border-top: 1px solid var(--color-ui-04);
     transition: all 300ms ease-in-out;
 }
@@ -1164,6 +1164,11 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+.present-as-quotation {
+    border-left: 0.375em solid var(--color-base01);
+    padding: 0.375em 0 0.375em 0.375em;
+    margin: 0.375em 0;
+}
 .do-not-overflow {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1521,12 +1526,12 @@ sidecar .result-as-table .big-top-pad:first-child {
 .log-lines .log-line {
     /* every row in the log table */
     display: table-row;
-    /* height: 3em; */
+    height: 3em;
 }
 .log-lines .log-line .log-field {
     /* every field in the log table */
     display: table-cell;
-    padding: 0.8em 0.375em;
+    padding: 0 0.375em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -2140,7 +2145,7 @@ sidecar.minimized .sidecar-bottom-stripe-left-bits, sidecar.minimized .header-ri
 }
 sidecar.minimized .sidecar-bottom-stripe {
     align-items: flex-end;
-    padding: 0.8em 0.375em;
+    padding: 0 0.375em;
     box-shadow: none;
 }
 sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
@@ -2201,6 +2206,15 @@ sidecar .usage-error-wrapper .hideable {
 .usage-error-wrapper h4 {
     text-transform: capitalize;
     margin: 0 0 0.375em;
+}
+.usage-error-wrapper .log-lines .log-line {
+    /* usage docs tend to be multi-line */
+    height: unset;
+}
+.usage-error-wrapper .log-lines .log-line .log-field {
+    /* used in tandem with height: unset */
+    padding-top: 0.875em;
+    padding-bottom: 0.875em;
 }
 .usage-error-wrapper h4 {
     margin: 1.33em 0 0.375em;
