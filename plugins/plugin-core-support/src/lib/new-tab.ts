@@ -248,7 +248,7 @@ const reindexTabs = () => {
     tabs[idx].setAttribute('data-tab-index', id.toString())
   }
 
-  const tabButtons = document.querySelectorAll('.main .left-tab-stripe .left-tab-stripe-button:not(.new-tab-button)')
+  const tabButtons = document.querySelectorAll('.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button')
   for (let idx = 0; idx < tabButtons.length; idx++) {
     const id = idx + 1 // also indexed from 1
     const button = tabButtons[idx] as HTMLElement

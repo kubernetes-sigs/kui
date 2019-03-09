@@ -43,14 +43,6 @@ body[kui-theme="Dark"] {
 
     --color-ui-06: hsl(216, 15%, 17%);
     --color-field-01: hsl(216, 15%, 17%);
-    --color-tab-01: #666666;
-    --color-tab-02: #fdc086;
-    --color-tab-03: #386cb0;
-    --color-tab-04: #7fc97f;
-    --color-tab-05: #ffff99;
-    --color-tab-06: #beaed4;
-    --color-tab-07: #f0027f;
-    --color-tab-08: #bf5b17;
 }
 
 body[kui-theme="Dark"] .sidecar-bottom-stripe {

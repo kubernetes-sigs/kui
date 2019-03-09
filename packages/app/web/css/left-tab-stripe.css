@@ -28,7 +28,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 .left-tab-stripe {
     flex-basis: 78px; /* this seems to align things well with macOS */
     min-width: 0;
-    padding: 1.5em 0 1em;
+    padding: 1.5em 0 0.5em;
     background: var(--color-stripe-01);
     display: flex;
     flex-direction: column;
@@ -56,23 +56,21 @@ body.os-darwin .left-tab-stripe {
     color: var(--color-text-01);
 }*/
 .left-tab-stripe-button {
-    counter-increment: tab-index;
     position: relative;
     display: flex;
-    flex-direction: column;
     margin: 1em 0;
+    flex-direction: column;
     color: var(--color-text-01);
     transition: color 600ms ease-in-out;
 }
-.left-tab-stripe-button:not([data-tab-button-index]) {
-    margin-top: 0.25em;
+.left-tab-stripe-bottom-buttons .left-tab-stripe-button {
+    margin: 1.375em 0;
 }
 .left-tab-stripe-button:not([data-tab-button-index]):hover i {
     color: rgba(255,255,255,0.5) !important;
 }
 .left-tab-stripe-button:not([data-tab-button-index]) i {
-    filter: none;
-    color: rgba(255,255,255,0.1) !important;
+    color: rgba(255,255,255,0.25) !important;
 }
 .left-tab-stripe-button:not([data-tab-button-index]):after {
     content: ''
@@ -82,7 +80,7 @@ body.os-darwin .left-tab-stripe {
     align-items: center;
     justify-content: center;
     filter: blur(0.5px) grayscale(0.5) brightness(0.75);
-    font-size: 2.75em;
+    font-size: 3em;
     transition: filter 300ms ease-in-out, color 300ms ease-in-out;
     /* border-radius: 3px / 6px;
     border: 9px solid transparent; */
@@ -111,23 +109,33 @@ body.os-darwin .left-tab-stripe {
 .left-tab-stripe-button:nth-child(8n+8) i {
     color: var(--color-tab-08);
 }
-.left-tab-stripe-button:after {
+
+/* these two rules give us the tab index label that appears inside of the tabs */
+.left-tab-stripe-buttons .left-tab-stripe-button {
+    counter-increment: tab-index;
+}
+.left-tab-stripe-buttons .left-tab-stripe-button:after {
     content: counter(tab-index);
     position: absolute;
-    top: 20%;
+    top: calc(0.6875 / 3 * 100%); /* matching 0.6875em here, and 3em for `fas fa-square` */
     left: 50%;
     transform: translateX(-50%);
+    color: var(--color-base06);
     font-weight: bold;
     font-size: 0.6875em;
     transition: font-size 150ms ease-in-out;
 }
+
 .left-tab-stripe-button.smaller-button i {
-    font-size: 2em;
+    font-size: 2.5em;
 }
 .left-tab-stripe-button.left-tab-stripe-button-selected:after {
     font-size: 0.875em;
 }
 .left-tab-stripe-button-selected i {
+    filter: grayscale(0.25);
+}
+.left-tab-stripe-bottom-buttons i {
     filter: grayscale(0.5);
 }
 .left-tab-stripe-button:not(.left-tab-stripe-button-selected):hover i {
@@ -142,7 +150,7 @@ body.os-darwin .left-tab-stripe {
 }
 .left-tab-stripe-button-selected .left-tab-stripe-button-label {
     /* reduce the visibility of the tab label, for the visible tab */
-    opacity: 0.7;
+    opacity: 0.75;
 }
 .left-tab-stripe-button-label {
     color: var(--color-text-02);
@@ -190,7 +198,7 @@ body.subwindow .repl .horizontal-landing-zone {
     justify-content: center;
 }
 #help-button.left-tab-stripe-button i {
-    color: var(--color-text-02) !important;
+    color: var(--color-base0D) !important;
 }
 #help-button.left-tab-stripe-button:hover i {
     color: var(--color-brand-02) !important;
