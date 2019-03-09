@@ -812,6 +812,11 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
 
       debug('exec output json', record)
       resolve(record)
+    } else if (command === 'kubectl' && verb === 'run' && argv[2]) {
+      const entity = argv[2]
+      const namespace = options.namespace || options.n || 'default'
+      debug('status after kubectl run', entity, namespace)
+      repl.qexec(`k8s status deploy "${entity}" -n "${namespace}"`).then(resolve).catch(reject)
     } else if ((options.f || options.file || (command === 'kubectl' && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
       //
       // then this was a create or delete from file; show the status of the operation
