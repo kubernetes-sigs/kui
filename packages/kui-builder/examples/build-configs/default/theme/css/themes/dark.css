@@ -20,8 +20,8 @@ body[kui-theme="Dark"] {
     --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
     --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
-    --color-light-red: hsla(0, 50%, 75%, 0.75);
-    --color-light-green: hsla(66, 39%, 57%, 75%);
+    --color-light-red: hsla(0, 80%, 75%, 50%);
+    --color-light-green: hsla(66, 69%, 57%, 50%);
     --color-light-yellow: hsl(40, 81%, 70%);
 
     --color-content-divider: hsl(208, 25%, 36%);
