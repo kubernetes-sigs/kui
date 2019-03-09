@@ -32,6 +32,7 @@ import { formatOneListResult } from '../views/table'
 import { keys } from '../keys'
 import { IShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
+import Presentation from './presentation'
 
 /**
  * e.g. 2017-06-15T14:41:15.60027911Z  stdout:
@@ -462,6 +463,14 @@ export const showCustom = async (custom, options) => {
     eventBus.emit('/sidecar/replace', sidecar.entity || sidecar.uuid)
   }
   sidecar.uuid = custom.uuid
+
+  // if the view hints that it wants to occupy the full screen and we
+  // are not currenlty in fullscreen, OR if the view does not want to
+  // occupy full screen and we *are*... in either case (this is an
+  // XOR, does as best one can in NodeJS), toggle maximization
+  if (custom.presentation === Presentation.SidecarFullscreen ? !isFullscreen() : isFullscreen()) {
+    toggleMaximization()
+  }
 
   if (custom.controlHeaders === true) {
     // plugin will control all headers

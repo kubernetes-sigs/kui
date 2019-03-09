@@ -28,6 +28,7 @@ const selectors = {
   APIHOST: '#openwhisk-api-host',
   NAMESPACE: '#openwhisk-namespace',
   SIDECAR_BASE: 'tab.visible sidecar',
+  SIDECAR_FULLSCREEN: 'tab.visible.sidecar-full-screen sidecar.visible',
   PROMPT_BLOCK: 'tab.visible .repl .repl-block',
   OOPS: 'tab.visible .repl .repl-block .oops'
 }
@@ -192,12 +193,15 @@ exports.cli = {
   expectOKWithOnly: entityName => res => expectOK(res, entityName), // expect ok and *only* the given result value
   expectOKWith: entityName => res => expectOK(res, [entityName]), // expect ok and at least the given result value
   expectOK: res => expectOK(res, { passthrough: true }).then(N => res.app.client.elements(selectors.LIST_RESULTS_BY_NAME_N(N))).then(elts => assert.strictEqual(elts.value.length, 0)).then(() => res.app),
-  expectJustOK: res => expectOK(res, true) // expect just ok, and no result value
+  expectJustOK: res => expectOK(res, true).then(() => res.app) // expect just ok, and no result value
 }
 
 exports.sidecar = {
   expectOpen: app => app.client.waitForVisible(selectors.SIDECAR, timeout).then(() => app),
   expectOpenWithFailure: app => app.client.waitForVisible(selectors.SIDECAR_WITH_FAILURE, timeout).then(() => app),
+
+  // expect open fullscreen
+  expectFullscreen: app => app.client.waitForVisible(selectors.SIDECAR_FULLSCREEN, timeout).then(() => app),
 
   // either minimized or fully closed
   expectClosed: app => app.client.waitForExist(selectors.SIDECAR_HIDDEN, timeout)

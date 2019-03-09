@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ const debug = Debug('plugins/bash-like/cmds/git-diff')
 import * as path from 'path'
 
 import { split } from '@kui-shell/core/core/repl'
+import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -71,9 +72,13 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
 
       // note: no sidecar header if this launched from the command line ("subwindow mode")
       resolve(asSidecarEntity(filePart, Diff2Html.getPrettyHtml(rawOut, {
-        showFiles, matching: 'lines', outputFormat: 'side-by-side'
-      }), { sidecarHeader: !document.body.classList.contains('subwindow') },
-                              undefined, commandPart, currentBranch))
+        showFiles,
+        matching: 'lines',
+        outputFormat: 'side-by-side'
+      }), {
+        presentation: Presentation.SidecarFullscreen,
+        sidecarHeader: !document.body.classList.contains('subwindow')
+      }, undefined, commandPart, currentBranch))
     } else {
       try {
         resolve(handleNonZeroExitCode(command, exitCode, rawOut, rawErr, execOptions))
