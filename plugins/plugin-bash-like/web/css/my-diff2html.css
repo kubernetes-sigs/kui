@@ -102,8 +102,7 @@ td > .d2h-code-side-linenumber {
 }
 
 .d2h-file-diff .d2h-ins.d2h-change, .d2h-file-diff .d2h-del.d2h-change {
-    background-color: var(--color-ui-01); /* rgba(0,0,0,0.01); */
-    color: var(--color-text-01);
+    background-color: var(--color-ui-01);
 }
 
 .line-num1, .line-num2 {
