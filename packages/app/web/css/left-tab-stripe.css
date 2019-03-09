@@ -75,11 +75,13 @@ body.os-darwin .left-tab-stripe {
 .left-tab-stripe-button:not([data-tab-button-index]):after {
     content: ''
 }
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
+    filter: blur(0.5px) grayscale(0.75) brightness(0.75);
+}
 .left-tab-stripe-button i {
     display: flex;
     align-items: center;
     justify-content: center;
-    filter: blur(0.5px) grayscale(0.5) brightness(0.75);
     font-size: 3em;
     transition: filter 300ms ease-in-out, color 300ms ease-in-out;
     /* border-radius: 3px / 6px;
@@ -133,7 +135,7 @@ body.os-darwin .left-tab-stripe {
     font-size: 0.875em;
 }
 .left-tab-stripe-button-selected i {
-    filter: grayscale(0.25);
+    filter: grayscale(0.5);
 }
 .left-tab-stripe-bottom-buttons i {
     filter: grayscale(0.5);

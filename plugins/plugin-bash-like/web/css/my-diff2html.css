@@ -162,16 +162,16 @@ td > .d2h-code-side-linenumber {
     justify-content: flex-end;
 }
 .d2h-file-stats > span {
-    color: var(--color-ui-01);
+    color: var(--color-white);
     border-color: transparent;
     padding: 0.25em;
     font-size: 0.875em;
 }
 .d2h-lines-added {
-    background: var(--color-ok);
+    background: var(--color-light-green);
 }
 .d2h-lines-deleted {
-    background: var(--color-error);
+    background: var(--color-light-red);
 }
 
 /* + prefix text for insert */
