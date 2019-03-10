@@ -272,6 +272,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       //
       if (header) {
         let headerDiv = div(header, 'normal-text sans-serif')
+
         if (!isHeadless()) {
           try {
             const marked = await import('marked')
@@ -280,6 +281,12 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           } catch (err) {
             debug('error using marked', err)
           }
+        }
+
+        if (message.exitCode !== 0 || message.exitCode !== 200) {
+          // the underlying command emitted some sort of usage model in response to an error
+          // e.g. `kubectl get pods --bogus
+          headerDiv.classList.add('red-text')
         }
 
         result.appendChild(headerDiv)

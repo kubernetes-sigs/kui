@@ -49,7 +49,6 @@ const outerCSSForKey = {
   'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
-  'APP VERSION': 'pre-wrap', // helm ls
   UPDATED: 'min-width-date-like', // helm ls
   REVISION: 'hide-with-sidecar', // helm ls
   AGE: 'very-narrow', // e.g. helm status and kubectl get svc
@@ -60,12 +59,13 @@ const outerCSSForKey = {
 const cssForKey = {
   // kubectl get events
   NAME: 'entity-name',
-  SOURCE: 'deemphasize',
-  SUBOBJECT: 'deemphasize',
-  'CREATED AT': 'slightly-deemphasize smaller-text',
+  SOURCE: 'lighter-text smaller-text',
+  SUBOBJECT: 'lighter-text smaller-text',
+  'CREATED AT': 'lighter-text smaller-text',
 
   // STATUS: 'even-smaller-text',
-  UPDATED: 'deemphasize'
+  'APP VERSION': 'pre-wrap lighter-text smaller-text', // helm ls
+  UPDATED: 'lighter-text smaller-text'
 }
 
 const tagForKey = {

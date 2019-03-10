@@ -24,8 +24,9 @@ import UsageError from '@kui-shell/core/core/usage-error'
  * @param command e.g. helm versus kubectl
  * @param verb e.g. list versus get
  * @param entityType? e.g. crd
+ *
  */
-export const renderHelp = (out: string, command: string, verb: string, entityType?: string) => {
+export const renderHelp = (out: string, command: string, verb: string, exitCode: number, entityType?: string) => {
   debug('renderHelp')
 
   // kube and helm help often have a `Use "this command" to do that operation`
@@ -162,6 +163,7 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
            )
 
   return new UsageError({
+    exitCode,
     commandPrefix: command, // for onclick handlers, e.g. when clicking on "get", we want to exec "kubectl get"
     commandSuffix: '-h', // we really want "kubectl get -h"
     breadcrumb: verb || command,

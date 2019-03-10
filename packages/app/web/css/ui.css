@@ -2404,6 +2404,11 @@ badge::first-letter {
     /* see the "in tandem" note immediately above */
     text-transform: uppercase;
 }
+.repl-result-prefix, badge:not(.badge-as-fontawesome) {
+    background-color: var(--color-tag-beta-fill);
+    color: var(--color-tag-beta-text);
+    font-family: var(--font-sans-serif);
+}
 badge.green-background {
     background: var(--color-support-02);
     color: var(--color-ui-01);
@@ -2441,12 +2446,6 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
 
 .repl-block.processing .repl-input input {
     color: hsla(194, 71%, 40%, 1);
-}
-
-.repl-result-prefix, badge:not(.badge-as-fontawesome) {
-    background-color: var(--color-tag-beta-fill);
-    color: var(--color-tag-beta-text);
-    font-family: var(--font-sans-serif);
 }
 
 .result-table .entity:nth-child(2n + 1) td, .result-table .entity:nth-child(2n + 1) .entity-attributes {
