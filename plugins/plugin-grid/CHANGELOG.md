@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.9.0 (2019-03-10)
+
+
+### Bug Fixes
+
+* **apache-composer:** compose yoyo -t @demos/if.js broken in webpack mode ([14ac816](https://github.com/IBM/kui/commit/14ac816)), closes [#332](https://github.com/IBM/kui/issues/332)
+* clicks on sidecar header etc. result in prompt losing focus ([2f78dfc](https://github.com/IBM/kui/commit/2f78dfc)), closes [#610](https://github.com/IBM/kui/issues/610)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* smoother transitions as themes switch ([1ad91c1](https://github.com/IBM/kui/commit/1ad91c1)), closes [#613](https://github.com/IBM/kui/issues/613)
+* **packages/app:** balloon-css tooltips should follow theme ([e8a73b9](https://github.com/IBM/kui/commit/e8a73b9)), closes [#663](https://github.com/IBM/kui/issues/663)
+
+
+### Features
+
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+* **plugins/plugin-wrk:** wrk plugin ([d39a331](https://github.com/IBM/kui/commit/d39a331)), closes [#624](https://github.com/IBM/kui/issues/624)
+
+
+
+
+
 # 0.8.0 (2019-03-09)
 
 
