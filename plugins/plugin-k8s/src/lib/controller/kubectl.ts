@@ -27,6 +27,7 @@ import UsageError from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { ExecType } from '@kui-shell/core/core/command-tree'
+import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -34,7 +35,7 @@ import { renderHelp } from '../util/help'
 import { fillInTheBlanks } from '../util/discovery/kubeconfig'
 import pickHelmClient from '../util/discovery/helm-client'
 
-import IResource from '../model/resource'
+import { IKubeResource, IResource } from '../model/resource'
 import { FinalState } from '../model/states'
 
 import { redactJSON, redactYAML } from '../view/redact'
@@ -780,9 +781,15 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         defaultMode: true
       }]
 
-      if (verb === 'get') {
-        const yaml = parseYAML(out)
+      const yaml = verb === 'get' && parseYAML(out)
+      const subtext = yaml && yaml.metadata && yaml.metadata.creationTimestamp && createdOn(yaml)
 
+      // nothing, yet
+      const badges = []
+      badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
+      // maybe? badges.push(yaml && yaml.spec && yaml.spec.replicas && `Replicas: ${yaml.spec.replicas}`)
+
+      if (verb === 'get') {
         const resource: IResource = { kind: command !== 'helm' && entityType, name: entity, yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
 
@@ -800,11 +807,14 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         type: 'custom',
         isEntity: true,
         name: entity || verb,
-        packageName: cmdlineForDisplay,
+        packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || cmdlineForDisplay,
         namespace: options.namespace || options.n,
-        prettyType: entityTypeForDisplay || command,
+        version: yaml && yaml.metadata && yaml.metadata.labels && yaml.metadata.labels.version,
+        prettyType: (yaml && yaml.kind) || entityTypeForDisplay || command,
+        subtext,
         noCost: true, // don't display the cost in the UI
         modes,
+        badges: badges.filter(x => x),
         content
       }
 
@@ -866,6 +876,29 @@ const dispatchViaDelegationTo = delegate => opts => {
 
   debug('delegating invoke', opts.argv[0], opts.command)
   return delegate(opts)
+}
+
+/**
+ * Format the creationTimestamp of the given resource
+ * TODO refactor this somewhere else
+ *
+ * @param resource a kubernetes resource
+ */
+const createdOn = (resource: IKubeResource): Element => {
+  const message = document.createElement('div')
+  const datePart = document.createElement('strong')
+
+  message.appendChild(document.createTextNode('Created on '))
+  message.appendChild(datePart)
+  try {
+    datePart.appendChild(prettyPrintTime(Date.parse(resource.metadata.creationTimestamp)))
+  } catch (err) {
+    debug('error trying to parse this creationTimestamp', resource.metadata.creationTimestamp)
+    console.error('error parsing creationTimestamp', err)
+    datePart.innerText = resource.metadata.creationTimestamp
+  }
+
+  return message
 }
 
 /**
