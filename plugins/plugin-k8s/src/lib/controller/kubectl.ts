@@ -683,7 +683,10 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
     // e.g. kubectl config without any args results in an exit code of 1
     // whereas kubectl config -h results in an exit code of 0,
     // but we'd like to display them the same
-    const isUsage = code !== 0 && verb === 'config' && !entityType && !entity
+    const originalCode = code
+    const isUsage = code !== 0 &&
+      ((verb === 'config' && !entityType && !entity) ||
+       (/Error: unknown.*flag/i.test(err)))
     if (isUsage) {
       code = 0
       out = err
@@ -750,7 +753,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       }
     } else if (options.help || options.h || argv.length === 1 || isUsage) {
       try {
-        resolve(renderHelp(out, command, verb, entityType))
+        resolve(renderHelp(out, command, verb, originalCode, entityType))
       } catch (err) {
         console.error('error rendering help', err)
         reject(out)
