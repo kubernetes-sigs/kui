@@ -513,6 +513,16 @@ export const showCustom = async (custom, options) => {
     })
   }
 
+  const badgesDomContainer = sidecar.querySelector('.header-right-bits .custom-header-content')
+  let badgesDom = badgesDomContainer.querySelector('.badges')
+  if (!badgesDom) {
+    badgesDom = document.createElement('span')
+    badgesDom.classList.add('badges')
+    badgesDomContainer.appendChild(badgesDom)
+  } else {
+    removeAllDomChildren(badgesDom)
+  }
+
   if (custom && custom.isEntity) {
     const entity = custom
     sidecar.entity = entity
@@ -522,7 +532,11 @@ export const showCustom = async (custom, options) => {
                            entity.prettyType || entity.type, entity.subtext, entity)
 
     // render badges
-    addVersionBadge(entity, { clear: true })
+    addVersionBadge(entity, { clear: true, badgesDom })
+  }
+
+  if (custom && custom.badges) {
+    custom.badges.forEach(badge => addBadge(badge, { badgesDom }))
   }
 
   const replView = document.querySelector('tab.visible .repl')
@@ -604,10 +618,6 @@ export const showCustom = async (custom, options) => {
   } else {
     container.appendChild(document.createTextNode(custom.content))
   }
-
-  if (custom && custom.badges) {
-    custom.badges.forEach(addBadge)
-  }
 } /* showCustom */
 
 /**
@@ -680,19 +690,18 @@ export const linkify = dom => {
  */
 interface IBadgeOptions {
   css?: string
-  onclick?
+  onclick?,
+  badgesDom: Element
 }
 class DefaultBadgeOptions implements IBadgeOptions {
+  badgesDom = getSidecar().querySelector('.sidecar-header .badges')
+
   constructor () {
     // empty
   }
 }
-export const addBadge = (badgeText: string | Element, { css, onclick }: IBadgeOptions = new DefaultBadgeOptions()) => {
-  debug('addBadge', badgeText)
-
-  const sidecar = getSidecar()
-  const header = sidecar.querySelector('.sidecar-header')
-  const badges = header.querySelector('.badges')
+export const addBadge = (badgeText: string | Element, { css, onclick, badgesDom = new DefaultBadgeOptions().badgesDom }: IBadgeOptions = new DefaultBadgeOptions()) => {
+  debug('addBadge', badgeText, badgesDom)
 
   const badge = document.createElement('badge') as HTMLElement
 
@@ -711,7 +720,7 @@ export const addBadge = (badgeText: string | Element, { css, onclick }: IBadgeOp
     badge.onclick = onclick
   }
 
-  badges.appendChild(badge)
+  badgesDom.appendChild(badge)
   return badge
 }
 
@@ -719,12 +728,12 @@ export const addBadge = (badgeText: string | Element, { css, onclick }: IBadgeOp
  * If the entity has a version attribute, then render it
  *
  */
-export const addVersionBadge = (entity, { clear = false } = {}) => {
+export const addVersionBadge = (entity, { clear = false, badgesDom = undefined } = {}) => {
   if (clear) {
     clearBadges()
   }
   if (entity.version) {
-    addBadge(`v${entity.version}`).classList.add('version')
+    addBadge(/^v/.test(entity.version) ? entity.version : `v${entity.version}`, { badgesDom }).classList.add('version')
   }
 }
 

@@ -70,6 +70,10 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
         }))
       }
     }
+  } else if (now.getFullYear() === then.getFullYear()) {
+    return document.createTextNode(then.toLocaleString(navigator.language, {
+      weekday: fmt, month: fmt, day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
+    }))
   } else {
     // different year or different month: print the long form
     return document.createTextNode(then.toLocaleString())

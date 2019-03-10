@@ -38,15 +38,16 @@ interface IKubeMetadata {
   kind: string
   name: string
   namespace?: string
+  creationTimestamp?: string
 }
 
-interface IKubeResource {
+export interface IKubeResource {
   metadata?: IKubeMetadata
   status?: IKubeStatus
   spec?: any
 }
 
-interface IResource {
+export interface IResource {
   filepathForDrilldown?: string
   kind?: string
   name?: string

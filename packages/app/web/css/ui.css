@@ -2387,7 +2387,8 @@ badge {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 600;
-
+}
+badge:not(.version) {
     /* in tandem with the ::first-letter rule immediately below, this gives us DEPLOYED -> Deployed */
     text-transform: lowercase;
     display: inline-block; /* <-- the trick requires block or inline-block */
