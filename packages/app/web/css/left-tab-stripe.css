@@ -169,7 +169,10 @@ body.os-darwin .left-tab-stripe {
     direction: rtl;
 }
 
-.sidecar-header, .sidecar-bottom-stripe {
+.sidecar-header span {
+    -webkit-app-region: no-drag;
+}
+.sidecar-header div, .sidecar-bottom-stripe {
     -webkit-app-region: drag;
 }
 sidecar .sidecar-header-name-content {
