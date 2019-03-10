@@ -352,6 +352,9 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     const opts = Object.assign({
       width,
       height,
+      webPreferences: {
+        nodeIntegration: true // prior to electron 5, this was the default
+      },
       show: false, // do not remove without consulting the ready-to-show comment below
       titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
     },
