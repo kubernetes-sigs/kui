@@ -2190,6 +2190,15 @@ sidecar.minimized [data-balloon]:before, sidecar.minimized [data-balloon]:after 
 }
 
 /* usage */
+.usage-error-wrapper .marked-content {
+    /* marked markdown renderer section */
+    white-space: normal;
+    font-size: 1rem;
+}
+.usage-error-wrapper .marked-content p {
+    /* marked markdown renderer paragraphs */
+    margin: 0.25em 0;
+}
 .usage-error-wrapper .hideable {
     margin: 2em 0;
     color: var(--color-text-01);
