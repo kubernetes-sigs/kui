@@ -24,6 +24,18 @@
     flex: 1;
 }
 
+.monaco-editor-wrapper .monaco-editor .emphasis {
+  font-style: italic;
+}
+
+.monaco-editor-wrapper .monaco-editor {
+  display: block;
+  padding: 0.3em 0.6em;
+}
+.monaco-editor-wrapper .monaco-editor {
+    background: transparent;
+}
+
 .monaco-editor .main {
     /* ui.css has a .main rule that we have to override; otherwise, the
    completion/suggestion UI list elements will have zero height and be

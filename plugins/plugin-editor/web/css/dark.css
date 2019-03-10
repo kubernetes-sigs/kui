@@ -1,13 +1,3 @@
-body[kui-theme-style="dark"] .monaco-editor {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  background: var(--color-ui-02);
-}
-body[kui-theme-style="dark"] .monaco-editor {
-    background: transparent;
-}
-
 /* these are the indentation indicators */
 body[kui-theme-style="dark"] .monaco-editor .lines-content .cigra {
     box-shadow: 1px 0 0 0 var(--color-base03) inset;
