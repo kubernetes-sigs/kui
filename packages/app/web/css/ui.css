@@ -253,7 +253,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .result-as-table .result-table .header-cell, .result-as-table.result-table .header-cell {
     font-weight: bold !important;
 }
-.result-as-table .result-table .header-row .header-cell , .result-as-table.result-table .header-row .header-cell {
+.log-lines .header-cell, .result-as-table .result-table .header-row .header-cell , .result-as-table.result-table .header-row .header-cell {
     background-color: var(--color-ui-06);
     border-bottom: 1px solid var(--color-content-divider);
 }
@@ -2388,6 +2388,11 @@ badge {
     white-space: nowrap;
     font-weight: 600;
 }
+badge.badge-as-fontawesome {
+    padding: 0;
+    font-size: 1.5em;
+    color: var(--color-base0C);
+}
 badge:not(.version) {
     /* in tandem with the ::first-letter rule immediately below, this gives us DEPLOYED -> Deployed */
     text-transform: lowercase;
@@ -2426,6 +2431,9 @@ badge.gray-background {
 .yellow-text {
     color: var(--color-support-03-darker);
 }
+.cyan-text {
+    color: var(--color-cyan);
+}
 
 sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoration="application error"] {
     color: var(--color-support-01-lighter);
@@ -2435,7 +2443,7 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
     color: hsla(194, 71%, 40%, 1);
 }
 
-.repl-result-prefix, badge {
+.repl-result-prefix, badge:not(.badge-as-fontawesome) {
     background-color: var(--color-tag-beta-fill);
     color: var(--color-tag-beta-text);
     font-family: var(--font-sans-serif);
@@ -2457,7 +2465,7 @@ sidecar .sidecar-header {
     transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
 }
 
-sidecar .sidecar-header badge {
+sidecar .sidecar-header badge:not(.badge-as-fontawesome) {
     background-color: var(--color-tag-beta-fill);
     color: var(--color-tag-beta-text);
 }
@@ -2468,7 +2476,7 @@ sidecar .sidecar-header badge.version {
     color: var(--color-tag-ibm-text);
 }
 
-badge.clickable:hover {
+badge.clickable:not(.badge-as-fontawesome):hover {
     background: hsl(203, 43%, 25%);
     text-decoration: none;
     /*var(--color-ui-01);*/

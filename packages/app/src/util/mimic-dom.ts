@@ -75,6 +75,7 @@ export default function () {
       querySelector: sel => {
         return obj[sel] || dom0()
       },
+      addEventListener: () => true,
       hasStyle: (style, desiredValue) => {
         const actualValue = obj.style && obj.style[style]
         // intentional double equals, so that 500=='500'

@@ -11,6 +11,10 @@
   },
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues"
+  },
   "dependencies": {},
   "main": "node_modules/@kui-shell/core/main/main.js",
   "kui": {

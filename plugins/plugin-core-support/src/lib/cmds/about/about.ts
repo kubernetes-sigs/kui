@@ -19,19 +19,18 @@ const debug = Debug('plugins/core-support/about')
 debug('loading')
 
 import * as colors from 'colors/safe'
-import * as path from 'path'
 
-import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import Presentation from '@kui-shell/core/webapp/views/presentation'
+import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
 
 import usage from './usage'
-import { version } from '@kui-shell/settings/package.json'
+import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
 import { theme as settings } from '@kui-shell/core/core/settings'
-import { getCssFilepathForCurrentTheme } from '@kui-shell/plugin-core-support/lib/cmds/theme'
 
-/** path to app/ directory */
-const ourRootDir = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-const settingsDir = path.dirname(require.resolve('@kui-shell/settings/package.json'))
+/** should we show low-level version info, e.g. electron version etc.? */
+const showVersionInfo = true
 
 /**
  * The repl allows plugins to provide their own window, via the
@@ -42,26 +41,185 @@ const settingsDir = path.dirname(require.resolve('@kui-shell/settings/package.js
 const aboutWindow = async () => { /* bringYourOwnWindow impl */
   debug('aboutWindow')
 
-  // note that this cannot be a top-level import, because the
-  // about-window npm does not behave nicely in headless mode
-  const openAboutWindow = (await import('about-window')).default
+  const { remote, shell } = await import('electron')
 
-  const about = openAboutWindow({
-    product_name: settings.productName,
-    icon_path: path.join(settingsDir, settings.largeIcon),
-    package_json_dir: settingsDir,
-    // use_inner_html: true,
-    css_path: [
-      getCssFilepathForCurrentTheme(),
-      path.join(ourRootDir, 'web/css/about.css')
-    ],
-    win_options: { width: 600, height: 600 }
-  })
+  try {
+    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/about.css'), key: 'about-window-css' })
+  } catch (err) {
+    const { dirname, join } = await import('path')
+    const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+    injectCSS(join(ourRootDir, 'web/css/about.css'))
+  }
 
-  // remove the click handler from the title element
-  about.webContents.on('did-finish-load', () => {
-    about.webContents.executeJavaScript(`document.body.setAttribute("kui-theme", "${document.body.getAttribute('kui-theme')}"); const t = document.querySelector('.title'), c=t.cloneNode(false); while (t.hasChildNodes()) c.appendChild(t.firstChild); t.parentNode.replaceChild(c, t);`)
-  })
+  // this is the main container for the dom
+  const content = document.createElement('div')
+  content.classList.add('padding-content')
+  content.classList.add('scrollable')
+  content.classList.add('scrollable-auto')
+  content.classList.add('about-window')
+
+  const flexContent = document.createElement('div')
+  flexContent.classList.add('page-content')
+  content.appendChild(flexContent)
+
+  const topContent = document.createElement('div')
+  const bottomContent = document.createElement('div')
+  topContent.classList.add('about-window-top-content')
+  bottomContent.classList.add('about-window-bottom-content')
+  flexContent.appendChild(topContent)
+  flexContent.appendChild(bottomContent)
+
+  const badges = []
+
+  const name = settings.productName || remote.app.getName()
+  const openHome = () => shell.openExternal(homepage)
+
+  if (license) {
+    badges.push(license)
+  }
+
+  const subtext = description
+  /* subtext.appendChild(document.createTextNode('Distributed under an '))
+  const licenseDom = document.createElement('strong')
+  licenseDom.innerText = license
+  subtext.appendChild(licenseDom)
+  subtext.appendChild(document.createTextNode(' license')) */
+
+  const logo = document.createElement('div')
+  topContent.appendChild(logo)
+  logo.classList.add('logo')
+
+  const icon = document.createElement('img')
+  icon.height = 200
+  icon.addEventListener('click', openHome)
+  icon.classList.add('clickable')
+  logo.appendChild(icon)
+  icon.src = settings.largeIcon
+
+  if (settings.ogDescription) {
+    try {
+      const marked = await import('marked')
+      const longDescription = document.createElement('div')
+      longDescription.classList.add('about-window-long-description')
+      longDescription.innerHTML = marked(settings.ogDescription)
+      logo.appendChild(longDescription)
+    } catch (err) {
+      debug('error rendering markdown', err)
+      const longDescription = document.createElement('p')
+      longDescription.innerText = settings.ogDescription
+      logo.appendChild(longDescription)
+    }
+  }
+
+  const insideContent = document.createElement('div')
+  insideContent.classList.add('about-window-inside-content')
+  topContent.appendChild(insideContent)
+
+  type OnClickHandler = () => any
+  const iconify = (fontawesome: string, title: string, href: string | OnClickHandler): Element => {
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('about-window-icon-stack')
+
+    const anchor = document.createElement('a')
+    anchor.title = title
+    anchor.target = '_blank'
+    wrapper.appendChild(anchor)
+
+    const icon = document.createElement('i')
+    icon.className = fontawesome
+    icon.classList.add('clickable')
+    anchor.appendChild(icon)
+
+    if (typeof href === 'string') {
+      anchor.href = href
+    } else {
+      anchor.href = '#'
+      anchor.onclick = (evt: Event) => {
+        href()
+        return false
+      }
+    }
+
+    const label = document.createElement('div')
+    label.innerText = title
+    wrapper.appendChild(label)
+
+    return wrapper
+  }
+
+  insideContent.appendChild(iconify('fab fa-readme', 'View tutorials', () => repl.pexec('getting started')))
+
+  if (bugs) {
+    insideContent.appendChild(iconify('fas fa-bug', 'Report an issue', bugs.url))
+  }
+
+  if (homepage) {
+    /* badges.push({
+      title: 'homepage',
+      fontawesome: 'fab fa-github',
+      onclick: openHome
+      }) */
+    insideContent.appendChild(iconify('fab fa-github', 'Clone on GitHub', homepage))
+  }
+
+  if (showVersionInfo) {
+    const table = document.createElement('table')
+    table.classList.add('log-lines')
+    table.classList.add('versions')
+    table.classList.add('smaller-text')
+    bottomContent.appendChild(table)
+
+    const versionModel = process.versions
+    versionModel[name] = version
+
+    const headerRow = table.insertRow(-1)
+    headerRow.className = 'log-line header-row'
+    const column1 = headerRow.insertCell(-1)
+    column1.innerText = 'COMPONENT'
+    column1.className = 'header-cell log-field'
+    const column2 = headerRow.insertCell(-1)
+    column2.innerText = 'VERSION'
+    column2.className = 'header-cell log-field'
+
+    for (const component of [name, 'electron', 'chrome', 'node', 'v8']) {
+      const version = versionModel[component]
+
+      if (version !== undefined) {
+        const row = table.insertRow(-1)
+        row.classList.add('log-line')
+
+        const nameCell = row.insertCell(-1)
+        nameCell.classList.add('log-field')
+        nameCell.innerText = component
+
+        const versionCell = row.insertCell(-1)
+        versionCell.classList.add('log-field')
+        versionCell.innerText = versionModel[component]
+        row.appendChild(versionCell)
+
+        if (component === name) {
+          nameCell.classList.add('semi-bold')
+          nameCell.classList.add('cyan-text')
+          versionCell.classList.add('semi-bold')
+          versionCell.classList.add('cyan-text')
+        } else {
+          nameCell.classList.add('even-lighter-text')
+        }
+      }
+    }
+  }
+
+  return {
+    type: 'custom',
+    isEntity: true,
+    prettyType: 'about',
+    presentation: document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen,
+    name,
+    badges,
+    version,
+    subtext,
+    content
+  }
 }
 
 /**
@@ -140,27 +298,22 @@ export default (commandTree, prequire) => {
    */
   commandTree.listen('/version', // the command path
     reportVersion, // the command handler
-    { noAuthOk, // the command options
-      usage: usage.version })
+    { noAuthOk, usage: usage.version })
 
   /**
    * Open a graphical window displaying more detail about the tool
    *
    */
-  commandTree.listen('/about', () => {
-    if (inElectron()) {
-      aboutWindow()
-      return true // tell the REPL we succeeded
-    } else {
-      // TODO, what should we show if we aren't in electron?
-      return repl.qexec('version')
-    }
-  }, {
+  commandTree.listen('/about', aboutWindow, {
     hidden: true, // don't list about in the help menu
     needsUI: true, // about requires a window
-    bringYourOwnWindow: aboutWindow, // about will manage its own window
     noAuthOk // about doesn't require openwhisk authentication
   })
 
   debug('init done')
+}
+
+export const preload = () => {
+  // install click handlers
+  (document.querySelector('#help-button') as HTMLElement).onclick = () => repl.pexec('about')
 }
