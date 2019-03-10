@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/proxy-support/executor')
 
+import UsageError from '@kui-shell/core/core/usage-error'
 import { IEvaluator, DirectEvaluator } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
 import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
@@ -77,6 +78,7 @@ class ProxyEvaluator implements IEvaluator {
           // to trigger the catch just below
           const err = new Error(response.body)
           err['code'] = err['statusCode'] = response.statusCode
+          err['body'] = response.body
           throw err
         } else {
           return response.body
@@ -84,10 +86,15 @@ class ProxyEvaluator implements IEvaluator {
       } catch (err) {
         debug('proxy execution resulted in an error, recasting to local exception', err.code, err.message, err.body, err)
 
-        const error = new Error((err.body && err.body.message) || (typeof err.body === 'string' ? err.body : err.message || 'Internal error'))
-        error['code'] = error['statusCode'] = (err.body && err.body.code) || err.code || err.statusCode
-        debug('using this code', error['code'])
-        throw error
+        if (err.body && err.body.isUsageError) {
+          debug('the error is a usage error, rethrowing as such')
+          throw new UsageError(err.body.raw, err.body.extra, err.body.code)
+        } else {
+          const error = new Error((err.body && err.body.message) || (typeof err.body === 'string' ? err.body : err.message || 'Internal error'))
+          error['code'] = error['statusCode'] = (err.body && err.body.code) || err.code || err.statusCode
+          debug('using this code', error['code'])
+          throw error
+        }
       }
     }
   }
