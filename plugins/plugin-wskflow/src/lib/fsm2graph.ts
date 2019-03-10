@@ -206,7 +206,7 @@ function drawNodeNew (id: string, label: string, type?: string, properties?, opt
     // uncomment the second clause if you want always to display 1-liner functions inline in the view
     if (options.renderFunctionsInView /* || nLines === 1 */) {
       // ok cool, then render this function body directly in the view
-      const charWidthForCode = defaultCharWidth * 0.63
+      const charWidthForCode = defaultCharWidth
 
       o.width = Math.min(maxWidth, maxLineLength * charWidthForCode)
       o.height = Math.max(2.25, nLines) * defaultCharHeight // use at least two lines; makes one-line functions look better

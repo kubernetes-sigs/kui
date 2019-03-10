@@ -808,7 +808,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       if (label) {
         const { maxLineLength } = textualPropertiesOfCode(label.value)
         const tabWidth = 2
-        const farLeft = (width.value - maxLineLength * 2.5) / 2
+        const farLeft = (width.value - maxLineLength * 3) / 2
 
         label.value.split(/\n/).forEach(line => {
           const ws = /^\s+/
