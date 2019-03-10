@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-// TODO repl and ui globals
-// 'use strict'
-
-const debug = require('debug')('core/usage-error')
+import * as Debug from 'debug'
+const debug = Debug('core/usage-error')
 
 import { isHeadless } from './capabilities'
 import pip from '../webapp/picture-in-picture'
@@ -256,7 +254,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         .then(crumbs => crumbs.map(attachBreadcrumb))
     }
 
-    return breadcrumbPromise.then(() => {
+    return breadcrumbPromise.then(async () => {
       //
       // title
       //
@@ -273,10 +271,17 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       // header message
       //
       if (header) {
-        const headerDiv = div(header)
-        // headerDiv.style.color = 'var(--color-support-01)'
-        headerDiv.style.fontWeight = '400'
-        sans(headerDiv)
+        let headerDiv = div(header, 'normal-text sans-serif')
+        if (!isHeadless()) {
+          try {
+            const marked = await import('marked')
+            headerDiv = div('', 'normal-text sans-serif marked-content')
+            headerDiv.innerHTML = marked(header)
+          } catch (err) {
+            debug('error using marked', err)
+          }
+        }
+
         result.appendChild(headerDiv)
       }
 
@@ -308,7 +313,12 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       if (example) {
         const examplePart = bodyPart()
         const prePart = prefix('Usage')
-        const textPart = div(example.replace(/^\s+/, ''))
+
+        const html = example
+          .trim()
+          .replace(/(\[[^\[\]]+\])/g, '<span class="even-lighter-text">$1</span>') // lighter text for [optional args]
+        const textPart = div()
+        textPart.innerHTML = html
 
         left.appendChild(examplePart)
         examplePart.appendChild(prePart)
