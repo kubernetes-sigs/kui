@@ -28,7 +28,7 @@
     "app-module-path": "^2.2.0",
     "debug": "^4.1.1",
     "expand-home-dir": "0.0.3",
-    "openwhisk-composer": "git+http://github.com/apache/incubator-openwhisk-composer.git"
+    "openwhisk-composer": "^0.10.0"
   },
   "publishConfig": {
     "access": "public"
