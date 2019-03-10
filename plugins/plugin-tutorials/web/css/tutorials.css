@@ -1,3 +1,7 @@
+body.subwindow #tutorialPane .tutorial-header {
+    padding-top: 1em;
+}
+
 body.tutorial-in-progress.tutorial-is-fullscreen tab {
     flex: 0 0 0%;
 }

@@ -700,15 +700,41 @@ class DefaultBadgeOptions implements IBadgeOptions {
     // empty
   }
 }
-export const addBadge = (badgeText: string | Element, { css, onclick, badgesDom = new DefaultBadgeOptions().badgesDom }: IBadgeOptions = new DefaultBadgeOptions()) => {
+
+/**
+ * This is the most complete form of a badge specification, allowing
+ * the caller to provide a title, an onclick handler, and an optional
+ * fontawesome icon representation.
+ *
+ */
+interface IBadgeSpec {
+  title: string
+  fontawesome?: string
+  onclick?: (evt: Event) => boolean
+}
+function isBadgeSpec (spec: string | IBadgeSpec | Element): spec is IBadgeSpec {
+  return typeof spec !== 'string' && !(spec instanceof Element)
+}
+
+export const addBadge = (badgeText: string | IBadgeSpec | Element, { css, onclick, badgesDom = new DefaultBadgeOptions().badgesDom }: IBadgeOptions = new DefaultBadgeOptions()) => {
   debug('addBadge', badgeText, badgesDom)
 
   const badge = document.createElement('badge') as HTMLElement
 
   if (typeof badgeText === 'string') {
     badge.innerText = badgeText as string
-  } else {
+  } else if (badgeText instanceof Element) {
     badge.appendChild(badgeText as Element)
+  } else {
+    // otherwise, badge is an IBadgeSpec
+    if (badgeText.fontawesome) {
+      const awesome = document.createElement('i')
+      awesome.className = badgeText.fontawesome
+      badge.classList.add('badge-as-fontawesome')
+      badge.appendChild(awesome)
+    } else {
+      badge.innerText = badgeText.title
+    }
   }
 
   if (css) {
@@ -718,6 +744,9 @@ export const addBadge = (badgeText: string | Element, { css, onclick, badgesDom 
   if (onclick) {
     badge.classList.add('clickable')
     badge.onclick = onclick
+  } else if (isBadgeSpec(badgeText)) {
+    badge.classList.add('clickable')
+    badge.onclick = badgeText.onclick
   }
 
   badgesDom.appendChild(badge)

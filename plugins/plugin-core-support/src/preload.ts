@@ -35,6 +35,7 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
       import('./lib/new-tab').then(_ => _.default(commandTree, prequire)),
       import('./lib/cmds/history/reverse-i-search').then(_ => _.default()),
       import('./lib/cmds/theme').then(_ => _.preload()),
+      import('./lib/cmds/about/about').then(_ => _.preload()),
       import('./lib/tab-completion').then(_ => _.default())
     ])
   }

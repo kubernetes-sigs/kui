@@ -58,10 +58,6 @@ const domReady = (prefs) => async () => {
     await repl.init(prefs)
     debug('repl init done')
 
-    // install click handlers
-    element('#about-button').onclick = () => repl.pexec('about')
-    element('#help-button').onclick = () => repl.pexec('getting started')
-
     // const namespace = require('../../../plugins/modules/openwhisk/plugin/lib/models/namespace')
     // const nsInit = namespace.init(plugins.prequire, prefs && prefs.noAuthOk, prefs)
 

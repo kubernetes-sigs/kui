@@ -21,13 +21,29 @@ import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-lin
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
+import { theme as settings } from '@kui-shell/core/core/settings'
+
 describe('About command', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should open the about window', () => cli.do('about', this.app)
-    .then(cli.expectOK)
-    .then(() => this.app.client.getWindowCount())
-    .then(count => assert.strictEqual(count, 2)) // about should open a new window
-    .catch(common.oops(this)))
+  it('should open the about window via command execution', () => cli.do('about', this.app)
+     .then(cli.expectJustOK)
+     .then(sidecar.expectOpen)
+     .then(sidecar.expectShowing(settings.productName))
+     .catch(common.oops(this)))
+
+  it('should open the about window via button click', async () => {
+    try {
+      await this.app.client.refresh()
+      await this.app.client.click('#help-button')
+
+      await Promise.all([
+        sidecar.expectOpen(this.app),
+        sidecar.expectShowing(settings.productName)(this.app)
+      ])
+    } catch (err) {
+      common.oops(this)(err)
+    }
+  })
 })
