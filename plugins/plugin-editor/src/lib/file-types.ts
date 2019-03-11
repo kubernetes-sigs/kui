@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,8 @@ export const language = kind => {
     return 'javascript'
   } else if (base === 'ts') {
     return 'typescript'
+  } else if (base === 'md') {
+    return 'markdown'
   } else if (base === 'sh') {
     return 'shell'
   } else if (base === 'yml') {
