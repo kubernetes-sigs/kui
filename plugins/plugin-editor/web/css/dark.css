@@ -32,7 +32,7 @@ body[kui-theme-style="dark"] .monaco-editor .line-numbers {
 body[kui-theme-style="dark"] .monaco-editor .mtk8,
 body[kui-theme-style="dark"] .monaco-editor .keyword {
     transition: color 300ms ease-in-out;
-    color: var(--color-base0E);
+    color: var(--color-base0C);
 }
 
 body[kui-theme-style="dark"] .monaco-editor .mtk6,
@@ -64,7 +64,7 @@ body[kui-theme-style="dark"] .monaco-editor .mtk1 {
 body[kui-theme-style="dark"] .monaco-editor .mtk5 {
     /* map values */
     transition: color 300ms ease-in-out;
-    color: var(--color-text-01);
+    color: var(--color-base0A);
 }
 
 body[kui-theme-style="dark"] .monaco-editor .mti20,
