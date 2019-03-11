@@ -3,10 +3,6 @@ body:not(.subwindow) sidecar .about-window.padding-content {
     display: flex;
 }
 
-.about-window .versions {
-    color: var(--color-text-02);
-}
-
 .about-window-long-description {
     text-align: justify;
 }
@@ -53,7 +49,7 @@ body:not(.subwindow) sidecar .about-window.padding-content {
     align-items: center;
 }
 .about-window .about-window-inside-content a {
-    font-size: 5em;
+    font-size: 4em;
     color: var(--color-base0C);
 }
 
