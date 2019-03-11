@@ -203,7 +203,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
           versionCell.classList.add('semi-bold')
           versionCell.classList.add('cyan-text')
         } else {
-          nameCell.classList.add('even-lighter-text')
+          nameCell.classList.add('lighter-text')
         }
       }
     }
