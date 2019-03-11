@@ -217,12 +217,12 @@ export default (command, highlightThis, container: string | Element, returnTo?: 
   if (typeof command === 'string') {
     debug('drilling down with string command')
 
-    return repl[(options && options.exec) || 'pexec'](command, {
+    return repl[(options && options.exec) || 'pexec'](command, Object.assign({}, {
       isDrilldown: true,
       preserveBackButton: true,
       rethrowErrors: true,
       reportErrors: true
-    }).catch(restoreFn)
+    }, (options && options.execOptions) || {})).catch(restoreFn)
   } else if (typeof command === 'function') {
     return command().catch(restoreFn)
   } else {

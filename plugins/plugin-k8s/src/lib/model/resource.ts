@@ -28,20 +28,50 @@ interface IKubeContainerStatus {
   state: any
 }
 
-interface IKubeStatus {
+export interface IKubeStatus {
   message: string
+  startTime?: string
+  phase?: string
+  podIP?: string
+  qosClass?: string
+  replicas?: number
+  readyReplicas?: number
+  availableReplicas?: number
+  unavailableReplicas?: number
+  updatedReplicas?: number
   containerStatuses?: Array<IKubeContainerStatus>
   conditions?: Array<IKubeStatusCondition>
 }
+export class DefaultKubeStatus implements IKubeStatus {
+  message = undefined
+  constructor () {
+    // empty
+  }
+}
 
-interface IKubeMetadata {
+interface IOwnerReferences {
+  kind: string
+  name: string
+}
+
+export interface IKubeMetadata {
   kind: string
   name: string
   namespace?: string
+  labels?: { [key: string]: string },
+  annotations?: object
   creationTimestamp?: string
+  generation?: string
+  ownerReferences?: Array<IOwnerReferences>
+}
+export class DefaultKubeMetadata implements IKubeMetadata {
+  kind = undefined
+  name = undefined
 }
 
 export interface IKubeResource {
+  apiVersion: string
+  kind: string
   metadata?: IKubeMetadata
   status?: IKubeStatus
   spec?: any

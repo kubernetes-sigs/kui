@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,15 @@ import UsageError from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { ExecType } from '@kui-shell/core/core/command-tree'
-import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
 import { fillInTheBlanks } from '../util/discovery/kubeconfig'
 import pickHelmClient from '../util/discovery/helm-client'
+import createdOn from '../util/created-on'
 
-import { IKubeResource, IResource } from '../model/resource'
+import IResource from '../model/resource'
 import { FinalState } from '../model/states'
 
 import { redactJSON, redactYAML } from '../view/redact'
@@ -46,6 +46,7 @@ import { addConditions } from '../view/modes/conditions'
 import { addPods } from '../view/modes/pods'
 import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
+import describe from './describe'
 
 /** add the user's option to the command line */
 const dashify = str => {
@@ -521,9 +522,6 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
   const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
   const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
 
-  // helm status exists; kubectl status does not, but we offer one via `k8s`
-  const statusCommand = command === 'kubectl' ? 'k8s' : command
-
   //
   // output format option
   //
@@ -533,6 +531,17 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
      || (command === 'kubectl' && verb === 'describe' && 'yaml')
      || (command === 'kubectl' && verb === 'logs' && 'logs')
      || (command === 'kubectl' && verb === 'get' && execOptions.raw && 'json'))
+
+  if (!isHeadless() &&
+      !execOptions.noDelegation &&
+      command === 'kubectl' &&
+      (verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json') && (execOptions.type !== ExecType.Nested || execOptions.delegationOk)))) {
+    debug('delegating to describe')
+    return describe(opts).then(resolveBase).catch(reject)
+  }
+
+  // helm status exists; kubectl status does not, but we offer one via `k8s`
+  const statusCommand = command === 'kubectl' ? 'k8s' : command
 
   // for "raw" execution, force json output
   if (command === 'kubectl' && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
@@ -785,12 +794,11 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       }]
 
       const yaml = verb === 'get' && parseYAML(out)
-      const subtext = yaml && yaml.metadata && yaml.metadata.creationTimestamp && createdOn(yaml)
+      const subtext = createdOn(yaml)
 
-      // nothing, yet
+      // sidecar badges
       const badges = []
       badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
-      // maybe? badges.push(yaml && yaml.spec && yaml.spec.replicas && `Replicas: ${yaml.spec.replicas}`)
 
       if (verb === 'get') {
         const resource: IResource = { kind: command !== 'helm' && entityType, name: entity, yaml }
@@ -882,29 +890,6 @@ const dispatchViaDelegationTo = delegate => opts => {
 }
 
 /**
- * Format the creationTimestamp of the given resource
- * TODO refactor this somewhere else
- *
- * @param resource a kubernetes resource
- */
-const createdOn = (resource: IKubeResource): Element => {
-  const message = document.createElement('div')
-  const datePart = document.createElement('strong')
-
-  message.appendChild(document.createTextNode('Created on '))
-  message.appendChild(datePart)
-  try {
-    datePart.appendChild(prettyPrintTime(Date.parse(resource.metadata.creationTimestamp)))
-  } catch (err) {
-    debug('error trying to parse this creationTimestamp', resource.metadata.creationTimestamp)
-    console.error('error parsing creationTimestamp', err)
-    datePart.innerText = resource.metadata.creationTimestamp
-  }
-
-  return message
-}
-
-/**
  * Register the commands
  *
  */
@@ -922,7 +907,7 @@ export default async (commandTree, prequire) => {
     'create',
     'get',
     'delete',
-    'describe',
+//    'describe',
     'explain',
     'logs'
   ]

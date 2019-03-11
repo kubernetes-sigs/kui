@@ -20,7 +20,7 @@ const common = require('@kui-shell/core/tests/lib/common')
 const ui = require('@kui-shell/core/tests/lib/ui')
 const cli = ui.cli
 
-const kinds = [ 'deployments', 'pods', 'crds' ] /* , 'services' */
+const kinds = [ 'deployments', 'pods', 'crds', 'cm' ] /* , 'services' */
 const okToSurvive = [ null, null, null ] /* , 'kubernetes' */
 
 /**

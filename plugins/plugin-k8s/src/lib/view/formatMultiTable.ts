@@ -32,14 +32,14 @@ export const getActiveView = () => {
  * Update table for picture-in-picture style drilldowns
  *
  */
-const updateTableForPip = (viewName: string) => (table: Array<any>) => {
+const updateTableForPip = (viewName: string, execOptions) => (table: Array<any>) => {
   debug('pip update for table', table)
 
   table.forEach(row => {
     if (row.onclick) {
       const command = row.onclick
       row.onclick = (evt: Event) => {
-        return drilldown(command, undefined, getActiveView(), viewName)(evt)
+        return drilldown(command, undefined, getActiveView(), viewName, { execOptions })(evt)
       }
     }
 
@@ -48,7 +48,7 @@ const updateTableForPip = (viewName: string) => (table: Array<any>) => {
         if (attr.onclick) {
           const command = attr.onclick
           attr.onclick = (evt: Event) => {
-            return drilldown(command, undefined, getActiveView(), viewName)(evt)
+            return drilldown(command, undefined, getActiveView(), viewName, { execOptions })(evt)
           }
         }
       })
@@ -60,7 +60,7 @@ const updateTableForPip = (viewName: string) => (table: Array<any>) => {
  * Return a multi-table view for the given table model
  *
  */
-export const formatTable = (model: Array<any>, { usePip = false, viewName = 'previous view' } = {}): HTMLElement => {
+export const formatTable = (model: Array<any>, { usePip = false, viewName = 'previous view', execOptions = {} } = {}): HTMLElement => {
   debug('formatTable', model)
 
   const resultDomOuter = document.createElement('div')
@@ -75,9 +75,9 @@ export const formatTable = (model: Array<any>, { usePip = false, viewName = 'pre
       debug('pip update')
 
       if (Array.isArray(model[0])) {
-        model.forEach(updateTableForPip(viewName))
+        model.forEach(updateTableForPip(viewName, execOptions))
       } else {
-        updateTableForPip(viewName)(model)
+        updateTableForPip(viewName, execOptions)(model)
       }
     }
 

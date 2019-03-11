@@ -42,7 +42,12 @@ export const addConditions = (modes: Array<any>, command: string, resource: IRes
  */
 export const conditionsButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
   mode: 'conditions',
-  direct: () => renderAndViewConditions(command, resource)
+  direct: {
+    plugin: 'k8s',
+    module: 'lib/view/modes/conditions',
+    operation: 'renderAndViewConditions',
+    parameters: { command, resource }
+  }
 }, overrides || {})
 
 /**
@@ -132,6 +137,10 @@ export const renderConditions = async (command: string, resource: IResource) => 
  * Render a conditions table and show it in the sidecar
  *
  */
-export const renderAndViewConditions = (command: string, resource: IResource) => {
-  renderConditions(command, resource).then(insertView)
+interface IParameters {
+  command: string
+  resource: IResource
+}
+export const renderAndViewConditions = (parameters: IParameters) => {
+  renderConditions(parameters.command, parameters.resource).then(insertView)
 }
