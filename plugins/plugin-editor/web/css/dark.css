@@ -1,9 +1,11 @@
 /* these are the indentation indicators */
 body[kui-theme-style="dark"] .monaco-editor .lines-content .cigra {
-    box-shadow: 1px 0 0 0 var(--color-base03) inset;
+    /* this is the active indentation indicator */
+    box-shadow: 1px 0 0 0 var(--color-base0D) inset;
     transition: box-shadow 300ms ease-in-out;
 }
 body[kui-theme-style="dark"] .monaco-editor .lines-content .cigr {
+    /* this is the inactive indentation indicator */
     box-shadow: 1px 0 0 0 var(--color-base04) inset;
     transition: box-shadow 300ms ease-in-out;
 }

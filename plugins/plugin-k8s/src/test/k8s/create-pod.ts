@@ -17,6 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
+import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
@@ -44,7 +45,7 @@ describe('electron create pod', function (this: common.ISuite) {
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
-        await sidecar.expectOpen(this.app).then(sidecar.expectMode('result')).then(sidecar.expectShowing('nginx'))
+        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('nginx'))
       } catch (err) {
         common.oops(this)(err)
       }

@@ -46,7 +46,7 @@ export const statusButton = (command: string, resource: IResource, finalState: F
  *
  */
 export const renderStatus = async (command: string, resource: IResource, finalState: FinalState) => {
-  debug('renderStatus', command, resource.filepathForDrilldown, resource.kind, resource.name, finalState)
+  debug('renderStatus', command, resource.filepathForDrilldown, resource.kind, resource.name, finalState, resource.yaml)
 
     // TODO: helm status doesn't yet support watching; so no final-state for helm status
   const final = command === 'kubectl' ? `--final-state ${finalState.toString()}` : ''
@@ -54,7 +54,7 @@ export const renderStatus = async (command: string, resource: IResource, finalSt
   // kubectl status => k8s status
   const commandForRepl = command === 'kubectl' ? 'k8s' : command
 
-  const fetchModels = `${commandForRepl} status ${repl.encodeComponent(resource.filepathForDrilldown || resource.kind)} ${repl.encodeComponent(resource.name)} ${final}`
+  const fetchModels = `${commandForRepl} status ${repl.encodeComponent(resource.filepathForDrilldown || resource.kind || resource.yaml.kind)} ${repl.encodeComponent(resource.name)} ${final}`
   debug('issuing command', fetchModels)
 
   const model = await repl.qexec(fetchModels)

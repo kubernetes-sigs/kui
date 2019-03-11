@@ -80,7 +80,7 @@ export const renderAndViewPods = async (parameters: IParameters) => {
     debug('getPods', getPods)
 
     const tableModel = await $$(getPods)
-    const tableView = formatTable(tableModel, { usePip: true, viewName })
+    const tableView = formatTable(tableModel, { usePip: true, viewName, execOptions: { delegationOk: true } })
     return insertView(tableView)
   }
 }

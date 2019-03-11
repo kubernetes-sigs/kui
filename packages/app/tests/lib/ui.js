@@ -316,6 +316,19 @@ exports.expectStruct = (struct1, noParse = false, failFast = true) => string => 
     throw err
   }
 }
+exports.expectYAMLSubset = (struct1, failFast = true) => string => {
+  try {
+    const struct2 = require('js-yaml').safeLoad(string)
+    const ok = sameStruct(struct1, struct2, true)
+    if (failFast) {
+      assert.ok(ok)
+    }
+    return ok
+  } catch (err) {
+    console.error('Error comparing subset for actual value= ' + string)
+    throw err
+  }
+}
 exports.expectSubset = (struct1, failFast = true) => string => {
   try {
     const ok = sameStruct(struct1, JSON.parse(string), true)

@@ -19,10 +19,11 @@ import assert = require('assert')
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
+import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
 
 const synonyms = ['kubectl']
 
-describe('electron create and get configmap', function (this: common.ISuite) {
+describe('electron configmap', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -47,8 +48,8 @@ describe('electron create and get configmap', function (this: common.ISuite) {
         // await this.app.client.waitForExist(`${selector} badge.green-background`)
 
         // now click on the table row
-        this.app.client.click(`${selector} .clickable`)
-        await sidecar.expectOpen(this.app).then(sidecar.expectMode('result')).then(sidecar.expectShowing('yoyo'))
+        await this.app.client.click(`${selector} .clickable`)
+        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('yoyo'))
       } catch (err) {
         common.oops(this)(err)
       }

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('webapp/picture-in-picture')
+
 import repl = require('../core/repl')
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showCustom } from './views/sidecar'
@@ -36,7 +39,7 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
   const { mode, label, flush, selected, selectionController, visibleWhen,
     leaveBottomStripeAlone = false,
     fontawesome, labelBelow, // show label below the fontawesome?
-    balloon, balloonLength, data, command = () => mode, direct,
+    balloon, balloonLength, data, command = () => mode, direct, execOptions,
     defaultMode, actAsButton, radioButton = false, echo = false, noHistory = true, replSilence = true } = opts
 
   if (visibleWhen && visibleWhen !== show) {
@@ -164,9 +167,9 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
 
       // execute the command
       if (direct) {
-        const view = await callDirect(direct, entity)
-        if (view && view.then && !actAsButton) {
-          view.then(custom => showCustom(custom, { leaveBottomStripeAlone }))
+        const view = await callDirect(direct, entity, execOptions)
+        if (view && !actAsButton) {
+          Promise.resolve(view).then(custom => showCustom(custom, { leaveBottomStripeAlone }))
         } else if (actAsButton && view && view.toggle) {
           view.toggle.forEach(({ mode, disabled }) => {
             const button = bottomStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
@@ -199,7 +202,7 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
  * across remote proxies, and thus is preferable to the former.
  *
  */
-type DirectViewController = DirectViewControllerFunction | IDirectViewControllerSpec
+type DirectViewController = string | DirectViewControllerFunction | IDirectViewControllerSpec
 type DirectViewControllerFunction = (entity: object) => object
 interface IDirectViewControllerSpec {
   plugin: string,
@@ -212,8 +215,13 @@ interface IDirectViewControllerSpec {
  * Call a "direct" impl
  *
  */
-const callDirect = async (makeView: DirectViewController, entity) => {
-  if (typeof makeView === 'function') {
+const callDirect = async (makeView: DirectViewController, entity, execOptions) => {
+  if (typeof makeView === 'string') {
+    const model = await repl.qexec(makeView, undefined, undefined, execOptions)
+    debug('makeView as string', model)
+    return model
+  } else if (typeof makeView === 'function') {
+    debug('makeView as function')
     return Promise.resolve(makeView(entity))
   } else {
     const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
