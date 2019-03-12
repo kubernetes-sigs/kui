@@ -136,7 +136,11 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       cell.classList.add('clickable')
       cell.onclick = evt => {
         evt.stopPropagation() // don't trickle up to the row click handler
-        onclick(evt)
+        if (typeof onclick === 'string') {
+          pexec(onclick)
+        } else {
+          onclick(evt)
+        }
       }
     }
 
@@ -179,9 +183,15 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
 
               // update onclick
               if (onclick) {
-                // debug('updating onclick')
-                entityNameClickable.onclick = onclick
+                debug('updating onclick', entity.onclick)
                 entityNameClickable.classList.add('clickable')
+                if (typeof onclick === 'string') {
+                  entityNameClickable.onclick = () => {
+                    return pexec(onclick)
+                  }
+                } else {
+                  entityNameClickable.onclick = onclick
+                }
               }
 
               // update the styling

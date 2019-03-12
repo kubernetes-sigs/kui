@@ -256,7 +256,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
         key: columns[nameColumnIdx].key,
         name: nameForDisplay,
         fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
-        onclick,
+        onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         noSort: true,
         css: firstColumnCSS,
         rowCSS,
@@ -265,6 +265,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
         attributes: columns.slice(1).map(({ key, value: column }, colIdx) => ({
           key,
           tag: idx > 0 && tagForKey[key],
+          onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
           outerCSS: header + ' ' + outerCSSForKey[key] +
             (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of columns.slice(1)
           css: css
