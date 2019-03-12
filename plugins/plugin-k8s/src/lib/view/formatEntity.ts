@@ -78,7 +78,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   // let everyone know that this resource has a new expected final state
   eventBus.emit('/kubectl/state/expect', { watch, finalState })
 
-  const namespaceAttrs = !watch.kind || watch.kind.match(/Namespace/i) ? [] : [{
+  const namespaceAttrs = !watch.kind || watch.kind.match(/(ns|Namespace)/i) ? [] : [{
     key: 'namespace', value: targetNamespace || namespace,
     outerCSS: 'pretty-narrow hide-with-sidecar'
   }]
