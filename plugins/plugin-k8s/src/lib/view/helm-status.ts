@@ -46,9 +46,10 @@ export const format = (command: string, verb: string, entityType: string, option
   debug('namespace', namespaceFromHelmStatusOutput)
 
   const namespaceFor = (entityType: string) => {
-    if (/ConfigMap(s?)|cm/i.test(entityType)) {
+    // i think the commented out bit was for some buggy controllers
+    /* if (/ConfigMap(s?)|cm/i.test(entityType)) {
       return 'default'
-    } else {
+    } else */ {
       return namespaceFromHelmStatusOutput
     }
   }
