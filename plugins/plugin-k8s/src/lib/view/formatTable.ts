@@ -269,9 +269,14 @@ export const formatTable = (command: string, verb: string, entityType: string, o
             (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of columns.slice(1)
           css: css
             + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
-          value: column
+          value: key === 'STATUS' ? capitalize(column) : column
         })).concat(fillTo(columns.length, maxColumns))
       }
     })
   })
+}
+
+/** normalize the status badge by capitalization */
+const capitalize = (str: string): string => {
+  return str[0].toUpperCase() + str.slice(1).toLowerCase()
 }

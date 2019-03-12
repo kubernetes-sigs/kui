@@ -646,6 +646,7 @@ body[kui-theme-style="dark"] .result-table:not(.result-table-with-custom-entity-
     height: 1.5rem;
     line-height: 1.5rem;
     display: inline-flex;
+    justify-content: center;
     align-items: center;
 }
 badge {
@@ -1270,7 +1271,6 @@ code.fancy-code, code.fancy-code.hljs {
 }
 .min-width-6em {
     min-width: 6em !important;
-    display: block;
 }
 .min-width-8em {
     min-width: 8em !important;
@@ -1305,9 +1305,6 @@ code.fancy-code, code.fancy-code.hljs {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-.sidecar-visible .badge-width {
-    width: 7em;
 }
 .pretty-narrow {
     /* please note: used in tandem with not-too-wide */
@@ -2395,17 +2392,6 @@ badge.badge-as-fontawesome {
     padding: 0;
     font-size: 1.5em;
     color: var(--color-base0C);
-}
-badge:not(.version) {
-    /* in tandem with the ::first-letter rule immediately below, this gives us DEPLOYED -> Deployed */
-    text-transform: lowercase;
-    display: inline-block; /* <-- the trick requires block or inline-block */
-    vertical-align: middle; /* <-- then, inline-block requires this */
-    text-align: center; /* <-- and this, though chrome seems happy without it */
-}
-badge::first-letter {
-    /* see the "in tandem" note immediately above */
-    text-transform: uppercase;
 }
 .repl-result-prefix, badge:not(.badge-as-fontawesome) {
     background-color: var(--color-tag-beta-fill);
