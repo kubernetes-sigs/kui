@@ -75,7 +75,7 @@ const headerRow = (opts: IHeaderRow, kind?: string) => {
   debug('headerRow', kind)
 
   const kindAttr = [{ value: 'KIND', outerCSS: 'header-cell not-too-wide' }]
-  const namespaceAttr = kind && kind.match(/Namespace/i) ? [] : [{ value: 'NAMESPACE', outerCSS: 'header-cell pretty-narrow hide-with-sidecar' }]
+  const namespaceAttr = kind && kind.match(/(ns|Namespace)/i) ? [] : [{ value: 'NAMESPACE', outerCSS: 'header-cell pretty-narrow hide-with-sidecar' }]
   const contextAttr = !opts.context ? [] : formatContextAttr('CONTEXT', 'header-cell')
   const attributes = kindAttr.concat(contextAttr).concat(namespaceAttr).concat([
     { value: 'STATUS', outerCSS: 'header-cell very-narrow not-too-wide min-width-6em text-center' },
