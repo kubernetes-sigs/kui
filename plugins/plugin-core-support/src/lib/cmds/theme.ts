@@ -194,26 +194,27 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
       webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${theme}')`)
       webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
     } else {
-      debug('using kui to inject CSS after the application has loaded, from the renderer process')
       const previousKey = document.body.getAttribute('kui-theme-key')
       const newKey = `kui-theme-css-${theme}`
-      const css = { key: newKey, path: getCssFilepathForGivenTheme(themeModel) }
-
-      // set the theme attributes on document.body
-      document.body.setAttribute('kui-theme-key', newKey)
-      document.body.setAttribute('kui-theme', theme)
-      document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
-
-      // inject the new css
-      await injectCSS(css)
 
       if (previousKey !== newKey) {
+        debug('using kui to inject CSS after the application has loaded, from the renderer process', previousKey, newKey)
+        const css = { key: newKey, path: getCssFilepathForGivenTheme(themeModel) }
+
+        // set the theme attributes on document.body
+        document.body.setAttribute('kui-theme-key', newKey)
+        document.body.setAttribute('kui-theme', theme)
+        document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
+
+        // inject the new css
+        await injectCSS(css)
+
         // warning: don't blindly uninject! only if we are actually changing themes
         await uninjectCSS({ key: previousKey })
-      }
 
-      // let others know that the theme has changed
-      setTimeout(() => eventBus.emit('/theme/change', { theme }))
+        // let others know that the theme has changed
+        setTimeout(() => eventBus.emit('/theme/change', { theme }))
+      }
     }
   } catch (err) {
     debug('error loading theme')
