@@ -270,7 +270,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
             (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of columns.slice(1)
           css: css
             + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
-          value: key === 'STATUS' ? capitalize(column) : column
+          value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
         })).concat(fillTo(columns.length, maxColumns))
       }
     })
