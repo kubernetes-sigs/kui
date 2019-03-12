@@ -92,6 +92,7 @@ const squishers = {
   full: hideCurrentReplBlock,
   repl: hideCurrentReplBlock,
 
+  nth: squishRepl,
   'last-full': squishRepl,
   last: squishRepl
 }
