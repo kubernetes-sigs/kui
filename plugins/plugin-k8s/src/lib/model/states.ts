@@ -373,7 +373,7 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
     const labels = watch.labels
 
     const getOpenWhiskResource = (exec: string) => repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
-    const getKubernetesResource = () => repl.pexec(`kubectl get ${kindForQuery(watch.apiVersion, kind)} ${repl.encodeComponent(name)} ${contextOption(context)} ${ns(namespace)} -o yaml`)
+    const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${repl.encodeComponent(name)} ${contextOption(context)} ${ns(namespace)} -o yaml`
 
     const tryGetOpenWhiskResource = () => getOpenWhiskResource('qexec')
       .then(() => getOpenWhiskResource('pexec'))
@@ -382,7 +382,7 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
           // hmm, then there is a disparity:
           // kubernetes thinks the resource is
           // alive, but OpenWhisk does not
-          return getKubernetesResource()
+          return repl.pexec(getKubernetesResource)
         } else {
           throw err
         }
