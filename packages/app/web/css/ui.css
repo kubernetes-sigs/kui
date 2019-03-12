@@ -238,7 +238,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .result-as-table .result-table-title-outer {
     display: flex;
     align-items: flex-end;
-    color: var(--color-brand-01);
+    color: var(--color-base0F);
     letter-spacing: 1px;
     font-weight: 500;
     padding: 1em 0.375rem 0.375em;
@@ -899,6 +899,9 @@ sidecar .sidecar-header-icon {
 }
 sidecar .sidecar-header-icon-wrapper {
     width: 4em; /* see the sidecar .sidecar-header .header-main-content calc(100% - 4em); the 4em parts must match! */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 sidecar .header-left-bits {
     align-items: stretch;
