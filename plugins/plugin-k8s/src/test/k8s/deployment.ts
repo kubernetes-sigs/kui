@@ -15,13 +15,14 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
+import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
-describe('electron deployment CRUD', function (this: common.ISuite) {
+describe('electron deployment', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -29,16 +30,52 @@ describe('electron deployment CRUD', function (this: common.ISuite) {
     return wipe(this)
   })
 
-  it('should create deployment from local file', () => {
-    return cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
-      .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`, 20000))
-      .catch(common.oops(this))
-  })
+  const createIt = () => {
+    it('should create deployment from local file', async () => {
+      try {
+        const selector = await cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
 
-  it('should delete the deployment by name', () => {
-    return cli.do('kubectl delete deployment myapp', this.app)
-      .then(cli.expectOKWithAny)
-      .catch(common.oops(this))
-  })
+        await this.app.client.waitForExist(`${selector} badge.green-background`)
+
+        await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
+
+        await sidecar.expectOpen(this.app)
+          .then(sidecar.expectMode(defaultModeForGet))
+          .then(sidecar.expectShowing('myapp', undefined, undefined, 'default'))
+      } catch (err) {
+        common.oops(this)(err)
+      }
+    })
+  }
+
+  const deleteItByName = () => {
+    it('should delete the deployment by name', () => {
+      return cli.do('kubectl delete deployment myapp', this.app)
+        .then(cli.expectOKWithAny)
+        .then(() => waitTillNone('deployment', undefined, 'myapp'))
+        .catch(common.oops(this))
+    })
+  }
+
+  const deleteItByClickingOnButton = () => {
+    it('should delete the deployment by clicking on the sidecar delete button', async () => {
+      try {
+        await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete'))
+
+        await waitTillNone('deployment', undefined, 'myapp')
+      } catch (err) {
+        common.oops(this)(err)
+      }
+    })
+  }
+
+  //
+  // here start the tests
+  //
+  createIt()
+  deleteItByName()
+
+  createIt()
+  deleteItByClickingOnButton()
 })
