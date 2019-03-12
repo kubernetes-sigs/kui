@@ -38,9 +38,14 @@ const viewName = 'Pods'
  *
  */
 export const addPods = (modes: Array<any>, command: string, resource: IResource) => {
-  debug('addPods', resource)
-  if (resource.yaml.spec && resource.yaml.spec.selector) {
-    modes.push(podsButton(command, resource))
+  try {
+    debug('addPods', resource)
+    if (resource.yaml.spec && resource.yaml.spec.selector) {
+      modes.push(podsButton(command, resource))
+    }
+  } catch (err) {
+    debug('error rendering pods button')
+    console.error(err)
   }
 }
 

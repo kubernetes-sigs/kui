@@ -37,9 +37,14 @@ const viewName = 'Containers'
  *
  */
 export const addContainers = (modes: Array<any>, command: string, resource: IResource) => {
-  if (resource.yaml.spec && resource.yaml.spec.containers) {
-    const button = containersButton(command, resource)
-    modes.push(button)
+  try {
+    if (resource.yaml.spec && resource.yaml.spec.containers) {
+      const button = containersButton(command, resource)
+      modes.push(button)
+    }
+  } catch (err) {
+    debug('error rendering containers button')
+    console.error(err)
   }
 }
 
