@@ -103,7 +103,7 @@ export const rendering = {
   cssForState: (state: State): string => {
     return `min-width-6em even-smaller-text ${state2Traffic(state).toString()}`
   },
-  outerCSS: 'no-wrap text-center'
+  outerCSS: 'no-wrap'
 }
 
 /**
@@ -396,7 +396,7 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
 
     // this is the update spec
     return {
-      outerCSS: done ? 'min-width-6em' : rendering.outerCSS,
+      outerCSS: done ? '' : rendering.outerCSS,
       value: newState,
       onclick,
       done,
