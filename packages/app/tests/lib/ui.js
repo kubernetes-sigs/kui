@@ -134,13 +134,20 @@ const expectOK = (appAndCount, opt) => {
     })
 }
 
+/** grab focus for the repl */
+const grabFocus = (app) => {
+  return app.client.click(selectors.CURRENT_PROMPT_BLOCK)
+    .then(() => app.client.waitForEnabled(selectors.CURRENT_PROMPT_BLOCK))
+}
+
 exports.cli = {
   /**
    * Execute a CLI command, and return the data-input-count of that command
    *
    */
-  do: (cmd, app, noNewline = false) => {
+  do: async (cmd, app, noNewline = false) => {
     return app.client.waitForExist(selectors.CURRENT_PROMPT_BLOCK)
+      .then(() => grabFocus(app))
       .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => app.client.getValue(selectors.CURRENT_PROMPT)
         .then(currentValue => app.client.setValue(selectors.CURRENT_PROMPT, `${currentValue}${cmd}`))

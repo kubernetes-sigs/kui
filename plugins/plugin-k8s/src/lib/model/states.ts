@@ -396,7 +396,7 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
 
     // this is the update spec
     return {
-      outerCSS: done ? 'text-center min-width-6em' : rendering.outerCSS,
+      outerCSS: done ? 'min-width-6em' : rendering.outerCSS,
       value: newState,
       onclick,
       done,

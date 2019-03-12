@@ -18,7 +18,7 @@ import assert = require('assert')
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
+import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
 
 const synonyms = ['kubectl']
@@ -79,6 +79,7 @@ describe('electron configmap', function (this: common.ISuite) {
 
         return cli.do(`${kubectl} delete cm ${name}`, this.app)
           .then(expectResult)
+          .then(() => waitTillNone('configmap', undefined, name))
           .catch(common.oops(this))
       })
     }
