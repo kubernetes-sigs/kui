@@ -621,6 +621,22 @@ export const showCustom = async (custom, options) => {
 } /* showCustom */
 
 /**
+ * Add view name to the sidecar header "icon text"
+ *
+ */
+export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement) => {
+  const iconDom = element('.sidecar-header-icon', sidecar)
+  let iconText = viewName.replace(/s$/, '')
+
+  const A = iconText.split(/(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])"/).filter(x => x)
+  if (iconText.length > 8 && A.length > 1) {
+    iconText = A.map(_ => _.charAt(0)).join('')
+  }
+
+  iconDom.innerText = iconText
+}
+
+/**
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
@@ -647,7 +663,7 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packa
   }
 
   if (viewName) {
-    element('.sidecar-header-icon', sidecar).innerText = viewName.replace(/s$/, '')
+    addSidecarHeaderIconText(viewName, sidecar)
   }
 
   if (subtext) {
@@ -868,9 +884,7 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
   const replView = document.querySelector('tab.visible .repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
-  const iconDom = element('.sidecar-header-icon', sidecar)
-  iconDom.removeAttribute('data-extra-decoration')
-  iconDom.innerText = (entity.prettyType || entity.type).replace(/s$/, '')
+  addSidecarHeaderIconText(entity.prettyType || entity.type, sidecar)
 
   // the name of the entity, for the header
   const nameDom = addNameToSidecarHeader(sidecar, entity.name, entity.packageName)
