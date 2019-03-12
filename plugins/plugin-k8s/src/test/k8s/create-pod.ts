@@ -41,7 +41,7 @@ describe('electron create pod', function (this: common.ISuite) {
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
         // wait for the badge to become green
-        await this.app.client.waitForExist(`${selector} badge.green-background`, 20000)
+        await this.app.client.waitForExist(`${selector} badge.green-background`)
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
@@ -54,20 +54,21 @@ describe('electron create pod', function (this: common.ISuite) {
     it(`should delete the sample pod from URL via ${kubectl}`, () => {
       return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`, 20000))
+        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
         .catch(common.oops(this))
     })
 
     it(`should create sample pod from local file via ${kubectl}`, () => {
       return cli.do(`${kubectl} create -f ${ROOT}/data/k8s/headless/pod.yaml`, this.app)
-        .then(cli.expectOKWith('nginx'))
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
         .catch(common.oops(this))
     })
 
     it(`should delete the sample pod by name via ${kubectl}`, () => {
       return cli.do(`${kubectl} delete pod nginx`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`, 20000))
+        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
         .catch(common.oops(this))
     })
   })

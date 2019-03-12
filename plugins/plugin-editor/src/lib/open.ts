@@ -76,7 +76,12 @@ export const openEditor = async (name, options, execOptions) => {
 
   editorWrapper.className = 'monaco-editor-wrapper'
   content.appendChild(editorWrapper)
-  editorWrapper.focus() // we want the editor to have focus, so the user can start coding
+
+  // we want the editor to have focus, so the user can start coding
+  // (but don't bother if we are in readOnly mode)
+  if (!options.readOnly) {
+    editorWrapper.focus()
+  }
 
   editorWrapper['baseFontSize'] = 14.4
 
@@ -97,7 +102,7 @@ export const openEditor = async (name, options, execOptions) => {
     editor.updateText = entity => {
       // monaco let's us replace the full range of text, so we don't need
       // an explicit delete of the current text
-      return setText(editor)(entity.exec)
+      return setText(editor, options)(entity.exec)
     }
 
     editor.clearDecorations = () => {
@@ -116,7 +121,7 @@ export const openEditor = async (name, options, execOptions) => {
       kind.innerText = ''
 
       // update the editor text
-      setText(editor, execOptions)(entity.exec)
+      setText(editor, options, execOptions)(entity.exec)
 
       content.classList.add('code-highlighting')
 
@@ -240,7 +245,7 @@ export const openEditor = async (name, options, execOptions) => {
  * Update the code in the editor to use the given text
  *
  */
-const setText = (editor, execOptions?) => ({ code, kind }) => {
+const setText = (editor, options, execOptions?) => ({ code, kind }) => {
   const lang = execOptions && execOptions.language || language(kind)
   debug('setText language', kind, lang)
   debug('setText code', code.substring(0, 20))
@@ -258,8 +263,12 @@ const setText = (editor, execOptions?) => ({ code, kind }) => {
     oldModel.dispose()
   }
 
-  // see https://github.com/Microsoft/monaco-editor/issues/194
-  setTimeout(() => editor.focus(), 500)
+  // see https://github.com/Microsoft/monaco-editor/issues/194 we need
+  // to re-grab focus after a model update; but don't bother if we are
+  // in readOnly mode
+  if (!options.readOnly) {
+    setTimeout(() => editor.focus(), 500)
+  }
 
   return code
 }

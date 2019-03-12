@@ -105,6 +105,7 @@ const cssForValue = {
   ProvisionedSuccessfully: 'green-background',
 
   // kube events
+  Active: 'green-background',
   Online: 'green-background',
   NodeReady: 'green-background',
   Pulled: 'green-background',
