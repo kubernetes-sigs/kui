@@ -107,6 +107,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   const ns = metadata.namespace
 
   const summary = {
+    Kind: resource.kind
     // Name: name,
     // Namespace: ns
   }
@@ -115,12 +116,15 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   add('Priority', spec.priority)
   add('Node', spec.nodeName && spec.hostIP && `${spec.nodeName}/${spec.hostIP}`)
   add('Start Time', status.startTime)
-  // add('Creation Timestamp', !status.startTime && prettyPrintTime(metadata.creationTimestamp).nodeValue)
   add('Labels', metadata.labels)
   add('Selectors', spec.selector)
+  add('Type', spec.type)
   add('Annotations', metadata.annotations)
   add('Status', status.phase)
   add('Controlled By', metadata.ownerReferences && metadata.ownerReferences.length === 1 && `${metadata.ownerReferences[0].kind}/${metadata.ownerReferences[0].name}`)
+
+  // services
+  add('IP', spec.clusterIP)
 
   // deployments
   add('Replicas', status.replicas && {
