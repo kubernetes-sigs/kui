@@ -91,14 +91,12 @@ td > .d2h-code-side-linenumber {
     /* character-level inserts */
     background-color: var(--color-light-green);
     color: var(--color-white);
-    padding: 0.25em 0.5em;
 }
 
 .d2h-code-line del, .d2h-code-side-line del {
     /* character-level deletes */
     background-color: var(--color-light-red);
     color: var(--color-white);
-    padding: 0.25em 0.5em;
 }
 
 .d2h-file-diff .d2h-ins.d2h-change, .d2h-file-diff .d2h-del.d2h-change {
