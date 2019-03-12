@@ -13,7 +13,7 @@ body[kui-theme="Nord"] {
     --color-base07: #8FBCBB;
     --color-base08: #88C0D0;
     --color-base09: #81A1C1;
-    --color-base0A: #5E81AC;
+    --color-base0A: hsl(213, 32%, 67%); /* dialed L from 54% #5E81AC */
     --color-base0B: #BF616A;
     --color-base0C: #D08770;
     --color-base0D: #EBCB8B;
