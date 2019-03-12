@@ -801,7 +801,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
 
       if (verb === 'get') {
-        const resource: IResource = { kind: command !== 'helm' && entityType, name: entity, yaml }
+        const resource: IResource = { kind: command !== 'helm' && yaml.kind, name: entity, yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
 
         addConditions(modes, command, resource)

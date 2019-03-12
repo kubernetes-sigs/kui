@@ -145,7 +145,13 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   // Conditions: status.conditions,
   // Volumes: spec.volumes,
   add('QoS Class', status.qosClass)
-  add('Tolerations', (spec.tolerations || []).map(({ key, effect, tolerationSeconds }) => ({ tolerate: key, effect, for: `${tolerationSeconds}s` })))
+  add('Tolerations', (spec.tolerations || []).map(({ key, value, effect, tolerationSeconds }) => {
+    if (!effect) {
+      return { key, value }
+    } else {
+      return { tolerate: key, effect, for: `${tolerationSeconds}s` }
+    }
+  }))
 
   const modes: Array<any> = [
     {
@@ -158,7 +164,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   const yaml = resource
   {
     const command = 'kubectl'
-    const resource: IResource = { kind: yaml.metadata.kind, name: yaml.metadata.name, yaml }
+    const resource: IResource = { kind: yaml.kind, name: yaml.metadata.name, yaml }
     modes.push(statusButton(command, resource, FinalState.NotPendingLike))
     addConditions(modes, command, resource)
     addPods(modes, command, resource)
