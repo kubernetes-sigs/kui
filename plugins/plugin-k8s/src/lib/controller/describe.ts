@@ -33,6 +33,7 @@ import { addPods } from '../view/modes/pods'
 import { addContainers } from '../view/modes/containers'
 import { statusButton } from '../view/modes/status'
 import insertView from '../view/insert-view'
+import { deleteResourceButton } from '../view/modes/crud'
 
 const usage = command => ({
   title: command,
@@ -175,6 +176,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     direct: `${getCmd} -o ${output}`,
     leaveBottomStripeAlone: true
   })
+  modes.push(deleteResourceButton())
 
   const badges = []
   badges.push(metadata && metadata.generation && `Generation ${metadata.generation}`)
