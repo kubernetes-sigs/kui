@@ -24,7 +24,7 @@ import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
-import { currentSelection, getSidecar, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
+import { currentSelection, getSidecar, addSidecarHeaderIconText, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
 
 import strings from '../i18n/strings'
 import { extension, language } from './file-types'
@@ -120,8 +120,7 @@ export const openEditor = async (name, options, execOptions) => {
 
       content.classList.add('code-highlighting')
 
-      const iconDom = sidecar.querySelector('.sidecar-header-icon') as HTMLElement
-      iconDom.innerText = (entity.prettyType || entity.type).replace(/s$/, '')
+      addSidecarHeaderIconText(entity.prettyType || entity.type, sidecar)
 
       // stash this so that the implicit entity model works
       sidecar.entity = entity
