@@ -17,7 +17,7 @@
 import assert = require('assert')
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
 
@@ -27,38 +27,90 @@ describe('electron configmap', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should wipe k8s', () => {
-    return wipe(this)
-  })
-
   synonyms.forEach(kubectl => {
-    it(`should create an empty configmap via ${kubectl}`, () => {
-      return cli.do(`${kubectl} create configmap yoyo`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('yoyo') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
-        .catch(common.oops(this))
-    })
+    /** return the editor text */
+    const getText = () => {
+      return this.app.client.execute(() => {
+        return document.querySelector('.monaco-editor-wrapper')['editor'].getValue()
+      }).then(res => res.value)
+    }
 
-    it(`should list configmaps via ${kubectl} then click`, async () => {
-      try {
-        const selector = await cli.do(`${kubectl} get cm`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('yoyo') }))
+    /** wait until the sidecar displays a superset of the given content */
+    const expectContent = (content: object) => {
+      return this.app.client.waitUntil(async () => {
+        const ok: boolean = await getText()
+          .then(expectYAMLSubset(content, false))
 
-        // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
-        // await this.app.client.waitForExist(`${selector} badge.green-background`)
+        return ok
+      })
+    }
 
-        // now click on the table row
-        await this.app.client.click(`${selector} .clickable`)
-        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('yoyo'))
-      } catch (err) {
-        common.oops(this)(err)
+    /**
+     * List configmaps, click on the given named configmap, and
+     * optionally expect the given content to appear in the sidecar
+     *
+     */
+    const listAndClick = (name: string, content?: object) => {
+      it(`should list configmaps via ${kubectl} then click on ${name}`, async () => {
+        try {
+          const selector = await cli.do(`${kubectl} get cm`, this.app)
+            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+
+          // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
+          // await this.app.client.waitForExist(`${selector} badge.green-background`)
+
+          // now click on the table row
+          await this.app.client.click(`${selector} .clickable`)
+          await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing(name))
+
+          if (content) {
+            await expectContent(content)
+          }
+        } catch (err) {
+          common.oops(this)(err)
+        }
+      })
+    }
+
+    /** delete the given configmap */
+    const deleteIt = (name: string, errOk = false) => {
+      it(`should delete the configmap ${name} via ${kubectl}`, () => {
+        const expectResult = errOk ? cli.expectAny : cli.expectOKWithString('deleted')
+
+        return cli.do(`${kubectl} delete cm ${name}`, this.app)
+          .then(expectResult)
+          .catch(common.oops(this))
+      })
+    }
+
+    /** create the given configmap with optional literal parameters */
+    const createIt = (name: string, literals = '') => {
+      it(`should create a configmap ${name} via ${kubectl}`, () => {
+        return cli.do(`${kubectl} create configmap ${name} ${literals}`, this.app)
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .catch(common.oops(this))
+      })
+    }
+
+    //
+    // now start the tests
+    //
+
+    deleteIt('yoyo', true) // errOk: it's ok if the configmap does not exist
+    deleteIt('momo', true) // errOk: it's ok if the configmap does not exist
+
+    createIt('yoyo')
+    createIt('momo', '--from-literal hello=world')
+
+    listAndClick('yoyo')
+    listAndClick('momo', {
+      Data: {
+        hello: 'world'
       }
     })
 
-    it(`should delete the configmap via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete cm yoyo`, this.app)
-        .then(cli.expectOKWithString('deleted'))
-        .catch(common.oops(this))
-    })
+    deleteIt('yoyo')
+    deleteIt('momo')
   })
 })

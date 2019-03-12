@@ -75,6 +75,7 @@ export interface IKubeResource {
   metadata?: IKubeMetadata
   status?: IKubeStatus
   spec?: any
+  data?: object
 }
 
 export interface IResource {
