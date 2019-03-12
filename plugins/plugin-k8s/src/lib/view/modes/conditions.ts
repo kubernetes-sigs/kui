@@ -30,8 +30,13 @@ import { formatTable } from '../formatMultiTable'
  *
  */
 export const addConditions = (modes: Array<any>, command: string, resource: IResource) => {
-  if (resource.yaml.spec && resource.yaml.status.conditions) {
-    modes.push(conditionsButton(command, resource))
+  try {
+    if (resource.yaml.status && resource.yaml.status.conditions) {
+      modes.push(conditionsButton(command, resource))
+    }
+  } catch (err) {
+    debug('error rendering conditions button')
+    console.error(err)
   }
 }
 
