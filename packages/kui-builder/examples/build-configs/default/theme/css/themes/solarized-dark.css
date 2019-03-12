@@ -14,9 +14,9 @@ body[kui-theme="Solarized"] {
     --color-base07: #fdf6e3;
     --color-base08: #dc322f;
     --color-base09: #cb4b16;
-    --color-base0A: #b58900;
+    --color-base0A: hsl(45, 100%, 38%); /* dialed L from 35% #b58900 */
     --color-base0B: #859900;
-    --color-base0C: #2aa198;
+    --color-base0C: hsl(175, 59%, 42%); /* dialed L from 35% #2aa198 */
     --color-base0D: hsl(205, 69%, 58%); /* dialed up to L=58% from 49% versus: #268bd2 */
     --color-base0E: #6c71c4;
     --color-base0F: #d33682;
