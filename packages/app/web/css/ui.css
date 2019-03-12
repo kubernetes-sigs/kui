@@ -856,8 +856,7 @@ sidecar .sidecar-header .header-main-content {
 }
 sidecar .header-right-bits {
     white-space: nowrap;
-    flex-direction: column;
-    justify-content: center;
+    align-items: center;
     margin: 0 1em;
 }
 .sidecar-header .kind {
@@ -938,6 +937,9 @@ sidecar .sidecar-header .badges {
     flex-wrap: wrap;
     align-items: flex-end;
     margin: 1rem 0 0 1rem;
+}
+sidecar .sidecar-header .badges:first-child {
+    margin-left: 0;
 }
 sidecar .sidecar-header badge {
     /* badges next to the entity name */
