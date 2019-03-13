@@ -34,7 +34,7 @@ for pkg in ../../packages/{app,kui-builder,proxy,tests} ../../plugins/*; do
     # check for inclusion constraints; e.g. package.json -> .kui.headless == false
     if [ -n "$1" ]; then
         OK=$(cat $pkg/package.json | jq --raw-output .kui.$1)
-        if [ "$OK" == "false" ]; then
+        if [ "$OK" == "false" ] || [ "$(printenv $OK)" == "false" ]; then
             # skip!
             echo "skipping $(basename $pkg)"
             continue
