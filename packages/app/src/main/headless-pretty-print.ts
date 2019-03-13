@@ -41,7 +41,20 @@ debug('stdoutIsFIFO', stdoutIsFIFO, noColor)
 const colorMap = {
   'var(--color-brand-01)': 'blue',
   'var(--color-brand-02)': 'blue',
-  'var(--color-support-02)': 'blue'
+  'var(--color-support-02)': 'blue',
+
+  'var(--color-black)': 'black',
+  'var(--color-red)': 'red',
+  'var(--color-green)': 'green',
+  'var(--color-yellow)': 'yellow',
+  'var(--color-blue)': 'blue',
+  'var(--color-magenta)': 'magenta',
+  'var(--color-cyan)': 'cyan',
+  'var(--color-white)': 'white',
+  'var(--color-gray)': 'gray',
+  'var(--color-light-red)': 'red',
+  'var(--color-light-green)': 'green',
+  'var(--color-light-yellow)': 'yellow'
 }
 
 let graphicalShellIsOpen = false
@@ -64,10 +77,14 @@ class DefaultPrettyOptions implements IPrettyOptions {
 }
 let firstPrettyDom = true // so we can avoid initial newlines for headers
 const prettyDom = (dom, logger = log, stream = process.stdout, _color, { columnWidths, extraColor: _extraColor }: IPrettyOptions = new DefaultPrettyOptions()) => {
-  const isHeader = dom.nodeType === 'h1' || dom.nodeType === 'h2'
+  debug('prettyDom')
+
+  const isHeader = dom.nodeType === 'h1' || dom.nodeType === 'h2' || dom.nodeType === 'h3' || dom.nodeType === 'h4'
   const capitalize = dom.className.indexOf('bx--no-link') >= 0
   const hasMargin = dom.className.indexOf('bx--breadcrumb-item--slash') >= 0 ||
-        dom.className.indexOf('left-pad') >= 0
+    dom.className.indexOf('left-pad') >= 0 ||
+    dom.style['margin'] ||
+    dom.style['padding']
 
   if (hasMargin) {
     stream.write(' ')
@@ -79,7 +96,7 @@ const prettyDom = (dom, logger = log, stream = process.stdout, _color, { columnW
     : _extraColor || 'reset'
   const colorCode = dom.hasStyle('color') || _color
   const color = colorMap[colorCode] || colorCode
-  // debug('colors', isHeader, color, extraColor)
+  // debug('colors', isHeader, colorCode, color, extraColor)
 
   if (isHeader) {
     // an extra newline before headers
