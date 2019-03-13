@@ -714,7 +714,7 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
 /* sidecar bottom stripe */
 .sidecar-bottom-stripe {
     padding: 0 1em;
-    flex-basis: 3rem;
+    flex-basis: 3em;
     min-height: 3rem; /* important for screenshot, which tries to maximally squish the sidecar height */
     display: flex;
     align-items: center;
