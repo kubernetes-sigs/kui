@@ -138,7 +138,11 @@ const oneTimeInit = (): void => {
   const initialTabId = initialTabButton.getAttribute('data-tab-button-index')
   initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
 
-  element('#new-tab-button').onclick = () => newTab()
+  if (document.body.classList.contains('subwindow')) {
+    element('#new-tab-button').onclick = () => window.open(window.location.href, '_blank')
+  } else {
+    element('#new-tab-button').onclick = () => newTab()
+  }
 
   addKeyboardListeners()
   addCommandEvaluationListeners()
