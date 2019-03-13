@@ -77,7 +77,7 @@ const installIstio = async ({ parsedOptions }) => {
 
   debug('installing charts')
   const chart = join(installDir, 'install/kubernetes/helm/istio')
-  return $$(`helm install ${chart} --name istio --namespace istio-system --set grafana.enabled=true`)
+  return $$(`helm install ${chart} --name istio --namespace istio-system --set grafana.enabled=true --set tracing.enabled=true`)
 }
 
 /**
