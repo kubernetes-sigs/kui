@@ -2125,6 +2125,7 @@ sidecar.minimized .sidecar-header-icon-wrapper {
     align-items: flex-end;
     justify-content: center;
     margin: -2em 0;
+    overflow: unset; /* see overflow:hidden for sidecar .sidecar-header-icon-wrapper */
 }
 sidecar.minimized .sidecar-header-icon {
     width: initial;
@@ -2434,7 +2435,7 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
 }
 
 .repl-block.processing .repl-input input {
-    color: hsla(194, 71%, 40%, 1);
+    color: var(--color-base0C);
 }
 
 .result-table .entity:nth-child(2n + 1) td, .result-table .entity:nth-child(2n + 1) .entity-attributes {
