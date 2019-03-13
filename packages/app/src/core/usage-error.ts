@@ -283,7 +283,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           }
         }
 
-        if (message.exitCode !== 0 || message.exitCode !== 200) {
+        if (message.exitCode > 0 && message.exitCode !== 200) {
           // the underlying command emitted some sort of usage model in response to an error
           // e.g. `kubectl get pods --bogus
           headerDiv.classList.add('red-text')
