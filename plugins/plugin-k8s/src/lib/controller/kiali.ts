@@ -79,6 +79,8 @@ const getApps = async ({ parsedOptions }) => {
   const pollingInterval = parsedOptions.watch ? parseDuration(parsedOptions.watch) : 10000
   const list = await client.appList(parsedOptions.namespace && new client.Namespace(parsedOptions.namespace))
 
+  const rateInterval = parsedOptions.interval
+
   const headerRows: Array<any> = [{
     type: 'application',
     noSort: true,
@@ -124,7 +126,7 @@ const getApps = async ({ parsedOptions }) => {
         outerCSS: 'text-center',
         css: TrafficLight.Yellow,
         watch: async (iter: number) => {
-          const health = await client.appHealth(app.name, new client.Namespace(list.namespace.name))
+          const health = await client.appHealth(app.name, new client.Namespace(list.namespace.name), rateInterval)
           const { errorRatio, inboundErrorRatio, outboundErrorRatio } = health.requests
 
           const { value, badgeCss } =
