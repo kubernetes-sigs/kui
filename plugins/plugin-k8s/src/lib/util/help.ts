@@ -131,7 +131,16 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
 
                 const secondPartIsMultiLine = secondPart.split(/[\n\r]/).length > 1
 
-                const command = secondPartIsMultiLine ? firstPart : secondPart
+                const clickable = (str: string): Element => {
+                  const clicky = document.createElement('span')
+                  clicky.innerText = str
+                  clicky.classList.add('clickable')
+                  const repl = require('@kui-shell/core/core/repl')
+                  clicky.onclick = () => repl.pexec(str)
+                  return clicky
+                }
+
+                const command = secondPartIsMultiLine ? firstPart : clickable(secondPart)
                 const docs = secondPartIsMultiLine ? secondPart : firstPart
 
                 return {
