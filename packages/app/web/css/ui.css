@@ -635,18 +635,18 @@ body[kui-theme-style="dark"] .result-table:not(.result-table-with-custom-entity-
 .repl-result-prefix, badge {
     font-weight: 400;
     transition: all 150ms ease-in-out;
-    font-size: 0.75rem;
-    border-radius: 0.9375rem;
-    margin: 0.1875rem;
-    padding: 0 0.625rem;
-    height: 1.5rem;
-    line-height: 1.5rem;
+    font-size: 0.825em;
+    border-radius: 0.9375em;
+    margin: 0.1875em;
+    padding: 0 0.825em;
+    height: 1.925em;
+    line-height: 1.925em;
     display: inline-flex;
     justify-content: center;
     align-items: center;
 }
 badge {
-    transition: all 450ms ease-in-out;
+    transition: color 300ms ease-in-out, background-color 300ms ease-in-out;
 }
 sidecar .sidecar-header badge.version {
     /* badge for action version */
@@ -1728,9 +1728,58 @@ body.subwindow .activation-result {
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 
-
+body.subwindow:not(.sidecar-full-screen), body.subwindow:not(.sidecar-full-screen) .page, body.subwindow:not(.sidecar-full-screen) .main, body.subwindow:not(.sidecar-full-screen) .repl {
+    height: auto;
+    overflow: auto;
+    max-height: unset;
+}
+body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe .left-tab-stripe-buttons,
+body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #theme-button,
+body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #help-button {
+    display: none;
+}
+body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #new-tab-button i {
+    font-size: 6vw;
+}
+body.subwindow sidecar .sidecar-header-name {
+    /* override 1rem */
+    margin-top: 1em;
+}
+body.subwindow .repl {
+    font-size: 2vw;
+    align-items: center;
+}
+body.subwindow .repl .horizontal-landing-zone {
+    width: 100%;
+}
+body.subwindow .repl.sidecar-visible {
+    display: none;
+    flex: 0;
+    opacity: 0;
+    margin: 0;
+    width: 0;
+    height: 0;
+}
+body.subwindow .repl-input {
+    justify-content: flex-end;
+}
+body.subwindow .repl-input, body.subwindow .repl-output {
+    padding: 0 1em 0 1em;
+}
+body.subwindow .repl-input input, body.subwindow .repl-input .repl-prompt, body.subwindow .repl .ok {
+    display: none;
+}
 body.subwindow .repl-block {
     background-color: transparent;
+}
+body.subwindow sidecar:not(.minimized) .sidecar-header-icon-wrapper {
+    width: 2em;
+}
+body.subwindow sidecar:not(.minimized) .sidecar-header-icon {
+    display: none;
+}
+body.subwindow sidecar .sidecar-bottom-stripe {
+    font-size: 2vw;
 }
 /*body.subwindow .repl-inner {
     margin-top: 2em;

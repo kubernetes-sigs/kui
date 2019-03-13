@@ -77,7 +77,8 @@ const selectors = {
  */
 const hideCurrentReplBlock = [{ selector: '#main-repl .repl-block.processing', property: 'display', value: 'none' }]
 const squishRepl = [
-  { selector: 'tab.visible .repl .repl-block:nth-last-child(2)', property: 'alignItems', value: 'flex-start' }
+  { selector: 'tab.visible .repl .repl-block:nth-last-child(2)', property: 'alignItems', value: 'flex-start' },
+  { selector: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-input', property: 'display', value: 'none' }
 ]
 const squishers = {
   sidecar: [

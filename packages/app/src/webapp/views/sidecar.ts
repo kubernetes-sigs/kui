@@ -843,6 +843,9 @@ export const isFullscreen = () => {
 }
 
 export const toggleMaximization = () => {
+  if (document.body.classList.contains('subwindow')) {
+    document.body.classList.add('sidecar-full-screen')
+  }
   element('tab.visible').classList.toggle('sidecar-full-screen')
   eventBus.emit('/sidecar/maximize')
 }

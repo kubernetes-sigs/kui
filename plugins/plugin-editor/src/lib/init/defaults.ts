@@ -28,7 +28,7 @@ export default options => ({
   scrollBeyondLastColumn: 2,
   // cursorStyle: 'block',
   fontFamily: 'var(--font-monospace)',
-  fontSize: '14.4',
+  fontSize: document.body.classList.contains('subwindow') ? '16' : '14.4',
 
   // specifics for readOnly mode
   glyphMargin: !options.readOnly, // needed for error indicators
