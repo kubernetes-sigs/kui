@@ -76,8 +76,7 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
         matching: 'lines',
         outputFormat: 'side-by-side'
       }), {
-        presentation: Presentation.SidecarFullscreen,
-        sidecarHeader: !document.body.classList.contains('subwindow')
+        presentation: Presentation.SidecarFullscreen
       }, undefined, commandPart, currentBranch))
     } else {
       try {

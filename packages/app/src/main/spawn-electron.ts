@@ -575,7 +575,7 @@ export const getCommand = argv => {
   debug('isShell', argv, isShell)
 
   let subwindowPlease = true
-  let subwindowPrefs: SubwindowPrefs = { fullscreen: true, width: 800, height: 800 }
+  let subwindowPrefs: SubwindowPrefs = { fullscreen: true, width: 1200, height: 800 }
 
   if (isShell) {
     // use a full window for 'shell'

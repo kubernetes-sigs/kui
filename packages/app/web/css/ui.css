@@ -529,7 +529,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .result-table .entity-name-group-extra-narrow {
     max-width: 10em;
 }
-.repl.sidecar-visible .log-lines {
+.repl.sidecar-visible .log-lines, body.subwindow .repl .log-lines {
     table-layout: fixed;
 }
 .repl.sidecar-visible .result-table .entity-name-group-extra-narrow {
@@ -1279,6 +1279,9 @@ code.fancy-code, code.fancy-code.hljs {
     min-width: 10em !important;
     display: block;
 }
+.timestamp-like {
+    width: 14em;
+}
 .min-width-date-like {
     min-width: 15em !important;
     display: block;
@@ -1553,9 +1556,6 @@ sidecar .activation-result .log-line .log-field code {
 sidecar .activation-result .log-line .log-field > div > div:first-child code {
     margin-top: 0;
 }
-.repl:not(.sidecar-visible) .log-lines .log-line .log-field:last-child > span {
-    padding-left: 2em;
-}
 .log-lines .log-line .log-field.activationId {
     font-weight: 500;
 }
@@ -1582,7 +1582,7 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
     text-align: right;
 }
 .log-lines .log-field.log-field-right-align.duration-field {
-    width: 8em;
+    width: 6em;
 }
 .log-lines .log-line .log-line-bar-field {
     position: relative;
@@ -1728,11 +1728,12 @@ body.subwindow .activation-result {
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 
-body.subwindow:not(.sidecar-full-screen), body.subwindow:not(.sidecar-full-screen) .page, body.subwindow:not(.sidecar-full-screen) .main, body.subwindow:not(.sidecar-full-screen) .repl {
+/* body.subwindow:not(.sidecar-full-screen), body.subwindow:not(.sidecar-full-screen) .page, body.subwindow:not(.sidecar-full-screen) .main, body.subwindow:not(.sidecar-full-screen) .repl {
+   disabled... a bit buggy. the goal is to use normal (outer-most) browser scrolling in the REPL
     height: auto;
     overflow: auto;
     max-height: unset;
-}
+} */
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe .left-tab-stripe-buttons,
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #theme-button,
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #help-button {
@@ -1766,7 +1767,7 @@ body.subwindow .repl-input {
 body.subwindow .repl-input, body.subwindow .repl-output {
     padding: 0 1em 0 1em;
 }
-body.subwindow .repl-input input, body.subwindow .repl-input .repl-prompt, body.subwindow .repl .ok {
+body.subwindow .repl-block:not(:first-child), body.subwindow .repl-input input, body.subwindow .repl-input .repl-prompt, body.subwindow .repl .ok {
     display: none;
 }
 body.subwindow .repl-block {
@@ -1778,8 +1779,14 @@ body.subwindow sidecar:not(.minimized) .sidecar-header-icon-wrapper {
 body.subwindow sidecar:not(.minimized) .sidecar-header-icon {
     display: none;
 }
+body.subwindow .graphical-icon {
+    font-size: 2.5vmin;
+}
 body.subwindow sidecar .sidecar-bottom-stripe {
-    font-size: 2vw;
+    font-size: 2vmin;
+}
+body.subwindow .log-lines {
+    font-size: 1.375vw;
 }
 /*body.subwindow .repl-inner {
     margin-top: 2em;
@@ -1818,7 +1825,7 @@ body.subwindow .header .header-right-bits .toggle-visibility-on-hover {
 body.subwindow .header .header-right-bits .toggle-visibility-on-hover .visible-on-hover {
     display: none;
 }
-body.subwindow .sidecar-full-screen sidecar/*.custom-content*/ .sidecar-header-icon-wrapper, sidecar.no-icon .sidecar-header-icon-wrapper {
+body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-header-icon-wrapper, sidecar.no-icon .sidecar-header-icon-wrapper {
     width: 1em;
 }
 body.subwindow .sidecar-full-screen sidecar:not(.minimized)/*.custom-content*/ .sidecar-header-icon-wrapper .sidecar-header-icon, sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
@@ -2648,7 +2655,7 @@ body.subwindow .repl-block {
     background-color: transparent;
 }
 body.subwindow sidecar {
-    background: var(--color-ui-01);
+    /* background: var(--color-ui-01); */
 }
 
 #restart-needed-warning {
@@ -2811,5 +2818,11 @@ body {
     100% {
         -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
         transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
+    }
+}
+
+@media all and (max-width: 1100px) {
+    .log-lines .log-field.start-time-field {
+        display: none;
     }
 }
