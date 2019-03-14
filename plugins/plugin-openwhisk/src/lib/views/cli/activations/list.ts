@@ -259,7 +259,7 @@ const _render = args => {
         // column 2: name cell
         const name = nextCell()
         const nameClick = newLine ? document.createElement('span') : name.querySelector('.clickable')
-        name.className = 'smaller-text lighter-text log-field entity-name'
+        name.className = 'lighter-text log-field entity-name'
         nameClick.className = 'clickable'
         nameClick.innerText = activation.name
         if (newLine) name.appendChild(nameClick)
@@ -312,6 +312,7 @@ const _render = args => {
         // column 3: duration cell
         const duration = nextCell()
         duration.className = 'smaller-text lighter-text log-field log-field-right-align duration-field'
+        duration.classList.add(isSuccess ? 'green-text' : 'red-text')
         if (activation.end) {
           duration.innerText = prettyPrintDuration(activation.end - activation.start)
         } else {
@@ -320,10 +321,13 @@ const _render = args => {
         }
 
         // column 4: success cell
-        const success = nextCell()
-        success.className = 'smaller-text lighter-text log-field success-field'
-        success.classList.add(isSuccess ? 'green-text' : 'red-text')
-        success.innerText = isSuccess ? 'ok' : 'failed'
+        /* const success = nextCell()
+        success.className = 'smaller-text lighter-text log-field success-field very-narrow'
+        removeAllDomChildren(success)
+        const successBadge = document.createElement('badge')
+        successBadge.classList.add(isSuccess ? 'green-background' : 'red-background')
+        successBadge.innerText = isSuccess ? 'OK' : 'Failed'
+        success.appendChild(successBadge) */
 
         // column 5|6?: result cell
         if (showResult) {
@@ -433,7 +437,7 @@ const _render = args => {
           const previous = activations[idx - 1]
           const previousStart = previous && (previous.start - findItemInAnnotations('waitTime', previous))
           const time = prettyPrintTime(activation.start - findItemInAnnotations('waitTime', activation), 'short', previousStart)
-          start.className = 'smaller-text lighter-text log-field log-field-right-align start-time-field'
+          start.className = 'smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
           if (newLine) start.appendChild(startInner)
           if (typeof time === 'string') {
             startInner.innerText = time
@@ -456,8 +460,8 @@ const _render = args => {
           const rightButtons = document.createElement('div')
 
           description = document.createElement('span')
-          prev = document.createElement('span')
-          next = document.createElement('span')
+          prev = document.createElement('i')
+          next = document.createElement('i')
 
           container.appendChild(paginator)
           paginator.classList.add('list-paginator')
@@ -497,10 +501,8 @@ const _render = args => {
           // forward and back buttons
           rightButtons.appendChild(prev)
           rightButtons.appendChild(next)
-          prev.innerText = '\uff1c'
-          next.innerText = '\uff1e'
-          prev.className = 'list-paginator-button list-paginator-button-prev'
-          next.className = 'list-paginator-button list-paginator-button-next'
+          prev.className = 'list-paginator-button list-paginator-button-prev fas fa-chevron-left'
+          next.className = 'list-paginator-button list-paginator-button-next fas fa-chevron-right'
         } else {
           const paginator = container.querySelector('.list-paginator')
           description = paginator.querySelector('.list-paginator-description')
@@ -509,7 +511,8 @@ const _render = args => {
         }
 
         // paginator description text
-        description.innerText = `${skip + 1}\u2013${skip + activationIds.length} items`
+        const ofNText = activations.length > 0 && !activations[0].sessionId ? ` of ${count < 10000 ? count : count.toLocaleString()}` : ''
+        description.innerText = `${skip + 1}\u2013${skip + activationIds.length} items${ofNText}`
 
         // pagination click handlers
         const goto = skip => () => {

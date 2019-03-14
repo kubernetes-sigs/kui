@@ -132,7 +132,6 @@ const doStatus = async ({ command, execOptions }) => new Promise(async (resolve,
     if (exitCode === 0) {
       // note: no sidecar header if this launched from the command line ("subwindow mode")
       resolve(asSidecarEntity('git status', status2Html(rawOut, stats), {
-        sidecarHeader: !document.body.classList.contains('subwindow')
       }, undefined, 'statuss', currentBranch)) // intentional additional s at the end
     } else {
       try {
