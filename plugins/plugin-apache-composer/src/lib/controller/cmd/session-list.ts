@@ -73,7 +73,7 @@ export default async (commandTree, prequire) => {
         }
         return parsedOptions.count ? foundSessions.slice(skip, parsedOptions['scan-limit'] + skip).length : foundSessions.slice(skip, parsedOptions['scan-limit'] + skip)
       } else {
-        return findSessions(0, name, 20) // always trying to find sessions in the latest 20 activations
+        return findSessions(0, name, 200) // always trying to find sessions in the latest 20 activations
           .then(foundSessions => parsedOptions.count ? foundSessions.slice(skip, limit + skip).length : foundSessions.slice(skip, limit + skip))
           .catch(err => err)
       }
