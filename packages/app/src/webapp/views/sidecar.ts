@@ -214,7 +214,7 @@ export const renderField = async (container: HTMLElement, entity, field: string,
           try {
             const obj = JSON.parse(match[3])
             const beautify = require('js-beautify').js_beautify
-            const prettier = beautify(match[3])
+            const prettier = beautify(match[3], { indent_size: 2 })
             mesg.innerHTML = hljs.highlight('javascript', prettier).value
           } catch (err) {
             // not json!
@@ -248,7 +248,7 @@ export const renderField = async (container: HTMLElement, entity, field: string,
       }, {})
     }
     const beautify = require('js-beautify').js_beautify
-    const prettier = beautify(JSON.stringify(value))
+    const prettier = beautify(JSON.stringify(value), { indent_size: 2 })
 
     // apply the syntax highlighter to the JSON
     container.innerHTML = hljs.highlight('javascript', prettier).value
