@@ -59,13 +59,17 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
   }
 
   /** add a cell to the current row of the list view we] are generating. "entityName" is the current row */
-  const addCell = (className, value, innerClassName = '', parent = entityName, onclick?, watch?, key?, fontawesome?, css?, watchLimit = 120, tag = 'span') => {
+  const addCell = (className, value, innerClassName = '', parent = entityName, onclick?, watch?, key?, fontawesome?, css?, watchLimit = 120, tag = 'span', tagClass?: string) => {
     const cell = document.createElement('span')
     const inner = document.createElement(tag)
 
     cell.className = className
+
     inner.className = innerClassName
     inner.classList.add('cell-inner')
+    if (tagClass) {
+      inner.classList.add(tagClass)
+    }
 
     if (key) {
       inner.setAttribute('data-key', key)
@@ -338,19 +342,28 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
     // otherwise, we have some generic attribute handlers, here
     const addKind = () => {
       if (entity.kind || entity.prettyKind) {
-        addCell('entity-kind green-text',
-                entity.prettyKind || entity.kind,
-                'smaller-text lighter-text')
+        addCell('entity-kind', entity.prettyKind || entity.kind)
       }
     }
     const addStatus = () => {
       if (entity.status) {
         const cell = addCell(`entity-rule-status`,
-                             entity.status,
-                             'smaller-text lighter-text')
+                             'Pending', // delay status display
+                             'repeating-pulse', // css
+                             // ugh: i know, this needs to be cleaned up:
+                             undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'badge', 'gray-background')
+
+        /** normalize the status badge by capitalization */
+        const capitalize = (str: string): string => {
+          return str[0].toUpperCase() + str.slice(1).toLowerCase()
+        }
 
         Promise.resolve(entity.status).then(status => {
-          cell.classList.add(status === 'active' ? 'green-text' : 'red-text')
+          const badge = cell.querySelector('badge') as HTMLElement
+          badge.innerText = capitalize(status)
+          badge.classList.remove('gray-background')
+          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
+          badge.classList.remove('repeating-pulse')
         })
       }
     }
@@ -358,7 +371,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       if (entity.version || entity.prettyVersion) {
         addCell('entity-version hide-with-sidecar',
                 entity.prettyVersion || entity.version,
-                'smaller-text lighter-text')
+                'slightly-deemphasize')
       }
     }
 
