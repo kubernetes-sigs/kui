@@ -80,7 +80,7 @@ describe('Sidecar bottom stripe interactions for activations', function (this: c
   }
 
   // create an action, using the implicit entity type
-  it(`should create an action ${actionName}`, () => cli.do(`let ${actionName} = x => { console.log(x); return x } -p x 5 -p y 10`, this.app)
+  it(`should create an action ${actionName}`, () => cli.do(`let ${actionName} = x => { console.log(JSON.stringify(x)); return x } -p x 5 -p y 10`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
