@@ -63,9 +63,11 @@ const cssForKey = {
   SUBOBJECT: 'lighter-text smaller-text',
   'CREATED AT': 'lighter-text smaller-text',
 
+  AGE: 'slightly-deemphasize',
+
   // STATUS: 'even-smaller-text',
-  'APP VERSION': 'pre-wrap lighter-text smaller-text', // helm ls
-  UPDATED: 'lighter-text smaller-text'
+  'APP VERSION': 'pre-wrap slightly-deemphasize', // helm ls
+  UPDATED: 'slightly-deemphasize somewhat-smaller-text'
 }
 
 const tagForKey = {
@@ -163,7 +165,6 @@ export const preprocessTable = (raw: Array<string>) => {
 
   return raw.map(table => {
     const header = table.substring(0, table.indexOf('\n'))
-
     const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
     const columnStarts: Array<number> = []
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) { // tslint:disable-line
