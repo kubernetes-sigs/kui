@@ -63,6 +63,19 @@ export const format = (command: string, verb: string, entityType: string, option
       // "v1/pod(related)" => "pod"
       const entityType = kind.replace(/(v\w+\/)?([^()]*)(\s*\(.*\))?/, '$2')
 
+      if (!/^\s*NAME\s+/.test(A[1])) {
+        // no header row? this seems to be a bug in helm
+        const match = A[1].match(/(.+\s+)(.+)/)
+        if (match && match[1]) {
+          const secondColIdx = match[1].length
+          const firstCol = 'NAME'
+          const secondCol = 'AGE'
+          const spaces = (nSpaces: number) => new Array(nSpaces).join(' ')
+          const header = `${firstCol}${spaces(secondColIdx - firstCol.length)}${secondCol}`
+          A.splice(1, 0, header)
+        }
+      }
+
       return {
         kind,
         table: formatTable(command,
