@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017,2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -335,7 +335,7 @@ const _render = args => {
           const code = document.createElement('code')
           code.classList.add('json')
           result.appendChild(code)
-          result.className = 'smaller-text lighter-text log-field activation-result'
+          result.className = 'somewhat-smaller-text lighter-text log-field activation-result'
           if (activation.response) {
             code.innerText = JSON.stringify(activation.response.result || {}).substring(0, 40)
             setTimeout(() => global['hljs'].highlightBlock(code), 0)
@@ -437,7 +437,7 @@ const _render = args => {
           const previous = activations[idx - 1]
           const previousStart = previous && (previous.start - findItemInAnnotations('waitTime', previous))
           const time = prettyPrintTime(activation.start - findItemInAnnotations('waitTime', activation), 'short', previousStart)
-          start.className = 'smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
+          start.className = 'somewhat-smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
           if (newLine) start.appendChild(startInner)
           if (typeof time === 'string') {
             startInner.innerText = time
