@@ -270,7 +270,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
   }
   if ((!options || !options.excludePackageName) && entity.packageName) {
     const packagePrefix = document.createElement('span')
-    packagePrefix.className = 'package-prefix'
+    packagePrefix.className = 'package-prefix lighter-text smaller-text'
     packagePrefix.innerText = entity.packageName + '/'
     entityNameGroup.appendChild(packagePrefix)
   }

@@ -173,7 +173,7 @@ body.still-loading .repl {
 }
 .repl-block.repl-active {
     /* for the bottom-most block, add a bit of bottom padding, to avoid smashing into the bottom of the viewport */
-    padding-bottom: 0.5em;
+    padding-bottom: 0.125em;
 }
 body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl .repl-block {
     border-color: transparent;
@@ -675,12 +675,6 @@ i.clickable:hover, badge.clickable:hover {
 }
 .entity .repl-result-prefix, .entity .border-right {
     border-right: 1px solid;
-}
-.package-prefix {
-    display: inline-block;
-    vertical-align: middle;
-    font-size: 0.75em;
-    opacity: 0.6;
 }
 
 /* sidecar */
@@ -1246,7 +1240,7 @@ code.fancy-code, code.fancy-code.hljs {
 .deemphasize {
     color: var(--color-text-02);
     font-size: 0.75em;
-    opacity: 0.6;
+    opacity: 0.7;
     vertical-align: middle;
 }
 .deemphasize.deemphasize-partial {
