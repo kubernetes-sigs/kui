@@ -47,7 +47,7 @@ const exec = (commandExtractor) => async function (req, res, next) {
   } catch (err) {
     debug('exception in command execution', err.code, err.message, err)
     const code = err.code || err.statusCode || 500
-    res.status(code).send(err.message)
+    res.status(code).send(err.message || err)
   }
 }
 
