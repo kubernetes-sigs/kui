@@ -1,0 +1,7 @@
+.screenshot-squish {
+    align-items: flex-start !important;
+}
+.screenshot-squish .repl-output {
+    padding: 0 1em 1em;
+}
+

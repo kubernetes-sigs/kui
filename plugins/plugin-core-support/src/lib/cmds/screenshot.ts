@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { dirname, join } from 'path'
+
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as cli from '@kui-shell/core/webapp/cli'
 import { keys } from '@kui-shell/core/webapp/keys'
-import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
 
 /**
  * Usage message
@@ -77,12 +80,12 @@ const selectors = {
  */
 const hideCurrentReplBlock = [{ selector: '#main-repl .repl-block.processing', property: 'display', value: 'none' }]
 const squishRepl = [
-  { selector: 'tab.visible .repl .repl-block:nth-last-child(2)', property: 'alignItems', value: 'flex-start' },
+  { selector: 'tab.visible .repl .repl-block:nth-last-child(2)', css: 'screenshot-squish' },
   { selector: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-input', property: 'display', value: 'none' }
 ]
 const squishers = {
   sidecar: [
-    { selector: 'tab.visible', property: 'align-items', value: 'flex-start' },
+    { selector: 'tab.visible', css: 'screenshot-squish' },
     { selector: sidecarSelector(), property: 'height', value: 'initial' },
     { selector: sidecarSelector('.custom-content'), property: 'flex', value: 'initial' },
     { selector: sidecarSelector('.sidecar-content'), property: 'flex', value: 'initial' },
@@ -100,16 +103,16 @@ const squishers = {
 const _squish = (which, op) => {
   const squisher = squishers[which]
   if (squisher) {
-    squisher.forEach(({ selector, property, value }) => {
+    squisher.forEach(({ selector, property, value, css }) => {
       const element = document.querySelector(selector)
       if (element) {
-        op(element, property, value)
+        op(element, property, value, css)
       }
     })
   }
 }
-const squish = which => _squish(which, (element, property, value) => { element.style[property] = value })
-const unsquish = which => _squish(which, (element, property, value) => { element.style[property] = null })
+const squish = which => _squish(which, (element, property, value, css) => { if (css) element.classList.add(css); if (property) element.style[property] = value })
+const unsquish = which => _squish(which, (element, property, value, css) => { if (css) element.classList.remove(css); if (property) element.style[property] = null })
 
 /** fill to two digits */
 const fill = n => n < 10 ? `0${n}` : n
@@ -130,6 +133,9 @@ export default async (commandTree, prequire) => {
     }
 
     try {
+      const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+      injectCSS(join(root, 'web/css/screenshot.css'))
+
       const { ipcRenderer, nativeImage, remote } = require('electron')
       const { app } = remote
 
