@@ -55,7 +55,7 @@ function headless {
 function cert {
     pushd "$BUILDER_HOME/dist/webpack" > /dev/null
     CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
-    cp -a "$CLIENT_HOME"/.keys .
+    cp -a "$CLIENT_HOME"/.keys "$STAGING_DIR"/app/bin
     popd
 }
 
