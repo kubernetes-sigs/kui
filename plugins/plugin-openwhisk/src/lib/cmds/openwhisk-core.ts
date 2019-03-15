@@ -68,7 +68,7 @@ const withHeader = (rows, execOptions) => {
 
     const type = rows[0].type
     const kind = type === 'actions' ? maybeCell('type', 'KIND') : []
-    const active = type === 'rules' ? cell('ACTIVE?') : []
+    const active = type === 'rules' ? cell('STATUS') : []
     const version = type === 'rules' ? cell('RULE', 'hide-with-sidecar') : maybeCell('version', 'VERSION', 'hide-with-sidecar')
 
     return [[{

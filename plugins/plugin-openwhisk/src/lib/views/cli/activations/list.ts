@@ -259,7 +259,7 @@ const _render = args => {
         // column 2: name cell
         const name = nextCell()
         const nameClick = newLine ? document.createElement('span') : name.querySelector('.clickable')
-        name.className = 'lighter-text log-field entity-name'
+        name.className = 'slightly-deemphasize log-field entity-name'
         nameClick.className = 'clickable'
         nameClick.innerText = activation.name
         if (newLine) name.appendChild(nameClick)
@@ -311,7 +311,7 @@ const _render = args => {
 
         // column 3: duration cell
         const duration = nextCell()
-        duration.className = 'smaller-text lighter-text log-field log-field-right-align duration-field'
+        duration.className = 'somewhat-smaller-text log-field log-field-right-align duration-field'
         duration.classList.add(isSuccess ? 'green-text' : 'red-text')
         if (activation.end) {
           duration.innerText = prettyPrintDuration(activation.end - activation.start)
