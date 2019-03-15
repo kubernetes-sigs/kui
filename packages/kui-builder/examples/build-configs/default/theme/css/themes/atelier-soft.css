@@ -1,0 +1,39 @@
+/**
+ * scheme: "Atelier Soft"
+ * author: "Nick Mitchell
+ */
+body[kui-theme="Atelier Soft"] {
+    --color-base00: #1E1E1E;
+    --color-base01: #242924;
+    --color-base02: hsl(120, 8%, 30%); /* dialed L from 40% #5e6e5e */
+    --color-base03: hsl(120, 9%, 20%); /* dialed L from 45% #687d68 */
+    --color-base04: #809980;
+    --color-base05: #DCDCDC;
+    --color-base06: #cfe8cf;
+    --color-base07: #f4fbf4;
+    --color-base08: #9A5334;
+    --color-base09: #D69D85;
+    --color-base0A: hsl(60, 70%, 41%); /* dialed L from 35% #98981b */
+    --color-base0B: #608B4E;
+    --color-base0C: #4EC9B0;
+    --color-base0D: #569CD6;;
+    --color-base0E: #BD63C5;
+    --color-base0F: #D7BA7D;
+
+    --color-ui-06: hsla(120, 8%, 15%, 1);
+
+    --color-light-red: hsla(350, 80%, 50%, 0.75);
+    --color-light-green: hsla(120, 60%, 40%, 0.75);
+    --color-yellow: var(--color-base09);
+    --color-light-yellow: hsla(48, 65%, 32%, 0.75);
+
+    --color-latency-0: #01665e;
+    --color-latency-1: #5ab4ac;
+    --color-latency-2: #c7eae5;
+    --color-latency-3: #f6e8c3;
+    --color-latency-4: #d8b365;
+    --color-latency-5: #8c510a;
+}
+
+/* vs 2015 dark highlightjs theme */
+.hljs{display:block;overflow-x:auto;padding:0.5em;background:#1E1E1E;color:#DCDCDC}.hljs-keyword,.hljs-literal,.hljs-symbol,.hljs-name{color:#569CD6}.hljs-link{color:#569CD6;text-decoration:underline}.hljs-built_in,.hljs-type{color:#4EC9B0}.hljs-number,.hljs-class{color:#B8D7A3}.hljs-string,.hljs-meta-string{color:#D69D85}.hljs-regexp,.hljs-template-tag{color:#9A5334}.hljs-subst,.hljs-function,.hljs-title,.hljs-params,.hljs-formula{color:#DCDCDC}.hljs-comment,.hljs-quote{color:#57A64A;font-style:italic}.hljs-doctag{color:#608B4E}.hljs-meta,.hljs-meta-keyword,.hljs-tag{color:#9B9B9B}.hljs-variable,.hljs-template-variable{color:#BD63C5}.hljs-attr,.hljs-attribute,.hljs-builtin-name{color:#9CDCFE}.hljs-section{color:gold}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-bullet,.hljs-selector-tag,.hljs-selector-id,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo{color:#D7BA7D}.hljs-addition{background-color:#144212;display:inline-block;width:100%}.hljs-deletion{background-color:#600;display:inline-block;width:100%}
