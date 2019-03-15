@@ -435,7 +435,7 @@ export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement)
   const iconDom = element('.sidecar-header-icon', sidecar)
   let iconText = viewName.replace(/s$/, '')
 
-  const A = iconText.split(/(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])"/).filter(x => x)
+  const A = iconText.split(/(?=[A-Z])/).filter(x => x)
   if (iconText.length > 10 && A.length > 1) {
     iconText = A.map(_ => _.charAt(0)).join('')
   }
