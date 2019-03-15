@@ -181,217 +181,13 @@ export const renderField = async (container: HTMLElement, entity, field: string,
     removeAllDomChildren(container)
     container.appendChild(logTable)
 
-    const nestedQuotes = str => {
-      let R = ''
-      let singleOpen = 0
-      for (let idx = 0; idx < str.length; idx++) {
-        const char = str.charAt(idx)
-        if (char === '\'') {
-          singleOpen++
-          R = R + '"'
-        } else if (char === '\'') {
-          singleOpen--
-          R = R + '"'
-        } else if (char === '`' && singleOpen > 0) {
-          R = R + '\\' + char
-        } else if (char === '"' && singleOpen > 0) {
-          R = R + '\\' + char
-        } else {
-          R = R + char
-        }
-      }
-      return R
-    }
-
-    /** try parsing the state as a JSON object */
-    const tryJSON = state => {
-      if (state.accum && state.accum.parens.listOpen > 0 && state.accum.parens.listClose > 0) {
-        const str = state.accum.smashed
-        let netArray = 0
-        let netList = 0
-        let firstOpen
-        let lastClose = -1
-        let previousClose = -1
-
-        const pretty = document.createElement('div')
-        pretty.style.display = 'flex'
-        pretty.style.flexDirection = 'column'
-        pretty.style.alignItems = 'flex-start'
-        state.accum.match[3] = pretty
-
-        const terminate = () => {
-          const interval = str.substring(firstOpen, lastClose + 1)
-          if (firstOpen) {
-            pretty.appendChild(document.createTextNode(str.substring(previousClose + 1, firstOpen)))
-          }
-
-          const struct = document.createElement('div')
-          const jsonified = nestedQuotes(interval)
-            .replace(/:\s+{/g, ':{')
-            .replace(/\n/g, '')
-            .replace(/\[Object\]/g, '["Object"]')
-            .replace(/\[Array\]/g, '["Array"]')
-            .replace(/{\s*([^:]+):/g, '{"$1":')
-            .replace(/"\s*,\s*([^:]+):/g, '","$1":')
-            .replace(/}\s*,\s*([^:]+):/g, '},"$1":')
-            .replace(/\]\s*,\s*([^:]+):/g, '],"$1":')
-            .replace(/(\d)\s*,\s*([^:]+):/g, '$1,"$2":')
-            .replace(/null\s*,\s*([^:]+):/g, 'null,"$1":')
-            .replace(/false\s*,\s*([^:]+):/g, 'false,"$1":')
-            .replace(/true\s*,\s*([^:]+):/g, 'true,"$1":')
-            .replace(/([^\\])""/g, '$1"')
-          try {
-            const maybeJSON = JSON.parse(jsonified)
-
-            const beautify = require('js-beautify').js_beautify
-            const json = document.createElement('code')
-            const content = beautify(JSON.stringify(maybeJSON), { indent_size: 2 })
-            json.classList.add('clickable-block')
-            json.setAttribute('title', 'Copy this structure')
-            json.appendChild(document.createTextNode(content))
-            json.onclick = () => {
-              require('electron').clipboard.writeText(content)
-              json.classList.remove('pulse')
-              setTimeout(() => json.classList.add('pulse'), 0)
-            }
-            struct.appendChild(json)
-
-            // apply the syntax highlighter to the JSON
-            setTimeout(() => hljs.highlightBlock(json), 0)
-          } catch (err) {
-            struct.appendChild(document.createTextNode(interval))
-          }
-
-          pretty.appendChild(struct)
-          firstOpen = undefined
-        }
-
-        for (let idx = 0; idx < str.length; idx++) {
-          const char = str.charAt(idx)
-          if (netArray === 0 && netList === 0 && char === '\n') {
-            /* if (pretty.children.length === 0
-               || pretty.children[pretty.children.length - 1].tagName === 'BR') {
-               // don't add a br for the first child, and don't add two in a row
-               } else {
-               // otherwise, add some spacing between structs
-               pretty.appendChild(document.createElement('br'))
-               } */
-
-          } else if (char === '[') {
-            netArray++
-            if (!firstOpen) {
-              firstOpen = idx
-              previousClose = lastClose
-            }
-          } else if (char === '{') {
-            netList++
-            if (!firstOpen) {
-              firstOpen = idx
-              previousClose = lastClose
-            }
-          } else if (char === ']') {
-            netArray--
-            lastClose = idx
-
-            if (netList === 0 && netArray === 0) {
-              terminate()
-            }
-          } else if (char === '}') {
-            netList--
-            lastClose = idx
-
-            if (netList === 0 && netArray === 0) {
-              terminate()
-            }
-          }
-        }
-
-        if (lastClose && lastClose < str.length - 2) {
-          pretty.appendChild(document.createTextNode(str.substring(lastClose + 2)))
-        }
-      }
-
-      if (state.accum) {
-        state.lines.push(state.accum.match)
-        state.accum = undefined
-      } else {
-        state.lines = state.lines.map(line => {
-          try {
-            return JSON.parse(line)
-          } catch (err) {
-            return line
-          }
-        })
-      }
-    } /* end of tryJSON */
-
-    /** net list-paren count */
-    const netParens = line => {
-      let listOpen = 0
-      let listClose = 0
-
-      for (let idx = 0; idx < line.length; idx++) {
-        const char = line.charAt(idx)
-        if (char === '{') {
-          listOpen++
-        } else if (char === '}') {
-          listClose++
-        }
-      }
-      return { listOpen, listClose }
-    }
-
-    // try combining log lines into JSON structs
-    const newLines = value.reduce((state, logLine) => {
-      const match = logLine.match(logPatterns.logLine)
-
-      /** we need to start a fresh row */
-      const freshRow = () => {
-        state.accum = {
-          match: match,
-          date: tryParseDate(match[1]),
-          lines: [logLine],
-          smashed: match[3],
-          parens: netParens(match[3])
-        }
-      }
-
-      if (!match) {
-        state.lines.push(logLine)
-      } else if (!state.accum) {
-        freshRow()
-      } else {
-        const thisDate = tryParseDate(match[1])
-        if (match && match[2] === state.accum.match[2] && (thisDate - state.accum.date < 100 ||
-                                                           state.accum.parens.listClose - state.accum.parens.listOpen > 0)) {
-          // both this and previous written to stderr, and no great time separation?
-          // then smash them together into one record
-          state.accum.lines.push(logLine)
-          const { listOpen, listClose } = netParens(match[3])
-          state.accum.smashed += `\n${match[3]}`
-          state.accum.parens.listOpen += listOpen
-          state.accum.parens.listClose += listClose
-        } else {
-          // then this batch of close-in-time rows has
-          // ended; flush it (via tryJSON), and start a
-          // fresh row
-          tryJSON(state)
-          freshRow()
-        }
-      }
-
-      return state
-    }, { accum: undefined, lines: [] })
-
-    tryJSON(newLines)
-    console.log(newLines)
-
-    newLines.lines.forEach(logLine => {
+    value.forEach(logLine => {
       const lineDom = document.createElement('div')
       lineDom.className = 'log-line'
       logTable.appendChild(lineDom)
 
-      const match = Array.isArray(logLine) && logLine
+      const match = logLine.match(logPatterns.logLine)
+
       if (match) {
         const date = document.createElement('div')
         // const type = document.createElement('div')
@@ -412,10 +208,21 @@ export const renderField = async (container: HTMLElement, entity, field: string,
           date.innerText = match[1]
         }
         // type.innerText = match[2]
-        if (typeof match[3] === 'string') {
-          mesg.innerText = match[3]
+
+        if (match[3].indexOf('{') >= 0) {
+          // possibly JSON?
+          try {
+            const obj = JSON.parse(match[3])
+            const beautify = require('js-beautify').js_beautify
+            const prettier = beautify(match[3])
+            mesg.innerHTML = hljs.highlight('javascript', prettier).value
+          } catch (err) {
+            // not json!
+            mesg.innerText = match[3]
+          }
         } else {
-          mesg.appendChild(match[3])
+          // not json!
+          mesg.innerText = match[3]
         }
       } else if (typeof logLine === 'string') {
         // unparseable log line, so splat out the raw text
@@ -441,10 +248,10 @@ export const renderField = async (container: HTMLElement, entity, field: string,
       }, {})
     }
     const beautify = require('js-beautify').js_beautify
-    container.innerText = beautify(JSON.stringify(value))
+    const prettier = beautify(JSON.stringify(value))
 
     // apply the syntax highlighter to the JSON
-    setTimeout(() => hljs.highlightBlock(container), 0)
+    container.innerHTML = hljs.highlight('javascript', prettier).value
   }
 }
 

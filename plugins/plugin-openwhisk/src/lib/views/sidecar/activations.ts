@@ -130,38 +130,35 @@ export default (entity, options: IShowOptions) => {
           // then its already a DOM
           activationResult.appendChild(projection)
         } else {
-          activationResult.innerText = projection
-          if (entity.contentType) {
+          if (entity.contentType && activationResult.innerText.length < 20 * 1024) {
             // caller gave us a content type. attempt to decorate
             const contentType = `language-${entity.contentType}`
             activationResult.classList.add(contentType)
             activationResult.classList.remove(activationResult.getAttribute('data-content-type')) // remove previous
             activationResult.setAttribute('data-content-type', contentType)
             activationResult.classList.remove('json')
-            if (activationResult.innerText.length < 20 * 1024) {
-              setTimeout(() => {
-                hljs.highlightBlock(activationResult)
-                linkify(activationResult)
-              }, 0)
-            }
+
+            activationResult.innerHTML = hljs.highlight(entity.contentType, projection).value
+            linkify(activationResult)
+          } else {
+            activationResult.innerText = projection
           }
         }
       } else {
         const data = JSON.stringify(result, undefined, 4)
-        if (data.length < 20 * 1024) {
+        if (data.length < 30 * 1024) {
           const beautify = require('js-beautify').js_beautify
+          const prettier = beautify(data)
 
           // colorify
           const contentType = 'language-json'
           activationResult.classList.add(contentType)
           activationResult.classList.remove(activationResult.getAttribute('data-content-type')) // remove previous
           activationResult.setAttribute('data-content-type', contentType)
-          activationResult.innerText = beautify(data)
+
           // apply the syntax highlighter to the code
-          setTimeout(() => {
-            hljs.highlightBlock(activationResult)
-            linkify(activationResult)
-          }, 0)
+          activationResult.innerHTML = hljs.highlight('javascript', prettier).value
+          linkify(activationResult)
         } else {
           // too big! too slow for the fancy stuff
           activationResult.innerText = data
