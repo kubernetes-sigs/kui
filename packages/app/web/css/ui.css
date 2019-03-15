@@ -1274,7 +1274,7 @@ code.fancy-code, code.fancy-code.hljs {
     display: block;
 }
 .timestamp-like {
-    width: 14em;
+    width: 16em;
 }
 .min-width-date-like {
     min-width: 15em !important;
