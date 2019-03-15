@@ -95,7 +95,9 @@ export default () => {
 
   /** listen for paste events, focus on the current prompt first */
   document.body.onpaste = evt => {
-    getCurrentPrompt().focus()
+    if (document.activeElement === document.body) {
+      getCurrentPrompt().focus()
+    }
   }
 
   /**
