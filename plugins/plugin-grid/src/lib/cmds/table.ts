@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { addNameToSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -614,6 +615,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
     content,
     controlHeaders: true,
     eventBus,
+    presentation: Presentation.SidecarFullscreenForPopups,
     modes: modes(viewName.toLowerCase(), options).concat(tableModes)
   }
 

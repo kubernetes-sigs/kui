@@ -246,6 +246,8 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
     if (process.platform !== 'darwin' || isRunningHeadless) {
       // if we're running headless, then quit on window closed, no matter which platform we're on
       app.quit()
+    } else {
+      app.hide()
     }
   })
 

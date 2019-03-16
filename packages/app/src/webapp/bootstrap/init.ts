@@ -90,10 +90,6 @@ export const init = (prefs = {}) => {
         const command = typeof maybeExecuteThis === 'string' ? maybeExecuteThis : maybeExecuteThis.join(' ')
         debug('maybeExecuteThis', maybeExecuteThis, command)
 
-        if (prefs && prefs.fullscreen !== false) {
-          document.querySelector('tab.visible').classList.add('sidecar-full-screen')
-        }
-
         if (prefs && prefs.partialExec) {
           // document.body.classList.add('repl-lite')
           const cli = await import('../cli')

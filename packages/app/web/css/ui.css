@@ -759,11 +759,23 @@ sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-maximize {
     transition: opacity 300ms ease-in-out;
     display: inline-block;
 }
-.sidecar-full-screen sidecar .sidecar-bottom-stripe-maximize .maximize-button-label, tab:not(.sidecar-full-screen) sidecar .sidecar-bottom-stripe-maximize .unmaximize-button-label {
+body:not(.subwindow) .sidecar-full-screen sidecar .sidecar-bottom-stripe-maximize .maximize-button-label, body:not(.subwindow) tab:not(.sidecar-full-screen) sidecar .sidecar-bottom-stripe-maximize .unmaximize-button-label {
     transition: opacity 0ms ease-in-out;
     opacity: 0;
     width: 0;
     height: 0;
+}
+body:not(.subwindow) .sidecar-bottom-stripe-quit, body.subwindow[data-presentation="SidecarFullscreen"] .sidecar-bottom-stripe-quit {
+    /* no quit button if not in subwindow/popup mode */
+    display: none;
+}
+body.subwindow[data-presentation="SidecarFullscreenForPopups"] .sidecar-bottom-stripe-close {
+    /* no close button if in subwindow/popup mode */
+    display: none;
+}
+body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize {
+    /* in subwindow mode, no maximize or unmaximize buttons */
+    display: none;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button-return-to::first-letter, .sidecar-bottom-stripe .sidecar-bottom-stripe-button[data-mode] {
     /* for bottom mode-switching buttons, capitalize the text; for actual buttons, keep the capitalization as it was given */
@@ -798,7 +810,8 @@ body.os-win32 sidecar .sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-
 sidecar .sidecar-bottom-stripe-back-bits, .sidecar-bottom-stripe .fill-container {
     /* back button in sidecar bottom stripe */
     border-right: 1px dotted hsla(240, 2%, 90%, 0.5);
-    padding-right: 1em;
+    padding-right: 0.4375rem;
+    margin-right: 0.4375rem;
 }
 sidecar .sidecar-bottom-stripe-back-bits > div {
     transition: all 150ms ease-in-out;
@@ -1722,12 +1735,11 @@ body.subwindow .activation-result {
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 
-/* body.subwindow:not(.sidecar-full-screen), body.subwindow:not(.sidecar-full-screen) .page, body.subwindow:not(.sidecar-full-screen) .main, body.subwindow:not(.sidecar-full-screen) .repl {
-   disabled... a bit buggy. the goal is to use normal (outer-most) browser scrolling in the REPL
+body.subwindow:not(.sidecar-visible), body.subwindow:not(.sidecar-visible) .page, body.subwindow:not(.sidecar-visible) .main, body.subwindow:not(.sidecar-visible) .repl, body.subwindow:not(.sidecar-visible) .tab-container, body.subwindow:not(.sidecar-visible) tab {
     height: auto;
     overflow: auto;
     max-height: unset;
-} */
+}
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe .left-tab-stripe-buttons,
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #theme-button,
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #help-button {
@@ -1741,7 +1753,7 @@ body.subwindow sidecar .sidecar-header-name {
     margin-top: 1em;
 }
 body.subwindow .repl {
-    font-size: 2vw;
+    font-size: 1.375vw;
     align-items: center;
 }
 body.subwindow .repl .horizontal-landing-zone {

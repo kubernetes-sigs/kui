@@ -56,7 +56,7 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
         resolve(true)
       }
 
-      debug('rendering git diff as HTML', rawOut)
+      debug('rendering git diff as HTML')
 
       // show a summary of changed files the top?
       const diffMatch = rawOut.match(/^diff\s+/mg)
@@ -74,7 +74,8 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
       resolve(asSidecarEntity(filePart, Diff2Html.getPrettyHtml(rawOut, {
         showFiles,
         matching: 'lines',
-        outputFormat: 'side-by-side'
+        outputFormat: 'side-by-side',
+        x: 3
       }), {
         presentation: Presentation.SidecarFullscreen
       }, undefined, commandPart, currentBranch))
