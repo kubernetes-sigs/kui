@@ -30,7 +30,7 @@ export const asSidecarContent = (renderedContent: Element | string, tag = 'pre')
   scrollInner.classList.add('padding-content')
   content.appendChild(scrollInner)
 
-  debug('renderedContent', renderedContent)
+  // debug('renderedContent', renderedContent)
   if (typeof renderedContent === 'string') {
     scrollInner.innerHTML = renderedContent
   } else {

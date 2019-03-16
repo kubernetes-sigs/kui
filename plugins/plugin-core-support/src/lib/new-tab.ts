@@ -222,6 +222,16 @@ const perTabInit = (doListen = true) => {
     toggle()
   }
 
+  // quit button
+  element(sidecarSelector('.sidecar-bottom-stripe-quit')).onclick = () => {
+    debug('quit button')
+    try {
+      window.close()
+    } catch (err) {
+      console.error('error handling quit button click', err)
+    }
+  }
+
   // screenshot button
   element(sidecarSelector('.sidecar-screenshot-button')).onclick = () => {
     debug('sidecar screenshot')

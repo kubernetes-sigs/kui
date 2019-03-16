@@ -275,8 +275,10 @@ export const showCustom = async (custom, options) => {
   // are not currenlty in fullscreen, OR if the view does not want to
   // occupy full screen and we *are*... in either case (this is an
   // XOR, does as best one can in NodeJS), toggle maximization
-  if (custom.presentation === Presentation.SidecarFullscreen ? !isFullscreen() : isFullscreen()) {
-    toggleMaximization()
+  const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
+    || document.body.classList.contains('subwindow')
+  if (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
+    toggleMaximization(custom.presentation || Presentation.SidecarFullscreen)
   }
 
   if (custom.controlHeaders === true) {
@@ -605,6 +607,8 @@ export const hide = (clearSelectionToo = false) => {
     // only minimize if we weren't asked to clear the selection
     sidecar.classList.add('minimized')
     element('tab.visible').classList.add('sidecar-is-minimized')
+  } else {
+    document.body.classList.remove('sidecar-visible')
   }
 
   const replView = document.querySelector('tab.visible .repl')
@@ -629,6 +633,7 @@ export const show = (block?, nextBlock?) => {
     element('tab.visible').classList.remove('sidecar-is-minimized')
     sidecar.classList.remove('minimized')
     sidecar.classList.add('visible')
+    document.body.classList.add('sidecar-visible')
 
     cli.scrollIntoView()
     const replView = document.querySelector('tab.visible .repl')
@@ -649,10 +654,18 @@ export const isFullscreen = () => {
   return element('tab.visible').classList.contains('sidecar-full-screen')
 }
 
-export const toggleMaximization = () => {
+export const toggleMaximization = (presentation?: Presentation) => {
   if (document.body.classList.contains('subwindow')) {
-    document.body.classList.add('sidecar-full-screen')
+    document.body.classList.toggle('sidecar-full-screen')
+    document.body.classList.toggle('sidecar-visible')
   }
+
+  if (presentation !== undefined) {
+    document.body.setAttribute('data-presentation', Presentation[presentation].toString())
+  } else {
+    document.body.removeAttribute('data-presentation')
+  }
+
   element('tab.visible').classList.toggle('sidecar-full-screen')
   eventBus.emit('/sidecar/maximize')
 }
@@ -693,6 +706,7 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
 
   const replView = document.querySelector('tab.visible .repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
+  document.body.classList.add('sidecar-visible')
 
   addSidecarHeaderIconText(entity.prettyType || entity.type, sidecar)
 

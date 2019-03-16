@@ -23,6 +23,7 @@ import { v4 as uuid } from 'uuid'
 import * as repl from '@kui-shell/core/core/repl'
 import { addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
 import { drilldownWith } from '../drilldown'
@@ -252,6 +253,7 @@ const drawGrid = (options: IOptions, header: IHeader, uuid: string, redraw = fal
     uuid,
     content,
     controlHeaders: true,
+    presentation: Presentation.SidecarFullscreenForPopups,
 
     // add zoom buttons to the mode button model
     modes: modes('grid', options).concat([switcher, zoomIn, zoomOut])

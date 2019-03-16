@@ -29,7 +29,8 @@
  *
  */
 enum Presentation {
-  SidecarFullscreen
+  SidecarFullscreen,
+  SidecarFullscreenForPopups
 }
 
 export default Presentation
