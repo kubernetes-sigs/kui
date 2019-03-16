@@ -275,10 +275,12 @@ export const showCustom = async (custom, options) => {
   // are not currenlty in fullscreen, OR if the view does not want to
   // occupy full screen and we *are*... in either case (this is an
   // XOR, does as best one can in NodeJS), toggle maximization
+  const isPopup = document.body.classList.contains('subwindow')
   const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
-    || document.body.classList.contains('subwindow')
-  if (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
-    toggleMaximization(custom.presentation || Presentation.SidecarFullscreen)
+  if (isPopup || viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
+    const presentAs = viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
+      : custom.presentation || Presentation.SidecarFullscreen
+    toggleMaximization(presentAs)
   }
 
   if (custom.controlHeaders === true) {
@@ -706,7 +708,11 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
 
   const replView = document.querySelector('tab.visible .repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
-  document.body.classList.add('sidecar-visible')
+
+  const viewProviderDesiresFullscreen = document.body.classList.contains('subwindow')
+  if (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
+    toggleMaximization(Presentation.SidecarFullscreen)
+  }
 
   addSidecarHeaderIconText(entity.prettyType || entity.type, sidecar)
 
