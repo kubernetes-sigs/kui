@@ -19,6 +19,9 @@ body.search-bar-is-visible .header .application-icon {
    z-index appropriately */
     z-index: -1000;
 }
+body.subwindow #search-bar.visible {
+    position: fixed;
+}
 #search-bar.visible {
     opacity: 1;
 

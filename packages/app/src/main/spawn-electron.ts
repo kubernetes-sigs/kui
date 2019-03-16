@@ -361,6 +361,13 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
     },
     subwindowPrefs && subwindowPrefs.position)
+
+    if (subwindowPlease) {
+      // this tells electron to size content to the given width and height,
+      // (i.e. NOT vice versa, to size the window to the content!)
+      opts.useContentSize = true
+    }
+
     if (process.env.KUI_POSITION_X) {
       opts.x = process.env.KUI_POSITION_X
     }

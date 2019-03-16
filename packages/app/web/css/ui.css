@@ -1739,6 +1739,11 @@ body.subwindow:not(.sidecar-visible), body.subwindow:not(.sidecar-visible) .page
     height: auto;
     overflow: auto;
     max-height: unset;
+    align-items: center;
+    justify-content: center;
+}
+body.subwindow:not(.sidecar-visible) sidecar {
+    width: 0;
 }
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe .left-tab-stripe-buttons,
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #theme-button,
