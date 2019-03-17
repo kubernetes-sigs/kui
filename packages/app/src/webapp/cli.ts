@@ -22,14 +22,16 @@ declare var hljs
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
 import { inElectron } from '../core/capabilities'
-import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
-import { formatListResult, formatMultiListResult } from './views/table'
 import { keys } from './keys'
+
+import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
 import * as historyModel from '../models/history'
-import { element } from './util/dom'
-import Presentation from './views/presentation'
+
+import { element, removeAllDomChildren } from './util/dom'
 import { prettyPrintTime } from './util/time'
 
+import Presentation from './views/presentation'
+import { formatListResult, formatMultiListResult } from './views/table'
 import { currentSelection, showEntity, showCustom } from './views/sidecar'
 
 /**
@@ -354,8 +356,27 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
       const subtext = document.createElement('div')
       subtext.appendChild(document.createTextNode('Last updated '))
       const date = document.createElement('strong')
-      date.appendChild(prettyPrintTime(Date.now()))
+      const now = new Date()
+      date.appendChild(prettyPrintTime(now))
       subtext.appendChild(date)
+
+      const millisPerDay = 24 * 60 * 60 * 1000
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      const millisSinceMidnight = now.getTime() - midnight.getTime()
+      const millisTillMidnight = millisPerDay - millisSinceMidnight
+
+      /** re-pretty-print the "now" timestamp with every changing day */
+      const updateLastUpdateDate = () => {
+        removeAllDomChildren(date)
+        date.appendChild(prettyPrintTime(now))
+      }
+
+      /** re-pretty-print the "now" timestamp after the first change of day */
+      const updateLastUpdateDateFirstTime = () => {
+        updateLastUpdateDate()
+        setInterval(updateLastUpdateDate, millisPerDay) // schedule daily updates
+      }
+      setTimeout(updateLastUpdateDateFirstTime, millisTillMidnight)
 
       if ((resultDom.parentNode as HTMLElement).classList.contains('result-as-multi-table')) {
         (resultDom.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
