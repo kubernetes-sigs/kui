@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('core/main/headless-support')
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as ui from '@kui-shell/core/tests/lib/ui'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+import { cli } from '@kui-shell/core/tests/lib/headless'
 
-import { print } from './headless-pretty-print'
+describe('bash-like host catchall', function (this: common.ISuite) {
+  before(common.before(this, { noApp: true }))
 
-/**
- * This supports commads streaming their output to the console
- *
- * @see repl.ts for use of createOutputStream
- * @see cli.ts for the webapp implementation
- *
- */
-export const streamTo = () => {
-  return async response => {
-    debug('streaming response', response)
-    print(response)
-  }
-}
+  it('should show some output for host google.com', () => cli.do('host google.com')
+     .then(cli.expectOK('has address'))
+     .catch(common.oops(this)))
+})

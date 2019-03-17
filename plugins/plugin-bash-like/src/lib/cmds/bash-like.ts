@@ -186,10 +186,14 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
   let pendingUsage = false
   proc.stdout.on('data', async data => {
     const handleANSI = () => {
-      const span = document.createElement('span')
-      span.setAttribute('class', 'whitespace')
-      span.innerHTML = ansi2HTML.toHtml(data.toString())
-      return span
+      if (isHeadless()) {
+        return data
+      } else {
+        const span = document.createElement('span')
+        span.setAttribute('class', 'whitespace')
+        span.innerHTML = ansi2HTML.toHtml(data.toString())
+        return span
+      }
     }
 
     const out = data.toString()
@@ -204,8 +208,10 @@ const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => n
       } else {
         const maybeKeyValue = formatKeyValue(strippedOut)
         if (maybeKeyValue) {
+          debug('formatting as key-value')
           resolve(maybeKeyValue)
         } else {
+          debug('formatting as ANSI')
           execOptions.stdout(handleANSI())
         }
       }
@@ -359,7 +365,13 @@ export default (commandTree, prequire) => {
   commandTree.listen('/!', shellFn, { docs: 'Execute a UNIX shell command', requiresLocal: true })
 
   commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true, requiresLocal: true })
+}
 
+/**
+ * On preload, register the catchall handler
+ *
+ */
+export const preload = (commandTree) => {
   if (!inBrowser()) {
     //
     // if we aren't running in a browser, then pass any command not

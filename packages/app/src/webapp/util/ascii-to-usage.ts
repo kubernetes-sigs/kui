@@ -131,4 +131,6 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
       return new UsageError(options.stderr ? { message: options.stderr, usage: model } : model)
     }
   }
+
+  debug('this does not look like a ASCII usage model')
 }
