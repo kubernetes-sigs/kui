@@ -22,6 +22,7 @@ import bottomStripe = require('./bottom-stripe')
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
+import { popupListen } from './cli'
 
 const _highlight = op => highlightThis => {
   if (highlightThis) {
@@ -65,7 +66,7 @@ const restore = (pippedContainer, sidecarClass, capturedHeaders, highlightThis, 
     curHeaderParent.insertBefore(node, nextSibling)
 
     if (redraw) {
-      redraw()
+      redraw(node)
     }
   })
 
@@ -110,7 +111,7 @@ const pip = (container, capturedHeaders, highlightThis, returnTo?: string, optio
     removeAllDomChildren(backLabel)
     const backButton = document.createElement('div')
     const backButtonReturnTo = document.createElement('span')
-    backButton.className = 'sidecar-bottom-stripe-back-button'
+    backButton.className = 'sidecar-bottom-stripe-back-button-clickable-part'
     backButtonReturnTo.className = 'sidecar-bottom-stripe-back-button-return-to'
     backButton.innerText = `Back to `
     backButtonReturnTo.innerText = returnTo
@@ -118,10 +119,10 @@ const pip = (container, capturedHeaders, highlightThis, returnTo?: string, optio
     backLabel.appendChild(backButton)
     backContainer.classList.add('has-back-button')
 
-    backButton.onclick = () => {
+    backButton.addEventListener('click', () => {
       restoreFn()
       backContainer.classList.remove('has-back-button')
-    }
+    }, { once: true })
   }
 
   return restoreFn
@@ -189,7 +190,7 @@ export default (command, highlightThis, container: string | Element, returnTo?: 
 
   // capture the current header and other DOM state, before the `command` overwrites it
   const alreadyPipped = document.querySelector('body > .picture-in-picture')
-  const capturedHeader = capture(sidecarSelector('.sidecar-header-text'))
+  const capturedHeader = capture(sidecarSelector('.sidecar-header-text'), popupListen)
   const capturedHeader2 = capture(sidecarSelector('.header-right-bits .custom-header-content'))
   const capturedHeader3 = capture(sidecarSelector('.header-right-bits .action-content'))
   const capturedHeader4 = capture(sidecarSelector('.sidecar-header-icon'))

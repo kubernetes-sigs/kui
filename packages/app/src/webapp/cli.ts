@@ -184,7 +184,7 @@ export const streamTo = (block: Element) => {
  * Render the results of a command evaluation in the "console"
  *
  */
-export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?) => response => {
+export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?) => response => {
   debug('printResults')
 
   const isPopup = document.body.classList.contains('subwindow')
@@ -385,7 +385,8 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
       const custom = {
         type: 'custom',
         isEntity: true,
-        name: getPrompt(block).value,
+        isREPL: true,
+        name: command,
         presentation: Presentation.SidecarFullscreenForPopups,
         subtext,
         content: resultDom.parentNode.parentNode // dom -> scrollRegion -> paddingContent
@@ -463,17 +464,32 @@ const updateInputAndMoveCaretToEOL = (input, newValue) => {
   setTimeout(() => setCaretPositionToEnd(input), 0)
 }
 
-export const unlisten = prompt => prompt && (prompt.onkeypress = null)
+export const unlisten = prompt => {
+  if (prompt && !prompt.classList.contains('sidecar-header-input')) {
+    prompt.onkeypress = null
+  }
+}
+export const popupListen = (text: Element) => {
+  if (text.classList.contains('is-repl-like')) {
+    const input = text.querySelector('.sidecar-header-input')
+    listen(input)
+  }
+}
 export const listen = prompt => {
-  // console.log('repl::listen', prompt.parentNode.parentNode)
-  prompt.focus()
+  debug('listen', prompt)
+
+  if (!prompt.classList.contains('sidecar-header-input')) {
+    prompt.focus()
+  }
+
   prompt.parentNode.parentNode.className = `${prompt.parentNode.parentNode.getAttribute('data-base-class')} repl-active`
+
   prompt.onkeypress = async event => {
     const char = event.keyCode
     if (char === keys.ENTER) {
         // user typed Enter; we've finished Reading, now Evalute
       const repl = await import('../core/repl')
-      repl.doEval()
+      repl.doEval({ prompt })
     }
   }
 

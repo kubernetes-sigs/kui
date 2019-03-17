@@ -459,9 +459,21 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packa
   nameDom.className = nameDom.getAttribute('data-base-class')
   element('.package-prefix', nameDom).innerText = packageName
 
+  if (entity && entity.isREPL) {
+    sidecar.querySelector('.sidecar-header-text').classList.add('is-repl-like')
+  } else {
+    sidecar.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
+  }
+
   if (typeof name === 'string') {
-    const nameContainer = element('.entity-name', nameDom)
-    nameContainer.innerText = name
+    if (entity && entity.isREPL) {
+      const nameContainer = nameDom.querySelector('.sidecar-header-input') as HTMLInputElement
+      nameContainer.value = name
+      cli.listen(nameContainer)
+    } else {
+      const nameContainer = element('.entity-name', nameDom)
+      nameContainer.innerText = name
+    }
   } else {
     const nameContainer = nameDom.querySelector('.entity-name')
     removeAllDomChildren(nameContainer)
@@ -781,25 +793,28 @@ export const init = async () => {
   debug('init')
 
   // command-left go back
-  document.onkeydown = async (event) => {
+  document.addEventListener('keydown', async (event: KeyboardEvent) => {
     if (event.keyCode === keys.LEFT_ARROW && (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))) {
-      const back = element('.sidecar-bottom-stripe-back-button', getSidecar())
+      const back = element('.sidecar-bottom-stripe-back-button-clickable-part', getSidecar())
       const clickEvent = document.createEvent('Events')
       clickEvent.initEvent('click', true, false)
       back.dispatchEvent(clickEvent)
     }
-  }
+  })
 
   // escape key toggles sidecar visibility
-  document.onkeyup = evt => {
+  document.addEventListener('keyup', (evt: KeyboardEvent) => {
     if (evt.keyCode === keys.ESCAPE) {
-      const closeButton = document.querySelector(sidecarSelector('.sidecar-bottom-stripe-close'))
-      if (isVisible()) {
-        closeButton.classList.add('hover')
-        setTimeout(() => closeButton.classList.remove('hover'), 500)
+      const isPopup = document.body.classList.contains('subwindow')
+      if (!isPopup) {
+        const closeButton = document.querySelector(sidecarSelector('.sidecar-bottom-stripe-close'))
+        if (isVisible()) {
+          closeButton.classList.add('hover')
+          setTimeout(() => closeButton.classList.remove('hover'), 500)
+        }
+        toggle()
+        cli.scrollIntoView()
       }
-      toggle()
-      cli.scrollIntoView()
     }
-  }
+  })
 }
