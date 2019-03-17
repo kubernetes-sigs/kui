@@ -85,6 +85,9 @@ const squishRepl = [
 ]
 const squishers = {
   sidecar: [
+    { selector: 'body.subwindow', css: 'screenshot-squish' },
+    { selector: 'body.subwindow .page', css: 'screenshot-squish' },
+    { selector: 'body.subwindow .main', css: 'screenshot-squish' },
     { selector: 'tab.visible', css: 'screenshot-squish' },
     { selector: sidecarSelector(), property: 'height', value: 'initial' },
     { selector: sidecarSelector('.custom-content'), property: 'flex', value: 'initial' },
@@ -213,11 +216,18 @@ export default async (commandTree, prequire) => {
           const snapImg = document.createElement('img')
           const message = document.createElement('div')
           const check = document.createElement('div')
+
+          const windowSize = document.body.getBoundingClientRect()
           const imgSize = img.getSize()
-          const widthPx = 600
-          const width = `${widthPx}px`
-          const heightPx = imgSize.height / imgSize.width * widthPx
-          const height = heightPx + 'px'
+
+          let widthPx = windowSize.width * 0.75
+          let heightPx = imgSize.height / imgSize.width * widthPx
+          if (heightPx > windowSize.height) {
+            // oops, too tall
+            heightPx = windowSize.height * 0.75
+            widthPx = imgSize.width / imgSize.height * heightPx
+          }
+          console.error('!!!!!!!', windowSize, imgSize, widthPx, heightPx)
 
           document.body.appendChild(snapDom)
           // snapDom.appendChild(snapHeader)
@@ -254,7 +264,7 @@ export default async (commandTree, prequire) => {
           snapHeader.appendChild(headerTitle) */
 
           snapFooter.classList.add('sidecar-bottom-stripe')
-          snapFooter.style.width = width
+          snapFooter.style.width = `${widthPx}px`
           snapFooter.style.justifyContent = 'flex-end'
 
           // save screenshot to disk
@@ -284,15 +294,15 @@ export default async (commandTree, prequire) => {
           // we trick chrome into thinking the image has no
           // width and height (but fake it with padding), the
           // border goes away: https://stackoverflow.com/a/14709695
-          snapImg.style.background = `url(${img.resize({ width: parseInt(width, 10), height: parseInt(height, 10) }).toDataURL()}) no-repeat center bottom/contain`
+          snapImg.style.background = `url(${img.resize({ width: widthPx, height: heightPx }).toDataURL()}) no-repeat center bottom/contain`
           snapImg.style.backgroundColor = 'var(--color-ui-01)'
           snapImg.style.maxWidth = '100%'
           snapImg.style.minHeight = '300px' // we need some min space to fit the green check and Screenshot copied to clipboard
           snapImg.style.maxHeight = '100%'
           snapImg.style.filter = 'blur(1px) grayscale(0.5) contrast(0.4)'
-          snapImg.style.width = '0px'
-          snapImg.style.height = '0px'
-          snapImg.style.padding = `${heightPx / 2}px ${widthPx / 2}px`
+          snapImg.style.width = `${widthPx}px`
+          snapImg.style.height = `${heightPx}px`
+          // snapImg.style.padding = `${heightPx / 1.5}px ${widthPx / 1.5}px`
 
           message.style.position = 'absolute'
           message.style.fontSize = '2.5em'

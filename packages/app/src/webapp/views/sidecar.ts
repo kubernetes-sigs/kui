@@ -107,6 +107,7 @@ export const getActiveView = () => {
   const sidecar = getSidecar()
   const activeView = sidecar.getAttribute('data-active-view')
   const container = sidecar.querySelector(activeView)
+  console.error('!!!!!!!', activeView, container, sidecar)
 
   return container
 }

@@ -27,6 +27,8 @@ import { formatListResult, formatMultiListResult } from './views/table'
 import { keys } from './keys'
 import * as historyModel from '../models/history'
 import { element } from './util/dom'
+import Presentation from './views/presentation'
+import { prettyPrintTime } from './util/time'
 
 import { currentSelection, showEntity, showCustom } from './views/sidecar'
 
@@ -183,6 +185,21 @@ export const streamTo = (block: Element) => {
 export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?) => response => {
   debug('printResults')
 
+  const isPopup = document.body.classList.contains('subwindow')
+  if (isPopup) {
+    const container = document.createElement('div')
+    container.classList.add('padding-content')
+
+    const scrollRegion = document.createElement('div')
+    scrollRegion.classList.add('scrollable')
+    scrollRegion.classList.add('scrollable-auto')
+    container.appendChild(scrollRegion)
+
+    resultDom = document.createElement('div')
+    resultDom.classList.add('repl-result')
+    scrollRegion.appendChild(resultDom)
+  }
+
   if (process.env.KUI_TEE_TO_FILE) {
     // we were asked to tee the output to the system console
     debug('teeing output to file', process.env.KUI_TEE_TO_FILE)
@@ -262,7 +279,9 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
       } else if (response.type === 'custom' || response.renderAs === 'custom') {
         if (echo) {
           showCustom(response, execOptions)
-          ok(resultDom.parentNode)
+          if (!isPopup) {
+            ok(resultDom.parentNode)
+          }
         } else if (execOptions && execOptions.replSilence) {
           showCustom(response, execOptions)
         }
@@ -329,6 +348,28 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
       promise.then(() => {
         ok(resultDom.parentNode as Element).className = 'ok-for-list'
       })
+    }
+
+    if (isPopup) {
+      const subtext = document.createElement('div')
+      subtext.appendChild(document.createTextNode('Last updated '))
+      const date = document.createElement('strong')
+      date.appendChild(prettyPrintTime(Date.now()))
+      subtext.appendChild(date)
+
+      if ((resultDom.parentNode as HTMLElement).classList.contains('result-as-multi-table')) {
+        (resultDom.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
+      }
+
+      const custom = {
+        type: 'custom',
+        isEntity: true,
+        name: getPrompt(block).value,
+        presentation: Presentation.SidecarFullscreenForPopups,
+        subtext,
+        content: resultDom.parentNode.parentNode // dom -> scrollRegion -> paddingContent
+      }
+      showCustom(custom, execOptions)
     }
   }
 

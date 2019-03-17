@@ -130,7 +130,7 @@ class Occupancy {
             repl.qexec(`wsk activation get ${cell.id}`)
               .then(({ response }) => {
                 if (response.result.error) {
-                  cell['failureMessage'] = response.result.error.error || response.result.error
+                  cell['failureMessage'] = response.result.error.error || response.result.error.message || response.result.error
                   cell.setAttribute('data-balloon', cell.getAttribute('data-balloon') + ` with: ${cell['failureMessage'].substring(0, 40)}`)
                 }
               })
@@ -292,7 +292,7 @@ const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sor
   const zoomLevel = options.zoom || smartZoom(totalCount)
   const zoomLevelForDisplay = options.timeline ? -1 : totalCount > 1000 ? -2 : totalCount <= 100 ? zoomLevel : 0 // don't zoom in too far, if there are many cells to display
 
-  gridGrid.className = `${css.gridGrid} cell-container zoom_${zoomLevelForDisplay}`
+  gridGrid.className = `${css.gridGrid} padding-content overflow-auto cell-container zoom_${zoomLevelForDisplay}`
   gridGrid.setAttribute('data-zoom-level', zoomLevelForDisplay)
   colorBy('duration', gridGrid)
 
@@ -566,17 +566,18 @@ export default async (commandTree, prequire, options?) => {
       .then(() => pollingGrid.apply(undefined, arguments))
   }, { hide: true })
 
-  wsk.synonyms('activations').forEach(syn => {
-    const route = `/wsk/${syn}/grid`
-    debug('installing command', route)
+  const route = `/wsk/grid`
+  debug('installing command', route)
 
-    commandTree.listen(route, fixedGrid, { usage,
-      needsUI: true,
-      viewName,
-      fullscreen: true,
-      width: 800,
-      height: 600,
-      placeholder: 'Loading activity grid ...' })
+  commandTree.listen(route, fixedGrid, {
+    usage,
+    needsUI: true,
+    viewName,
+    fullscreen: true,
+    width: 800,
+    height: 600,
+    placeholder: 'Loading activity grid ...'
+  })
 
     // coloring
     /* const cmd = commandTree.listen(`/wsk/${syn}/color/grid/by`, ({ argvNoOptions }) => {
@@ -591,5 +592,4 @@ export default async (commandTree, prequire, options?) => {
         }, { docs: 'Change the coloring strategy of the activation grid' })
         commandTree.listen('/wsk/$dur', () => colorBy('duration'), cmd)
         commandTree.listen('/wsk/$pf', () => colorBy('pass/fail'), cmd) */
-  })
 }
