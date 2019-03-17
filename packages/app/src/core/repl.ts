@@ -104,9 +104,7 @@ export const init = (prefs = {}) => {
  * User hit enter in the REPL
  *
  */
-export const doEval = () => {
-  const block = cli.getCurrentBlock()
-  const prompt = cli.getPrompt(block)
+export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(block) } = {}) => {
   const command = prompt.value.trim()
 
   if (block['completion']) {
@@ -708,7 +706,7 @@ class InProcessExecutor implements IExecutor {
               debug('displaying response')
               const resultDom = block.querySelector('.repl-result')
               return new Promise(resolve => {
-                cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions)(response) // <--- the Print part of REPL
+                cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions, command)(response) // <--- the Print part of REPL
                   .then(() => {
                     if (echo) {
                       // <-- create a new input, for the next iter of the Loop

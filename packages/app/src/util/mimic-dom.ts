@@ -54,6 +54,7 @@ export default function () {
       _classList: [],
       classList: {
         add: _ => obj._classList.push(_),
+        contains: _ => obj._classList.indexOf(_) >= 0,
         remove: _ => {
           const idx = obj._classList.findIndex(x => x === _)
           if (idx >= 0) {

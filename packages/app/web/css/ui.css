@@ -374,7 +374,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     flex: 1;
     caret-color: var(--color-support-01);
 }
-.repl input:focus {
+.repl input:focus, .repl-input-like:focus {
     outline: none;
 }
 .repl-block.valid-response .ok, .green-text, .dragover .ok-text-on-dragover {
@@ -916,6 +916,9 @@ sidecar .sidecar-header-icon {
     font-weight: 400;
     letter-spacing: 1px;
     pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
+}
+sidecar .sidecar-header-input {
+    display: none;
 }
 sidecar .sidecar-header-name {
     flex: 1;
@@ -1754,6 +1757,18 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #help-button {
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #new-tab-button i {
     font-size: 6vw;
 }
+body.subwindow sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
+    display: none;
+}
+body.subwindow sidecar .sidecar-header-text.is-repl-like .sidecar-header-input {
+    display: unset;
+    font-size: unset;
+    font-family: var(--font-sans-serif);
+}
+body.subwindow sidecar .sidecar-header-name-content, body.subwindow sidecar .sidecar-header-text {
+    /* make sidecar-header-input occupy full width */
+    flex: 1;
+}
 body.subwindow sidecar .padding-content {
     flex: 1;
     padding: 2vh 78px;
@@ -1776,8 +1791,10 @@ body.subwindow .repl, body.subwindow .result-as-table {
 }
 body.subwindow .result-as-table {
     font-family: var(--font-monospace);
-    display: flex;
     margin: auto;
+}
+body.subwindow .result-as-table:not(.scrollable) {
+    display: flex;
 }
 body.subwindow .scrollable {
     overflow-x: scroll;
@@ -1859,7 +1876,7 @@ body.subwindow .header .header-right-bits .toggle-visibility-on-hover .visible-o
 }
 body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-header-icon-wrapper, sidecar.no-icon .sidecar-header-icon-wrapper {
     width: 78px;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
 }
 sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
     display: none;
