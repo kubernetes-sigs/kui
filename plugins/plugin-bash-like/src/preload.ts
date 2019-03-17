@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,18 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/main/headless-support')
+const debug = Debug('plugins/bash-like/preload')
 
-import { print } from './headless-pretty-print'
+import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+
+import { preload as registerCatchAll } from './lib/cmds/bash-like'
 
 /**
- * This supports commads streaming their output to the console
- *
- * @see repl.ts for use of createOutputStream
- * @see cli.ts for the webapp implementation
+ * This is the module
  *
  */
-export const streamTo = () => {
-  return async response => {
-    debug('streaming response', response)
-    print(response)
-  }
+const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
+  registerCatchAll(commandTree)
 }
+
+export default registration
