@@ -650,10 +650,7 @@ export default async (commandTree, prequire) => {
     height: 600,
     placeholder: 'Loading activity summary ...' }
 
-  wsk.synonyms('activations').forEach(syn => {
-    const cmd = commandTree.listen(`/wsk/${syn}/table`, tableIt('table'), opts)
+  const cmd = commandTree.listen(`/wsk/table`, tableIt('table'), opts)
 
-    commandTree.listen(`/wsk/${syn}/summary`, tableIt('summary'), opts)
-    commandTree.synonym(`/wsk/${syn}/tab`, tableIt('tab'), cmd, opts)
-  })
+  commandTree.listen(`/wsk/summary`, tableIt('summary'), opts)
 }

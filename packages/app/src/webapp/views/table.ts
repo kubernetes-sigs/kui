@@ -19,6 +19,8 @@ const debug = Debug('webapp/views/table')
 
 import { getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
+import drilldown from '../picture-in-picture'
+import { getActiveView } from './sidecar'
 
 /**
  * Format one row in the table
@@ -320,14 +322,18 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       entityNameClickable.classList.add(entity.css)
     }
   }
-
   if (entity.onclick === false) {
     // the provider has told us the entity name is not clickable
     entityNameClickable.classList.remove('clickable')
-  } else if (typeof entity.onclick === 'string') {
-    entityNameClickable.onclick = () => pexec(entity.onclick)
   } else {
-    entityNameClickable.onclick = entity.onclick
+    const isPopup = document.body.classList.contains('subwindow')
+    if (isPopup) {
+      entityNameClickable.onclick = evt => drilldown(entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+    } else if (typeof entity.onclick === 'string') {
+      entityNameClickable.onclick = () => pexec(entity.onclick)
+    } else {
+      entityNameClickable.onclick = entity.onclick
+    }
   }
 
   //
@@ -438,7 +444,7 @@ export const formatMultiListResult = async (response, resultDom) => {
         const tableScroll = document.createElement('div')
         tableScroll.classList.add('scrollable')
         tableScroll.classList.add('scrollable-auto')
-        tableScroll.setAttribute('data-table-max-rows', typeof table[0].flexWrap === 'number' ? table[0].flexWrap : 4)
+        tableScroll.setAttribute('data-table-max-rows', typeof table[0].flexWrap === 'number' ? table[0].flexWrap : 8)
         tableScroll.appendChild(tableDom)
         tableOuter.appendChild(tableScroll)
       } else {

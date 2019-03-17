@@ -55,7 +55,6 @@ body .page > .header {
 }
 .header-left-bits, .header-right-bits {
     display: flex;
-    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -263,7 +262,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .result-as-table .repl-result {
     /* repl table */
     display: table;
-    overflow-x: auto;
 }
 .result-as-table.result-as-multi-table.result-as-multi-table-flex-wrap .repl-result {
     display: flex;
@@ -707,6 +705,7 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
 
 /* sidecar bottom stripe */
 .sidecar-bottom-stripe {
+    border-top: 1px solid var(--color-ui-02);
     padding: 0 1em;
     flex-basis: 3em;
     min-height: 3rem; /* important for screenshot, which tries to maximally squish the sidecar height */
@@ -769,11 +768,11 @@ body:not(.subwindow) .sidecar-bottom-stripe-quit, body.subwindow[data-presentati
     /* no quit button if not in subwindow/popup mode */
     display: none;
 }
-body.subwindow[data-presentation="SidecarFullscreenForPopups"] .sidecar-bottom-stripe-close {
+body.subwindow[data-presentation="SidecarFullscreenForPopups"] sidecar .sidecar-bottom-stripe-close {
     /* no close button if in subwindow/popup mode */
     display: none;
 }
-body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize {
+body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
     /* in subwindow mode, no maximize or unmaximize buttons */
     display: none;
 }
@@ -815,7 +814,7 @@ sidecar .sidecar-bottom-stripe-back-bits, .sidecar-bottom-stripe .fill-container
 }
 sidecar .sidecar-bottom-stripe-back-bits > div {
     transition: all 150ms ease-in-out;
-    opacity: 0.6;
+    color: var(--color-text-02);
     display: flex;
     align-items: center;
 }
@@ -859,8 +858,7 @@ sidecar .sidecar-header .header-main-content {
 }
 sidecar .header-right-bits {
     white-space: nowrap;
-    align-items: center;
-    margin: 0 1em;
+    margin: 1rem;
 }
 .sidecar-header .kind {
     font-variant: small-caps;
@@ -1183,6 +1181,9 @@ sidecar.no-limits-data .activation-estimated-cost-container {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.overflow-auto {
+    overflow: auto;
+}
 .display-inline {
     display: inline;
 }
@@ -1355,10 +1356,7 @@ code.fancy-code, code.fancy-code.hljs {
 .big-top-pad:not(:first-child) > div {
     padding-top: 0.75em;
 }
-.result-as-multi-table-flex-wrap .big-top-pad > div {
-    padding-top: 0;
-}
-.repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
+.repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div, body.subwindow .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
     padding-right: 2em;
 }
 sidecar .result-as-table .big-top-pad:first-child {
@@ -1453,6 +1451,9 @@ sidecar .result-as-table .big-top-pad:first-child {
 .scrollable::-webkit-scrollbar-track, .scrollable-x::-webkit-scrollbar-track, .scrollable-auto::-webkit-scrollbar-track { box-shadow: inset 0 0 8px var(--color-scrollbar-track); border-radius: 10px; border-radius: 10px; }
 /* Handle */
 .scrollable::-webkit-scrollbar-thumb, .scrollable-x::-webkit-scrollbar-thumb, .scrollable-auto::-webkit-scrollbar-thumb { border-radius: 10px; background: var(--color-scrollbar-thumb); box-shadow: inset 0 0 2px var(--color-scrollbar-thumb-border); }
+.result-as-table.scrollable::-webkit-scrollbar-thumb, .result-as-table.scrollable::-webkit-scrollbar-track {
+    box-shadow: none;
+}
 .scrollable::-webkit-scrollbar, .scrollable-auto::-webkit-scrollbar { width: 8px; }
 .scrollable-x::-webkit-scrollbar { height: 8px; }
 
@@ -1596,7 +1597,7 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
     width: 50%;
     max-width: 20em;
 }
-.repl .log-lines .log-line .log-line-bar-field {
+.result-as-table .log-lines .log-line .log-line-bar-field {
     /* add a left-right border to the timeline bars, but only for the repl side, not the sidecar Trace view */
     border: 1px solid var(--color-ui-04);
 }
@@ -1753,13 +1754,39 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #help-button {
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #new-tab-button i {
     font-size: 6vw;
 }
-body.subwindow sidecar .sidecar-header-name {
-    /* override 1rem */
-    margin-top: 1em;
+body.subwindow sidecar .padding-content {
+    flex: 1;
+    padding: 2vh 78px;
+    display: flex;
+    /* align-items: center;
+    justify-content: center; */
 }
-body.subwindow .repl {
-    font-size: 1.375vw;
+body.subwindow sidecar .padding-content:not(.overflow-auto) {
+    overflow: hidden;
+}
+body.subwindow .result-table {
+    margin: 0;
+}
+body.subwindow .repl, body.subwindow .result-as-table .repl-result {
+    font-size: unset;
+}
+body.subwindow .repl, body.subwindow .result-as-table {
+    font-size: 2vmin;
     align-items: center;
+}
+body.subwindow .result-as-table {
+    font-family: var(--font-monospace);
+    display: flex;
+    margin: auto;
+}
+body.subwindow .scrollable {
+    overflow-x: scroll;
+}
+body.subwindow .scrollable-auto {
+    overflow-x: auto;
+}
+body.subwindow .result-as-table.result-as-multi-table-flex-wrap {
+    display: initial;
 }
 body.subwindow .repl .horizontal-landing-zone {
     width: 100%;
@@ -1778,26 +1805,20 @@ body.subwindow .repl-input {
 body.subwindow .repl-input, body.subwindow .repl-output {
     padding: 0 1em 0 1em;
 }
-body.subwindow .repl-block:not(:first-child), body.subwindow .repl-input input, body.subwindow .repl-input .repl-prompt, body.subwindow .repl .ok {
+body.subwindow .repl-block:not(:first-child), body.subwindow .repl-input input, body.subwindow .repl-input .repl-prompt, body.subwindow .ok {
     display: none;
 }
 body.subwindow .repl-block {
     background-color: transparent;
 }
-body.subwindow sidecar:not(.minimized) .sidecar-header-icon-wrapper {
-    width: 2em;
-}
-body.subwindow sidecar:not(.minimized) .sidecar-header-icon {
-    display: none;
-}
 body.subwindow .graphical-icon {
     font-size: 2.5vmin;
 }
-body.subwindow sidecar .sidecar-bottom-stripe {
+body.subwindow .sidecar-bottom-stripe-back-button .graphical-icon {
     font-size: 2vmin;
 }
-body.subwindow .log-lines {
-    font-size: 1.375vw;
+body.subwindow sidecar .sidecar-bottom-stripe {
+    font-size: 2vmin;
 }
 /*body.subwindow .repl-inner {
     margin-top: 2em;
@@ -1837,9 +1858,10 @@ body.subwindow .header .header-right-bits .toggle-visibility-on-hover .visible-o
     display: none;
 }
 body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-header-icon-wrapper, sidecar.no-icon .sidecar-header-icon-wrapper {
-    width: 1em;
+    width: 78px;
+    margin-top: 1rem;
 }
-body.subwindow .sidecar-full-screen sidecar:not(.minimized)/*.custom-content*/ .sidecar-header-icon-wrapper .sidecar-header-icon, sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
+sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
     display: none;
 }
 .subwindow sidecar .sidecar-header .header-right-bits .activation-viz-plugin.grid-header-key table {
@@ -1854,12 +1876,11 @@ sidecar .activation-result {
 body.subwindow .sidecar-full-screen sidecar .sidecar-header .entity-name-line {
     flex-wrap: wrap;
 }
-body.subwindow .sidecar-full-screen sidecar .sidecar-header .header-right-bits {
-    margin-top: 0;
-    margin-bottom: 0;
-}
 body.subwindow .sidecar-full-screen sidecar .sidecar-header .action-content #version {
     min-height: 20px;
+}
+body.subwindow .repl-block.processing .repl-prompt-right-element-icon {
+    font-size: 3em;
 }
 
 /*
@@ -2509,7 +2530,7 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
     background-color: var(--color-ui-02);
     transition: background-color 300ms ease-in-out;
 }
-body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) td, body:not(.subwindow) sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
+body sidecar .result-table .entity:nth-child(2n + 1) td, body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
     /* table row striping in sidecar (when not full screen) */
     background:var(--color-ui-03);
 }
@@ -2666,7 +2687,9 @@ body.subwindow .repl-block {
     background-color: transparent;
 }
 body.subwindow sidecar {
-    /* background: var(--color-ui-01); */
+    background: var(--color-ui-02);
+    border-left: none;
+    box-shadow: none;
 }
 
 #restart-needed-warning {

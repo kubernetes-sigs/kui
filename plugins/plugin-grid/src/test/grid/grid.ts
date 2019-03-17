@@ -196,18 +196,18 @@ describe('grid visualization', function (this: common.ISuite) {
 
   // invoke again with positive, and then look for a count of 2
   notbomb()
-  openGridExpectCountOf(0, 0, `$ grid --batches ${N} ${randomGarbage}`, randomGarbage, 0) // expect 0 cells, for a random action name
-  openGridExpectCountOf(2, 0, `$ grid --batches ${N}`)
+  openGridExpectCountOf(0, 0, `wsk grid --batches ${N} ${randomGarbage}`, randomGarbage, 0) // expect 0 cells, for a random action name
+  openGridExpectCountOf(2, 0, `wsk grid --batches ${N}`)
 
   // this test suite is too flakey against IBM CLoud Functions, as activation records may only become visible way in the future
   /*
   notbomb()
-  openGridExpectCountOf(3, 0, `$ grid --batches ${N} ${actionName}`, actionName, 3)
+  openGridExpectCountOf(3, 0, `grid --batches ${N} ${actionName}`, actionName, 3)
 
   // invoke again with positive, and then look for a count of 3
   notbomb()
-  openGridExpectCountOf(4, 0, `wsk activation grid --batches ${N}`)
-  openGridExpectCountOf(0, 0, `wsk activation grid --batches ${N} ${randomGarbage}`, randomGarbage, 0) // expect 0 cells, for a random action name
+  openGridExpectCountOf(4, 0, `grid --batches ${N}`)
+  openGridExpectCountOf(0, 0, `wsk grid --batches ${N} ${randomGarbage}`, randomGarbage, 0) // expect 0 cells, for a random action name
   bomb()
   openGridExpectCountOf(4, 1, `wsk activation grid --batches ${N} ${actionName}`, actionName, 5)
 

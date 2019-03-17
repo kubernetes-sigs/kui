@@ -178,7 +178,7 @@ const capture = (selector: string, redraw?) => {
  *
  */
 export default (command, highlightThis, container: string | Element, returnTo?: string, options?) => (event?: Event) => {
-  debug('drilldown', command)
+  debug('drilldown', command, container, returnTo)
 
   if (event) event.stopPropagation()
 
