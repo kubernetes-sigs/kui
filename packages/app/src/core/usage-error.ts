@@ -275,7 +275,13 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
         if (!isHeadless()) {
           try {
-            const marked = await import('marked')
+            const Marked = await import('marked')
+            const renderer = new Marked.Renderer()
+            const marked = _ => Marked(_, { renderer })
+            renderer.link = (href, title, text) => {
+              return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
+            }
+
             headerDiv = div('', 'normal-text sans-serif marked-content')
             headerDiv.innerHTML = marked(header)
           } catch (err) {
