@@ -128,7 +128,7 @@ const timeString = ts => ts.toLocaleTimeString('en-us').replace(/:/g, '.')
 
 /** this is the handler body */
 export default async (commandTree, prequire) => {
-  commandTree.listen('/screenshot', ({ argvNoOptions, parsedOptions: options }) => new Promise((resolve, reject) => {
+  commandTree.listen('/screenshot', ({ argvNoOptions, parsedOptions: options }) => new Promise(async (resolve, reject) => {
     if (inBrowser()) {
       const error = new Error('Command not yet supported when running in a browser')
       error['code'] = 500
@@ -139,7 +139,7 @@ export default async (commandTree, prequire) => {
       const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
       injectCSS(join(root, 'web/css/screenshot.css'))
 
-      const { ipcRenderer, nativeImage, remote } = require('electron')
+      const { ipcRenderer, nativeImage, remote, shell } = await import('electron')
       const { app } = remote
 
       // which dom to snap?
@@ -266,7 +266,7 @@ export default async (commandTree, prequire) => {
           const saveButtonIcon = document.createElement('i')
           const ts = new Date()
           const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`
-          const location = require('path').join(app.getPath('desktop'), filename)
+          const location = join(app.getPath('desktop'), filename)
           saveButton.setAttribute('data-balloon', 'Save to Desktop')
           saveButton.setAttribute('data-balloon-pos', 'up')
           saveButton.className = 'sidecar-bottom-stripe-button sidecar-bottom-stripe-save graphical-icon screenshot-save-button'
@@ -275,13 +275,13 @@ export default async (commandTree, prequire) => {
           saveButton.onclick = () => {
             saveButton.classList.add('yellow-text')
             remote.require('fs').writeFile(location,
-              img.toPNG(), () => {
+              img.toPNG(), async () => {
                 console.log(`screenshot saved to ${location}`)
                 saveButton.classList.remove('yellow-text')
                 saveButton.classList.add('green-text')
 
                 try {
-                  require('electron').shell.showItemInFolder(location)
+                  shell.showItemInFolder(location)
                 } catch (err) {
                   console.error('error opening screenshot file')
                 }
