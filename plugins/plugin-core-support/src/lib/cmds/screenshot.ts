@@ -203,6 +203,8 @@ export default async (commandTree, prequire) => {
 
         // capture a screenshot
         const listener = (event, buf) => {
+          document.body.classList.remove('no-tooltips-anywhere')
+
           if (!buf) {
             // some sort of internal error in the main process
             screenshotButton.classList.remove('force-no-hover')
@@ -211,7 +213,6 @@ export default async (commandTree, prequire) => {
 
           const img = nativeImage.createFromBuffer(buf)
           const snapDom = document.createElement('div')
-          // const snapHeader = document.createElement('header')
           const snapFooter = document.createElement('div')
           const snapImg = document.createElement('img')
           const message = document.createElement('div')
@@ -220,21 +221,24 @@ export default async (commandTree, prequire) => {
           const windowSize = document.body.getBoundingClientRect()
           const imgSize = img.getSize()
 
-          let widthPx = windowSize.width * 0.75
+          // pixel dimensions of the screenshot popup
+          let widthPx = windowSize.width * 0.65
           let heightPx = imgSize.height / imgSize.width * widthPx
           if (heightPx > windowSize.height) {
             // oops, too tall
-            heightPx = windowSize.height * 0.75
+            heightPx = windowSize.height * 0.65
             widthPx = imgSize.width / imgSize.height * heightPx
           }
-          console.error('!!!!!!!', windowSize, imgSize, widthPx, heightPx)
+
+          // viewport width dimensions of the screenshot popup
+          const widthVw = `${100 * widthPx / windowSize.width}vw`
+          const heightVw = `${100 * heightPx / windowSize.width}vw`
 
           document.body.appendChild(snapDom)
-          // snapDom.appendChild(snapHeader)
           snapDom.appendChild(snapImg)
           snapDom.appendChild(snapFooter)
           snapDom.appendChild(check)
-          snapDom.appendChild(message)
+          snapFooter.appendChild(message)
 
           snapDom.id = 'screenshot-captured'
           snapDom.classList.add('go-away-able')
@@ -252,32 +256,39 @@ export default async (commandTree, prequire) => {
           snapDom.style.alignItems = 'center'
           snapDom.style.zIndex = '5'
 
-          /* snapHeader.classList.add('header')
-          snapHeader.style.paddingLeft = '1.5em'
-          snapHeader.style.flexBasis = '2.75em'
-          snapHeader.style.width = width
-          snapHeader.style.maxWidth = '100%'
-          snapHeader.style.border = 'none'
-          const headerTitle = document.createElement('div')
-          headerTitle.classList.add('application-name')
-          headerTitle.innerText = 'Screenshot'
-          snapHeader.appendChild(headerTitle) */
-
           snapFooter.classList.add('sidecar-bottom-stripe')
-          snapFooter.style.width = `${widthPx}px`
+          snapFooter.style.width = widthVw
           snapFooter.style.justifyContent = 'flex-end'
+          snapFooter.style.alignItems = 'center'
 
           // save screenshot to disk
           const saveButton = document.createElement('div')
+          const saveButtonIcon = document.createElement('i')
           const ts = new Date()
           const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`
           const location = require('path').join(app.getPath('desktop'), filename)
-          saveButton.innerText = 'Save to Desktop'
-          saveButton.className = 'sidecar-bottom-stripe-button sidecar-bottom-stripe-save'
+          saveButton.setAttribute('data-balloon', 'Save to Desktop')
+          saveButton.setAttribute('data-balloon-pos', 'up')
+          saveButton.className = 'sidecar-bottom-stripe-button sidecar-bottom-stripe-save graphical-icon screenshot-save-button'
+          saveButtonIcon.className = 'fas fa-save'
+          saveButton.appendChild(saveButtonIcon)
           saveButton.onclick = () => {
+            saveButton.classList.add('yellow-text')
             remote.require('fs').writeFile(location,
               img.toPNG(), () => {
                 console.log(`screenshot saved to ${location}`)
+                saveButton.classList.remove('yellow-text')
+                saveButton.classList.add('green-text')
+
+                try {
+                  require('electron').shell.showItemInFolder(location)
+                } catch (err) {
+                  console.error('error opening screenshot file')
+                }
+
+                setTimeout(() => {
+                  saveButton.classList.remove('green-text')
+                }, 3000)
               })
           }
 
@@ -300,21 +311,20 @@ export default async (commandTree, prequire) => {
           snapImg.style.minHeight = '300px' // we need some min space to fit the green check and Screenshot copied to clipboard
           snapImg.style.maxHeight = '100%'
           snapImg.style.filter = 'blur(1px) grayscale(0.5) contrast(0.4)'
-          snapImg.style.width = `${widthPx}px`
-          snapImg.style.height = `${heightPx}px`
-          // snapImg.style.padding = `${heightPx / 1.5}px ${widthPx / 1.5}px`
+          snapImg.style.width = widthVw
+          snapImg.style.height = heightVw
 
-          message.style.position = 'absolute'
-          message.style.fontSize = '2.5em'
-          message.style.fontWeight = '600'
-          message.style.top = 'calc(50% + 1.5em)'
-          message.innerText = 'Screenshot copied to clipboard'
+          message.classList.add('green-text')
+          message.style.flex = '1'
+          message.innerText = 'Screenshot successfully copied to clipboard'
 
-          check.classList.add('go-away-button')
+          check.classList.add('screenshot-check-icon')
           check.style.position = 'absolute'
-          check.innerText = '\u2714'
           check.style.color = 'var(--color-ok)'
-          check.style.fontSize = '7em'
+          check.style.fontSize = '18vmin'
+          const checkIcon = document.createElement('i')
+          checkIcon.className = 'fas fa-clipboard-check'
+          check.appendChild(checkIcon)
 
           // temporarily disable the repl
           cli.getCurrentPrompt().readOnly = true
@@ -362,6 +372,7 @@ export default async (commandTree, prequire) => {
           rect)
       }
 
+      document.body.classList.add('no-tooltips-anywhere')
       setTimeout(snap, 100)
     } catch (e) {
       console.error(e)

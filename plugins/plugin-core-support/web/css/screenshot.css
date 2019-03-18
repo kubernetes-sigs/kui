@@ -5,3 +5,16 @@
     padding: 0 1em 1em;
 }
 
+body.no-tooltips-anywhere [data-balloon]:before, body.no-tooltips-anywhere [data-balloon]:after {
+    display: none !important;
+}
+
+.screenshot-save-button.green-text:hover {
+    /* override hover effect, so that the icon is green even when hovered,
+   which will be the case after the user clicks save! */
+    color: var(--color-green) !important;
+}
+.screenshot-save-button.yellow-text:hover {
+    /* same for yellow */
+    color: var(--color-yellow) !important;
+}
