@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('main/spawn-electron')
 debug('loading')
 
+import windowDefaults from '../webapp/defaults'
 import { IExecOptions } from '../models/execOptions'
 
 import * as colors from 'colors/safe'
@@ -584,7 +585,7 @@ export const getCommand = argv => {
   debug('isShell', argv, isShell)
 
   let subwindowPlease = true
-  let subwindowPrefs: SubwindowPrefs = { fullscreen: true, width: 1200, height: 800 }
+  let subwindowPrefs: SubwindowPrefs = { fullscreen: true, width: windowDefaults.width, height: windowDefaults.height }
 
   if (isShell) {
     // use a full window for 'shell'

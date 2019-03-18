@@ -17,13 +17,14 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/grid/cmds/grid')
 
+import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { v4 as uuid } from 'uuid'
 import * as repl from '@kui-shell/core/core/repl'
-import { addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
-import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import windowDefaults from '@kui-shell/core/webapp/defaults'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
+import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import { addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
 import { drilldownWith } from '../drilldown'
@@ -573,10 +574,8 @@ export default async (commandTree, prequire, options?) => {
     usage,
     needsUI: true,
     viewName,
-    fullscreen: true,
-    width: 800,
-    height: 600,
-    placeholder: 'Loading activity grid ...'
+    width: windowDefaults.width,
+    height: windowDefaults.height
   })
 
     // coloring
