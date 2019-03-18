@@ -116,58 +116,88 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
   // we will strip this off
   const startIdx = output.match(/^total [\d]+/) ? 1 : 0
 
+  const columnGap = process.platform === 'darwin' ? 15 : 1
+
   const rows = output
     .split(/[\n\r]/)
     .slice(startIdx) // maybe strip off "total nnn"
     .map(line => line
-      .split(/[\s]{15}/)
-      .map(col => col.trim())
-      .filter(x => x)
-      .map((col, idx, A) => {
-        if (idx === 1) {
-          // the "num links" and "user" columns are adjoined
-          // e.g. "1 nickm"
-          const spaceIdx = col.indexOf(' ')
-          return [
-            col.substring(0, spaceIdx),
-            col.substring(spaceIdx + 1)
-          ]
-        } else if (idx === 3) {
-          // the size, date, and filename columns are adjoined
-          // e.g. "12K Jul 26 12:58 CHANGELOG.md"
+         .split(new RegExp(`[\\s]{${columnGap}}`))
+         .map(col => col.trim())
+         .filter(x => x)
+         .map((col, idx, A) => {
+           if (idx === 1) {
+             // the "num links" and "user" columns are adjoined
+             // e.g. "1 nickm"
+             const spaceIdx = col.indexOf(' ')
+             return [
+               col.substring(0, spaceIdx),
+               col.substring(spaceIdx + 1)
+             ].filter(x => x) // the first entry might be blank, e.g. on linux
+           } else if (process.platform !== 'darwin' && idx >= 5 && idx <= 7) {
+             // the date column is split across three cols in our split
+             if (idx === 5) {
+               return `${A[idx]} ${A[idx + 1]} ${A[idx + 2]}`
+             }
+           } else if (process.platform === 'darwin' && idx === 3) {
+             // the size, date, and filename columns are adjoined
+             // e.g. "12K Jul 26 12:58 CHANGELOG.md"
 
-          const spaceIdx1 = col.indexOf(' ') // space after 12k
+             const spaceIdx1 = col.indexOf(' ') // space after 12k
 
-          const stats = A[0]
-          const isLink = stats.charAt(0) === 'l'
+             const stats = A[0]
+             const isLink = stats.charAt(0) === 'l'
 
-          if (isLink) {
-            // links are a bit funky, e.g.
-            // "115B Sep  4 21:04 yo.js -> /path/to/yo.js"
-            const arrow = '->'
-            const arrowIdx = col.lastIndexOf(arrow)
-            const endOfLinkIdx = arrowIdx - arrow.length + 1
-            const startOfFilename = scanForFilename(col, fileMap, endOfLinkIdx - 1)
+             if (isLink) {
+               // links are a bit funky, e.g.
+               // "115B Sep  4 21:04 yo.js -> /path/to/yo.js"
+               const arrow = '->'
+               const arrowIdx = col.lastIndexOf(arrow)
+               const endOfLinkIdx = arrowIdx - arrow.length + 1
+               const startOfFilename = scanForFilename(col, fileMap, endOfLinkIdx - 1)
 
-            return [
-              col.substring(0, spaceIdx1), // size
-              col.substring(spaceIdx1 + 1, startOfFilename), // date
-              col.substring(startOfFilename + 1, endOfLinkIdx) // link name
-            ]
-          } else {
-            const startOfFilename = scanForFilename(col, fileMap) // e.g. space after :58 in the comment under idx === 3
+               return [
+                 col.substring(0, spaceIdx1), // size
+                 col.substring(spaceIdx1 + 1, startOfFilename), // date
+                 col.substring(startOfFilename + 1, endOfLinkIdx) // link name
+               ]
+             } else {
+               const startOfFilename = scanForFilename(col, fileMap) // e.g. space after :58 in the comment under idx === 3
 
-            return [
-              col.substring(0, spaceIdx1), // size
-              col.substring(spaceIdx1 + 1, startOfFilename), // date
-              col.substring(startOfFilename + 1) // filename
-            ]
-          }
-        } else {
-          return col
-        }
-      }))
+               return [
+                 col.substring(0, spaceIdx1), // size
+                 col.substring(spaceIdx1 + 1, startOfFilename), // date
+                 col.substring(startOfFilename + 1) // filename
+               ]
+             }
+           } else if (process.platform !== 'darwin' && idx >= 8) {
+             // here is where we handle the name column(s) on
+             // non-darwin platforms; these usually span 3-N columns,
+             // depending on how many spaces the base filename and
+             // linked filename contain
+             if (idx === 8) {
+               // idx 8 marks the start of the name -> link columns
+               const stats = A[0]
+               const isLink = stats.charAt(0) === 'l'
+               const rest = A.slice(idx).join(' ')
+
+               if (isLink) {
+                 // if this row represents a link, the format will be name -> linkedFile
+                 // we want the "name" part
+                 const arrow = '->'
+                 const arrowIdx = rest.lastIndexOf(arrow)
+                 return rest.slice(0, arrowIdx).trim()
+               } else {
+                 // otherwise, this isn't a link, so peel off the remaining columns
+                 return rest
+               }
+             }
+           } else {
+             return col
+           }
+         }))
     .map(flatten)
+    .map(row => row.filter(x => x))
     .filter(x => x.length > 0)
     .filter(row => !row[row.length - 1].match(/~$/)) // hack for now: remove emacs ~ temporary files
   debug('rows', rows)
@@ -190,44 +220,44 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
   }
 
   return [ headerRow ].concat(rows
-    .map(columns => {
-      const stats = columns[0]
-      const isDirectory = stats.charAt(0) === 'd'
-      const isLink = stats.charAt(0) === 'l'
-      const isExecutable = stats.indexOf('x') > 0
-      const isSpecial = stats.charAt(0) !== '-'
+                              .map(columns => {
+                                const stats = columns[0]
+                                const isDirectory = stats.charAt(0) === 'd'
+                                const isLink = stats.charAt(0) === 'l'
+                                const isExecutable = stats.indexOf('x') > 0
+                                const isSpecial = stats.charAt(0) !== '-'
 
-      const name = columns[columns.length - 1]
-      const nameForDisplay = `${name}${isDirectory ? '/' : isLink ? '@' : isExecutable ? '*' : ''}`
+                                const name = columns[columns.length - 1]
+                                const nameForDisplay = `${name}${isDirectory ? '/' : isLink ? '@' : isExecutable ? '*' : ''}`
 
-      const css = isDirectory ? 'dir-listing-is-directory'
-        : isLink ? 'dir-listing-is-link' // note that links are also x; we choose l first
-          : isExecutable ? 'dir-listing-is-executable'
-            : isSpecial ? 'dir-listing-is-other-special'
-              : ''
+                                const css = isDirectory ? 'dir-listing-is-directory'
+                                  : isLink ? 'dir-listing-is-link' // note that links are also x; we choose l first
+                                  : isExecutable ? 'dir-listing-is-executable'
+                                  : isSpecial ? 'dir-listing-is-other-special'
+                                  : ''
 
-      const startTrim = 2
-      const endTrim = 0
-      const allTrim = startTrim + endTrim + 1
+                                const startTrim = 2
+                                const endTrim = 0
+                                const allTrim = startTrim + endTrim + 1
 
-      // idx into the attributes; minus 1 because we slice off the name
-      const ownerIdx = 1 - 1
-      const groupIdx = 2 - 1
-      const dateIdx = columns.length - allTrim - 1
+                                // idx into the attributes; minus 1 because we slice off the name
+                                const ownerIdx = 1 - 1
+                                const groupIdx = 2 - 1
+                                const dateIdx = columns.length - allTrim - 1
 
-      return {
-        type: cmd,
-        name: nameForDisplay,
-        onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
-        noSort: true,
-        css,
-        attributes: columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
-          value: col,
-          outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'pretty-narrow',
-          css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
-        }))
-      }
-    }))
+                                return {
+                                  type: cmd,
+                                  name: nameForDisplay,
+                                  onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
+                                  noSort: true,
+                                  css,
+                                  attributes: columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
+                                    value: col,
+                                    outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'pretty-narrow',
+                                    css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
+                                  }))
+                                }
+                              }))
 }
 
 /**
@@ -245,11 +275,18 @@ const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions:
   }
 
   const dashFlags = '-lh' +
-        (options.t ? 't' : '') +
-        (options.r ? 'r' : '') +
-        (options.a ? 'a' : '')
+    (options.t ? 't' : '') +
+    (options.r ? 'r' : '') +
+    (options.a ? 'a' : '')
 
-  return doShell(['!', 'ls', dashFlags, filepath], options, Object.assign({}, execOptions, {
+  const platformFlags = []
+  if (process.platform === 'linux') {
+    // Ignore backup files. WARNING: -B on macOS/BSD means something
+    // entirely different
+    platformFlags.push('-B')
+  }
+
+  return doShell(['!', 'ls', dashFlags, ...platformFlags, filepath], options, Object.assign({}, execOptions, {
     nested: true,
     raw: true,
     env: {
