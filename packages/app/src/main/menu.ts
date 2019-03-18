@@ -34,7 +34,23 @@ interface IMenuItem {
  */
 const tellRendererToExecute = async (command: string) => {
   const { webContents } = await import('electron')
-  webContents.getFocusedWebContents().send('/repl/pexec', { command })
+  const focusedWindow = webContents.getFocusedWebContents()
+
+  const devTools = webContents.getAllWebContents().map(_ => _.devToolsWebContents).filter(x => x)
+  const isFocusedWindowDevTools = devTools.find(_ => _.id === focusedWindow.id)
+
+  if (isFocusedWindowDevTools) {
+    // debug('closing dev tools')
+    const owningWindow = webContents.getAllWebContents().find(_ => {
+      return _.devToolsWebContents && _.devToolsWebContents.id === focusedWindow.id
+    })
+    if (owningWindow) {
+      owningWindow.closeDevTools()
+    }
+  } else {
+    // debug('closing kui window')
+    focusedWindow.send('/repl/pexec', { command })
+  }
 }
 
 /**
@@ -62,7 +78,7 @@ export const install = (app, Menu, createWindow) => {
       },
       { type: 'separator' },
       { label: 'Close Tab',
-        click: () => closeTab(),
+        click: closeTab,
         accelerator: 'CommandOrControl+W'
       },
       { role: 'close' }
