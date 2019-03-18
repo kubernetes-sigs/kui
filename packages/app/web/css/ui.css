@@ -710,7 +710,6 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
     flex-basis: 3em;
     min-height: 3rem; /* important for screenshot, which tries to maximally squish the sidecar height */
     display: flex;
-    align-items: center;
     z-index: 5;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;  /* chrome */
@@ -724,6 +723,8 @@ sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits, sidecar .sideca
     /* button container in sidecar bottom stripe */
     flex: 1;
     display: flex;
+}
+.sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
     align-items: center;
 }
 sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
@@ -825,10 +826,7 @@ sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:
     display: none;
 }
 sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
-    font-size: 0.875em;
-}
-sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button .sidecar-bottom-stripe-back-inner-bits {
-    margin-left: 0.75ex;
+    font-size: 2.5vmin;
 }
 
 /* custom content */
@@ -1832,7 +1830,7 @@ body.subwindow .graphical-icon {
     font-size: 2.5vmin;
 }
 body.subwindow .sidecar-bottom-stripe-back-button .graphical-icon {
-    font-size: 2vmin;
+    font-size: 3vmin;
 }
 body.subwindow sidecar .sidecar-bottom-stripe {
     font-size: 2vmin;
@@ -1923,7 +1921,7 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
     justify-content: flex-start;
 
     /* these two rules are an attempt to push the tooltips just above the bottom stripe */
-    height: 2rem;
+    height: 100%;
     align-items: center;
 
     transition: opacity 150ms ease-in-out;
