@@ -18,3 +18,16 @@ body.no-tooltips-anywhere [data-balloon]:before, body.no-tooltips-anywhere [data
     /* same for yellow */
     color: var(--color-yellow) !important;
 }
+
+.screenshot-success-message {
+    flex: 1;
+}
+
+.screenshot-check-icon {
+    position: absolute;
+    color: var(--color-ok);
+    font-size: 20vmin;
+}
+.screenshot-check-icon i {
+    text-shadow: 0 0 0.1ex var(--color-base02);
+}

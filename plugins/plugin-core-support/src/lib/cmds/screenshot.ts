@@ -314,14 +314,10 @@ export default async (commandTree, prequire) => {
           snapImg.style.width = widthVw
           snapImg.style.height = heightVw
 
-          message.classList.add('green-text')
-          message.style.flex = '1'
+          message.classList.add('screenshot-success-message')
           message.innerText = 'Screenshot successfully copied to clipboard'
 
           check.classList.add('screenshot-check-icon')
-          check.style.position = 'absolute'
-          check.style.color = 'var(--color-ok)'
-          check.style.fontSize = '18vmin'
           const checkIcon = document.createElement('i')
           checkIcon.className = 'fas fa-clipboard-check'
           check.appendChild(checkIcon)
