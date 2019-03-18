@@ -24,27 +24,14 @@ body[kui-theme="Dark"] {
     --color-light-green: hsla(66, 69%, 57%, 50%);
     --color-light-yellow: hsl(40, 81%, 70%);
 
-    --color-content-divider: hsl(208, 25%, 42%);
-    --color-stripe-01: hsl(216, 24%, 8%);
-    --color-stripe-02: hsl(216, 8%, 23%);
-    --color-support-04: #5aaafa;
-    --color-brand-01-10: hsla(210, 64%, 40%, 10%);
-    --color-brand-02: hsl(208, 48%, 63%);
-    --color-brand-03: #de935f;
-
     --color-scrollbar-thumb: hsla(216, 7%, 6%, 0.25);
     --color-scrollbar-thumb-border: hsla(216, 7%, 48%, 0.75);
     --color-scrollbar-track: transparent;
-
-    --color-carbon-components-h3: hsl(208, 85%, 63%);
 
     --color-ui-06: hsl(216, 15%, 17%);
     --color-field-01: hsl(216, 15%, 17%);
 }
 
-body[kui-theme="Dark"] .sidecar-bottom-stripe {
-    color: var(--color-text-01);
-}
 body[kui-theme="Dark"] #screenshot-captured {
     color: var(--color-ui-01);
 }
