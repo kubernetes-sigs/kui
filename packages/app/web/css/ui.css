@@ -826,7 +826,7 @@ sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:
     display: none;
 }
 sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
-    font-size: 2.5vmin;
+    font-size: 3vmin;
 }
 
 /* custom content */
