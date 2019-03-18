@@ -221,8 +221,12 @@ const updateLocalWskProps = (wsk, auth?: string, subject?: string): Promise<stri
 const list = async () => {
   debug('list')
 
-  const type = 'namespaces'
   const list = await namespace.list()
+  if (list.length === 0) {
+    throw new Error('No registered authorization keys. Try wsk auth add.')
+  }
+
+  const type = 'namespaces'
   const current = await repl.qexec('wsk namespace current')
 
   const headerRow = {

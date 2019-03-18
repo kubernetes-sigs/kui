@@ -77,7 +77,7 @@ const writeSelectedNS = selectedNS => {
   }
 }
 
-export const setApiHost = apiHost => {
+export const setApiHost = (apiHost = '') => {
   const apiHostDom = document.querySelector('#openwhisk-api-host') as HTMLElement
 
   // strip off the proto
