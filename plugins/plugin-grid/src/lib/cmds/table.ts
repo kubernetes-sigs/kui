@@ -15,6 +15,7 @@
  */
 
 import Presentation from '@kui-shell/core/webapp/views/presentation'
+import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { addNameToSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -642,13 +643,13 @@ export default async (commandTree, prequire) => {
   const tableIt = cmd => visualize(wsk, commandTree, cmd, 'summary', drawTable,
     '\t-w|--w     wider action name column\n\t--ww       even wider action name column')
 
-  const opts = { usage,
+  const opts = {
+    usage,
     needsUI: true,
     viewName,
-    fullscreen: true,
-    width: 800,
-    height: 600,
-    placeholder: 'Loading activity summary ...' }
+    width: windowDefaults.width,
+    height: windowDefaults.height
+  }
 
   const cmd = commandTree.listen(`/wsk/table`, tableIt('table'), opts)
 
