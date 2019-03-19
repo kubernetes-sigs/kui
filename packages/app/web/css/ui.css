@@ -704,8 +704,11 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
 }
 
 /* sidecar bottom stripe */
-.sidecar-bottom-stripe {
+body[kui-theme-style="dark"] .sidecar-bottom-stripe {
+    /* dark themes need a bit of a top border to distinguish the sidecar contents */
     border-top: 1px solid var(--color-ui-02);
+}
+.sidecar-bottom-stripe {
     padding: 0 1em;
     flex-basis: 3em;
     min-height: 3rem; /* important for screenshot, which tries to maximally squish the sidecar height */
