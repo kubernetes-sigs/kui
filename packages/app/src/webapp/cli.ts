@@ -187,8 +187,6 @@ const createPopupContentContainer = (css = []): HTMLElement => {
 
   const scrollRegion = document.createElement('div')
   scrollRegion.classList.add('repl-block')
-  scrollRegion.classList.add('scrollable')
-  scrollRegion.classList.add('scrollable-auto')
   css.forEach(_ => scrollRegion.classList.add(_))
   container.appendChild(scrollRegion)
 

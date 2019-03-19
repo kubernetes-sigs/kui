@@ -455,9 +455,6 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           cmdCell.className = 'log-field'
           docsCell.className = 'log-field'
 
-          cmdCell.style.background = 'var(--color-ui-02)'
-          docsCell.style.background = 'var(--color-ui-02)'
-
           cmdPart.style.fontWeight = '500'
           wrap(sans(docsPart))
 
