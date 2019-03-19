@@ -383,7 +383,7 @@ const correctMissingBindingName = options => entity => {
   return entity
 }
 
-const addPrettyType = (entityType, verb, entityName) => entity => {
+const addPrettyType = (entityType, verb, entityName) => async entity => {
   if (typeof entity === 'string') {
     return {
       type: entityType,
@@ -457,7 +457,7 @@ const addPrettyType = (entityType, verb, entityName) => entity => {
       const action = repl.qexec(`wsk action get "/${entity.namespace}/${entity.name}"`)
       const ns = repl.qexec('wsk namespace current')
 
-      entity.prettyVersion = action.then(async action => {
+      entity.prettyVersion = await action.then(async action => {
         if (action.exec && action.exec.components) {
           const nsPattern = new RegExp('^/' + (await ns) + '/')
           return action.exec.components
@@ -471,8 +471,8 @@ const addPrettyType = (entityType, verb, entityName) => entity => {
       const rule = repl.qexec(`wsk rule get "/${entity.namespace}/${entity.name}"`)
 
       entity.status = rule.then(rule => rule.status)
-      entity.prettyVersion = rule.then(rule => `${rule.trigger.name} \u27fc ${rule.action.name}`)
-      //                                                             ^^^^^^ this is a unicode |->
+      entity.prettyVersion = await rule.then(rule => `${rule.trigger.name} \u27fc ${rule.action.name}`)
+      //                                                                   ^^^^^^ this is a unicode |->
     }
   }
 
@@ -1216,7 +1216,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
         })
         .then(pretty)
         .then(correctMissingBindingName(options))
-        .then(response => Array.isArray(response) ? response.map(pretty) : response)
+        .then(response => Array.isArray(response) ? Promise.all(response.map(pretty)) : response)
         .then(response => Array.isArray(response) && response.length > 0 ? withHeader(response, execOptions) : response)
         .then(response => {
           if (commandTree &&
