@@ -1,3 +1,7 @@
+body.subwindow .activation-viz-plugin {
+    font-size: 2.25vmin;
+}
+
 .activation-viz-plugin {
     flex: 1;
     display: flex;
@@ -78,7 +82,7 @@
 
 .activation-viz-plugin .data-table td {
     text-align: right;
-    padding: 0.6rem 0.75rem;
+    padding: 0 0.375em;
     transition: all 150ms ease-in-out;
 }
 .data-table:not(.table-header) tr:nth-child(2n + 1) td {
@@ -283,9 +287,8 @@
 }
 .activation-viz-plugin .data-table td.cell-stats .stat-indicator {
     position: absolute;
-    color: white;
-    font-size: 0.6em;
-    opacity: 0.8;
+    color: var(--color-text-02);
+    font-size: 0.7em;
 }
 .activation-viz-plugin .data-table td.cell-stats .stat-bar:hover {
     outline: 1px solid rgba(0, 85, 127, 0.2)
@@ -624,7 +627,7 @@
 .activation-viz-plugin .grid-header-key table {
     paddingLeft: '1ex'
 }
-.activation-viz-plugin.grid-header-key {
+body .activation-viz-plugin.grid-header-key {
     height: 8em;
     width: calc(1.1 * 8 * 2.25vw); /* 7 cells in legend, plus 1 for slop, 1.1x for some more */
     font-size: 0.875em;
@@ -654,6 +657,9 @@ body.subwindow .activation-viz-plugin.grid-header-key {
 }
 .activation-viz-plugin.grid-header-key table {
     border-spacing: 0;
+}
+body.subwindow .activation-viz-plugin.grid-header-key .zoom_-1 .activation-viz-legend-label {
+    font-size: 1.25vmin;
 }
 .activation-viz-plugin.grid-header-key .zoom_-1 .activation-viz-legend-label {
     font-size: 0.675em;
