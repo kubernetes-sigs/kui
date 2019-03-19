@@ -815,7 +815,6 @@ sidecar .sidecar-bottom-stripe-back-bits, .sidecar-bottom-stripe .fill-container
 }
 sidecar .sidecar-bottom-stripe-back-bits > div {
     transition: all 150ms ease-in-out;
-    color: var(--color-text-02);
     display: flex;
     align-items: center;
 }
