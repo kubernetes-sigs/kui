@@ -1776,11 +1776,11 @@ body.subwindow sidecar .padding-content {
     flex: 1;
     padding: 2vh 78px;
     display: flex;
-    /* align-items: center;
-    justify-content: center; */
+    align-items: center;
+    /* justify-content: center; */
 }
-body.subwindow sidecar .padding-content:not(.overflow-auto) {
-    overflow: hidden;
+body.subwindow sidecar .padding-content {
+    overflow: auto;
 }
 body.subwindow .result-table {
     margin: 0;
@@ -1790,7 +1790,7 @@ body.subwindow .repl, body.subwindow .repl-block .repl-result {
 }
 body.subwindow .repl, body.subwindow .repl-block {
     font-size: 2vmin;
-    align-items: center;
+    display: initial;
 }
 body.subwindow .repl-block {
     font-family: var(--font-monospace);
@@ -2339,6 +2339,7 @@ sidecar .usage-error-wrapper .hideable {
     /* used in tandem with height: unset */
     padding-top: 0.875em;
     padding-bottom: 0.875em;
+    background-color: var(--color-ui-02);
 }
 .usage-error-wrapper h4 {
     margin: 1.33em 0 0.375em;
