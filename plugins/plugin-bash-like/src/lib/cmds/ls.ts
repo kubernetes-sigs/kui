@@ -280,11 +280,6 @@ const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions:
     (options.a ? 'a' : '')
 
   const platformFlags = []
-  if (process.platform === 'linux') {
-    // Ignore backup files. WARNING: -B on macOS/BSD means something
-    // entirely different
-    platformFlags.push('-B')
-  }
 
   return doShell(['!', 'ls', dashFlags, ...platformFlags, filepath], options, Object.assign({}, execOptions, {
     nested: true,
