@@ -2629,8 +2629,8 @@ sidecar .sidecar-header-icon {
     color: var(--color-brand-02);
 }
 
-sidecar .sidecar-header-name .package-prefix {
-    color: var(--color-text-02);
+.package-prefix {
+    font-weight: 300;
 }
 
 .sequence-component {
