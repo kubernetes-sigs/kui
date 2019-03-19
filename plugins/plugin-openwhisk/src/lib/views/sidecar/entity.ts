@@ -351,12 +351,12 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
       if (entity.actions) {
         entity.actions.map(wsk.fillInActionDetails(entity))
           .map(formatOneListResult({ excludePackageName: true, alwaysShowType: true }))
-          .map(dom => actions.appendChild(dom))
+          .forEach(dom => actions.appendChild(dom))
       }
       if (entity.feeds) {
         entity.feeds.map(wsk.fillInActionDetails(entity, 'feeds'))
           .map(formatOneListResult({ excludePackageName: true, alwaysShowType: true }))
-          .map(dom => actions.appendChild(dom))
+          .forEach(dom => actions.appendChild(dom))
       }
     }
   } else if (entity.type === 'activations') {
