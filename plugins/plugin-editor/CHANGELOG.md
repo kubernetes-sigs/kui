@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.12.0 (2019-03-19)
+
+
+### Bug Fixes
+
+* clicks on sidecar header etc. result in prompt losing focus ([2f78dfc](https://github.com/IBM/kui/commit/2f78dfc)), closes [#610](https://github.com/IBM/kui/issues/610)
+* improved support for long vertical "resource type" sidecar header ([73ac7b4](https://github.com/IBM/kui/commit/73ac7b4)), closes [#780](https://github.com/IBM/kui/issues/780)
+* more dark mode tweaks, including for editor text ([1d353ae](https://github.com/IBM/kui/commit/1d353ae)), closes [#554](https://github.com/IBM/kui/issues/554)
+* **plugins/plugin-editor:** add missing deps to package.json ([63bc382](https://github.com/IBM/kui/commit/63bc382)), closes [#587](https://github.com/IBM/kui/issues/587)
+* paste in editor results in loss of editor focus ([f4ef055](https://github.com/IBM/kui/commit/f4ef055)), closes [#847](https://github.com/IBM/kui/issues/847)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com/IBM/kui/commit/1f7c263)), closes [#510](https://github.com/IBM/kui/issues/510) [#425](https://github.com/IBM/kui/issues/425)
+* **plugin-openwhisk:** separate out the editor parts from plugin-openwhisk ([8195220](https://github.com/IBM/kui/commit/8195220)), closes [#437](https://github.com/IBM/kui/issues/437) [#441](https://github.com/IBM/kui/issues/441)
+* **plugins-editor, plugins-openwhisk-editor-extensions:** fixes for lock/unlock and deploy n editor ([d0801a1](https://github.com/IBM/kui/commit/d0801a1)), closes [#472](https://github.com/IBM/kui/issues/472)
+* **plugins/plugin-editor:** editor plugin not properly rendering markdown ([2f99bbc](https://github.com/IBM/kui/commit/2f99bbc)), closes [#763](https://github.com/IBM/kui/issues/763)
+* **plugins/plugin-editor:** improve key-value coloration in editor ([77c7b93](https://github.com/IBM/kui/commit/77c7b93)), closes [#765](https://github.com/IBM/kui/issues/765)
+* **plugins/plugin-editor:** improved dark mode for editor ([8a7fd03](https://github.com/IBM/kui/commit/8a7fd03)), closes [#533](https://github.com/IBM/kui/issues/533) [#530](https://github.com/IBM/kui/issues/530)
+* **plugins/plugin-editor:** monaco-editor scrollbar positioning issues ([bf1245e](https://github.com/IBM/kui/commit/bf1245e)), closes [#753](https://github.com/IBM/kui/issues/753)
+* **plugins/plugin-k8s:** k get namespace does not show green for Active ([6146269](https://github.com/IBM/kui/commit/6146269)), closes [#782](https://github.com/IBM/kui/issues/782)
+
+
+### Features
+
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+* **plugins/plugin-k8s:** kubectl describe refinements ([6b6e8c5](https://github.com/IBM/kui/commit/6b6e8c5)), closes [#756](https://github.com/IBM/kui/issues/756)
+* --ui should open repl-free windows ([088c24f](https://github.com/IBM/kui/commit/088c24f)), closes [#830](https://github.com/IBM/kui/issues/830)
+* use editor more widely ([fe063de](https://github.com/IBM/kui/commit/fe063de)), closes [#532](https://github.com/IBM/kui/issues/532)
+
+
+
+
+
 # 0.11.0 (2019-03-10)
 
 
