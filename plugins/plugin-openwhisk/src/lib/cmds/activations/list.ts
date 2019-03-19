@@ -73,7 +73,7 @@ const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOption
 
   try {
     const list = await wsk.client(execOptions).activations.list(opts)
-      .then(L => L.map(wsk.addPrettyType('activations', 'list')))
+      .then(L => Promise.all(L.map(wsk.addPrettyType('activations', 'list'))))
 
     return list
   } catch (err) {
