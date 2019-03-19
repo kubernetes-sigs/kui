@@ -494,8 +494,8 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packa
     const sub = element('.sidecar-header-secondary-content .custom-header-content', sidecar)
     removeAllDomChildren(sub)
 
-    const text = await Promise.resolve(subtext)
-    if (text.nodeName) {
+    const text = await Promise.resolve(call(subtext))
+    if (text instanceof Element) {
       sub.appendChild(text)
     } else {
       sub.innerText = text
@@ -503,6 +503,33 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packa
   }
 
   return nameDom
+}
+
+/**
+ * Call a formatter
+ *
+ */
+export interface IFormatter {
+  plugin: string
+  module: string
+  operation: string
+  parameters: object
+}
+function isFormatter (spec: IFormatter | string | Promise<string>): spec is IFormatter {
+  return typeof spec !== 'string' &&
+    !(spec instanceof Promise) &&
+    spec.plugin !== undefined &&
+    spec.module !== undefined &&
+    spec.operation !== undefined &&
+    spec.parameters !== undefined
+}
+const call = async (spec: IFormatter | string | Promise<string>): Promise<string | Element> => {
+  if (!isFormatter(spec)) {
+    return Promise.resolve(spec)
+  } else {
+    const provider = await import(`@kui-shell/plugin-${spec.plugin}/${spec.module}`)
+    return provider[spec.operation](spec.parameters)
+  }
 }
 
 /**

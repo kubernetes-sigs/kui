@@ -532,7 +532,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
      || (command === 'kubectl' && verb === 'logs' && 'logs')
      || (command === 'kubectl' && verb === 'get' && execOptions.raw && 'json'))
 
-  if (!isHeadless() &&
+  if ((!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
       command === 'kubectl' &&
       (verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json') && (execOptions.type !== ExecType.Nested || execOptions.delegationOk)))) {

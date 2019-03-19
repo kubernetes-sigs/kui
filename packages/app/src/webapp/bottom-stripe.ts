@@ -205,9 +205,9 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
 type DirectViewController = string | DirectViewControllerFunction | IDirectViewControllerSpec
 type DirectViewControllerFunction = (entity: object) => object
 interface IDirectViewControllerSpec {
-  plugin: string,
-  module: string,
-  operation: string,
+  plugin: string
+  module: string
+  operation: string
   parameters: object
 }
 
