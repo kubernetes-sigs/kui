@@ -450,7 +450,10 @@ const addPrettyType = (entityType, verb, entityName) => entity => {
     //
     // then this is the .map(addPrettyName) part of a list result
     //
-    entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(`/${entity.namespace}/${entity.name}`)}`
+    if (!entity.onclick) {
+      // a postprocess handler might have already added an onclick handler
+      entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(`/${entity.namespace}/${entity.name}`)}`
+    }
 
     if (entity.type === 'actions' && entity.prettyType === 'sequence') {
       // add a fun a->b->c rendering of the sequence
@@ -1298,12 +1301,19 @@ const makeInit = (commandTree) => async (isReinit = false) => {
       }
     }),
 
-    fillInActionDetails: (Package, type) => actionSummary => Object.assign({}, actionSummary, {
-      // given the actionSummary from the 'actions' field of a package entity
-      type: type || 'actions',
-      packageName: Package.name,
-      namespace: `${Package.namespace}/${Package.name}`
-    }),
+    fillInActionDetails: (Package, type) => actionSummary => {
+      const kindAnnotation = actionSummary.annotations && actionSummary.annotations.find(_ => _.key === 'exec')
+      const kind = kindAnnotation && kindAnnotation.value
+
+      return Object.assign({}, actionSummary, {
+        // given the actionSummary from the 'actions' field of a package entity
+        type: type || 'actions',
+        packageName: Package.name,
+        namespace: `${Package.namespace}/${Package.name}`,
+        kind,
+        onclick: `wsk action get ${repl.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
+      })
+    },
 
     /** actions => action */
     toOpenWhiskKind: toOpenWhiskKind,
