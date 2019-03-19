@@ -490,12 +490,6 @@ export const listen = prompt => {
         // user typed Enter; we've finished Reading, now Evalute
       const repl = await import('../core/repl')
       repl.doEval({ prompt })
-    } else if (char === keys.PAGEUP) {
-      const { height } = document.body.getBoundingClientRect()
-      document.querySelector('tab.visible .repl').scrollBy(0, -height)
-    } else if (char === keys.PAGEDOWN) {
-      const { height } = document.body.getBoundingClientRect()
-      document.querySelector('tab.visible .repl').scrollBy(0, +height)
     }
   }
 
@@ -508,6 +502,14 @@ export const listen = prompt => {
       if (newValue) {
         updateInputAndMoveCaretToEOL(prompt, newValue)
       }
+    } else if (char === keys.PAGEUP) {
+      debug('pageup')
+      const { height } = document.body.getBoundingClientRect()
+      document.querySelector('tab.visible .repl-inner').scrollBy(0, -height)
+    } else if (char === keys.PAGEDOWN) {
+      debug('pagedown')
+      const { height } = document.body.getBoundingClientRect()
+      document.querySelector('tab.visible .repl-inner').scrollBy(0, +height)
     } else if (char === keys.C && event.ctrlKey) {
       // Ctrl+C, cancel
       doCancel()
