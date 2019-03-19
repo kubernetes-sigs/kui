@@ -50,6 +50,7 @@ const expect = {
         }
       }
     }
+
     assert.ok(foundMatch)
     return actualOutput
   },

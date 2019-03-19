@@ -13,43 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { appList } from '../../utility/usage'
-import * as repl from '@kui-shell/core/core/repl'
-import * as astUtil from '../../utility/ast'
-import UsageError from '@kui-shell/core/core/usage-error'
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-list')
 
+import * as repl from '@kui-shell/core/core/repl'
+import UsageError from '@kui-shell/core/core/usage-error'
+
+import { appList } from '../../utility/usage'
+import * as astUtil from '../../utility/ast'
+
+import withHeader from '@kui-shell/plugin-openwhisk/lib/models/withHeader'
+
+/** for the table model */
+const type = 'composition'
+const prettyType = type
+const prettyKind = type
+
+/**
+ * Command handler for app list
+ *
+ */
 export default async (commandTree, prequire) => {
-  /* command handler for app list */
-  commandTree.listen(`/wsk/app/list`, ({ argvNoOptions, parsedOptions }) => {
-    return repl.qfexec(argvNoOptions.join(' ').replace('app', 'action'))
+  commandTree.listen(`/wsk/app/list`, ({ argvNoOptions, parsedOptions, execOptions }) => {
+    if (parsedOptions.limit === 0) {
+      return []
+    }
+
+    return repl.qexec(argvNoOptions.join(' ').replace('app', 'action'))
       .then(actions => {
-        debug('app list -> action list', actions)
-        let apps = actions.filter(astUtil.isAnApp)
+        debug('filtering action list to find compositions', actions)
+        const apps = actions.filter(astUtil.isAnApp)
+          .map(app => Object.assign({}, app, {
+            prettyType,
+            prettyKind,
+            onclick: `app get "/${app.namespace}/${app.name}"`
+          }))
 
-        if (parsedOptions.limit === 0) return []
+        const skip = parsedOptions.skip || 0
+        const limit = parsedOptions.limit || apps.length
 
-        const queryParameters = ['limit', 'skip']
-        queryParameters.forEach(parameter => {
-          if (parsedOptions[parameter] !== undefined && (!Number.isInteger(parsedOptions[parameter]) || parsedOptions[parameter] < 0)) {
-            throw new UsageError(`The query parameter ${parameter} was malformed:\nThe value '${parsedOptions[parameter]}' is not an integer.`)
-          }
-        })
+        const paginated = apps.slice(skip, skip + limit)
 
-        let skip = parsedOptions.skip || 0
-
-        let limit = parsedOptions.limit || apps.length
-
-        apps.forEach(app => {
-          app.type = 'composition'
-          app.prettyType = 'composition'
-          app.prettyKind = 'composition'
-          app.onclick = () => repl.pexec(`app get "/${app.namespace}/${app.name}"`)
-          app.noSort = true
-          return app
-        })
-        return parsedOptions.count ? apps.slice(skip, skip + limit).length : apps.slice(skip, skip + limit)
+        return parsedOptions.count ? paginated.length : withHeader(paginated, execOptions)
       })
   }, { usage: appList('list') })
 }

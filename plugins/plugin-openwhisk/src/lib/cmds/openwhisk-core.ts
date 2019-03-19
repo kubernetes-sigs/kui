@@ -28,6 +28,7 @@ import { theme as settings } from '@kui-shell/core/core/settings'
 import historyModel = require('@kui-shell/core/models/history')
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
+import withHeader from '../models/withHeader'
 import namespace = require('../models/namespace')
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode } from '../models/modes'
@@ -49,39 +50,6 @@ const getClient = (execOptions) => {
     return initOWFromConfig(execOptions.credentials.openwhisk)
   } else {
     return globalOW
-  }
-}
-
-/**
- * Maybe add a header row for tables. If this is a nested call,
- * i.e. some other plugin is calling us for the data rather than the
- * model, make sure not to add a header --- unless that other plugin
- * actually wants us to add the header (showHeader).
- *
- */
-const withHeader = (rows, execOptions) => {
-  if (!execOptions.showHeader && (execOptions.nested || rows[0].type === 'activations')) {
-    return rows
-  } else {
-    const cell = (value, outerCSS = '') => [{ value, outerCSS: `header-cell ${outerCSS}` }]
-    const maybeCell = (field: string, value: string, outerCSS?: string) => rows[0][field] ? cell(value, outerCSS) : []
-
-    const type = rows[0].type
-    const kind = type === 'actions' ? maybeCell('type', 'KIND') : []
-    const active = type === 'rules' ? cell('STATUS') : []
-    const version = type === 'rules' ? cell('RULE', 'hide-with-sidecar') : maybeCell('version', 'VERSION', 'hide-with-sidecar')
-
-    return [[{
-      title: type,
-      type: type,
-      name: 'NAME',
-      noSort: true,
-      onclick: false,
-      header: true,
-      outerCSS: 'header-cell',
-      annotations: [],
-      attributes: kind.concat(active).concat(version)
-    }].concat(rows)]
   }
 }
 
