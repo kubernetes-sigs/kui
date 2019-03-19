@@ -20,6 +20,7 @@ debug('loading')
 
 import { IKubeResource } from '../model/resource'
 
+import { IFormatter } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
 /**
@@ -28,21 +29,39 @@ import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
  *
  * @param resource a kubernetes resource
  */
-export default (resource: IKubeResource): Element => {
+export default (resource: IKubeResource): IFormatter => {
   if (resource && resource.metadata && resource.metadata.creationTimestamp) {
-    const message = document.createElement('div')
-    const datePart = document.createElement('strong')
-
-    message.appendChild(document.createTextNode('Created on '))
-    message.appendChild(datePart)
-    try {
-      datePart.appendChild(prettyPrintTime(Date.parse(resource.metadata.creationTimestamp)))
-    } catch (err) {
-      debug('error trying to parse this creationTimestamp', resource.metadata.creationTimestamp)
-      console.error('error parsing creationTimestamp', err)
-      datePart.innerText = resource.metadata.creationTimestamp
+    return {
+      plugin: 'k8s',
+      module: 'lib/util/created-on',
+      operation: 'format',
+      parameters: {
+        resource
+      }
     }
-
-    return message
   }
+}
+
+interface Parameters {
+  resource: IKubeResource
+}
+
+/** format the creation time of a resource */
+export const format = (parameters: Parameters): Element => {
+  const { resource } = parameters
+
+  const message = document.createElement('div')
+  const datePart = document.createElement('strong')
+
+  message.appendChild(document.createTextNode('Created on '))
+  message.appendChild(datePart)
+  try {
+    datePart.appendChild(prettyPrintTime(Date.parse(resource.metadata.creationTimestamp)))
+  } catch (err) {
+    debug('error trying to parse this creationTimestamp', resource.metadata.creationTimestamp)
+    console.error('error parsing creationTimestamp', err)
+    datePart.innerText = resource.metadata.creationTimestamp
+  }
+
+  return message
 }
