@@ -449,7 +449,7 @@ class InProcessExecutor implements IExecutor {
           if (execOptions && execOptions.failWithUsage) {
             return evaluator.options.usage
           } else {
-            return oops(block, nextBlock)(new UsageError(evaluator.options.usage))
+            return oops(command, block, nextBlock)(new UsageError(evaluator.options.usage))
           }
         }
 
@@ -513,7 +513,7 @@ class InProcessExecutor implements IExecutor {
               if (execOptions && execOptions.failWithUsage) {
                 return err
               } else {
-                return oops(block, nextBlock)(err)
+                return oops(command, block, nextBlock)(err)
               }
             } else if ((match.boolean && typeof parsedOptions[optionalArg] !== 'boolean') ||
                        (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
@@ -546,7 +546,7 @@ class InProcessExecutor implements IExecutor {
               if (execOptions && execOptions.failWithUsage) {
                 return error
               } else {
-                return oops(block, nextBlock)(error)
+                return oops(command, block, nextBlock)(error)
               }
             }
           }
@@ -591,7 +591,7 @@ class InProcessExecutor implements IExecutor {
                   return err
                 } else {
                   debug('broadcasting usage error')
-                  return oops(block, nextBlock)(err)
+                  return oops(command, block, nextBlock)(err)
                 }
               } else {
                 debug('repl selection', selection)
@@ -614,14 +614,14 @@ class InProcessExecutor implements IExecutor {
           debug('command requires auth, and we do not have it')
           const err = new Error('Command requires authentication')
           err['code'] = 403
-          return oops(block, nextBlock)(err)
+          return oops(command, block, nextBlock)(err)
         }
 
         if (evaluator.options && evaluator.options.requiresLocal && !hasLocalAccess()) {
           debug('command does not work in a browser')
           const err = new Error('Command requires local access')
           err['code'] = 406 // http not acceptable
-          return oops(block, nextBlock)(err)
+          return oops(command, block, nextBlock)(err)
         }
 
         // if we don't have a head (yet), but this command
@@ -725,7 +725,7 @@ class InProcessExecutor implements IExecutor {
                       throw err
                     } else {
                       // then report the error to the repl
-                      oops(block, nextBlock)(err)
+                      oops(command, block, nextBlock)(err)
                     }
                   })
               })
@@ -752,13 +752,13 @@ class InProcessExecutor implements IExecutor {
               } else if (!nested && !rethrowIt) {
                 debug('reporting command execution error to user via repl')
                 console.error(err)
-                oops(block, nextBlock)(err)
+                oops(command, block, nextBlock)(err)
               } else {
                 debug('rethrowing command execution error')
                 if (reportIt) {
                   // maybe the caller also wants us to report it via the repl?
                   debug('also reporting command execution error to user via repl')
-                  oops(block, nextBlock)(err)
+                  oops(command, block, nextBlock)(err)
                 }
                 throw err
               }
@@ -799,9 +799,9 @@ class InProcessExecutor implements IExecutor {
       return Promise.resolve(e.message).then(message => {
         if (message.nodeName) {
           e.message = message
-          oops(block, nextBlock)(e)
+          oops(command, block, nextBlock)(e)
         } else {
-          const cmd = cli.showHelp(blockForError, nextBlock, e)
+          const cmd = cli.showHelp(command, blockForError, nextBlock, e)
           const resultDom = blockForError.querySelector('.repl-result')
           return Promise.resolve(cmd)
             .then(cli.printResults(blockForError, nextBlock, resultDom))
@@ -860,12 +860,12 @@ export const installOopsHandler = fn => {
   debug('installing oops handler')
   oopsHandler = fn
 }
-const oops = (block?: Element, nextBlock?: Element) => err => {
+const oops = (command?: string, block?: Element, nextBlock?: Element) => err => {
   if (oopsHandler) {
     debug('invoking registered oops handler')
     return oopsHandler(block, nextBlock)(err)
   } else {
-    return cli.oops(block, nextBlock)(err)
+    return cli.oops(command, block, nextBlock)(err)
   }
 }
 

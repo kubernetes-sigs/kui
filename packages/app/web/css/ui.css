@@ -1785,14 +1785,14 @@ body.subwindow sidecar .padding-content:not(.overflow-auto) {
 body.subwindow .result-table {
     margin: 0;
 }
-body.subwindow .repl, body.subwindow .result-as-table .repl-result {
+body.subwindow .repl, body.subwindow .repl-block .repl-result {
     font-size: unset;
 }
-body.subwindow .repl, body.subwindow .result-as-table {
+body.subwindow .repl, body.subwindow .repl-block {
     font-size: 2vmin;
     align-items: center;
 }
-body.subwindow .result-as-table {
+body.subwindow .repl-block {
     font-family: var(--font-monospace);
     margin: auto;
 }
@@ -1825,7 +1825,7 @@ body.subwindow .repl-input {
 body.subwindow .repl-output {
     padding: 0 1em 0 1em;
 }
-body.subwindow .repl-block:not(:first-child), body.subwindow .repl-input, body.subwindow .ok {
+body.subwindow .repl .repl-input .repl-prompt, body.subwindow .repl .repl-input input, body.subwindow .repl .repl-prompt-timestamp, body.subwindow sidecar .repl-input, body.subwindow sidecar .repl-block .ok {
     display: none;
 }
 body.subwindow .repl-block {
@@ -2319,7 +2319,7 @@ sidecar.minimized [data-balloon]:before, sidecar.minimized [data-balloon]:after 
     color: var(--color-text-01);
 }
 sidecar .usage-error-wrapper .hideable {
-    background: var(--color-ui-03);
+    background: transparent;
 }
 .usage-error-wrapper h3, .usage-error-wrapper h4 {
     font-weight: 300;
