@@ -25,7 +25,7 @@ import sidecarSelector from './views/sidecar-selector'
 export const css = {
   buttons: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits'),
   backContainer: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
-  backLabel: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-inner-bits'), // houses the back button text
+  backButton: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
   modeContainer: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
   button: 'sidecar-bottom-stripe-button',
   buttonActingAsButton: 'sidecar-bottom-stripe-button-as-button',

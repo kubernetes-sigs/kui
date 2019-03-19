@@ -89,7 +89,7 @@ const restore = (pippedContainer, sidecarClass, capturedHeaders, highlightThis, 
  *
  *
  */
-const pip = (container, capturedHeaders, highlightThis, returnTo?: string, options?) => {
+const pip = (container, capturedHeaders, highlightThis, returnTo = 'previous view', options?) => {
   try {
     if (container !== true) {
       container.parentNode.removeChild(container)
@@ -102,28 +102,17 @@ const pip = (container, capturedHeaders, highlightThis, returnTo?: string, optio
   const sidecarClass = sidecar.className
   const escapeHandler = undefined // we don't want to override the escape key behavior
   const backContainer = document.querySelector(bottomStripe.css.backContainer)
-  const backLabel = document.querySelector(bottomStripe.css.backLabel)
+  const backButton = document.querySelector(bottomStripe.css.backButton)
   const restoreFn = restore(container, sidecarClass, capturedHeaders, highlightThis, escapeHandler, options)
 
-  if (returnTo) {
-    debug('returnTo', returnTo)
+  debug('returnTo', returnTo)
+  backButton.setAttribute('data-balloon', `Return to ${returnTo}`)
+  backContainer.classList.add('has-back-button')
 
-    removeAllDomChildren(backLabel)
-    const backButton = document.createElement('div')
-    const backButtonReturnTo = document.createElement('span')
-    backButton.className = 'sidecar-bottom-stripe-back-button-clickable-part'
-    backButtonReturnTo.className = 'sidecar-bottom-stripe-back-button-return-to'
-    backButton.innerText = `Back to `
-    backButtonReturnTo.innerText = returnTo
-    backButton.appendChild(backButtonReturnTo)
-    backLabel.appendChild(backButton)
-    backContainer.classList.add('has-back-button')
-
-    backButton.addEventListener('click', () => {
-      restoreFn()
-      backContainer.classList.remove('has-back-button')
-    }, { once: true })
-  }
+  backButton.addEventListener('click', () => {
+    restoreFn()
+    backContainer.classList.remove('has-back-button')
+  }, { once: true })
 
   return restoreFn
 }
