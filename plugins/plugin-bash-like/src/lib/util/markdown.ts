@@ -91,12 +91,14 @@ export default async (source, fullpath, hljs) => {
   const marked = _ => Marked(_, { renderer })
   const htmlString = marked(source)
 
+  const body = document.createElement('div')
+  body.classList.add('padding-content')
+
   const wrapper = document.createElement('div')
   wrapper.innerHTML = htmlString
-
   wrapper.classList.add('page-content') // carbon-components
-  wrapper.classList.add('padding-content')
-  wrapper.classList.add('scrollable')
+  body.appendChild(wrapper)
+  // wrapper.classList.add('scrollable')
 
   // hello! here we fix up the onclick handlers; see the
   // "repl-pexec-link" note above
@@ -157,5 +159,5 @@ export default async (source, fullpath, hljs) => {
     }
   }
 
-  return { title, body: wrapper }
+  return { title, body }
 }
