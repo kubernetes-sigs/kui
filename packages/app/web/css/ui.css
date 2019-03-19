@@ -1171,6 +1171,14 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+.blurry {
+    filter: blur(3px) brightness(0.5) grayscale(0.5);
+    -webkit-app-region: drag;
+}
+.blurry [data-balloon]:before, .blurry [data-balloon]:after {
+    /* no tooltips under a blurry element */
+    display: none;
+}
 .present-as-quotation {
     border-left: 0.375em solid var(--color-base01);
     padding: 0.375em 0 0.375em 0.375em;

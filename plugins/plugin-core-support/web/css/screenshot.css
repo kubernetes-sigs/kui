@@ -39,3 +39,32 @@ body[kui-theme-style="dark"] .screenshot-check-icon {
 .screenshot-check-icon i {
     text-shadow: 0 0 0.1ex var(--color-base02);
 }
+
+#screenshot-captured {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    box-shadow: 0 0 2em var(--color-base01);
+    border: 1px solid var(--color-base04);
+}
+
+#screenshot-captured .sidecar-bottom-stripe {
+    justify-content: flex-end;
+    align-items: center;
+    border-top-color: var(--color-base04);
+}
+
+#screenshot-captured .screenshot-image {
+    max-width: 100%;
+    min-height: 300px; /* we need some min space to fit the green check and Screenshot copied to clipboard */
+    max-height: 100%;
+    filter: grayscale(0.375) contrast(0.75) blur(1px);
+}
+
+

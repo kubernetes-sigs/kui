@@ -78,7 +78,9 @@ const selectors = {
  * Sizing elements to fit prior to capturing them
  *
  */
-const hideCurrentReplBlock = [{ selector: '#main-repl .repl-block.processing', property: 'display', value: 'none' }]
+const hideCurrentReplBlock = [
+  { selector: '#main-repl .repl-block.processing', property: 'display', value: 'none' }
+]
 const squishRepl = [
   { selector: 'tab.visible .repl .repl-block:nth-last-child(2)', css: 'screenshot-squish' },
   { selector: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-input', property: 'display', value: 'none' }
@@ -211,10 +213,57 @@ export default async (commandTree, prequire) => {
             return reject(new Error('Internal Error'))
           }
 
+          // when we're done, re-enable the things we messed with and hide the snapDom
+          const finish = () => {
+            cleanupMouseEvents()
+
+            document.onkeyup = oldHandler
+            cli.getCurrentPrompt().readOnly = false
+            snapDom.classList.add('go-away')
+            setTimeout(() => document.body.removeChild(snapDom), 1000) // match go-away-able transition-duration; see ui.css
+          }
+
+          // the following bits handle mouse clicks on the underlying
+          // page; we want the screenshot popup to disappear onclick,
+          // but need to distinguish clicks from drags, sigh
+          let notAClick = false
+          let currentClickX
+          let currentClickY
+          const blurryClick = () => {
+            if (!notAClick) {
+              finish()
+            }
+          }
+          const blurryMouseDown = (evt: MouseEvent) => {
+            currentClickX = evt.screenX
+            currentClickY = evt.screenY
+          }
+          const blurryMouseUp = (evt: MouseEvent) => {
+            // if the total pixel movement is small, then we're ok calling this a click
+            notAClick = Math.abs(evt.screenX - currentClickX) + Math.abs(evt.screenY - currentClickY) > 4
+          }
+          const cleanupMouseEvents = () => {
+            // remove the underlying page blurry bit
+            document.querySelector('.page').classList.remove('blurry')
+
+            document.querySelector('.page').removeEventListener('click', blurryClick)
+            document.querySelector('.page').removeEventListener('mousedown', blurryMouseDown)
+            document.querySelector('.page').removeEventListener('mouseup', finish)
+          }
+          const initMouseEvents = () => {
+            // make the underlying page blurry while we have the snapshot overlay up
+            document.querySelector('.page').classList.add('blurry')
+
+            document.querySelector('.page').addEventListener('click', blurryClick)
+            document.querySelector('.page').addEventListener('mousedown', blurryMouseDown)
+            document.querySelector('.page').addEventListener('mouseup', blurryMouseUp)
+          }
+          initMouseEvents()
+
           const img = nativeImage.createFromBuffer(buf)
           const snapDom = document.createElement('div')
           const snapFooter = document.createElement('div')
-          const snapImg = document.createElement('img')
+          const snapImg = document.createElement('div')
           const message = document.createElement('div')
           const check = document.createElement('div')
 
@@ -244,22 +293,9 @@ export default async (commandTree, prequire) => {
           snapDom.classList.add('go-away-able')
           snapDom.classList.add('go-away') // initially hidden
           setTimeout(() => snapDom.classList.remove('go-away'), 0)
-          snapDom.style.background = 'rgba(0,0,0,0.75)'
-          snapDom.style.position = 'absolute'
-          snapDom.style.width = '100%'
-          snapDom.style.height = '100%'
-          snapDom.style.top = '0'
-          snapDom.style.left = '0'
-          snapDom.style.display = 'flex'
-          snapDom.style.flexDirection = 'column'
-          snapDom.style.justifyContent = 'center'
-          snapDom.style.alignItems = 'center'
-          snapDom.style.zIndex = '5'
 
           snapFooter.classList.add('sidecar-bottom-stripe')
           snapFooter.style.width = widthVw
-          snapFooter.style.justifyContent = 'flex-end'
-          snapFooter.style.alignItems = 'center'
 
           // save screenshot to disk
           const saveButton = document.createElement('div')
@@ -306,13 +342,9 @@ export default async (commandTree, prequire) => {
           // width and height (but fake it with padding), the
           // border goes away: https://stackoverflow.com/a/14709695
           snapImg.style.background = `url(${img.resize({ width: widthPx, height: heightPx }).toDataURL()}) no-repeat center bottom/contain`
-          snapImg.style.backgroundColor = 'var(--color-ui-01)'
-          snapImg.style.maxWidth = '100%'
-          snapImg.style.minHeight = '300px' // we need some min space to fit the green check and Screenshot copied to clipboard
-          snapImg.style.maxHeight = '100%'
-          snapImg.style.filter = 'blur(1px) grayscale(0.5) contrast(0.4)'
           snapImg.style.width = widthVw
           snapImg.style.height = heightVw
+          snapImg.classList.add('screenshot-image')
 
           message.classList.add('screenshot-success-message')
           message.innerText = 'Screenshot successfully copied to clipboard'
@@ -327,14 +359,6 @@ export default async (commandTree, prequire) => {
 
           // temporarily override escape
           const oldHandler = document.onkeyup
-
-          // when we're done, re-enable the things we messed with and hide the snapDom
-          const finish = () => {
-            document.onkeyup = oldHandler
-            cli.getCurrentPrompt().readOnly = false
-            snapDom.classList.add('go-away')
-            setTimeout(() => document.body.removeChild(snapDom), 1000) // match go-away-able transition-duration; see ui.css
-          }
 
           // we'll do a finish when the user hits escape
           document.onkeyup = evt => {
