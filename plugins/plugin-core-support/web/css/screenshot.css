@@ -5,6 +5,10 @@
     padding: 0 1em 1em;
 }
 
+.screenshot-squish .hide-with-screenshot {
+    display: none;
+}
+
 body.no-tooltips-anywhere [data-balloon]:before, body.no-tooltips-anywhere [data-balloon]:after {
     display: none !important;
 }
