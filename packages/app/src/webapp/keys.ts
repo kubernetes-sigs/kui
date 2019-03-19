@@ -30,8 +30,8 @@ export const keys = {
   N: 78,
   R: 82,
   T: 'T'.charCodeAt(0),
-  PAGEDOWN: 36,
-  PAGEUP: 21,
+  PAGEUP: 33,
+  PAGEDOWN: 34,
   END: 35,
   HOME: 36
 }
