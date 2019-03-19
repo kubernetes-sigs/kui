@@ -490,6 +490,12 @@ export const listen = prompt => {
         // user typed Enter; we've finished Reading, now Evalute
       const repl = await import('../core/repl')
       repl.doEval({ prompt })
+    } else if (char === keys.PAGEUP) {
+      const { height } = document.body.getBoundingClientRect()
+      document.querySelector('tab.visible .repl').scrollBy(0, -height)
+    } else if (char === keys.PAGEDOWN) {
+      const { height } = document.body.getBoundingClientRect()
+      document.querySelector('tab.visible .repl').scrollBy(0, +height)
     }
   }
 
