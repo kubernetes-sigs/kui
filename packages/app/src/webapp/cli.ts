@@ -180,6 +180,72 @@ export const streamTo = (block: Element) => {
   }
 }
 
+/** create a popup content container */
+const createPopupContentContainer = (css = []): HTMLElement => {
+  const container = document.createElement('div')
+  container.classList.add('padding-content')
+
+  const scrollRegion = document.createElement('div')
+  scrollRegion.classList.add('repl-block')
+  scrollRegion.classList.add('scrollable')
+  scrollRegion.classList.add('scrollable-auto')
+  css.forEach(_ => scrollRegion.classList.add(_))
+  container.appendChild(scrollRegion)
+
+  const resultDom = document.createElement('div')
+  resultDom.classList.add('repl-result')
+  scrollRegion.appendChild(resultDom)
+
+  return resultDom
+}
+
+/** render popup content in the given container */
+const renderPopupContent = (command: string, container: Element, execOptions?: IExecOptions) => {
+  const subtext = document.createElement('div')
+  subtext.appendChild(document.createTextNode('Last updated '))
+  const date = document.createElement('strong')
+  const now = new Date()
+  date.appendChild(prettyPrintTime(now))
+  subtext.appendChild(date)
+
+  const millisPerDay = 24 * 60 * 60 * 1000
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+  const millisSinceMidnight = now.getTime() - midnight.getTime()
+  const millisTillMidnight = millisPerDay - millisSinceMidnight
+
+  /** re-pretty-print the "now" timestamp with every changing day */
+  const updateLastUpdateDate = () => {
+    removeAllDomChildren(date)
+    date.appendChild(prettyPrintTime(now))
+  }
+
+  /** re-pretty-print the "now" timestamp after the first change of day */
+  const updateLastUpdateDateFirstTime = () => {
+    updateLastUpdateDate()
+    setInterval(updateLastUpdateDate, millisPerDay) // schedule daily updates
+  }
+  setTimeout(updateLastUpdateDateFirstTime, millisTillMidnight)
+
+  if ((container.parentNode as HTMLElement).classList.contains('result-as-multi-table')) {
+    (container.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
+  }
+
+  const custom = {
+    type: 'custom',
+    isEntity: true,
+    isREPL: true,
+    name: command,
+    presentation: Presentation.SidecarFullscreenForPopups,
+    subtext,
+    content: container.parentNode.parentNode // dom -> scrollRegion -> paddingContent
+  }
+
+  showCustom(custom, execOptions)
+}
+
+/** are we operating in popup mode? */
+const isPopup = () => document.body.classList.contains('subwindow')
+
 /**
  * Render the results of a command evaluation in the "console"
  *
@@ -187,19 +253,8 @@ export const streamTo = (block: Element) => {
 export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?) => response => {
   debug('printResults')
 
-  const isPopup = document.body.classList.contains('subwindow')
-  if (isPopup) {
-    const container = document.createElement('div')
-    container.classList.add('padding-content')
-
-    const scrollRegion = document.createElement('div')
-    scrollRegion.classList.add('scrollable')
-    scrollRegion.classList.add('scrollable-auto')
-    container.appendChild(scrollRegion)
-
-    resultDom = document.createElement('div')
-    resultDom.classList.add('repl-result')
-    scrollRegion.appendChild(resultDom)
+  if (isPopup()) {
+    resultDom = createPopupContentContainer()
   }
 
   if (process.env.KUI_TEE_TO_FILE) {
@@ -253,7 +308,7 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
           }
         }
       } else if (response.nodeName) { // TODO is this the best way to detect response is a dom??
-          // pre-formatted DOM element
+        // pre-formatted DOM element
         if (echo) {
           resultDom.appendChild(response);
           (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
@@ -267,7 +322,7 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
         (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
         ok(resultDom.parentNode).className = 'ok-for-list'
       } else if (typeof response === 'number' || typeof response === 'string' ||
-          (!response.type && response.message && typeof response.message === 'string')) {
+                 (!response.type && response.message && typeof response.message === 'string')) {
         // if either the response is a string, or it's a non-entity (no response.type) and has a message field
         //     then treat the response as a simple string response
         if (echo) {
@@ -281,7 +336,7 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
       } else if (response.type === 'custom' || response.renderAs === 'custom') {
         if (echo) {
           showCustom(response, execOptions)
-          if (!isPopup) {
+          if (!isPopup()) {
             ok(resultDom.parentNode)
           }
         } else if (execOptions && execOptions.replSilence) {
@@ -352,46 +407,8 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
       })
     }
 
-    if (isPopup) {
-      const subtext = document.createElement('div')
-      subtext.appendChild(document.createTextNode('Last updated '))
-      const date = document.createElement('strong')
-      const now = new Date()
-      date.appendChild(prettyPrintTime(now))
-      subtext.appendChild(date)
-
-      const millisPerDay = 24 * 60 * 60 * 1000
-      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
-      const millisSinceMidnight = now.getTime() - midnight.getTime()
-      const millisTillMidnight = millisPerDay - millisSinceMidnight
-
-      /** re-pretty-print the "now" timestamp with every changing day */
-      const updateLastUpdateDate = () => {
-        removeAllDomChildren(date)
-        date.appendChild(prettyPrintTime(now))
-      }
-
-      /** re-pretty-print the "now" timestamp after the first change of day */
-      const updateLastUpdateDateFirstTime = () => {
-        updateLastUpdateDate()
-        setInterval(updateLastUpdateDate, millisPerDay) // schedule daily updates
-      }
-      setTimeout(updateLastUpdateDateFirstTime, millisTillMidnight)
-
-      if ((resultDom.parentNode as HTMLElement).classList.contains('result-as-multi-table')) {
-        (resultDom.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
-      }
-
-      const custom = {
-        type: 'custom',
-        isEntity: true,
-        isREPL: true,
-        name: command,
-        presentation: Presentation.SidecarFullscreenForPopups,
-        subtext,
-        content: resultDom.parentNode.parentNode // dom -> scrollRegion -> paddingContent
-      }
-      showCustom(custom, execOptions)
+    if (isPopup()) {
+      renderPopupContent(command, resultDom, execOptions)
     }
   }
 
@@ -487,7 +504,7 @@ export const listen = prompt => {
   prompt.onkeypress = async event => {
     const char = event.keyCode
     if (char === keys.ENTER) {
-        // user typed Enter; we've finished Reading, now Evalute
+      // user typed Enter; we've finished Reading, now Evalute
       const repl = await import('../core/repl')
       repl.doEval({ prompt })
     }
@@ -687,20 +704,20 @@ export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExec
  * Handle command execution errors
  *
  */
-export const oops = (block?: Element, nextBlock?: Element) => err => {
+export const oops = (command: string, block?: Element, nextBlock?: Element) => err => {
   const message = oopsMessage(err)
-    // const errString = err && err.toString()
+  // const errString = err && err.toString()
 
   if (!block) return // we're not attached to a prompt right now
 
   setStatus(block, 'error')
 
-  const resultDom = block.querySelector('.repl-result')
+  const resultDom = isPopup() ? createPopupContentContainer(['error']) : block.querySelector('.repl-result')
   const oopsDom = document.createElement('div')
   oopsDom.className = 'oops'
 
   if (err.message && err.message.nodeName) {
-      // err.message is a DOM
+    // err.message is a DOM
     oopsDom.appendChild(err.message)
   } else if (err.html) {
     // pre-rendered HTML
@@ -709,15 +726,15 @@ export const oops = (block?: Element, nextBlock?: Element) => err => {
   } else if (err.message && err.message.then) {
     err.message.then(message => {
       err.message = message
-      oops(block, nextBlock)(err)
+      oops(command, block, nextBlock)(err)
     })
     return
   } else if (err.nodeName) {
-      // err is a DOM
+    // err is a DOM
     oopsDom.appendChild(err)
   } else {
-      // we'll go with our formatted message
-      // wrap in a span so that drag text selection works; see shell issue #249
+    // we'll go with our formatted message
+    // wrap in a span so that drag text selection works; see shell issue #249
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(message))
     oopsDom.appendChild(span)
@@ -736,18 +753,22 @@ export const oops = (block?: Element, nextBlock?: Element) => err => {
     }
   }
 
+  if (isPopup()) {
+    renderPopupContent(command, resultDom)
+  }
+
   installBlock(block.parentNode, block, nextBlock)()
 
-    // indicate that we've already rendered the block
+  // indicate that we've already rendered the block
   return false
 }
 
-export const showHelp = (block: Element, nextBlock: Element, error) => {
+export const showHelp = (command: string, block: Element, nextBlock: Element, error) => {
   // if the message says command not found, then add on the "enter help to see your options" as a suffix
   const baseMessage = 'Enter help to see your options.'
   if (error.message && error.message === 'Command not found') error.message += `\n${baseMessage}`
 
-  return oops(block, nextBlock)(error) && false
+  return oops(command, block, nextBlock)(error) && false
 }
 
 /**
@@ -854,7 +875,7 @@ export const prompt = (msg: string, block: Element, nextBlock: Element, options,
         .then(() => undefined) // so that restorePrompt sees no input on success
         .then(restorePrompt)
         .then(installBlock(block.parentNode, block, nextBlock)) // <-- create a new input, for the next iter of the Loop
-        .catch(err => { restorePrompt(); oops(block, nextBlock)(err) })
+        .catch(err => { restorePrompt(); oops('', block, nextBlock)(err) })
     }
   }
 
