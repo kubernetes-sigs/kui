@@ -318,7 +318,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 repl .repl-block.using-custom-prompt .repl-prompt-righty > i {
     display: none;
 }
-repl .repl-prompt-righty > i {
+.repl-prompt-righty > i {
     color: var(--color-brand-01);
     font-size: 1.125em;
 }
@@ -913,9 +913,6 @@ sidecar .sidecar-header-icon {
     font-weight: 400;
     letter-spacing: 1px;
     pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
-}
-sidecar .sidecar-header-input {
-    display: none;
 }
 sidecar .sidecar-header-name {
     flex: 1;
@@ -1757,10 +1754,8 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #new-tab-button i {
 body.subwindow sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
     display: none;
 }
-body.subwindow sidecar .sidecar-header-text.is-repl-like .sidecar-header-input {
-    display: unset;
-    font-size: unset;
-    font-family: var(--font-sans-serif);
+body.subwindow sidecar .sidecar-header-text.is-repl-like .repl-input {
+    display: flex;
 }
 body.subwindow sidecar .sidecar-header-name-content, body.subwindow sidecar .sidecar-header-text {
     /* make sidecar-header-input occupy full width */
@@ -1814,12 +1809,12 @@ body.subwindow .repl.sidecar-visible {
     height: 0;
 }
 body.subwindow .repl-input {
-    justify-content: flex-end;
+    padding: 0;
 }
-body.subwindow .repl-input, body.subwindow .repl-output {
+body.subwindow .repl-output {
     padding: 0 1em 0 1em;
 }
-body.subwindow .repl-block:not(:first-child), body.subwindow .repl-input input, body.subwindow .repl-input .repl-prompt, body.subwindow .ok {
+body.subwindow .repl-block:not(:first-child), body.subwindow .repl-input, body.subwindow .ok {
     display: none;
 }
 body.subwindow .repl-block {
@@ -1855,6 +1850,13 @@ body.subwindow.still-loading .application-icon {
 }
 body.subwindow .header {
     margin: 0;
+}
+sidecar .repl-input {
+    display: none;
+}
+body.subwindow sidecar .repl-input input {
+    font-family: var(--font-sans-serif);
+    font-size: unset;
 }
 body.subwindow .header .header-left-bits .deemphasize {
     display: none;
