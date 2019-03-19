@@ -114,10 +114,14 @@ export const appList = command => ({
   title: 'List compositions',
   header: 'Print a list of deployed compositions',
   example: `app ${command}`,
-  optional: [{ name: 'namespace|package',
-    positional: true,
-    entity: 'package',
-    docs: 'list all actions in a given /namespace or package' }].concat(skipAndLimit),
+  optional: [
+    {
+      name: 'namespace|package',
+      positional: true,
+      entity: 'package',
+      docs: 'list all actions in a given /namespace or package'
+    }
+  ].concat(skipAndLimit),
   parents: ['composer', { command: 'composer app' }],
   related: ['app create', 'app get', 'app invoke']
 })

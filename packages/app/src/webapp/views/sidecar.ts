@@ -27,7 +27,7 @@ import eventBus from '../../core/events'
 import { prequire } from '../../core/plugins'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
-import { addModeButtons } from '../bottom-stripe'
+import { css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
 import { formatOneListResult } from '../views/table'
 import { keys } from '../keys'
 import { IShowOptions, DefaultShowOptions } from './show-options'
@@ -822,7 +822,7 @@ export const init = async () => {
   // command-left go back
   document.addEventListener('keydown', async (event: KeyboardEvent) => {
     if (event.keyCode === keys.LEFT_ARROW && (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))) {
-      const back = element('.sidecar-bottom-stripe-back-button-clickable-part', getSidecar())
+      const back = document.querySelector(bottomStripeCSS.backButton)
       const clickEvent = document.createEvent('Events')
       clickEvent.initEvent('click', true, false)
       back.dispatchEvent(clickEvent)
