@@ -37,13 +37,24 @@ const flatten = arrays => [].concat.apply([], arrays)
  * start of some filename in the given fileMap
  *
  */
-const scanForFilename = (str, fileMap, endIdx = str.length - 1) => {
+const scanForFilename = (str: string, fileMap, endIdx = str.length - 1) => {
+  let candidate
+  let candidateIdx
+
   for (let idx = endIdx; idx >= 0; idx--) {
     const maybe = str.slice(idx, endIdx + 1)
     if (fileMap[maybe]) {
-      fileMap[maybe] = false // we already matched this!
-      return idx - 1
+      // find the longest candidate
+      if (!candidate || candidate.length < maybe.length) {
+        candidate = maybe
+        candidateIdx = idx - 1
+      }
     }
+  }
+
+  if (candidate) {
+    fileMap[candidate] = false // we already matched this!
+    return candidateIdx
   }
 }
 
