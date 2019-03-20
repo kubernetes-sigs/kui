@@ -859,7 +859,7 @@ sidecar .sidecar-header .header-main-content {
 }
 sidecar .header-right-bits {
     white-space: nowrap;
-    margin: 1rem;
+    margin: 1em;
 }
 .sidecar-header .kind {
     font-variant: small-caps;
@@ -938,7 +938,6 @@ sidecar .sidecar-header .badges {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    margin: 1rem 0 0 1rem;
 }
 sidecar .sidecar-header .badges:first-child {
     margin-left: 0;
