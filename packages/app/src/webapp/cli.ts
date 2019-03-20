@@ -32,7 +32,7 @@ import { prettyPrintTime } from './util/time'
 
 import Presentation from './views/presentation'
 import { formatListResult, formatMultiListResult } from './views/table'
-import { currentSelection, showEntity, showCustom } from './views/sidecar'
+import { getSidecar, currentSelection, showEntity, showCustom } from './views/sidecar'
 
 /**
  * Make sure that the given repl block is visible.
@@ -244,7 +244,7 @@ const renderPopupContent = (command: string, container: Element, execOptions?: I
 }
 
 /** are we operating in popup mode? */
-const isPopup = () => document.body.classList.contains('subwindow')
+export const isPopup = () => document.body.classList.contains('subwindow')
 
 /**
  * Render the results of a command evaluation in the "console"
@@ -886,6 +886,18 @@ export const init = async (prefs = {}) => {
   debug('init')
 
   listen(getInitialPrompt())
+
+  // in popup mode, cmd/ctrl+L should focus the repl input
+  if (isPopup()) {
+    document.body.addEventListener('keydown', (event: KeyboardEvent) => {
+      const char = event.keyCode
+      if (char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) {
+        const input = getSidecar().querySelector('.repl-input input') as HTMLInputElement
+        input.focus()
+        input.setSelectionRange(0, input.value.length)
+      }
+    })
+  }
 
   // if you want to have the current directory displayed with the initial prompt
   // getCurrentBlock().querySelector('.repl-context').innerText = process.cwd() === process.env.HOME ? '~' : basename(process.cwd());
