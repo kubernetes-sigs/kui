@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('webapp/views/table')
 
-import { getCurrentPrompt } from '../cli'
+import { isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
 import { getActiveView } from './sidecar'
@@ -142,7 +142,9 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       cell.classList.add('clickable')
       cell.onclick = evt => {
         evt.stopPropagation() // don't trickle up to the row click handler
-        if (typeof onclick === 'string') {
+        if (isPopup()) {
+          return drilldown(onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+        } else if (typeof onclick === 'string') {
           pexec(onclick)
         } else {
           onclick(evt)
@@ -293,6 +295,11 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
 
   if (entity.key) {
     entityNameClickable.setAttribute('data-key', entity.key)
+  } else {
+    // if we have no key field, and this is the first column, let us
+    // use NAME as the default key; e.g. we style NAME columns
+    // slightly differently
+    entityNameClickable.setAttribute('data-key', 'NAME')
   }
 
   // name of the entity
@@ -326,9 +333,10 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
     // the provider has told us the entity name is not clickable
     entityNameClickable.classList.remove('clickable')
   } else {
-    const isPopup = document.body.classList.contains('subwindow')
-    if (isPopup) {
-      entityNameClickable.onclick = evt => drilldown(entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+    if (isPopup()) {
+      entityNameClickable.onclick = evt => {
+        return drilldown(entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+      }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => pexec(entity.onclick)
     } else {
