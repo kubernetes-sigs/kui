@@ -27,7 +27,7 @@ import withHeader from '@kui-shell/plugin-openwhisk/lib/models/withHeader'
 
 /** for the table model */
 const type = 'composition'
-const prettyType = type
+const prettyType = 'compositions'
 const prettyKind = type
 
 /**
