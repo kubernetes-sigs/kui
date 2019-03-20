@@ -360,7 +360,7 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
     }
 
     if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
-      return table(decodedResult, '', command, verb, command === 'helm' ? '' : entityType, entity, options)
+      return table(decodedResult, '', command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions)
     } else {
       //
       // generic handling of other output formats, for now
@@ -396,7 +396,7 @@ const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string
  * Display the given string as a REPL table
  *
  */
-const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options) => {
+const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options, execOptions) => {
   debug('displaying as table', verb, entityType)
 
   // TODO move this to shouldWe...
@@ -416,7 +416,11 @@ const table = (decodedResult: string, stderr: string, command: string, verb: str
   } else if (tables && tables.length >= 1) {
     // try use display this as a table
     const tablesModel = formatTable(command, verb, entityType, options, tables)
-    return tablesModel.length === 1 ? tablesModel[0] : tablesModel
+    if (execOptions.raw) {
+      return tablesModel.length === 1 ? tablesModel[0] : tablesModel
+    } else {
+      return tablesModel
+    }
   } else if (verb === 'delete') {
     debug('returning delete entity for repl')
     return {
@@ -852,7 +856,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       // tabular output
       //
       debug('attempting to display as a table')
-      resolve(table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options))
+      resolve(table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions))
     } else {
       //
       // otherwise, return raw text for display in the repl

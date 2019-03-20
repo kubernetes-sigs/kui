@@ -67,7 +67,7 @@ const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined
   .then(addClickHandlers(opts.execOptions))
   .then(table => {
     table[0].title = 'Kubernetes Contexts'
-    return [table]
+    return table
   })
 
 /**

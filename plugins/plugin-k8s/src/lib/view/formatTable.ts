@@ -261,7 +261,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
         noSort: true,
         css: firstColumnCSS,
         rowCSS,
-        title: tables.length > 1 && idx === 0 && lines.length > 1 && kindFromResourceName(lines[1][0].value),
+        title: tables.length > 1 && idx === 0 && lines.length > 1 ? kindFromResourceName(lines[1][0].value) : entityType,
         outerCSS: `${header} ${outerCSSForKey[columns[0].key] || ''}`,
         attributes: columns.slice(1).map(({ key, value: column }, colIdx) => ({
           key,

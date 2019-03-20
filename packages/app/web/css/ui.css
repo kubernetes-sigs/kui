@@ -243,7 +243,8 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     padding: 1em 0.375rem 0.375em;
     padding-left: 0;
 }
-.result-as-table .result-table-title-outer i {
+.result-as-multi-table .result-table-outer-wrapper:first-child .result-table-title-outer {
+    padding-top: 0;
 }
 .result-as-table .result-table-title {
     flex: 1;
@@ -1778,6 +1779,7 @@ body.subwindow sidecar .padding-content {
     display: flex;
     /* align-items: center; */
     /* justify-content: center; */
+    flex-direction: column;
 }
 body.subwindow sidecar .padding-content {
     overflow: auto;
