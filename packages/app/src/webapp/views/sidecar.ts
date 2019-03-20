@@ -276,9 +276,8 @@ export const showCustom = async (custom, options) => {
   // are not currenlty in fullscreen, OR if the view does not want to
   // occupy full screen and we *are*... in either case (this is an
   // XOR, does as best one can in NodeJS), toggle maximization
-  const isPopup = document.body.classList.contains('subwindow')
   const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
-  if (isPopup || viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
+  if (cli.isPopup() || viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
     const presentAs = viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
       : custom.presentation || Presentation.SidecarFullscreen
     toggleMaximization(presentAs)
@@ -832,8 +831,7 @@ export const init = async () => {
   // escape key toggles sidecar visibility
   document.addEventListener('keyup', (evt: KeyboardEvent) => {
     if (evt.keyCode === keys.ESCAPE) {
-      const isPopup = document.body.classList.contains('subwindow')
-      if (!isPopup) {
+      if (!cli.isPopup()) {
         const closeButton = document.querySelector(sidecarSelector('.sidecar-bottom-stripe-close'))
         if (isVisible()) {
           closeButton.classList.add('hover')
