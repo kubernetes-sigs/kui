@@ -27,6 +27,10 @@ body[kui-theme="Atelier"] {
     --color-yellow: var(--color-base09);
     --color-light-yellow: hsla(48, 65%, 32%, 0.75);
 
+    --color-scrollbar-thumb: #121412;
+    --color-scrollbar-thumb-border: #3F433F;
+    --color-scrollbar-thumb-outline: #1C221C;
+
     --color-latency-0: #01665e;
     --color-latency-1: #5ab4ac;
     --color-latency-2: #c7eae5;

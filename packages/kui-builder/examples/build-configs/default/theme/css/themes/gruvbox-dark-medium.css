@@ -22,7 +22,11 @@ body[kui-theme="Gruvbox"] {
 
     --color-light-red: hsla(6, 96%, 59%, 0.75);
     --color-light-green: hsla(61, 66%, 44%, 0.75);
-    --color-light-yellow: hsla(42, 95%, 58%, 0.75)
+    --color-light-yellow: hsla(42, 95%, 58%, 0.75);
+
+    --color-scrollbar-thumb: #1E1C1B;
+    --color-scrollbar-thumb-border: #54514F;
+    --color-scrollbar-thumb-outline: #363230;
 
     --color-latency-0: #1b7837;
     --color-latency-1: #7fbf7b;

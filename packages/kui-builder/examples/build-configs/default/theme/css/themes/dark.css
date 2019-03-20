@@ -24,9 +24,9 @@ body[kui-theme="Dark"] {
     --color-light-green: hsla(66, 69%, 57%, 50%);
     --color-light-yellow: hsl(40, 81%, 70%);
 
-    --color-scrollbar-thumb: hsla(216, 7%, 6%, 0.25);
-    --color-scrollbar-thumb-border: hsla(216, 7%, 48%, 0.75);
-    --color-scrollbar-track: transparent;
+    --color-scrollbar-thumb: #141517;
+    --color-scrollbar-thumb-border: #424448;
+    --color-scrollbar-thumb-outline: #212327;
 
     --color-ui-06: hsl(216, 15%, 17%);
     --color-field-01: hsl(216, 15%, 17%);

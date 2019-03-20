@@ -25,6 +25,10 @@ body[kui-theme="Paraiso"] {
     --color-light-green: hsla(153, 43%, 50%, 0.75);
     --color-light-yellow: hsla(45, 99%, 55%, 0.75);
 
+    --color-scrollbar-thumb: #1C151C;
+    --color-scrollbar-thumb-border: #514551;
+    --color-scrollbar-thumb-outline: #332432;
+
     --color-latency-0: #542788;
     --color-latency-1: #998ec3;
     --color-latency-2: #d8daeb;

@@ -30,6 +30,10 @@ body[kui-theme="Nord"] {
     --color-light-green: hsla(92, 28%, 65%, 0.75);
     --color-light-yellow: hsla(40, 71%, 73%, 0.75);
 
+    --color-scrollbar-thumb: #1E2029;
+    --color-scrollbar-thumb-border: #545968;
+    --color-scrollbar-thumb-outline: #363B4D;
+
     --color-latency-0: #4575b4;
     --color-latency-1: #91bfdb;
     --color-latency-2: #e0f3f8;

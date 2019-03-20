@@ -24,6 +24,10 @@ body[kui-theme="Zenburn"] {
     --color-light-green: hsla(120, 14%, 60%, 75%);
     --color-light-yellow: hsl(40, 81%, 70%);
 
+    --color-scrollbar-thumb: #202020;
+    --color-scrollbar-thumb-border: #585858;
+    --color-scrollbar-thumb-outline: #3A3A3A;
+
     --color-latency-0: #1a9850;
     --color-latency-1: #91cf60;
     --color-latency-2: #d9ef8b;
