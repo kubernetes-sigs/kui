@@ -872,7 +872,7 @@ sidecar .header-right-bits {
     font-family: inherit;
     margin: 0;
 }
-.header-right-bits .action-content {
+.header-right-bits .action-content, .header-right-bits .custom-header-content {
     display: flex;
     flex-direction: column;
     flex: 1;
