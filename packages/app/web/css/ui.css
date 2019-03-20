@@ -536,10 +536,10 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .header-cell {
     text-align: left; /* th defaults to text-align: center */
 }
-.entity-name-group:not(.header-cell) .entity-name, .result-as-table .bold {
+.entity-name-group:not(.header-cell) .entity-name[data-key="NAME"], .result-as-table .bold {
     font-weight: 500;
 }
-body[kui-theme-style="dark"] .result-table:not(.result-table-with-custom-entity-colors) .entity-name-group:not(.header-cell) .entity-name, .result-table:not(.result-table-with-custom-entity-colors) .bold {
+body[kui-theme-style="dark"] .result-table:not(.result-table-with-custom-entity-colors) .entity-name-group:not(.header-cell) .entity-name[data-key="NAME"], .result-table:not(.result-table-with-custom-entity-colors) .bold {
     /* in dark mode, emphasize the entity name, unless
    (.result-table-with-custom-entity-colors) the client has requested
    control over entity colors */
