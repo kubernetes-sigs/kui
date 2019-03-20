@@ -41,6 +41,7 @@ env:
 
   global:
     - TRAVIS_KUBE_VERSION=1.12 # kubeadm-dind
+    - TRAVIS_HELM_VERSION=2.13.0 # kubeadm-dind
     - WEBPACK_CLIENT_URL="https://localhost:9080/"
     - TEST_ORG=testorg
     - TEST_SPACE=testspace
