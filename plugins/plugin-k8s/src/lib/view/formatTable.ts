@@ -254,7 +254,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
       const header = idx === 0 ? 'header-cell' : ''
 
       return {
-        key: columns[nameColumnIdx].key,
+        key: columns[0].key,
         name: nameForDisplay,
         fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
