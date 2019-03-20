@@ -52,6 +52,11 @@ td > .d2h-code-side-linenumber {
     border-color: var(--color-content-divider);
 }
 
+/* no line number support */
+.d2h-wrapper .d2h-code-linenumber {
+    display: none;
+}
+
 .d2h-code-linenumber {
     background-color: var(--color-ui-01);
     width: 7em;
