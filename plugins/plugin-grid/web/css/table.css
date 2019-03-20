@@ -411,6 +411,7 @@ body.subwindow .activation-viz-plugin {
 .activation-viz-plugin .grid-grid:not(.activation-viz-timeline) {
     /* margin: 0.5em 0 0.5em 0.5em; */ /* has to be margin, not padding; see shell issue #874; no right margin for scrollbar flush right */
     display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     overflow-y: auto;
