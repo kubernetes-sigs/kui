@@ -43,9 +43,9 @@ body[kui-theme="Light"] {
     --color-ui-04: var(--color-light-gray); /* 206 3 90 */
     --color-ui-05: var(--color-dark-gray); /* 204 15 65 */
 
-    --color-scrollbar-thumb: rgba(21, 41, 52, 0.35); /* color-text-01 at reduced alpha */
-    --color-scrollbar-thumb-border: var(--color-brand-01);
-    --color-scrollbar-track: var(--color-ui-05);
+    --color-scrollbar-thumb: #7A7B7D;
+    --color-scrollbar-thumb-border: #A8AAAC;
+    --color-scrollbar-thumb-outline: #FEFFFF;
 
     --color-selection-background: rgba(140, 155, 165, 0.40); /* color-ui-05 at reduced alpha */
 

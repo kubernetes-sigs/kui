@@ -149,8 +149,8 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
     // the return value will be `result`; we will populate it with
     // those fields now; `body` is the flex-wrap portion of the
     // content
-    const resultWrapper = div(undefined, 'fade-in usage-error-wrapper')
-    const result = div(undefined, options.noHide ? '' : ['hideable', 'page-content'])
+    const resultWrapper = div(undefined, 'usage-error-wrapper')
+    const result = div(undefined, options.noHide ? '' : ['hideable', 'page-content'], 'p')
     const body = div()
     const left = div() // usage and detailedExample
     const right = div() // required and optional parameters
@@ -353,7 +353,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         // detailed examples in a scroll region
         const examplesInScrollRegion = examples.length > 4 && sections && sections.length > 0
 
-        const rowsPart = examplesInScrollRegion ? div(undefined, 'scrollable') : examplePart
+        const rowsPart = examplesInScrollRegion ? div(undefined, ['scrollable', 'scrollable-auto']) : examplePart
         if (examplesInScrollRegion) {
           const nRowsInViewport = 6
           examplePart.appendChild(rowsPart)
@@ -404,7 +404,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         // bottom border; the 3em part must .log-line's height in
         // ui.css; nRowsInViewport = true means disable inner scrolling
         if (rows.length > nRowsInViewport && nRowsInViewport !== true) {
-          const tableScrollable = div(undefined, 'scrollable')
+          const tableScrollable = div(undefined, ['scrollable', 'scrollable-auto'])
           const nRows = (sections && (sections.length === 2 || (sections.length === 1 && scrollableDetailedExamples))) ? 8 : nRowsInViewport
           tableScrollable.style.maxHeight = `calc(${nRows} * 3em + 1px)`
           tableScrollable.appendChild(table)
