@@ -23,6 +23,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
@@ -34,7 +35,8 @@ const args = {
   package: ''
 }
 
-describe('Create with explicit entity type, then list', function (this: common.ISuite) {
+// TODO: webpack test
+localDescribe('Create with explicit entity type, then list', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

@@ -14,7 +14,8 @@ env:
       NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
 
     - LAYERS="openwhisk1 openwhisk3 grid"
-      MOCHA_TARGETS="electron"
+      MOCHA_TARGETS="webpack electron"
+      KUI_USE_PROXY=false
       NEEDS_OPENWHISK=true
 
     - LAYERS="openwhisk2 openwhisk4"

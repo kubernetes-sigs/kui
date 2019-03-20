@@ -25,6 +25,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
@@ -32,11 +33,11 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
-describe('Invoke -q (quiet invoke)', function (this: common.ISuite) {
+// TODO: webpack test
+localDescribe('Invoke -q (quiet invoke)', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  // create an action, using the implicit entity type
   it('should create an action', () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)

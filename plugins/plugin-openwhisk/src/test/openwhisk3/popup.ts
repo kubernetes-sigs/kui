@@ -18,7 +18,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-
+const { localDescribe } = common
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
@@ -114,49 +114,49 @@ const expectError = function (this: common.ISuite, spec: IErrorSpec) {
 // from here on are the tests...
 //
 
-describe('popup create action', function (this: common.ISuite) {
+localDescribe('popup create action', function (this: common.ISuite) {
   before(openwhisk.before(this, { popup: createAction(foo, foojs) }))
   after(common.after(this))
 
   waitForCreate.bind(this)({ name: foo, kind: 'action' })
 })
 
-describe('popup create action expecting conflict', function (this: common.ISuite) {
+localDescribe('popup create action expecting conflict', function (this: common.ISuite) {
   before(common.before(this, { popup: createAction(foo, foojs) }))
   after(common.after(this))
 
   expectError.bind(this)({ code: 409 })
 })
 
-describe('popup invoke non-existent action expecting error', function (this: common.ISuite) {
+localDescribe('popup invoke non-existent action expecting error', function (this: common.ISuite) {
   before(common.before(this, { popup: invokeAction('nope') }))
   after(common.after(this))
 
   expectError.bind(this)({ code: 404 })
 })
 
-describe('popup invoke action no parameters', function (this: common.ISuite) {
+localDescribe('popup invoke action no parameters', function (this: common.ISuite) {
   before(common.before(this, { popup: invokeAction(foo) }))
   after(common.after(this))
 
   waitForInvoke.bind(this)({ name: 'Step1 undefined' })
 })
 
-describe('popup invoke action with parameters', function (this: common.ISuite) {
+localDescribe('popup invoke action with parameters', function (this: common.ISuite) {
   before(common.before(this, { popup: invokeAction(foo).concat(['-p', 'name', '314159']) }))
   after(common.after(this))
 
   waitForInvoke.bind(this)({ name: 'Step1 314159' })
 })
 
-describe('popup delete action', function (this: common.ISuite) {
+localDescribe('popup delete action', function (this: common.ISuite) {
   before(common.before(this, { popup: deleteAction(foo) }))
   after(common.after(this))
 
   waitForDelete.bind(this)({ name: foo })
 })
 
-describe('popup delete non-existent action', function (this: common.ISuite) {
+localDescribe('popup delete non-existent action', function (this: common.ISuite) {
   before(common.before(this, { popup: deleteAction(foo) }))
   after(common.after(this))
 

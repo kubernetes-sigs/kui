@@ -21,7 +21,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, normalizeHTML, selectors, sidecar } = ui
-const { rp } = common
+const { rp, localDescribe } = common
 
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
@@ -45,7 +45,7 @@ const clean = host => {
   }
 }
 
-describe('Execute a command file', function (this: common.ISuite) {
+localDescribe('Execute a command file', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

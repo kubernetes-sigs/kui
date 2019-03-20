@@ -152,14 +152,26 @@ exports.before = (ctx, opts) => {
   return function () {
     const { cli } = ui
 
-    const addWskAuth = process.env.MOCHA_RUN_TARGET !== 'webpack' || opts.fuzz ? x => x
+    const setApiHost = process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz) ? x => x
+      : () => cli.do(`wsk host set ${apihost}`, ctx.app)
+        .then(cli.expectOK)
+        .catch(err => {
+          console.log(`Failed at command: wsk host set ${apihost}`)
+          common.oops(ctx)(err)
+        })
+
+    const addWskAuth = process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz) ? x => x
       : () => cli.do(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
         .then(cli.expectOK)
-        .catch(common.oops(ctx))
+        .catch(err => {
+          console.log(`Failed at command: wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`)
+          common.oops(ctx)(err)
+        })
 
     // clean openwhisk assets from previous runs, then start the app
     return Promise.all([ cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), cleanAll(true, process.env.AUTH2) ])
       .then(common.before(ctx, opts))
+      .then(setApiHost)
       .then(addWskAuth)
   }
 }

@@ -19,6 +19,7 @@ import { v4 as uuid } from 'uuid'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 const actionName = `activation-table-${uuid()}` // some unique name
 
@@ -89,7 +90,7 @@ export const openTableExpectCountOf = function (ctx, expectedCount, expectedErro
 }
 
 describe('summary visualization', function (this: common.ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   const invoke = (inputValue = 1) => {

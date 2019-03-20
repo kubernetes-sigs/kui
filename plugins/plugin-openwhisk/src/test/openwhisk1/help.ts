@@ -27,7 +27,7 @@ const { cli, selectors, sidecar } = ui
 import { doHelp, header, header2 } from '@kui-shell/plugin-core-support/test/core-support/help'
 
 /* the header for action help */
-const actionHelpHeader = header2('OpenWhisk', 'Action Operations')
+const actionHelpHeader = process.env.MOCHA_RUN_TARGET === 'webpack' && process.platform === 'linux' ? header2('OpenWhisk', 'Action operations') : header2('OpenWhisk', 'Action Operations')
 
 describe('Help command', function (this: common.ISuite) {
   before(openwhisk.before(this))
@@ -36,7 +36,6 @@ describe('Help command', function (this: common.ISuite) {
   //
   // and now here come the tests...
   //
-
   doHelp.call(this, 'wsk', { expect: header('OpenWhisk') })
   doHelp.call(this, 'wsk action', { expect: actionHelpHeader })
   doHelp.call(this, 'wsk action help', { expect: actionHelpHeader })

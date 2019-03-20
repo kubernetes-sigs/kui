@@ -19,6 +19,7 @@ import { v4 as uuid } from 'uuid'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 const actionName = `activation-grid-${uuid()}` // some unique name
 // const actionName2 = `activation-grid-${uuid()}` // some unique name
@@ -27,7 +28,7 @@ const N = 1 // number of activation batches to fetch
 const randomGarbage = `activation-grid-garbage-${uuid()}` // some unique name
 
 describe('grid visualization', function (this: common.ISuite) {
-  before(common.before(this))
+  before(openwhisk.before(this))
   after(common.after(this))
 
   const invoke = (inputValue, name = actionName, packageName?) => {
