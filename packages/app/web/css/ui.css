@@ -1776,7 +1776,7 @@ body.subwindow sidecar .padding-content {
     flex: 1;
     padding: 2vh 78px;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     /* justify-content: center; */
 }
 body.subwindow sidecar .padding-content {
@@ -2431,7 +2431,7 @@ sidecar .usage-error-wrapper .hideable {
     top: -.5rem;
     width: 5rem;
 }
-.page-content h3:first-child, .page-content h2:first-child, .page-content hr + h3 {
+.page-content > h3:first-child, .page-content > h2:first-child, .page-content hr + h3 {
     margin-top: 0;
     padding-top: 0;
 }
@@ -2779,6 +2779,7 @@ body {
     --color-support-02: var(--color-green);
     --color-support-03: var(--color-light-yellow);
     --color-support-03-darker: var(--color-yellow);
+    --color-support-04: var(--color-base0C);
 
     --color-stripe-01: var(--color-base01);
     --color-stripe-02: var(--color-base03);

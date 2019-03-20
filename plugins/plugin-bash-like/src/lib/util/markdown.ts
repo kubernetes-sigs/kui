@@ -14,18 +14,80 @@
  * limitations under the License.
  */
 
+import * as url from 'url'
 import * as path from 'path'
 
 import { pexec } from '@kui-shell/core/core/repl'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
+interface IMarkdown {
+  title: HTMLElement
+  body: HTMLElement
+}
+
 /**
  * Render a markdown file as HTML
  *
  */
-export default async (source, fullpath, hljs) => {
+export default (suffix: string, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+  if (suffix === 'md') {
+    return markdownify(source, fullpath, hljs)
+  } else if (suffix === 'adoc') {
+    return asciidocify(source, fullpath, hljs)
+  }
+}
+
+/**
+ * Render an <a>
+ *
+ */
+const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
+  const { href } = link
+
+  const parsedUrl = url.parse(href)
+  const isRemote = parsedUrl.protocol !== undefined && parsedUrl.protocol !== 'file:'
+
+  if (!isRemote && parsedUrl.pathname) {
+    const url = href.charAt(0) === '!' ? href : path.relative(
+      process.cwd(),
+      path.normalize(path.join(path.dirname(fullpath), parsedUrl.pathname)))
+    link.href = parsedUrl.hash || '#'
+    link.setAttribute('data-url', url)
+  }
+
+  // we add the `repl-pexec-link` breadcrumb so that we can fix up
+  // the onclick handlers below, in the "hello!" loop; we can't do
+  // this here, because we need the doms to be instantiated (not
+  // necessarily attached) before we can add the onclick handlers in
+  // the form we need
+  if (!isRemote) {
+    // don't pexec external links
+    link.classList.add('repl-pexec-link')
+  } else {
+    link.target = '_blank'
+  }
+
+  link.classList.add('bx--link')
+}
+
+/**
+ * Render an asciidoc file as HTML
+ *
+ */
+const asciidocify = async (source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+  const Asciidoctor = await import('asciidoctor.js')
+  const asciidoctor = Asciidoctor()
+
+  const htmlString = asciidoctor.convert(source)
+  return wrap(htmlString, fullpath, hljs)
+}
+
+/**
+ * Render a markdown file as HTML
+ *
+ */
+const markdownify = async (source: string, fullpath: string, hljs): Promise<IMarkdown> => {
   // use marked, but render links specially
-  const url = await import('url')
   const Marked = await import('marked')
   const renderer = new Marked.Renderer()
 
@@ -64,33 +126,27 @@ export default async (source, fullpath, hljs) => {
   }
 
   /** transform the href attribute of links */
-  renderer.link = (href, title, text) => {
-    const parsedUrl = url.parse(href)
-    const isRemote = !!parsedUrl.protocol
-    const target = isRemote ? `target='_blank'` : ''
-    let dataUrl = ''
-
-    if (!isRemote && parsedUrl.pathname) {
-      const url = href.charAt(0) === '!' ? href : path.relative(
-        process.cwd(),
-        path.normalize(path.join(path.dirname(fullpath), parsedUrl.pathname)))
-      href = '#'
-      dataUrl = `data-url="${url}"`
-    }
-
-    // we add the `repl-pexec-link` breadcrumb so that we can fix up
-    // the onclick handlers below, in the "hello!" loop; we can't do
-    // this here, because we need the doms to be instantiated (not
-    // necessarily attached) before we can add the onclick handlers in
-    // the form we need
-    const pexec = !isRemote ? 'repl-pexec-link' : '' // don't pexec external links
-    return `<a class='bx--link ${pexec}' ${dataUrl} ${target} href='${href}'` + (title ? ' title="' + title + '"' : '') + `}>${text}</a>`
+  renderer.link = (href: string, title: string, text: string) => {
+    const link = document.createElement('a')
+    link.href = href
+    if (title) link.title = title
+    link.innerHTML = text
+    renderLink(fullpath)
+    return link.outerHTML
   }
 
   // now we invoke marked with our renderer
   const marked = _ => Marked(_, { renderer })
   const htmlString = marked(source)
 
+  return wrap(htmlString, fullpath, hljs)
+}
+
+/**
+ * Wrap a formatted innerHTML
+ *
+ */
+const wrap = (htmlString: string, fullpath: string, hljs): IMarkdown => {
   const body = document.createElement('div')
   body.classList.add('padding-content')
 
@@ -98,7 +154,13 @@ export default async (source, fullpath, hljs) => {
   wrapper.innerHTML = htmlString
   wrapper.classList.add('page-content') // carbon-components
   body.appendChild(wrapper)
-  // wrapper.classList.add('scrollable')
+
+  const links = wrapper.querySelectorAll('a')
+  const rendLink = renderLink(fullpath)
+  for (let idx = 0; idx < links.length; idx++) {
+    const link = links[idx] as HTMLAnchorElement
+    rendLink(link)
+  }
 
   // hello! here we fix up the onclick handlers; see the
   // "repl-pexec-link" note above

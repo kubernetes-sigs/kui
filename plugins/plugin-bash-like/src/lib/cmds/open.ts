@@ -77,8 +77,8 @@ const open = async (filepath, hljs) => {
           let name = basename(filepath)
           let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
-          if (suffix === 'md' && !isHeadless()) {
-            const { title, body } = await markdownify(data, fullpath, hljs)
+          if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
+            const { title, body } = await markdownify(suffix, data, fullpath, hljs)
 
             data = body
 
