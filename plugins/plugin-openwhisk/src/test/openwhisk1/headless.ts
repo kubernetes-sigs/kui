@@ -30,6 +30,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { cli } from '@kui-shell/core/tests/lib/headless'
+const { localDescribe } = common
 
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
@@ -44,7 +45,7 @@ interface IResponse {
   stderr?: string
 }
 
-describe('Headless mode', function (this: common.ISuite) {
+localDescribe('Headless mode', function (this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
   // intentional typo with "actiono"

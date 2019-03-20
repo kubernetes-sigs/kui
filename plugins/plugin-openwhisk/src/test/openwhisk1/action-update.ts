@@ -15,6 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
+const { localIt } = common
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
@@ -82,13 +83,13 @@ describe('wsk action update without input file', function (this: common.ISuite) 
     .then(ui.expectStruct({ 'y': 4 })) // note that the original parameter binding is expected to be overwritten
     .catch(common.oops(this)))
 
-  it('should update the action, this time with a file', () => cli.do(`wsk action update ${actionName} -p name updater ${ROOT}/data/openwhisk/foo.js`, this.app)
+  localIt('should update the action, this time with a file', () => cli.do(`wsk action update ${actionName} -p name updater ${ROOT}/data/openwhisk/foo.js`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
     .catch(common.oops(this)))
 
-  it('should switch to parameters mode and verify updated params', () => cli.do('parameters', this.app)
+  localIt('should switch to parameters mode and verify updated params', () => cli.do('parameters', this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
@@ -96,7 +97,7 @@ describe('wsk action update without input file', function (this: common.ISuite) 
     .then(ui.expectStruct({ 'name': 'updater' })) // note that the original parameter binding is expected to be overwritten
     .catch(common.oops(this)))
 
-  it('should invoke the new code', () => cli.do(`wsk action invoke ${actionName}`, this.app)
+  localIt('should invoke the new code', () => cli.do(`wsk action invoke ${actionName}`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))

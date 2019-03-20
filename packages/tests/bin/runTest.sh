@@ -27,6 +27,29 @@ set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+#
+# This function checks whether wsk config file has auth and exports the auth value to the tests
+# e.g. exportWskAuth "$WSK_CONFIG_FILE" "AUTH" "$TEST_SPACE" "noWskAuthOK"
+#
+function exportWskAuth {
+  if [ -f "$1" ]; then
+    . "$1"
+    if [ -n "$AUTH" ]; then
+      export $2=$AUTH
+      if [ "$2" == "AUTH" ]; then
+        export __OW_APIGW_TOKEN=$APIGW_ACCESS_TOKEN
+        echo "Key from layer '$3' '$AUTH'"
+      else
+        echo "Key from layer2 '$3' '$AUTH'"
+      fi
+    elif [ "$4" != "noWskAuthOK" ]; then
+      exit 1
+    fi
+  elif [ "$4" != "noWskAuthOK" ]; then
+    exit 1
+  fi
+}
+
 if [ -n "$LAYER" ]; then
     # user asked to run tests in just one specified layer, e.g. "07"
 
@@ -44,25 +67,24 @@ if [ -n "$LAYER" ]; then
         # will use ~/.wskprops of process.env.WSK_CONFIG_FILE as per
         # the nominal openwhisk behavior
         #
-        echo "Allocating OpenWhisk keys for travis"
-
         export WSK_CONFIG_FILE=~/.wskprops_${KEY}_${PORT_OFFSET}
         export WSK_CONFIG_FILEb=~/.wskpropsb_${KEY}_${PORT_OFFSET}
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}"
         export TEST_SPACE2="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}b"
-        "$SCRIPTDIR"/allocateOpenWhiskAuth.sh "$TEST_SPACE" "$TEST_SPACE2"
 
-        if [ -f "$WSK_CONFIG_FILEb" ]; then
-            . "$WSK_CONFIG_FILEb"
-            export AUTH2=$AUTH
-            echo "Key from layer2 '$TEST_SPACE2' '$AUTH2'"
+        # check if we have already did auth allocation from previous tests against other mocha target
+        exportWskAuth "$WSK_CONFIG_FILE" "AUTH" "$TEST_SPACE" "noWskAuthOK" # noWskAuthOK: don't fail if there's no auth in our wsk config file
+
+        if [ -n "$AUTH" ]; then
+            echo "Already Allocated OpenWhisk keys for travis from previous tests against other Mocha target"
+        else
+            echo "Allocating OpenWhisk keys for travis"
+            "$SCRIPTDIR"/allocateOpenWhiskAuth.sh "$TEST_SPACE" "$TEST_SPACE2"
+            if [ "$NEEDS_SECOND_OPENWHISK_AUTH" == true ]; then
+              exportWskAuth "$WSK_CONFIG_FILEb" "AUTH2" "$TEST_SPACE2"
+            fi
+            exportWskAuth "$WSK_CONFIG_FILE" "AUTH" "$TEST_SPACE"
         fi
-
-        . "$WSK_CONFIG_FILE"
-        export AUTH=$AUTH
-        export __OW_APIGW_TOKEN=$APIGW_ACCESS_TOKEN
-
-        echo "Key from layer '$TEST_SPACE' '${AUTH}'"
     fi
 
     TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test/$LAYER" -maxdepth 5)

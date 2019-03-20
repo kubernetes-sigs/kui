@@ -25,6 +25,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
@@ -36,7 +37,8 @@ const ROOT = path.dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/pac
 const fooSrc = readFileSync(path.join(ROOT, 'data/openwhisk/foo.js')).toString()
 const foo2Src = readFileSync(path.join(ROOT, 'data/openwhisk/foo2.js')).toString()
 
-describe('Sidecar bottom stripe interactions for actions', function (this: common.ISuite) {
+// TODO: webpack test
+localDescribe('Sidecar bottom stripe interactions for actions', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
