@@ -22,6 +22,7 @@ import bottomStripe = require('./bottom-stripe')
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
+import Presentation from './views/presentation'
 import { popupListen } from './cli'
 
 const _highlight = op => highlightThis => {
@@ -40,7 +41,7 @@ const highlight = _highlight('add')
  * Make an DOM event handler that will restore the given pippedContainer
  *
  */
-const restore = (pippedContainer, sidecarClass, capturedHeaders, highlightThis, escapeHandler, options?) => () => {
+const restore = (pippedContainer, previousPresentation: Presentation, sidecarClass: string, capturedHeaders, highlightThis, escapeHandler, options?) => () => {
   debug('restore')
 
   const sidecar = getSidecar()
@@ -48,6 +49,11 @@ const restore = (pippedContainer, sidecarClass, capturedHeaders, highlightThis, 
 
   if (pippedContainer !== true) {
     removeAllDomChildren(parent)
+  }
+
+  if (previousPresentation) {
+    debug('restoring presentation mode', previousPresentation, Presentation[previousPresentation].toString())
+    document.body.setAttribute('data-presentation', Presentation[previousPresentation].toString())
   }
 
   // restore escape handler
@@ -89,7 +95,7 @@ const restore = (pippedContainer, sidecarClass, capturedHeaders, highlightThis, 
  *
  *
  */
-const pip = (container, capturedHeaders, highlightThis, returnTo = 'previous view', options?) => {
+const pip = (container, previousPresentation: Presentation, capturedHeaders, highlightThis, returnTo = 'previous view', options?) => {
   try {
     if (container !== true) {
       container.parentNode.removeChild(container)
@@ -103,7 +109,7 @@ const pip = (container, capturedHeaders, highlightThis, returnTo = 'previous vie
   const escapeHandler = undefined // we don't want to override the escape key behavior
   const backContainer = document.querySelector(bottomStripe.css.backContainer)
   const backButton = document.querySelector(bottomStripe.css.backButton)
-  const restoreFn = restore(container, sidecarClass, capturedHeaders, highlightThis, escapeHandler, options)
+  const restoreFn = restore(container, previousPresentation, sidecarClass, capturedHeaders, highlightThis, escapeHandler, options)
 
   debug('returnTo', returnTo)
   backButton.setAttribute('data-balloon', `Return to ${returnTo}`)
@@ -179,6 +185,7 @@ export default (command, highlightThis, container: string | Element, returnTo?: 
 
   // capture the current header and other DOM state, before the `command` overwrites it
   const alreadyPipped = document.querySelector('body > .picture-in-picture')
+  const presentation: Presentation = document.body.getAttribute('data-presentation') && Presentation[document.body.getAttribute('data-presentation')]
   const capturedHeader = capture(sidecarSelector('.sidecar-header-text'), popupListen)
   const capturedHeader2 = capture(sidecarSelector('.header-right-bits .custom-header-content'))
   const capturedHeader3 = capture(sidecarSelector('.header-right-bits .action-content'))
@@ -191,12 +198,13 @@ export default (command, highlightThis, container: string | Element, returnTo?: 
 
   debug('container', container)
   debug('alreadyPipped', alreadyPipped)
+  debug('presentation', presentation)
 
   const capturedHeaders = [ capturedHeader, capturedHeader2, capturedHeader3, capturedHeader4, capturedHeader5, capturedFooter ]
 
   // make the transition
   const restoreFn = container && !alreadyPipped
-    ? pip(container, capturedHeaders, highlightThis, returnTo, options)
+    ? pip(container, presentation, capturedHeaders, highlightThis, returnTo, options)
     : () => true
 
   highlight(highlightThis)

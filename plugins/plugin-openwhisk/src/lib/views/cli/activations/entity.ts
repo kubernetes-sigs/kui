@@ -42,7 +42,7 @@ interface IActivation {
  * Render an activation response in the CLI portion of the UI
  *
  */
-export default async (response: IActivation, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<void> => {
+export default async (response: IActivation, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<boolean> => {
   if (!response.response && response.activationId) {
     // probably non-blocking invoke
     // say "ok: invoked foo with id xxx"
@@ -56,10 +56,10 @@ export default async (response: IActivation, resultDom: Element, parsedOptions: 
     const nsForDisplay = !ns || ns === await currentNamespace() ? '' : `/${ns}/`
     const prettyName = `${nsForDisplay}${nameParts.slice(restIndex).join('/')}`
 
-    suffix.appendChild(document.createTextNode(`: invoked ${prettyName} with id `))
+    suffix.appendChild(document.createTextNode(` invoked ${prettyName} with id `))
 
     const clickable = document.createElement('span') as HTMLElement
-    clickable.className = 'clickable activationId'
+    clickable.className = 'clickable clickable-blatant activationId'
     clickable.innerText = response.activationId
     clickable.onclick = () => {
       const fetch = async (iter: number) => {
@@ -78,11 +78,12 @@ export default async (response: IActivation, resultDom: Element, parsedOptions: 
     suffix.appendChild(clickable)
 
     ok(resultDom, suffix)
+    return false
   } else {
     // blocking invoke, we have a response
     debug('rendering in sidecar')
 
-    showEntity(response, execOptions)
-    ok(resultDom)
+    await showEntity(response, execOptions)
+    return true
   }
 }

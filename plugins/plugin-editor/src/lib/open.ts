@@ -218,7 +218,7 @@ export const openEditor = async (name, options, execOptions) => {
         editor.updateOptions({ automaticLayout: false })
         setTimeout(() => {
           const { width, height } = editorWrapper.getBoundingClientRect()
-          editor.layout({ width: width - 10, height: height - 7 })
+          editor.layout({ width, height })
         }, 300)
       }
 

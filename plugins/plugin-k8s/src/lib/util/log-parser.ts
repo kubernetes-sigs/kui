@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+declare var hljs
+
 import * as Debug from 'debug'
 const debug = Debug('k8s/util/log-parser')
 
@@ -85,7 +87,7 @@ interface IOptions {
 }
 
 interface IZaprEntry {
-  timestamp: string
+  timestamp: string | Text | Element
   logType: string
   provider: string
   origin: string
@@ -188,6 +190,52 @@ const parseCloudLens = (raw: string, options: IOptions): Array<any> => {
  *
  */
 const parseIstio = (raw: string): Array<IZaprEntry> => {
+  let prevTimestamp: string
+
+  return raw
+    .split(/[\n\r]/)
+    .map(line => {
+      try {
+        const record = JSON.parse(line)
+        const timestamp = record.time || record.timestamp || record.date
+        const logType: string = record.level || record.logType || ''
+        const origin: string = record.instance || record.provider || ''
+
+        const zapr = {
+          timestamp: prettyPrintTime(timestamp, undefined, prevTimestamp),
+          logType,
+          provider: 'istio',
+          origin,
+          rest: record
+        }
+
+        prevTimestamp = timestamp
+        return zapr
+      } catch (err) {
+        // not JSON
+
+        // 2019-02-22T15:22:52.837196Z     info    Monitored certs: []envoy.CertSource{envoy.CertSource{Directory:"/etc/certs/", Files:[]string{"cert-chain.pem", "key.pem", "root-cert.pem"}}}
+        const pattern2Split = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s+([^\s]+)\s+([\s\S]*)$/
+        const match = line.split(pattern2Split)
+
+        const timestamp = (match && match[1]) || ''
+        const logType = (match && match[2]) || 'info'
+        const rest = (match && match[3]) || line
+
+        const zapr = {
+          timestamp: timestamp && prettyPrintTime(timestamp, undefined, prevTimestamp),
+          logType,
+          provider: '',
+          origin: '',
+          rest
+        }
+
+        prevTimestamp = timestamp
+        return zapr
+      }
+    })
+}
+const parseIstio2 = (raw: string): Array<IZaprEntry> => {
   // [2019-02-22 15:22:54.048][16][info][upstream] external/envoy/source/common/upstream/cluster_manager_impl.cc:494] add/update cluster outbound|9093||istio-telemetry.istio-system.svc.cluster.local during init
   // [2019-02-22 15:22:52.882][16][info][main] external/envoy/source/server/server.cc:190] initializing epoch 0 (hot restart version=10.200.16384.256.options=capacity=16384, num_slots=8209 hash=228984379728933363 size=4882536)
   const pattern = /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)\]\[(\d+)\]\[(.*)\]\[(.*)\]\s+(.*:\d+)\]\s+(.*)$/mg
@@ -248,7 +296,7 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
   } else {
     const container = document.createElement('div')
     container.classList.add('log-lines')
-    container.classList.add('fixed-table-layout')
+    // container.classList.add('fixed-table-layout')
 
     logEntries.forEach(({ logType = '', timestamp = '', origin = '', rest, runLength = 1 }) => {
       // dom for the log line
@@ -257,44 +305,52 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
       container.appendChild(logLine)
 
       // stdout or stderr?
-      if (logType.match(/^I/) || logType.match(/^INFO$/)) {
+      if (logType.match(/^I/) || logType.match(/^INFO$/i)) {
         logLine.classList.add('logged-to-stdout')
-      } else if (logType.match(/^[EF]/) || logType.match(/^(ERROR|WARN)/)) { // errors or failures
+      } else if (logType.match(/^[EF]/) || logType.match(/^(ERROR|WARN)/i)) { // errors or failures
         logLine.classList.add('logged-to-stderr')
       }
 
       // timestamp rendering
-      const timestampDom = document.createElement('div')
-      timestampDom.className = 'log-field log-date entity-name-group hljs-attribute'
-      if (typeof timestamp === 'string') {
-        timestampDom.innerText = timestamp
-      } else {
-        timestampDom.appendChild(timestamp)
-      }
-      logLine.appendChild(timestampDom)
+      const hasFirstColumn = true // timestamp || origin || (runLength > 1)
+      if (hasFirstColumn) {
+        const timestampDom = document.createElement('td')
+        timestampDom.className = 'log-field log-date entity-name-group hljs-attribute'
+        if (typeof timestamp === 'string') {
+          timestampDom.innerText = timestamp
+        } else {
+          timestampDom.appendChild(timestamp)
+        }
+        logLine.appendChild(timestampDom)
 
-      // origin, e.g. filename and line number, rendering
-      const originDom = document.createElement('div')
-      originDom.className = 'entity-name'
-      originDom.innerText = origin ? origin.replace(/]$/, '') : ''
-      timestampDom.appendChild(originDom)
+        // origin, e.g. filename and line number, rendering
+        const originDom = document.createElement('div')
+        originDom.className = 'entity-name'
+        originDom.innerText = origin ? origin.replace(/]$/, '') : ''
+        timestampDom.appendChild(originDom)
 
-      // run length rendering
-      if (runLength > 1) {
-        const runLengthDom = document.createElement('div')
-        runLengthDom.innerText = `(${runLength} times)`
-        runLengthDom.classList.add('small-top-pad')
-        runLengthDom.classList.add('red-text')
-        timestampDom.appendChild(runLengthDom)
+        // run length rendering
+        if (runLength > 1) {
+          const runLengthDom = document.createElement('div')
+          runLengthDom.innerText = `(${runLength} times)`
+          runLengthDom.classList.add('small-top-pad')
+          runLengthDom.classList.add('red-text')
+          timestampDom.appendChild(runLengthDom)
+        }
       }
 
       // log message rendering
-      const restDom = document.createElement('div')
+      const restDom = document.createElement('td')
       restDom.className = 'log-field log-message slightly-smaller-text'
+
+      /* if (!hasFirstColumn) {
+        restDom.setAttribute('colspan', '2')
+      } */
+
       if (typeof rest === 'object') {
         const pre = document.createElement('pre')
         const code = document.createElement('code')
-        code.innerText = JSON.stringify(rest)
+        code.innerText = JSON.stringify(rest, undefined, 2)
         pre.appendChild(code)
         restDom.appendChild(pre)
       } else {

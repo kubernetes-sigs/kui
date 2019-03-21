@@ -1,6 +1,5 @@
-body:not(.subwindow) sidecar .about-window.padding-content {
-    /* for "subwindows", i.e. windows launched from the command line, use the default block, so that the content scrolls */
-    display: flex;
+.about-window {
+    overflow: auto;
 }
 
 .about-window-long-description {
@@ -13,33 +12,39 @@ body:not(.subwindow) sidecar .about-window.padding-content {
 }
 .about-window .logo img {
     float: left;
-    margin-right: 1em;
+    margin-right: 1.5em;
     transition: all .8s ease-in-out;
 }
 .about-window .logo img:hover {
     filter: brightness(1.1);
 }
 
-.about-window .page-content {
+.xxabout-window .page-content {
     display: flex;
     flex-direction: column;
 }
 .about-window-top-content {
     flex: 1;
     display: flex;
-    align-items: center;
     flex-direction: column;
+    font-family: var(--font-sans-serif);
+    white-space: normal;
+    margin: 3em;
+    max-width: 50em;
 }
 
 .about-window-inside-content {
     display: flex;
     justify-content: space-evenly;
     width: 100%;
-    max-width: 40em;
 }
 
-.about-window-top-content .logo, .about-window-bottom-content, .about-window-inside-content {
-    margin: 1em;
+.about-window-inside-content {
+    margin: 3em 3em 0;
+}
+
+.about-window-bottom-content {
+    margin: 0 3em;
 }
 
 /* the middle content icon "stacks" */
@@ -55,7 +60,6 @@ body:not(.subwindow) sidecar .about-window.padding-content {
 
 .about-window-bottom-content {
     display: flex;
-    justify-content: center;
 }
 .about-window-bottom-content .log-lines {
     width: auto;

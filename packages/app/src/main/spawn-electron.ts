@@ -580,7 +580,7 @@ export const getCommand = argv => {
   argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/))
 
   // re: argv.length === 0, this should happen for double-click launches
-  const isShell = argv.length === 0 || argv.find(_ => _ === 'shell') || (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE)
+  const isShell = !process.env.KUI_POPUP && (argv.length === 0 || argv.find(_ => _ === 'shell') || (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE))
 
   debug('isShell', argv, isShell)
 
@@ -592,6 +592,8 @@ export const getCommand = argv => {
     argv = ['shell']
     subwindowPlease = false
     subwindowPrefs = { }
+  } else if (process.env.KUI_POPUP) {
+    argv = JSON.parse(process.env.KUI_POPUP)
   }
 
   debug('using args', argv, subwindowPrefs)

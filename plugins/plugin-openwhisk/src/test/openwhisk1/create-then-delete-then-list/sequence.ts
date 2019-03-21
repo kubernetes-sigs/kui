@@ -53,10 +53,10 @@ describe('Create a sequence, list it, delete it', function (this: common.ISuite)
 
   // delete the actions, keeping the sequence around
   it(`should delete the newly created action using "${rm}"`, () => cli.do(`action ${rm} foo`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOK)
     .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
   it(`should delete the other newly created action using "${rm}"`, () => cli.do(`action ${rm} foo2`, this.app)
-    .then(cli.expectJustOK)
+    .then(cli.expectOK)
     .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
 
   // now try clicking on one of the sequence component bubbles

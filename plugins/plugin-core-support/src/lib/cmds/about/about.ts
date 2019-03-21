@@ -54,8 +54,6 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
   // this is the main container for the dom
   const content = document.createElement('div')
   content.classList.add('padding-content')
-  content.classList.add('scrollable')
-  content.classList.add('scrollable-auto')
   content.classList.add('about-window')
 
   const flexContent = document.createElement('div')

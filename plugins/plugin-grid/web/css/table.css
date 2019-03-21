@@ -496,6 +496,7 @@ body.subwindow .activation-viz-plugin {
     align-content: flex-start;
 }
 .activation-viz-plugin .grid .grid-label {
+    font-family: var(--font-sans-serif);
     font-weight: 400;
     margin-bottom: 0.125em;
     /* min-width: 8em; */

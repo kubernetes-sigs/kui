@@ -108,6 +108,9 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
     //
     // here start the tests
     //
+    deleteNs(ns1, true) // ok if it doesn't exist
+    deleteNs(ns2, true) // ok if it doesn't exist
+
     createNs(ns1)
     createNs(ns2)
 

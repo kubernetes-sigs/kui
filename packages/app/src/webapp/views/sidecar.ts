@@ -107,7 +107,6 @@ export const getActiveView = () => {
   const sidecar = getSidecar()
   const activeView = sidecar.getAttribute('data-active-view')
   const container = sidecar.querySelector(activeView)
-  console.error('!!!!!!!', activeView, container, sidecar)
 
   return container
 }
@@ -260,9 +259,9 @@ export const renderField = async (container: HTMLElement, entity, field: string,
  * Show custom content in the sidecar
  *
  */
-export const showCustom = async (custom, options) => {
+export const showCustom = async (custom, options, resultDom?: Element) => {
   if (!custom || !custom.content) return
-  debug('showCustom', custom, options)
+  debug('showCustom', custom, options, resultDom)
 
   const sidecar = getSidecar()
 
@@ -278,9 +277,10 @@ export const showCustom = async (custom, options) => {
   // XOR, does as best one can in NodeJS), toggle maximization
   const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
   if (cli.isPopup() || viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
-    const presentAs = viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
-      : custom.presentation || Presentation.SidecarFullscreen
-    toggleMaximization(presentAs)
+    const presentation = viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
+      : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen
+    toggleMaximization()
+    presentAs(presentation)
   }
 
   if (custom.controlHeaders === true) {
@@ -353,7 +353,7 @@ export const showCustom = async (custom, options) => {
   const replView = document.querySelector('tab.visible .repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
-  const container = sidecar.querySelector('.custom-content')
+  const container = resultDom || sidecar.querySelector('.custom-content')
   removeAllDomChildren(container)
 
   if (custom.content.then) {
@@ -385,7 +385,9 @@ export const showCustom = async (custom, options) => {
 
           const { content } = await edit(entity, { readOnly: true })
           container.appendChild(content)
-          return
+
+          presentAs(Presentation.FixedSize)
+          return Presentation.FixedSize
         } catch (err) {
           debug('erroring in loading editor', err)
           // intentional fall-through
@@ -466,9 +468,9 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packa
 
   if (typeof name === 'string') {
     if (entity && entity.isREPL) {
-      const nameContainer = nameDom.querySelector('.sidecar-header-input') as HTMLInputElement
+      /* const nameContainer = nameDom.querySelector('.sidecar-header-input') as HTMLInputElement
       nameContainer.value = name
-      cli.listen(nameContainer)
+      cli.listen(nameContainer) */
     } else {
       const nameContainer = element('.entity-name', nameDom)
       nameContainer.innerText = name
@@ -695,16 +697,18 @@ export const isFullscreen = () => {
   return element('tab.visible').classList.contains('sidecar-full-screen')
 }
 
-export const toggleMaximization = (presentation?: Presentation) => {
-  if (document.body.classList.contains('subwindow')) {
-    document.body.classList.toggle('sidecar-full-screen')
-    document.body.classList.toggle('sidecar-visible')
-  }
-
-  if (presentation !== undefined) {
+export const presentAs = (presentation?: Presentation) => {
+  if (presentation || presentation === 0) {
     document.body.setAttribute('data-presentation', Presentation[presentation].toString())
   } else {
     document.body.removeAttribute('data-presentation')
+  }
+}
+
+export const toggleMaximization = () => {
+  if (document.body.classList.contains('subwindow')) {
+    document.body.classList.toggle('sidecar-full-screen')
+    document.body.classList.toggle('sidecar-visible')
   }
 
   element('tab.visible').classList.toggle('sidecar-full-screen')
@@ -750,7 +754,8 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
 
   const viewProviderDesiresFullscreen = document.body.classList.contains('subwindow')
   if (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
-    toggleMaximization(Presentation.SidecarFullscreen)
+    toggleMaximization()
+    presentAs(Presentation.SidecarFullscreen)
   }
 
   addSidecarHeaderIconText(entity.prettyType || entity.type, sidecar)

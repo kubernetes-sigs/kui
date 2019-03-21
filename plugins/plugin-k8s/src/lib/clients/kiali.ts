@@ -18,13 +18,18 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/clients/kiali')
 
 import * as needle from 'needle'
+import * as parseDuration from 'parse-duration'
 
+import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
 
 interface IOptions {
+  local: boolean
   kialiNamespace: string
   duration: string
+  pi: string
   graphType: string
+  layout: string
   injectServiceNodes: boolean
   groupBy: string
   appenders: string
@@ -33,9 +38,12 @@ interface IOptions {
 }
 
 class DefaultOptions implements IOptions {
+  local = false
   kialiNamespace = 'istio-system'
   duration = '10m'
+  pi = '15000'
   graphType = 'versionedApp'
+  layout = 'dagre'
   injectServiceNodes = true
   groupBy = 'app'
   appenders = 'deadNode,sidecarsCheck,serviceEntry,istio'
@@ -65,10 +73,16 @@ const get = fetch('get')
  *
  */
 let cachedApihost: string
-const apihost = async (kialiNamespace: string) => {
+const apihost = async (options: IOptions = new DefaultOptions()) => {
+  if (options.local) {
+    return `http://localhost:3000`
+  }
+
   if (cachedApihost) {
     return cachedApihost
   }
+
+  const { kialiNamespace } = options
 
   const [ svc, ingress ] = await Promise.all([
     $(`kubectl get svc kiali -n "${kialiNamespace}" -o json`),
@@ -100,9 +114,73 @@ const apihost = async (kialiNamespace: string) => {
  * @return the endpoint of the Kiali console
  *
  */
-export const kialiConsole = async (options: IOptions = new DefaultOptions()) => {
-  return `${await apihost(options.kialiNamespace)}/kiali/console`
+export const consoleView = async (options: IOptions = new DefaultOptions()) => {
+  return `${await apihost(options)}/kiali/console`
 }
+
+/**
+ * @return the endpoint of the Kiali graph view
+ * e.g. graph/namespaces/?edges=noEdgeLabels&graphType=versionedApp&namespaces=default&injectServiceNodes=true&duration=60&pi=15000&layout=dagre
+ *
+ */
+export const graphView = async (_options: IOptions = new DefaultOptions()) => {
+  const options = Object.assign({}, new DefaultOptions(), _options)
+
+  // the graph view seems to accept duration in units of seconds, weird. the graph model API accepts prometheus strings etc.
+  const MILLIS_PER_SECOND = 1000
+
+  const endpoint = `${await apihost(options)}/console/graph/namespaces/?edges=noEdgeLabels&graphType=${options.graphType}&namespaces=${options.namespace}&injectServiceNodes=true&duration=${parseDuration(options.duration) / MILLIS_PER_SECOND}&pi=${parseDuration(options.pi)}&layout=${options.layout}`
+  debug('graphView endpoint', endpoint)
+
+  const content = document.createElement('webview')
+  content.src = endpoint
+
+  /* content.addEventListener('did-stop-loading', function () {
+    content.openDevTools()
+  }) */
+
+  content.addEventListener('did-finish-load', function () {
+    content.insertCSS(`
+body { padding: 0 !important; background: #242924 !important; font-size: 16px !important; }
+#root, .container-pf-nav-pf-vertical, .container-fluid { height: 100% !important; }
+.ferfxaq { height: 100% !important; }
+.nav-pf-vertical, .navbar-pf-vertical, .breadcrumbs-pf-title { display: none; }
+.pficon-ok:before { color: #29a329 !important; }
+.label-pair .label-key { background-color: #1999b3 !important; color: hsl(120, 13%, 80%) !important; }
+.label-pair .label-value { background-color: hsl(228, 90%, 68%) !important; color: hsl(120, 13%, 80%) !important; }
+.container-pf-nav-pf-vertical > div:first-child { display: none; }
+.toolbar-pf { display: none !important; }
+.blank-slate-pf { background: transparent !important; border-color: transparent !important; color: hsl(120, 13%, 80%) !important; }
+.btn-primary { background: hsl(228, 90%, 68%) !important; border: hsl(228, 90%, 68%) !important; }
+.btn-default { background: hsl(120, 13%, 80%) !important; border: hsl(228, 90%, 68%) !important; color: #131513 !important; }
+.panel-heading { background: hsl(120, 9%, 20%) !important; color: hsl(120, 13%, 80%) !important; border: #809980 !important; }
+.panel { background: hsl(120, 8%, 30%) !important; color: hsl(120, 13%, 80%) !important; border-color: #809980 !important; }
+.card-pf { background-color: hsl(120, 13%, 80%) !important; box-shadow-color: #809980 !important; color: #131513 !important; }
+.f1ad7fht, .f1dwpjwl { background: #f4fbf4 !important; border-color: #809980 !important; } /* Legend, Hide */
+a { color: hsl(228, 90%, 68%) !important; }
+.container-pf-nav-pf-vertical { margin: 0 !important; }
+.navbar-pf-vertical, .about-modal-pf, .login-pf body, .login-pf .login-pf, .nav-pf-vertical, .nav-pf-vertical .list-group-item.active>a, .nav-pf-vertical .list-group-item:hover>a { background-color: #242924 !important; }
+hr { border-top-color: #809980 !important; }
+`)
+  })
+
+  return {
+    type: 'custom',
+    isEntity: true,
+    prettyType: 'kiali',
+    name: 'Graph View',
+    packageName: options.namespace,
+    presentation: Presentation.FixedSize,
+    modes: modes('graph'),
+    content
+  }
+}
+
+const _modes = [
+  { mode: 'apps', command: () => 'kiali get apps' },
+  { mode: 'graph', command: () => 'kiali graph --local' }
+]
+export const modes = (defaultMode: string) => _modes.map(_ => Object.assign({}, _, { defaultMode: _.mode === defaultMode }))
 
 /**
  * Fetch the Kiali graph model
@@ -110,10 +188,10 @@ export const kialiConsole = async (options: IOptions = new DefaultOptions()) => 
  * @param namespace application namespace
  *
  */
-export const graph = async (options: IOptions = new DefaultOptions()) => {
+export const graphModel = async (options: IOptions = new DefaultOptions()) => {
   // e.g. https://10.10.10.10:9080/kiali/api/namespaces/graph?duration=60s&graphType=versionedApp&injectServiceNodes=true&groupBy=app&appenders=deadNode,sidecarsCheck,serviceEntry,istio&namespaces=default
 
-  const url = `${apihost(options.kialiNamespace)}/kiali/api/namespaces/graph?duration=${options.duration}&graphType=${options.graphType}&injectServiceNodes=${options.injectServiceNodes}&groupBy=${options.groupBy}&appenders=${options.appenders}&namespaces=${options.namespaces}`
+  const url = `${apihost(options)}/kiali/api/namespaces/graph?duration=${options.duration}&graphType=${options.graphType}&injectServiceNodes=${options.injectServiceNodes}&groupBy=${options.groupBy}&appenders=${options.appenders}&namespaces=${options.namespaces}`
 
   return needle('get', url, { json: true, username: 'kiali', password: 'kiali' })
 }
@@ -134,7 +212,7 @@ interface IApplicationList {
  *
  */
 export const appList = async (options: IOptions = new DefaultOptions()): Promise<IApplicationList> => {
-  const url = `${await apihost(options.kialiNamespace)}/kiali/api/namespaces/${options.namespace}/apps`
+  const url = `${await apihost(options)}/kiali/api/namespaces/${options.namespace}/apps`
   return get(url)
 }
 
@@ -158,6 +236,6 @@ interface IApplicationHealth {
  *
  */
 export const appHealth = async (app: string, options: IOptions = new DefaultOptions(), rateInterval = '10m'): Promise<IApplicationHealth> => {
-  const url = `${await apihost(options.kialiNamespace)}/kiali/api/namespaces/${options.namespace}/apps/${app}/health?rateInterval=${rateInterval}`
+  const url = `${await apihost(options)}/kiali/api/namespaces/${options.namespace}/apps/${app}/health?rateInterval=${rateInterval}`
   return get(url)
 }

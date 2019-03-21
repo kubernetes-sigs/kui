@@ -293,7 +293,7 @@ const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sor
   const zoomLevel = options.zoom || smartZoom(totalCount)
   const zoomLevelForDisplay = options.timeline ? -1 : totalCount > 1000 ? -2 : totalCount <= 100 ? zoomLevel : 0 // don't zoom in too far, if there are many cells to display
 
-  gridGrid.className = `${css.gridGrid} padding-content overflow-auto cell-container zoom_${zoomLevelForDisplay}`
+  gridGrid.className = `${css.gridGrid} overflow-auto cell-container zoom_${zoomLevelForDisplay}`
   gridGrid.setAttribute('data-zoom-level', zoomLevelForDisplay)
   colorBy('duration', gridGrid)
 

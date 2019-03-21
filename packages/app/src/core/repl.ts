@@ -697,7 +697,7 @@ class InProcessExecutor implements IExecutor {
             })
 
             // response=true means we are in charge of 'ok'
-            if (nested || response.mode === 'prompt' || block['_isFakeDom']) {
+            if (nested || response.mode === 'prompt' || (block && block['_isFakeDom'])) {
               // the parent exec will deal with the repl
               debug('passing control back to prompt processor or headless', response, commandUntrimmed)
               return Promise.resolve(response)
@@ -706,7 +706,7 @@ class InProcessExecutor implements IExecutor {
               debug('displaying response')
               const resultDom = block.querySelector('.repl-result')
               return new Promise(resolve => {
-                cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions, command)(response) // <--- the Print part of REPL
+                cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions, command, evaluator)(response) // <--- the Print part of REPL
                   .then(() => {
                     if (echo) {
                       // <-- create a new input, for the next iter of the Loop

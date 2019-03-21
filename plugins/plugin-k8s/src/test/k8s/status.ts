@@ -35,10 +35,13 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
       .catch(common.oops(ctx))
   })
 
-  it('should list the new pod via the status command', () => {
-    return impl.do('k8s status', ctx.app)
-      .then(impl.expectOK('nginx'))
-      .catch(common.oops(ctx))
+  const alternatives = ['k status', 'kubectl status', 'k list', 'kubectl list']
+  alternatives.forEach(cmd => {
+    it(`should list the new pod via the "${cmd}"`, () => {
+      return impl.do(cmd, ctx.app)
+        .then(impl.expectOK('nginx'))
+        .catch(common.oops(ctx))
+    })
   })
 
   it('should delete the new pod by yaml', () => {
@@ -49,16 +52,16 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   })
 
   it('should NOT list the new pod via the status command', () => {
-    return impl.do('k8s status', ctx.app)
+    return impl.do('k status', ctx.app)
       .then(impl.expectJustOK())
       .catch(common.oops(ctx))
   })
 }
 
-describe('k8s status kubectl kui headless mode', function (this: common.ISuite) {
+describe('k status kubectl kui headless mode', function (this: common.ISuite) {
   doHeadless(this, kubectl)
 })
 
-describe('k8s status bin/kui headless mode', function (this: common.ISuite) {
+describe('k status bin/kui headless mode', function (this: common.ISuite) {
   doHeadless(this, kui)
 })

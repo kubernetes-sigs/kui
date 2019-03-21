@@ -282,15 +282,16 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
   const idx = argvNoOptions.indexOf(command) + 1
   const file = argvNoOptions[idx]
   const name = argvNoOptions[idx + 1]
-  const namespace = parsedOptions.namespace || 'default'
+  const namespace = parsedOptions.namespace || parsedOptions.n || 'default'
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
-  debug('getDirectReferences', file, name, namespace)
+  debug('getDirectReferences', file, name)
 
   /** format a --namespace cli option for the given kubeEntity */
   const ns = ({ metadata= {} } = {}) => {
+    debug('ns', metadata['namespace'], namespace)
     return metadata['namespace']
       ? `-n "${metadata['namespace']}"`
-      : parsedOptions.namespace ? `-n ${namespace}`
+      : parsedOptions.namespace || parsedOptions.n ? `-n ${namespace}`
       : ''
   }
 
@@ -383,10 +384,10 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
 
       // make a list of tables, recursively calling ourselves for
       // each yaml file in the given directory
-      return Promise.all(yamlsWithMainFirst.map(filepath => repl.qexec(`k8s status "${filepath}" --final-state ${finalState}`,
+      return Promise.all(yamlsWithMainFirst.map(filepath => repl.qexec(`k status "${filepath}" --final-state ${finalState}`,
                                                                        undefined, undefined, execOptions)))
     } else if (isDir === undefined) {
-      // then the file does not exist; maybe the user specified a resource kind, e.g. k8s status pods
+      // then the file does not exist; maybe the user specified a resource kind, e.g. k status pods
       debug('status by resource kind', file, name)
 
       const kubeEntities = repl.qexec(`kubectl get "${file}" "${name || ''}" ${ns()} -o json`,
@@ -468,11 +469,11 @@ const findControlledResources = async (args, kubeEntities: Array<any>): Promise<
 }
 
 /**
- * k8s status command handler
+ * k status command handler
  *
  */
-const status = command => async args => {
-  debug('constructing status')
+export const status = (command: string) => async args => {
+  debug('constructing status', args)
 
   const direct = await getDirectReferences(command)(args)
   if (Array.isArray(direct)) {

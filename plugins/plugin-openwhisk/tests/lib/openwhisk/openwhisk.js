@@ -146,20 +146,20 @@ const cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY |
 
 exports.cleanAll = cleanAll
 
-exports.before = (ctx, { fuzz, noApp = false } = {}) => {
+exports.before = (ctx, opts) => {
   ctx.retries(10)
 
   return function () {
     const { cli } = ui
 
-    const addWskAuth = process.env.MOCHA_RUN_TARGET !== 'webpack' || fuzz ? x => x
+    const addWskAuth = process.env.MOCHA_RUN_TARGET !== 'webpack' || opts.fuzz ? x => x
       : () => cli.do(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
         .then(cli.expectOK)
         .catch(common.oops(ctx))
 
     // clean openwhisk assets from previous runs, then start the app
     return Promise.all([ cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), cleanAll(true, process.env.AUTH2) ])
-      .then(common.before(ctx, { fuzz, noApp }))
+      .then(common.before(ctx, opts))
       .then(addWskAuth)
   }
 }
