@@ -1801,6 +1801,7 @@ body.subwindow .repl-block {
 }
 body.subwindow .result-as-table:not(.scrollable) {
     display: flex;
+    flex-direction: column;
 }
 body.subwindow .scrollable {
     overflow-x: scroll;
@@ -1842,9 +1843,6 @@ body.subwindow .sidecar-bottom-stripe-back-button .graphical-icon {
 }
 body.subwindow sidecar .sidecar-bottom-stripe {
     font-size: 2vmin;
-}
-body.subwindow sidecar .usage-error-wrapper {
-    font-weight: normal;
 }
 body.subwindow sidecar .usage-error-wrapper .page-content {
     display: flex;
@@ -2319,6 +2317,10 @@ sidecar.minimized [data-balloon]:before, sidecar.minimized [data-balloon]:after 
 }
 
 /* usage */
+.usage-error-wrapper {
+    color: var(--color-text-01);
+    font-weight: normal;
+}                    
 .usage-error-wrapper .marked-content {
     /* marked markdown renderer section */
     white-space: normal;
