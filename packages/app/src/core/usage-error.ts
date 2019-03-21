@@ -162,7 +162,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       left.classList.add('fifty-fifty')
       right.classList.add('fifty-fifty')
     } else {
-      right.style.marginLeft = '2em'
+      left.style.marginRight = '2em'
     }
 
     if (messageString) {
@@ -305,6 +305,10 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       body.appendChild(right)
       result.appendChild(body)
 
+      // keep track of the scroll regions we have created; if not
+      // many, maybe we use outer scrolling inside of inner scrolling
+      const scrollRegions = []
+
       // any minimally formatted sections? e.g. `intro` and `section` fields
       const makeSection = (parent = right, noMargin = false) => ({ title, content }) => {
         const wrapper = bodyPart(noMargin)
@@ -329,6 +333,8 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
         const html = example
           .trim()
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
           .replace(/(\[[^\[\]]+\])/g, '<span class="even-lighter-text">$1</span>') // lighter text for [optional args]
         const textPart = div()
         textPart.innerHTML = html
@@ -355,6 +361,8 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
         const rowsPart = examplesInScrollRegion ? div(undefined, ['scrollable', 'scrollable-auto']) : examplePart
         if (examplesInScrollRegion) {
+          scrollRegions.push(rowsPart)
+
           const nRowsInViewport = 6
           examplePart.appendChild(rowsPart)
           rowsPart.style.maxHeight = `calc(${nRowsInViewport} * 3em + 1px)`
@@ -370,7 +378,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           exampleContainer.appendChild(textPart)
           exampleContainer.appendChild(docPart)
 
-          textPart.style.color = 'var(--color-base0C)'
+          textPart.classList.add('example-command-text')
         })
       }
 
@@ -409,6 +417,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           tableScrollable.style.maxHeight = `calc(${nRows} * 3em + 1px)`
           tableScrollable.appendChild(table)
           wrapper.appendChild(tableScrollable)
+          scrollRegions.push(tableScrollable)
         } else {
           wrapper.appendChild(table)
         }
@@ -440,10 +449,10 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
           const cmdCell = row.insertCell(-1)
           const docsCell = row.insertCell(-1)
-          const cmdPart = span(label)
+          const cmdPart = span(label, 'pre-wrap')
           const dirPart = isDir && label && span('/')
-          const examplePart = example && span(example, label || dirPart ? 'left-pad' : '') // for -p key value, "key value"
-          const aliasesPart = aliases && aliases.length > 0 && div(undefined, 'lighter-text smaller-text small-top-pad')
+          const examplePart = example && span(example, label || dirPart ? 'left-pad lighter-text smaller-text' : '') // for -p key value, "key value"
+          const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'lighter-text smaller-text small-left-pad')
           const docsPart = span(docs)
           const allowedPart = allowed && smaller(span(undefined))
 
@@ -488,15 +497,15 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
           cmdCell.appendChild(cmdPart)
           if (dirPart) cmdCell.appendChild(smaller(dirPart))
           if (aliasesPart) cmdCell.appendChild(smaller(aliasesPart))
-          if (examplePart) cmdCell.appendChild(smaller(examplePart))
+          if (examplePart) cmdCell.appendChild(examplePart)
           docsCell.appendChild(docsPart)
           if (allowedPart) docsCell.appendChild(allowedPart)
 
           if (command) {
-            if (!isDir) cmdPart.style.fontWeight = 'bold'
+            if (!isDir) cmdPart.classList.add('semi-bold')
             if (!noclick) {
               cmdPart.classList.add('clickable')
-              // cmdPart.classList.add('clickable-blatant')
+              cmdPart.classList.add('clickable-blatant')
               cmdPart.onclick = async event => {
                 if (partial) {
                   const cli = await import('../webapp/cli')
@@ -615,6 +624,13 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
           listPart.appendChild(commandPart)
         })
+      }
+
+      // only one scroll region? then we might as well use outer scrolling
+      if (scrollRegions.length === 1) {
+        scrollRegions[0].classList.remove('scrollable')
+        scrollRegions[0].classList.remove('scrollable-auto')
+        scrollRegions[0].style.maxHeight = ''
       }
 
       return resultWrapper

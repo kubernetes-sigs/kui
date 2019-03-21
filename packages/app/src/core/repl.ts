@@ -580,7 +580,7 @@ class InProcessExecutor implements IExecutor {
                 // command's typing requirement
                 const message = nRequiredArgs === 0 && nPositionalOptionals === 0
                   ? 'This command accepts no positional arguments'
-                  : nPositionalOptionals > 0 ? 'This command does not accept this many arguments'
+                  : nPositionalOptionals > 0 ? 'This command does not accept this number of arguments'
                   : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
                 const err = new UsageError({ message, usage })
                 err.code = 497

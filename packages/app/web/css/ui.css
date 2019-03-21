@@ -444,7 +444,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .fifty-fifty:last-child {
     max-width: 50%;
 }
-.sidecar-visible .repl-block .fifty-fifty, tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
+.repl.sidecar-visible .repl-block .fifty-fifty, tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
     max-width: unset;
     margin-right: unset;
 }
@@ -1465,7 +1465,7 @@ sidecar .result-as-table .big-top-pad:first-child {
 .result-as-table.scrollable::-webkit-scrollbar-thumb, .result-as-table.scrollable::-webkit-scrollbar-track {
     box-shadow: none;
 }
-.scrollable::-webkit-scrollbar, .scrollable-auto::-webkit-scrollbar { width: 8px; }
+.scrollable::-webkit-scrollbar, .scrollable-auto::-webkit-scrollbar { width: 9px; height: 9px; }
 .scrollable-x::-webkit-scrollbar { height: 8px; }
 
 /* highlight.js tweaks */
@@ -1779,8 +1779,6 @@ body.subwindow sidecar .padding-content {
     flex: 1;
     padding: 2vh 78px;
     display: flex;
-    /* align-items: center; */
-    /* justify-content: center; */
     flex-direction: column;
 }
 body.subwindow sidecar .padding-content {
@@ -1791,6 +1789,7 @@ body.subwindow .result-table {
 }
 body.subwindow .repl, body.subwindow .repl-block .repl-result {
     font-size: unset;
+    overflow: unset;
 }
 body.subwindow .repl, body.subwindow .repl-block {
     font-size: 2vmin;
@@ -1844,9 +1843,20 @@ body.subwindow .sidecar-bottom-stripe-back-button .graphical-icon {
 body.subwindow sidecar .sidecar-bottom-stripe {
     font-size: 2vmin;
 }
-/*body.subwindow .repl-inner {
-    margin-top: 2em;
-}*/
+body.subwindow sidecar .usage-error-wrapper {
+    font-weight: normal;
+}
+body.subwindow sidecar .usage-error-wrapper .page-content {
+    display: flex;
+    flex-direction: column;
+}
+body.subwindow .page-content h2, body.subwindow .page-h2 {
+    font-size: 3.75vmin;
+    padding: 1vmin 0 1.5vmin;
+}
+body.subwindow .bx--breadcrumb-item {
+    margin-right: 2vmin;
+}
 
 /* we use titleBarStyle:hidden/hiddenInset on mac; this makes room for the window close/min/max buttons */
 body.os-darwin:not(.fullscreen) .header {
@@ -2347,6 +2357,9 @@ sidecar .usage-error-wrapper .hideable {
 }
 .usage-error-wrapper h4 {
     margin: 1.33em 0 0.375em;
+}
+.usage-error-wrapper .example-command-text {
+    color: var(--color-base0C);
 }
 .bx--breadcrumb {
     display: flex;
