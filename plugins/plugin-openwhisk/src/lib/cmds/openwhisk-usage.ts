@@ -18,8 +18,8 @@ const all = [ 'wsk action', 'wsk activation', 'wsk package', 'wsk rule', 'wsk tr
 const except = str => all.filter(_ => _ !== str)
 
 const aliases = {
-  get: ['open'],
-  list: ['ls']
+  get: [],
+  list: []
 }
 
 /** yargs-parser configuration */
