@@ -46,7 +46,8 @@ import { addConditions } from '../view/modes/conditions'
 import { addPods } from '../view/modes/pods'
 import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
-import describe from './describe'
+import describeImpl from './describe'
+import { status as statusImpl } from './status'
 
 /** add the user's option to the command line */
 const dashify = str => {
@@ -541,11 +542,13 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       command === 'kubectl' &&
       (verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json') && (execOptions.type !== ExecType.Nested || execOptions.delegationOk)))) {
     debug('delegating to describe')
-    return describe(opts).then(resolveBase).catch(reject)
+    return describeImpl(opts).then(resolveBase).catch(reject)
+  } else if (command === 'kubectl' && (verb === 'status' || verb === 'list')) {
+    return statusImpl(verb)(opts).then(resolveBase).catch(reject)
   }
 
   // helm status exists; kubectl status does not, but we offer one via `k8s`
-  const statusCommand = command === 'kubectl' ? 'k8s' : command
+  const statusCommand = command === 'kubectl' ? 'k' : command
 
   // for "raw" execution, force json output
   if (command === 'kubectl' && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
@@ -656,7 +659,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
           ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
           : ''
 
-        debug('about to get status', options.f || options.file, entityType, entity)
+        debug('about to get status', options.f || options.file, entityType, entity, resourceNamespace)
         return repl.qexec(`${statusCommand} status ${options.f || options.file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
                           undefined, undefined, { parameters: execOptions.parameters })
         .catch(err => {
@@ -841,7 +844,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       const entity = argv[2]
       const namespace = options.namespace || options.n || 'default'
       debug('status after kubectl run', entity, namespace)
-      repl.qexec(`k8s status deploy "${entity}" -n "${namespace}"`).then(resolve).catch(reject)
+      repl.qexec(`k status deploy "${entity}" -n "${namespace}"`).then(resolve).catch(reject)
     } else if ((options.f || options.file || (command === 'kubectl' && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
       //
       // then this was a create or delete from file; show the status of the operation

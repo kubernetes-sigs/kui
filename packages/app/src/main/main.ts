@@ -26,7 +26,7 @@ import { SubwindowPrefs, getCommand, initElectron, initHeadless } from './spawn-
  *
  */
 export const main = (argv: Array<string>, env = process.env, execOptions?: IExecOptions) => {
-  const forceUI = !!argv.find(arg => arg === '--ui')
+  const forceUI = !!argv.find(arg => arg === '--ui') || !!env.KUI_POPUP
   const isShell = !!argv.find(arg => arg === 'shell')
   const kuiShell = forceUI || isShell
   const isRunningHeadless = !!env.KUI_HEADLESS && !kuiShell

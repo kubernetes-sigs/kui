@@ -4,7 +4,7 @@ const timeout = process.env.TIMEOUT || 60000
 const constants = {
   API_HOST: process.env.API_HOST,
   // CLI_PLACEHOLDER: process.env.CLI_PLACEHOLDER || 'enter your command',
-  OK: process.env.OK || '<span class="ok">ok</span>',
+  OK: process.env.OK || /ok/,
   JUST_OK: process.env.OK || 'ok'
 }
 
@@ -84,7 +84,7 @@ const expectOK = (appAndCount, opt) => {
     .then(promptValue => { if (promptValue.length !== 0) { console.error(`Expected prompt value to be empty: ${promptValue}`) } return promptValue })
     .then(promptValue => assert.strictEqual(promptValue.length, 0)) //      ... verify that
     .then(() => opt && opt.expectError ? false : app.client.getHTML(selectors.OK_N(N - 1), timeout)) // get the "ok" part of the current command
-    .then(ok => opt && opt.expectError ? false : assert.strictEqual(ok, constants.OK)) // make sure it says "ok" !
+    .then(ok => opt && opt.expectError ? false : assert.ok(constants.OK.test(ok))) // make sure it says "ok" !
     .then(() => {
       // validate any expected list entry
       if (typeof opt === 'string') {
@@ -231,12 +231,12 @@ exports.sidecar = {
     .then(actualSource => assert.strictEqual(actualSource.replace(/\s+/g, ''), expectedSource.replace(/\s+/g, '')))
     .then(() => app),
 
-  expectResult: expectedResult => app => app.client.getText(selectors.SIDECAR_ACTIVATION_RESULT)
-    .then(exports.expectStruct(expectedResult))
+  expectResult: (expectedResult, failFast = true) => app => app.client.getText(selectors.SIDECAR_ACTIVATION_RESULT)
+    .then(exports.expectStruct(expectedResult, undefined, failFast))
     .then(() => app),
 
-  expectResultSubset: expectedResult => app => app.client.getText(selectors.SIDECAR_ACTIVATION_RESULT)
-    .then(exports.expectSubset(expectedResult))
+  expectResultSubset: (expectedResult, failFast = true) => app => app.client.getText(selectors.SIDECAR_ACTIVATION_RESULT)
+    .then(exports.expectSubset(expectedResult, failFast))
     .then(() => app),
 
   expectBadge: badge => app => app.client.waitUntil(() => app.client.getText(selectors.SIDECAR_BADGES)

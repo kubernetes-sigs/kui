@@ -199,7 +199,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   ) || undefined
 
   // helm doesn't support --output
-  const drilldownFormat = drilldownCommand === 'kubectl' && drilldownVerb === 'get' ? '--output=yaml' : ''
+  const drilldownFormat = drilldownCommand === 'kubectl' && drilldownVerb === 'get' ? '-o yaml' : ''
 
   const drilldownNamespace = options.n || options.namespace
     ? `-n ${repl.encodeComponent(options.n || options.namespace)}`

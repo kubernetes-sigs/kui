@@ -141,7 +141,7 @@ const ingress = async ({ argvNoOptions: args }) => {
  *
  */
 const statusBookinfo = async () => {
-  return $$(`k8s status ${bookinfoYamls}`)
+  return $$(`k status ${bookinfoYamls}`)
 }
 
 /**

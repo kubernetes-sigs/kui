@@ -32,7 +32,7 @@ import { prettyPrintTime } from './util/time'
 
 import Presentation from './views/presentation'
 import { formatListResult, formatMultiListResult } from './views/table'
-import { getSidecar, currentSelection, showEntity, showCustom } from './views/sidecar'
+import { getSidecar, currentSelection, presentAs, showEntity, showCustom } from './views/sidecar'
 
 /**
  * Make sure that the given repl block is visible.
@@ -96,8 +96,9 @@ export const setStatus = (block: Element, status: string) => {
  *
  *
  */
-export const ok = (parentNode: Element, suffix?: string | Element) => {
+export const ok = (parentNode: Element, suffix?: string | Element, css?: string) => {
   const okLine = document.createElement('div')
+  okLine.classList.add('ok-line')
 
   const replResultBlock = parentNode.parentNode.querySelector('.repl-result')
   const resultHasContent = replResultBlock.children.length > 0
@@ -107,11 +108,16 @@ export const ok = (parentNode: Element, suffix?: string | Element) => {
 
   const ok = document.createElement('span')
   okLine.appendChild(ok)
-  ok.setAttribute('class', 'ok')
-  ok.appendChild(document.createTextNode('ok'))
+  ok.classList.add('ok')
+  ok.appendChild(document.createTextNode(suffix ? 'ok:' : 'ok'))
 
   if (suffix) {
-    okLine.appendChild(typeof suffix === 'string' ? document.createTextNode(suffix) : suffix)
+    ok.classList.add('inline-ok')
+    okLine.appendChild(typeof suffix === 'string' ? document.createTextNode(` ${suffix}`) : suffix)
+  }
+
+  if (css) {
+    okLine.classList.add(css)
   }
 
   parentNode.appendChild(okLine)
@@ -181,7 +187,7 @@ export const streamTo = (block: Element) => {
 }
 
 /** create a popup content container */
-const createPopupContentContainer = (css = []): HTMLElement => {
+export const createPopupContentContainer = (css = [], presentation?: Presentation): HTMLElement => {
   const container = document.createElement('div')
   container.classList.add('padding-content')
 
@@ -190,6 +196,10 @@ const createPopupContentContainer = (css = []): HTMLElement => {
   css.forEach(_ => scrollRegion.classList.add(_))
   container.appendChild(scrollRegion)
 
+  if (presentation || presentation === 0) {
+    presentAs(presentation)
+  }
+
   const resultDom = document.createElement('div')
   resultDom.classList.add('repl-result')
   scrollRegion.appendChild(resultDom)
@@ -197,8 +207,14 @@ const createPopupContentContainer = (css = []): HTMLElement => {
   return resultDom
 }
 
-/** render popup content in the given container */
-const renderPopupContent = (command: string, container: Element, execOptions?: IExecOptions) => {
+/**
+ * Render popup content in the given container
+ *
+ */
+const renderPopupContent = (command: string, container: Element, execOptions?: IExecOptions, { modes = [], badges = [], controlHeaders = false } = {}) => {
+  debug('renderPopupContent', command, container)
+
+  // Last updated... text
   const subtext = document.createElement('div')
   subtext.appendChild(document.createTextNode('Last updated '))
   const date = document.createElement('strong')
@@ -224,21 +240,26 @@ const renderPopupContent = (command: string, container: Element, execOptions?: I
   }
   setTimeout(updateLastUpdateDateFirstTime, millisTillMidnight)
 
-  if ((container.parentNode as HTMLElement).classList.contains('result-as-multi-table')) {
-    (container.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
-  }
+  if (container) {
+    if ((container.parentNode as HTMLElement).classList.contains('result-as-multi-table')) {
+      (container.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
+    }
 
-  const custom = {
-    type: 'custom',
-    isEntity: true,
-    isREPL: true,
-    name: command,
-    presentation: Presentation.SidecarFullscreenForPopups,
-    subtext,
-    content: container.parentNode.parentNode // dom -> scrollRegion -> paddingContent
-  }
+    const custom = {
+      type: 'custom',
+      isEntity: true,
+      isREPL: true,
+      name: command,
+      presentation: Presentation.SidecarFullscreenForPopups,
+      subtext,
+      modes,
+      badges,
+      controlHeaders,
+      content: container.parentNode.parentNode // dom -> scrollRegion -> paddingContent
+    }
 
-  showCustom(custom, execOptions)
+    showCustom(custom, execOptions)
+  }
 }
 
 /** are we operating in popup mode? */
@@ -248,11 +269,12 @@ export const isPopup = () => document.body.classList.contains('subwindow')
  * Render the results of a command evaluation in the "console"
  *
  */
-export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?) => response => {
-  debug('printResults')
+export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?, evaluator?) => response => {
+  debug('printResults', response)
 
+  let customContainer
   if (isPopup()) {
-    resultDom = createPopupContentContainer()
+    resultDom = customContainer = createPopupContentContainer(['valid-response'], response.presentation || (!Array.isArray(response) && Presentation.SidecarFullscreenForPopups))
   }
 
   if (process.env.KUI_TEE_TO_FILE) {
@@ -299,7 +321,8 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
         if (response.length > 0) {
           const registeredListView = registeredListViews[response[0].type]
           if (registeredListView) {
-            registeredListView(response, resultDom, parsedOptions)
+            await registeredListView(response, resultDom, parsedOptions)
+            return resultDom.children.length === 0
           } else {
             const rows = await formatListResult(response)
             rows.map(row => resultDom.appendChild(row))
@@ -310,7 +333,7 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
         if (echo) {
           resultDom.appendChild(response);
           (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-          ok(resultDom.parentNode).className = 'ok-for-list'
+          ok(resultDom.parentNode).classList.add('ok-for-list')
         }
       } else if (response.verb === 'list' && response[response.type] && typeof response[response.type] === 'number') {
         // maybe a list API returned a count?
@@ -318,7 +341,7 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
         span.innerText = response[response.type]
         resultDom.appendChild(span);
         (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-        ok(resultDom.parentNode).className = 'ok-for-list'
+        ok(resultDom.parentNode).classList.add('ok-for-list')
       } else if (typeof response === 'number' || typeof response === 'string' ||
                  (!response.type && response.message && typeof response.message === 'string')) {
         // if either the response is a string, or it's a non-entity (no response.type) and has a message field
@@ -329,22 +352,39 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
           span.innerText = response.message || response
           resultDom.appendChild(span);
           (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-          ok(resultDom.parentNode).className = 'ok-for-list'
+          ok(resultDom.parentNode).classList.add('ok-for-list')
         }
       } else if (response.type === 'custom' || response.renderAs === 'custom') {
-        if (echo) {
-          showCustom(response, execOptions)
+        if (echo || execOptions && execOptions.replSilence) {
+          const presentation = await showCustom(response, execOptions, customContainer)
+
           if (!isPopup()) {
             ok(resultDom.parentNode)
           }
-        } else if (execOptions && execOptions.replSilence) {
-          showCustom(response, execOptions)
+
+          if (presentation !== undefined) {
+            response.presentation = presentation
+          }
+
+          return !customContainer || customContainer.children.length === 0
         }
       } else if (registeredEntityViews[response.type]) {
         // there is a registered entity view handler for this response
-        await registeredEntityViews[response.type](response, resultDom, parsedOptions, execOptions)
+        if (await registeredEntityViews[response.type](response, resultDom, parsedOptions, execOptions)) {
+          if (echo) ok(resultDom.parentNode)
+        }
+
+        // we rendered the content?
+        return resultDom.children.length === 0
       } else if (response.verb === 'delete') {
-        if (echo) ok(resultDom.parentNode)
+        if (echo) {
+          // we want the 'ok:' part to appear even in popup mode
+          if (response.type) {
+            ok(resultDom, `deleted ${response.type.replace(/s$/, '')} ${response.name}`, 'show-in-popup')
+          } else {
+            ok(resultDom)
+          }
+        }
       } else if (response.verb === 'get' || response.verb === 'create' || response.verb === 'update') {
         // get response?
         const forRepl = showEntity(response, Object.assign({}, execOptions || {}, { echo, show: response.show || 'default' }))
@@ -357,6 +397,9 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
             ok(resultDom.parentNode)
           }
         }
+
+        // we rendered the content
+        return true
       } else if (typeof response === 'object') {
         // render random json in the REPL directly
         const code = document.createElement('code')
@@ -364,7 +407,7 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
         resultDom.appendChild(code)
         setTimeout(() => hljs.highlightBlock(code), 0);
         (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-        ok(resultDom.parentNode).className = 'ok-for-list'
+        ok(resultDom.parentNode).classList.add('ok-for-list')
       }
     } else if (response) {
       if (echo) ok(resultDom.parentNode)
@@ -373,8 +416,9 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
 
   let promise
   if (Array.isArray(response) && Array.isArray(response[0])) {
-    // multi-table output
-    promise = formatMultiListResult(response, resultDom)
+    // multi-table output; false means that the renderer hasn't placed
+    // anything in the DOM; it's up to us here
+    promise = formatMultiListResult(response, resultDom).then(() => false)
   } else {
     promise = render(response, { echo, resultDom })
   }
@@ -401,14 +445,31 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
     (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
     if (echo) {
       promise.then(() => {
-        ok(resultDom.parentNode as Element).className = 'ok-for-list'
+        ok(resultDom.parentNode as Element).classList.add('ok-for-list')
       })
     }
-
-    if (isPopup()) {
-      renderPopupContent(command, resultDom, execOptions)
-    }
   }
+
+  promise.then(async (alreadyRendered: boolean) => {
+    if (isPopup() && ((Array.isArray(response) || (customContainer && customContainer.children.length > 0)) || response.presentation === Presentation.FixedSize)) {
+
+      const incognito = evaluator && evaluator.options && evaluator.options.incognito && evaluator.options.incognito
+      if (!incognito || incognito.indexOf('popup') < 0) {
+        // view modes
+        const modes = response.modes ||
+          (response[0] && response[0].modes) ||
+          (response[0] && response[0][0] && response[0][0].modes)
+
+        await renderPopupContent(command, alreadyRendered !== true && resultDom, execOptions, { modes, controlHeaders: response.controlHeaders, badges: response.badges })
+      }
+
+      if (!incognito || incognito.indexOf('popup') < 0) {
+        // add the command to the popup CLI, unless the command does
+        // not wish itself to be known in the popup CLI
+        popupListen(undefined, command)
+      }
+    }
+  })
 
   return Promise.resolve()
 }
@@ -417,7 +478,7 @@ export const getInitialBlock = () => {
   return document.querySelector('tab.visible .repl .repl-block.repl-initial')
 }
 export const getCurrentBlock = () => {
-  return document.querySelector('tab.visible .repl .repl-block.repl-active')
+  return document.querySelector('tab.visible .repl-active')
 }
 export const getCurrentProcessingBlock = () => {
   return document.querySelector('tab.visible .repl .repl-block.processing')
@@ -484,14 +545,19 @@ export const unlisten = prompt => {
     prompt.onkeypress = null
   }
 }
-export const popupListen = (text: Element) => {
-  if (text.classList.contains('is-repl-like')) {
-    const input = text.querySelector('.sidecar-header-input')
-    listen(input)
+export const popupListen = (text = getSidecar().querySelector('.sidecar-header-text'), previousCommand?: string) => {
+  if (previousCommand) {
+    // emit the previous command on the repl
+    const nameContainer = getSidecar().querySelector('.sidecar-header-input') as HTMLInputElement
+    nameContainer.value = previousCommand
   }
+
+  const input = text.querySelector('.sidecar-header-input')
+  listen(input)
 }
 export const listen = prompt => {
   debug('listen', prompt)
+  prompt.readOnly = false
 
   if (!prompt.classList.contains('sidecar-header-input')) {
     prompt.focus()
@@ -752,7 +818,8 @@ export const oops = (command: string, block?: Element, nextBlock?: Element) => e
   }
 
   if (isPopup()) {
-    renderPopupContent(command, resultDom)
+    renderPopupContent(command, message.content || resultDom, {}, message.modes)
+    popupListen(undefined, command)
   }
 
   installBlock(block.parentNode, block, nextBlock)()

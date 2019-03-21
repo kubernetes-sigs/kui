@@ -85,6 +85,7 @@ const getApps = async ({ parsedOptions }) => {
     type: 'application',
     noSort: true,
     name: 'NAME',
+    modes: client.modes('apps'),
     outerCSS: 'header-cell',
     attributes: [
       { value: 'MESHED?', outerCSS: 'header-cell text-center hide-with-sidecar' },
@@ -152,7 +153,13 @@ const getApps = async ({ parsedOptions }) => {
       {
         outerCSS: 'hide-with-sidecar',
         fontawesome: [
-          { fontawesome: 'fas fa-vial', balloon: 'Start a load test', onclick: async () => pexec(`wrk -d 20 ${await ingressFor(app.name)}`) }
+          {
+            fontawesome: 'fas fa-vial',
+            balloon: 'Load test',
+            balloonLength: 'small',
+            balloonPos: 'left',
+            onclick: async () => pexec(`wrk -d 20 ${await ingressFor(app.name)}`)
+          }
         ]
       }
     ]
@@ -188,5 +195,6 @@ export default async (commandTree, prequire) => {
   const getAppsCmd2 = commandTree.listen('/k/get/apps', getApps, { noAuthOk: true })
   commandTree.synonym('/k/get/app', getApps, getAppsCmd2, { noAuthOk: true })
 
-  commandTree.listen('/kiali/console', () => client.kialiConsole(), { noAuthOk: true })
+  commandTree.listen('/kiali/console', () => client.consoleView(), { noAuthOk: true })
+  commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView(parsedOptions), { noAuthOk: true })
 }

@@ -1,5 +1,10 @@
 body.subwindow #tutorialPane .tutorial-header {
     padding-top: 1em;
+    -webkit-app-region: drag;
+}
+
+body.subwindow.tutorial-in-progress, body.subwindow.tutorial-in-progress .page, body.subwindow.tutorial-in-progress .main {
+    height: 100%;
 }
 
 body.tutorial-in-progress.tutorial-is-fullscreen tab {
@@ -52,14 +57,14 @@ body.tutorial-in-progress.tutorial-is-fullscreen tab {
     
 #tutorialPane .tutorial-header {
     display: flex;
-    border-bottom: 2px solid var(--color-content-divider);
-    margin: 0 0 1em;
+    border-bottom: 1px solid var(--color-content-divider);
+    margin: 0 0 2em;
     padding: 0 1.8125em;
 }
 #tutorialPane .tutorial-header .tutorial-header-names {
     flex: 1;
     font-size: 2.75em;
-    padding: calc(1em / 2.75) 0 calc(0.5em / 2.75);
+    padding: calc(1em / 2.75) 0 calc(1em / 2.75);
 }
 #tutorialPane .tutorial-header .tutorial-header-tutorial-name-stripe {
     display: flex;

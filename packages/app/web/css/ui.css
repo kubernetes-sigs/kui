@@ -181,9 +181,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .repl, .repl input {
     font-family: var(--font-monospace);
 }
-.repl-result {
-    font-size: 0.875em;
-}
 .result-as-table .result-table, .result-as-table.result-table {
     display: table;
     border-spacing: 0;
@@ -366,11 +363,13 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     opacity: 0 !important;
     margin: 0 !important;
 }
+.repl-result, .repl input, .repl-input-like {
+    font-size: 0.925em;
+}
 .repl input, .repl-input-like {
     font-weight: 500; /* make it a bit more substantial; IBM Plex Mono 400 is too light */
     color: var(--color-text-01);
     background: transparent;
-    font-size: 0.875em;
     border: none;
     flex: 1;
     caret-color: var(--color-support-01);
@@ -388,9 +387,14 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .header .clickable.oops {
     font-weight: 900;
 }
+.repl-block.valid-response div:not(.repl-result) > .ok-line,  .repl-block.valid-response > .oops {
+    font-size: 0.875em;
+}
 .repl-block.valid-response .ok, .repl-block.valid-response > .oops {
     display: block;
-    font-size: 0.875em;
+}
+.repl-block.valid-response .ok.inline-ok {
+    display: inline;
 }
 .repl-block.valid-response .repl-result .ok {
     /* oof, sometimes the .ok is nested under a repl-result, which would
@@ -768,18 +772,6 @@ body:not(.subwindow) .sidecar-full-screen sidecar .sidecar-bottom-stripe-maximiz
     opacity: 0;
     width: 0;
     height: 0;
-}
-body:not(.subwindow) .sidecar-bottom-stripe-quit, body.subwindow[data-presentation="SidecarFullscreen"] .sidecar-bottom-stripe-quit {
-    /* no quit button if not in subwindow/popup mode */
-    display: none;
-}
-body.subwindow[data-presentation="SidecarFullscreenForPopups"] sidecar .sidecar-bottom-stripe-close {
-    /* no close button if in subwindow/popup mode */
-    display: none;
-}
-body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
-    /* in subwindow mode, no maximize or unmaximize buttons */
-    display: none;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button-return-to::first-letter, .sidecar-bottom-stripe .sidecar-bottom-stripe-button[data-mode] {
     /* for bottom mode-switching buttons, capitalize the text; for actual buttons, keep the capitalization as it was given */
@@ -1171,6 +1163,11 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+webview {
+    display: flex;
+    flex: 1;
+    background: transparent;
+}
 .blurry {
     filter: blur(3px) brightness(0.5) grayscale(0.5);
     -webkit-app-region: drag;
@@ -1364,7 +1361,7 @@ code.fancy-code, code.fancy-code.hljs {
 .top-pad {
     margin-top: 1em;
 }
-.big-top-pad:not(:first-child) > div {
+.repl .big-top-pad > div, .big-top-pad:not(:first-child) > div {
     padding-top: 0.75em;
 }
 .repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div, body.subwindow .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
@@ -1634,8 +1631,8 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 .log-lines .log-line .log-field.log-date {
     /* the date part of log lines */
     vertical-align: middle;
-    font-size: 0.875em;
-    font-weight: bold;
+    font-size: 0.925em;
+    font-weight: 500;
     width: 15em;
     padding-top: 1em;
     padding-bottom: 1em;
@@ -1645,7 +1642,7 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
     color: var(--color-text-02);
 }
 .log-lines .log-line .log-field.log-date.hljs-attribute {
-    color: var(--color-base0D);
+    color: var(--color-text-01);
 }
 .log-lines .log-line .log-message {
     /* the message part of log lines */
@@ -1653,15 +1650,6 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 }
 sidecar .log-lines .log-line:nth-child(2n) .log-field {
     background: var(--color-ui-03);
-}
-/*body.subwindow sidecar .activation-result .log-line .log-field code {
-    background: var(--color-ui-02);
-}*/
-body.subwindow sidecar .log-lines .log-line:nth-child(2n+1) .log-field {
-    background: var(--color-ui-02);
-}    
-body.subwindow .activation-result {
-    background: var(--color-ui-02);
 }
 
 /* legend for activation/trace list */
@@ -1746,13 +1734,58 @@ body.subwindow .activation-result {
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
-
-body.subwindow:not(.sidecar-visible), body.subwindow:not(.sidecar-visible) .page, body.subwindow:not(.sidecar-visible) .main, body.subwindow:not(.sidecar-visible) .repl, body.subwindow:not(.sidecar-visible) .tab-container, body.subwindow:not(.sidecar-visible) tab {
+body.subwindow .repl-block .ok-line, body.subwindow .repl-block .oops {
+    font-size: 2.5vmin;
+}
+body:not(.subwindow) .sidecar-bottom-stripe-quit, body.subwindow[data-presentation="SidecarFullscreen"] .sidecar-bottom-stripe-quit {
+    /* no quit button if not in subwindow/popup mode */
+    display: none;
+}
+body.subwindow[data-presentation="SidecarFullscreenForPopups"] sidecar .sidecar-bottom-stripe-close, body.subwindow[data-presentation="FixedSize"] sidecar .sidecar-bottom-stripe-close {
+    /* no close button if in subwindow/popup mode */
+    display: none;
+}
+body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
+    /* in subwindow mode, no maximize or unmaximize buttons */
+    display: none;
+}
+/*body.subwindow sidecar .activation-result .log-line .log-field code {
+    background: var(--color-ui-02);
+}*/
+body.subwindow sidecar .log-lines .log-line:nth-child(2n+1) .log-field {
+    background: var(--color-ui-02);
+}    
+body.subwindow .activation-result {
+    background: var(--color-ui-02);
+}
+body.subwindow .repl-block {
+    background-color: transparent;
+}
+body.subwindow sidecar {
+    background: var(--color-ui-02);
+    border-left: none;
+    box-shadow: none;
+}
+body.subwindow[data-presentation="FixedSize"] .repl-block {
+    margin: 0;
+    flex: 1;
+    display: flex;
+}
+body.subwindow[data-presentation="FixedSize"] .repl-block .repl-result {
+    flex: 1;
+}
+body.subwindow:not(.sidecar-visible) .repl {
+    display: flex;
+}
+body.subwindow:not(.sidecar-visible), body.subwindow:not(.sidecar-visible) .page, body.subwindow:not(.sidecar-visible) .main, body.subwindow:not(.sidecar-visible) .xxxrepl, body.subwindow:not(.sidecar-visible) .tab-container, body.subwindow:not(.sidecar-visible) tab {
     height: auto;
     overflow: auto;
     max-height: unset;
     align-items: center;
     justify-content: center;
+}
+body.subwindow.tutorial-is-fullscreen .main {
+    align-items: initial;
 }
 body.subwindow:not(.sidecar-visible) sidecar {
     width: 0;
@@ -1771,15 +1804,19 @@ body.subwindow sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity
 body.subwindow sidecar .sidecar-header-text.is-repl-like .repl-input {
     display: flex;
 }
-body.subwindow sidecar .sidecar-header-name-content, body.subwindow sidecar .sidecar-header-text {
+body.subwindow sidecar .sidecar-header-name-content, body.subwindow sidecar .sidecar-header-text, body.subwindow sidecar .sidecar-header-text.is-repl-like .repl-input {
     /* make sidecar-header-input occupy full width */
     flex: 1;
 }
 body.subwindow sidecar .padding-content {
     flex: 1;
-    padding: 2vh 78px;
+    padding: 4vh 6vh 0;
     display: flex;
     flex-direction: column;
+}
+body.subwindow[data-presentation="FixedSize"] sidecar .padding-content {
+    /* content takes care of layout, e.g. monaco-editor */
+    padding: 0;
 }
 body.subwindow sidecar .padding-content {
     overflow: auto;
@@ -1791,15 +1828,23 @@ body.subwindow .repl, body.subwindow .repl-block .repl-result {
     font-size: unset;
     overflow: unset;
 }
-body.subwindow .repl, body.subwindow .repl-block {
+body.subwindow sidecar .sidecar-header-secondary-content {
+    font-size: 1em;
+}
+body.subwindow .repl, body.subwindow .custom-content {
     font-size: 2vmin;
+}
+body.subwindow .repl, body.subwindow .repl-block, body.subwindow .result-as-table {
     display: initial;
 }
 body.subwindow .repl-block {
     font-family: var(--font-monospace);
     margin: auto;
 }
-body.subwindow .result-as-table:not(.scrollable) {
+body.subwindow .result-as-table {
+    padding-bottom: 4vh;
+}
+body.subwindow .result-as-multi-table:not(.scrollable) {
     display: flex;
     flex-direction: column;
 }
@@ -1829,7 +1874,7 @@ body.subwindow .repl-input {
 body.subwindow .repl-output {
     padding: 0 1em 0 1em;
 }
-body.subwindow .repl .repl-input .repl-prompt, body.subwindow .repl .repl-input input, body.subwindow .repl .repl-prompt-timestamp, body.subwindow sidecar .repl-input, body.subwindow sidecar .repl-block .ok {
+body.subwindow .repl .repl-input .repl-prompt, body.subwindow .repl .repl-input input, body.subwindow .repl .repl-prompt-timestamp, body.subwindow sidecar .repl-input, body.subwindow sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
     display: none;
 }
 body.subwindow .repl-block {
@@ -1878,8 +1923,12 @@ sidecar .repl-input {
     display: none;
 }
 body.subwindow sidecar .repl-input input {
+    -webkit-app-region: no-drag;
     font-family: var(--font-sans-serif);
     font-size: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 body.subwindow .header .header-left-bits .deemphasize {
     display: none;
@@ -2721,22 +2770,15 @@ sidecar .sidecar-header-icon {
 .log-lines-message-for-activations {
     font-family: var(--font-sans-serif);
 }
-.log-lines .log-line.logged-to-stderr .log-message {
+.log-lines .log-line.logged-to-stderr .log-date {
     /* special display for messages of error log lines */
-    color: hsla(12, 78%, 25%, 1);
-    /*border-color: hsl(12, 78%, 45%);*/
+    color: var(--color-error);
+}
+sidecar .custom-content .log-field pre > code {
+    padding: 1em;
 }
 .log-lines .log-line .log-message pre code {
     white-space: pre-wrap;
-}
-
-body.subwindow .repl-block {
-    background-color: transparent;
-}
-body.subwindow sidecar {
-    background: var(--color-ui-02);
-    border-left: none;
-    box-shadow: none;
 }
 
 #restart-needed-warning {

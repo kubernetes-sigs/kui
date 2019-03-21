@@ -22,6 +22,12 @@
 
 .monaco-editor-wrapper {
     flex: 1;
+
+    /* This allows room for the horizontal scrollbar, and other
+   miscellaneous monaco-editor bits that are positioned violently,
+   without regard to the container. See
+   https://github.com/Microsoft/monaco-editor/issues/29 */
+    overflow: hidden;
 }
 
 .monaco-editor-wrapper .monaco-editor .emphasis {
@@ -30,7 +36,6 @@
 
 .monaco-editor-wrapper .monaco-editor {
   display: block;
-  padding: 0.3em 0.6em;
 }
 .monaco-editor-wrapper .monaco-editor {
     background: transparent;

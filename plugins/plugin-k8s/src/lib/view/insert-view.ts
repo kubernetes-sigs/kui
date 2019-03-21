@@ -17,8 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/view/insert-view')
 
+import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
+import { getActiveView, presentAs } from '@kui-shell/core/webapp/views/sidecar'
 
 /**
  * Update the current view into the sidecar; this is helpful for tab
@@ -33,4 +34,6 @@ export default (view: HTMLElement) => {
 
   removeAllDomChildren(container)
   container.appendChild(view)
+
+  presentAs(Presentation.Default)
 }

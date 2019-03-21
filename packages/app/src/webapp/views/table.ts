@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('webapp/views/table')
 
+import eventBus from '../../core/events'
 import { isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
@@ -159,17 +160,27 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       // we'll ping the watcher at most watchLimit times
       let count = watchLimit
 
-      const stopWatching = interval => {
+      // the current watch interval; used for clear/reset/stop
+      let interval
+
+      const stopWatching = () => {
+        debug('stopWatching')
         clearInterval(interval)
         cell.classList.remove(pulse)
       }
 
+      // if we are presenting in popup mode, then when the sidecar is
+      // replaced, also terminate watching
+      // revisit this when we can handle restoring after a back and forth
+      /* if (isPopup()) {
+        eventBus.once('/sidecar/replace', stopWatching)
+      } */
+
       /** the watch interval handler */
-      let interval
       const watchIt = () => {
         if (--count < 0) {
           debug('watchLimit exceeded', value)
-          stopWatching(interval)
+          stopWatching()
           return
         }
 
@@ -182,11 +193,11 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
               }
 
               // debug('watch update', done)
-              // stopWatching(interval)
+              // stopWatching()
 
               // are we done polling for updates?
               if (value === null || value === undefined || done) {
-                stopWatching(interval)
+                stopWatching()
               }
 
               // update onclick
@@ -241,7 +252,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
                 if (slowPoll) {
                   // user requested a new, "slow polling" watch
                   debug('updating watch interval', slowPoll)
-                  stopWatching(interval) // this will remove the "pulse" effect, which is what we want
+                  stopWatching() // this will remove the "pulse" effect, which is what we want
                   interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
                 }
               })

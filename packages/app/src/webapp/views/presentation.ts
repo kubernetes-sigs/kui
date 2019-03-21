@@ -29,6 +29,8 @@
  *
  */
 enum Presentation {
+  Default,
+  FixedSize,
   SidecarFullscreen,
   SidecarFullscreenForPopups
 }

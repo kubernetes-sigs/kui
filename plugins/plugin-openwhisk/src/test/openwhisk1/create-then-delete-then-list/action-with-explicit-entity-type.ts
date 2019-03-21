@@ -43,7 +43,7 @@ describe('Create an action, list it, delete it, then list nothing explicit entit
 
     // delete the action
     it(`should delete the newly created action using "${cmd}"`, () => cli.do(`action ${cmd} foo`, this.app)
-      .then(cli.expectJustOK)
+      .then(cli.expectOK)
       .then(sidecar.expectClosed))
   })
 })

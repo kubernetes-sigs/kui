@@ -86,5 +86,5 @@ const domReady = (prefs) => async () => {
 export default async () => {
   const prefs = initializer.preinit()
 
-  window.addEventListener('load', domReady(prefs))
+  window.addEventListener('load', domReady(prefs), { once: true })
 }

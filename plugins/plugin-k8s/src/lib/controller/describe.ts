@@ -19,6 +19,7 @@ const debug = Debug('k8s/controller/describe')
 
 import { safeDump } from 'js-yaml'
 
+import { isPopup } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
@@ -32,7 +33,6 @@ import { addConditions } from '../view/modes/conditions'
 import { addPods } from '../view/modes/pods'
 import { addContainers } from '../view/modes/containers'
 import { statusButton } from '../view/modes/status'
-import insertView from '../view/insert-view'
 import { deleteResourceButton } from '../view/modes/crud'
 
 const usage = command => ({
@@ -107,13 +107,16 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   const name = metadata.name
   const ns = metadata.namespace
 
-  const summary = {
-    Kind: resource.kind
-    // Name: name,
-    // Namespace: ns
-  }
+  const summary = {}
   const add = addField.bind(summary)
 
+  if (isPopup()) {
+    // popup mode may not display name and namespace in header
+    add('Name', name)
+    add('Namespace', ns)
+  }
+
+  add('Kind', resource.kind)
   add('Priority', spec.priority)
   add('Node', spec.nodeName && spec.hostIP && `${spec.nodeName}/${spec.hostIP}`)
   add('Start Time', status.startTime)

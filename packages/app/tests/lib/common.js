@@ -47,7 +47,7 @@ exports.rp = opts => {
  * value of this function.
  *
  */
-const prepareElectron = (fuzz) => {
+const prepareElectron = (fuzz, popup = false) => {
   const Application = require('spectron').Application
   const electron = require('electron') // relative to __dirname
   const appMain = process.env.APP_MAIN || '../../build/packages/app/src/main/main.js' // relative to the tests/ directory
@@ -91,6 +91,10 @@ const prepareElectron = (fuzz) => {
     opts.env.DEBUG = process.env.DEBUG
   }
 
+  if (popup) {
+    opts.env.KUI_POPUP = JSON.stringify(popup)
+  }
+
   return new Application(opts)
 }
 
@@ -103,12 +107,12 @@ exports.prepareElectron = prepareElectron
  * @param noApp do not spawn the electron parts
  *
  */
-exports.before = (ctx, { fuzz, noApp = false } = {}) => {
+exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
   ctx.retries(10)
 
   return function () {
     if (!noApp) {
-      ctx.app = prepareElectron(fuzz)
+      ctx.app = prepareElectron(fuzz, popup)
     }
 
     // start the app, if requested

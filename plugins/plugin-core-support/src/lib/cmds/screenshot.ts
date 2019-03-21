@@ -90,11 +90,7 @@ const squishers = {
     { selector: 'body.subwindow', css: 'screenshot-squish' },
     { selector: 'body.subwindow .page', css: 'screenshot-squish' },
     { selector: 'body.subwindow .main', css: 'screenshot-squish' },
-    { selector: 'tab.visible', css: 'screenshot-squish' },
-    { selector: sidecarSelector(), property: 'height', value: 'initial' },
-    { selector: sidecarSelector('.custom-content'), property: 'flex', value: 'initial' },
-    { selector: sidecarSelector('.sidecar-content'), property: 'flex', value: 'initial' },
-    { selector: '#wskflowDiv', property: 'height', value: 'auto' }
+    { selector: 'tab.visible', css: 'screenshot-squish' }
   ],
 
   // screenshot full and repl should remove the last command from the screenshot, so that "screenshot full" doesn't show
@@ -398,5 +394,5 @@ export default async (commandTree, prequire) => {
       console.error(e)
       reject(new Error('Internal Error'))
     }
-  }), { usage, noAuthOk: true, requiresLocal: true }) // currently screenshot does not support browser mode
+  }), { usage, noAuthOk: true, incognito: ['popup'], requiresLocal: true }) // currently screenshot does not support browser mode
 }

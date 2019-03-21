@@ -134,8 +134,11 @@ body.os-darwin .left-tab-stripe {
 .left-tab-stripe-button.left-tab-stripe-button-selected:after {
     font-size: 0.875em;
 }
-.left-tab-stripe-button-selected i {
-    filter: grayscale(0.5);
+body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i {
+    filter: grayscale(0.5) opacity(0.5);
+}
+.left-tab-stripe-buttons .left-tab-stripe-button i {
+    filter: grayscale(0.5) opacity(0.25);
 }
 .left-tab-stripe-bottom-buttons i {
     filter: grayscale(0.5);
