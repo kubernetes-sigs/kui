@@ -46,7 +46,7 @@
     "json-colorizer": "^2.1.2",
     "mkdirp": "^0.5.1",
     "needle": "^2.2.4",
-    "opn": "^5.4.0",
+    "opn": "^5.5.0",
     "pretty-ms": "^4.0.0",
     "properties-parser": "^0.3.1",
     "tmp": "0.0.33",
