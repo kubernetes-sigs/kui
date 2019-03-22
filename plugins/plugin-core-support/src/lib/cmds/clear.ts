@@ -57,5 +57,5 @@ const clear = ({ parsedOptions }) => {
  *
  */
 export default (commandTree, prequire) => {
-  commandTree.listen('/clear', clear, { usage, noAuthOk: true })
+  commandTree.listen('/clear', clear, { usage, noAuthOk: true, inBrowserOk: true })
 }
