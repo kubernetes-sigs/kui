@@ -120,3 +120,15 @@ body[kui-theme-style="dark"] .monaco-editor-overlaymessage .message {
 body[kui-theme-style="dark"] .monaco-editor-overlaymessage .anchor {
     border-top-color: var(--color-base0C);
 }
+
+/* bracket matches */
+body[kui-theme-style="dark"] .cdr.bracket-match {
+    border-color: rgba(255,255,255,0.25);
+    background-color: transparent;
+}
+
+/* current line highlight */
+body[kui-theme-style="dark"] .monaco-editor .current-line {
+    border-color: rgba(255,255,255,0.1);
+    border-width: 1px;
+}

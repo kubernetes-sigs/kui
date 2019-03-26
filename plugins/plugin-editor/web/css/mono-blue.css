@@ -38,7 +38,10 @@ body[kui-theme-style="light"] .monaco-editor .mtk22 {
     color: #0048ab;
 }
 
-body[kui-theme-style="light"] .monaco-editor .mtk1 {
+/** mtk9 is e.g. { and } */
+body[kui-theme-style="light"] .monaco-editor .mtk1,
+body[kui-theme-style="light"] .monaco-editor .mtk4,
+body[kui-theme-style="light"] .monaco-editor .mtk9 {
     /* map keys */
     transition: color 300ms ease-in-out;
     color: var(--color-text-02);
@@ -92,7 +95,8 @@ body[kui-theme-style="light"] .monaco-editor .name,
 body[kui-theme-style="light"] .monaco-editor .selector-id,
 body[kui-theme-style="light"] .monaco-editor .selector-class {
     transition: color 300ms ease-in-out;
-    color: #cc6666
+    color: var(--color-base0C);
+    font-weight: 500;
 }
 
 body[kui-theme-style="light"] .monaco-editor .meta,
@@ -130,4 +134,9 @@ body[kui-theme-style="light"] .monaco-editor-overlaymessage .message {
 }
 body[kui-theme-style="light"] .monaco-editor-overlaymessage .anchor {
     border-top-color: var(--color-base0C);
+}
+
+/* bracket matches */
+body[kui-theme-style="light"] .cdr.bracket-match {
+    background-color: var(--color-base03);
 }
