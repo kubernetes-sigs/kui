@@ -211,7 +211,7 @@ export const createPopupContentContainer = (css = [], presentation?: Presentatio
  * Render popup content in the given container
  *
  */
-const renderPopupContent = (command: string, container: Element, execOptions?: IExecOptions, { modes = [], badges = [], controlHeaders = false } = {}) => {
+const renderPopupContent = (command: string, container: Element, execOptions?: IExecOptions, { prettyType = '', modes = [], badges = [], controlHeaders = false, presentation = Presentation.SidecarFullscreenForPopups } = {}) => {
   debug('renderPopupContent', command, container)
 
   // Last updated... text
@@ -250,7 +250,8 @@ const renderPopupContent = (command: string, container: Element, execOptions?: I
       isEntity: true,
       isREPL: true,
       name: command,
-      presentation: Presentation.SidecarFullscreenForPopups,
+      presentation,
+      prettyType,
       subtext,
       modes,
       badges,
@@ -272,8 +273,12 @@ export const isPopup = () => document.body.classList.contains('subwindow')
 export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?, evaluator?) => response => {
   debug('printResults', response)
 
+  // does the command handler want to be incognito in the UI?
+  const incognitoHint = evaluator && evaluator.options && evaluator.options.incognito && evaluator.options.incognito
+  const incognito = incognitoHint && isPopup() && incognitoHint.indexOf('popup') >= 0
+
   let customContainer
-  if (isPopup()) {
+  if (isPopup() && !incognito) {
     resultDom = customContainer = createPopupContentContainer(['valid-response'], response.presentation || (!Array.isArray(response) && Presentation.SidecarFullscreenForPopups))
   }
 
@@ -434,6 +439,9 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
 
     if (!Array.isArray(response[0]) && response.length > 0) {
       resultDom.classList.add('result-table')
+      if (isPopup()) {
+        presentAs(Presentation.FixedSize)
+      }
     } else {
       (resultDom.parentNode as HTMLElement).classList.add('result-as-multi-table')
       if (response[0] && response[0][0] && response[0][0].flexWrap) {
@@ -452,18 +460,28 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
 
   promise.then(async (alreadyRendered: boolean) => {
     if (isPopup() && ((Array.isArray(response) || (customContainer && customContainer.children.length > 0)) || response.presentation === Presentation.FixedSize)) {
-
-      const incognito = evaluator && evaluator.options && evaluator.options.incognito && evaluator.options.incognito
-      if (!incognito || incognito.indexOf('popup') < 0) {
+      if (!incognito) {
         // view modes
         const modes = response.modes ||
           (response[0] && response[0].modes) ||
           (response[0] && response[0][0] && response[0][0].modes)
 
-        await renderPopupContent(command, alreadyRendered !== true && resultDom, execOptions, { modes, controlHeaders: response.controlHeaders, badges: response.badges })
+        // entity type
+        const prettyType = response.type || response.kind || response.prettyType || response.prettyKind || (response[0] && response[0].title) || (response[0] && response[0][0] && response[0][0].title)
+
+        // presentation mode
+        const presentation = response.presentation || (prettyType && Array.isArray(response) && Presentation.FixedSize) || Presentation.SidecarFullscreenForPopups
+
+        await renderPopupContent(command, alreadyRendered !== true && resultDom, execOptions, {
+          modes,
+          prettyType,
+          badges: response.badges,
+          controlHeaders: response.controlHeaders,
+          presentation
+        })
       }
 
-      if (!incognito || incognito.indexOf('popup') < 0) {
+      if (!incognito) {
         // add the command to the popup CLI, unless the command does
         // not wish itself to be known in the popup CLI
         popupListen(undefined, command)
@@ -605,20 +623,24 @@ export const listen = prompt => {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
       // behavior
-      const current = getCurrentPrompt().value
-      const repl = await import('../core/repl')
-      const currentCursorPosition = getCurrentPrompt().selectionStart // also restore the cursor position
-      repl.pexec('clear')
-        .then(() => {
-          if (current) {
-            // restore the prompt value
-            getCurrentPrompt().value = current
+      if (isPopup()) {
+        // see init() below; in popup mode, cmd/ctrl+L does something different
+      } else {
+        const current = getCurrentPrompt().value
+        const repl = await import('../core/repl')
+        const currentCursorPosition = getCurrentPrompt().selectionStart // also restore the cursor position
+        repl.pexec('clear')
+          .then(() => {
+            if (current) {
+              // restore the prompt value
+              getCurrentPrompt().value = current
 
-            // restore the prompt cursor position
-            debug('restoring cursor position', currentCursorPosition)
-            getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
-          }
-        })
+              // restore the prompt cursor position
+              debug('restoring cursor position', currentCursorPosition)
+              getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
+            }
+          })
+      }
     } else if (char === keys.HOME) {
       // go to first command in history
       const newValue = historyModel.first().raw

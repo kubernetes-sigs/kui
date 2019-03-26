@@ -711,7 +711,7 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
 /* sidecar bottom stripe */
 body[kui-theme-style="dark"] .sidecar-bottom-stripe {
     /* dark themes need a bit of a top border to distinguish the sidecar contents */
-    border-top: 1px solid var(--color-ui-02);
+    border-top: 1px solid var(--color-ui-01);
 }
 .sidecar-bottom-stripe {
     padding: 0 1em;
@@ -1771,6 +1771,16 @@ body.subwindow[data-presentation="FixedSize"] .repl-block {
     flex: 1;
     display: flex;
 }
+body.subwindow[data-presentation="FixedSize"] .result-table {
+    table-layout: fixed;
+    width: 100%;
+}
+body.subwindow[data-presentation="FixedSize"] sidecar .sidecar-header {
+    border-bottom-color: var(--color-base01);
+}
+body.subwindow[data-presentation="FixedSize"] .result-table-title-outer {
+    display: none;
+}
 body.subwindow[data-presentation="FixedSize"] .repl-block .repl-result {
     flex: 1;
 }
@@ -2598,6 +2608,9 @@ badge.gray-background {
     background: var(--color-ui-05);
     color: var(--color-ui-02);
 }
+badge.title-color {
+    background: var(--color-base0F);
+}
 
 .oops.oops-as-html {
     color: unset !important;
@@ -2635,11 +2648,6 @@ sidecar .sidecar-header {
     border-bottom-color: var(--color-content-divider);
     background-color: var(--color-ui-01);
     transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
-}
-
-sidecar .sidecar-header badge:not(.badge-as-fontawesome) {
-    background-color: var(--color-tag-beta-fill);
-    color: var(--color-tag-beta-text);
 }
 
 sidecar .sidecar-header badge.version {
