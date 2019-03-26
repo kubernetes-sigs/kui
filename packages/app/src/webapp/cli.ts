@@ -490,7 +490,11 @@ export const getInitialPrompt = (): HTMLInputElement => {
   return getPrompt(getInitialBlock())
 }
 export const getCurrentPrompt = (noFakes = false): HTMLInputElement => {
-  return getPrompt(getCurrentBlock(), noFakes)
+  if (isPopup()) {
+    return getSidecar().querySelector('input')
+  } else {
+    return getPrompt(getCurrentBlock(), noFakes)
+  }
 }
 export const getPromptLeft = (block: Element) => {
   return block.querySelector('.repl-prompt-righty')
@@ -664,7 +668,7 @@ export const paste = event => {
     event.preventDefault()
 
     // const prompt = event.currentTarget
-    const lines = text.split(/\n|\r/)
+    const lines = text.split(/[\n\r]/)
 
     const pasteLooper = async (idx: number) => {
       if (idx === lines.length) {
