@@ -27,9 +27,6 @@ body[kui-theme="Dark"] {
     --color-scrollbar-thumb: #141517;
     --color-scrollbar-thumb-border: #424448;
     --color-scrollbar-thumb-outline: #212327;
-
-    --color-ui-06: hsl(216, 15%, 17%);
-    --color-field-01: hsl(216, 15%, 17%);
 }
 
 body[kui-theme="Dark"] #screenshot-captured {
