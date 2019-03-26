@@ -20,4 +20,4 @@ set -e
 set -o pipefail
 
 # create an electron dist to test against
-cd clients/default && NO_INSTALLER=true npm run build:electron -- linux
+cd clients/default && NO_INSTALLER=true npm run build:electron -- ${TRAVIS_OS_NAME}

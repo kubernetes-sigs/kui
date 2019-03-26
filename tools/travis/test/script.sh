@@ -19,6 +19,14 @@
 set -e
 set -o pipefail
 
+#
+# repo composer/kui doesn't support travis osx
+# travis osx doesn't have docker
+#
+if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == "composer/kui" ] || [ "$NEEDS_OPENWHISK" == true ] || [ "$NEEDS_KUBERNETES" == true ]); then
+  exit 0
+fi
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 if [ -n "$SCRIPTS" ]; then
@@ -47,9 +55,13 @@ if [ -n "$LAYERS" ]; then
     if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
         for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
           echo "mocha target: $MOCHA_RUN_TARGET"
-          echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
-          export MOCHA_RUN_TARGET
-          (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS)
+          if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
+            echo "skip webpack test in osx for now" # FIXME
+          else
+            echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
+            export MOCHA_RUN_TARGET
+            (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS)
+          fi
         done
     fi
 

@@ -5,6 +5,10 @@ language: node_js
 node_js: 8
 dist: trusty
 
+os:
+  - linux
+  - osx
+
 env:
   matrix:
     - SCRIPTS="lint.sh"
@@ -49,10 +53,11 @@ env:
     - LOCAL_OPENWHISK=true # allows e.g. openwhisk/src/test/openwhisk1/headless to avoid trying to host set <not-local>
     - IGNORE_CERTS=true # apache-composer needs this, because it doesn't obey INSECURE_SSL in wskprops
     - PATH=bin:$PATH
-    - NO_MAC_DMG_INSTALLER=true # we can't build macOS DMG files in travis :(
+    - NO_MAC_DMG_INSTALLER=`if [ "${TRAVIS_OS_NAME}" != "osx" ]; then echo "true"; fi` # we can't build macOS DMG files in linux travis :(
     - WINDOW_WIDTH=1400                   # ! important ! so that clicks don't fail due to elements being off-viewport
     - WINDOW_HEIGHT=1050                  # ! ibid !
-    - TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/clients/default/dist/electron/Kui-linux-x64/Kui" # test against a specific dist build
+    - TEST_FROM_LINUX_BUILD="${TRAVIS_BUILD_DIR}/clients/default/dist/electron/Kui-linux-x64/Kui" # test against a specific dist build
+    - TEST_FROM_OSX_BUILD="${TRAVIS_BUILD_DIR}/clients/default/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"
     - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
 
 install: ./tools/travis/test/install.sh

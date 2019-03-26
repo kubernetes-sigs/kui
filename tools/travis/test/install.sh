@@ -19,13 +19,21 @@
 set -e
 set -o pipefail
 
+#
+# repo composer/kui doesn't support travis osx
+# travis osx doesn't have docker
+#
+if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == "composer/kui" ] || [ "$NEEDS_OPENWHISK" == true ] || [ "$NEEDS_KUBERNETES" == true ]); then
+  exit 0
+fi
+
 if [ ! -d bin ]; then
     mkdir bin
 fi
 
 # install jq
 # (doing an apt-get update to install jq takes forever; often 80-90 seconds)
-JQ_PLATFROM=$(case $TRAVIS_OS_NAME in "linux" ) echo "jq-linux64";; "osx" ) echo "jq-osx-amd64.dms";; esac)
+JQ_PLATFROM=`case $TRAVIS_OS_NAME in "linux" ) echo "jq-linux64";; "osx" ) echo "jq-osx-amd64.dms";; esac`
 (cd bin && curl -L -O https://github.com/stedolan/jq/releases/download/jq-1.6/${JQ_PLATFROM} && mv ${JQ_PLATFROM} jq && chmod +x jq)
 
 function wait_and_get_exit_codes() {
