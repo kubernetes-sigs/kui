@@ -276,11 +276,17 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
   // occupy full screen and we *are*... in either case (this is an
   // XOR, does as best one can in NodeJS), toggle maximization
   const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
-  if (cli.isPopup() || viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
-    const presentation = viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
-      : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen
-    toggleMaximization()
+    || (cli.isPopup() && (custom.presentation === Presentation.SidecarFullscreenForPopups || custom.presentation === Presentation.FixedSize))
+
+  if (custom.presentation || cli.isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen())) {
+    const presentation = custom.presentation ||
+      (viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
+       : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen)
     presentAs(presentation)
+
+    if (viewProviderDesiresFullscreen) {
+      setMaximization()
+    }
   }
 
   if (custom.controlHeaders === true) {
@@ -439,14 +445,20 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
  */
 export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement) => {
   const iconDom = element('.sidecar-header-icon', sidecar)
-  let iconText = viewName.replace(/s$/, '')
 
-  const A = iconText.split(/(?=[A-Z])/).filter(x => x)
-  if (iconText.length > 10 && A.length > 1) {
-    iconText = A.map(_ => _.charAt(0)).join('')
+  if (viewName) {
+    let iconText = viewName.replace(/s$/, '')
+
+    const A = iconText.split(/(?=[A-Z])/).filter(x => x)
+    if (iconText.length > 10 && A.length > 1) {
+      iconText = A.map(_ => _.charAt(0)).join('')
+    }
+
+    iconDom.innerText = iconText
+  } else {
+    // no viewName, make sure it appears blank in the UI
+    iconDom.innerText = ''
   }
-
-  iconDom.innerText = iconText
 }
 
 /**
@@ -487,9 +499,7 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packa
     clickable.onclick = onclick
   }
 
-  if (viewName) {
-    addSidecarHeaderIconText(viewName, sidecar)
-  }
+  addSidecarHeaderIconText(viewName, sidecar)
 
   if (subtext) {
     const sub = element('.sidecar-header-secondary-content .custom-header-content', sidecar)
@@ -705,16 +715,32 @@ export const presentAs = (presentation?: Presentation) => {
   }
 }
 
-export const toggleMaximization = () => {
+/**
+ * Ensure that we are in sidecar maximization mode
+ *
+ */
+export const setMaximization = (op = 'add') => {
   if (document.body.classList.contains('subwindow')) {
-    document.body.classList.toggle('sidecar-full-screen')
-    document.body.classList.toggle('sidecar-visible')
+    document.body.classList[op]('sidecar-full-screen')
+    document.body.classList[op]('sidecar-visible')
   }
 
-  element('tab.visible').classList.toggle('sidecar-full-screen')
+  element('tab.visible').classList[op]('sidecar-full-screen')
   eventBus.emit('/sidecar/maximize')
 }
 
+/**
+ * Toggle sidecar maximization
+ *
+ */
+export const toggleMaximization = () => {
+  setMaximization('toggle')
+}
+
+/**
+ * Toggle sidecar visibility
+ *
+ */
 export const toggle = () => isVisible() ? hide() : show()
 
 /**
@@ -758,10 +784,9 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
     presentAs(Presentation.SidecarFullscreen)
   }
 
-  addSidecarHeaderIconText(entity.prettyType || entity.type, sidecar)
-
   // the name of the entity, for the header
-  const nameDom = addNameToSidecarHeader(sidecar, entity.name, entity.packageName)
+  const viewName = entity.prettyType || entity.type
+  const nameDom = addNameToSidecarHeader(sidecar, entity.name, entity.packageName, undefined, viewName)
 
   clearBadges()
   addVersionBadge(entity)
