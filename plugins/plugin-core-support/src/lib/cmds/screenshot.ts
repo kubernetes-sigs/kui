@@ -101,19 +101,46 @@ const squishers = {
   'last-full': squishRepl,
   last: squishRepl
 }
+const flatten = arrays => [].concat.apply([], arrays)
 const _squish = (which, op) => {
   const squisher = squishers[which]
   if (squisher) {
-    squisher.forEach(({ selector, property, value, css }) => {
+    const impl = (dryRun: boolean) => squisher.map(({ selector, property, value, css }) => {
       const element = document.querySelector(selector)
       if (element) {
-        op(element, property, value, css)
+        return op(dryRun, element, property, value, css) // true i.e. dryRun=true
       }
-    })
+    }).find(x => x)
+
+    // do not squish if one of the regions has a non-zero scrollTop;
+    // first we have to scan for such a condition
+    const doNotSquish = impl(true) // dryRun=true
+
+    if (!doNotSquish) {
+      impl(false) // dryRun=false
+    }
+
+    return doNotSquish
   }
 }
-const squish = which => _squish(which, (element, property, value, css) => { if (css) element.classList.add(css); if (property) element.style[property] = value })
-const unsquish = which => _squish(which, (element, property, value, css) => { if (css) element.classList.remove(css); if (property) element.style[property] = null })
+const squish = which => _squish(which, (dryRun: boolean, element: HTMLElement, property, value, css) => {
+  if (dryRun) {
+    const scrollers = element.querySelectorAll('.overflow-auto')
+    for (let idx = 0; idx < scrollers.length; idx++) {
+      const scroller = scrollers[idx]
+      if (scroller.scrollTop) {
+        return true
+      }
+    }
+  } else {
+    if (css) element.classList.add(css)
+    if (property) element.style[property] = value
+  }
+})
+const unsquish = which => _squish(which, (_, element: HTMLElement, property, value, css) => {
+  if (css) element.classList.remove(css)
+  if (property) element.style[property] = null
+})
 
 /** fill to two digits */
 const fill = n => n < 10 ? `0${n}` : n
@@ -179,7 +206,7 @@ export default async (commandTree, prequire) => {
       screenshotButton.classList.add('force-no-hover')
 
       // squish down the element to be copied, sizing it to fit
-      squish(which)
+      const doNotSquish = squish(which)
 
       // which rectangle to snap; electron's rect schema differs
       // from the underlying dom's schema. sigh
@@ -372,7 +399,9 @@ export default async (commandTree, prequire) => {
           ipcRenderer.removeListener('capture-page-to-clipboard-done', listener)
 
           // undo any squishing
-          unsquish(which)
+          if (!doNotSquish) {
+            unsquish(which)
+          }
 
           screenshotButton.classList.remove('force-no-hover')
           resolve('Successfully captured a screenshot to the clipboard')

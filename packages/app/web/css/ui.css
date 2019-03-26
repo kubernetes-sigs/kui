@@ -1831,7 +1831,7 @@ body.subwindow .repl, body.subwindow .repl-block .repl-result {
 body.subwindow sidecar .sidecar-header-secondary-content {
     font-size: 1em;
 }
-body.subwindow .repl, body.subwindow .custom-content {
+body.subwindow:not([data-presentation="FixedSize"]) .repl, body.subwindow:not([data-presentation="FixedSize"]) .custom-content {
     font-size: 2vmin;
 }
 body.subwindow .repl, body.subwindow .repl-block, body.subwindow .result-as-table {
@@ -1841,7 +1841,7 @@ body.subwindow .repl-block {
     font-family: var(--font-monospace);
     margin: auto;
 }
-body.subwindow .result-as-table {
+body.subwindow:not([data-presentation="FixedSize"]) .result-as-table {
     padding-bottom: 4vh;
 }
 body.subwindow .result-as-multi-table:not(.scrollable) {

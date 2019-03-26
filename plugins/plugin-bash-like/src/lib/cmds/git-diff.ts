@@ -20,6 +20,7 @@ const debug = Debug('plugins/bash-like/cmds/git-diff')
 import * as path from 'path'
 
 import { split } from '@kui-shell/core/core/repl'
+import { isPopup } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import { handleNonZeroExitCode } from '../util/exec'
@@ -76,7 +77,7 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
         matching: 'lines'
         // outputFormat: 'side-by-side',
       }), {
-        presentation: Presentation.SidecarFullscreen
+        presentation: isPopup() ? Presentation.FixedSize : Presentation.SidecarFullscreen
       }, undefined, commandPart, currentBranch))
     } else {
       try {
