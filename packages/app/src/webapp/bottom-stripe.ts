@@ -234,7 +234,29 @@ export const addModeButton = (mode, entity) => {
   return _addModeButton(bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (modes, entity, options) => {
+export const addModeButtons = (modesUnsorted = [], entity, options) => {
+  // place flush:right items at the end
+  const modes = modesUnsorted.sort((a, b) => {
+    if (a.flush !== b.flush) {
+      if (a.flush === 'right') {
+        return 1
+      } else if (b.flush === 'right') {
+        return -1
+      } else {
+        return a.flush - b.flush
+      }
+    } else {
+      return 0
+    }
+  })
+
+  // if we have *only* flush-right buttons, then do not flush-right any of them
+  const nFlushRight = modes.reduce((count, { flush }) => count += flush === 'right' ? 1 : 0, 0)
+  const nFlushLeft = modes.reduce((count, { flush }) => count += flush !== 'weak' && flush !== 'right' ? 1 : 0, 0)
+  if (nFlushRight > 0 && nFlushLeft === 0) {
+    modes.forEach(_ => delete _.flush)
+  }
+
   // for going back
   const addModeButtons = (modes, entity, show) => {
     const bottomStripe = document.querySelector(css.modeContainer)

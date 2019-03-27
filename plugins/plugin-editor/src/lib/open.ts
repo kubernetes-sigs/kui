@@ -246,7 +246,9 @@ export const openEditor = async (name, options, execOptions) => {
  *
  */
 const setText = (editor, options, execOptions?) => ({ code, kind }) => {
-  const lang = execOptions && execOptions.language || language(kind)
+  // options is --language yaml command line
+  // execOptions is side channel progmmatic information passed via repl.exec
+  const lang = (options && options.language) || (execOptions && execOptions.language) || language(kind)
   debug('setText language', kind, lang)
   debug('setText code', code.substring(0, 20))
 

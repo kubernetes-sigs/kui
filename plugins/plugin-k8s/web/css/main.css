@@ -54,6 +54,7 @@
     margin: 1.5em 0 0;
     background: var(--color-ui-01);
     box-shadow: 0 1px 2px 0 rgba(0,0,0,0.10);
+    transition: border 300ms ease-in-out, background 300ms ease-in-out;
 }
 .project-config-container .project-apis {
     display: flex;
@@ -124,6 +125,7 @@
     font-weight: 400;
     white-space: nowrap;
     margin-bottom: 1em;
+    transition: color 300ms ease-in-out;
 }
 
 .project-config-container .configSourceIns {
@@ -242,9 +244,10 @@
     height: 2.5rem;
     min-width: 10rem;
     padding: 0 1rem;
-    color: var(--color-stripe-01);
-    background-color: rgba(61, 112, 178, 0.1);
+    color: var(--color-text-01);
+    background-color: var(--color-field-01);
     border: 1px solid transparent;
+    transition: color 300ms ease-in-out;
 }
 .bx--btn--primary:focus, .bx--btn--primary:hover {
     background-color: var(--color-brand-02);

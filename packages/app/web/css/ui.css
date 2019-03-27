@@ -2608,7 +2608,7 @@ badge.gray-background {
     background: var(--color-ui-05);
     color: var(--color-ui-02);
 }
-badge.title-color {
+badge.is-title-like, badge.is-kind-like {
     background: var(--color-base0F);
 }
 
@@ -2841,6 +2841,8 @@ body {
     --color-brand-01: var(--color-blue);
     --color-brand-02: var(--color-magenta);
     --color-brand-03: var(--color-cyan);
+
+    --color-field-01: var(--color-base01);
 
     --color-text-against-dark-bg: var(--color-text-01);
     --color-support-01: var(--color-red);

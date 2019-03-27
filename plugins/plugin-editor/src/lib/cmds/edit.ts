@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/cmds/edit-amd')
+const debug = Debug('plugins/editor/cmds/edit')
 
 import { respondToRepl } from '../util'
 import { IEntity as IEditorEntity, fetchEntity } from '../fetchers'
@@ -23,6 +23,7 @@ import * as usage from '../../usage'
 import { lockIcon as defaultLock } from '../readonly'
 import { applyOverrides } from '../overrides'
 import { openEditor } from '../open'
+import { persisters } from '../persisters'
 
 import * as repl from '@kui-shell/core/core/repl'
 
@@ -63,7 +64,19 @@ const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = n
   // maybe the caller is passing us the name and entity programmatically?
   const { parameters: programmaticArgs } = execOptions
 
-  const name = (programmaticArgs && programmaticArgs.name) || argvNoOptions[argvNoOptions.indexOf('edit') + 1]
+  const positionalName = argvNoOptions[argvNoOptions.indexOf('edit') + 1]
+  const name = (programmaticArgs && programmaticArgs.name) || positionalName
+
+  // for a programmatic entity, the name of the field is e.g. `edit !source`
+  if (positionalName && positionalName.charAt(0) === '!') {
+    if (programmaticArgs.filepath) {
+      programmaticArgs.persister = persisters.files
+    }
+    programmaticArgs.exec = {
+      kind: parsedOptions['language'],
+      code: programmaticArgs[positionalName.slice(1)]
+    }
+  }
 
   //
   // fetch the entity and open the editor in parallel

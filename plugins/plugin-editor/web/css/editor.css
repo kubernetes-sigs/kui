@@ -84,7 +84,6 @@
     display: flex;
 }
 .custom-header-content .editor-status > div {
-    transition: opacity 150ms ease-in-out;
     opacity: 0;
     width: 0;
     height: 0;
