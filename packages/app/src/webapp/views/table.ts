@@ -62,7 +62,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
   }
 
   /** add a cell to the current row of the list view we] are generating. "entityName" is the current row */
-  const addCell = (className, value, innerClassName = '', parent = entityName, onclick?, watch?, key?, fontawesome?, css?, watchLimit = 120, tag = 'span', tagClass?: string) => {
+  const addCell = (className, value, innerClassName = '', parent = entityName, onclick?, watch?, key?, fontawesome?, css?, watchLimit = 100000, tag = 'span', tagClass?: string) => {
     const cell = document.createElement('span')
     const inner = document.createElement(tag)
 
@@ -163,6 +163,9 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       // the current watch interval; used for clear/reset/stop
       let interval
 
+      // are we currently slowPolling?
+      let slowPolling = false
+
       const stopWatching = () => {
         debug('stopWatching')
         clearInterval(interval)
@@ -251,9 +254,19 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
 
                 if (slowPoll) {
                   // user requested a new, "slow polling" watch
-                  debug('updating watch interval', slowPoll)
-                  stopWatching() // this will remove the "pulse" effect, which is what we want
-                  interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
+                  if (!slowPolling) {
+                    debug('entering slowPoll mode', slowPoll)
+                    slowPolling = true
+                    stopWatching() // this will remove the "pulse" effect, which is what we want
+                    interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
+                  }
+                } else if (slowPolling) {
+                  // we were told not to slowPoll, but we are currently slowPolling
+                  debug('exiting slowPoll mode')
+                  slowPolling = false
+                  cell.classList.add(pulse)
+                  clearInterval(interval)
+                  interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
                 }
               })
             })

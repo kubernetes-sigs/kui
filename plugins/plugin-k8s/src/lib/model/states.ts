@@ -55,15 +55,6 @@ export const States = {
   Conflict: 'Conflict'
 }
 
-export const endWatchWithConflict = () => ({
-  done: true,
-  value: States.Conflict,
-  css: rendering.cssForState(States.Conflict),
-  others: [
-    { key: 'message', value: 'Conflicting concurrent requests' }
-  ]
-})
-
 /** groups of States that mark desired final outcomes */
 export enum FinalState {
   NotPendingLike,
@@ -395,12 +386,16 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
       ? tryGetOpenWhiskResource
       : getKubernetesResource
 
+    // should we start a slowPoll?
+    const slowPoll = done && finalState === FinalState.NotPendingLike
+
     // this is the update spec
     return {
       outerCSS: done ? '' : rendering.outerCSS,
       value: newState,
       onclick,
-      done,
+      slowPoll: slowPoll && 5000,
+      done: done && !slowPoll, // terminate completely if we are done and have chosen not to slowPoll
 
       css: rendering.cssForState(newState),
       others
