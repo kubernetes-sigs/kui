@@ -32,10 +32,18 @@ export const persisters = {
     getCode: entity => entity,
     saveString: strings.saveLocalFile,
     save: (entity, editor) => new Promise((resolve, reject) => {
-      writeFile(entity.filepath, editor.getValue(), err => {
+      const rawText = editor.getValue()
+
+      writeFile(entity.filepath, rawText, err => {
         if (err) {
           reject(err)
         } else {
+          if (entity.extractName) {
+            // let's see if we can re-extract the updated entity name
+            // from the raw source
+            entity.name = entity.extractName(rawText)
+          }
+
           resolve(entity)
         }
       })

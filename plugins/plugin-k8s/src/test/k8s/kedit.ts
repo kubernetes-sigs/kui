@@ -31,9 +31,18 @@ const initialFile = 'deployment.yaml'
 const initialFilepath = join(ROOT, 'data', 'k8s', initialFile)
 const tmpFilepath = join(TMP, initialFile)
 
-const initialContent = safeLoad(readFileSync(initialFilepath))
-const updatedContent = Object.assign({}, initialContent, { kind: 'hello there' })
+interface Resource {
+  kind: string
+  metadata: {
+    name: string
+  }
+}
+const initialContent: Resource = safeLoad(readFileSync(initialFilepath))
+const updatedContent: Resource = Object.assign({}, initialContent, { name: 'camera-shy', kind: 'hello there' })
 // NOTE: the space in 'hello there' is intentional; it tests that the sidecar etc. logic can handle a kind with spaces!
+
+const initialResourceName = initialContent.metadata.name
+const updatedResourceName = updatedContent.metadata.name
 
 /** get the monaco editor text */
 const getValue = (app: Application) => {
@@ -81,19 +90,42 @@ describe('electron kedit', function (this: common.ISuite) {
      .catch(common.oops(this)))
   }
 
+  /** switch to a given tab */
+  const switchTo = (mode: string) => async () => {
+    await this.app.client.click(selectors.SIDECAR_MODE_BUTTON(mode))
+    return this.app
+  }
+
+  const switchToEdit = switchTo('edit')
+  const switchToRaw = (cmd: string) => async () => {
+    if (cmd !== 'edit') {
+      await switchTo('raw')()
+    }
+
+    await this.app.client.waitForEnabled(`${selectors.SIDECAR} .monaco-editor`)
+
+    return this.app
+  }
+
   const editWithoutSaving = () => {
     it('should kedit but not save the content of an existing file', () => cli.do(`kedit "${tmpFilepath}"`, this.app)
-     .then(cli.expectJustOK)
-     .then(sidecar.expectOpen)
-     .then(() => setValue(this.app, 'should not be saved'))
-     .catch(common.oops(this)))
+       .then(cli.expectJustOK)
+       .then(sidecar.expectOpen)
+       .then(sidecar.expectShowing(initialResourceName))
+       .then(switchToRaw('kedit'))
+       .then(() => setValue(this.app, 'should not be saved'))
+       .then(() => this.app)
+       .then(sidecar.expectShowing(initialResourceName))
+       .catch(common.oops(this)))
   }
 
   const reopenWith = (cmd: string) => ({
-    andExpect: (expected: object) => {
-      it(`should re-open the file and see the unchanged content using "${cmd}"`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
+    andExpect: (expected: Resource, displayedName = expected.metadata.name) => {
+      it(`should re-open the file and see the ${expected.metadata.name} using "${cmd}"`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
          .then(cli.expectJustOK)
          .then(sidecar.expectOpen)
+         .then(sidecar.expectShowing(displayedName))
+         .then(switchToRaw(cmd))
          .then(verifyYAML(expected))
          .catch(common.oops(this)))
     }
@@ -103,8 +135,33 @@ describe('electron kedit', function (this: common.ISuite) {
     it(`should edit and save the content using "${cmd}"`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
        .then(cli.expectJustOK)
        .then(sidecar.expectOpen)
+       .then(() => cmd === 'kedit' && sidecar.expectShowing(initialResourceName)(this.app))
+       .then(switchToRaw(cmd))
        .then(() => setValue(this.app, safeDump(updatedContent)))
        .then(save(this.app))
+       .then(() => cmd === 'kedit' && sidecar.expectShowing(updatedResourceName)(this.app))
+       .catch(common.oops(this)))
+  }
+
+  const updateViaForm = () => {
+    const cmd = 'kedit'
+    const intermediateResourceName = 'funny-money'
+
+    it(`should edit and save the content via form`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
+       .then(cli.expectJustOK)
+       .then(sidecar.expectOpen)
+       .then(sidecar.expectShowing(initialResourceName))
+       .then(() => `${selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`)
+       .then(selector => this.app.client.waitForVisible(selector).then(() => selector))
+       .then(selector => this.app.client.setValue(selector, intermediateResourceName))
+       .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('save')))
+       .then(() => this.app)
+       .then(sidecar.expectShowing(intermediateResourceName))
+       .then(switchToRaw(cmd))
+       .then(sidecar.expectShowing(intermediateResourceName))
+       .then(() => setValue(this.app, safeDump(updatedContent)))
+       .then(save(this.app))
+       .then(sidecar.expectShowing(updatedResourceName))
        .catch(common.oops(this)))
   }
 
@@ -117,6 +174,12 @@ describe('electron kedit', function (this: common.ISuite) {
   editWithoutSaving()
   reopenWith('open').andExpect(initialContent)
   reopenWith('kedit').andExpect(initialContent)
+
+  // now update via form with "kedit"
+  makeACopy()
+  updateViaForm()
+  reopenWith('open').andExpect(updatedContent)
+  reopenWith('kedit').andExpect(updatedContent)
 
   // now update with "kedit"
   updateWith('kedit')

@@ -2,6 +2,7 @@
 #sidecar .is-modified-wrapper {
     display: flex;
     align-items: center;
+    direction: initial;
 }
 #sidecar .is-modified-indicator {
     transition: all 300ms ease-in-out;

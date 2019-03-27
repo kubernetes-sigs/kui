@@ -462,6 +462,27 @@ export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement)
 }
 
 /**
+ * Update sidecar header
+ *
+ */
+interface IHeaderUpdate {
+  name?: string
+  packageName?: string
+}
+export const updateSidecarHeader = (update: IHeaderUpdate, sidecar = getSidecar()) => {
+  const nameDom = sidecar.querySelector('.sidecar-header-name-content')
+
+  if (update.name) {
+    const nameContainer = element('.entity-name', nameDom)
+    nameContainer.innerText = update.name
+  }
+
+  if (update.packageName) {
+    element('.package-prefix', nameDom).innerText = update.packageName
+  }
+}
+
+/**
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
