@@ -16,7 +16,11 @@
 
 const debug = require('debug')('k8s/form-renderer')
 
+import { safeDump } from 'js-yaml'
+
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
+
+import { IKubeResource } from '../model/resource'
 
 export interface IFormGroup {
   title: string
@@ -68,7 +72,7 @@ const update = (yaml, path: Array<string>, value: string | number | boolean) => 
  * Save the current form choices
  *
  */
-const doSave = (form: HTMLFormElement, yaml: object, filepath: string, button?: HTMLButtonElement) => () => {
+const doSave = (form: HTMLFormElement, yaml: object, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
   if (button) {
     button.classList.add('yellow-background')
     button.classList.add('repeating-pulse')
@@ -97,14 +101,69 @@ const doSave = (form: HTMLFormElement, yaml: object, filepath: string, button?: 
       button.classList.remove('yellow-background')
       button.classList.remove('repeating-pulse')
     }
+
+    onSave(safeDump(yaml))
   }, 0)
+}
+
+/**
+ * Generate form groups from a given kube resource
+ *
+ */
+const formGroups = (yaml: IKubeResource): Array<IFormGroup> => {
+  const groups: Array<IFormGroup> = []
+
+  const push = (group: string, key: string, { parent = yaml, path = [key], skip = {} } = {}) => {
+    const formGroup = groups.find(({ title }) => title === group)
+      || { title: group, choices: [] }
+
+    const { choices } = formGroup
+
+    if (choices.length === 0) {
+      // then we just created a new group
+      groups.push(formGroup)
+    }
+
+    //
+    // for each element of the structure, either render a leaf
+    // choice or recurse into a subtree
+    //
+    const struct = parent[key]
+    for (let key in struct) {
+      if (!skip[key]) {
+        const value = struct[key]
+        const next = path.concat([key]) // path to this leaf or subtree
+
+        if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
+          // leaf node
+          choices.push({ key, value, path: next })
+        } else if (!Array.isArray(value)) { // not sure what to do with arrays, yet
+          // subtree: descend recursively
+          // note how we intentionally flatten, for now
+          push(key, key, { parent: struct, path: next })
+        }
+      }
+    }
+  }
+
+  //
+  // for now, we pick which subtrees we want to offer as choices:
+  // metadata, spec, and data; note that we place metadata and spec
+  // in the same group: 'Resource Definition'
+  //
+  push('Resource Definition', 'metadata')
+  push('Resource Definition', 'spec', { skip: { service: true } })
+  push('Data Values', 'data')
+
+  return groups
 }
 
 /**
  * Present a form view over a resource
  *
  */
-export const generateForm = (parsedOptions) => (yaml, filepath: string, name: string, kind: string, formElements: Array<IFormGroup>) => {
+export const generateForm = (parsedOptions) => (yaml: IKubeResource, filepath: string, name: string, kind: string, onSave: (rawText) => any) => {
+  const formElements = formGroups(yaml)
   debug('generate form', formElements)
 
   const form = document.createElement('form')
@@ -203,24 +262,8 @@ export const generateForm = (parsedOptions) => (yaml, filepath: string, name: st
     }
   })
 
-  /*
-  const okButton = document.createElement('button')
-  okButton.setAttribute('type', 'button')
-  okButton.className = 'bx--btn bx--btn--primary'
-  okButton.innerText = 'Save My Choices'
-  buttons.appendChild(okButton)
-
-  const resetButton = document.createElement('button')
-  resetButton.setAttribute('type', 'button')
-  resetButton.className = 'bx--btn bx--btn--secondary'
-  resetButton.innerText = 'Reset'
-  buttons.appendChild(resetButton)
-
-  okButton.onclick = doSave(okButton, form, yaml, filepath)
-  resetButton.onclick = () => form.reset()
-  */
   const modes = [
-    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(form, yaml, filepath) },
+    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(form, yaml, filepath, onSave) },
     { mode: 'revert', flush: 'right', actAsButton: true, direct: () => form.reset() }
   ]
 
