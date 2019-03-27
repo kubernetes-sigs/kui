@@ -326,7 +326,7 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
 
   if (custom.displayOptions) {
     custom.displayOptions.forEach(option => {
-      sidecar.classList.add(option)
+      sidecar.classList.add(option.replace(/\s/g, '-'))
     })
   }
 
@@ -588,6 +588,7 @@ class DefaultBadgeOptions implements IBadgeOptions {
 interface IBadgeSpec {
   title: string
   fontawesome?: string
+  css?: string
   onclick?: (evt: Event) => boolean
 }
 function isBadgeSpec (spec: string | IBadgeSpec | Element): spec is IBadgeSpec {
@@ -612,6 +613,10 @@ export const addBadge = (badgeText: string | IBadgeSpec | Element, { css, onclic
       badge.appendChild(awesome)
     } else {
       badge.innerText = badgeText.title
+
+      if (badgeText.css) {
+        badge.classList.add(badgeText.css)
+      }
     }
   }
 

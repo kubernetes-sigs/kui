@@ -52,6 +52,7 @@ export const lockIcon = ({ getEntity,
   direct = gotoReadonlyLocalFile({ getEntity })
 }) => ({
   mode,
+  flush: 'weak', // if we have only flush:right buttons, don't let this keep us from snapping them left
   actAsButton: true,
   fontawesome: icon,
   data: {

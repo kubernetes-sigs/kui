@@ -30,7 +30,7 @@ export const respondToRepl = (extraModes = [], displayOptions = []) => ({ getEnt
   content,
   controlHeaders: ['.header-right-bits'],
   displayOptions: [`entity-is-${getEntity().type}`, 'edit-mode'].concat(displayOptions),
-  badges: [ language(getEntity().exec.kind) ],
+  badges: [ { title: language(getEntity().exec.kind), css: 'is-kind-like' } ],
   modes: extraModes
     .map(modeFn => modeFn({ getEntity, editor, eventBus }))
     .concat([

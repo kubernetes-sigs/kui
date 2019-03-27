@@ -64,6 +64,7 @@ export const save = ({ getEntity, editor, eventBus }) => {
   return {
     mode,
     actAsButton: true,
+    flush: 'right',
     // fontawesome: 'fas fa-cloud-upload-alt',
     direct: () => {
       const entity = getEntity()
@@ -92,6 +93,7 @@ export const save = ({ getEntity, editor, eventBus }) => {
 export const revert = ({ getEntity, editor, eventBus }) => ({
   mode: strings.revert,
   actAsButton: true,
+  flush: 'right',
   // fontawesome: 'fas fa-cloud-download-alt',
   // fontawesome: 'fas fa-sync-alt',
   direct: () => {

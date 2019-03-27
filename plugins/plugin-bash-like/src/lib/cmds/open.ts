@@ -43,6 +43,7 @@ const open = async (filepath, hljs) => {
   if (suffix === 'js' ||
       suffix === 'ts' ||
       suffix === 'go' ||
+      suffix === 'txt' ||
       suffix === 'swift' ||
       suffix === 'py' ||
       suffix === 'json') {

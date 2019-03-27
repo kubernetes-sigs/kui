@@ -320,23 +320,24 @@ exports.expectStruct = (struct1, noParse = false, failFast = true) => string => 
     }
     return ok
   } catch (err) {
-    console.error('Error comparing structs for actual value= ' + string)
+    console.error('Error comparing structs for actual value=' + string)
     throw err
   }
 }
-exports.expectYAMLSubset = (struct1, failFast = true) => string => {
+exports.expectYAML = (struct1, subset = false, failFast = true) => string => {
   try {
     const struct2 = require('js-yaml').safeLoad(string)
-    const ok = sameStruct(struct1, struct2, true)
+    const ok = sameStruct(struct1, struct2, subset)
     if (failFast) {
       assert.ok(ok)
     }
     return ok
   } catch (err) {
-    console.error('Error comparing subset for actual value= ' + string)
+    console.error('Error comparing subset for actual value=' + string)
     throw err
   }
 }
+exports.expectYAMLSubset = (struct1, failFast = true) => exports.expectYAML(struct1, true, failFast)
 exports.expectSubset = (struct1, failFast = true) => string => {
   try {
     const ok = sameStruct(struct1, JSON.parse(string), true)
@@ -345,7 +346,7 @@ exports.expectSubset = (struct1, failFast = true) => string => {
     }
     return true
   } catch (err) {
-    console.error('Error comparing subset for actual value= ' + string)
+    console.error('Error comparing subset for actual value=' + string)
     throw err
   }
 }

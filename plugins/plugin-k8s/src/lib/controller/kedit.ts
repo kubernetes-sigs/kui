@@ -118,11 +118,11 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   // add our mode buttons
   const resource = { kind: yaml.kind, filepathForDrilldown: filepath, yaml }
   const addModeButtons = (defaultMode: string) => response => {
-    response['modes'] = [
+    response['modes'] = (response['modes'] || []).concat([
       { mode: 'edit', direct: openInEditor },
       { mode: 'configure', direct: openAsForm(filepath) },
       statusButton('kubectl', resource, FinalState.NotPendingLike)
-    ]
+    ])
 
     response['modes'].find(({ mode }) => mode === defaultMode).defaultMode = true
 
@@ -138,6 +138,7 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
                       undefined, undefined, {
                         parameters: {
                           name: basename(filepath),
+                          filepath,
                           source: redactYAML(safeDump(yaml))
                         }
                       })
