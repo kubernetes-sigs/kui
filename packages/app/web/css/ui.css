@@ -1824,6 +1824,10 @@ body.subwindow sidecar .padding-content {
     display: flex;
     flex-direction: column;
 }
+body.subwindow sidecar .padding-content .padding-content {
+    /* this rule protects against nested padding-content; we don't want to pad twice */
+    padding: 0;
+}
 body.subwindow[data-presentation="FixedSize"] sidecar .padding-content {
     /* content takes care of layout, e.g. monaco-editor */
     padding: 0;

@@ -47,6 +47,8 @@ interface Getter {
 export interface IEntity {
   type: string
   name: string
+  extractName?: (raw: string) => string // re-extract name from raw source, e.g. after a save or revert
+  lock?: any // set to false if you don't want a lock icon
   filepath?: string
   exec: IExecSpec
   persister: any

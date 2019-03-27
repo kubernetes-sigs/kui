@@ -65,12 +65,7 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   // override the type shown in the sidecar header to show the
   // resource kind
   const typeOverride = yaml.kind
-  let nameOverride = (yaml.metadata && yaml.metadata.name) || basename(filepath)
-
-  // custom hacks now for seed
-  if (yaml.spec && yaml.spec.service) {
-    nameOverride = yaml.spec.service
-  }
+  const nameOverride = () => (yaml.metadata && yaml.metadata.name) || basename(filepath)
 
   const formGroups: Array<IFormGroup> = []
   const push = (group: string, key: string, { parent = yaml, path = [key], skip = {} } = {}) => {
@@ -119,8 +114,8 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   const resource = { kind: yaml.kind, filepathForDrilldown: filepath, yaml }
   const addModeButtons = (defaultMode: string) => response => {
     response['modes'] = (response['modes'] || []).concat([
-      { mode: 'edit', direct: openInEditor },
-      { mode: 'configure', direct: openAsForm(filepath) },
+      { mode: 'edit', direct: openAsForm },
+      { mode: 'raw', direct: openInEditor },
       statusButton('kubectl', resource, FinalState.NotPendingLike)
     ])
 
@@ -131,27 +126,30 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
 
   /** open the content in the monaco editor */
   const openInEditor = () => {
-    debug('openInEditor')
+    debug('openInEditor', yaml.metadata.name)
 
     const { safeDump } = require('js-yaml')
-    return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride}" --language yaml`,
+    return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride()}" --language yaml`,
                       undefined, undefined, {
                         parameters: {
-                          name: basename(filepath),
+                          name: yaml.metadata.name,
+                          kind: yaml.kind,
+                          lock: false, // we don't want a lock icon
+                          extractName: (raw: string) => require('js-yaml').safeLoad(raw).metadata.name,
                           filepath,
                           source: redactYAML(safeDump(yaml))
                         }
                       })
-      .then(addModeButtons('edit'))
+      .then(addModeButtons('raw'))
   }
 
   /** open the content as a pretty-printed form */
-  const openAsForm = (filepath: string) => () => {
-    return Promise.resolve(generateForm(parsedOptions)(yaml, filepath, nameOverride, typeOverride, formGroups))
-      .then(addModeButtons('configure'))
+  const openAsForm = () => {
+    return Promise.resolve(generateForm(parsedOptions)(yaml, filepath, nameOverride(), typeOverride, formGroups))
+      .then(addModeButtons('edit'))
   }
 
-  return openInEditor()
+  return openAsForm()
 
   /*return repl.qexec(`edit !source ${typeOverride} ${nameOverride} --language yaml`,
     undefined, undefined, {
@@ -214,7 +212,7 @@ const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
   const filepath = findFile(expandHomeDir(filepathAsGiven))
   debug('filepath', filepath)
 
-  const { safeLoadAll: parseYAML } = require('js-yaml')
+  const { safeLoadAll: parseYAML } = await import('js-yaml')
   const { readFile } = await import('fs-extra') // 22ms or so to load fs-extra, so defer it
   const yamls = parseYAML(await readFile(filepath))
   debug('yamls', yamls)

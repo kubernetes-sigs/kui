@@ -168,7 +168,34 @@ export const openEditor = async (name, options, execOptions) => {
       upToDate.className = 'is-up-to-date'
       modified.className = 'is-modified'
 
-      // even handlers for saved and content-changed
+      /** update isdecar header */
+      const updateHeader = () => {
+        if (!execOptions.noSidecarHeader) {
+          debug('updateHeader', entity)
+
+          // make a wrapper around the entity name to house the "is
+          // modified" indicator
+          const nameDiv = document.createElement('div')
+          const namePart = document.createElement('span')
+          const isModifiedPart = document.createElement('span')
+          const isModifiedIcon = document.createElement('i')
+
+          nameDiv.appendChild(namePart)
+          nameDiv.appendChild(isModifiedPart)
+          isModifiedPart.appendChild(isModifiedIcon)
+          namePart.innerText = entity.name
+          nameDiv.className = 'is-modified-wrapper'
+          isModifiedPart.className = 'is-modified-indicator'
+          isModifiedIcon.className = 'fas fa-asterisk'
+          isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
+          isModifiedPart.setAttribute('data-balloon-pos', 'left')
+
+          addNameToSidecarHeader(sidecar, nameDiv, entity.packageName, undefined, entity.prettyKind || entity.kind || entity.prettyType || entity.viewName)
+          addVersionBadge(entity, { clear: true })
+        }
+      }
+
+      /** even handlers for saved and content-changed */
       const editsInProgress = () => {
         // debug('editsInProgress')
         sidecar.classList.add('is-modified')
@@ -176,7 +203,7 @@ export const openEditor = async (name, options, execOptions) => {
         eventBus.emit('/editor/change', {})
       }
       const editsCommitted = entity => {
-        debug('editsCommited')
+        debug('editsCommited', entity)
         const lockIcon = sidecar.querySelector('[data-mode="lock"]')
 
         sidecar.classList.remove('is-modified')
@@ -185,33 +212,14 @@ export const openEditor = async (name, options, execOptions) => {
         sidecar.entity = entity
         debug('status:is-up-to-date')
 
-        // update the version badge to reflect the update
-        addVersionBadge(entity, { clear: true })
+        // update sidecar header, after save or revert
+        updateHeader()
       }
       eventBus.on('/editor/save', editsCommitted)
       editor.getModel().onDidChangeContent(editsInProgress)
 
-      if (!execOptions.noSidecarHeader) {
-        // make a wrapper around the entity name to house the "is
-        // modified" indicator
-        const nameDiv = document.createElement('div')
-        const namePart = document.createElement('span')
-        const isModifiedPart = document.createElement('span')
-        const isModifiedIcon = document.createElement('i')
-
-        nameDiv.appendChild(namePart)
-        nameDiv.appendChild(isModifiedPart)
-        isModifiedPart.appendChild(isModifiedIcon)
-        namePart.innerText = entity.name
-        nameDiv.className = 'is-modified-wrapper'
-        isModifiedPart.className = 'is-modified-indicator'
-        isModifiedIcon.className = 'fas fa-asterisk'
-        isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
-        isModifiedPart.setAttribute('data-balloon-pos', 'left')
-
-        addNameToSidecarHeader(sidecar, nameDiv, entity.packageName)
-        addVersionBadge(entity, { clear: true })
-      }
+      // update sidecar header, initial call
+      updateHeader()
 
       /** call editor.layout */
       const relayout = editor.relayout = () => {

@@ -16,6 +16,8 @@
 
 const debug = require('debug')('k8s/form-renderer')
 
+import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
+
 export interface IFormGroup {
   title: string
   choices: Array<IFormElement>
@@ -66,16 +68,23 @@ const update = (yaml, path: Array<string>, value: string | number | boolean) => 
  * Save the current form choices
  *
  */
-const doSave = (button: HTMLButtonElement, form, yaml, filepath: string) => () => {
-  button.classList.add('yellow-background')
-  button.classList.add('repeating-pulse')
+const doSave = (form: HTMLFormElement, yaml: object, filepath: string, button?: HTMLButtonElement) => () => {
+  if (button) {
+    button.classList.add('yellow-background')
+    button.classList.add('repeating-pulse')
+  }
 
   setTimeout(async () => {
-    const inputs: Array<HTMLInputElement> = form.querySelectorAll('input')
+    const inputs = form.querySelectorAll('input')
     for (let idx = 0; idx < inputs.length; idx++) {
-      const input = inputs[idx]
+      const input = inputs[idx] as HTMLInputElement
       const path = input['__path']
       update(yaml, path, input.value)
+
+      const label = input.getAttribute('data-form-label')
+      if (label === 'name') {
+        updateSidecarHeader({ name: input.value })
+      }
     }
 
     debug('doSave done extracting values', yaml)
@@ -84,20 +93,22 @@ const doSave = (button: HTMLButtonElement, form, yaml, filepath: string) => () =
     await writeFile(filepath, safeDump(yaml))
     debug('doSave done writing file')
 
-    button.classList.remove('yellow-background')
-    button.classList.remove('repeating-pulse')
+    if (button) {
+      button.classList.remove('yellow-background')
+      button.classList.remove('repeating-pulse')
+    }
   }, 0)
 }
 
 /**
- * Present a form
+ * Present a form view over a resource
  *
  */
 export const generateForm = (parsedOptions) => (yaml, filepath: string, name: string, kind: string, formElements: Array<IFormGroup>) => {
   debug('generate form', formElements)
 
   const form = document.createElement('form')
-  form.className = 'project-config-container'
+  form.className = 'project-config-container padding-content overflow-auto'
 
   const list = document.createElement('ul')
   list.className = 'project-config-list'
@@ -192,6 +203,7 @@ export const generateForm = (parsedOptions) => (yaml, filepath: string, name: st
     }
   })
 
+  /*
   const okButton = document.createElement('button')
   okButton.setAttribute('type', 'button')
   okButton.className = 'bx--btn bx--btn--primary'
@@ -206,6 +218,11 @@ export const generateForm = (parsedOptions) => (yaml, filepath: string, name: st
 
   okButton.onclick = doSave(okButton, form, yaml, filepath)
   resetButton.onclick = () => form.reset()
+  */
+  const modes = [
+    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(form, yaml, filepath) },
+    { mode: 'revert', flush: 'right', actAsButton: true, direct: () => form.reset() }
+  ]
 
   const subtext = document.createElement('span')
   subtext.appendChild(document.createTextNode('The provider '))
@@ -220,6 +237,7 @@ export const generateForm = (parsedOptions) => (yaml, filepath: string, name: st
     isEntity: true,
     name,
     subtext,
-    content: form
+    content: form,
+    modes
   }
 }

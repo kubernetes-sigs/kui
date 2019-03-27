@@ -97,8 +97,8 @@ const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = n
 
   // respond with a repl-compatible data model
   const custom = execOptions.custom
-  const lock = (custom && custom.lock) || entity.gotoReadonlyView || defaultLock
-  return respondToRepl([ lock ])(model)
+  const lock = (custom && custom.lock) || (entity.lock !== undefined ? entity.lock : (entity.gotoReadonlyView || defaultLock))
+  return respondToRepl(lock ? [ lock ] : [])(model)
 }
 
 export default async (commandTree) => {
