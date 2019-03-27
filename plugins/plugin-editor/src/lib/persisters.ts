@@ -38,10 +38,11 @@ export const persisters = {
         if (err) {
           reject(err)
         } else {
-          if (entity.extractName) {
+          if (entity.extract) {
             // let's see if we can re-extract the updated entity name
             // from the raw source
-            entity.name = entity.extractName(rawText)
+            const newEntity = entity.extract(rawText, entity)
+            Object.assign(entity, newEntity)
           }
 
           resolve(entity)

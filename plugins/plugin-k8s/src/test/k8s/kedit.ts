@@ -38,7 +38,7 @@ interface Resource {
   }
 }
 const initialContent: Resource = safeLoad(readFileSync(initialFilepath))
-const updatedContent: Resource = Object.assign({}, initialContent, { name: 'camera-shy', kind: 'hello there' })
+const updatedContent: Resource = Object.assign({}, initialContent, { metadata: { name: 'camera-shy' }, kind: 'hello there' })
 // NOTE: the space in 'hello there' is intentional; it tests that the sidecar etc. logic can handle a kind with spaces!
 
 const initialResourceName = initialContent.metadata.name
@@ -121,7 +121,7 @@ describe('electron kedit', function (this: common.ISuite) {
 
   const reopenWith = (cmd: string) => ({
     andExpect: (expected: Resource, displayedName = expected.metadata.name) => {
-      it(`should re-open the file and see the ${expected.metadata.name} using "${cmd}"`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
+      it(`should re-open the file and see resource named ${expected.metadata.name} using "${cmd}"`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
          .then(cli.expectJustOK)
          .then(sidecar.expectOpen)
          .then(sidecar.expectShowing(displayedName))
@@ -176,12 +176,13 @@ describe('electron kedit', function (this: common.ISuite) {
   reopenWith('kedit').andExpect(initialContent)
 
   // now update via form with "kedit"
-  makeACopy()
+  // makeACopy() <-- note no copy, this will double-check that the editWithoutSaving truly did not save
   updateViaForm()
   reopenWith('open').andExpect(updatedContent)
   reopenWith('kedit').andExpect(updatedContent)
 
   // now update with "kedit"
+  makeACopy()
   updateWith('kedit')
   reopenWith('open').andExpect(updatedContent)
   reopenWith('kedit').andExpect(updatedContent)

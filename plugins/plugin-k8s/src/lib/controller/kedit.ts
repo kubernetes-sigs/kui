@@ -27,6 +27,7 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
 
 import { FinalState } from '../model/states'
+import { IKubeResource, IResource } from '../model/resource'
 
 import { redactYAML } from '../view/redact'
 import { statusButton } from '../view/modes/status'
@@ -65,50 +66,7 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
   // override the type shown in the sidecar header to show the
   // resource kind
   const typeOverride = yaml.kind
-  const nameOverride = () => (yaml.metadata && yaml.metadata.name) || basename(filepath)
-
-  const formGroups: Array<IFormGroup> = []
-  const push = (group: string, key: string, { parent = yaml, path = [key], skip = {} } = {}) => {
-    const formGroup = formGroups.find(({ title }) => title === group)
-      || { title: group, choices: [] }
-
-    const { choices } = formGroup
-
-    if (choices.length === 0) {
-      // then we just created a new group
-      formGroups.push(formGroup)
-    }
-
-    //
-    // for each element of the structure, either render a leaf
-    // choice or recurse into a subtree
-    //
-    const struct = parent[key]
-    for (let key in struct) {
-      if (!skip[key]) {
-        const value = struct[key]
-        const next = path.concat([key]) // path to this leaf or subtree
-
-        if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
-          // leaf node
-          choices.push({ key, value, path: next })
-        } else if (!Array.isArray(value)) { // not sure what to do with arrays, yet
-          // subtree: descend recursively
-          // note how we intentionally flatten, for now
-          push(key, key, { parent: struct, path: next })
-        }
-      }
-    }
-  }
-
-  //
-  // for now, we pick which subtrees we want to offer as choices:
-  // metadata, spec, and data; note that we place metadata and spec
-  // in the same group: 'Resource Definition'
-  //
-  push('Resource Definition', 'metadata')
-  push('Resource Definition', 'spec', { skip: { service: true } })
-  push('Data Values', 'data')
+  const nameOverride = (resource: IKubeResource) => (resource.metadata && resource.metadata.name) || basename(filepath)
 
   // add our mode buttons
   const resource = { kind: yaml.kind, filepathForDrilldown: filepath, yaml }
@@ -124,61 +82,56 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
     return response
   }
 
+  interface Resource extends IResource {
+    source: string
+  }
+
+  /** re-extract the structure from raw yaml string */
+  const extract = (rawText: string, entity?: Resource): Resource => {
+    const resource = editorEntity.yaml = require('js-yaml').safeLoad(rawText)
+    editorEntity.source = rawText
+    editorEntity.name = resource.metadata.name
+    editorEntity.kind = resource.kind
+
+    if (entity) {
+      entity.source = editorEntity.source
+      entity.name = editorEntity.name
+      entity.kind = editorEntity.kind
+    }
+
+    return entity
+  }
+
+  const { safeDump } = await import('js-yaml')
+  const editorEntity = {
+    name: yaml.metadata.name,
+    kind: yaml.kind,
+    lock: false, // we don't want a lock icon
+    extract,
+    filepath,
+    source: redactYAML(safeDump(yaml)),
+    yaml
+  }
+
   /** open the content in the monaco editor */
   const openInEditor = () => {
     debug('openInEditor', yaml.metadata.name)
 
-    const { safeDump } = require('js-yaml')
-    return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride()}" --language yaml`,
+    return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.yaml)}" --language yaml`,
                       undefined, undefined, {
-                        parameters: {
-                          name: yaml.metadata.name,
-                          kind: yaml.kind,
-                          lock: false, // we don't want a lock icon
-                          extractName: (raw: string) => require('js-yaml').safeLoad(raw).metadata.name,
-                          filepath,
-                          source: redactYAML(safeDump(yaml))
-                        }
+                        parameters: editorEntity
                       })
       .then(addModeButtons('raw'))
   }
 
   /** open the content as a pretty-printed form */
   const openAsForm = () => {
-    return Promise.resolve(generateForm(parsedOptions)(yaml, filepath, nameOverride(), typeOverride, formGroups))
+    return Promise.resolve(generateForm(parsedOptions)(editorEntity.yaml, filepath, nameOverride(editorEntity.yaml), typeOverride, extract))
       .then(addModeButtons('edit'))
   }
 
+  // open as form by default
   return openAsForm()
-
-  /*return repl.qexec(`edit !source ${typeOverride} ${nameOverride} --language yaml`,
-    undefined, undefined, {
-    parameters: {
-    name: basename(filepath),
-    source: safeDump(yamlSubset),
-    persister: {
-    saveString: 'Save',
-    save: async (wsk, action, editor) => {
-    try {
-    const updatedYAML = parseYAML(editor.getValue())[0];
-    const yamlToSave = Object.assign({}, yaml, updatedYAML);
-    delete yamlToSave.persister
-    debug('saving', yamlToSave)
-    await writeFile(filepath, safeDump(yamlToSave));
-    return action;
-    } catch (err) {
-    console.error(err);
-    throw err;
-    }
-    },
-    revert: (wsk, action) => {
-    debug('reverting')
-    action.exec.code = safeDump(yamlSubset);
-    return Promise.resolve(action);
-    }
-    }
-    }
-    });*/
 }
 
 /**
