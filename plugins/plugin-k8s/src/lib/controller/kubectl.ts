@@ -567,6 +567,19 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
     rawArgv.push('1000')
   }
 
+  if (options.watch || options.w || options['watch-only']) {
+    const idxs = [
+      rawArgv.indexOf('--watch'),
+      rawArgv.indexOf('--watch=true'),
+      rawArgv.indexOf('-w'),
+      rawArgv.indexOf('-w=true'),
+      rawArgv.indexOf('--watch-only'),
+      rawArgv.indexOf('--watch-only=true')
+    ].filter(_ => _ !== -1)
+
+    idxs.map(idx => rawArgv.splice(idx, 1))
+  }
+
   // strip trailing e.g. .app
   const entityTypeWithoutTrailingSuffix = entityType && entityType.replace(/\..*$/, '').replace(/-[a-z0-9]{9}-[a-z0-9]{5}$/, '')
 
@@ -774,6 +787,13 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         console.error('error rendering help', err)
         reject(out)
       }
+    } else if (command === 'kubectl' && verb === 'get' && (options.watch || options.w)) {
+      // kubectl get --watch mode?
+      debug('delegating to k status')
+      const ns = options.n || options.namespace
+        ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
+        : ''
+      return repl.qexec(`k status ${entityType} ${entity || ''} ${ns}`).then(resolveBase, reject)
     } else if (output === 'json' || output === 'yaml' || output === 'logs') {
       //
       // return a sidecar entity
