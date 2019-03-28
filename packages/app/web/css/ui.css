@@ -424,7 +424,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     display: flex;
     align-items: flex-start;
 }
-.sidecar-visible .repl-block.processing .repl-output, .sidecar-visible .repl-block.valid-response .repl-output {
+.sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.processing .repl-output, .sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.valid-response .repl-output {
     align-items: stretch;
 }
 .repl-block.processing .repl-result-spinner-inner {
@@ -712,8 +712,10 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
 }
 
 /* sidecar bottom stripe */
-body[kui-theme-style="dark"] .sidecar-bottom-stripe {
-    /* dark themes need a bit of a top border to distinguish the sidecar contents */
+body[kui-theme-style="dark"] sidecar:not(.minimized) .sidecar-bottom-stripe {
+    /* dark themes need a bit of a top border to distinguish the sidecar
+   contents; but make sure not to add this border when the sidecar is
+   minimzed */
     border-top: 1px solid var(--color-ui-01);
 }
 .sidecar-bottom-stripe {
