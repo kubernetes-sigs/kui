@@ -33,6 +33,11 @@ export const States = {
   Running: 'Running',
   ProvisionedSuccessfully: 'ProvisionedSuccessfully',
 
+  // online-like from knative
+  Deployed: 'Deployed',
+  ChannelReady: 'ChannelReady',
+  Addressable: 'Addressable',
+
   // offline-like
   Offline: 'Offline',
   Undeployed: 'Offline',
@@ -79,7 +84,8 @@ const groupOf = (A: Array<State>) => A.reduce((group, state) => {
 }, {})
 
 /** states that are synonymous with being Online */
-stateGroups[FinalState.OnlineLike] = groupOf([ States.Active, States.Online, States.Ready, States.Running, States.ProvisionedSuccessfully ])
+stateGroups[FinalState.OnlineLike] = groupOf([ States.Active, States.Online, States.Ready, States.Running, States.ProvisionedSuccessfully, States.Deployed, States.ChannelReady, States.Addressable
+])
 const isOnlineLike = (state: State): boolean => stateGroups[FinalState.OnlineLike][state]
 
 /** states that are synonymous with being Offline */
@@ -102,7 +108,7 @@ export interface IStatus {
  */
 export const rendering = {
   cssForState: (state: State): string => {
-    return `min-width-6em even-smaller-text ${state2Traffic(state).toString()}`
+    return `min-width-6em ${state2Traffic(state).toString()}`
   },
   outerCSS: 'no-wrap'
 }

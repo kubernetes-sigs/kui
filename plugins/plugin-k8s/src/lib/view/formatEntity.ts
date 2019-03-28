@@ -109,7 +109,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
 
     {
       key: 'message', value: '',
-      css: 'deemphasize', outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
+      css: 'somewhat-smaller-text slightly-deemphasize', outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
     }
   ]
 

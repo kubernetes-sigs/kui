@@ -84,7 +84,6 @@ const waitForCreate = function (this: common.ISuite, spec: ICreateSpec) {
     const waitForDescribeContent = async () => {
       await waitForIcon()
       await textExists(`Name: ${name}`)
-      await textExists(`Kind: ${kind}`)
 
       if (!/namespace/i.test(kind)) {
         await textExists(`Namespace: ${ns}`)
