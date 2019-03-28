@@ -345,7 +345,7 @@ repl .repl-block.using-custom-prompt .repl-prompt-righty > i {
 .repl-block.error .repl-prompt-right-elements .repl-prompt-right-element-icon {
     color: var(--color-error);
 }
-repl.sidecar-visible .repl-prompt-right-elements, .repl-active .repl-prompt-right-elements {
+repl.sidecar-visible .repl-block:not(.processing) .repl-prompt-right-elements, .repl-active .repl-prompt-right-elements {
     opacity: 0;
     width: 0;
     padding: 0;
@@ -373,6 +373,9 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     border: none;
     flex: 1;
     caret-color: var(--color-support-01);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .repl input:focus, .repl-input-like:focus {
     outline: none;
