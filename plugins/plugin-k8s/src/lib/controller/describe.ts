@@ -116,14 +116,14 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     add('Namespace', ns)
   }
 
-  add('Kind', resource.kind)
+  // add('Kind', resource.kind)
   add('Priority', spec.priority)
   add('Node', spec.nodeName && spec.hostIP && `${spec.nodeName}/${spec.hostIP}`)
   add('Start Time', status.startTime)
   add('Labels', metadata.labels)
+  add('Annotations', metadata.annotations)
   add('Selectors', spec.selector)
   add('Type', spec.type)
-  add('Annotations', metadata.annotations)
   add('Status', status.phase)
   add('Controlled By', metadata.ownerReferences && metadata.ownerReferences.length === 1 && `${metadata.ownerReferences[0].kind}/${metadata.ownerReferences[0].name}`)
 
@@ -132,6 +132,8 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
 
   // services
   add('IP', spec.clusterIP)
+  add('Ports', spec.ports)
+  add('Session Affinity', spec.sessionAffinity)
 
   // deployments
   add('Replicas', status.replicas && {
@@ -142,6 +144,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     unavailable: status.unavailableReplicas || 0
   })
   add('StrategyType', spec.strategy && spec.strategy.type)
+  add('Strategy', spec.strategy)
   // pods
   add('IP', status.podIP)
   // 'Init Containers': spec.initContainers,
