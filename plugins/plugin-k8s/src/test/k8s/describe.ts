@@ -82,6 +82,12 @@ describe('electron describe', function (this: common.ISuite) {
       })
     }
 
+    it(`should fail with 404 for unknown resource type via ${kubectl}`, () => {
+      const fakeType = 'yoyoyo1334u890724'
+      return cli.do(`${kubectl} describe ${fakeType} productPage`, this.app)
+        .then(cli.expectError(404))
+    })
+
     it(`should create sample pod from URL via ${kubectl}`, () => {
       return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))

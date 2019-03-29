@@ -283,6 +283,9 @@ const parseIstio2 = (raw: string): Array<IZaprEntry> => {
   })
 }
 
+/** filter out empty log entries */
+const notEmpty = (_: IZaprEntry) => _.timestamp || _.rest || _.origin || _.provider
+
 /**
  * Format the kubectl access logs
  *
@@ -298,7 +301,9 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
     container.classList.add('log-lines')
     // container.classList.add('fixed-table-layout')
 
-    logEntries.forEach(({ logType = '', timestamp = '', origin = '', rest, runLength = 1 }) => {
+    const doWeHaveAnyFirstColumns = logEntries.find(_ => _.timestamp || _.origin || _.runLength > 1)
+
+    logEntries.filter(notEmpty).forEach(({ logType = '', timestamp = '', origin = '', rest, runLength = 1 }) => {
       // dom for the log line
       const logLine = document.createElement('div')
       logLine.classList.add('log-line')
@@ -312,8 +317,7 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
       }
 
       // timestamp rendering
-      const hasFirstColumn = true // timestamp || origin || (runLength > 1)
-      if (hasFirstColumn) {
+      if (doWeHaveAnyFirstColumns) {
         const timestampDom = document.createElement('td')
         timestampDom.className = 'log-field log-date entity-name-group hljs-attribute'
         if (typeof timestamp === 'string') {
@@ -343,10 +347,6 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
       const restDom = document.createElement('td')
       restDom.className = 'log-field log-message slightly-smaller-text'
 
-      /* if (!hasFirstColumn) {
-        restDom.setAttribute('colspan', '2')
-      } */
-
       if (typeof rest === 'object') {
         const pre = document.createElement('pre')
         const code = document.createElement('code')
@@ -355,9 +355,9 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
         restDom.appendChild(pre)
       } else {
         const pre = document.createElement('pre')
-        const code = document.createElement('code')
-        code.innerText = rest
-        pre.appendChild(code)
+        pre.classList.add('pre-wrap')
+        pre.classList.add('break-all')
+        pre.innerText = rest
         restDom.appendChild(pre)
       }
       logLine.appendChild(restDom)

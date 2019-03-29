@@ -540,8 +540,8 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
   if ((!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
       command === 'kubectl' &&
-      (verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json') && (execOptions.type !== ExecType.Nested || execOptions.delegationOk)))) {
-    debug('delegating to describe')
+      ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) && (execOptions.type !== ExecType.Nested || execOptions.delegationOk))) {
+    debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
     return describeImpl(opts).then(resolveBase).catch(reject)
   } else if (command === 'kubectl' && (verb === 'status' || verb === 'list')) {
     return statusImpl(verb)(opts).then(resolveBase).catch(reject)

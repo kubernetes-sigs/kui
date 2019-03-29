@@ -506,10 +506,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.entity .entity-kind > span {
-    min-width: 7em;
-}
-.repl.sidecar-visible .entity .entity-kind {
+.entity .entity-kind {
     width: 8em;
 }
 .entity .entity-narrow {
@@ -1654,6 +1651,8 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 .log-lines .log-line .log-message {
     /* the message part of log lines */
     white-space: pre-wrap;
+    padding-top: 0.375em;
+    padding-bottom: 0.375em;
 }
 sidecar .log-lines .log-line:nth-child(2n) .log-field {
     background: var(--color-ui-03);

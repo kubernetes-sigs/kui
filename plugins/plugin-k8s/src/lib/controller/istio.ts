@@ -146,12 +146,13 @@ const installIstio = async ({ argvNoOptions, parsedOptions }) => {
 const uninstallIstio = async ({ parsedOptions }) => {
   debug('removing istio')
   try {
-    await $$('helm delete --purge istio')
+    return Promise.all([
+      $$('helm delete --purge istio-init').catch(err => { debug('istio-init delete error', err) }),
+      $$('helm delete --purge istio').catch(err => { debug('istio delete error', err) })
+    ]).then(() => true)
   } catch (err) {
     console.error(err)
   }
-
-  return $$('helm delete --purge istio-init')
 }
 
 /** resource definitions for bookinfo */
