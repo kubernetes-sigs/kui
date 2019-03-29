@@ -215,18 +215,35 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         // not JSON
 
         // 2019-02-22T15:22:52.837196Z     info    Monitored certs: []envoy.CertSource{envoy.CertSource{Directory:"/etc/certs/", Files:[]string{"cert-chain.pem", "key.pem", "root-cert.pem"}}}
-        const pattern2Split = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s+([^\s]+)\s+([\s\S]*)$/
-        const match = line.split(pattern2Split)
+        const pattern1 = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s+([^\s]+)\s+([\s\S]*)$/
+        let match = line.split(pattern1)
+        let timestampIndex = 1
+        let logTypeIndex = 2
+        let restIndex = 3
+        let originIndex // none
+        let providerIndex // none
 
-        const timestamp = (match && match[1]) || ''
-        const logType = (match && match[2]) || 'info'
-        const rest = (match && match[3]) || line
+        // [2019-02-22 15:22:54.048][16][info][upstream] external/envoy/source/common/upstream/cluster_manager_impl.cc:494] add/update cluster outbound|9093||istio-telemetry.istio-system.svc.cluster.local during init
+        if (!match || match.length === 1) {
+          const pattern2 = /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)\]\[(\d+)\]\[(.*)\]\[(.*)\]\s+(.*:\d+)\]\s+(.*)$/
+          match = line.split(pattern2)
+          logTypeIndex = 3
+          originIndex = 5
+          providerIndex = 4
+          restIndex = 6
+        }
+
+        const timestamp = (match && match[timestampIndex]) || ''
+        const logType = (match && match[logTypeIndex]) || 'info'
+        const origin = (match && match[originIndex]) || ''
+        const provider = (match && match[providerIndex]) || ''
+        const rest = (match && match[restIndex]) || line
 
         const zapr = {
           timestamp: timestamp && prettyPrintTime(timestamp, undefined, prevTimestamp),
           logType,
-          provider: '',
-          origin: '',
+          provider,
+          origin,
           rest
         }
 
@@ -301,9 +318,9 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
     container.classList.add('log-lines')
     // container.classList.add('fixed-table-layout')
 
-    const doWeHaveAnyFirstColumns = logEntries.find(_ => _.timestamp || _.origin || _.runLength > 1)
+    const doWeHaveAnyFirstColumns = logEntries.find(_ => _.timestamp || _.origin || _.provider || _.runLength > 1)
 
-    logEntries.filter(notEmpty).forEach(({ logType = '', timestamp = '', origin = '', rest, runLength = 1 }) => {
+    logEntries.filter(notEmpty).forEach(({ logType = '', timestamp = '', origin = '', provider = '', rest, runLength = 1 }) => {
       // dom for the log line
       const logLine = document.createElement('div')
       logLine.classList.add('log-line')
@@ -357,8 +374,22 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
         const pre = document.createElement('pre')
         pre.classList.add('pre-wrap')
         pre.classList.add('break-all')
-        pre.innerText = rest
         restDom.appendChild(pre)
+
+        // see if rest is of the form "a: b"
+        const trySplit = rest.split(/^(.*:)(\s+.*)$/)
+        if (trySplit && trySplit.length > 1) {
+          const a = document.createElement('span')
+          a.classList.add('map-key')
+          a.innerText = trySplit[1]
+          const b = document.createElement('span')
+          b.classList.add('map-value')
+          b.innerText = trySplit[2]
+          pre.appendChild(a)
+          pre.appendChild(b)
+        } else {
+          pre.innerText = rest
+        }
       }
       logLine.appendChild(restDom)
     })
