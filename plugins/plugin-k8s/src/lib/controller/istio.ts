@@ -114,26 +114,26 @@ const installIstio106 = async ({ parsedOptions }) => {
   return $$(`helm install ${chart} --name istio --namespace istio-system --set grafana.enabled=true --set tracing.enabled=true`)
 }
 
-const installIstio = async ({ argvNoOptions, parsedOptions }) => {
+const installIstio11 = async ({ argvNoOptions, parsedOptions }) => {
   const profile = argvNoOptions[argvNoOptions.indexOf('install') + 1] || 'default'
 
   const dir = await downloadIstio(parsedOptions.version)
   debug('download dir %s', dir)
 
   debug('istio init')
-  await $$(`helm install ${dir}/install/kubernetes/helm/istio-init --name istio-init --namespace istio-system`)
+  await $$(`helm install "${dir}/install/kubernetes/helm/istio-init" --name istio-init --namespace istio-system`)
 
   debug('istio install with profile %s', profile)
   if (profile === 'default') {
-    return $$(`helm install ${dir}/install/kubernetes/helm/istio --name istio --namespace istio-system`)
+    return $$(`helm install "${dir}/install/kubernetes/helm/istio" --name istio --namespace istio-system`)
   } else if (profile === 'demo') {
-    return $$(`helm install ${dir}/install/kubernetes/helm/istio --name istio --namespace istio-system --values ${dir}/install/kubernetes/helm/istio/values-istio-demo.yaml`)
+    return $$(`helm install "${dir}/install/kubernetes/helm/istio" --name istio --namespace istio-system --values "${dir}/install/kubernetes/helm/istio/values-istio-demo.yaml"`)
   } else if (profile === 'demo-auth') {
-    return $$(`helm install ${dir}/install/kubernetes/helm/istio --name istio --namespace istio-system --values ${dir}/install/kubernetes/helm/istio/values-istio-demo-auth.yaml`)
+    return $$(`helm install "${dir}/install/kubernetes/helm/istio" --name istio --namespace istio-system --values "${dir}/install/kubernetes/helm/istio/values-istio-demo-auth.yaml"`)
   } else if (profile === 'minimal') {
-    return $$(`helm install ${dir}/install/kubernetes/helm/istio --name istio --namespace istio-system --values ${dir}/install/kubernetes/helm/istio/values-istio-minimal.yaml`)
+    return $$(`helm install "${dir}/install/kubernetes/helm/istio" --name istio --namespace istio-system --values "${dir}/install/kubernetes/helm/istio/values-istio-minimal.yaml"`)
   } else if (profile === 'sds') {
-    return $$(`helm install ${dir}/install/kubernetes/helm/istio --name istio --namespace istio-system --values ${dir}/install/kubernetes/helm/istio/values-istio-sds-auth.yaml`)
+    return $$(`helm install "${dir}/install/kubernetes/helm/istio" --name istio --namespace istio-system --values "${dir}/install/kubernetes/helm/istio/values-istio-sds-auth.yaml"`)
   } else {
     throw new Error('Unsupported istio profile')
   }
@@ -143,16 +143,31 @@ const installIstio = async ({ argvNoOptions, parsedOptions }) => {
  * Uninstall istio
  *
  */
-const uninstallIstio = async ({ parsedOptions }) => {
+const uninstallIstio11 = async ({ parsedOptions }) => {
   debug('removing istio')
   try {
     return Promise.all([
-      $$('helm delete --purge istio-init').catch(err => { debug('istio-init delete error', err) }),
-      $$('helm delete --purge istio').catch(err => { debug('istio delete error', err) })
+      $$('helm delete --purge istio-init').catch(squash),
+      $$('helm delete --purge istio').catch(squash)
     ]).then(() => true)
   } catch (err) {
     console.error(err)
   }
+}
+
+/**
+ * Uninstall istio
+ *
+ */
+const uninstallIstio106 = async ({ parsedOptions }) => {
+  const version = parsedOptions.version || '1.0.6'
+
+  await Promise.all([
+    $(`kubectl delete -f https://raw.githubusercontent.com/istio/istio/${version}/install/kubernetes/helm/istio/templates/crds.yaml`).catch(squash),
+    $('helm delete --purge istio').catch(squash)
+  ])
+
+  return true
 }
 
 /** resource definitions for bookinfo */
@@ -209,9 +224,9 @@ const statusBookinfo = async () => {
  *
  */
 export default async (commandTree, prequire) => {
-  commandTree.listen('/istio/install', installIstio, { noAuthOk: true })
-  commandTree.listen('/istio/uninstall', uninstallIstio, { noAuthOk: true })
-  commandTree.listen('/istio/delete', uninstallIstio, { noAuthOk: true })
+  commandTree.listen('/istio/install', installIstio106, { noAuthOk: true })
+  commandTree.listen('/istio/uninstall', uninstallIstio106, { noAuthOk: true })
+  commandTree.listen('/istio/delete', uninstallIstio106, { noAuthOk: true })
   commandTree.listen('/istio/ingress', ingress, { noAuthOk: true })
   commandTree.listen('/istio/status', () => $$('k status svc -n istio-system'), { noAuthOk: true })
 

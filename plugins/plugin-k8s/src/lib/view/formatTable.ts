@@ -99,7 +99,8 @@ const cssForValue = {
   Failed: 'red-background',
   Running: 'green-background',
   Pending: 'yellow-background',
-  Succeeded: '', // successfully terminated; don't use a color
+  Succeeded: 'gray-background', // successfully terminated; don't use a color
+  Completed: 'gray-background', // successfully terminated; don't use a color
   Unknown: '',
 
   // AWS events
