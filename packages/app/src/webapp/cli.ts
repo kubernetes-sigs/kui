@@ -619,7 +619,8 @@ export const listen = prompt => {
     } else if (char === keys.U && event.ctrlKey) {
       // clear line
       prompt.value = ''
-    } else if (char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) {
+    } else if ((char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey)))
+               || (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
       // behavior

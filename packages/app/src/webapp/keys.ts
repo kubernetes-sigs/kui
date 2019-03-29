@@ -26,6 +26,7 @@ export const keys = {
   UP: 38,
   P: 80,
   DOWN: 40,
+  K: 75,
   L: 76,
   N: 78,
   R: 82,
