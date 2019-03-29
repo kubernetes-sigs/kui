@@ -121,6 +121,9 @@ describe('electron namespace', function (this: common.ISuite) {
           .then(cli.expectJustOK)
           .then(sidecar.expectOpen)
           .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
+          .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
+          .then(() => `${selectors.SIDECAR} .result-table .entity[data-name="nginx"] badge.green-background`)
+          .then(selector => this.app.client.waitForExist(selector))
           .catch(common.oops(this))
       })
     }

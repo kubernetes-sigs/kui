@@ -54,7 +54,7 @@ export const renderStatus = async (command: string, resource: IResource, finalSt
   // kubectl status => k8s status
   const commandForRepl = command === 'kubectl' ? 'k' : command
 
-  const fetchModels = `${commandForRepl} status ${repl.encodeComponent(resource.filepathForDrilldown || resource.kind || resource.yaml.kind)} ${repl.encodeComponent(resource.name)} ${final}`
+  const fetchModels = `${commandForRepl} status ${repl.encodeComponent(resource.filepathForDrilldown || resource.kind || resource.yaml.kind)} ${repl.encodeComponent(resource.name)} ${final} -n "${resource.yaml.metadata.namespace}"`
   debug('issuing command', fetchModels)
 
   const model = await repl.qexec(fetchModels)
