@@ -55,13 +55,13 @@ body[kui-theme-style="dark"] .monaco-editor .mtk22, body[kui-theme-style="dark"]
        mtk4 is the CSS class for JSON keys
    */
     transition: color 300ms ease-in-out;
-    color: var(--color-base0C);
+    color: var(--color-map-key)
 }
 
 body[kui-theme-style="dark"] .monaco-editor .mtk1 {
     /* map keys */
     transition: color 300ms ease-in-out;
-    color: var(--color-text-01);
+    color: var(--color-map-value);
 }
 body[kui-theme-style="dark"] .monaco-editor .mtk5 {
     /* map values */

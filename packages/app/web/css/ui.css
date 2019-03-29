@@ -1167,6 +1167,12 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+.map-key {
+    color: var(--color-map-key);
+}
+.map-value {
+    color: var(--color-map-value);
+}
 webview {
     display: flex;
     flex: 1;
@@ -1641,12 +1647,17 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
     padding-top: 1em;
     padding-bottom: 1em;
     white-space: pre-wrap;
+    text-align: right;
+}
+.log-lines .log-line .log-field.log-date .entity-name {
+    /* this represents e.g. the origin or source line for a log entry */
+    color: var(--color-text-02);
 }
 .log-lines .log-line .log-field.log-date:not(.hljs-attribute) {
     color: var(--color-text-02);
 }
 .log-lines .log-line .log-field.log-date.hljs-attribute {
-    color: var(--color-text-01);
+    color: var(--color-base0A);
 }
 .log-lines .log-line .log-message {
     /* the message part of log lines */
@@ -2902,6 +2913,10 @@ body {
     /* two-color charts; yellow versus cyan should be a pretty good default */
     --color-chart-0: var(--color-yellow);
     --color-chart-1: var(--color-cyan);
+
+    /* map keys and values */
+    --color-map-key: var(--color-base0C);
+    --color-map-value: var(--color-text-01);
 
     /* tab colors */
     --color-tab-01: var(--color-base0D);
