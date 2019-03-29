@@ -54,7 +54,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
 
   const kindForDisplay = masqueradeKind || kind
 
-  const kindAttr: Array<any> = [{ key: 'kind', value: kindForDisplay }]
+  const kindAttr: Array<any> = [{ key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }]
   const contextAttr = parsedOptions.multi || !context ? []
     : formatContextAttr(context)
 

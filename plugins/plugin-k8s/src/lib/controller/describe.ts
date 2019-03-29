@@ -74,6 +74,9 @@ const describe = async ({ command, parsedOptions, execOptions }) => {
 
     const describeCmd = command
       .replace(/get/, 'describe')
+      .replace(/(-o|--output)[= ](yaml|json)/, '')
+
+    debug('describeCmd', describeCmd)
     debug('getCmd', getCmd)
 
     const resource: IKubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
@@ -165,6 +168,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
       mode: 'summary',
       defaultMode: true,
       direct: describeCmd,
+      execOptions: { delegationOk: true },
       leaveBottomStripeAlone: true
     }
   ]

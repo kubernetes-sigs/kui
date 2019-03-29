@@ -173,9 +173,12 @@ const getStatusFromConditions = response => {
     const conditions = response.status.conditions
     conditions.sort((a, b) => - (new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()))
     debug('using condition for status', conditions[0], conditions)
+
+    const conditionForMessage = conditions.find(_ => _.message) || conditions[0]
+
     return {
       state: conditions[0].reason || conditions[0].type,
-      message: conditions[0].message || conditions[0].lastTransitionTime
+      message: (conditionForMessage && conditionForMessage.message) || conditions[0].lastTransitionTime
     }
   }
 }
