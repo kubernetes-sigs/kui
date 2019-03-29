@@ -31,6 +31,8 @@ export const States = {
   Online: 'Online',
   Ready: 'Ready',
   Running: 'Running',
+  Completed: 'Completed',
+  Succeeded: 'Succeeded',
   ProvisionedSuccessfully: 'ProvisionedSuccessfully',
 
   // online-like from knative
@@ -75,7 +77,7 @@ const groupOf = (A: Array<State>) => A.reduce((group, state) => {
 }, {})
 
 /** states that are synonymous with being Online */
-stateGroups[FinalState.OnlineLike] = groupOf([ States.Active, States.Online, States.Ready, States.Running, States.ProvisionedSuccessfully, States.Deployed, States.ChannelReady, States.Addressable
+stateGroups[FinalState.OnlineLike] = groupOf([ States.Active, States.Online, States.Ready, States.Running, States.ProvisionedSuccessfully, States.Deployed, States.ChannelReady, States.Addressable, States.Completed, States.Succeeded
 ])
 const isOnlineLike = (state: State): boolean => stateGroups[FinalState.OnlineLike][state]
 
