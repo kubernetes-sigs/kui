@@ -19,7 +19,7 @@ const debug = Debug('core-support/history/reverse-i-search')
 
 import * as historyModel from '@kui-shell/core/models/history'
 import { getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
-import { keys } from '@kui-shell/core/webapp/keys'
+import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 
 // TODO externalize
@@ -142,6 +142,13 @@ function registerListener () {
     }
   }
 
+  /** fill in the result of a search */
+  function completeSearch () {
+    debug('completing search')
+    getCurrentPrompt().value = placeholderContentPart.getAttribute('data-full-match')
+    cancelISearch()
+  }
+
   /**
    * User hits enter while in i-search mode
    *
@@ -149,9 +156,7 @@ function registerListener () {
   function maybeComplete (evt) {
     if (isSearchActive) {
       if (evt.keyCode === keys.ENTER) {
-        debug('completing search')
-        getCurrentPrompt().value = placeholderContentPart.getAttribute('data-full-match')
-        cancelISearch()
+        completeSearch()
       }
     }
   }
@@ -185,7 +190,7 @@ function registerListener () {
 
           placeholder = document.createElement('span')
           placeholderFixedPart = document.createElement('span')
-          placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, '').replace(/\$2/, ``)
+          placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, '').replace(/\$2/, prompt.value)
           placeholder.appendChild(placeholderFixedPart)
           placeholder.classList.add('repl-temporary')
           placeholder.classList.add('normal-text')
@@ -215,6 +220,8 @@ function registerListener () {
           currentOnKeypress = prompt.onkeypress
           prompt.onkeypress = maybeComplete
         }
+      } else if (isSearchActive && isCursorMovement(evt)) {
+        completeSearch()
       } else {
         // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
         debug('cancel', evt.keyCode)

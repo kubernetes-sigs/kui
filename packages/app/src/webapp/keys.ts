@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+/** does the given keycode correspond to a cursor movement? */
+export const isCursorMovement = (evt: KeyboardEvent): boolean => {
+  const code = evt.keyCode
+
+  return evt.ctrlKey &&
+    (code === keys.A || code === keys.E || code === keys.F || code === keys.B)
+}
+
 export const keys = {
   ENTER: 13,
   BACKSPACE: 127,
@@ -21,7 +29,10 @@ export const keys = {
   TAB: 9,
   LEFT_ARROW: 37,
   A: 65,
+  B: 66,
   C: 67,
+  E: 69,
+  F: 70,
   U: 85,
   UP: 38,
   P: 80,
