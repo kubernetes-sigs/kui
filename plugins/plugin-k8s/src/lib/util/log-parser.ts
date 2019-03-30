@@ -218,7 +218,10 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
           rest: record
         }
 
-        prevTimestamp = timestamp
+        if (timestamp) {
+          prevTimestamp = timestamp
+        }
+
         return zapr
       } catch (err) {
         // not JSON
@@ -256,57 +259,12 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
           rest
         }
 
-        prevTimestamp = timestamp
+        if (timestamp) {
+          prevTimestamp = timestamp
+        }
         return zapr
       }
     })
-}
-const parseIstio2 = (raw: string): Array<IZaprEntry> => {
-  // [2019-02-22 15:22:54.048][16][info][upstream] external/envoy/source/common/upstream/cluster_manager_impl.cc:494] add/update cluster outbound|9093||istio-telemetry.istio-system.svc.cluster.local during init
-  // [2019-02-22 15:22:52.882][16][info][main] external/envoy/source/server/server.cc:190] initializing epoch 0 (hot restart version=10.200.16384.256.options=capacity=16384, num_slots=8209 hash=228984379728933363 size=4882536)
-  const pattern = /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)\]\[(\d+)\]\[(.*)\]\[(.*)\]\s+(.*:\d+)\]\s+(.*)$/mg
-
-  // 2019-02-22T15:22:52.837196Z     info    Monitored certs: []envoy.CertSource{envoy.CertSource{Directory:"/etc/certs/", Files:[]string{"cert-chain.pem", "key.pem", "root-cert.pem"}}}
-  const pattern2Split = /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)/
-  const pattern2Rest = /^\s+([^\s]+)\s+([\s\S]*)/
-  const rest = raw.replace(pattern, '')
-  const lines2 = rest
-    .split(pattern2Split)
-    .slice(1)
-    .reduce((lines, line, idx, A) => {
-      if (idx % 2 === 0) {
-        const restOfLine = A[idx + 1].match(pattern2Rest) || A[idx + 1]
-        debug('rest', A[idx + 1], restOfLine)
-        lines.push({
-          timestamp: prettyPrintTime(A[idx]),
-          logType: restOfLine[1],
-          rest: restOfLine[2].replace(/[\n\r]*$/, '')
-        })
-      }
-
-      return lines
-    }, []).filter(x => x !== '\n')
-  debug('lines2', lines2)
-
-  const records = raw.split(pattern).slice(1).filter(x => x !== '\n')
-  const lines = records.reduce((lines, line, idx, A) => {
-    if (idx % 6 === 0) {
-      lines.push({
-        timestamp: prettyPrintTime(A[idx]),
-        logType: A[idx + 2],
-        provider: A[idx + 3],
-        origin: A[idx + 4],
-        rest: A[idx + 5] && A[idx + 5].trim()
-      })
-    }
-
-    return lines
-  }, [])
-  debug('lines', lines)
-
-  return lines.concat(lines2).sort((a,b) => {
-    return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  })
 }
 
 /** filter out empty log entries */
