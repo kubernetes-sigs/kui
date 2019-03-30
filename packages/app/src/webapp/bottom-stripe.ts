@@ -135,55 +135,57 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
   if (command || direct) {
     button.onclick = async () => {
       // change the active button
-      if (!actAsButton) {
-        const currentActive = bottomStripe.querySelector(`.${css.active}`)
-        if (currentActive) {
-          currentActive.classList.remove(css.active)
-        }
-        button.classList.add(css.active)
-
-        // visible when
-        /* buttons.forEach(button => {
-                    const visibleWhen = button.getAttribute('visible-when')
-                    if (visibleWhen) {
-                        if (visibleWhen !== (mode||label)) {
-                            button.classList.add(css.hidden)
-                        } else {
-                            button.classList.remove(css.hidden)
-                        }
-                    }
-                }) */
-      } else if (actAsButton && selected !== undefined) {
-        if (radioButton) {
-          button.classList.toggle(css.selected)
-        } else {
-          const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
-          if (currentSelected) {
-            currentSelected.classList.remove(css.selected)
+      const changeActiveButton = () => {
+        if (!actAsButton) {
+          const currentActive = bottomStripe.querySelector(`.${css.active}`)
+          if (currentActive) {
+            currentActive.classList.remove(css.active)
           }
-          button.classList.add(css.selected)
+          button.classList.add(css.active)
+        } else if (actAsButton && selected !== undefined) {
+          if (radioButton) {
+            button.classList.toggle(css.selected)
+          } else {
+            const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
+            if (currentSelected) {
+              currentSelected.classList.remove(css.selected)
+            }
+            button.classList.add(css.selected)
+          }
         }
       }
 
       // execute the command
       if (direct) {
-        const view = await callDirect(direct, entity, execOptions)
-        if (view && !actAsButton) {
-          Promise.resolve(view).then(custom => showCustom(custom, { leaveBottomStripeAlone }))
-        } else if (actAsButton && view && view.toggle) {
-          view.toggle.forEach(({ mode, disabled }) => {
-            const button = bottomStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
-            if (button) {
-              if (disabled) {
-                button.classList.add('disabled')
-              } else {
-                button.classList.remove('disabled')
+        try {
+          const view = await callDirect(direct, entity, execOptions)
+          if (view && !actAsButton) {
+            Promise.resolve(view).then(custom => showCustom(custom, { leaveBottomStripeAlone }))
+          } else if (actAsButton && view && view.toggle) {
+            view.toggle.forEach(({ mode, disabled }) => {
+              const button = bottomStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
+              if (button) {
+                if (disabled) {
+                  button.classList.add('disabled')
+                } else {
+                  button.classList.remove('disabled')
+                }
               }
-            }
-          })
+            })
+
+            changeActiveButton()
+          }
+        } catch (err) {
+          // do not change active bottom if the command failed!
+          console.error(err)
         }
       } else {
-        repl.pexec(command(entity), { /* leaveBottomStripeAlonex true,*/ echo, noHistory, replSilence })
+        try {
+          await repl.pexec(command(entity), { /* leaveBottomStripeAlonex true,*/ echo, noHistory, replSilence })
+          changeActiveButton()
+        } catch (err) {
+          console.error(err)
+        }
       }
     }
   }
@@ -217,9 +219,12 @@ interface IDirectViewControllerSpec {
  */
 const callDirect = async (makeView: DirectViewController, entity, execOptions) => {
   if (typeof makeView === 'string') {
-    const model = await repl.qexec(makeView, undefined, undefined, execOptions)
-    debug('makeView as string', model)
-    return model
+    debug('makeView as string')
+    if (execOptions && execOptions.exec === 'pexec') {
+      return repl.pexec(makeView, execOptions)
+    } else {
+      return repl.qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
+    }
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
     return Promise.resolve(makeView(entity))

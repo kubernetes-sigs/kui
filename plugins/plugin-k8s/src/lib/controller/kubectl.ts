@@ -534,7 +534,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
     (options.output || options.o
      || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
      || (command === 'kubectl' && verb === 'describe' && 'yaml')
-     || (command === 'kubectl' && verb === 'logs' && 'logs')
+     || (command === 'kubectl' && verb === 'logs' && 'Latest')
      || (command === 'kubectl' && verb === 'get' && execOptions.raw && 'json'))
 
   if ((!isHeadless() || execOptions.isProxied) &&
@@ -794,7 +794,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
         : ''
       return repl.qexec(`k status ${entityType} ${entity || ''} ${ns}`).then(resolveBase, reject)
-    } else if (output === 'json' || output === 'yaml' || output === 'logs') {
+    } else if (output === 'json' || output === 'yaml' || verb === 'logs') {
       //
       // return a sidecar entity
       //
@@ -802,7 +802,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
 
       const result = output === 'json'
         ? JSON.parse(out)
-        : output === 'logs' ? formatLogs(out)
+        : verb === 'logs' ? formatLogs(out)
         : output === 'yaml' ? redactYAML(out, options)
         : redactJSON(out, options)
 
@@ -813,12 +813,27 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         return resolve(result)
       }
 
-      const modes = [{
+      const modes: Array<any> = [{
         mode: 'result',
-        direct: () => repl.pexec(rawCommand),
+        direct: rawCommand,
         label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
         defaultMode: true
       }]
+
+      if (verb === 'logs') {
+        modes.push({
+          mode: 'previous',
+          direct: `${rawCommand} --previous`,
+          execOptions: {
+            exec: 'pexec'
+          }
+        })
+
+        if (options.previous) {
+          modes[0].defaultMode = false
+          modes[1].defaultMode = true
+        }
+      }
 
       const yaml = verb === 'get' && parseYAML(out)
       const subtext = createdOn(yaml)

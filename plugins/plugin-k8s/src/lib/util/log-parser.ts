@@ -22,6 +22,15 @@ const debug = Debug('k8s/util/log-parser')
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
 /**
+ * Timestamp format. Usually one of 'long', 'short', or 'narrow',
+ * corresponding roughly e.g. to 'Thursday' versus 'Thu' versus 'T'.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleString
+ *
+ */
+const timestampFormat = 'short'
+
+/**
  * Squash runs of the same log entry
  *
  */
@@ -202,7 +211,7 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         const origin: string = record.instance || record.provider || ''
 
         const zapr = {
-          timestamp: prettyPrintTime(timestamp, undefined, prevTimestamp),
+          timestamp: prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
           logType,
           provider: 'istio',
           origin,
@@ -240,7 +249,7 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         const rest = (match && match[restIndex]) || line
 
         const zapr = {
-          timestamp: timestamp && prettyPrintTime(timestamp, undefined, prevTimestamp),
+          timestamp: timestamp && prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
           logType,
           provider,
           origin,
@@ -338,7 +347,10 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
         const timestampDom = document.createElement('td')
         timestampDom.className = 'log-field log-date entity-name-group hljs-attribute'
         if (typeof timestamp === 'string') {
-          timestampDom.innerText = timestamp
+          // due to td styling issues, some CSS attrs are on td > span
+          const inner = document.createElement('span')
+          inner.innerText = timestamp
+          timestampDom.appendChild(inner)
         } else {
           timestampDom.appendChild(timestamp)
         }
@@ -377,16 +389,20 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
         restDom.appendChild(pre)
 
         // see if rest is of the form "a: b"
-        const trySplit = rest.split(/^(.*:)(\s+.*)$/)
+        const trySplit = rest.split(/^(.*:)(\s+.*)?$/)
         if (trySplit && trySplit.length > 1) {
           const a = document.createElement('span')
           a.classList.add('map-key')
           a.innerText = trySplit[1]
-          const b = document.createElement('span')
-          b.classList.add('map-value')
-          b.innerText = trySplit[2]
           pre.appendChild(a)
-          pre.appendChild(b)
+
+          if (trySplit[2]) {
+            // we could just have a:<EOL>
+            const b = document.createElement('span')
+            b.classList.add('map-value')
+            b.innerText = trySplit[2]
+            pre.appendChild(b)
+          }
         } else {
           pre.innerText = rest
         }

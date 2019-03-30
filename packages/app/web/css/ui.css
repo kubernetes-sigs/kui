@@ -1559,7 +1559,7 @@ sidecar .result-as-table .big-top-pad:first-child {
 .log-lines .log-line .log-field {
     /* every field in the log table */
     display: table-cell;
-    padding: 0 0.375em;
+    padding: 0.375rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -1641,13 +1641,14 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 .log-lines .log-line .log-field.log-date {
     /* the date part of log lines */
     vertical-align: middle;
+    text-align: right;
+    width: 15em;
+}
+.log-lines .log-line .log-field.log-date > span {
+    /* the date part of log lines */
     font-size: 0.925em;
     font-weight: 500;
-    width: 15em;
-    padding-top: 1em;
-    padding-bottom: 1em;
     white-space: pre-wrap;
-    text-align: right;
 }
 .log-lines .log-line .log-field.log-date .entity-name {
     /* this represents e.g. the origin or source line for a log entry */
@@ -1660,13 +1661,13 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
     color: var(--color-base0A);
 }
 .log-lines .log-line .log-message {
-    /* the message part of log lines */
     white-space: pre-wrap;
-    padding-top: 0.375em;
-    padding-bottom: 0.375em;
+}
+sidecar .log-lines .log-line {
+    height: auto;
 }
 sidecar .log-lines .log-line:nth-child(2n) .log-field {
-    background: var(--color-ui-03);
+    background: var(--color-ui-03); /* <-- zebra */
 }
 
 /* legend for activation/trace list */
