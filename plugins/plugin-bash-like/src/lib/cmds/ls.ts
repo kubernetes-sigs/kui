@@ -226,7 +226,7 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
       { key: 'owner', value: 'OWNER', outerCSS: outerCSSSecondary },
       { key: 'group', value: 'GROUP', outerCSS: outerCSSSecondary },
       { key: 'size', value: 'SIZE', outerCSS: outerCSSSecondary },
-      { key: 'lastmod', value: 'LAST MODIFIED', outerCSS }
+      { key: 'lastmod', value: 'LAST MODIFIED', outerCSS: `${outerCSS} badge-width` }
     ]
   }
 
@@ -264,7 +264,7 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
                                   css,
                                   attributes: columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
                                     value: col,
-                                    outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'pretty-narrow',
+                                    outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
                                     css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
                                   }))
                                 }
