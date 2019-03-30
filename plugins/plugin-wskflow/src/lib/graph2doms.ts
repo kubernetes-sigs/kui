@@ -28,46 +28,6 @@ import { textualPropertiesOfCode } from './util'
 
 const maxLabelLength = 10
 
-const wfColor = {
-  Task: {
-    normal: '#90CAF9',
-    undeployed: 'lightgrey',
-    hovered: '#42A5F5' // old node color
-  },
-  EE: {
-    // normal: "#ABB2B9"
-    // normal: "lightgrey"
-    normal: 'transparent'
-  },
-  Try: {
-    // normal: "#82E0AA",
-    // hovered: "#4CAF50"
-    normal: '#90CAF9',
-    hovered: '#42A5F5' // old node color
-  },
-  handler: {
-    normal: '#FE8A92',
-    hovered: '#E91E63'
-  },
-  try_catch: {
-    normal: 'grey',
-    hovered: 'grey'
-  },
-  reOrCon: {
-    normal: '#f9ac1d'
-  },
-  Value: {
-    normal: '#BB8FCE'
-  },
-  Dummy: {
-    normal: 'grey'
-  },
-  Edges: {
-    normal: 'grey',
-    forwarding: '#3498DB'
-  }
-}
-
 const wfColorAct = {
   active: '#81C784',
   failed: '#EC7063',
@@ -154,7 +114,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
   defs.append('svg:g')
     .attr('id', 'retryIconNormal')
     .attr('transform', 'scale(0.02) rotate(90)')
-    .style('fill', wfColor.reOrCon.normal)
     .append('svg:path')
     .attr('d', 'M852.8,558.8c0,194.5-158.2,352.8-352.8,352.8c-194.5,0-352.8-158.3-352.8-352.8c0-190.8,152.4-346.7,341.8-352.5v117.4l176.4-156.9L489,10v118C256.3,133.8,68.8,324.8,68.8,558.8C68.8,796.6,262.2,990,500,990c237.8,0,431.2-193.4,431.2-431.2H852.8z')
 
@@ -386,17 +345,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           return 'transparent'
         }
       })
-      .style('stroke', function (d) {
-        if (d.children) {
-          if (d.type === 'try_catch') return wfColor.try_catch.normal
-          else if (d.type === 'try') return wfColor.Try.normal
-          else if (d.type === 'handler') return wfColor.handler.normal
-          else if (d.id !== 'root') return 'var(--color-text-01)'
-          else return 'transparent'
-        } else {
-          if (activations && d.visited === undefined) { return wfColorAct.inactiveBorder } else { return 'var(--color-text-01)' }
-        }
-      })
       .style('cursor', function (d) {
         if (activations) {
           if (d.visited && d.type === 'action') { return 'pointer' } else { return 'normal' }
@@ -458,30 +406,27 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
               let result = JSON.stringify(act.response.result, undefined, 4)
               if (result.length > 200) { result = result.substring(0, 200) + '\u2026' } // horizontal ellipsis
 
-              qtipText += `<div style='padding-bottom:2px'>${d.type} <span style='color:${wfColorAct.active}'>${timeString}</span></div>${result}`
+              qtipText += `<div style='padding-bottom:2px'><span class='qtip-prefix'>${d.type}</span> <span style='color:${wfColorAct.active}'>${timeString}</span></div>${result}`
             }
           }
         } else {
           if (d.children) {
             if (d.type === 'try') {
-              $(this).css('stroke', wfColor.Try.hovered)
-              qtipText = "<span style='color: " + wfColor.Try.normal + "'>Try Block</span>"
+              qtipText = "<span class='qtip-prefix red-text'>Try Block</span>"
             } else if (d.type === 'handler') {
-              $(this).css('stroke', wfColor.handler.hovered)
-              qtipText = "<span style='color: " + wfColor.handler.normal + "'>Handler Block</span>"
+              qtipText = "<span class='qtip-prefix red-text'>Handler Block</span>"
             } else if (d.type === 'try_catch') {
-              $(this).css('stroke', wfColor.try_catch.hovered)
               const label = d.label || d.tooltip || ''
               if (label.indexOf(':') !== -1) {
-                qtipText = "Try-Catch:<span style='color: orange'>" + label.substring(label.indexOf(':') + 1) + '</span>'
+                qtipText = "<span class='qtip-prefix'>Try-Catch</span> <span style='color: orange'>" + label.substring(label.indexOf(':') + 1) + '</span>'
                 // $(this).siblings("use").attr("xlink:href", "#retryIconOrange").attr("href", "#retryIconOrange");
               } else if (label.indexOf('Repeat') !== -1) {
                 const num = label.split(' ')[1]
-                qtipText = 'Repeat ' + "<span style='color: orange'>" + num + ' times</span> then continue'
+                qtipText = "<span class='qtip-prefix'>Repeat </span>" + "<span style='color: orange'>" + num + ' times</span> then continue'
                 // $(this).siblings("use").attr("xlink:href", "#retryIconOrange").attr("href", "#retryIconOrange");
               } else {
                 // qtipText = "<span style='color: #E5E8E8'>"+label+"</span>"
-                qtipText = label
+                qtipText = `<span class='qtip-prefix'>${label}</span>`
               }
             }
           } else if (d.type === 'action' && $('#' + d.id).attr('data-deployed') === 'not-deployed') {
@@ -512,7 +457,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
             if (edgeId) {
               if (isOrigin) { qtipText = `<span class='qtip-prefix ${d.type}' style='padding-right:5px; color: #85C1E9'>Retain |</span> Data forwarding</span>` } else { qtipText = `<span class='qtip-prefix ${d.type}' style='padding-right:5px; color: #85C1E9'>Retain |</span> Data merging</span>` }
 
-              $(".link[id='" + edgeId + "']").css('stroke', wfColor.Edges.forwarding).addClass('hover forwarding-edge')
+              $(".link[id='" + edgeId + "']").addClass('hover forwarding-edge')
             }
           } else if (d.type === 'Entry') {
             if (d.properties && d.properties.kind === 'trigger') {
@@ -580,15 +525,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
               $(this).css('fill', wfColorAct.active)
             }
           }
-        } else {
-          if (d.children) {
-            if (d.type === 'try') $(this).css('stroke', wfColor.Try.normal)
-            else if (d.type === 'handler') $(this).css('stroke', wfColor.handler.normal)
-            else if (d.type === 'try_catch') $(this).css('stroke', wfColor.try_catch.normal)
-          } else if (d.type === 'action' && $('#' + d.id).attr('data-deployed') !== 'not-deployed') {
-            $(this).css('fill', wfColor.Task.normal)
-          }
-          $('.link').not('.forwardingLink').css('stroke', 'grey')
         }
 
         $('.link').removeClass('hover')
@@ -825,9 +761,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       }
     }
 
-    d3.select('.repeat').append('use')
-      .attr('xlink:href', '#retryIconNormal').attr('href', '#retryIconNormal').attr('x', 10).attr('y', -14)
-
     // #2 add paths with arrows for the edges
     root.selectAll('.link')
       .data(links, function (d) { return d.id })
@@ -872,12 +805,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       .style('stroke', function (d) {
         if (activations) {
           if (d.visited) { return wfColorAct.active } else { return wfColorAct.edgeInactive }
-        } else {
-          if (d.source.indexOf('__origin') >= 0 && d.target.indexOf('__terminus') >= 0) {
-            return wfColor.Edges.forwarding
-          } else {
-            return wfColor.Edges.normal
-          }
         }
       })
       .on('mouseout', function (edge, i) {
@@ -1023,6 +950,11 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         }
       }
     })
+
+    setTimeout(() => {
+      d3.select('.repeat').append('use')
+        .attr('xlink:href', '#retryIconNormal').attr('href', '#retryIconNormal').attr('x', 10).attr('y', -14)
+    }, 0)
 
     setTimeout(addMorePathAttr, 0)  // we aren't properly using d3.select.enter... hacking a bit, for now
     setTimeout(addEdgeLabels, 0)

@@ -2187,49 +2187,6 @@ body[kui-theme-style="dark"] [data-balloon][data-balloon-pos='right']:before {
     white-space: pre-wrap !important;
 }
 
-/* qtip rules */
-#qtip {
-    transition: opacity 150ms ease-in-out;
-    transition-delay: 100ms;
-    display: flex;
-    align-items: center;
-    opacity: 0;
-    z-index: 10;
-    position: absolute;
-    pointer-events: none;
-
-    /* see shell issue #906 */
-    top: 0;
-    left: 0;
-}
-#qtipArrow {
-    position: relative;
-    left: 3px;
-    top: 1px;
-    color: var(--color-stripe-02);
-}
-#qtipContent {
-    background-color: var(--color-stripe-02);
-    color: var(--color-text-against-dark-bg); 
-    font-size: 0.75em;
-    padding: 1ex;
-    /*display: flex;
-    flex-wrap: wrap;*/
-    margin: 0px;
-    margin-right: 1ex; /* don't get all squished up against the right-end edge of the window */
-    max-width: 40ex;
-    word-wrap: break-word;
-}
-#qtip.visible {
-    opacity: 0.975;
-}
-#qtip.qtip-pre #qtipContent {
-    overflow: hidden;
-    white-space: pre;
-    text-overflow: ellipsis;
-    display: initial !important; /* override display: flex */
-}
-
 /* help widget */
 .help-widget {
     padding-left: 0.5ex;
