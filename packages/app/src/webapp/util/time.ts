@@ -36,7 +36,7 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
     // same day as now: just print the time
     const prev: Date = previousTimestamp &&
       (!isDate(previousTimestamp) ? new Date(previousTimestamp) : previousTimestamp)
-    const verySmallDelta = !!(prev && Math.abs(then.getDate() - prev.getDate()) < 1000)
+    const verySmallDelta = !!(prev && Math.abs(then.getTime() - prev.getTime()) < 1000)
     const prevOnSameDay = !!(prev && (prev.getFullYear() === then.getFullYear() &&
                                       prev.getMonth() === then.getMonth() &&
                                       prev.getDate() === then.getDate()))
@@ -61,7 +61,6 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
       }
     }
 
-    console.error('!!!!!', now.getTime(), prev && prev.getTime())
     if (now.getDate() === then.getDate()) {
       // same day as today
       if (prevOnSameDay) {
