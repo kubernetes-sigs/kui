@@ -53,29 +53,36 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
     if (now.getDate() === then.getDate()) {
       if (prevOnSameDay) {
         if (fmt === 'delta') {
-          return document.createTextNode(`+${prettyPrintDuration(then.getTime() - prev.getTime())}`)
+          return span(`+${prettyPrintDuration(then.getTime() - prev.getTime())}`)
         } else {
           return sameDay()
         }
       } else {
-        return document.createTextNode(`Today at ${then.toLocaleTimeString()}`)
+        return span(`Today at ${then.toLocaleTimeString()}`)
       }
     } else {
       // same year and month, different day than now
       if (prevOnSameDay) {
         return sameDay()
       } else {
-        return document.createTextNode(then.toLocaleString(navigator.language, {
+        return span(then.toLocaleString(navigator.language, {
           weekday: fmt, month: fmt, day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
         }))
       }
     }
   } else if (now.getFullYear() === then.getFullYear()) {
-    return document.createTextNode(then.toLocaleString(navigator.language, {
+    return span(then.toLocaleString(navigator.language, {
       weekday: fmt, month: fmt, day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
     }))
   } else {
     // different year or different month: print the long form
-    return document.createTextNode(then.toLocaleString())
+    return span(then.toLocaleString())
   }
+}
+
+/** due to td styling issues, some CSS attrs are on td > span */
+const span = (text: string): HTMLElement => {
+  const inner = document.createElement('span')
+  inner.innerText = text
+  return inner
 }

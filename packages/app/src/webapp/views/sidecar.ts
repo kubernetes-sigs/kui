@@ -181,6 +181,7 @@ export const renderField = async (container: HTMLElement, entity, field: string,
     removeAllDomChildren(container)
     container.appendChild(logTable)
 
+    let previousTimestamp: Date
     value.forEach(logLine => {
       const lineDom = document.createElement('div')
       lineDom.className = 'log-line'
@@ -198,12 +199,14 @@ export const renderField = async (container: HTMLElement, entity, field: string,
 
         lineDom.className = `${lineDom.className} logged-to-${match[2]}` // add stderr/stdout to the line's CSS class
 
-        date.className = 'log-field log-date'
+        date.className = 'log-field log-date hljs-attribute'
         // type.className = 'log-field log-type'
-        mesg.className = 'log-field log-message'
+        mesg.className = 'log-field log-message slight-smaller-text'
 
         try {
-          date.innerText = new Date(match[1]).toLocaleString()
+          const timestamp = new Date(match[1])
+          date.appendChild(prettyPrintTime(timestamp, 'short', previousTimestamp))
+          previousTimestamp = timestamp
         } catch (e) {
           date.innerText = match[1]
         }
