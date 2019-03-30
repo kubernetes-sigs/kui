@@ -60,17 +60,18 @@ break {
 #wskflowSVG #retryIconNormal path {
     /* the retry loop doesn't need a stroke */
     stroke: none !important;
+    fill: var(--color-base09);
 }
 #wskflowSVG path.forwardingLink {
-    stroke: rgb(52, 152, 219) !important;
+    stroke: var(--color-base0D) !important;
     stroke-width: 1; /* 2 with support for non-scaling stroke */
     pointer-events: all;
 }
 #wskflowSVG marker#forwardingEnd {
-    fill: #3498DB;
+    fill: var(--color-base0D);
 }
 #wskflowSVG marker#greenEnd {
-    fill: #81C784;
+    fill: var(--color-green);
 }
 #wskflowSVG marker#trueEnd, #wskflowSVG .node .edge-label.true-branch {
     fill: orange;
@@ -134,7 +135,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry text, body[kui-theme-s
 
 #wskflowSVG .node.leaf.function .atom {
     /* function nodes are yellow in app graph*/
-    fill: var(--color-support-03) !important;    
+    fill: var(--color-support-03);
     stroke: var(--color-ui-05) !important;
 }
 
@@ -191,24 +192,6 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry text, body[kui-theme-s
     /*fill: var(--color-support-03);*/
 }
 
-
-#qtip .qtip-prefix {
-    font-weight: bold;
-}
-#qtip .qtip-prefix.red-text {
-    filter: brightness(1.5);          /* make it more legible against the qtip background */
-    padding-right: 5px;
-}
-#qtip .qtip-prefix.action {
-    color: var(--color-support-04); /* match hover color of action nodes */
-}
-#qtip .qtip-prefix.function {
-    color: var(--color-support-03);
-}
-#qtip .qtip-prefix.let, #qtip .qtip-prefix.literal {
-    color: var(--color-brand-02);
-    filter: brightness(2); /* too dim against the qtip background */
-}
 #wskflowSVG .node.leaf.let .atom, #wskflowSVG .node.leaf.literal .atom {
     /*fill: var(--color-brand-03);
     stroke: var(--color-text-01) !important;*/
@@ -268,4 +251,65 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
     /*fill: var(--color-ui-02) !important;*/
     font-size: 5px;
     letter-spacing: 0.1px;
+}
+
+
+/* qtip rules */
+#qtip {
+    transition: opacity 150ms ease-in-out;
+    transition-delay: 100ms;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    z-index: 10;
+    position: absolute;
+    pointer-events: none;
+
+    /* see shell issue #906 */
+    top: 0;
+    left: 0;
+}
+#qtipArrow {
+    position: relative;
+    left: 3px;
+    top: 1px;
+    color: var(--color-stripe-02);
+}
+#qtipContent {
+    background-color: var(--color-stripe-02);
+    color: var(--color-text-against-dark-bg); 
+    font-size: 0.75em;
+    padding: 1ex;
+    /*display: flex;
+    flex-wrap: wrap;*/
+    margin: 0px;
+    margin-right: 1ex; /* don't get all squished up against the right-end edge of the window */
+    max-width: 40ex;
+    word-wrap: break-word;
+}
+#qtip.visible {
+    opacity: 0.975;
+}
+#qtip.qtip-pre #qtipContent {
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+    display: initial !important; /* override display: flex */
+}
+#qtip .qtip-prefix {
+    font-weight: bold;
+}
+#qtip .qtip-prefix.red-text {
+    filter: brightness(1.5);          /* make it more legible against the qtip background */
+    padding-right: 5px;
+}
+#qtip .qtip-prefix.action {
+    color: var(--color-support-04); /* match hover color of action nodes */
+}
+#qtip .qtip-prefix.function {
+    color: var(--color-support-03);
+}
+#qtip .qtip-prefix.let, #qtip .qtip-prefix.literal {
+    color: var(--color-brand-02);
+    filter: brightness(2); /* too dim against the qtip background */
 }
