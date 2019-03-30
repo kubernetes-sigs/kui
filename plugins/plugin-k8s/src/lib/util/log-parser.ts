@@ -97,6 +97,7 @@ interface IOptions {
 
 interface IZaprEntry {
   timestamp: string | Text | Element
+  rawTimestamp: string
   logType: string
   provider: string
   origin: string
@@ -210,8 +211,9 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         const logType: string = record.level || record.logType || ''
         const origin: string = record.instance || record.provider || ''
 
-        const zapr = {
+        const zapr: IZaprEntry = {
           timestamp: prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
+          rawTimestamp: timestamp,
           logType,
           provider: 'istio',
           origin,
@@ -251,8 +253,9 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         const provider = (match && match[providerIndex]) || ''
         const rest = (match && match[restIndex]) || line
 
-        const zapr = {
+        const zapr: IZaprEntry = {
           timestamp: timestamp && prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
+          rawTimestamp: timestamp,
           logType,
           provider,
           origin,
@@ -265,6 +268,24 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         return zapr
       }
     })
+    .reduce((lines, line, idx) => {
+      // try to reduce down log entries with the same (timestamp, origin, provider)
+      if (idx > 0) {
+        const prevLine = lines[lines.length - 1]
+
+        if (line.origin === prevLine.origin &&
+            line.provider === prevLine.provider &&
+            (line.rawTimestamp === prevLine.rawTimestamp || !line.rawTimestamp)) {
+          prevLine.rest = `${prevLine.rest}\n${line.rest}`
+        } else {
+          lines.push(line)
+        }
+      } else {
+        lines.push(line)
+      }
+
+      return lines
+    }, [])
 }
 
 /** filter out empty log entries */
@@ -315,10 +336,12 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
         logLine.appendChild(timestampDom)
 
         // origin, e.g. filename and line number, rendering
-        const originDom = document.createElement('div')
-        originDom.className = 'entity-name'
-        originDom.innerText = origin ? origin.replace(/]$/, '') : ''
-        timestampDom.appendChild(originDom)
+        if (origin) {
+          const originDom = document.createElement('span')
+          originDom.className = 'entity-name'
+          originDom.innerText = origin ? origin.replace(/]$/, '') : ''
+          timestampDom.appendChild(originDom)
+        }
 
         // run length rendering
         if (runLength > 1) {

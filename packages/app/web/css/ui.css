@@ -1559,7 +1559,7 @@ sidecar .result-as-table .big-top-pad:first-child {
     white-space: nowrap;
     text-overflow: ellipsis;
     opacity: 1; /* see issue #132 */
-    border-top: 1px solid var(--color-ui-04);
+    /* border-top: 1px solid var(--color-ui-04); */
 }
 .log-lines .log-line .log-field.log-message {
     vertical-align: middle;
@@ -1641,13 +1641,17 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 }
 .log-lines .log-line .log-field.log-date > span {
     /* the date part of log lines */
+    display: block;
     font-size: 0.925em;
     font-weight: 500;
     white-space: pre-wrap;
+    vertical-align: middle;
 }
 .log-lines .log-line .log-field.log-date .entity-name {
     /* this represents e.g. the origin or source line for a log entry */
     color: var(--color-text-02);
+    display: inline-block;
+    font-weight: 400;
 }
 .log-lines .log-line .log-field.log-date:not(.hljs-attribute) {
     color: var(--color-text-02);
