@@ -30,7 +30,6 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     min-width: 0;
     padding: 1.5em 0 0.5em;
     background: var(--color-stripe-01);
-    border-right: 1px solid var(--color-ui-03);
     display: flex;
     flex-direction: column;
     -webkit-app-region: drag;
