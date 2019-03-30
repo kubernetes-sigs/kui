@@ -1309,7 +1309,7 @@ code.fancy-code, code.fancy-code.hljs {
     width: 16em;
 }
 .min-width-date-like {
-    min-width: 15em !important;
+    width: 15em;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
