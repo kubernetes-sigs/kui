@@ -332,7 +332,7 @@ repl .repl-block.using-custom-prompt .repl-prompt-righty > i {
 .repl-prompt-right-elements .repl-prompt-right-element-icon {
     margin-left: 1ex;
     color: var(--color-ui-05);
-    font-size: 1.5em;
+    font-size: 1.5em; /* see the comment for repl-input re: min-height; that should match this */
     transition: all 300ms ease-in-out;
 }
 .repl-prompt-right-elements .repl-prompt-right-element-icon:hover {
@@ -346,11 +346,7 @@ repl .repl-block.using-custom-prompt .repl-prompt-righty > i {
     color: var(--color-error);
 }
 repl.sidecar-visible .repl-block:not(.processing) .repl-prompt-right-elements, .repl-active .repl-prompt-right-elements {
-    opacity: 0;
-    width: 0;
-    padding: 0;
-    margin: 0;
-    /* important: keep height, otherwise when .repl-active goes away, the height of the repl-line line may change */
+    display: none; /* see the comment for repl-input re: min-height */
 }
 
 body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-prompt-lefty, body/*.sidecar-full-screen*/ repl .repl-prompt-lefty {
@@ -364,7 +360,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     margin: 0 !important;
 }
 .repl-result, .repl input, .repl-input-like {
-    font-size: 0.925em;
+    font-size: 0.875em;
 }
 .repl input, .repl-input-like {
     font-weight: 500; /* make it a bit more substantial; IBM Plex Mono 400 is too light */
@@ -410,6 +406,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .repl-input {
     align-items: center;
+    min-height: 1.5em; /* so that when the sidecar is open (and the right-elements are display:none) we don't get a height adjustment */
 }
 .repl-input, .repl-output {
     display: flex
@@ -687,23 +684,19 @@ sidecar {
     flex: 0 0 0%;
     min-width: 0;
     transition: all 300ms ease-in-out;
-    box-shadow: 0 0 1ex var(--color-ui-02);
     display: flex;
     flex-direction: column;
     overflow-y: hidden;
-    background:var(--color-ui-02);
+    background: var(--color-ui-02);
 }
 sidecar.visible {
     flex: 6;
     z-index: 1; /* float above the repl */
     transition-duration: 600ms; /* a bit slower coming out */
-    border-left: 1px solid;
-    border-left-color: var(--color-ui-04);
+    border-left: 1px solid var(--color-ui-03);
 }
 body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
-    border-left-color: var(--color-ui-05);
-    border-left-style: dotted;
-    box-shadow: none;
+    border-left: none;
 }
 .sidecar-full-screen .repl.sidecar-visible {
     flex: 0 0 0;
@@ -715,7 +708,7 @@ body[kui-theme-style="dark"] sidecar:not(.minimized) .sidecar-bottom-stripe {
     /* dark themes need a bit of a top border to distinguish the sidecar
    contents; but make sure not to add this border when the sidecar is
    minimzed */
-    border-top: 1px solid var(--color-ui-01);
+    border-top: 1px solid var(--color-ui-03);
 }
 .sidecar-bottom-stripe {
     padding: 0 1em;
@@ -840,9 +833,11 @@ sidecar .custom-content {
 }
 sidecar .sidecar-header {
     display: flex;
-    border-bottom: 1px solid;
+    border-bottom: 1px solid var(--color-content-divider);
+    background-color: var(--color-ui-01);
     flex-basis: 9rem;
     min-height: 9rem; /* see shell issue #712 */
+    transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
 }
 sidecar .sidecar-header .header-main-content {
     flex: 1;
@@ -2621,12 +2616,6 @@ sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoratio
 body sidecar .result-table .entity:nth-child(2n + 1) td, body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
     /* table row striping in sidecar (when not full screen) */
     background:var(--color-ui-03);
-}
-
-sidecar .sidecar-header {
-    border-bottom-color: var(--color-content-divider);
-    background-color: var(--color-ui-01);
-    transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
 }
 
 sidecar .sidecar-header badge.version {
