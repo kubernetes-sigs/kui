@@ -16,9 +16,11 @@
 
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/tests/headless')
+
 import * as assert from 'assert'
 import * as path from 'path'
 import { exec } from 'child_process'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
@@ -78,27 +80,33 @@ const expect = {
   }
 }
 
-const validation = {
-  appList: ({ name, packageName = '', namespace = '' }) => {
+class Validation {
+  ctx: common.ISuite
+
+  constructor (ctx: common.ISuite) {
+    this.ctx = ctx
+  }
+
+  appList ({ name, packageName = '', namespace = '' }) {
     if (namespace !== '') {
       it(`validate app list /${namespace}`, () => cli.do(`app list /${namespace}`)
         .then(expect.appList({ name, packageName }))
-        .catch(common.oops(this)))
+        .catch(common.oops(this.ctx)))
     }
 
     if (packageName !== '') {
       it(`validate app list ${packageName}/`, () => cli.do(`app list ${packageName}/`)
         .then(expect.appList({ name, packageName }))
-        .catch(common.oops(this)))
+        .catch(common.oops(this.ctx)))
     }
 
     it(`validate app list`, () => cli.do(`app list`)
       .then(expect.appList({ name, packageName }))
-      .catch(common.oops(this)))
-  },
+      .catch(common.oops(this.ctx)))
+  }
 
   // every app invoke commands are converted to blocking invocation and only displays the response result
-  invoke: ({ name, params = '', output, packageName = '', namespace = '' }) => {
+  invoke ({ name, params = '', output, packageName = '', namespace = '' }) {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
@@ -112,17 +120,17 @@ const validation = {
     invokers.forEach(invoker => {
       it(`validate ${invoker}`, () => cli.do(invoker)
         .then(expect.json({ expectedOutput: output, expectedKeys: undefined }))
-        .catch(common.oops(this)))
+        .catch(common.oops(this.ctx)))
     })
-  },
+  }
 
-  async: ({ name, output, packageName = '', namespace = '' }) => {
+  async ({ name, output, packageName = '', namespace = '' }) {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
     it(`validate async ${name}`, () => cli.do(`app async ${name}`)
       .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
-      .catch(common.oops(this)))
+      .catch(common.oops(this.ctx)))
 
     it(`validate async ${name} ; session get ; session list`, () => cli.do(`app async ${name}`)
       .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
@@ -176,10 +184,10 @@ const validation = {
           fetchList(0)
         })
       })
-      .catch(common.oops(this)))
-  },
+      .catch(common.oops(this.ctx)))
+  }
 
-  appGet: ({ name, packageName = '', namespace = '' }) => {
+  appGet ({ name, packageName = '', namespace = '' }) {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
@@ -188,15 +196,15 @@ const validation = {
 
     it(`validate app get ${name}`, () => cli.do(`app get ${name}`)
       .then(expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys }))
-      .catch(common.oops(this)))
-  },
+      .catch(common.oops(this.ctx)))
+  }
 
-  do: ({ name, packageName = '', namespace = '', output, params = '', outputWithParams = {} }) => {
-    validation.appList({ name, packageName, namespace })
-    validation.invoke({ name, output, packageName, namespace })
-    if (params) validation.invoke({ name, params, output: outputWithParams, packageName, namespace })
-    validation.async({ name, output, packageName, namespace })
-    validation.appGet({ name, packageName, namespace })
+  do ({ name, packageName = '', namespace = '', output, params = '', outputWithParams = {} }) {
+    this.appList({ name, packageName, namespace })
+    this.invoke({ name, output, packageName, namespace })
+    if (params) this.invoke({ name, params, output: outputWithParams, packageName, namespace })
+    this.async({ name, output, packageName, namespace })
+    this.appGet({ name, packageName, namespace })
   }
 
 }
@@ -204,14 +212,14 @@ const validation = {
 describe('Composer Headless Test :', function (this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
-  describe('should create simple composition from @demos', function () {
+  describe('should create simple composition from @demos', function (this: common.ISuite) {
     it('app create test1 @demos/hello.js', () => cli.do('app create test1 @demos/hello.js')
       .then(cli.expectOK('ok: updated composition test1\n', { exact: true }))
       .catch(common.oops(this)))
-    validation.do({ name: 'test1', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
+    new Validation(this).do({ name: 'test1', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
   })
 
-  describe('app list options', function () {
+  describe('app list options', function (this: common.ISuite) {
     it('should get empty result by app list --limit 0', () => cli.do('app list --limit 0')
       .then(cli.expectOK('', { exact: true }))
       .catch(common.oops(this)))
@@ -229,7 +237,7 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
       .catch(common.oops(this)))
   })
 
-  describe('should create composition with package', function () {
+  describe('should create composition with package', function (this: common.ISuite) {
     it('should fail with 404 when creating composition with non-existing package', () => cli.do('app create testing/subtest1 @demos/hello.js')
       .then(cli.expectError(cli.exitCode(404)))
       .catch(common.oops(this)))
@@ -242,25 +250,25 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
       .then(cli.expectOK('ok: updated composition testing/subtest1\n', { exact: true }))
       .catch(common.oops(this)))
 
-    validation.do({ name: 'subtest1', packageName: 'testing', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
+    new Validation(this).do({ name: 'subtest1', packageName: 'testing', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
   })
 
   if (ui.expectedNamespace()) {
-    describe('should create composition with namespace', function () {
+    describe('should create composition with namespace', function (this: common.ISuite) {
       it('validate app create with namespace', () => cli.do(`app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`)
         .then(cli.expectOK(`ok: updated composition testing/subtest2\n`, { exact: true }))
         .catch(common.oops(this)))
-      validation.do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
+      new Validation(this).do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
     })
   }
 
-  describe('should fail when creating composition from non-exisiting file', function () {
+  describe('should fail when creating composition from non-exisiting file', function (this: common.ISuite) {
     it('fails app create error error.js', () => cli.do('app create error error.js')
       .then(cli.expectError(1))
       .catch(common.oops(this)))
   })
 
-  describe('should create compostion and dependent actions with implicity entity', function () {
+  describe('should create compostion and dependent actions with implicity entity', function (this: common.ISuite) {
     it('validate app create test2 @demos/if.js', () => cli.do('app create test2 @demos/if.js')
       .then(cli.expectOK('ok: updated composition test2\n', { exact: true }))
       .catch(common.oops(this)))
@@ -270,36 +278,36 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
       .catch(common.oops(this)))
   })
 
-  describe('should update simple composition', function () {
+  describe('should update simple composition', function (this: common.ISuite) {
     it('validate app update test1 @demos/let.js', () => cli.do('app update test1 @demos/let.js')
       .then(cli.expectOK('ok: updated composition test1\n', { exact: true }))
       .catch(common.oops(this)))
-    validation.do({ name: 'test1', output: { ok: true } })
+    new Validation(this).do({ name: 'test1', output: { ok: true } })
   })
 
-  describe('should update simple composition with packageName', function () {
+  describe('should update simple composition with packageName', function (this: common.ISuite) {
     it('validate app update testing/subtest1 @demos/let.js', () => cli.do('app update testing/subtest1 @demos/let.js')
       .then(cli.expectOK('ok: updated composition testing/subtest1\n', { exact: true }))
       .catch(common.oops(this)))
-    validation.do({ name: 'subtest1', packageName: 'testing', output: { ok: true } })
+    new Validation(this).do({ name: 'subtest1', packageName: 'testing', output: { ok: true } })
   })
 
   if (ui.expectedNamespace()) {
-    describe('should update simple composition with namespace', function () {
+    describe('should update simple composition with namespace', function (this: common.ISuite) {
       it(`validate app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`, () => cli.do(`app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`)
         .then(cli.expectOK(`ok: updated composition testing/subtest2\n`, { exact: true }))
         .catch(common.oops(this)))
-      validation.do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { ok: true } })
+      new Validation(this).do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { ok: true } })
     })
   }
 
-  describe('should fail when updating with non-existing path', function () {
+  describe('should fail when updating with non-existing path', function (this: common.ISuite) {
     it('should fail when updating with non-existing path', () => cli.do('app update test2 @demos/dummy.js')
       .then(cli.expectError(1))
       .catch(common.oops(this)))
   })
 
-  describe('should delete tests', function () {
+  describe('should delete tests', function (this: common.ISuite) {
     it('validate app delete test1', () => cli.do('app delete test1')
       .then(cli.expectOK())
       .catch(common.oops(this)))
@@ -319,7 +327,7 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
     }
   })
 
-  describe('error handling with non-exisiting composition', function () {
+  describe('error handling with non-exisiting composition', function (this: common.ISuite) {
     it('should 404 when invoking deleted composition', () => cli.do('app invoke test2')
       .then(cli.expectError(cli.exitCode(404)))
       .catch(common.oops(this)))
