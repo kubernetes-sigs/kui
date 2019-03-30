@@ -44,25 +44,19 @@ body.os-darwin .left-tab-stripe {
     overflow: auto;
 }
 
-/*.left-tab-stripe-button {
-    width: 3.25em;
-    height: 3.25em;
-    margin: 2em 0;
-    background: rgba(255,255,255,0.1);
-    border: 2px solid transparent;
-    transition: all 300ms ease-in-out;
-    border-radius: 3px / 6px;
-    padding: 0.25ex;
-    color: var(--color-text-01);
-}*/
 .left-tab-stripe-button {
     position: relative;
     display: flex;
     margin: 1em 0;
     flex-direction: column;
     color: var(--color-text-01);
-    transition: color 600ms ease-in-out;
+    opacity: 1;
+    transition: color 600ms ease-in-out, opacity: 300ms ease-in-out;
 }
+.left-tab-stripe-button:only-child {
+    opacity: 0;
+}
+
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
     margin: 1.375em 0;
 }
@@ -75,7 +69,7 @@ body.os-darwin .left-tab-stripe {
 .left-tab-stripe-button:not([data-tab-button-index]):after {
     content: ''
 }
-.left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
+.left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
     filter: blur(0.5px) grayscale(0.75) brightness(0.75);
 }
 .left-tab-stripe-button i {
@@ -129,7 +123,7 @@ body.os-darwin .left-tab-stripe {
 }
 
 .left-tab-stripe-button.smaller-button i {
-    font-size: 2.5em;
+    font-size: 2em;
 }
 .left-tab-stripe-button.left-tab-stripe-button-selected:after {
     font-size: 0.875em;
