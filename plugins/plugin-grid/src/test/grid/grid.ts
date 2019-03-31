@@ -144,20 +144,49 @@ describe('grid visualization', function (this: common.ISuite) {
 
   /** switch between tabs */
   const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
-  const switchTo = tab => {
-    it(`should switch to ${tab}`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON(tab))
-      .then(() => this.app.client.waitForText(icon))
-      /* .then(() => this.app.client.waitUntil(() => {
-               return this.app.client.waitForExist(icon)
-                   .then(this.app.client.getText(icon))
-                   .then(text => text === tab)
-           })) */
+  const switchTo = (tab: string) => {
+    const button = ui.selectors.SIDECAR_MODE_BUTTON(tab)
+
+    it(`should switch to ${tab}`, () => this.app.client.waitForVisible(button)
+       .then(() => this.app.client.waitForEnabled(button))
+       .then(() => this.app.client.waitUntil(async () => {
+         try {
+           await this.app.client.click(button)
+           await this.app.client.waitUntil(async () => {
+             try {
+               const text = await this.app.client.getText(icon)
+               return new RegExp(tab, 'i').test(text)
+             } catch (err) {
+               return false
+             }
+           })
+
+           const b1 = ui.selectors.SIDECAR_MODE_BUTTON('zoom-in')
+           const b2 = ui.selectors.SIDECAR_MODE_BUTTON('outliers')
+
+           if (tab === 'grid') {
+             await Promise.all([
+               this.app.client.waitForVisible(b1),
+               this.app.client.waitForVisible(b2, 10000, true)
+             ])
+           } else if (tab === 'summary') {
+             await Promise.all([
+               this.app.client.waitForVisible(b2),
+               this.app.client.waitForVisible(b1, 10000, true)
+             ])
+           }
+
+           return true
+         } catch (err) {
+           return false
+         }
+       }))
       .catch(common.oops(this)))
   }
   const switcheroo = () => {
     switchTo('summary')
-    switchTo('grid')
-    switchTo('summary')
+    // switchTo('grid')
+    // switchTo('summary')
     // switchTo('timeline')
     // switchTo('grid')
   }
