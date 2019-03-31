@@ -149,6 +149,7 @@ const markdownify = async (source: string, fullpath: string, hljs): Promise<IMar
 const wrap = (htmlString: string, fullpath: string, hljs): IMarkdown => {
   const body = document.createElement('div')
   body.classList.add('padding-content')
+  body.classList.add('overflow-auto')
 
   const wrapper = document.createElement('div')
   wrapper.innerHTML = htmlString
