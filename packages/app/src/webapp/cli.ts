@@ -21,7 +21,7 @@ declare var hljs
 
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
-import { inElectron } from '../core/capabilities'
+import { inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 
 import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
@@ -65,14 +65,85 @@ export const scrollIntoView = ({ when = 305, which = '.repl-active', element = d
 }
 
 /**
- *
+ * Initiate input queueing
  *
  */
-export const setStatus = (block: Element, status: string) => {
+const startInputQueueing = () => {
+  if (!isHeadless()) {
+    const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
+    invisibleHand.focus()
+  }
+}
+
+/**
+ * Handle any input that queued up during command processing
+ *
+ */
+const handleQueuedInput = async (nextBlock: HTMLElement) => {
+  if (isHeadless()) {
+    return
+  }
+
+  const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
+
+  // here is what might have queued up
+  const queuedInput = invisibleHand.value
+
+  // reset the queueing state
+  invisibleHand.value = ''
+  invisibleHand.blur()
+
+  if (nextBlock && queuedInput.length > 0) {
+    let nextPrompt = getPrompt(nextBlock)
+    if (nextPrompt) {
+      const lines = queuedInput.split(/[\n\r]/)
+
+      const firstNonBlank = lines.findIndex(_ => _.length > 0)
+      const nPrefixNewlines = firstNonBlank >= 0 ? firstNonBlank : lines.length === 0 ? -1 : lines.length
+
+      // handle prefix newlines
+      for (let idx = 0; idx < nPrefixNewlines; idx++) {
+        await doCancel()
+
+        nextBlock = getCurrentBlock()
+        nextPrompt = getCurrentPrompt()
+      }
+
+      // now handle any actual input
+      if (firstNonBlank >= 0) {
+        // for the first one, add it to the existing (preallocated) nextPrompt
+        nextPrompt.value = lines[firstNonBlank]
+
+        // if the user also hit a trailing newline, make sure to trigger a doEval
+        if (lines.length - firstNonBlank > 1) {
+          const repl = await import('../core/repl')
+          await repl.doEval({ block: nextBlock, prompt: nextPrompt })
+
+          // lastly, if the user typed more than one newline, handle
+          // the rest via a doPaste
+          const remainingLines = lines.slice(firstNonBlank + 1).join('\n')
+          if (remainingLines.length > 0) {
+            doPaste(remainingLines)
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Set the processing/active status for the given block
+ *
+ */
+export const setStatus = (block: HTMLElement, status: string) => {
   if (block) {
     block.classList.remove('processing')
     block.classList.remove('repl-active')
     block.classList.add(status)
+
+    if (status === 'processing') {
+      startInputQueueing()
+    }
 
     // add timestamp to prompt
     element('.repl-prompt-timestamp', block).innerText = new Date().toLocaleTimeString()
@@ -270,7 +341,7 @@ export const isPopup = () => document.body.classList.contains('subwindow')
  * Render the results of a command evaluation in the "console"
  *
  */
-export const printResults = (block: Element, nextBlock: Element, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?, evaluator?) => response => {
+export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?, evaluator?) => response => {
   debug('printResults', response)
 
   // does the command handler want to be incognito in the UI?
@@ -315,7 +386,9 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
     }
   }
 
-  if (echo) setStatus(block, 'valid-response')
+  if (echo) {
+    setStatus(block, 'valid-response')
+  }
 
   const render = async (response, { echo, resultDom }) => {
     if (response && response !== true) {
@@ -495,10 +568,10 @@ export const printResults = (block: Element, nextBlock: Element, resultDom: Elem
 export const getInitialBlock = () => {
   return document.querySelector('tab.visible .repl .repl-block.repl-initial')
 }
-export const getCurrentBlock = () => {
+export const getCurrentBlock = (): HTMLElement => {
   return document.querySelector('tab.visible .repl-active')
 }
-export const getCurrentProcessingBlock = () => {
+export const getCurrentProcessingBlock = (): HTMLElement => {
   return document.querySelector('tab.visible .repl .repl-block.processing')
 }
 export const getPrompt = (block, noFakes = false) => {
@@ -525,7 +598,7 @@ export const getCurrentPromptLeft = () => {
  * Remove any .repl-temporary structures from the given dom
  *
  */
-export const removeAnyTemps = (block: Element) => {
+export const removeAnyTemps = (block: HTMLElement): HTMLElement => {
   const temps = block.querySelectorAll('.repl-temporary')
 
   for (let idx = 0; idx < temps.length; idx++) {
@@ -662,13 +735,13 @@ export const listen = prompt => {
   prompt.onpaste = paste
 }
 
-export const installBlock = (parentNode, currentBlock, nextBlock) => () => {
+export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBlock: HTMLElement) => async () => {
   if (!nextBlock) return // error cases
 
   parentNode.appendChild(nextBlock)
   listen(getPrompt(nextBlock))
   nextBlock.querySelector('input').focus()
-  nextBlock.setAttribute('data-input-count', parseInt(currentBlock.getAttribute('data-input-count'), 10) + 1)
+  nextBlock.setAttribute('data-input-count', (parseInt(currentBlock.getAttribute('data-input-count'), 10) + 1).toString())
 
   // if you want to have the current directory displayed with the prompt
   // nextBlock.querySelector('.repl-context').innerText = process.cwd() === process.env.HOME ? '~' : basename(process.cwd());
@@ -676,6 +749,8 @@ export const installBlock = (parentNode, currentBlock, nextBlock) => () => {
   scrollIntoView({ when: 0 })
 
   eventBus.emit('/core/cli/install-block')
+
+  await handleQueuedInput(nextBlock)
 }
 
 /**
@@ -690,54 +765,59 @@ export const paste = event => {
     // we'll handle it from here!
     event.preventDefault()
 
-    // const prompt = event.currentTarget
-    const lines = text.split(/[\n\r]/)
-
-    const pasteLooper = async (idx: number) => {
-      if (idx === lines.length) {
-        // all done...
-        return Promise.resolve()
-      } else if (lines[idx] === '') {
-        // then this is a blank line, so skip it
-        return pasteLooper(idx + 1)
-      } else if (idx <= lines.length - 2) {
-        // then this is a command line with a trailing newline
-        const repl = await import('../core/repl')
-        return repl.pexec(getCurrentPrompt().value + lines[idx])
-          .then(() => pasteLooper(idx + 1))
-      } else {
-        // then this is the last line, but without a trailing newline.
-        // here, we add this command line to the current prompt, without executing it
-        const prompt = getCurrentPrompt()
-
-        // paste the line with respect to the current prompt's
-        // selection range; if there is no selection range, then
-        // prompt.selectionStart will be the current caret position
-        // (which is precisely what we want, i.e. to paste the given
-        // text at the current caret position); if there is a
-        // selectionEnd, then we will *also* replace the selection
-        // range
-
-        // and, then, when we are done, will position the caret just
-        // after the pasted text:
-        const newCaretPosition = prompt.selectionStart + lines[idx].length
-
-        // note how this will either place the new text at the caret
-        // position, or replace the selected text (if selectionEnd !==
-        // selectionStart)
-        prompt.value = prompt.value.substring(0, prompt.selectionStart)
-          + lines[idx]
-          + prompt.value.substring(prompt.selectionEnd)
-
-        // restore the caret position
-        prompt.setSelectionRange(newCaretPosition, newCaretPosition)
-
-        return Promise.resolve()
-      }
-    }
-
-    return pasteLooper(0)
+    return doPaste(text)
   }
+}
+
+const doPaste = (text: string) => {
+  // const prompt = event.currentTarget
+  const lines = text.split(/[\n\r]/)
+
+  const pasteLooper = async (idx: number) => {
+    if (idx === lines.length) {
+      // all done...
+      return Promise.resolve()
+    /* } else if (lines[idx] === '') {
+      // then this is a blank line, so skip it
+      return pasteLooper(idx + 1) */
+    } else if (idx <= lines.length - 2) {
+      // then this is a command line with a trailing newline
+      const prompt = getCurrentPrompt()
+      const repl = await import('../core/repl')
+      return repl.pexec(prompt.value + lines[idx])
+        .then(() => pasteLooper(idx + 1))
+    } else {
+      // then this is the last line, but without a trailing newline.
+      // here, we add this command line to the current prompt, without executing it
+
+      // paste the line with respect to the current prompt's
+      // selection range; if there is no selection range, then
+      // prompt.selectionStart will be the current caret position
+      // (which is precisely what we want, i.e. to paste the given
+      // text at the current caret position); if there is a
+      // selectionEnd, then we will *also* replace the selection
+      // range
+
+      // and, then, when we are done, will position the caret just
+      // after the pasted text:
+      const prompt = getCurrentPrompt()
+      const newCaretPosition = prompt.selectionStart + lines[idx].length
+
+      // note how this will either place the new text at the caret
+      // position, or replace the selected text (if selectionEnd !==
+      // selectionStart)
+      prompt.value = prompt.value.substring(0, prompt.selectionStart)
+        + lines[idx]
+        + prompt.value.substring(prompt.selectionEnd)
+
+      // restore the caret position
+      prompt.setSelectionRange(newCaretPosition, newCaretPosition)
+
+      return Promise.resolve()
+    }
+  }
+
+  return pasteLooper(0)
 }
 
 /**
@@ -760,7 +840,7 @@ export const doCancel = () => {
   }
 
   // Note: clone after restorePrompt
-  const nextBlock = block.cloneNode(true)
+  const nextBlock = block.cloneNode(true) as HTMLElement
   const nextBlockPrompt = getPrompt(nextBlock)
 
   block.className = `${block.getAttribute('data-base-class')} cancelled`
@@ -795,7 +875,7 @@ export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExec
  * Handle command execution errors
  *
  */
-export const oops = (command: string, block?: Element, nextBlock?: Element) => err => {
+export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => err => {
   const message = oopsMessage(err)
   // const errString = err && err.toString()
 
@@ -855,7 +935,7 @@ export const oops = (command: string, block?: Element, nextBlock?: Element) => e
   return false
 }
 
-export const showHelp = (command: string, block: Element, nextBlock: Element, error) => {
+export const showHelp = (command: string, block: HTMLElement, nextBlock: HTMLElement, error) => {
   // if the message says command not found, then add on the "enter help to see your options" as a suffix
   const baseMessage = 'Enter help to see your options.'
   if (error.message && error.message === 'Command not found') error.message += `\n${baseMessage}`
@@ -867,7 +947,7 @@ export const showHelp = (command: string, block: Element, nextBlock: Element, er
  * Prompt the user for information
  *
  */
-export const prompt = (msg: string, block: Element, nextBlock: Element, options, completion) => {
+export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, options, completion) => {
   debug('prompt', options)
 
   const selection = block.querySelector('.repl-selection') as HTMLElement

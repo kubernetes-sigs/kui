@@ -61,6 +61,7 @@ selectors.SIDECAR_CLOSE_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-cl
 selectors.PROCESSING_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`
 selectors.CURRENT_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`
 selectors.PROMPT_BLOCK_N = N => `${selectors.PROMPT_BLOCK}[data-input-count="${N}"]`
+selectors.PROCESSING_N = N => `${selectors.PROMPT_BLOCK_N(N)}.processing`
 selectors.CURRENT_PROMPT = `${selectors.CURRENT_PROMPT_BLOCK} input`
 selectors.PROMPT_N = N => `${selectors.PROMPT_BLOCK_N(N)} input`
 selectors.OUTPUT_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result`
@@ -81,8 +82,8 @@ const expectOK = (appAndCount, opt) => {
     .then(nextPrompt => app.client.getAttribute(selectors.PROMPT_N(N), 'placeholder')) // it should have a placeholder text
     // .then(attr => assert.strictEqual(attr, constants.CLI_PLACEHOLDER)) //      ... verify that
     .then(() => app.client.getValue(selectors.PROMPT_N(N), timeout)) // it should have an empty value
-    .then(promptValue => { if (promptValue.length !== 0) { console.error(`Expected prompt value to be empty: ${promptValue}`) } return promptValue })
-    .then(promptValue => assert.strictEqual(promptValue.length, 0)) //      ... verify that
+    .then(promptValue => { if ((!opt || !opt.nonBlankPromptOk) && promptValue.length !== 0) { console.error(`Expected prompt value to be empty: ${promptValue}`) } return promptValue })
+    .then(promptValue => { if (!opt || !opt.nonBlankPromptOk) assert.strictEqual(promptValue.length, 0) }) //      ... verify that
     .then(() => opt && opt.expectError ? false : app.client.getHTML(selectors.OK_N(N - 1), timeout)) // get the "ok" part of the current command
     .then(ok => opt && opt.expectError ? false : assert.ok(constants.OK.test(ok))) // make sure it says "ok" !
     .then(() => {
@@ -194,7 +195,8 @@ exports.cli = {
   /** wait for the result of a cli.do */
   makeCustom: (selector, expect, exact) => ({ selector: selector, expect: expect, exact: exact }),
   expectError: (statusCode, expect, passthrough) => res => expectOK(res, { selector: `.oops[data-status-code="${statusCode || 0}"]`, expectError: true, expect: expect, passthrough }).then(_ => passthrough ? _ : res.app),
-  expectBlank: res => expectOK(res, { selector: '', expectError: true }),
+  expectBlankWithOpts: (opts = {}) => res => expectOK(res, Object.assign({ selector: '', expectError: true }, opts)),
+  expectBlank: res => exports.cli.expectBlankWithOpts()(res),
   expectOKWithCustom: custom => res => expectOK(res, custom), // as long as its ok, accept anything
   expectOKWithString: (expect, exact) => res => exports.cli.expectOKWithCustom({ expect, exact })(res),
   expectOKWithAny: res => expectOK(res), // as long as its ok, accept anything

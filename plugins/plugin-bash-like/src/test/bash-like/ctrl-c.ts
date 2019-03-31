@@ -42,7 +42,7 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
 
   const echoThisString = 'hi'
   localIt('should initiate a command that completes with some delay', async () => {
-    const res = await cli.do(`sleep 3; echo ${echoThisString}`, this.app)
+    const res = await cli.do(`/bin/sleep 3; echo ${echoThisString}`, this.app)
     await this.app.client.keys(ui.ctrlC)
     return this.app.client.waitUntil(async () => {
       const actualText = await this.app.client.getText(selectors.OUTPUT_N(res.count))

@@ -24,6 +24,7 @@ import about from './lib/cmds/about/about'
 import base64 from './lib/cmds/base64'
 import openui from './lib/cmds/open-ui-from-terminal'
 import prompt from './lib/cmds/prompt'
+import sleep from './lib/cmds/sleep'
 import window from './lib/cmds/window'
 import history from './lib/cmds/history/history'
 
@@ -44,6 +45,7 @@ export default async (commandTree, prequire, options) => {
     clear(commandTree, prequire),
     base64(commandTree, prequire),
     prompt(commandTree, prequire),
+    sleep(commandTree, prequire),
     history(commandTree, prequire),
     about(commandTree, prequire)
   ])

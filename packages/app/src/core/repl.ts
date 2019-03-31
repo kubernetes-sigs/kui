@@ -351,7 +351,7 @@ class InProcessExecutor implements IExecutor {
 
     try {
       if (block && !nested && echo) {
-        block.className = `${block.getAttribute('data-base-class')} processing`
+        cli.setStatus(block, 'processing')
         if (!isHeadless()) {
           cli.scrollIntoView({ when: 0, element: element('.repl-result-spinner', block) })
         }
@@ -860,7 +860,7 @@ export const installOopsHandler = fn => {
   debug('installing oops handler')
   oopsHandler = fn
 }
-const oops = (command?: string, block?: Element, nextBlock?: Element) => err => {
+const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) => err => {
   if (oopsHandler) {
     debug('invoking registered oops handler')
     return oopsHandler(block, nextBlock)(err)
