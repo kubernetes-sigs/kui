@@ -36,18 +36,20 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
     // same day as now: just print the time
     const prev: Date = previousTimestamp &&
       (!isDate(previousTimestamp) ? new Date(previousTimestamp) : previousTimestamp)
-    const verySmallDelta = !!(prev && Math.abs(then.getTime() - prev.getTime()) < 1000)
     const prevOnSameDay = !!(prev && (prev.getFullYear() === then.getFullYear() &&
                                       prev.getMonth() === then.getMonth() &&
                                       prev.getDate() === then.getDate()))
     const sameDay = () => {
+      const delta = then.getTime() - prev.getTime()
+      const verySmallDelta = Math.abs(delta) < 1000
+
       if (fmt === 'delta' || verySmallDelta) {
-        const delta = then.getTime() - prev.getTime()
         if (delta === 0) {
           return span('')
         } else {
           // very small delta (or we were explicitly asked to print deltas)
-          return span(`+${prettyPrintDuration(then.getTime() - prev.getTime())}`)
+          const sign = delta < 0 ? '' : '+' // the minus will appear for us
+          return span(`${sign}${prettyPrintDuration(then.getTime() - prev.getTime())}`)
         }
       } else {
         const res = document.createElement('span')

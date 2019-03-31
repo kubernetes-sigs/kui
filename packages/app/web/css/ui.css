@@ -696,7 +696,7 @@ sidecar.visible {
     border-left: 1px solid var(--color-ui-03);
 }
 body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
-    border-left: none;
+    border-left-color: var(--color-ui-04);
 }
 .sidecar-full-screen .repl.sidecar-visible {
     flex: 0 0 0;
@@ -1647,11 +1647,14 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
     white-space: pre-wrap;
     vertical-align: middle;
 }
-.log-lines .log-line .log-field.log-date .entity-name {
+.log-lines .log-line .log-field.log-date .entity-name, .log-lines .log-line .log-field.log-date .provider-name {
     /* this represents e.g. the origin or source line for a log entry */
     color: var(--color-text-02);
-    display: inline-block;
+    display: block;
     font-weight: 400;
+}
+.log-lines .log-line .log-field.log-date .provider-name {
+    color: var(--color-base09);
 }
 .log-lines .log-line .log-field.log-date:not(.hljs-attribute) {
     color: var(--color-text-02);
