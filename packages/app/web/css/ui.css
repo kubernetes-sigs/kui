@@ -2112,17 +2112,20 @@ body:not(.oops-total-catastrophe) #restart-needed-warning {
     width: 100%;
     height: 100%;
     display: flex;
-}
-#restart-needed-warning .restart-needed-warning-content {
-    display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    font-size: 3rem;
-    padding: 2em;
+    flex-direction: column;
+}
+#restart-needed-warning i {
+    font-size: 12vw;
+    color: var(--color-base08);
+}
+#restart-needed-warning .restart-needed-warning-content {
+    font-size: 3vw;
+    padding: 5vmin;
 }
 body.oops-total-catastrophe #restart-needed-warning {
-    opacity: 0.95;
+    opacity: 1;
 }
 
 /* tooltips */
