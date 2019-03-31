@@ -201,6 +201,7 @@ const parseCloudLens = (raw: string, options: IOptions): Array<any> => {
  */
 const parseIstio = (raw: string): Array<IZaprEntry> => {
   let prevTimestamp: string
+  let idxOfPrevTimestamp
 
   return raw
     .split(/[\n\r]/)
@@ -241,10 +242,22 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         if (!match || match.length === 1) {
           const pattern2 = /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)\]\[(\d+)\]\[(.*)\]\[(.*)\]\s+(.*:\d+)\]\s+(.*)$/
           match = line.split(pattern2)
-          logTypeIndex = 3
-          originIndex = 5
-          providerIndex = 4
-          restIndex = 6
+
+          if (match && match.length > 1) {
+            // success
+            logTypeIndex = 3
+            originIndex = 5
+            providerIndex = 4
+            restIndex = 6
+          } else {
+            // [2019-03-29T23:14:17.109Z] "GET /ratings/0HTTP/1.1" 200 - 0 48 2 2 "-" "Apache-CXF/3.1.14" "d89018c8-792f-42a6-ab04-c863f9daed88" "ratings:9080" "172.30.166.214:9080" outbound|9080||ratings.default.svc.cluster.local - 172.21.130.75:9080 172.30.48.86:37582
+            const pattern3 = /^\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\]\s+"([^"]+)"\s+(\d+)\s+(.*)$/
+            match = line.split(pattern3)
+            logTypeIndex = -1
+            originIndex = 2
+            providerIndex = 3
+            restIndex = 4
+          }
         }
 
         const timestamp = (match && match[timestampIndex]) || ''
@@ -341,6 +354,13 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
           originDom.className = 'entity-name'
           originDom.innerText = origin ? origin.replace(/]$/, '') : ''
           timestampDom.appendChild(originDom)
+        }
+
+        if (provider) {
+          const providerDom = document.createElement('span')
+          providerDom.className = 'entity-name provider-name'
+          providerDom.innerText = provider ? provider.replace(/]$/, '') : ''
+          timestampDom.appendChild(providerDom)
         }
 
         // run length rendering
