@@ -1,0 +1,29 @@
+.xterm-container .xterm-rows {
+    font-family: var(--font-monospace) !important;
+}
+
+.xterm-container.xterm-terminated .xterm-cursor {
+    display: none !important;
+}
+
+.xterm-container .xterm-screen, .xterm-container .xterm-rows > div {
+    width: 100% !important;
+}
+.xterm-container .xterm-screen {
+    height: auto !important;
+}
+
+/* alt buffer mode */
+tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .horizontal-landing-zone, tab.xterm-alt-buffer-mode .repl-input {
+    display: none;
+}
+tab.xterm-alt-buffer-mode .repl-output, tab.xterm-alt-buffer-mode .repl-block {
+    padding: 0;
+}
+tab.xterm-alt-buffer-mode .repl-inner {
+    overflow: hidden;
+}
+tab.xterm-alt-buffer-mode .xterm-rows > div.hide {
+    /* don't hide any rows when in alt buffer mode */
+    display: block;
+}

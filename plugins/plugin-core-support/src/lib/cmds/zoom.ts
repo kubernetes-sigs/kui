@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/zoom')
 
+import eventBus from '@kui-shell/core/core/events'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
@@ -45,6 +46,7 @@ const listener = (event: KeyboardEvent): void => {
     debug('reset zoom')
     event.preventDefault()
     reset()
+    setTimeout(() => eventBus.emit('/zoom', 1), 100)
   } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey)) {
     // zooming
     event.preventDefault()
@@ -52,6 +54,7 @@ const listener = (event: KeyboardEvent): void => {
     const factor = char === keys.ZOOM_IN ? 1 : -1
     const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
     _set(newZoom)
+    setTimeout(() => eventBus.emit('/zoom', newZoom), 100)
   }
 }
 

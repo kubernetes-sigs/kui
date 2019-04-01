@@ -48,7 +48,7 @@ localDescribe('shell commands', function (this: ISuite) {
   // these two are useful as a pair; git usage responds with exit code
   // 1, whereas ibmcloud responds with exit code 0
   it('should give usage for git', () => cli.do(`git`, this.app)
-    .then(cli.expectError(1, 'usage: git'))
+    .then(cli.expectError(1))
     .catch(common.oops(this)))
   it('should give usage for ibmcloud', () => cli.do(`ibmcloud`, this.app)
     .then(cli.expectError(500, header('ibmcloud')))
@@ -63,18 +63,6 @@ localDescribe('shell commands', function (this: ISuite) {
   if (hasExe('ibmcloud')) {
     it('should give usage for ibmcloud config', () => cli.do(`ibmcloud config`, this.app)
        .then(cli.expectError(2, undefined, { passthrough: true }))
-       .then(N => Promise.all([
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .click-here-for-usage-container`),
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .usage-error-message-string`)
-       ])
-             .then(() => this.app.client.getText(`${selectors.OUTPUT_N(N)} .usage-error-message-string`))
-             .then(txt => assert.ok(/Incorrect Usage/i.test(txt)))
-             .then(() => this.app.client.click(`${selectors.OUTPUT_N(N)} .click-here-for-usage`))
-             .then(() => Promise.all([
-               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="options"]`),
-               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="config"]`),
-               this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`)
-             ])))
        .catch(common.oops(this)))
 
     it('should give usage for ibmcloud app', () => cli.do(`ibmcloud app`, this.app)

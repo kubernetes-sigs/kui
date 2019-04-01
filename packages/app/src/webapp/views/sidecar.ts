@@ -889,6 +889,13 @@ export const init = async () => {
 
   // escape key toggles sidecar visibility
   document.addEventListener('keyup', (evt: KeyboardEvent) => {
+    if (document.activeElement &&
+        !(document.activeElement === document.body ||
+          document.activeElement.classList.contains('repl-input-element'))) {
+      // not focused on repl
+      return
+    }
+
     if (evt.keyCode === keys.ESCAPE) {
       if (!cli.isPopup()) {
         const closeButton = document.querySelector(sidecarSelector('.sidecar-bottom-stripe-close'))

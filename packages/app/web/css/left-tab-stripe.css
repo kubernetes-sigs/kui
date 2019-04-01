@@ -192,7 +192,7 @@ body.subwindow .repl .horizontal-landing-zone {
 }
 .repl-input, .repl-output {
     padding: 0 1em 0 1.8125em;
-    transition: padding 300ms ease-in-out;
+    transition: padding 150ms ease-in-out;
 }
 .repl.sidecar-visible .repl-input, .repl.sidecar-visible .repl-output {
     padding-left: 1em;

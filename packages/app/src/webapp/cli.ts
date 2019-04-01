@@ -76,13 +76,18 @@ const startInputQueueing = () => {
 }
 
 /**
- * Handle any input that queued up during command processing
+ * This API call allows plugins to disable input queueing while a
+ * command is being processed.
+ *
+ * @return any queued input so far
  *
  */
-const handleQueuedInput = async (nextBlock: HTMLElement) => {
+export const disableInputQueueing = (): string => {
   if (isHeadless()) {
     return
   }
+
+  debug('disableInputQueueing')
 
   const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
 
@@ -93,7 +98,21 @@ const handleQueuedInput = async (nextBlock: HTMLElement) => {
   invisibleHand.value = ''
   invisibleHand.blur()
 
-  if (nextBlock && queuedInput.length > 0) {
+  return queuedInput
+}
+
+/**
+ * Handle any input that queued up during command processing
+ *
+ */
+const handleQueuedInput = async (nextBlock: HTMLElement) => {
+  const queuedInput = disableInputQueueing()
+
+  if (!queuedInput) {
+    return
+  } else if (nextBlock && queuedInput.length > 0) {
+    debug('adding queued input to nextBlock')
+
     let nextPrompt = getPrompt(nextBlock)
     if (nextPrompt) {
       const lines = queuedInput.split(/[\n\r]/)

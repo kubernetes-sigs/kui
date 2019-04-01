@@ -38,3 +38,6 @@ app.inst
 keys
 *flycheck*.ts
 /build
+
+# these seem to come from node-pty or xterm.js
+.swp

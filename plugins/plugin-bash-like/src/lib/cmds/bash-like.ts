@@ -32,7 +32,6 @@ import * as Ansi2Html from 'ansi-to-html'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import UsageError from '@kui-shell/core/core/usage-error'
 import * as repl from '@kui-shell/core/core/repl'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import formatKeyValue from '../util/ascii-key-value-to-table'
@@ -379,17 +378,25 @@ export const preload = (commandTree) => {
     //
     commandTree.catchall(
       () => true, // we will accept anything
-      ({ command, argvNoOptions, execOptions, parsedOptions, createOutputStream }) => {
+      async ({ block, command, argv, argvNoOptions, execOptions, parsedOptions, createOutputStream }) => {
         debug('handling catchall', command)
 
-        return doExec(command, argvNoOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
-          .catch(err => {
-            // here, we trim the first part of "/bin/sh: someNonExistentCommand: command not found"
-            if (err.message && typeof err.message === 'string') {
-              err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
-            }
-            throw err
-          })
+        /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
+        const cleanUpError = err => {
+          if (err.message && typeof err.message === 'string') {
+            err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
+          }
+          throw err
+        }
+
+        if (isHeadless()) {
+          return doExec(command, argvNoOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
+            .catch(cleanUpError)
+        } else {
+          const { doExec } = await import('../../pty/client')
+          return doExec(block, command, argv, Object.assign({}, { stdout: createOutputStream() }, execOptions))
+            .catch(cleanUpError)
+        }
       },
       0, // priority
       { noAuthOk: true })

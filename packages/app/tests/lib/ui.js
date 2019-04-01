@@ -198,12 +198,48 @@ exports.cli = {
   expectBlankWithOpts: (opts = {}) => res => expectOK(res, Object.assign({ selector: '', expectError: true }, opts)),
   expectBlank: res => exports.cli.expectBlankWithOpts()(res),
   expectOKWithCustom: custom => res => expectOK(res, custom), // as long as its ok, accept anything
-  expectOKWithString: (expect, exact) => res => exports.cli.expectOKWithCustom({ expect, exact })(res),
+  expectOKWithString: (expect, exact = false) => res => {
+    // first try innerText
+    return exports.cli.expectOKWithCustom({ expect, exact })(res)
+      .catch(err1 => {
+        // use .textContent as a backup plan
+        return exports.cli.expectOKWithTextContent(expect, exact)(res)
+          .catch(err2 => {
+            throw err1
+          })
+      })
+  },
+  expectOKWithTextContent: (expect, exact = false, sel = ' ') => async res => {
+    // Notes: webdriverio's getText seems to use .innerText to extract
+    // the text from a given selector; this is quite unreliable in
+    // terms of whitespace preservation; e.g. <div><span>
+    // </span><span> </span></div> will preserve whitespace, but if
+    // the inner spans have are inline-block, then innerText will not
+    // preserve whitespace; textContent *will* preserve whitespace
+    const selector = await exports.cli.expectOKWithCustom({ selector: sel })(res)
+    const txt = await exports.getTextContent(res.app, selector)
+
+    if (exact) {
+      return assert.strictEqual(txt, expect)
+    } else {
+      if (txt.indexOf(expect) < 0) {
+        console.error(`Expected string not found expected=${expect} idx=${txt.indexOf(expect)} actual=${txt}`)
+        assert.ok(txt.indexOf(expect) >= 0)
+      }
+    }
+  },
   expectOKWithAny: res => expectOK(res), // as long as its ok, accept anything
   expectOKWithOnly: entityName => res => expectOK(res, entityName), // expect ok and *only* the given result value
   expectOKWith: entityName => res => expectOK(res, [entityName]), // expect ok and at least the given result value
   expectOK: res => expectOK(res, { passthrough: true }).then(N => res.app.client.elements(selectors.LIST_RESULTS_BY_NAME_N(N))).then(elts => assert.strictEqual(elts.value.length, 0)).then(() => res.app),
   expectJustOK: res => expectOK(res, true).then(() => res.app) // expect just ok, and no result value
+}
+
+/** extract text from the given selector using .textContent */
+exports.getTextContent = (app, selector) => {
+  return app.client.execute(selector => {
+    return document.querySelector(selector).textContent
+  }, selector).then(_ => _.value)
 }
 
 exports.sidecar = {
