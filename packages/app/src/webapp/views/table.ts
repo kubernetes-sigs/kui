@@ -189,7 +189,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
 
         try {
           Promise.resolve(watch(watchLimit - count - 1))
-            .then(({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll }) => {
+            .then(({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll = false }) => {
               if (unchanged) {
                 // nothing to do, yet
                 return
@@ -251,24 +251,26 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
                     otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
                   }
                 }
-
-                if (slowPoll) {
-                  // user requested a new, "slow polling" watch
-                  if (!slowPolling) {
-                    debug('entering slowPoll mode', slowPoll)
-                    slowPolling = true
-                    stopWatching() // this will remove the "pulse" effect, which is what we want
-                    interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
-                  }
-                } else if (slowPolling) {
-                  // we were told not to slowPoll, but we are currently slowPolling
-                  debug('exiting slowPoll mode')
-                  slowPolling = false
-                  cell.classList.add(pulse)
-                  clearInterval(interval)
-                  interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
-                }
               })
+
+              // here we manage the slowPoll transitions
+              if (slowPoll) {
+                // the model provider has requested a new, "slow polling" watch
+                if (!slowPolling) {
+                  debug('entering slowPoll mode', slowPoll)
+                  slowPolling = true
+                  stopWatching() // this will remove the "pulse" effect, which is what we want
+                  interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
+                }
+              } else if (slowPolling) {
+                // we were told not to slowPoll, but we are currently
+                // slowPolling, and so we exit slowPoll mode
+                debug('exiting slowPoll mode')
+                slowPolling = false
+                cell.classList.add(pulse)
+                clearInterval(interval)
+                interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+              }
             })
         } catch (err) {
           console.error('Error watching value', err)

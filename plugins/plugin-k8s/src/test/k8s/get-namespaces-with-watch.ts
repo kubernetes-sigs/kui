@@ -19,11 +19,8 @@ import { cli, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
 
-/** name of the pod */
-const podName = 'nginx'
-
-/** source for the resource spec */
-const url = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'
+/** name of the namespace */
+const nsName = 'yoyo'
 
 enum Status {
   Offline = 'red-background',
@@ -32,63 +29,32 @@ enum Status {
 
 /** after a cli.do (res), wait for a table row with the given status */
 const waitForStatus = async function (this: common.ISuite, status: Status, res) {
-  const selector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) })(res)
+  const selector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME(nsName) })(res)
   await this.app.client.waitForExist(`${selector} span:not(.repeating-pulse) badge.${status}`)
 
   return selector
 }
 
-/** create pod, and expect status eventually to be green */
-const createPod = async function (this: common.ISuite, kubectl: string) {
-  it(`should create sample pod from URL via ${kubectl}`, async () => {
+/** create namespace, and expect status eventually to be green */
+const createNS = async function (this: common.ISuite, kubectl: string) {
+  it(`should create namespace from URL via ${kubectl}`, async () => {
     const waitForOnline = waitForStatus.bind(this, Status.Online)
 
     try {
-      await waitForOnline(await cli.do(`${kubectl} create -f ${url}`, this.app))
+      await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
     } catch (err) {
       common.oops(this)(err)
     }
   })
 }
 
-/** create, then delete; the create table status had better not change */
-const createAndDeletePod = function (this: common.ISuite, kubectl: string) {
-  it(`should create then delete sample pod from URL via ${kubectl}`, async () => {
-    try {
-      const waitForOnline = waitForStatus.bind(this, Status.Online)
-      const waitForOffline = waitForStatus.bind(this, Status.Offline)
-
-      const selector1 = await waitForOnline(await cli.do(`${kubectl} create -f ${url}`, this.app))
-      const selector2 = await waitForOffline(await cli.do(`${kubectl} delete -f ${url}`, this.app))
-
-      // the first badge.Online selector had better still exist after the delete
-      await this.app.client.waitForExist(selector1)
-
-      const selector3 = await waitForOnline(await cli.do(`${kubectl} create -f ${url}`, this.app))
-
-      // that second badge.Offline selector had better still exist after the (second) create
-      await this.app.client.waitForExist(selector2)
-
-      // one last delete...
-      await waitForOffline(await cli.do(`${kubectl} delete -f ${url}`, this.app))
-
-      // the previous badges had all better still exist after that second delete
-      await this.app.client.waitForExist(selector1)
-      await this.app.client.waitForExist(selector2)
-      await this.app.client.waitForExist(selector3)
-    } catch (err) {
-      common.oops(this)(err)
-    }
-  })
-}
-
-/** delete pod, and expect status eventually to be green; or (if noExistOk=true) eventually to get a 404 */
-const deletePod = function (this: common.ISuite, kubectl: string, { noExistOk = false } = {}) {
-  it(`should delete the sample pod from URL via ${kubectl} with noExistOk=${noExistOk}`, async () => {
+/** delete namespace, and expect status eventually to be green; or (if noExistOk=true) eventually to get a 404 */
+const deleteNS = function (this: common.ISuite, kubectl: string, { noExistOk = false } = {}) {
+  it(`should delete the namespace ${nsName} from URL via ${kubectl} with noExistOk=${noExistOk}`, async () => {
     try {
       const waitForOffline = waitForStatus.bind(this, Status.Offline)
 
-      const res = await cli.do(`${kubectl} delete -f ${url}`, this.app)
+      const res = await cli.do(`${kubectl} delete ns ${nsName}`, this.app)
 
       if (noExistOk) {
         return this.app.client.waitUntil(async () => {
@@ -96,7 +62,7 @@ const deletePod = function (this: common.ISuite, kubectl: string, { noExistOk = 
             const maybe404 = `${selectors.OUTPUT_N(res.count)} .oops[data-status-code="404"]`
             const elt = await this.app.client.element(maybe404)
             if (elt.state === 'failure') {
-              // no 404? then we'd better eventuallly see that the pod is offline
+              // no 404? then we'd better eventuallly see that the namespace is offline
               await waitForOffline(res)
               return true
             } else {
@@ -108,7 +74,7 @@ const deletePod = function (this: common.ISuite, kubectl: string, { noExistOk = 
           }
         })
       } else {
-        // noExistOk=false, then we'd better eventually see that the pod is offline
+        // noExistOk=false, then we'd better eventually see that the namespace is offline
         await waitForOffline(res)
         return
       }
@@ -118,17 +84,17 @@ const deletePod = function (this: common.ISuite, kubectl: string, { noExistOk = 
   })
 }
 
-/** k get pods -w */
-const watchPods = function (this: common.ISuite, kubectl: string) {
-  it(`should watch pods via ${kubectl} get pods -w`, async () => {
+/** k get ns -w */
+const watchNS = function (this: common.ISuite, kubectl: string) {
+  it(`should watch namespaces via ${kubectl} get ns -w`, async () => {
     try {
       const waitForOnline = waitForStatus.bind(this, Status.Online)
       const waitForOffline = waitForStatus.bind(this, Status.Offline)
 
-      const selector1 = await waitForOnline(await cli.do(`${kubectl} create -f ${url}`, this.app))
-      const selector2 = await waitForOnline(await cli.do(`${kubectl} get pods -w`, this.app))
+      const selector1 = await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
+      const selector2 = await waitForOnline(await cli.do(`${kubectl} get ns -w`, this.app))
       const selector2ButOffline = selector2.replace(Status.Online, Status.Offline)
-      const selector3 = await waitForOffline(await cli.do(`${kubectl} delete -f ${url}`, this.app))
+      const selector3 = await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
 
       // the create and delete badges had better still exist
       await this.app.client.waitForExist(selector1)
@@ -142,7 +108,7 @@ const watchPods = function (this: common.ISuite, kubectl: string) {
       await this.app.client.waitForExist(selector2ButOffline)
 
       // create again
-      const selector4 = await waitForOnline(await cli.do(`${kubectl} create -f ${url}`, this.app))
+      const selector4 = await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
 
       // the "online" badge from the watch had better now exist again after the create
       // (i.e. we had better actually be watching!)
@@ -158,24 +124,22 @@ const watchPods = function (this: common.ISuite, kubectl: string) {
 
 const synonyms = ['kubectl', 'k']
 
-describe('electron watch pod', function (this: common.ISuite) {
+describe('electron watch namespace', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   synonyms.forEach(kubectl => {
-    const createIt = createPod.bind(this, kubectl)
-    const deleteIt = deletePod.bind(this, kubectl)
-    const createAndDeleteIt = createAndDeletePod.bind(this, kubectl)
-    const watchIt = watchPods.bind(this, kubectl)
+    const createIt = createNS.bind(this, kubectl)
+    const deleteIt = deleteNS.bind(this, kubectl)
+    const watchIt = watchNS.bind(this, kubectl)
 
     //
     // here come the tests
     //
 
-    deleteIt({ noExistOk: true }) // delete the pod, but it's ok if it doesn't exist
+    deleteIt({ noExistOk: true }) // delete the namespace, but it's ok if it doesn't exist
     createIt()
     deleteIt()
-    createAndDeleteIt()
     watchIt()
   })
 })
