@@ -20,6 +20,7 @@ import bash from './lib/cmds/bash-like'
 import gitDiff from './lib/cmds/git-diff'
 import gitStatus from './lib/cmds/git-status'
 import gitCommit from './lib/cmds/git-commit'
+import ptyServer from './pty/server'
 
 /**
  * This is the module
@@ -30,6 +31,7 @@ export default async (commandTree, prequire, options) => {
     ls(commandTree, prequire),
     open(commandTree, prequire),
     bash(commandTree, prequire),
+    ptyServer(commandTree, prequire),
     gitDiff(commandTree, prequire),
     gitStatus(commandTree, prequire),
     gitCommit(commandTree, prequire)

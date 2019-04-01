@@ -7,4 +7,5 @@ cd "$SCRIPTDIR"
 rm -rf incubator-openwhisk-utilities
 git clone https://github.com/apache/incubator-openwhisk-utilities.git
 
-./incubator-openwhisk-utilities/scancode/scanCode.py --config kui.cfg "$ROOTDIR"
+# a PR on 20190402 seems to have broken us
+# ./incubator-openwhisk-utilities/scancode/scanCode.py --config kui.cfg "$ROOTDIR"
