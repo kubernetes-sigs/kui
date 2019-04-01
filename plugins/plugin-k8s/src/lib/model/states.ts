@@ -369,10 +369,6 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
       (finalState === FinalState.OfflineLike && isOfflineLike(newState))
     // || (!offlineOk && newState === States.Disparity);
 
-    if (done) {
-      debug('watchStatus done', newState, watch.kind, watch.name, FinalState[finalState])
-    }
-
     const labels = watch.labels
 
     const getOpenWhiskResource = (exec: string) => repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
@@ -399,6 +395,10 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
 
     // should we start a slowPoll?
     const slowPoll = done && finalState === FinalState.NotPendingLike
+
+    if (done) {
+      debug('watchStatus done', slowPoll, newState, watch.kind, watch.name, FinalState[finalState])
+    }
 
     // this is the update spec
     return {
