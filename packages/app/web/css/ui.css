@@ -81,11 +81,8 @@ body .page > .header {
     background-repeat: no-repeat;
     background-size: contain;
 }
-.application-icon {
-    animation: spin 500ms linear 1;
-}
 body.still-loading .application-icon {
-    animation: spin 2.5s alternate infinite;
+    animation: pulse 1000ms infinite alternate-reverse;
 }
 .application-icon:hover {
     opacity: 1;
@@ -99,8 +96,7 @@ body:not(.not-electron) .application-icon {
 .application-icon {
     width: 3.75em;
     height: 3.75em;
-    margin: 0 auto;
-    margin-bottom: 1em;
+    margin: 1em auto;
     -webkit-app-region: no-drag;
     transition: all 650ms ease-in-out;
     opacity: 0.75;
