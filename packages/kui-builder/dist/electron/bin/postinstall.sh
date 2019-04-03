@@ -6,7 +6,7 @@ if [[ `uname` == Darwin ]]; then
     # for mac, we need gtar
     which gtar >& /dev/null
     if [ $? != 0 ]; then
-        brew install gtar
+        brew install gnu-tar
     fi
 
     # needed for windows builds

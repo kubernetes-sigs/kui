@@ -29,9 +29,9 @@ const creator = new MSICreator({
   appDirectory,
   outputDirectory,
   setupIcon,
-  name: 'fsh',
+  name: 'kui',
   setupExe: `${PRODUCT_NAME}.exe`,
-  exe: 'fsh'
+  exe: 'kui'
 })
 
 creator.create()

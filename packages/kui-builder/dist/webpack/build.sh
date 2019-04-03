@@ -56,7 +56,7 @@ echo "build-webpack CORE_HOME=$CORE_HOME"
 echo "build-webpack APPDIR=$APPDIR"
 
 if [[ `uname` == Darwin ]]; then
-    # see bin/postinstall; we use brew to ensure we have gtar
+    which gtar || brew install gnu-tar
     TAR=gtar
 else
     TAR=tar

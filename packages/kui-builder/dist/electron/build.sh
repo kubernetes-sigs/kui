@@ -124,6 +124,9 @@ function init {
 
     # make the build directory
     mkdir -p "$BUILDDIR"
+
+    # pick up dependencies and install helpers
+    (cd $CLIENT_HOME/node_modules/@kui-shell/builder/dist/electron && npm install)
 }
 
 # check for prerequisites
@@ -160,7 +163,6 @@ function assembleHTMLPieces {
     fi
 
     # minify the core css
-    (cd "$BUILDER_HOME/dist/electron" && npm install) # to pick up `minify`
     CSS_SOURCE="$CORE_HOME"/web/css
     CSS_TARGET="$APPDIR"/build/css
     mkdir -p "$CSS_TARGET"
