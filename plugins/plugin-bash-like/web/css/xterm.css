@@ -17,7 +17,7 @@
 tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .horizontal-landing-zone, tab.xterm-alt-buffer-mode .repl-input {
     display: none;
 }
-tab.xterm-alt-buffer-mode .repl-output, tab.xterm-alt-buffer-mode .repl-block {
+tab.xterm-alt-buffer-mode .repl-output, tab.xterm-alt-buffer-mode .repl-block, tab.xterm-alt-buffer-mode .repl.sidecar-visible .repl-output {
     padding: 0;
 }
 tab.xterm-alt-buffer-mode .repl-inner {
