@@ -75,8 +75,8 @@ localDescribe('shell commands', function (this: ISuite) {
        .catch(common.oops(this)))
   }
 
-  it('should answer which ls with /bin/ls', () => cli.do(`which ls`, this.app)
-    .then(cli.expectOKWithCustom({ expect: '/bin/ls' }))
+  it('should answer which ls with /bin/ls', () => cli.do(`which -a ls`, this.app) // For some customized bash, `which ls` could show: ls: aliased to ls -G
+    .then(cli.expectOKWithCustom({ expect: '/bin/ls', exact: false }))
     .catch(common.oops(this)))
 
   it('should echo hi', () => cli.do(`echo hi`, this.app)

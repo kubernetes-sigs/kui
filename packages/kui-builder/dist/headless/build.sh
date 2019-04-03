@@ -31,16 +31,6 @@ APPDIR="$STAGING"/kui/packages/app
 BUILDER_HOME="$STAGING"/kui/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME/dist/headless"
 
-if [[ `uname` == Darwin ]]; then
-    TAR=gtar
-    which gtar >& /dev/null
-    if [ $? != 0 ]; then
-        brew install gtar
-    fi
-else
-    TAR=tar
-fi
-
 function init {
     rm -rf "$STAGING"/kui
     mkdir -p "$STAGING/kui/bin"
@@ -94,6 +84,14 @@ function cleanup {
 
 function tarCopy {
     echo "tar copy to $STAGING from $CLIENT_HOME"
+
+    if [[ `uname` == Darwin ]]; then
+        which gtar || brew install gnu-tar
+        TAR=gtar
+    else
+        TAR=tar
+    fi
+
     (cd "$STAGING" && \
          "$TAR" -C "$CLIENT_HOME" -cf - \
                 --exclude "./npm-packs" \

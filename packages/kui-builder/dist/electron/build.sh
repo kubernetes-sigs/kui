@@ -53,14 +53,13 @@ echo "Using VERSION=$VERSION"
 # we will manage devDep pruning ourselves
 #NO_PRUNE=--no-prune
 
-if [[ `uname` == Darwin ]]; then
-    # see bin/postinstall; we use brew to ensure we have gtar
-    TAR=gtar
-else
-    TAR=tar
-fi
-
 function tarCopy {
+  if [[ `uname` == Darwin ]]; then
+      which gtar || brew install gnu-tar
+      TAR=gtar
+  else
+      TAR=tar
+  fi
     # word of warning for linux: in the TAR command below, the `-cf -` has
     # to come before the --exclude rules!
     "$TAR" -C "$CLIENT_HOME" -cf - \
@@ -187,6 +186,10 @@ function win32 {
         # create the bundles
         echo "Electron build for win32"
 
+        if [[ `uname` == Darwin ]]; then
+          which mono || brew install mono
+        fi
+
         (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
 	    "$STAGING" \
 	    "${PRODUCT_NAME}" \
@@ -275,6 +278,11 @@ function mac {
 function linux {
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "linux" ]; then
         echo "Electron build linux"
+
+        if [[ `uname` == Darwin ]]; then
+          which dpkg || brew install dpkg
+          which fakeroot || brew install fakeroot
+        fi
 
         (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
 	    "$STAGING" \

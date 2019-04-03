@@ -4,8 +4,7 @@
   "description": "Files for creating a Shell distributable binary",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "./bin/postinstall.sh"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "Apache-2.0",

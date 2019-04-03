@@ -55,13 +55,6 @@ echo "build-webpack STAGING=$STAGING"
 echo "build-webpack CORE_HOME=$CORE_HOME"
 echo "build-webpack APPDIR=$APPDIR"
 
-if [[ `uname` == Darwin ]]; then
-    # see bin/postinstall; we use brew to ensure we have gtar
-    TAR=gtar
-else
-    TAR=tar
-fi
-
 function pre {
     (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/pre' -exec {} \;)
     # (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/pre' -exec rm node_modules/@kui-plugin/{} \;)
@@ -75,6 +68,13 @@ function post {
 
 # copy the core bits to the staging area
 function tarCopy {
+    if [[ `uname` == Darwin ]]; then
+        which gtar || brew install gnu-tar
+        TAR=gtar
+    else
+        TAR=tar
+    fi
+
     # word of warning for linux: in the TAR command below, the `-cf -` has
     # to come before the --exclude rules!
     "$TAR" -C "$CLIENT_HOME" -cf - \

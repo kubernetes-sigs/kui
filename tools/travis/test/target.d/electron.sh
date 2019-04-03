@@ -20,4 +20,11 @@ set -e
 set -o pipefail
 
 # create an electron dist to test against
-cd clients/default && NO_INSTALLER=true npm run build:electron -- linux
+PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
+cd clients/default && NO_INSTALLER=true npm run build:electron -- ${PLATFORM}
+
+if [ "$PLATFORM" == linux ]; then
+  ls dist/electron/*darwin* && exit 1 || exit 0
+elif [ "$PLATFORM" == darwin ]; then
+  ls dist/electron/*linux* && exit 1 || exit 0
+fi

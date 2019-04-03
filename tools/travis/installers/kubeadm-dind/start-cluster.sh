@@ -45,10 +45,11 @@ pushd /tmp
 
   # Download and install helm
   #  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh
-  echo "Downloading this helm: https://storage.googleapis.com/kubernetes-helm/helm-v${TRAVIS_HELM_VERISON}-linux-amd64.tar.gz"
-  curl -L "https://storage.googleapis.com/kubernetes-helm/helm-v${TRAVIS_HELM_VERSION}-linux-amd64.tar.gz" | tar zxf -
-  sudo cp linux-amd64/helm /usr/local/bin
-  sudo cp linux-amd64/tiller /usr/local/bin
+  PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
+  echo "Downloading this helm: https://storage.googleapis.com/kubernetes-helm/helm-v${TRAVIS_HELM_VERISON}-${PLATFORM}-amd.tar.gz"
+  curl -L "https://storage.googleapis.com/kubernetes-helm/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz" | tar zxf -
+  sudo cp ${PLATFORM}-amd64/helm /usr/local/bin
+  sudo cp ${PLATFORM}-amd64/tiller /usr/local/bin
   sudo chmod +x /usr/local/bin/{helm,tiller}
 popd
 

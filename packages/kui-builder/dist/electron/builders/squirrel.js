@@ -29,9 +29,9 @@ electronInstaller.createWindowsInstaller({
   appDirectory,
   outputDirectory,
   setupIcon,
-  name: 'fsh',
+  name: 'kui',
   setupExe: `${PRODUCT_NAME}.exe`,
-  exe: 'fsh'
+  exe: 'kui'
 })
   .then(() => {
     console.log('Windows squirrel build succeeded')
