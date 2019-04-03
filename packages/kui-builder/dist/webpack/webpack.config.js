@@ -164,6 +164,7 @@ module.exports = {
       { test: /jquery\.map/, use: 'ignore-loader' },
       { test: /sizzle\.min\.map/, use: 'ignore-loader' },
       { test: /\/modules\/queue-view\//, use: 'ignore-loader' },
+      { test: /\/node_modules\/proxy-agent\//, use: 'ignore-loader' },
       { test: /\/node_modules\/fsevents\//, use: 'ignore-loader' },
       { test: /\/node_modules\/nan\//, use: 'ignore-loader' },
       { test: /translation-demo\/composition.js$/, use: 'ignore-loader' },
