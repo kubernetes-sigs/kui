@@ -23,15 +23,15 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
-    "archiver": "^3.0.0",
-    "command-exists": "^1.2.8",
-    "debug": "^4.1.1",
+    "archiver": "3.0.0",
+    "command-exists": "1.2.8",
+    "debug": "4.1.1",
     "expand-home-dir": "0.0.3",
-    "fs-extra": "^7.0.1",
-    "js-yaml": "^3.13.0",
-    "needle": "^2.2.4",
-    "parse-duration": "^0.1.1",
-    "semver": "^5.6.0",
+    "fs-extra": "7.0.1",
+    "js-yaml": "3.13.0",
+    "needle": "2.2.4",
+    "parse-duration": "0.1.1",
+    "semver": "5.6.0",
     "tmp": "0.0.33"
   },
   "publishConfig": {

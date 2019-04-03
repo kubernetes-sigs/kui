@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "ibm-cos-sdk": "^1.2.3",
-    "needle": "^2.2.4"
+    "ibm-cos-sdk": "1.2.3",
+    "needle": "2.2.4"
   }
 }

@@ -139,6 +139,7 @@ module.exports = {
       // typescript exclusion rules
       { test: /\/src\/*\.ts/, use: 'ignore-loader' },
       { test: /\/node_modules\/typescript\//, use: 'ignore-loader' },
+      { test: /\/node_modules\/proxy-agent\//, use: 'ignore-loader' },
       { test: /\/node_modules\/@babel\//, use: 'ignore-loader' },
       { test: /\/node_modules\/@types\//, use: 'ignore-loader' },
       { test: /fetch-ui/, use: 'ignore-loader' },

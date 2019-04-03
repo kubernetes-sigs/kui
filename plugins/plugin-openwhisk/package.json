@@ -26,16 +26,16 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
-    "adm-zip": "^0.4.13",
-    "archiver": "^3.0.0",
-    "debug": "^4.1.1",
+    "adm-zip": "0.4.13",
+    "archiver": "3.0.0",
+    "debug": "4.1.1",
     "expand-home-dir": "0.0.3",
-    "htmlparser2": "^3.10.1",
-    "needle": "^2.2.4",
-    "openwhisk": "^3.11.0",
-    "parse-duration": "^0.1.1",
-    "pretty-ms": "^4.0.0",
-    "promise-retry": "^1.1.1",
+    "htmlparser2": "3.10.1",
+    "needle": "2.2.4",
+    "openwhisk": "3.18.0",
+    "parse-duration": "0.1.1",
+    "pretty-ms": "4.0.0",
+    "promise-retry": "1.1.1",
     "tmp": "0.0.33"
   },
   "publishConfig": {
