@@ -19,7 +19,6 @@ import open from './lib/cmds/open'
 import bash from './lib/cmds/bash-like'
 import gitDiff from './lib/cmds/git-diff'
 import gitStatus from './lib/cmds/git-status'
-import gitCommit from './lib/cmds/git-commit'
 import ptyServer from './pty/server'
 
 /**
@@ -33,7 +32,6 @@ export default async (commandTree, prequire, options) => {
     bash(commandTree, prequire),
     ptyServer(commandTree, prequire),
     gitDiff(commandTree, prequire),
-    gitStatus(commandTree, prequire),
-    gitCommit(commandTree, prequire)
+    gitStatus(commandTree, prequire)
   ])
 }
