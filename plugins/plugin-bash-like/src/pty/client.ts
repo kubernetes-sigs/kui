@@ -78,7 +78,9 @@ class Resizer {
     this.resizeNow = () => {
       return this.scheduleResize()
     }
-    window.addEventListener('resize', this.resizeNow)
+
+    window.addEventListener('resize', this.resizeNow) // window resize
+    eventBus.on('/sidecar/toggle', this.resizeNow) // sidecar resize
   }
 
   destroy () {
@@ -136,7 +138,7 @@ class Resizer {
     }
   }
 
-  private resize (): void {
+  private resize () {
     const altBuffer = this.inAltBufferMode()
 
     const selector = altBuffer ? 'tab.visible .repl' : 'tab.visible .repl-input input'
@@ -148,6 +150,8 @@ class Resizer {
 
     this.terminal.resize(cols, rows)
     this.currentAsync = false
+
+    setTimeout(() => this.hideTrailingEmptyLines(), 100)
 
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
@@ -273,9 +277,10 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
     terminal.focus()
 
     // theming
-    injectTheme(terminal) // inject once on startup
-    eventBus.on('/theme/change', () => injectTheme(terminal)) // and re-inject when the theme changes
-    eventBus.on('/zoom', () => injectTheme(terminal)) // respond to font zooming
+    const inject = () => injectTheme(terminal)
+    inject() // inject once on startup
+    eventBus.on('/theme/change', inject) // and re-inject when the theme changes
+    eventBus.on('/zoom', inject) // respond to font zooming
 
     const cmd = argv[0]
     const args = argv.slice(1).filter(x => x)
@@ -344,7 +349,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
           }
 
           // true: purge trailing empty lines, now that the subprocess has exited
-          resizer.hideTrailingEmptyLines(true)
+          resizer.hideTrailingEmptyLines(false)
         }, 100)
 
         resizer.destroy()

@@ -317,7 +317,8 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
   const modes = custom.modes
   if (!options || !options.leaveBottomStripeAlone) {
     addModeButtons(modes, custom, options)
-    sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} visible custom-content`)
+    sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
+    setVisibleClass(sidecar)
   } else {
     sidecar.classList.add('custom-content')
   }
@@ -704,7 +705,25 @@ export const hide = (clearSelectionToo = false) => {
     delete sidecar.entity
   }
 
+  setTimeout(() => eventBus.emit('/sidecar/toggle'), 300)
   return true
+}
+
+const setVisibleClass = (sidecar: Element) => {
+  sidecar.classList.add('visible')
+}
+
+const setVisible = (sidecar: Element) => {
+  setVisibleClass(sidecar)
+  element('tab.visible').classList.remove('sidecar-is-minimized')
+  sidecar.classList.remove('minimized')
+  document.body.classList.add('sidecar-visible')
+  setTimeout(() => eventBus.emit('/sidecar/toggle'), 600)
+
+  const replView = document.querySelector('tab.visible .repl')
+  replView.classList.add('sidecar-visible')
+
+  cli.scrollIntoView()
 }
 
 export const show = (block?, nextBlock?) => {
@@ -712,15 +731,7 @@ export const show = (block?, nextBlock?) => {
 
   const sidecar = getSidecar()
   if (currentSelection() || sidecar.className.indexOf('custom-content') >= 0) {
-    element('tab.visible').classList.remove('sidecar-is-minimized')
-    sidecar.classList.remove('minimized')
-    sidecar.classList.add('visible')
-    document.body.classList.add('sidecar-visible')
-
-    cli.scrollIntoView()
-    const replView = document.querySelector('tab.visible .repl')
-    replView.classList.add('sidecar-visible')
-
+    setVisible(sidecar)
     return true
   } else if (block && nextBlock) {
     cli.oops(block, nextBlock)({ error: 'You have no entity to show' })
@@ -802,7 +813,8 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
 
   // remember the selection model
   if (!options || options.echo !== false) sidecar.entity = entity
-  sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} visible entity-is-${entity.prettyType} entity-is-${entity.type}`)
+  sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} entity-is-${entity.prettyType} entity-is-${entity.type}`)
+  setVisibleClass(sidecar)
 
   const replView = document.querySelector('tab.visible .repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
