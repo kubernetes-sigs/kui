@@ -135,7 +135,7 @@ function prereq {
 }
 
 function assembleHTMLPieces {
-        export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "package.json")).dependencies.electron).replace(/^[^~]/, ""))')
+        export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "package.json")).dependencies.electron).replace(/^[~^]/, ""))')
 
     # product name
     export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"

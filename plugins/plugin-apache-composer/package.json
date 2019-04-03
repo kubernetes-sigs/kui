@@ -25,10 +25,10 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
-    "app-module-path": "^2.2.0",
-    "debug": "^4.1.1",
+    "app-module-path": "2.2.0",
+    "debug": "4.1.1",
     "expand-home-dir": "0.0.3",
-    "openwhisk-composer": "^0.10.0"
+    "openwhisk-composer": "0.10.0"
   },
   "publishConfig": {
     "access": "public"
