@@ -60,8 +60,22 @@ echo "Version after publish: $VERSION"
 echo "Storing builds in this bucket: $COS_BUCKET"
 
 # 2. build the platform binary bundles
-(cd "$TOPDIR"/clients/default && npm run build:electron -- ${PLATFORM-all})
-(cd "$TOPDIR"/clients/default && npm run build:headless)
+if [ -z $PLATFORM ]; then
+    if [[ `uname` == Linux ]]; then
+        echo "Building Linux, Windows and Headless distributions from Linux host"
+        (cd "$TOPDIR"/clients/default && npm run build:electron linux)
+        (cd "$TOPDIR"/clients/default && npm run build:electron windows)
+        (cd "$TOPDIR"/clients/default && npm run build:headless)
+    elif [[ `uname` == Darwin ]]; then
+        echo "Building macOS distributions from macOS host"
+        (cd "$TOPDIR"/clients/default && npm run build:electron darwin)
+    fi
+else
+    echo "Building $PLATFORM distributions"
+    (cd "$TOPDIR"/clients/default && npm run build:electron -- $PLATFORM)
+    (cd "$TOPDIR"/clients/default && npm run build:headless)
+fi
+
 
 echo "confirming what we built for headless:"
 ls "$DISTDIR/headless"
@@ -78,13 +92,18 @@ if [ -z "$NO_PUSH" ]; then
     # unfriendly environs such as github markdown
     EXIST_OK=true node ./push-file.js web-${COS_BUCKET} "$SCRIPTDIR"/../../local-proxy.html
 
-    echo "win32: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-win32-x64.zip"
-    echo "macOS: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui.dmg"
-    echo "macOS-zip: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-darwin-x64.zip"
-    echo "linux-zip: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-linux-x64.zip"
-    echo "linux-deb: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-linux-x64.deb"
-    echo "headless: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-headless.zip"
-    echo "headless: https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}/Kui-headless.tar.bz2"
+    KUI_S3=https://s3-api.us-geo.objectstorage.softlayer.net/kui-${COS_BUCKET}
+
+    if [[ `uname` == Linux ]]; then
+      echo "win32: ${KUI_S3}/Kui-win32-x64.zip"
+      echo "linux-zip: ${KUI_S3}/Kui-linux-x64.zip"
+      echo "linux-deb: ${KUI_S3}/Kui-linux-x64.deb"
+      echo "headless: ${KUI_S3}/Kui-headless.zip"
+      echo "headless: ${KUI_S3}/Kui-headless.tar.bz2"
+    elif [[ `uname` == Darwin ]]; then
+      echo "macOS: ${KUI_S3}/Kui.dmg"
+      echo "macOS-tar: ${KUI_S3}/Kui-darwin-x64.tar.bz2"
+    fi
 fi
 
 # revert version
