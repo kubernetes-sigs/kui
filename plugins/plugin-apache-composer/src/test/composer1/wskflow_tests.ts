@@ -204,7 +204,7 @@ describe('drilldown to action from wskflow', function (this: common.ISuite) {
       return this.app.client.getText(ui.selectors.SIDECAR_TITLE)
         .then(text => text === actionName)
     }))
-    .then(() => this.app.client.waitForExist('#qtip', 2000, false)) // qtip better not be visible
+    .then(() => this.app.client.waitForVisible('#qtip', 2000, true)) // qtip better not be visible
     .catch(common.oops(this)))
 })
 

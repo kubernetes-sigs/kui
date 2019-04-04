@@ -30,9 +30,11 @@ enum Status {
 /** after a cli.do (res), wait for a table row with the given status */
 const waitForStatus = async function (this: common.ISuite, status: Status, res) {
   const selector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME(nsName) })(res)
-  await this.app.client.waitForExist(`${selector} span:not(.repeating-pulse) badge.${status}`)
+  const expectStatus = `${selector} span:not(.repeating-pulse) badge.${status}`
 
-  return selector
+  await this.app.client.waitForExist(expectStatus)
+
+  return expectStatus
 }
 
 /** create namespace, and expect status eventually to be green */
@@ -102,7 +104,7 @@ const watchNS = function (this: common.ISuite, kubectl: string) {
 
       // the "online" badge from the watch had better *NOT* exist after the delete
       // (i.e. we had better actually be watching!)
-      await this.app.client.waitForExist(selector2, 20000, false)
+      await this.app.client.waitForExist(selector2, 20000, true)
 
       // and, conversely, that watch had better eventually show Offline
       await this.app.client.waitForExist(selector2ButOffline)
@@ -115,7 +117,7 @@ const watchNS = function (this: common.ISuite, kubectl: string) {
       await this.app.client.waitForExist(selector2)
 
       // and, conversely, that watch had better NOT show Offline
-      await this.app.client.waitForExist(selector2ButOffline, 20000, false)
+      await this.app.client.waitForExist(selector2ButOffline, 20000, true)
     } catch (err) {
       common.oops(this)(err)
     }

@@ -43,7 +43,7 @@ localDescribe('Text search', function (this: ISuite) {
     .catch(common.oops(this)))
 
   it('should close the search bar if pressing esc in search input', () => this.app.client.setValue('#search-input', keys.ESCAPE)
-    .then(() => this.app.client.waitForVisible('#search-bar', 2000, false))
+    .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
     .catch(common.oops(this)))
 
   // re-open, so that we can test the close button
@@ -54,7 +54,7 @@ localDescribe('Text search', function (this: ISuite) {
 
   // 2 matches test
   it('should close the search bar if clicking the close button', () => this.app.client.click('#search-close-button')
-    .then(() => this.app.client.waitForVisible('#search-bar', 2000, false))
+    .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
     .catch(common.oops(this)))
   it('should add grumble to the repl', () => cli.do('grumble', this.app)
     .then(cli.expectError(404))
@@ -79,7 +79,7 @@ localDescribe('Text search', function (this: ISuite) {
 
   // 1 match test
   it('should close the search bar if clicking the close button', () => this.app.client.click('#search-close-button')
-    .then(() => this.app.client.waitForVisible('#search-bar', 2000, false))
+    .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
     .catch(common.oops(this)))
   it('should add bojangles to the repl', () => cli.do('bojangles', this.app)
     .then(cli.expectError(404))
@@ -97,7 +97,7 @@ localDescribe('Text search', function (this: ISuite) {
 
   // no matches test
   it('should close the search bar if clicking the close button', () => this.app.client.click('#search-close-button')
-    .then(() => this.app.client.waitForVisible('#search-bar', 2000, false))
+    .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
     .catch(common.oops(this)))
   // re-open, so that we can test entering text and hitting enter
   it('should find nothing when searching for waldo', () => this.app.client.keys([ui.ctrlOrMeta, 'f'])
@@ -113,7 +113,7 @@ localDescribe('Text search', function (this: ISuite) {
 
   // paste test
   it('should close the search bar if clicking the close button', () => this.app.client.click('#search-close-button')
-    .then(() => this.app.client.waitForVisible('#search-bar', 2000, false))
+    .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
     .catch(common.oops(this)))
   it('should paste into the text search box', () => this.app.client.keys([ui.ctrlOrMeta, 'f'])
     .then(() => this.app.client.waitForVisible('#search-bar'))
