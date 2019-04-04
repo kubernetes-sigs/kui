@@ -24,10 +24,15 @@ import * as WebSocket from 'ws'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { disableInputQueueing } from '@kui-shell/core/webapp/cli'
+import { disableInputQueueing, scrollIntoView } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
+
+const enterApplicationModePattern = /\x1b\[\?1h/
+const exitApplicationModePattern = /\x1b\[\?1l/
+const enterAltBufferPattern = /\x1b\[\??(47|1047)h/
+const exitAltBufferPattern = /\x1b\[\??(47|1047)l/
 
 /**
  * Strip off ANSI and other control characters from the given string
@@ -46,6 +51,17 @@ const stripControlCharacters = (str: string): string => {
 }
 
 /**
+ * Strip off ANSI control characters and color codes
+ *
+ */
+const stripClean = (str: string): string => {
+  return str.replace(/\x1b\[[0-9;]*m/g, '') // Remove color sequences only
+    .replace(/\x1b\[[0-9;]*[a-zA-Z]~?/g, '') // Remove all escape sequences
+    .replace(/\x1b\[[0-9;]*[mGKH]/g, '') // Remove color and move sequences
+    .replace(/\x1b\[[0-9;]*[mGKF]/g, '')
+}
+
+/**
  * Take a hex color string and return the corresponding RGBA with the given alpha
  *
  */
@@ -61,13 +77,20 @@ const alpha = (hex, alpha) => {
   }
 }
 
-const defaultNRows = 1000
 class Resizer {
-  currentAsync: any
+  private currentAsync: any
 
-  readonly ws: WebSocket
-  readonly terminal: xterm.Terminal
-  readonly resizeNow: any
+  /** are we in alt buffer mode? */
+  private alt = false
+
+  /** are we in application mode? e.g. less */
+  private app = false
+
+  private quiescent: any
+
+  private readonly ws: WebSocket
+  private readonly terminal: xterm.Terminal
+  private readonly resizeNow: any
 
   constructor (terminal: xterm.Terminal, ws: WebSocket) {
     this.ws = ws
@@ -97,7 +120,14 @@ class Resizer {
    * @param purge: boolean remove such rows entirely from the DOM
    *
    */
-  hideTrailingEmptyLines (purge = false) {
+  hideTrailingEmptyLines (purge = false, retry = true) {
+    if (this.inApplicationMode() && !purge) {
+      debug('not hiding trailing lines, as we are in application mode')
+      return
+    } else {
+      debug('yes, we are hiding trailing lines')
+    }
+
     const rows = this.terminal.element.querySelectorAll('.xterm-rows > div')
 
     let firstNonEmptyRowIdx = -1
@@ -107,6 +137,20 @@ class Resizer {
         firstNonEmptyRowIdx = idx
         break
       }
+    }
+
+    if (firstNonEmptyRowIdx === -1 && retry) {
+      const self = this
+      if (self.quiescent) clearTimeout(self.quiescent)
+
+      const ping = () => {
+        self.hideTrailingEmptyLines(purge, false)
+        self.quiescent = undefined
+      }
+      self.quiescent = setTimeout(ping, 200)
+    } else if (this.quiescent) {
+      clearTimeout(this.quiescent)
+      this.quiescent = undefined
     }
 
     const idx = firstNonEmptyRowIdx
@@ -138,50 +182,95 @@ class Resizer {
     }
   }
 
+  private paddingHorizontal (elt: Element) {
+    const style = window.getComputedStyle(elt)
+    return parseInt(style.getPropertyValue('padding-left') || '0', 10)
+      + parseInt(style.getPropertyValue('padding-right') || '0', 10)
+  }
+
+  private paddingVertical (elt: Element) {
+    const style = window.getComputedStyle(elt)
+    return parseInt(style.getPropertyValue('padding-top') || '0', 10)
+      + parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
+  }
+
   private resize () {
     const altBuffer = this.inAltBufferMode()
 
-    const selector = altBuffer ? 'tab.visible .repl' : 'tab.visible .repl-input input'
-    const rect = document.querySelector(selector).getBoundingClientRect()
+    const selectorForWidth = altBuffer ? 'tab.visible .repl' : 'tab.visible .repl-inner .repl-block .repl-output' // 'tab.visible .repl-inner .repl-input input'
+    const widthElement = document.querySelector(selectorForWidth)
+    const width = widthElement.getBoundingClientRect().width - this.paddingHorizontal(widthElement)
 
-    const cols = ~~(rect.width / this.terminal['_core'].renderer.dimensions.actualCellWidth)
-    const rows = !altBuffer ? defaultNRows : ~~(rect.height / this.terminal['_core'].renderer.dimensions.actualCellHeight)
-    debug('resize', cols, rows)
+    const selectorForHeight = altBuffer ? selectorForWidth : 'tab.visible .repl-inner'
+    const heightElement = selectorForHeight === selectorForWidth ? widthElement : document.querySelector(selectorForHeight)
+    const height = heightElement.getBoundingClientRect().height - this.paddingVertical(heightElement)
+
+    const cols = Math.floor(width / this.terminal['_core'].renderer.dimensions.actualCellWidth)
+    const rows = Math[altBuffer ? 'floor' : 'ceil'](height / this.terminal['_core'].renderer.dimensions.actualCellHeight)
+    debug('resize', cols, rows, width, height)
 
     this.terminal.resize(cols, rows)
     this.currentAsync = false
 
-    setTimeout(() => this.hideTrailingEmptyLines(), 100)
+    // setTimeout(() => this.hideTrailingEmptyLines(), 100)
+    this.hideTrailingEmptyLines()
 
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
     }
   }
 
-  inAltBufferMode (): boolean {
-    return document.querySelector('tab.visible').classList.contains('xterm-alt-buffer-mode')
+  inApplicationMode (): boolean {
+    return this.app
   }
 
-  setModeHandler (params: number[], collect: string): boolean {
+  inAltBufferMode (): boolean {
+    return this.alt
+  }
+
+  /** ANSI control characters of the "h" class, i.e. setMode control */
+  setMode (params: number[], collect: string): boolean {
     if (collect === '?' && params.find(_ => _ === 47 || _ === 1047)) {
       // switching to alt screen buffer
-      debug('switching to alt buffer mode', params, collect)
-      document.querySelector('tab.visible').classList.add('xterm-alt-buffer-mode')
+      this.enterAltBufferMode()
       this.scheduleResize()
       return true
     }
   }
 
-  resetModeHandler (params: number[], collect: string): boolean {
+  /** ANSI control characters of the "l" class, i.e. resetMode control */
+  resetMode (params: number[], collect: string): boolean {
     if (collect === '?' && params.find(_ => _ === 47 || _ === 1047)) {
       // switching to normal screen buffer
-      debug('switching to normal buffer mode', params, collect)
-      document.querySelector('tab.visible').classList.remove('xterm-alt-buffer-mode')
+      this.exitAltBufferMode()
       this.terminal.clear()
       this.hideTrailingEmptyLines()
       this.scheduleResize()
       return true
     }
+  }
+
+  enterApplicationMode () {
+    debug('switching to application mode')
+    this.app = true
+  }
+
+  exitApplicationMode () {
+    debug('switching out of application mode')
+    this.app = false
+    this.hideTrailingEmptyLines()
+  }
+
+  enterAltBufferMode () {
+    debug('switching to alt buffer mode')
+    this.alt = true
+    document.querySelector('tab.visible').classList.add('xterm-alt-buffer-mode')
+  }
+
+  exitAltBufferMode () {
+    debug('switching to normal buffer mode')
+    this.alt = false
+    document.querySelector('tab.visible').classList.remove('xterm-alt-buffer-mode')
   }
 }
 
@@ -244,16 +333,6 @@ const injectTheme = (terminal: xterm.Terminal): void => {
 export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>, execOptions) => new Promise((resolve, reject) => {
   disableInputQueueing()
 
-  const cmdLineOrig = cmdLine
-  if (cmdLine.match(/^\s*git\s+/)) {
-    // force git to output ANSI color codes, even though it is feeding
-    // us via a pipe
-    cmdLine = cmdLine.replace(/^(\s*git)(\s+)/, '$1 -c color.ui=always$2')
-    debug('altered cmdline for git', cmdLine)
-  } else if (cmdLine.match(/^\s*tree(\s+.*)?$/) && process.platform !== 'win32') {
-    cmdLine = cmdLine.replace(/^(\s*tree)(\s*)/, `$1 -C -F -I '*~' --dirsfirst $2`)
-  }
-
   if (inBrowser()) {
     injectCSS({ css: require('xterm/dist/xterm.css'), key: 'xtermjs' })
     injectCSS({ css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'), key: 'kui-xtermjs' })
@@ -272,7 +351,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
     // xtermContainer.classList.add('zoomable')
     parent.appendChild(xtermContainer)
 
-    const terminal = new xterm.Terminal({ rendererType: 'dom', rows: defaultNRows })
+    const terminal = new xterm.Terminal({ rendererType: 'dom' })
     terminal.open(xtermContainer)
     terminal.focus()
 
@@ -289,6 +368,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
     const ws = new WebSocket(url)
 
     const resizer = new Resizer(terminal, ws)
+    // resizer.hideTrailingEmptyLines()
 
     // nothing to do here for now:
     // ws.on('open', () => {})
@@ -303,20 +383,23 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
       ws.send(JSON.stringify({ type: 'data', data: key }))
     })
 
-    let htel
     terminal.on('linefeed', () => {
-      if (!resizer.inAltBufferMode()) {
-        if (htel) clearTimeout(htel)
-        htel = setTimeout(resizer.hideTrailingEmptyLines.bind(resizer), 50)
-        terminal.scrollToBottom()
+      try {
+        if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
+          resizer.hideTrailingEmptyLines()
+          terminal.scrollToBottom()
+          scrollIntoView({ element: terminal.element, when: 1 })
+        }
+      } catch (err) {
+        console.error(err)
       }
     })
 
     // we need to identify when the application wants us to switch
     // into and out of "alt buffer" mode; e.g. typing "vi" then :wq
     // from vi would enter and exit alt buffer mode, respectively.
-    terminal.addCsiHandler('h', resizer.setModeHandler.bind(resizer))
-    terminal.addCsiHandler('l', resizer.resetModeHandler.bind(resizer))
+    terminal.addCsiHandler('h', resizer.setMode.bind(resizer))
+    terminal.addCsiHandler('l', resizer.resetMode.bind(resizer))
 
     terminal.element.classList.add('fullscreen')
 
@@ -327,7 +410,24 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
       if (msg.type === 'data') {
         // plain old data flowing out of the PTY; send it on to the xterm UI
-        raw += stripControlCharacters(msg.data)
+
+        if (enterApplicationModePattern.test(msg.data)) {
+          // e.g. less start
+          resizer.enterApplicationMode()
+        } else if (exitApplicationModePattern.test(msg.data)) {
+          // e.g. less exit
+          resizer.exitApplicationMode()
+        } if (enterAltBufferPattern.test(msg.data)) {
+          // we need to fast-track this; xterm.js does not invoke the
+          // setMode/resetMode handlers till too late; we might've
+          // called raw += ... even though we are in alt buffer mode
+          resizer.enterAltBufferMode()
+        } else if (exitAltBufferPattern.test(msg.data)) {
+          // ... same here
+          resizer.exitAltBufferMode()
+        } else if (!resizer.inAltBufferMode()) {
+          raw += stripClean(msg.data)
+        }
 
         const maybeUsage = !resizer.inAltBufferMode() && (pendingUsage || formatUsage(cmdLine, msg.data, { drilldownWithPip: true }))
         if (maybeUsage) {
@@ -342,14 +442,8 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
         terminal.blur()
 
         setTimeout(() => {
-          const rowWithCursor = xtermContainer.querySelector('.xterm-cursor').parentNode as Element
-          if (rowWithCursor.children.length === 1) {
-            // hide the row containing the cursor if it ony contains the cursor
-            rowWithCursor.classList.add('hide')
-          }
-
           // true: purge trailing empty lines, now that the subprocess has exited
-          resizer.hideTrailingEmptyLines(false)
+          resizer.hideTrailingEmptyLines(true)
         }, 100)
 
         resizer.destroy()
@@ -359,12 +453,21 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
           execOptions.stdout(formatUsage(cmdLine, raw, { drilldownWithPip: true }))
         }
 
-        if (msg.exitCode !== 0) {
-          const error = new Error(raw)
+        // vi, then :wq, then :q, you will get an exit code of 1, but
+        // with no output (raw===''); note how we treat this as "ok",
+        // i.e. no error thrown
+        if (msg.exitCode !== 0 && raw.length > 0) {
+          const error = new Error('')
           if (/File exists/i.test(raw)) error['code'] = 409 // re: i18n, this is for tests
-          else if (msg.exitCode !== 127 && /not found/i.test(raw)) error['code'] = 404 // re: i18n, this is for tests
+          else if (msg.exitCode !== 127 && (/no such/i.test(raw) || /not found/i.test(raw))) error['code'] = 404 // re: i18n, this is for tests
           else error['code'] = msg.exitCode
-          xtermContainer.classList.add('hide')
+
+          if (msg.exitCode === 127) {
+            xtermContainer.classList.add('hide')
+          } else {
+            error['hide'] = true
+          }
+
           reject(error)
         } else {
           resolve(true)
@@ -517,7 +620,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
        if (maybeUsage) {
        // const message = await maybeUsage.message
        // debug('maybeUsage', message)
-       // const commandWithoutOptions = cmdLineOrig.replace(/\s--?\w+/g, '')
+       // const commandWithoutOptions = cmdLine.replace(/\s--?\w+/g, '')
        // return resolve(asSidecarEntity(commandWithoutOptions, message, {}, undefined, 'usage'))
        return resolve(maybeUsage)
        }
@@ -531,7 +634,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
        resolve(json)
        } if (reallyLong(rawOut)) {
        // a lot of output? render in sidecar
-       resolve(asSidecarEntity(cmdLineOrig, parentNode, {
+       resolve(asSidecarEntity(cmdLine, parentNode, {
        sidecarHeader: !document.body.classList.contains('subwindow')
        }))
        } else {
@@ -549,7 +652,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
        maybeUsage['code'] = exitCode
        reject(maybeUsage)
        } else {
-       resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, rawErr, execOptions, parentNode))
+       resolve(handleNonZeroExitCode(cmdLine, exitCode, rawOut, rawErr, execOptions, parentNode))
        }
        } catch (err) {
        reject(err)

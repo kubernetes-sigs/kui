@@ -426,8 +426,15 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.processing .repl-output, .sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.valid-response .repl-output {
     align-items: stretch;
 }
+.repl-result-spinner {
+    opacity: 0;
+    height: 0;
+    width: 0;
+}
 .repl-block.processing .repl-result-spinner-inner {
-    animation: spin 750ms linear infinite;
+    /* animation: spin 750ms linear infinite; */
+    height: 0;
+    width: 0;
     display: inline-block;
 }
 .repl-block.processing .repl-result-spinner-inner:after {
@@ -2911,9 +2918,6 @@ body {
     }
 }
 
-.repl-result-spinner {
-    opacity: 0;
-}
 .repl-block.processing .repl-prompt-right-element-icon {
     animation: 3s flip ease-in-out infinite;
 }

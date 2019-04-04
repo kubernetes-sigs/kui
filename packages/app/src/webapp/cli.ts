@@ -43,24 +43,39 @@ import { getSidecar, currentSelection, presentAs, showEntity, showCustom } from 
  * @param center this is passed directly to the underlying API https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoViewIfNeeded
  *
  */
-export const scrollIntoView = ({ when = 305, which = '.repl-active', element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement, center = true } = {}) => {
+interface ScrollOptions {
+  when?: number
+  which?: string
+  element?: HTMLElement,
+  how?: string
+  center?: boolean | ScrollIntoViewOptions
+}
+let currentScrollAsync
+export const scrollIntoView = (opts?: ScrollOptions) => {
+  const { when = 305, which = '.repl-active .repl-input', element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement, center = undefined, how = 'scrollIntoViewIfNeeded' } = opts || {}
+
   const scroll = () => {
     try {
       // false here means "bottom of the element will be aligned to the bottom of the visible area of the scrollable ancestor"
       //    (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView)
       // document.querySelector('tab.visible .repl .repl-active').scrollIntoView(true)
-      element['scrollIntoViewIfNeeded'](center)
+      element[how](center || { block: 'end', inline: 'end' })
     } catch (e) {
       if (element) {
-        element.scrollIntoView(center)
+        element.scrollIntoView(center || { block: 'end', inline: 'end' })
       }
     }
+  }
+
+  if (currentScrollAsync) {
+    clearTimeout(currentScrollAsync)
+    currentScrollAsync = undefined
   }
 
   if (when === 0) {
     scroll()
   } else {
-    setTimeout(scroll, when)
+    currentScrollAsync = setTimeout(scroll, when)
   }
 }
 
@@ -272,7 +287,7 @@ export const streamTo = (block: Element) => {
       pre.appendChild(previousLine)
     }
 
-    scrollIntoView({ when: 0, element: spinner })
+    // scrollIntoView({ when: 0, element: spinner })
   }
 }
 
@@ -765,7 +780,7 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
   // if you want to have the current directory displayed with the prompt
   // nextBlock.querySelector('.repl-context').innerText = process.cwd() === process.env.HOME ? '~' : basename(process.cwd());
 
-  scrollIntoView({ when: 0 })
+  scrollIntoView({ when: 100 })
 
   eventBus.emit('/core/cli/install-block')
 
@@ -906,7 +921,9 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   const oopsDom = document.createElement('div')
   oopsDom.className = 'oops'
 
-  if (err.message && err.message.nodeName) {
+  if (err['hide']) {
+    // we were instructed not to show any message
+  } else if (err.message && err.message.nodeName) {
     // err.message is a DOM
     oopsDom.appendChild(err.message)
   } else if (err.html) {

@@ -2,13 +2,10 @@
     font-family: var(--font-monospace) !important;
 }
 
-.xterm-container.xterm-terminated .xterm-cursor {
+tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-cursor {
     display: none !important;
 }
 
-.xterm-container .xterm-screen, .xterm-container .xterm-rows > div {
-    width: 100% !important;
-}
 .xterm-container .xterm-screen {
     height: auto !important;
 }
