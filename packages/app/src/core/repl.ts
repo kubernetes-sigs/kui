@@ -352,9 +352,6 @@ class InProcessExecutor implements IExecutor {
     try {
       if (block && !nested && echo) {
         cli.setStatus(block, 'processing')
-        if (!isHeadless()) {
-          cli.scrollIntoView({ when: 0, element: element('.repl-result-spinner', block) })
-        }
         prompt.readOnly = true
       }
 

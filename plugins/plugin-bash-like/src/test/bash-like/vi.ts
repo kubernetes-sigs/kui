@@ -20,26 +20,28 @@ const { cli, keys, selectors, sidecar } = ui
 const { localDescribe } = common
 
 import * as assert from 'assert'
-import { readFileSync } from 'fs'
+import { readFileSync, unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
+import { promisify } from 'util'
 
 /** sleep for the given number of milliseconds */
 const sleep = (millis: number) => new Promise(resolve => setTimeout(resolve, millis))
 
-localDescribe('xterm vi', function (this: common.ISuite) {
+/** helpful selectors */
+const rows = `${selectors.PROMPT_BLOCK_N(0)} .xterm-container .xterm-rows`
+const lastRow = `${rows} > div:last-child`
+
+localDescribe('xterm vi 1', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   const typeThisText = 'hello there'
 
   it('use vi to create a new file', async () => {
-    try {
-      const file = tmpFile()
-      const res = cli.do(`vi ${file.name}`, this.app)
+    const file = tmpFile()
 
-      // selectors
-      const rows = `${selectors.PROMPT_BLOCK_N(0)} .xterm-container .xterm-rows`
-      const lastRow = `${rows} > div:last-child`
+    try {
+      const res = cli.do(`vi ${file.name}`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows)
@@ -69,6 +71,42 @@ localDescribe('xterm vi', function (this: common.ISuite) {
 
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), 'hello there')
+    } catch (err) {
+      common.oops(this)(err)
+    } finally {
+      return promisify(unlink)(file.name)
+    }
+  })
+})
+
+localDescribe('xterm vi 2', function (this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
+  it('open vi :wq then :q, and expect no error', async () => {
+    try {
+      const res = cli.do(`vi`, this.app)
+
+      // wait for vi to come up
+      await this.app.client.waitForExist(rows)
+
+      // hmm.. for some reason we can't type keys right away
+      await sleep(1000)
+
+      // :wq
+      await this.app.client.keys(':wq')
+      await this.app.client.keys(keys.ENTER)
+      /* await this.app.client.waitUntil(async () => {
+        const txt = await ui.getTextContent(this.app, lastRow)
+        console.error('txt %s', txt)
+        return /No file name/i.test(txt)
+      }) */
+
+      // :q
+      await this.app.client.keys(':q')
+      await this.app.client.keys(keys.ENTER)
+
+      // expect a clean exit, i.e. no error output on the console
+      await res.then(cli.expectBlank)
     } catch (err) {
       common.oops(this)(err)
     }

@@ -362,7 +362,7 @@ const withEvents = (evaluator, leaf, partialMatches?) => {
     error: (command, err) => {
       if (err.code === 127) {
         // command not found
-        const suggestions = suggestPartialMatches(partialMatches, true) // true: don't throw an exception
+        const suggestions = suggestPartialMatches(partialMatches, true, err['hide']) // true: don't throw an exception
         debug('got suggestions after unresolvable command not found', suggestions)
         return suggestions
       }
@@ -604,7 +604,7 @@ const commandNotFound = async (argv, partialMatches?, execOptions?) => {
   return suggestPartialMatches(partialMatches)
 }
 
-export const suggestPartialMatches = (partialMatches?, noThrow = false) => {
+export const suggestPartialMatches = (partialMatches?, noThrow = false, hide = false) => {
   debug('suggestPartialMatches', partialMatches)
 
   // filter out any partial matches without usage info
@@ -618,6 +618,8 @@ export const suggestPartialMatches = (partialMatches?, noThrow = false) => {
   if (anyPartials) {
     error['partialMatches'] = availablePartials.map(_ => ({ command: _.route.split('/').slice(1).join(' '),
       usage: _.options && _.options.usage }))
+  } else {
+    error['hide'] = hide
   }
 
   if (noThrow) {

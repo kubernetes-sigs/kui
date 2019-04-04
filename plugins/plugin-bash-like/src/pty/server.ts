@@ -162,7 +162,11 @@ export const main = async (N: number, cmdline: string, cwd: string) => {
           return shell.write(msg.data)
 
         case 'resize':
-          return shell.resize(msg.cols, msg.rows)
+          try {
+            return shell.resize(msg.cols, msg.rows)
+          } catch (err) {
+            console.error('could not resize pty', err)
+          }
       }
     })
   })
