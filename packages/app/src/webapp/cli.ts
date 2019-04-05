@@ -177,6 +177,8 @@ export const setStatus = (block: HTMLElement, status: string) => {
 
     if (status === 'processing') {
       startInputQueueing()
+    } else if (status === 'repl-active') {
+      getPrompt(block).value = ''
     }
 
     // add timestamp to prompt

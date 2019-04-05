@@ -26,7 +26,7 @@ import { isVisible as isSidecarVisible,
          clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element } from '@kui-shell/core/webapp/util/dom'
-import { listen, getCurrentPrompt } from '@kui-shell/core/webapp/cli'
+import { listen, getCurrentPrompt, setStatus } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { IEvent, ExecType } from '@kui-shell/core/core/command-tree'
@@ -184,7 +184,11 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   getCurrentTabButtonLabel().innerText = '\u00a0' // nbsp
 
-  await qexec('clear --keep-current-active')
+  const currentlyProcessingBlock = await qexec('clear --keep-current-active')
+  if (currentlyProcessingBlock.nodeName) {
+    debug('new tab cloned from one that is currently processing a command')
+    setStatus(currentlyProcessingBlock, 'repl-active')
+  }
 
   newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
   clearSelection()
@@ -243,12 +247,17 @@ const perTabInit = (doListen = true) => {
  * Same as newTab, but done asynchronously
  *
  */
-const newTabAsync = () => {
-  // we can't proceed until the repl is done installing the next block
-  eventBus.once('/core/cli/install-block', () => newTab())
+const newTabAsync = ({ execOptions }) => {
+  if (execOptions.nested) {
+    newTab()
+    return true
+  } else {
+    // we can't proceed until the repl is done installing the next block
+    eventBus.once('/core/cli/install-block', () => newTab())
 
-  // tell the REPL we're done, so it can get busy installing the next block!
-  return true
+    // tell the REPL we're done, so it can get busy installing the next block!
+    return true
+  }
 }
 
 /**

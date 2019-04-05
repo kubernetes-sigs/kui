@@ -39,12 +39,16 @@ const clear = ({ parsedOptions }) => {
     } else {
       // keep the current active prompt
       debug('preserving the current active prompt')
-      const selector = 'tab.visible .repl-inner .repl-block:not(.repl-active)'
+      const selector = 'tab.visible .repl-inner .repl-block:not(.repl-active):not(.processing)'
 
       const blocks = document.querySelectorAll(selector)
       for (let idx = 0; idx < blocks.length; idx++) {
         blocks[idx].parentNode.removeChild(blocks[idx])
       }
+
+      // return the current processing block, if there is one
+      const processing = 'tab.visible .repl-inner .repl-block.processing'
+      return document.querySelector(processing) || true
     }
   }
 

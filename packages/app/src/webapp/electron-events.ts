@@ -32,6 +32,12 @@ const listenForRemoteEvents = (ipcRenderer) => {
       const repl = require('../core/repl')
       return repl.pexec(command)
     })
+
+    ipcRenderer.on('/repl/qexec', (event, { command }) => {
+      debug('remote qexec', command)
+      const repl = require('../core/repl')
+      return repl.qexec(command)
+    })
   }
 }
 
