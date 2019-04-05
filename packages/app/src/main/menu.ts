@@ -49,7 +49,7 @@ const tellRendererToExecute = async (command: string) => {
     }
   } else {
     // debug('closing kui window')
-    focusedWindow.send('/repl/pexec', { command })
+    focusedWindow.send('/repl/qexec', { command })
   }
 }
 
