@@ -115,54 +115,14 @@ class Resizer {
   }
 
   /**
-   * Ensure that trailing empty lines are not visible
-   *
-   * @param purge: boolean remove such rows entirely from the DOM
+   * Render a row that contains only the cursor as invisible
    *
    */
-  hideTrailingEmptyLines (purge = false, retry = true) {
-    if (this.inApplicationMode() && !purge) {
-      debug('not hiding trailing lines, as we are in application mode')
-      return
-    } else {
-      debug('yes, we are hiding trailing lines')
-    }
-
-    const rows = this.terminal.element.querySelectorAll('.xterm-rows > div')
-
-    let firstNonEmptyRowIdx = -1
-    for (let idx = rows.length - 1; idx >= 0; idx--) {
-      if (rows[idx].children.length > 0 && !this.isEmptyCursorRow(rows[idx])) {
-        // found first non-empty row
-        firstNonEmptyRowIdx = idx
-        break
-      }
-    }
-
-    if (firstNonEmptyRowIdx === -1 && retry) {
-      const self = this
-      if (self.quiescent) clearTimeout(self.quiescent)
-
-      const ping = () => {
-        self.hideTrailingEmptyLines(purge, false)
-        self.quiescent = undefined
-      }
-      self.quiescent = setTimeout(ping, 200)
-    } else if (this.quiescent) {
-      clearTimeout(this.quiescent)
-      this.quiescent = undefined
-    }
-
-    const idx = firstNonEmptyRowIdx
-    for (let jdx = idx; jdx >= 0; jdx--) {
-      rows[jdx].classList.remove('hide')
-    }
-    for (let jdx = idx + 1; jdx < rows.length; jdx++) {
-      if (purge) {
-        rows[jdx].parentNode.removeChild(rows[jdx])
-      } else {
-        rows[jdx].classList.add('hide')
-      }
+  hideCursorOnlyRow () {
+    const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
+    const cursorRow = cursor && (cursor.parentNode as Element)
+    if (cursorRow && cursorRow.children.length === 1) {
+      cursorRow.classList.add('hide')
     }
   }
 
@@ -197,7 +157,7 @@ class Resizer {
   private resize () {
     const altBuffer = this.inAltBufferMode()
 
-    const selectorForWidth = altBuffer ? 'tab.visible .repl' : 'tab.visible .repl-inner .repl-block .repl-output' // 'tab.visible .repl-inner .repl-input input'
+    const selectorForWidth = altBuffer ? 'tab.visible .repl' : 'tab.visible .repl-inner .repl-block .repl-output'
     const widthElement = document.querySelector(selectorForWidth)
     const width = widthElement.getBoundingClientRect().width - this.paddingHorizontal(widthElement)
 
@@ -206,14 +166,11 @@ class Resizer {
     const height = heightElement.getBoundingClientRect().height - this.paddingVertical(heightElement)
 
     const cols = Math.floor(width / this.terminal['_core'].renderer.dimensions.actualCellWidth)
-    const rows = Math[altBuffer ? 'floor' : 'ceil'](height / this.terminal['_core'].renderer.dimensions.actualCellHeight)
+    const rows = Math.floor(height / this.terminal['_core'].renderer.dimensions.actualCellHeight)
     debug('resize', cols, rows, width, height)
 
     this.terminal.resize(cols, rows)
     this.currentAsync = false
-
-    // setTimeout(() => this.hideTrailingEmptyLines(), 100)
-    this.hideTrailingEmptyLines()
 
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
@@ -244,7 +201,6 @@ class Resizer {
       // switching to normal screen buffer
       this.exitAltBufferMode()
       this.terminal.clear()
-      this.hideTrailingEmptyLines()
       this.scheduleResize()
       return true
     }
@@ -253,12 +209,13 @@ class Resizer {
   enterApplicationMode () {
     debug('switching to application mode')
     this.app = true
+    document.querySelector('tab.visible').classList.add('xterm-application-mode')
   }
 
   exitApplicationMode () {
     debug('switching out of application mode')
     this.app = false
-    this.hideTrailingEmptyLines()
+    document.querySelector('tab.visible').classList.remove('xterm-application-mode')
   }
 
   enterAltBufferMode () {
@@ -312,11 +269,12 @@ const injectTheme = (terminal: xterm.Terminal): void => {
 
   debug('itheme for xterm', itheme)
   terminal.setOption('theme', itheme)
-  // terminal.setOption('fontFamily', val('monospace', 'font'))
+  terminal.setOption('fontFamily', val('monospace', 'font'))
 
   try {
     const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
     terminal.setOption('fontSize', parseInt(fontTheme.fontSize.replace(/px$/, ''), 10))
+    // terminal.setOption('lineHeight', )//parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10))
 
     // FIXME. not tied to theme
     terminal.setOption('fontWeight', 400)
@@ -368,7 +326,6 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
     const ws = new WebSocket(url)
 
     const resizer = new Resizer(terminal, ws)
-    // resizer.hideTrailingEmptyLines()
 
     // nothing to do here for now:
     // ws.on('open', () => {})
@@ -386,9 +343,8 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
     terminal.on('linefeed', () => {
       try {
         if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
-          resizer.hideTrailingEmptyLines()
           terminal.scrollToBottom()
-          scrollIntoView({ element: terminal.element, when: 1 })
+          scrollIntoView({ element: terminal.element, when: 10 })
         }
       } catch (err) {
         console.error(err)
@@ -410,6 +366,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
       if (msg.type === 'data') {
         // plain old data flowing out of the PTY; send it on to the xterm UI
+        // debug('!!!!!', msg.data)
 
         if (enterApplicationModePattern.test(msg.data)) {
           // e.g. less start
@@ -441,10 +398,15 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
         ws.close()
         terminal.blur()
 
-        setTimeout(() => {
-          // true: purge trailing empty lines, now that the subprocess has exited
-          resizer.hideTrailingEmptyLines(true)
-        }, 100)
+        resizer.exitAltBufferMode()
+        resizer.exitApplicationMode()
+
+        // Notes: terminal.write (just above, in 'data') is
+        // asynchronous. For now, cascade some calls so that we can
+        // get it done ASAP.
+        setTimeout(() => resizer.hideCursorOnlyRow(), 10)
+        setTimeout(() => resizer.hideCursorOnlyRow(), 200)
+        setTimeout(() => resizer.hideCursorOnlyRow(), 400)
 
         resizer.destroy()
         xtermContainer.classList.add('xterm-terminated')

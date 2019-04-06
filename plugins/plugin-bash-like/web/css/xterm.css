@@ -2,25 +2,36 @@
     font-family: var(--font-monospace) !important;
 }
 
-tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-cursor {
+tab:not(.xterm-alt-buffer-mode):not(.xterm-application-mode) .xterm-container .xterm-cursor {
     display: none !important;
 }
 
-.xterm-container .xterm-screen {
+tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
     height: auto !important;
 }
 
 /* alt buffer mode */
+tab.xterm-alt-buffer-mode .repl-inner {
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    background: var(--color-stripe-01);
+}
+tab.xterm-alt-buffer-mode .repl-result-spinner {
+    display: none;
+}
 tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .horizontal-landing-zone, tab.xterm-alt-buffer-mode .repl-input {
     display: none;
 }
-tab.xterm-alt-buffer-mode .repl-output, tab.xterm-alt-buffer-mode .repl-block, tab.xterm-alt-buffer-mode .repl.sidecar-visible .repl-output {
+tab.xterm-alt-buffer-mode .repl-output, tab.xterm-alt-buffer-mode .repl-block, tab.xterm-alt-buffer-mode .repl.sidecar-visible .repl-output, tab.xterm-alt-buffer-mode .repl.sidecar-visible .repl-result {
     padding: 0;
 }
-tab.xterm-alt-buffer-mode .repl-inner {
-    overflow: hidden;
+
+tab:not(.xterm-alt-buffer-mode) .xterm-rows > div:empty {
+    display: none;
 }
-tab.xterm-alt-buffer-mode .xterm-rows > div.hide {
-    /* don't hide any rows when in alt buffer mode */
-    display: block;
+
+.xterm-container .xterm-fg-7.xterm-dim {
+    opacity: 1;
+    color: var(--color-text-02);
 }
