@@ -281,7 +281,9 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
   const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
     || (cli.isPopup() && (custom.presentation === Presentation.SidecarFullscreenForPopups || custom.presentation === Presentation.FixedSize))
 
-  if (custom.presentation || cli.isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen())) {
+  if (!custom.presentation && !cli.isPopup()) {
+    presentAs(Presentation.Default)
+  } else if (custom.presentation || cli.isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen())) {
     const presentation = custom.presentation ||
       (viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
        : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen)
@@ -290,6 +292,9 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
     if (viewProviderDesiresFullscreen) {
       setMaximization()
     }
+  } else {
+    // otherwise, reset to default presentation mode
+    presentAs(Presentation.Default)
   }
 
   if (custom.controlHeaders === true) {
@@ -748,8 +753,11 @@ export const isFullscreen = () => {
 }
 
 export const presentAs = (presentation?: Presentation) => {
-  if (presentation || presentation === 0) {
+  if (presentation || presentation === Presentation.Default) {
     document.body.setAttribute('data-presentation', Presentation[presentation].toString())
+    if (!cli.isPopup() && presentation === Presentation.Default) {
+      setMaximization('remove')
+    }
   } else {
     document.body.removeAttribute('data-presentation')
   }
@@ -823,6 +831,9 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
   if (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
     toggleMaximization()
     presentAs(Presentation.SidecarFullscreen)
+  } else {
+    // otherwise, reset to default presentation mode
+    presentAs(Presentation.Default)
   }
 
   // the name of the entity, for the header
