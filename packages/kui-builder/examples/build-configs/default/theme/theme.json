@@ -29,7 +29,7 @@
     { "name": "Solarized", "css": "themes/solarized-dark.css", "style": "dark" },
     { "name": "Zenburn", "css": "themes/zenburn.css", "style": "dark" }
   ],
-  "fonts": "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,600",
+  "fonts": "https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|IBM+Plex+Sans:300,400,600",
   "appIcon": "icons/png/kui.png",
   "largeIcon": "icons/svg/kui.svg",
   "favicon": "icons/ico/kui.ico",

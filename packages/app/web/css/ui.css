@@ -2856,7 +2856,7 @@ body {
     --color-scrollbar-track: transparent;
 
     --font-sans-serif: "IBM Plex Sans", sans-serif;
-    --font-monospace: "IBM Plex Mono","DejaVu Sans Mono","Bitstream Vera Sans Mono",Courier,monospace;
+    --font-monospace: "Roboto Mono",Courier,monospace;
 
     --color-carbon-components-h3: var(--color-cyan);
     --color-hover-primary-text: var(--color-cyan);
