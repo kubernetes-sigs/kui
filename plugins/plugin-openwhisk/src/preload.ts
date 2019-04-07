@@ -25,14 +25,14 @@ import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
  *
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
+  /*if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
     const { auth } = await import('./lib/models/auth')
 
     if (auth.get()) {
       debug('we have openwhisk credentials available from startup')
       // capabilities.setHasAuth will be called from the auth model impl
     }
-  }
+  }*/
 }
 
 export default registration

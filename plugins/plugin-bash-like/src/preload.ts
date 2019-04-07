@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/preload')
-
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
-import { preload as registerCatchAll } from './lib/cmds/bash-like'
+import { preload as registerCatchAll } from './lib/cmds/catchall'
 
 /**
  * This is the module
  *
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  registerCatchAll(commandTree)
+  await registerCatchAll(commandTree)
 }
 
 export default registration

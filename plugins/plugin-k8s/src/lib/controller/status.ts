@@ -314,7 +314,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     debug('status check for the current context')
     return getStatusForKnownContexts(execOptions, parsedOptions)()
   } else if (file.charAt(0) === '!') {
-    const { safeLoadAll: parseYAML } = require('js-yaml')
+    const { safeLoadAll: parseYAML } = await import('js-yaml')
     const resources = parseYAML(execOptions.parameters[file.slice(1)])
     debug('status by programmatic parameter', resources)
     const entities = await Promise.all(resources.map(_ => {
@@ -416,7 +416,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
       // handle !spec
       const passedAsParameter = !isURL && filepath.match(/\/(!.*$)/)
 
-      const { safeLoadAll: parseYAML } = require('js-yaml')
+      const { safeLoadAll: parseYAML } = await import('js-yaml')
       const { fetchFile } = await import('../util/fetch-file')
       const specs = (passedAsParameter
                      ? parseYAML(execOptions.parameters[passedAsParameter[1].slice(1)]) // yaml given programatically

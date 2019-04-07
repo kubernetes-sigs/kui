@@ -134,7 +134,7 @@ export const doShell = (argv: Array<string>, options, execOptions?) => new Promi
   doExec(cmdLine, rest, execOptions).then(resolve, reject)
 })
 
-const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => new Promise(async (resolve, reject) => {
+export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
   const shell = await import('shelljs')
 
@@ -364,41 +364,4 @@ export default (commandTree, prequire) => {
   commandTree.listen('/!', shellFn, { docs: 'Execute a UNIX shell command', requiresLocal: true })
 
   commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true, requiresLocal: true })
-}
-
-/**
- * On preload, register the catchall handler
- *
- */
-export const preload = (commandTree) => {
-  if (!inBrowser()) {
-    //
-    // if we aren't running in a browser, then pass any command not
-    // found exceptions to the outer shell
-    //
-    commandTree.catchall(
-      () => true, // we will accept anything
-      async ({ block, command, argv, argvNoOptions, execOptions, parsedOptions, createOutputStream }) => {
-        debug('handling catchall', command)
-
-        /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
-        const cleanUpError = err => {
-          if (err.message && typeof err.message === 'string') {
-            err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
-          }
-          throw err
-        }
-
-        if (isHeadless()) {
-          return doExec(command, argvNoOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
-            .catch(cleanUpError)
-        } else {
-          const { doExec } = await import('../../pty/client')
-          return doExec(block, command, argv, Object.assign({}, { stdout: createOutputStream() }, execOptions))
-            .catch(cleanUpError)
-        }
-      },
-      0, // priority
-      { noAuthOk: true })
-  }
 }
