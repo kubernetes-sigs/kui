@@ -2841,7 +2841,7 @@ body {
     --color-stripe-01: var(--color-base01);
     --color-stripe-02: var(--color-base03);
 
-    --color-text-01: var(--color-base07);
+    --color-text-01: var(--color-base06);
     --color-text-02: var(--color-base04);
 
     --color-selection-background: var(--color-base04);
