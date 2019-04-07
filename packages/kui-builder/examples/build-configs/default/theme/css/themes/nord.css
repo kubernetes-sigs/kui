@@ -21,6 +21,7 @@ body[kui-theme="Nord"] {
     --color-base0F: #B48EAD;
 
     --color-white: var(--color-base06);
+    --color-text-01: var(--color-base06);
     --color-cyan: var(--color-base08);
     --color-red: var(--color-base0B);
     --color-green: var(--color-base0E);
