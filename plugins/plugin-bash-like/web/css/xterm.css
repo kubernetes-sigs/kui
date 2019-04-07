@@ -2,10 +2,6 @@
     font-family: var(--font-monospace) !important;
 }
 
-tab:not(.xterm-alt-buffer-mode):not(.xterm-application-mode) .xterm-container .xterm-cursor {
-    display: none !important;
-}
-
 tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
     height: auto !important;
 }

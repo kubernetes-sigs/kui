@@ -24,7 +24,7 @@ import * as WebSocket from 'ws'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { disableInputQueueing, scrollIntoView } from '@kui-shell/core/webapp/cli'
+import { disableInputQueueing, pasteQueuedInput, scrollIntoView } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
@@ -320,8 +320,6 @@ const injectTheme = (terminal: xterm.Terminal): void => {
  *
  */
 export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>, execOptions) => new Promise((resolve, reject) => {
-  disableInputQueueing()
-
   if (inBrowser()) {
     injectCSS({ css: require('xterm/dist/xterm.css'), key: 'xtermjs' })
     injectCSS({ css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'), key: 'kui-xtermjs' })
@@ -342,7 +340,6 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
     const terminal = new xterm.Terminal({ rendererType: 'dom' })
     terminal.open(xtermContainer)
-    terminal.focus()
 
     // theming
     const inject = () => injectTheme(terminal)
@@ -358,8 +355,20 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
     const resizer = new Resizer(terminal, ws)
 
-    // nothing to do here for now:
-    // ws.on('open', () => {})
+    // when the websocket is ready, handle any queued input; only then
+    // do we focus the terminal (till then, the CLI module will handle
+    // queuing, and read out the value via disableInputQueueing()
+    ws.on('open', () => {
+      const queuedInput = disableInputQueueing()
+      if (queuedInput.length > 0) {
+        debug('queued input up front', queuedInput)
+        setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
+      }
+
+      // now that we've grabbed queued input, focus on the terminal,
+      // and it will handle input for now until the process exits
+      terminal.focus()
+    })
 
     // tell server that we are done, so that it can clean up
     window.addEventListener('beforeunload', () => {
@@ -367,8 +376,14 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
     })
 
     // relay keyboard input to the server
+    let queuedInput
     terminal.on('key', (key, ev) => {
-      ws.send(JSON.stringify({ type: 'data', data: key }))
+      if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
+        debug('queued input out back', key)
+        queuedInput += key
+      } else {
+        ws.send(JSON.stringify({ type: 'data', data: key }))
+      }
     })
 
     let currentScrollAsync
@@ -459,6 +474,10 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
           reject(error)
         } else {
+          if (queuedInput && queuedInput.length > 0) {
+            pasteQueuedInput(queuedInput)
+          }
+
           resolve(true)
         }
       }
