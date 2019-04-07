@@ -159,13 +159,19 @@ export const main = async (N: number, cmdline: string, cwd: string) => {
           return exitNow(msg.exitCode)
 
         case 'data':
-          return shell.write(msg.data)
+          try {
+            return shell.write(msg.data)
+          } catch (err) {
+            console.error('could not write to the shell', err)
+            break
+          }
 
         case 'resize':
           try {
             return shell.resize(msg.cols, msg.rows)
           } catch (err) {
             console.error('could not resize pty', err)
+            break
           }
       }
     })

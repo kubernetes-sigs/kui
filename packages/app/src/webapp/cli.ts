@@ -111,6 +111,15 @@ export const disableInputQueueing = (): string => {
 }
 
 /**
+ * Set the queued input model to the given value
+ *
+ */
+export const pasteQueuedInput = (value: string) => {
+  const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
+  invisibleHand.value = value
+}
+
+/**
  * Handle any input that queued up during command processing
  *
  */
