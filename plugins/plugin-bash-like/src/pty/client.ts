@@ -80,6 +80,9 @@ const alpha = (hex, alpha) => {
 class Resizer {
   private currentAsync: any
 
+  /** have we already hidden the cursor? */
+  private hiddenCursorRow: Element
+
   /** are we in alt buffer mode? */
   private alt = false
 
@@ -119,10 +122,38 @@ class Resizer {
    *
    */
   hideCursorOnlyRow () {
-    const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
-    const cursorRow = cursor && (cursor.parentNode as Element)
-    if (cursorRow && cursorRow.children.length === 1) {
-      cursorRow.classList.add('hide')
+    const doHide = () => {
+      const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
+      const cursorRow = cursor && (cursor.parentNode as Element)
+      if (cursorRow) {
+        if (cursorRow != this.hiddenCursorRow) { // tslint:disable-line:triple-equals
+          this.maybeUnhideCursorRow()
+        }
+
+        if (cursorRow.children.length === 1) {
+          cursorRow.classList.add('hide')
+          this.hiddenCursorRow = cursorRow
+        }
+      }
+    }
+
+    // Notes: terminal.write (just above, in 'data') is
+    // asynchronous. For now, cascade some calls so that we can
+    // get it done ASAP.
+    setTimeout(doHide, 10)
+    setTimeout(doHide, 200)
+    setTimeout(doHide, 400)
+  }
+
+  /**
+   * Due to a race with exit versus data events, we need to be careful
+   * to unhide the hiddenCursorRow if new data flows in
+   *
+   */
+  maybeUnhideCursorRow () {
+    if (this.hiddenCursorRow) {
+      this.hiddenCursorRow.classList.remove('hide')
+      this.hiddenCursorRow = undefined
     }
   }
 
@@ -366,7 +397,6 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
       if (msg.type === 'data') {
         // plain old data flowing out of the PTY; send it on to the xterm UI
-        // debug('!!!!!', msg.data)
 
         if (enterApplicationModePattern.test(msg.data)) {
           // e.g. less start
@@ -400,13 +430,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
         resizer.exitAltBufferMode()
         resizer.exitApplicationMode()
-
-        // Notes: terminal.write (just above, in 'data') is
-        // asynchronous. For now, cascade some calls so that we can
-        // get it done ASAP.
-        setTimeout(() => resizer.hideCursorOnlyRow(), 10)
-        setTimeout(() => resizer.hideCursorOnlyRow(), 200)
-        setTimeout(() => resizer.hideCursorOnlyRow(), 400)
+        resizer.hideCursorOnlyRow()
 
         resizer.destroy()
         xtermContainer.classList.add('xterm-terminated')
