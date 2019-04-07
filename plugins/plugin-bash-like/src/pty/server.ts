@@ -113,7 +113,7 @@ const getLoginShell = async (): Promise<string> => new Promise((resolve, reject)
  * Spawn the shell
  * Compliments of http://krasimirtsonev.com/blog/article/meet-evala-your-terminal-in-the-browser-extension
  */
-export const main = async (N: number, cmdline: string, cwd: string) => {
+export const main = async (N: number) => {
   const WebSocket = await import('ws')
   const pty = await import('node-pty')
   // const termios = await import('termios')
@@ -126,18 +126,6 @@ export const main = async (N: number, cmdline: string, cwd: string) => {
   const idx = servers.length
   servers.push(wss)
   wss.on('connection', async (ws) => {
-    const shell = pty.spawn(await getLoginShell(), ['-l', '-i', '-c', '--', cmdline], {
-      name: 'xterm-color',
-      cwd,
-      env: process.env
-    })
-    // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
-
-    // send all PTY data out to the websocket client
-    shell.on('data', (data) => {
-      ws.send(JSON.stringify({ type: 'data', data }))
-    })
-
     const exitNow = (exitCode: number) => {
       cleanupCallback()
       wss.close()
@@ -145,18 +133,42 @@ export const main = async (N: number, cmdline: string, cwd: string) => {
       process.exit(exitCode)
     }
 
-    shell.on('exit', (exitCode: number) => {
-      ws.send(JSON.stringify({ type: 'exit', exitCode }))
-      exitNow(exitCode)
-    })
+    let shell
 
     // For all websocket data send it to the shell
-    ws.on('message', (data) => {
+    ws.on('message', async (data: string) => {
       const msg = JSON.parse(data)
 
       switch (msg.type) {
         case 'exit':
           return exitNow(msg.exitCode)
+
+        case 'exec':
+          try {
+            shell = pty.spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
+              name: 'xterm-color',
+              cwd: msg.cwd || process.cwd(),
+              env: msg.env || process.env
+            })
+            // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
+
+            // send all PTY data out to the websocket client
+            shell.on('data', (data) => {
+              ws.send(JSON.stringify({ type: 'data', data }))
+            })
+
+            shell.on('exit', (exitCode: number) => {
+              shell = undefined
+              ws.send(JSON.stringify({ type: 'exit', exitCode }))
+              // exitNow(exitCode)
+            })
+
+            ws.send(JSON.stringify({ type: 'state', state: 'ready' }))
+
+          } catch (err) {
+            console.error('could not exec', err)
+          }
+          break
 
         case 'data':
           try {
@@ -168,7 +180,9 @@ export const main = async (N: number, cmdline: string, cwd: string) => {
 
         case 'resize':
           try {
-            return shell.resize(msg.cols, msg.rows)
+            if (shell) {
+              return shell.resize(msg.cols, msg.rows)
+            }
           } catch (err) {
             console.error('could not resize pty', err)
             break
@@ -208,7 +222,7 @@ export default (commandTree, prequire) => {
     }
 
     // reinvoke ourselves in a separate process
-    const child = spawn('node', [cachedSelf, N, execOptions.parameters.cmdLine, process.cwd()], {
+    const child = spawn('node', [cachedSelf, N], {
       cwd: selfHome,
       env: process.env
     })
@@ -237,8 +251,5 @@ export default (commandTree, prequire) => {
 // this is the entry point when we re-invoke ourselves as a separate
 // process (see just above)
 if (require.main === module) {
-  const cmdline = process.argv[3]
-  const cwd = process.argv[4]
-
-  main(parseInt(process.argv[2], 10), cmdline, cwd)
+  main(parseInt(process.argv[2], 10))
 }
