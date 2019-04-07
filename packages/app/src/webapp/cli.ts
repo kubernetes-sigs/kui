@@ -50,7 +50,6 @@ interface ScrollOptions {
   how?: string
   center?: boolean | ScrollIntoViewOptions
 }
-let currentScrollAsync
 export const scrollIntoView = (opts?: ScrollOptions) => {
   const { when = 305, which = '.repl-active .repl-input', element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement, center = undefined, how = 'scrollIntoViewIfNeeded' } = opts || {}
 
@@ -67,15 +66,10 @@ export const scrollIntoView = (opts?: ScrollOptions) => {
     }
   }
 
-  if (currentScrollAsync) {
-    clearTimeout(currentScrollAsync)
-    currentScrollAsync = undefined
-  }
-
   if (when === 0) {
     scroll()
   } else {
-    currentScrollAsync = setTimeout(scroll, when)
+    return setTimeout(scroll, when)
   }
 }
 
