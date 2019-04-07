@@ -29,17 +29,13 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin'
 
 export default async (commandTree, prequire: PluginRequire) => {
-  debug('init')
-  await auth(commandTree, prequire)
-  await contexts(commandTree, prequire)
-  await status(commandTree, prequire)
-  await kubectl(commandTree, prequire)
-  await istio(commandTree, prequire)
-  await kiali(commandTree, prequire)
-
-  if (!inBrowser()) {
-    const kedit: PluginRegistration = (await import('./lib/controller/kedit')).default
-    await kedit(commandTree, prequire)
-    debug('kedit')
-  }
+  return Promise.all([
+    auth(commandTree, prequire),
+    contexts(commandTree, prequire),
+    status(commandTree, prequire),
+    kubectl(commandTree, prequire),
+    istio(commandTree, prequire),
+    kiali(commandTree, prequire),
+    inBrowser() ? Promise.resolve() : (await import('./lib/controller/kedit')).default(commandTree, prequire)
+  ])
 }

@@ -19,22 +19,24 @@ const debug = Debug('plugins/proxy-support/preload')
 
 import { inBrowser, assertLocalAccess } from '@kui-shell/core/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
-import { setEvaluatorImpl } from '@kui-shell/core/core/repl'
-import { config } from '@kui-shell/core/core/settings'
-
-import ProxyEvaluator from './lib/proxy-executor'
 
 /**
  * This is the module
  *
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  debug('config', config)
+  if (inBrowser()) {
+    const { config } = await import('@kui-shell/core/core/settings')
+    debug('config', config)
 
-  if (inBrowser() && !config['disableProxy']) {
-    debug('attempting to establish our proxy executor')
-    setEvaluatorImpl(new ProxyEvaluator())
-    assertLocalAccess()
+    if (!config['disableProxy']) {
+      const ProxyEvaluator = (await import('./lib/proxy-executor')).default
+      const { setEvaluatorImpl } = await import('@kui-shell/core/core/repl')
+
+      debug('attempting to establish our proxy executor')
+      setEvaluatorImpl(new ProxyEvaluator())
+      assertLocalAccess()
+    }
   }
 }
 

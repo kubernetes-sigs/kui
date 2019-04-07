@@ -158,7 +158,7 @@ const usage = {
 }
 
 export default (commandTree, prequire) => {
-  commandTree.listen('/run', doRun, { usage })
+  commandTree.listen('/run', doRun, { usage, noAuthOk: true })
   commandTree.listen('/show',
                      ({ execOptions }) => {
                        debug('show', execOptions)
@@ -211,5 +211,5 @@ export default (commandTree, prequire) => {
                          }
                        }
                      },
-                     { hidden: true })
+                     { hidden: true, noAuthOk: true })
 }

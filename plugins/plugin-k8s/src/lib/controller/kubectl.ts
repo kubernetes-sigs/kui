@@ -19,7 +19,6 @@ const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
 import * as expandHomeDir from 'expand-home-dir'
-import { safeLoad as parseYAML } from 'js-yaml'
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -46,8 +45,13 @@ import { addConditions } from '../view/modes/conditions'
 import { addPods } from '../view/modes/pods'
 import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
-import describeImpl from './describe'
 import { status as statusImpl } from './status'
+
+/** lazily load js-yaml and invoke its yaml parser */
+const parseYAML = async (str: string): Promise<any> => {
+  const { safeLoad } = await import('js-yaml')
+  return safeLoad(str)
+}
 
 /** add the user's option to the command line */
 const dashify = str => {
@@ -149,7 +153,7 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
       //
       // here is where we hunt for the CA by inspecting the kubeconfig
       //
-      const kubeconfig = parseYAML(kubeconfigContents)
+      const kubeconfig = await parseYAML(kubeconfigContents)
       debug('kubeconfig contents', kubeconfig)
 
       // the ca is located in the same directory as the kubeconfig file
@@ -542,6 +546,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
       command === 'kubectl' &&
       ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) && (execOptions.type !== ExecType.Nested || execOptions.delegationOk))) {
     debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
+    const describeImpl = (await import('./describe')).default
     return describeImpl(opts).then(resolveBase).catch(reject)
   } else if (command === 'kubectl' && (verb === 'status' || verb === 'list')) {
     return statusImpl(verb)(opts).then(resolveBase).catch(reject)
@@ -698,9 +703,9 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
     }
   }
 
-  child.on('close', code => {
-    // debug('exec close', code);
-    // debug('exec stdout', out);
+  child.on('close', async (code: number) => {
+    // debug('exec close', code)
+    // debug('exec stdout', out)
     if (err.length > 0 || code !== 0) {
       debug('exec has stderr with code %s', code)
       debug('exec stderr args', argvWithFileReplacements.join(' '))
@@ -835,7 +840,7 @@ const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (
         }
       }
 
-      const yaml = verb === 'get' && parseYAML(out)
+      const yaml = verb === 'get' && await parseYAML(out)
       const subtext = createdOn(yaml)
 
       // sidecar badges

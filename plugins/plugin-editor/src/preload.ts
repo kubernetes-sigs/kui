@@ -34,7 +34,7 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
   if (inBrowser()) {
     // NOTE how there is no await; this is because our goal is only to
     // prefetch it
-    prequire('plugin-editor')
+    setTimeout(() => prequire('plugin-editor'), 500)
   }
 }
 

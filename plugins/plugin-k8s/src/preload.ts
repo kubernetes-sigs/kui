@@ -20,8 +20,6 @@ const debug = Debug('plugins/k8s/preload')
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
-import { restoreAuth } from './lib/model/auth'
-
 /**
  * This is the module
  *
@@ -29,6 +27,7 @@ import { restoreAuth } from './lib/model/auth'
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
   if (inBrowser()) {
     debug('preload for browser')
+    const { restoreAuth } = await import('./lib/model/auth')
     restoreAuth()
   }
 }

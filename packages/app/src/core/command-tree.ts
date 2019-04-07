@@ -488,7 +488,7 @@ export const setDefaultCommandContext = (commandContext: Array<string>) => {
 /** read, with retries based on the current context */
 const internalRead = (model, argv) => {
   if (argv[0] === 'kui') argv.shift()
-  return _read(model, Context.current.concat(argv), Context.current.slice(0, Context.current.length - 1), argv)
+  return _read(model, argv, Context.current, argv)
 }
 
 /**
@@ -546,21 +546,23 @@ const disambiguate = async (argv, noRetry = false) => {
         debug('disambiguate nope', intentions)
         return
       }
-    } else if (idx < argv.length - 1 && leaf.children) {
+    } else if (idx === argv.length - 1 && leaf.children) {
       // then the match is indeed a subtree
       debug('validating disambiguation')
       let foundMatch = false
       const next = argv[argv.length - 1]
       for (let cmd in leaf.children) {
         if (cmd === next) {
-          foundMatch = true
-          break
+          debug('found child', cmd, leaf.children[cmd])
+          return withEvents(leaf.children[cmd].$, leaf.children[cmd])
         }
       }
-      if (!foundMatch) {
-        debug('disambiguate blocked due to subtree mismatch')
-        return
-      }
+
+      debug('disambiguate blocked due to subtree mismatch')
+      return
+    } else if (idx < argv.length - 1 && leaf.children) {
+      debug('disambigaute blocked due to partial match')
+      return
     }
 
     debug(`disambiguate success ${leaf.route}`)
@@ -698,9 +700,10 @@ const removeDuplicates = async (arr: Array<IRoute>): Promise<Array<IRoute>> => {
 
 /** here, we will use implicit context resolutions */
 export const read = async (argv, noRetry = false, noSubtreeRetry = false, execOptions) => {
-  let cmd = (await internalRead(model, argv)) || (await disambiguate(argv))
+  let cmd = (await disambiguate(argv))
 
   if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
+    debug('overridden')
     await resolver.resolve(cmd.route)
     return read(argv, true, noSubtreeRetry, execOptions)
   }
@@ -709,7 +712,7 @@ export const read = async (argv, noRetry = false, noSubtreeRetry = false, execOp
     if (!noRetry) {
       debug('forcing a plugin resolution')
       await resolver.resolve(`/${argv.join('/')}`)
-      return read(argv, true, noSubtreeRetry, execOptions)
+      cmd = (await disambiguate(argv)) || (await internalRead(model, argv))
     }
   }
 
