@@ -171,9 +171,9 @@ body.still-loading .repl {
     display: flex;
     flex-direction: column;
 }
-.repl-block.repl-active {
+.repl-block.repl-active, .repl-block.processing {
     /* for the bottom-most block, add a bit of bottom padding, to avoid smashing into the bottom of the viewport */
-    padding-bottom: 0.125em;
+    padding-bottom: 0.5em;
 }
 body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl .repl-block {
     border-color: transparent;
