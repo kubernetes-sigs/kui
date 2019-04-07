@@ -25,7 +25,6 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
-    "ansi-to-html": "0.6.10",
     "asciidoctor.js": "1.5.9",
     "debug": "4.1.1",
     "diff2html": "2.7.0",
@@ -35,6 +34,11 @@
     "shelljs": "0.8.3",
     "ws": "6.2.1",
     "xterm": "3.12.0"
+  },
+  "kui": {
+    "exclude": {
+      "headless": [ "asciidoctor.js", "marked", "node-pty", "ws", "xterm" ]
+    }
   },
   "publishConfig": {
     "access": "public"
