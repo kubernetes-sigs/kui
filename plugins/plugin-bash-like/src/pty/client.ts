@@ -140,7 +140,7 @@ class Resizer {
     // Notes: terminal.write (just above, in 'data') is
     // asynchronous. For now, cascade some calls so that we can
     // get it done ASAP.
-    setTimeout(doHide, 10)
+    setTimeout(doHide, 40)
     setTimeout(doHide, 200)
     setTimeout(doHide, 400)
   }
@@ -371,11 +371,14 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
       ws.send(JSON.stringify({ type: 'data', data: key }))
     })
 
+    let currentScrollAsync
     terminal.on('linefeed', () => {
       try {
         if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
-          terminal.scrollToBottom()
-          scrollIntoView({ element: terminal.element, when: 10 })
+          if (currentScrollAsync) {
+            clearTimeout(currentScrollAsync)
+          }
+          currentScrollAsync = scrollIntoView({ element: terminal.element, when: 30 })
         }
       } catch (err) {
         console.error(err)
