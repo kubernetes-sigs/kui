@@ -316,10 +316,42 @@ const injectTheme = (terminal: xterm.Terminal): void => {
 }
 
 /**
+ * Create a websocket connection, or reuse if we already have one for the current tab
+ *
+ */
+const getOrCreateWebSocket = async (cmdline: string) => {
+  // tell the server to start a subprocess
+  const doExec = (ws: WebSocket) => ws.send(JSON.stringify({ type: 'exec', cmdline, cwd: process.cwd(), env: process.env }))
+
+  const tab = document.querySelector('tab.visible')
+  const cachedws = tab['ws']
+
+  if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
+    debug('allocating new websocket')
+
+    const url = await $('bash websocket open')
+    debug('websocket url', url)
+    const ws = new WebSocket(url)
+    tab['ws'] = ws
+
+    // when the websocket is ready, handle any queued input; only then
+    // do we focus the terminal (till then, the CLI module will handle
+    // queuing, and read out the value via disableInputQueueing()
+    ws.on('open', () => doExec(ws))
+
+    return ws
+  } else {
+    debug('reusing existing websocket')
+    doExec(cachedws)
+    return cachedws
+  }
+}
+
+/**
  *
  *
  */
-export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>, execOptions) => new Promise((resolve, reject) => {
+export const doExec = (block: HTMLElement, cmdline: string, argv: Array<String>, execOptions) => new Promise((resolve, reject) => {
   if (inBrowser()) {
     injectCSS({ css: require('xterm/dist/xterm.css'), key: 'xtermjs' })
     injectCSS({ css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'), key: 'kui-xtermjs' })
@@ -347,28 +379,9 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
     eventBus.on('/theme/change', inject) // and re-inject when the theme changes
     eventBus.on('/zoom', inject) // respond to font zooming
 
-    const cmd = argv[0]
-    const args = argv.slice(1).filter(x => x)
-    const url = await $('bash websocket open', undefined, undefined, { parameters: { cmdLine } })
-    debug('websocket url', url)
-    const ws = new WebSocket(url)
-
+    // const args = argv.slice(1).filter(x => x)
+    const ws = await getOrCreateWebSocket(cmdline)
     const resizer = new Resizer(terminal, ws)
-
-    // when the websocket is ready, handle any queued input; only then
-    // do we focus the terminal (till then, the CLI module will handle
-    // queuing, and read out the value via disableInputQueueing()
-    ws.on('open', () => {
-      const queuedInput = disableInputQueueing()
-      if (queuedInput.length > 0) {
-        debug('queued input up front', queuedInput)
-        setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
-      }
-
-      // now that we've grabbed queued input, focus on the terminal,
-      // and it will handle input for now until the process exits
-      terminal.focus()
-    })
 
     // tell server that we are done, so that it can clean up
     window.addEventListener('beforeunload', () => {
@@ -408,12 +421,20 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
 
     terminal.element.classList.add('fullscreen')
 
-    let pendingUsage = false
-    let raw = ''
-    ws.on('message', (data) => {
+    const onMessage = (data: string) => {
       const msg = JSON.parse(data)
 
-      if (msg.type === 'data') {
+      if (msg.type === 'state' && msg.state === 'ready') {
+        const queuedInput = disableInputQueueing()
+        if (queuedInput.length > 0) {
+          debug('queued input up front', queuedInput)
+          setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
+        }
+
+        // now that we've grabbed queued input, focus on the terminal,
+        // and it will handle input for now until the process exits
+        terminal.focus()
+      } else if (msg.type === 'data') {
         // plain old data flowing out of the PTY; send it on to the xterm UI
 
         if (enterApplicationModePattern.test(msg.data)) {
@@ -434,7 +455,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
           raw += stripClean(msg.data)
         }
 
-        const maybeUsage = !resizer.inAltBufferMode() && (pendingUsage || formatUsage(cmdLine, msg.data, { drilldownWithPip: true }))
+        const maybeUsage = !resizer.inAltBufferMode() && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
         if (maybeUsage) {
           pendingUsage = true
         } else {
@@ -443,8 +464,10 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
       } else if (msg.type === 'exit') {
         // server told us that it is done
         debug('exit', msg.exitCode)
-        ws.close()
+        // ws.close()
         terminal.blur()
+
+        ws.removeEventListener('message', onMessage)
 
         resizer.exitAltBufferMode()
         resizer.exitApplicationMode()
@@ -454,7 +477,7 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
         xtermContainer.classList.add('xterm-terminated')
 
         if (pendingUsage) {
-          execOptions.stdout(formatUsage(cmdLine, raw, { drilldownWithPip: true }))
+          execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
         }
 
         // vi, then :wq, then :q, you will get an exit code of 1, but
@@ -481,7 +504,11 @@ export const doExec = (block: HTMLElement, cmdLine: string, argv: Array<String>,
           resolve(true)
         }
       }
-    })
+    }
+
+    let pendingUsage = false
+    let raw = ''
+    ws.on('message', onMessage)
 
     /* const proc = shell.exec(cmdLine, {
        async: true,
