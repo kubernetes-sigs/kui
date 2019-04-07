@@ -825,7 +825,7 @@ sidecar .sidecar-bottom-stripe-back-bits > div:hover {
 sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:not(.has-back-button) {
     display: none;
 }
-sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
+body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
     font-size: 3vmin;
 }
 
