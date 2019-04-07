@@ -16,6 +16,10 @@ tab.xterm-alt-buffer-mode .repl-inner {
     display: flex;
     align-items: flex-end;
     background: var(--color-stripe-01);
+    -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
+}
+tab.xterm-alt-buffer-mode .repl-inner .repl-block {
+    -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
 }
 tab.xterm-alt-buffer-mode .repl-result-spinner {
     display: none;
