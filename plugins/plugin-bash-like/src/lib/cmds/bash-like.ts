@@ -27,8 +27,6 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
-import * as Ansi2Html from 'ansi-to-html'
-
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import UsageError from '@kui-shell/core/core/usage-error'
 import * as repl from '@kui-shell/core/core/repl'
@@ -158,43 +156,11 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
   })
 
   // accumulate doms from the output of the subcommand
-  const parentNode = document.createElement('div')
   let rawOut = ''
   let rawErr = ''
 
-  const ansi2HTML = new Ansi2Html({
-    bg: 'var(--color-ui-01)',
-    fg: 'var(--color-text-01)',
-    colors: {
-      0: 'var(--color-black)',
-      1: 'var(--color-red)',
-      2: 'var(--color-green)',
-      3: 'var(--color-yellow)',
-      4: 'var(--color-blue)',
-      5: 'var(--color-magenta)',
-      6: 'var(--color-cyan)',
-      7: 'var(--color-white)',
-      8: 'var(--color-gray)',
-      9: 'var(--color-light-red)',
-      10: 'var(--color-light-green)',
-      11: 'var(--color-light-yellow)'
-    },
-    stream: true // save state across calls
-  })
-
   let pendingUsage = false
   proc.stdout.on('data', async data => {
-    const handleANSI = () => {
-      if (isHeadless()) {
-        return data
-      } else {
-        const span = document.createElement('span')
-        span.setAttribute('class', 'whitespace')
-        span.innerHTML = ansi2HTML.toHtml(data.toString())
-        return span
-      }
-    }
-
     const out = data.toString()
 
     if (execOptions.stdout) {
@@ -211,11 +177,10 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
           resolve(maybeKeyValue)
         } else {
           debug('formatting as ANSI')
-          execOptions.stdout(handleANSI())
+          execOptions.stdout(data)
         }
       }
     } else {
-      parentNode.appendChild(handleANSI())
       rawOut += out
     }
   })
@@ -226,11 +191,6 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
     if (execOptions.stderr) {
       execOptions.stderr(data.toString())
       // stderrLines += data.toString()
-    } else {
-      const span = document.createElement('span')
-      parentNode.appendChild(span)
-      span.setAttribute('class', 'whitespace oops')
-      span.innerHTML = ansi2HTML.toHtml(data.toString())
     }
   })
 
@@ -305,13 +265,8 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
           json['type'] = 'shell'
           json['verb'] = 'get'
           resolve(json)
-        } if (reallyLong(rawOut)) {
-          // a lot of output? render in sidecar
-          resolve(asSidecarEntity(cmdLineOrig, parentNode, {
-            sidecarHeader: !document.body.classList.contains('subwindow')
-          }))
         } else {
-          resolve(parentNode)
+          resolve(rawOut)
         }
       }
     } else {
@@ -320,12 +275,12 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
 
       try {
         const noControlCharacters = stripControlCharacters(rawOut)
-        const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true, stderr: rawErr && parentNode })
+        const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true, stderr: rawErr })
         if (maybeUsage) {
           maybeUsage['code'] = exitCode
           reject(maybeUsage)
         } else {
-          resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, rawErr, execOptions, parentNode))
+          resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, rawErr, execOptions))
         }
       } catch (err) {
         reject(err)
