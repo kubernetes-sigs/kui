@@ -17,6 +17,7 @@ body[kui-theme="Light"] {
     --color-base0E: #beaed4;
     --color-base0F: #beaed4;
     
+    --color-text-01: var(--color-base00);
     --color-text-02: #5a6872;
 
     --color-light-red: rgba(231, 29, 50, 0.75);
