@@ -8,10 +8,12 @@
 
 .about-window .logo {
     display: flex;
-    align-items: center;
 }
 .about-window .logo img {
     float: left;
+    width: 8em;
+    height: 8em;
+    max-width: none;
     margin-right: 1.5em;
     transition: all .8s ease-in-out;
 }
@@ -29,22 +31,15 @@
     flex-direction: column;
     font-family: var(--font-sans-serif);
     white-space: normal;
-    margin: 3em;
+    padding: 3em;
     max-width: 50em;
 }
 
 .about-window-inside-content {
     display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-}
-
-.about-window-inside-content {
-    margin: 3em 3em 0;
-}
-
-.about-window-bottom-content {
-    margin: 0 3em;
+    justify-content: space-between;
+    padding: 3em;
+    background: var(--color-base03);
 }
 
 /* the middle content icon "stacks" */
@@ -53,14 +48,19 @@
     flex-direction: column;
     align-items: center;
 }
+.about-window-icon-stack > div {
+    margin-top: 0.375em;
+}
 .about-window .about-window-inside-content a {
-    font-size: 4em;
-    color: var(--color-base0C);
+    font-size: 3em;
+    color: var(--color-base05);
 }
 
 .about-window-bottom-content {
     display: flex;
+    justify-content: center;
+    padding: 3em;
 }
 .about-window-bottom-content .log-lines {
-    width: auto;
+    width: calc(100% - 6em);
 }

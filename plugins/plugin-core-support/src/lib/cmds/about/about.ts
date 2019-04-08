@@ -53,7 +53,6 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 
   // this is the main container for the dom
   const content = document.createElement('div')
-  content.classList.add('padding-content')
   content.classList.add('about-window')
 
   const flexContent = document.createElement('div')
@@ -61,11 +60,8 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
   content.appendChild(flexContent)
 
   const topContent = document.createElement('div')
-  const bottomContent = document.createElement('div')
   topContent.classList.add('about-window-top-content')
-  bottomContent.classList.add('about-window-bottom-content')
   flexContent.appendChild(topContent)
-  flexContent.appendChild(bottomContent)
 
   const badges = []
 
@@ -87,11 +83,12 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
   topContent.appendChild(logo)
   logo.classList.add('logo')
 
+  const iconP = document.createElement('p')
   const icon = document.createElement('img')
-  icon.height = 200
   icon.addEventListener('click', openHome)
   icon.classList.add('clickable')
-  logo.appendChild(icon)
+  iconP.appendChild(icon)
+  logo.appendChild(iconP)
   icon.src = settings.largeIcon
 
   if (settings.ogDescription) {
@@ -104,6 +101,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     } catch (err) {
       debug('error rendering markdown', err)
       const longDescription = document.createElement('p')
+      longDescription.classList.add('about-window-long-description')
       longDescription.innerText = settings.ogDescription
       logo.appendChild(longDescription)
     }
@@ -111,7 +109,11 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 
   const insideContent = document.createElement('div')
   insideContent.classList.add('about-window-inside-content')
-  topContent.appendChild(insideContent)
+  flexContent.appendChild(insideContent)
+
+  const bottomContent = document.createElement('div')
+  bottomContent.classList.add('about-window-bottom-content')
+  flexContent.appendChild(bottomContent)
 
   type OnClickHandler = () => any
   const iconify = (fontawesome: string, title: string, href: string | OnClickHandler): Element => {
@@ -164,7 +166,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     const table = document.createElement('table')
     table.classList.add('log-lines')
     table.classList.add('versions')
-    table.classList.add('smaller-text')
+    table.classList.add('somewhat-smaller-text')
     bottomContent.appendChild(table)
 
     const versionModel = process.versions

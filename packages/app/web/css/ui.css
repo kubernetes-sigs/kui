@@ -2472,6 +2472,8 @@ sidecar .usage-error-wrapper .hideable {
 .page-content p {
     font-weight: 400;
     line-height: 1.5em;
+}
+.page-content p:not(:last-child) {
     padding: 0 0 0.5rem;
 }
 .page-content h1 {
