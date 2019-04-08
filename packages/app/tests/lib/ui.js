@@ -349,6 +349,16 @@ exports.sidecar = {
     .then(() => app)
 }
 
+/** get the monaco editor text */
+exports.getValueFromMonaco = async (app /*: Application */, prefix = '') => {
+  const selector = `${prefix} .monaco-editor-wrapper`
+  await app.client.waitForExist(selector)
+
+  return app.client.execute(selector => {
+    return document.querySelector(selector)['editor'].getValue()
+  }, selector).then(_ => _.value)
+}
+
 /** is the given struct2 the same as the given struct2 (given as a string) */
 exports.expectStruct = (struct1, noParse = false, failFast = true) => string => {
   try {

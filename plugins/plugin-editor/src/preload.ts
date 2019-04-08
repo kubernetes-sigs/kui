@@ -18,23 +18,26 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 debug('done loading prereqs')
 
 /**
- * Here, we prefetch the editor, if we're running in browser
- * mode. It is slow to load.
+ * Here, we prefetch the editor, which is especially important if
+ * we're running in browser mode. It is slow to load.
  *
  */
 const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
   debug('initializing')
 
-  if (inBrowser()) {
+  if (!isHeadless()) {
     // NOTE how there is no await; this is because our goal is only to
     // prefetch it
-    setTimeout(() => prequire('plugin-editor'), 500)
+    setTimeout(() => {
+      import('./lib/open').then(_ => _.preload())
+      prequire('plugin-editor')
+    }, 500)
   }
 }
 

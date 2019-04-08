@@ -116,7 +116,13 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry text, body[kui-theme-s
 }
 
 #wskflowSVG .node .atom {
-    fill: var(--color-ui-05);
+    fill: var(--color-base02);
+}
+body[kui-theme-style="dark"] #wskflowSVG .node .atom {
+    fill: var(--color-base04);
+}
+body[kui-theme-style="dark"] #wskflowSVG .action[data-deployed="not-deployed"] .atom {
+    opacity: 0.7;
 }
 #wskflowSVG .node .atom ~ text {
     fill: var(--color-text-01);

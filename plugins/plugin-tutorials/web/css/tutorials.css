@@ -354,7 +354,7 @@ body.tutorial-in-progress.tutorial-is-fullscreen tab {
     display: none;
 }
 #tutorialPane.visible.minimized {
-    flex-basis: 13em;
+    flex-basis: 14em;
 }
 #tutorialPane.minimized .tutorial-hide-when-minimized {
     margin: 0;

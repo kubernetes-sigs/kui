@@ -87,9 +87,9 @@ export const visualizeComposition = async (response, execOptions) => {
     const doVisualize = execOptions.override || !execOptions.nested
     const options = execOptions.originalOptions || {}
     // use require rather than import here to prevent from prequiring wskflow module in headless mode
-    const { decorateAsApp } = require('@kui-shell/plugin-wskflow/lib/util')
-    const content = await decorateAsApp({ action, doVisualize, options: Object.assign({}, execOptions, options) })
+    const { decorateAsApp } = await import('@kui-shell/plugin-wskflow/lib/util')
     const input = `/${response.namespace}/${response.name}`
+    const content = await decorateAsApp({ action, input, doVisualize, options: Object.assign({}, execOptions, options) })
 
     if (doVisualize) {
       debug('visualze composition')

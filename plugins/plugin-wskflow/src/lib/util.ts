@@ -47,39 +47,59 @@ export const textualPropertiesOfCode = (code: string): ITextualProperties => {
  * Entity view mode if we have javascript source
  *
  */
-export const codeViewMode = {
+export const codeViewMode = (source: string, contentType = 'javascript') => ({
   mode: 'source',
   label: 'code',
-  direct: entity => {
+  leaveBottomStripeAlone: true,
+  direct: {
+    type: 'custom',
+    isEntity: true,
+    contentType,
+    contentTypeProjection: 'source',
+    content: {
+      source
+    }
+  }
+/*  direct: entity => {
     entity.type = 'actions'
     return sidecar.showEntity(entity, { show: 'source' })
-  }
-}
+  }*/
+})
 
 /**
  * Entity view modes
  *
  */
-export const vizAndfsmViewModes = (visualize, commandPrefix, defaultMode = 'visualization', options) => [
-  { mode: 'visualization',
-    defaultMode: defaultMode === 'visualization',
-    direct: entity => {
-      return repl.qexec(`${commandPrefix} "${entity.input}" ${optionsToString(options)}`)
-    } },
-  { mode: 'ast',
-    label: 'JSON',
-    defaultMode: defaultMode === 'ast',
-    direct: entity => {
-      entity.type = 'actions'
-      sidecar.showEntity(entity, { show: 'ast' })
-    } }
-]
+export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode = 'visualization', input: string, ast: object, options) => {
+  const modes = [
+    {
+      mode: 'visualization',
+      defaultMode: defaultMode === 'visualization',
+      direct: `${commandPrefix} "${input}" ${optionsToString(options)}`
+    },
+    {
+      mode: 'ast',
+      label: 'JSON',
+      defaultMode: defaultMode === 'ast',
+      leaveBottomStripeAlone: true,
+      direct: {
+        type: 'custom',
+        isEntity: true,
+        contentType: 'json',
+        content: ast
+      }
+    }
+  ]
+
+  return modes
+}
+
 /**
  * Amend the result of an `action get`, to make the entity appear more
  * like an app
  *
  */
-export const decorateAsApp = async ({ action, viewName = 'composition', commandPrefix = 'app get', doVisualize, options }) => {
+export const decorateAsApp = async ({ action, input, viewName = 'composition', commandPrefix = 'app get', doVisualize, options }) => {
   debug('decorateAsApp', options)
   action.prettyType = badges.app
 
@@ -111,8 +131,8 @@ export const decorateAsApp = async ({ action, viewName = 'composition', commandP
     }
 
     action.modes = (action.modes || []).filter(_ => _.mode !== 'code')
-      .concat(vizAndfsmViewModes(visualize, commandPrefix, undefined, options.originalOptions || options))
-      .concat(sourceAnnotation ? [ codeViewMode ] : [])
+      .concat(vizAndfsmViewModes(visualize, commandPrefix, undefined, input, action.ast, options.originalOptions || options))
+      .concat(sourceAnnotation ? [ codeViewMode(action.source) ] : [])
       .concat(zoomToFitButtons(controller))
     debug('action', action)
     return view || action

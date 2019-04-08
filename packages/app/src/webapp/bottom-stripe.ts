@@ -160,6 +160,9 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
         try {
           const view = await callDirect(direct, entity, execOptions)
           if (view && !actAsButton) {
+            if (direct.isEntity || leaveBottomStripeAlone) {
+              changeActiveButton()
+            }
             Promise.resolve(view).then(custom => showCustom(custom, { leaveBottomStripeAlone }))
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
@@ -174,6 +177,8 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
             })
 
             changeActiveButton()
+          } else if (!leaveBottomStripeAlone) {
+            changeActiveButton()
           }
         } catch (err) {
           // do not change active bottom if the command failed!
@@ -182,7 +187,9 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
       } else {
         try {
           await repl.pexec(command(entity), { /* leaveBottomStripeAlonex true,*/ echo, noHistory, replSilence })
-          changeActiveButton()
+          if (leaveBottomStripeAlone) {
+            changeActiveButton()
+          }
         } catch (err) {
           console.error(err)
         }
@@ -211,6 +218,7 @@ interface IDirectViewControllerSpec {
   module: string
   operation: string
   parameters: object
+  isEntity?: boolean
 }
 
 /**
@@ -228,6 +236,9 @@ const callDirect = async (makeView: DirectViewController, entity, execOptions) =
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
     return Promise.resolve(makeView(entity))
+  } else if (makeView.isEntity) {
+    const combined = Object.assign({}, entity, makeView)
+    return combined
   } else {
     const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
     return provider[makeView.operation](makeView.parameters)

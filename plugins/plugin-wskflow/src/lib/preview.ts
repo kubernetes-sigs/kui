@@ -28,6 +28,7 @@ import { PluginRegistration } from '@kui-shell/core/models/plugin'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import * as repl from '@kui-shell/core/core/repl'
+import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
 
@@ -62,7 +63,7 @@ interface ICompositionWithCode {
  *
  */
 const registration: PluginRegistration = (commandTree, prequire) => {
-  const readFile = (input) => new Promise(async (resolve, reject) => {
+  const readFile = (input: string): Promise<string> => new Promise(async (resolve, reject) => {
     const filepath = findFile(expandHomeDir(input))
 
     if (!inBrowser()) {
@@ -102,7 +103,7 @@ const registration: PluginRegistration = (commandTree, prequire) => {
 
     let fsmPromise
     let type
-    let extraModes = []
+    const coreModes = []
 
     const extension = input.substring(input.lastIndexOf('.') + 1)
 
@@ -118,7 +119,6 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       debug('input is composer library client', extension)
       try {
         fsmPromise = compileUtil.sourceToComposition({ inputFile: input, name: path.basename(input) })
-        extraModes.push(Object.assign({}, wskflowUtil.codeViewMode, { defaultMode: mode === 'source' }))
         debug('composition parsed from input', fsmPromise)
       } catch (err) {
         reject(err)
@@ -136,6 +136,8 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       // pass through cli options for the wskflow renderer
       const viewOptions: IViewOptions = new DefaultViewOptions()
 
+      coreModes.push(wskflowUtil.codeViewMode(code))
+
       if (options.functions) {
         // note we must be careful not to pass false; only undefined
         viewOptions.renderFunctionsInView = options.functions // render all inline functions directly in the view?
@@ -146,9 +148,12 @@ const registration: PluginRegistration = (commandTree, prequire) => {
         viewOptions.noHeader = true
       }
 
-      const visualize = require('./visualize').default
+      const visualize = (await import('./visualize')).default
       const { view, controller } = await wskflowUtil.wskflow(visualize, { ast, input, name, viewOptions, container: execOptions.container, namespace: undefined })
-      extraModes = extraModes.concat(wskflowUtil.zoomToFitButtons(controller))
+
+      const modes: Array<any> = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
+      modes.splice(modes.length, 0, ...coreModes)
+      const extraModes = wskflowUtil.zoomToFitButtons(controller)
 
       let entity = {
         isEntity: true,
@@ -164,7 +169,8 @@ const registration: PluginRegistration = (commandTree, prequire) => {
         exec: {
           kind: 'source'
         },
-        modes: wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, options).concat(extraModes),
+        presentation: Presentation.FixedSize,
+        modes: modes.concat(extraModes),
         annotations: [
           { key: 'wskng.combinators',
             value: [{ role: 'replacement', type: 'composition', badge: type }]

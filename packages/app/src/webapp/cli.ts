@@ -321,8 +321,10 @@ export const createPopupContentContainer = (css = [], presentation?: Presentatio
  * Render popup content in the given container
  *
  */
-const renderPopupContent = (command: string, container: Element, execOptions?: IExecOptions, { prettyType = '', modes = [], badges = [], controlHeaders = false, presentation = Presentation.SidecarFullscreenForPopups } = {}) => {
+const renderPopupContent = (command: string, container: Element, execOptions: IExecOptions, entity: any = {}) => {
   debug('renderPopupContent', command, container)
+
+  const { prettyType = '', modes = [], badges = [], controlHeaders = false, presentation = Presentation.SidecarFullscreenForPopups } = entity
 
   // Last updated... text
   const subtext = document.createElement('div')
@@ -369,7 +371,7 @@ const renderPopupContent = (command: string, container: Element, execOptions?: I
       content: container.parentNode.parentNode // dom -> scrollRegion -> paddingContent
     }
 
-    showCustom(custom, execOptions)
+    showCustom(Object.assign({}, custom, entity), execOptions)
   }
 }
 
@@ -584,13 +586,13 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
         // presentation mode
         const presentation = response.presentation || (prettyType && Array.isArray(response) && Presentation.FixedSize) || Presentation.SidecarFullscreenForPopups
 
-        await renderPopupContent(command, alreadyRendered !== true && resultDom, execOptions, {
+        await renderPopupContent(command, alreadyRendered !== true && resultDom, execOptions, Object.assign({}, response, {
           modes,
           prettyType,
           badges: response.badges,
           controlHeaders: response.controlHeaders,
           presentation
-        })
+        }))
       }
 
       if (!incognito) {
