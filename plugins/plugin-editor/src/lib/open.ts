@@ -24,7 +24,7 @@ import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
-import { currentSelection, getSidecar, addSidecarHeaderIconText, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
+import { currentSelection, getSidecar, isVisible as isSidecarVisible, addSidecarHeaderIconText, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
 
 import strings from '../i18n/strings'
 import { extension, language } from './file-types'
@@ -56,19 +56,22 @@ export const openEditor = async (name, options, execOptions) => {
     options.showFoldingControls = 'always'
   }
 
-  if (inBrowser()) {
-    // const mp = require('./edit-webpack')
-    injectScript({ src: require('monaco-editor/min/vs/loader.js'), key: 'editor.monaco' })
-  } else {
-    const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
-    injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
-  }
+  if (!pre2) {
+    if (inBrowser()) {
+      // const mp = require('./edit-webpack')
+      injectScript({ src: require('monaco-editor/min/vs/loader.js'), key: 'editor.monaco' })
+    } else {
+      const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
+      injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
+    }
 
-  try {
-    injectCSS({ css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(), key: 'editor.editor' })
-  } catch (err) {
-    const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-    injectCSS(path.join(ourRoot, 'web/css/editor.css'))
+    try {
+      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(), key: 'editor.editor' })
+    } catch (err) {
+      const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
+      injectCSS(path.join(ourRoot, 'web/css/editor.css'))
+    }
+    pre2 = true
   }
 
   const content = document.createElement('div')
@@ -223,16 +226,23 @@ export const openEditor = async (name, options, execOptions) => {
 
       /** call editor.layout */
       const relayout = editor.relayout = () => {
-        editor.updateOptions({ automaticLayout: false })
-        setTimeout(() => {
+        const go = () => {
           const { width, height } = editorWrapper.getBoundingClientRect()
           editor.layout({ width, height })
-        }, 300)
+        }
+
+        editor.updateOptions({ automaticLayout: false })
+        setTimeout(go, 0)
       }
 
       globalEventBus.on('/sidecar/maximize', relayout)
       window.addEventListener('resize', relayout)
-      setTimeout(relayout, 400)
+
+      if (isSidecarVisible()) {
+        relayout()
+      } else {
+        setTimeout(relayout, 400)
+      }
 
       return Promise.resolve({ getEntity, editor, content, eventBus })
     }
@@ -283,17 +293,29 @@ const setText = (editor, options, execOptions?) => ({ code, kind }) => {
   return code
 }
 
+let pre = false
+let pre2 = false
+export const preload = () => {
+  pre = true
+  injectTheme()
+}
+
 /**
  * Inject the current theme into the editor
  *
+ * @param editorWrapper null allows for pre-injecting of CSS (performance optimization)
  */
-const injectTheme = (editorWrapper: Element) => {
+const injectTheme = (editorWrapper?: Element) => {
+  if (pre) {
+    return
+  }
+
   const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
   const currentTheme = document.querySelector('body').getAttribute('kui-theme')
 
-  const previousKey = editorWrapper.getAttribute('kui-theme-key')
+  const previousKey = editorWrapper && editorWrapper.getAttribute('kui-theme-key')
   const key = `editor.theme-${currentTheme}`
-  editorWrapper.setAttribute('kui-theme-key', key)
+  if (editorWrapper) editorWrapper.setAttribute('kui-theme-key', key)
 
   // dangit: in webpack we can require the CSS; but in plain nodejs,
   // we cannot, so have to use filesystem operations to acquire the
@@ -317,5 +339,8 @@ const injectTheme = (editorWrapper: Element) => {
 
   // remove previous theme; for some reason, if we don't do this as an
   // async, chrome flashes as we change themes!
-  setTimeout(() => uninjectCSS({ key: previousKey }), 0)
+  if (editorWrapper) {
+    setTimeout(() => uninjectCSS({ key: previousKey }), 0)
+    pre = false
+  }
 }

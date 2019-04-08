@@ -290,7 +290,7 @@ describe('Intro demo scenario', function (this: common.ISuite) {
 
       // switch to ast tab
       .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('ast')))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast[appName1]))
 
       // switch to annotations tab
@@ -369,12 +369,12 @@ describe('Intro demo scenario', function (this: common.ISuite) {
 
       // visit ast tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast.hello))
 
       // visit code tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName1).replace(/\s+/g, '')))
 
       .catch(common.oops(this)))
@@ -410,12 +410,12 @@ describe('Intro demo scenario', function (this: common.ISuite) {
 
       // visit ast tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast[appName2]))
 
       // visit code tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName2).replace(/\s+/g, '')))
 
       .catch(common.oops(this)))
@@ -445,7 +445,7 @@ describe('Intro demo scenario', function (this: common.ISuite) {
       // .then(sidecar.expectBadge(badges.composerLib))
       .then(graph.hasNodes({ tasks: 3, total: 6, deployed: 3 })) // <---- deployed had better be 3 now
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast[appName2]))
       .catch(common.oops(this)))
   }
@@ -532,12 +532,12 @@ describe('Intro demo scenario', function (this: common.ISuite) {
 
       // visit ast tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast[appName3]))
 
       // visit code tab
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName3).replace(/\s+/g, '')))
 
       .catch(common.oops(this)))
@@ -567,7 +567,7 @@ describe('Intro demo scenario', function (this: common.ISuite) {
       // .then(sidecar.expectBadge(badges.composerLib))
       .then(graph.hasNodes({ tasks: 2, total: 4, deployed: 1 })) // <---- deployed had better be 1 now
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast[appName3]))
       .catch(common.oops(this)))
   }
@@ -632,7 +632,7 @@ describe('Intro demo scenario', function (this: common.ISuite) {
       // .then(sidecar.expectBadge(badges.composerLib))
       .then(graph.hasNodes({ tasks: 3, total: 7, deployed: 1 })) // <---- deployed had better be 1
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast[appName4]))
       .catch(common.oops(this)))
   }
@@ -678,7 +678,7 @@ describe('Intro demo scenario', function (this: common.ISuite) {
       // .then(sidecar.expectBadge(badges.composerLib))
       .then(graph.hasNodes({ tasks: 2, total: 5, deployed: 0, values: 1 }))
       .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-      .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
+      .then(() => ui.getValueFromMonaco(this.app))
       .then(ui.expectStruct(ast[appName5]))
       .catch(common.oops(this)))
   }
