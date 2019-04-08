@@ -957,8 +957,8 @@ sidecar .sidecar-header-name-content .entity-name {
     white-space: nowrap;
 
     /* these two rules help us to simulate left-ellision */
-    direction: rtl;
-    text-align: left;
+    /* direction: rtl;
+    text-align: left; */
 }
 sidecar .sidecar-header-name-content > span {
     display: block;
