@@ -84,7 +84,7 @@ const respond = (options: ParsedOptions) => response => {
  *
  */
 const doInvoke = (rawInvoke: CommandHandler) => (opts: IEvaluatorArgs) => {
-  if (!opts.argv.find(opt => opt === '-b' || opt === '--blocking')) {
+  if (!opts.argv.find(opt => opt === '-b' || opt === '-r' || opt === '--blocking' || opt === '--result')) {
     // doInvoke means blocking invoke, so make sure that the argv
     // indicates that we want a blocking invocation
     opts.argv.push('-b')
