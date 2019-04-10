@@ -77,7 +77,7 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
         matching: 'lines'
         // outputFormat: 'side-by-side',
       }), {
-        presentation: isPopup() ? Presentation.FixedSize : Presentation.SidecarFullscreen
+        presentation: isPopup() ? Presentation.FixedSize : Presentation.Default
       }, undefined, commandPart, currentBranch))
     } else {
       try {
