@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-bash-like",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Kui plugin that offers local bash-like shell integrations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -37,7 +37,13 @@
   },
   "kui": {
     "exclude": {
-      "headless": [ "asciidoctor.js", "marked", "node-pty", "ws", "xterm" ]
+      "headless": [
+        "asciidoctor.js",
+        "marked",
+        "node-pty",
+        "ws",
+        "xterm"
+      ]
     }
   },
   "publishConfig": {
