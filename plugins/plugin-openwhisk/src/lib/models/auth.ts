@@ -20,8 +20,9 @@ debug('loading')
 
 import openwhisk = require('openwhisk')
 
-import { inBrowser, getAuthValue, setHasAuth } from '@kui-shell/core/core/capabilities'
+import { inBrowser, getAuthValue, setHasAuth, inElectron } from '@kui-shell/core/core/capabilities'
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
+import { config } from '@kui-shell/core/core/settings'
 
 let wskprops
 try {
@@ -60,7 +61,14 @@ const localStorageKey = {
  *
  *
  */
-export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || window.localStorage.getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost')
+export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || window.localStorage.getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost') || getDefaultApiHost()
+
+function getDefaultApiHost () {
+  if (inElectron() && config && config['electron-host']) {
+    return config['electron-host']
+  }
+  return window.location ? window.location.host : ''
+}
 
 let authKey = process.env.__OW_API_KEY || wskprops.AUTH || window.localStorage.getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 
