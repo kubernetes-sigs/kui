@@ -27,7 +27,7 @@ import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
 
 import usage from './usage'
 import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
-import { theme as settings } from '@kui-shell/core/core/settings'
+import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
 
 /** should we show low-level version info, e.g. electron version etc.? */
 const showVersionInfo = true
@@ -171,6 +171,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 
     const versionModel = process.versions
     versionModel[name] = version
+    versionModel['build'] = extras['build-info']
 
     const headerRow = table.insertRow(-1)
     headerRow.className = 'log-line header-row'
@@ -181,7 +182,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     column2.innerText = 'VERSION'
     column2.className = 'header-cell log-field'
 
-    for (const component of [name, 'electron', 'chrome', 'node', 'v8']) {
+    for (const component of [name, 'build', 'electron', 'chrome', 'node', 'v8']) {
       const version = versionModel[component]
 
       if (version !== undefined) {
@@ -244,6 +245,9 @@ const reportVersion = ({ argv }) => {
 
   if (!checkForUpdates) {
     // we were asked only to report the installed version
+    if (extras['build-info']) {
+      return `${version} (build ${extras['build-info']})`
+    }
     return version
   }
 
