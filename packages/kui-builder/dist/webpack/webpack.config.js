@@ -16,7 +16,12 @@
 
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
-const CompressionPlugin = require('brotli-webpack-plugin')
+const webCompress = process.env.WEB_COMPRESS
+console.log("compression", webCompress)
+const useGzip = webCompress === "gzip"
+console.log("useGzip", useGzip)
+const CompressionPlugin = require(useGzip? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
+
 // const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
