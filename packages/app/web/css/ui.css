@@ -2375,7 +2375,7 @@ sidecar.minimized [data-balloon]:before, sidecar.minimized [data-balloon]:after 
 .usage-error-wrapper .marked-content {
     /* marked markdown renderer section */
     white-space: normal;
-    font-size: 1rem;
+    font-size: 1em;
 }
 .usage-error-wrapper .marked-content p {
     /* marked markdown renderer paragraphs */
@@ -2474,7 +2474,7 @@ sidecar .usage-error-wrapper .hideable {
     line-height: 1.5em;
 }
 .page-content p:not(:last-child) {
-    padding: 0 0 0.5rem;
+    padding: 0 0 0.5em;
 }
 .page-content h1 {
     font-size: 3.375rem;
