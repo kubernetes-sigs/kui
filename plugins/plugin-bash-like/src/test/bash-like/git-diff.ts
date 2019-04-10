@@ -74,14 +74,14 @@ localDescribe('git diff', function (this: common.ISuite) {
      .then(sidecar.expectClosed)
      .catch(common.oops(this)))
 
-  it('should show a diff fullscreen', async () => {
+  it('should show a diff', async () => {
     try {
       await modifyTopLevelReadme()
 
       await cli.do('git diff', this.app)
         .then(res => res.app)
         .then(sidecar.expectOpen)
-        .then(sidecar.expectFullscreen)
+        // .then(sidecar.expectFullscreen)
 
       await restoreTopLevelReadme()
     } catch (err) {
