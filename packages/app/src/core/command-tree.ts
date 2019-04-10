@@ -563,6 +563,9 @@ const disambiguate = async (argv, noRetry = false) => {
     } else if (idx < argv.length - 1 && leaf.children) {
       debug('disambigaute blocked due to partial match')
       return
+    } else if (idx === 0 && resolver.disambiguate(argv[argv.length - 1])) {
+      debug('disambiguation blocked due to idx conflict', resolver.disambiguate(argv[idx]))
+      return
     }
 
     debug(`disambiguate success ${leaf.route}`)
