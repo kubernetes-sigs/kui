@@ -12,17 +12,7 @@ in the top-level [plugins](../../plugins) directory. It will be more
 difficult for you to exclude the plugins that are part of this
 repository; there is currently no way to selectively exclude these
 plugins. To build clients in this "monorepo" mode, and assuming you
-have already cloned-and-owned the default client:
-
-```bash
-cd clients/my-client
-npm run build:headless
-npm run build:electron
-npm run build:webpack
-```
-
-You needn't build all three flavors of clients; this example is
-intended to enumerate the commands.
+have already cloned-and-owned the default client: see [Packaging up Kui](packaging.md).
 
 ### Developing a client externally
 

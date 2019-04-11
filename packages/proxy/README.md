@@ -1,5 +1,7 @@
 # The Kui Proxy
 
+NOTE: Internal consumption only! Don't use this directly!
+
 It is likely that your browser deployment will not have direct API
 access to the backend API servers. This could be due to CORS
 limitations, for example. To support this use case, Kui includes a
@@ -12,7 +14,7 @@ plugins will likely not be functional when serving Kui from a browser.
 The proxy design leverages a headless build of Kui, hosted in a docker
 image, and fronted by a thin [express](https://expressjs.com/) routing
 layer. The webpack build then communicates with the proxy to evaluate
-the commands. 
+the commands.
 
 ## Building the webpack client
 
