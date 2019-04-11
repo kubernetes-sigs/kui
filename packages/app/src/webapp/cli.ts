@@ -51,7 +51,7 @@ interface ScrollOptions {
   center?: boolean | ScrollIntoViewOptions
 }
 export const scrollIntoView = (opts?: ScrollOptions) => {
-  const { when = 305, which = '.repl-active .repl-input', element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement, center = undefined, how = 'scrollIntoViewIfNeeded' } = opts || {}
+  const { when = 305, which = '.repl-active', element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement, center = undefined, how = 'scrollIntoViewIfNeeded' } = opts || {}
 
   const scroll = () => {
     try {
