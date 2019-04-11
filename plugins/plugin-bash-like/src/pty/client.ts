@@ -143,6 +143,7 @@ class Resizer {
     setTimeout(doHide, 40)
     setTimeout(doHide, 200)
     setTimeout(doHide, 400)
+    setTimeout(doHide, 800)
   }
 
   /**
@@ -382,6 +383,7 @@ export const doExec = (block: HTMLElement, cmdline: string, argv: Array<String>,
     // const args = argv.slice(1).filter(x => x)
     const ws = await getOrCreateWebSocket(cmdline)
     const resizer = new Resizer(terminal, ws)
+    let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
 
     // tell server that we are done, so that it can clean up
     window.addEventListener('beforeunload', () => {
@@ -399,14 +401,13 @@ export const doExec = (block: HTMLElement, cmdline: string, argv: Array<String>,
       }
     })
 
-    let currentScrollAsync
     terminal.on('linefeed', () => {
       try {
         if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
           if (currentScrollAsync) {
             clearTimeout(currentScrollAsync)
           }
-          currentScrollAsync = scrollIntoView({ element: terminal.element, when: 30 })
+          currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 30 })
         }
       } catch (err) {
         console.error(err)
