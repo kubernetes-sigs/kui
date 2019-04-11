@@ -115,7 +115,7 @@ const getLoginShell = async (): Promise<string> => new Promise((resolve, reject)
  */
 export const main = async (N: number) => {
   const WebSocket = await import('ws')
-  const pty = await import('node-pty')
+  const pty = require('node-pty-prebuilt') // use require because of the wrong moudle name in node-pty-prebuilt, see: https://github.com/daviwil/node-pty-prebuilt/issues/10
   // const termios = await import('termios')
 
   const port = await getPort()

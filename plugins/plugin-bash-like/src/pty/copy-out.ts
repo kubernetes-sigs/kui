@@ -41,7 +41,7 @@ export const copyOutFile = (src: string): Promise<string> => new Promise((resolv
         await ensureDir(nmDist)
         const nmSrc = dirname(dirname(require.resolve('ws/package.json')))
 
-        const requiredModules = ['ws', 'node-pty', 'nan', 'async-limiter']
+        const requiredModules = ['ws', 'node-pty-prebuilt', 'nan', 'async-limiter']
         const copyNodeModules = requiredModules.map(async _ => {
           const src = join(nmSrc, _)
           const dest = join(nmDist, _)
