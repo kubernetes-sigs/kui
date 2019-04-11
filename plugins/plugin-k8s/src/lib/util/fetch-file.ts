@@ -33,7 +33,7 @@ export const fetchFile = (url: string): Promise<Array<Buffer>> => {
   return Promise.all(urls.map(async url => {
     if (url.match(/http(s)?:\/\//)) {
       debug('fetch remote', url)
-      return needle('get', url).then(_ => _.body)
+      return needle('get', url, { follow_max: 10 }).then(_ => _.body)
     } else {
       debug('fetch local', url)
 
