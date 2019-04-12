@@ -60,7 +60,7 @@ for i in node_modules/@kui-shell/plugin-*; do
     for j in $(cat "$i"/package.json | jq -c .kui.exclude.$1 | sed -e 's/\[//' -e 's/\]//' -e 's/"//g' -e 's/,/ /g'); do
         if [[ $j != "null" ]]; then
             echo "Uninstalling $j from `basename $i`"
-            (cd "$i" && npm uninstall --save "$j")
+            (cd "$i" && npm uninstall --save --no-package-lock "$j")
         fi
     done
 done

@@ -28,11 +28,11 @@
     "debug": "4.1.1",
     "expand-home-dir": "0.0.3",
     "fs-extra": "7.0.1",
-    "js-yaml": "3.13.0",
-    "needle": "2.2.4",
+    "js-yaml": "3.13.1",
+    "needle": "2.3.0",
     "parse-duration": "0.1.1",
-    "semver": "5.6.0",
-    "tmp": "0.0.33"
+    "semver": "6.0.0",
+    "tmp": "0.1.0"
   },
   "publishConfig": {
     "access": "public"

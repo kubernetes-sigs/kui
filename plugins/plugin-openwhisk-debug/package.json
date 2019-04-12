@@ -27,10 +27,10 @@
   "dependencies": {
     "extract-zip": "1.6.7",
     "fs-extra": "7.0.1",
-    "needle": "2.2.4",
+    "needle": "2.3.0",
     "node-docker-api": "1.1.22",
     "promise-retry": "1.1.1",
-    "tmp": "0.0.33"
+    "tmp": "0.1.0"
   },
   "kui": {
     "headless": false,
