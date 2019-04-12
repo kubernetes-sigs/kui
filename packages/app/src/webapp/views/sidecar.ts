@@ -774,7 +774,7 @@ export const setMaximization = (op = 'add') => {
   }
 
   element('tab.visible').classList[op]('sidecar-full-screen')
-  eventBus.emit('/sidecar/maximize')
+  setTimeout(() => eventBus.emit('/sidecar/maximize'), 600)
 }
 
 /**
