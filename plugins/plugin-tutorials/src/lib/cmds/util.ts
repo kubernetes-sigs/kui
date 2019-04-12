@@ -19,7 +19,8 @@ const debug = require('debug')('tutorial.utils')
 import { join, basename, dirname } from 'path'
 
 /** enclosing directory for tutorials */
-export const contentDir = join(__dirname, '../../../samples/@tutorials')
+const top = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
+export const contentDir = join(top, 'samples/@tutorials')
 
 /** enclosing directory for a given tutorial */
 export const projectHome = projectName => join(contentDir, projectName)
