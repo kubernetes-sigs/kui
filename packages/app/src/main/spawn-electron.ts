@@ -464,7 +464,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
         openFixedWindow({ type: 'videos', event, url, options, size: { width: 800, height: 600 } })
       } else {
         event.preventDefault()
-        require('opn')(url)
+        require('open')(url)
       }
     })
 

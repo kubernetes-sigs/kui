@@ -13,7 +13,7 @@
     "debug": "4.1.1",
     "electron-installer-debian": "1.1.1",
     "electron-installer-dmg": "2.0.0",
-    "electron-packager": "13.1.0",
+    "electron-packager": "13.1.1",
     "electron-wix-msi": "2.1.1",
     "glob": "7.1.3",
     "minifier": "0.8.1"

@@ -36,8 +36,8 @@ let disambiguator = {} // map from command name to disambiguations
 export interface ICatchAllHandler {
   prio: number
   plugin: string // registered plugin
-  options: Object
-  offer: (argv: Array<String>) => boolean // does the handler accept the given command?
+  options: object
+  offer: (argv: Array<string>) => boolean // does the handler accept the given command?
   eval // command evaluator
 }
 export const catchalls: Array<ICatchAllHandler> = [] // handlers for command not found

@@ -31,7 +31,7 @@
     "parse-duration": "0.1.1",
     "pretty-ms": "4.0.0",
     "properties-parser": "0.3.1",
-    "tmp": "0.0.33",
+    "tmp": "0.1.0",
     "wrk": "git://github.com/starpit/node-wrk.git#latency_stacks"
   },
   "publishConfig": {
