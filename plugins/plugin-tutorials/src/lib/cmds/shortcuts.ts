@@ -18,6 +18,7 @@
 // as it conflicts with the kui-builder kui-link-source-assets.sh
 // the typescript compiler moves the json files into the builddir, if we use import
 const { name: gettingStartedDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json')
+const { name: kubernetesBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/kubernetes-basics/package.json')
 const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/coding-basics/package.json')
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
 
@@ -34,8 +35,13 @@ module.exports = (commandTree, prequire) => {
                        () => repl.qexec('tutorial play @tutorials/getting-started'),
                        { usage: { cmd: 'started', docs: gettingStartedDocs }, needsUI: true, noAuthOk: true })
 
-    // coding basics shortcut
-  commandTree.listen('/tutorial/coding/basics',
+  // kubernetes coding basics shortcut
+  commandTree.listen('/tutorial/kubernetes/starter',
+                       () => repl.qexec('tutorial play @tutorials/kubernetes-basics'),
+                       { usage: { cmd: 'basics', docs: kubernetesBasicsDocs }, needsUI: true, noAuthOk: true })
+
+  // coding basics shortcut
+  commandTree.listen('/tutorial/composer/basics',
                        () => repl.qexec('tutorial play @tutorials/coding-basics'),
                        { usage: { cmd: 'basics', docs: codingBasicsDocs }, needsUI: true, noAuthOk: true })
 

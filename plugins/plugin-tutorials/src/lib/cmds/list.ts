@@ -62,7 +62,7 @@ const doList = () => new Promise((resolve, reject) => {
         // add a "level" column
         attributes.push({ key: 'level',
           value: level,
-          css: 'deemphasize green-text sans-serif'
+          css: 'slightly-deemphasize'
         })
 
         let descriptionForDisplay = description
