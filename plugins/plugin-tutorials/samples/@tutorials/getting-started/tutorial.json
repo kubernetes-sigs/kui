@@ -6,8 +6,8 @@
   "skills": ["Command Structure", "Tutorials"],
   "steps": [
     {
-      "heading": "Developing with Composer",
-      "content": "The Composition Service offers a new programming model for building cloud-native applications by **composing cloud functions and services**. This guide introduces you to the developer experience.\n\nWhen programming compositions, the tooling runs entirely on your laptop. As you execute commands, you will have access to your local filesystem and your favorite terminal and text editor. To help with understanding complex data, the tool offers a suite of **visualizations**.",
+      "heading": "Developing with Kui",
+      "content": "Kui Shell offers a new development experience for building cloud-native applications. By combining the power of familiar **CLIs** with **visualizations** in high-impact areas, Kui enables you to manipulate complex JSON and YAML data models, integrate disparate tooling, and provides quick access to aggregate views of operational data.",
       "renderingHints": "fifty-fifty",
       "extras": {
         "learnMore": {
@@ -15,10 +15,11 @@
         },
         "nextSteps": [
           { "command": "auth", "display": "authentication", "doc": "To create and invoke, you will need to be authenticated", "when": "no-auth" },
-          { "command": "coding basics", "doc": "An **interactive tutorial** that shows how to code, deploy, and invoke" },
+          { "command": "tutorial kubernetes starter", "display": "kubernetes basics", "doc": "An **interactive tutorial** that shows some Kubernetes starter material" },
           { "command": "tutorials", "doc": "Choose from the **full list of tutorials**" },
-          { "command": "combinators", "doc": "A **reference guide** to Composer programming" },
-          { "command": "composer help", "doc": "Explore the Composition Service **CLI commands**", "when": "auth" },
+          { "command": "combinators", "doc": "A **reference guide** to Apache Composer programming" },
+          { "command": "tutorial composer basics", "display": "composer basics", "doc": "An **interactive tutorial** that shows how to code, deploy, and invoke for Apache Composer" },
+          { "command": "composer help", "doc": "Explore the Composition Service **CLI commands**", "when": "auth", "hidden": true },
           { "command": "wsk help", "doc": "Explore the **Cloud Function** commands", "hidden": true }
         ],
 

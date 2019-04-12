@@ -249,10 +249,17 @@ const showTutorial = (tutorialName, obj) => {
 
     // restore fullscreen mode, if that's where we came from
     if (pane.hasAttribute('tutorial-was-fullscreen')) {
-      pane.setAttribute('tutorial-is-fullscreen', 'tutorial-is-fullscreen')
-      document.body.classList.add('tutorial-is-fullscreen')
+      const stack = parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10) - 1
+      if (stack === 0) {
+        pane.removeAttribute('tutorial-was-fullscreen')
+        pane.setAttribute('tutorial-is-fullscreen', 'tutorial-is-fullscreen')
+        document.body.classList.add('tutorial-is-fullscreen')
+      } else {
+        pane.setAttribute('tutorial-was-fullscreen', stack.toString())
+      }
     }
 
+    hideSidecar()
     pane.classList.remove('minimized')
   }
 
@@ -466,9 +473,11 @@ const commandFromFullscreen = (pane, command, display= command) => () => {
   }
 
   if (pane.hasAttribute('tutorial-is-fullscreen')) {
-    pane.setAttribute('tutorial-was-fullscreen', 'tutorial-was-fullscreen')
+    pane.setAttribute('tutorial-was-fullscreen', '1')
     pane.removeAttribute('tutorial-is-fullscreen')
     document.body.classList.remove('tutorial-is-fullscreen')
+  } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
+    pane.setAttribute('tutorial-was-fullscreen', 1 + parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10))
   }
 
   // switch to minimized mode, unless this is a tutorial play
@@ -582,11 +591,12 @@ const transitionSteps = (stepNum, obj, pane) => {
     }
 
     let table = extras.table
-    if (extras.nextSteps) {
+    const nextSteps = extras.nextSteps || extras.alternate
+    if (nextSteps) {
       table = {
-        title: 'Next Steps',
+        title: extras.alternate ? 'Alternate Adventures' : 'Next Steps',
         columns: ['Command', 'Description'],
-        rows: extras.nextSteps.filter(_ => !_.hidden).map(({ command, display= command, doc, when }) => [
+        rows: nextSteps.filter(_ => !_.hidden).map(({ command, display= command, doc, when }) => [
           { value: display,
             when,
             onclick: commandFromFullscreen(pane, command, display) },

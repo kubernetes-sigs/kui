@@ -74,7 +74,7 @@
         "nextSteps": [
           { "command": "play @tutorials/wookie",
             "doc": "Explore a more complex composition, which uses conditional execution and data forwarding." },
-          { "command": "tutorial list",
+          { "command": "getting started",
             "doc": "Choose your own adventure!" }
         ]
       }
