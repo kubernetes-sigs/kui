@@ -4,7 +4,7 @@ body:not([data-presentation="FixedSize"]).screenshot-squish, body:not([data-pres
 body:not([data-presentation="FixedSize"]).screenshot-squish .repl-output {
     padding: 0 1em 1em;
 }
-body:not([data-presentation="FixedSize"]) .repl-block.screenshot-squish {
+body:not([data-presentation="FixedSize"]).screenshot-squish .repl-block {
     align-items: flex-start;
 }
 body:not([data-presentation="FixedSize"]).screenshot-squish sidecar.screenshot-squish {
