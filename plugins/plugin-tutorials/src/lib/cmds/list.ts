@@ -71,7 +71,7 @@ const doList = () => new Promise((resolve, reject) => {
           descriptionWrapper.appendChild(document.createTextNode(description))
 
           const isNowPlaying = document.createElement('span')
-          isNowPlaying.className = 'red-text deemphasize semi-bold small-left-pad'
+          isNowPlaying.className = 'red-text semi-bold small-left-pad'
           isNowPlaying.innerText = '(now playing)'
           descriptionWrapper.appendChild(isNowPlaying)
 
