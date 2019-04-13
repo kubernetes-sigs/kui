@@ -43,6 +43,9 @@
         "node-pty",
         "ws",
         "xterm"
+      ],
+      "webpack": [
+        "node-pty"
       ]
     }
   },

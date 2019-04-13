@@ -557,9 +557,28 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       }
       event.returnValue = 'ok'
     })
-    ipcMain.on('asynchronous-message', (event, arg) => {
+    ipcMain.on('/exec/invoke', async (event, arg) => {
       const message = JSON.parse(arg)
-      switch (message.operation) {
+      const channel = `/exec/response/${message.hash}`
+      debug('invoke', message)
+
+      try {
+        const mod = await import(message.module)
+        debug('invoke got module')
+
+        const returnValue = await mod[message.main || 'main'](message.args)
+        debug('invoke got returnValue', returnValue)
+
+        event.sender.send(channel, JSON.stringify({
+          success: true,
+          returnValue
+        }))
+      } catch (error) {
+        debug('error in exec', error)
+        event.sender.send(channel, JSON.stringify({
+          success: false,
+          error
+        }))
       }
     })
 
