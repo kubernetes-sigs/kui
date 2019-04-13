@@ -235,6 +235,12 @@ exports.cli = {
   expectJustOK: res => expectOK(res, true).then(() => res.app) // expect just ok, and no result value
 }
 
+/** wait for the xterm input to be read */
+exports.waitForXtermInput = (app, N) => {
+  const selector = `${selectors.PROMPT_BLOCK_N(N)} .xterm-helper-textarea`
+  return app.client.waitForExist(selector)
+}
+
 /** extract text from the given selector using .textContent */
 exports.getTextContent = (app, selector) => {
   return app.client.execute(selector => {

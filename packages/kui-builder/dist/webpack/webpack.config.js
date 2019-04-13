@@ -67,6 +67,7 @@ module.exports = {
     'tap', // wskflow
     'babel-core/register', // wskflow
     'aws-sdk', // wskflow
+    'node-pty', // bash-like
     './es6/crc9_1wire', // k8s
     './es6/crc17_xmodem', // k8s, openwhisk
     './es6/crc17_modbus', // k8s, openwhisk

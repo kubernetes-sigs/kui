@@ -47,6 +47,14 @@
     "tslint-config-standard": "8.0.1",
     "typescript": "3.4.3"
   },
+  "kui": {
+    "exclude": {
+      "webpack": [
+        "electron",
+        "spectron"
+      ]
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
