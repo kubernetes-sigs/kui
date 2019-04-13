@@ -81,9 +81,9 @@ const selectors = {
 const hideCurrentReplBlock = [
   { selector: '#main-repl .repl-block.processing', property: 'display', value: 'none' }
 ]
-const squishRepl = [
-  { selector: 'tab.visible .repl .repl-block:nth-last-child(2)', css: 'screenshot-squish' },
-  { selector: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-input', property: 'display', value: 'none' }
+const squishRepl = (selector: string) => [
+  { selector: 'body', css: 'screenshot-squish' },
+  { selector: `${selector} .repl-input`, property: 'display', value: 'none' }
 ]
 const squishers = {
   sidecar: [
@@ -102,8 +102,13 @@ const squishers = {
   last: squishRepl
 }
 const flatten = arrays => [].concat.apply([], arrays)
-const _squish = (which, op) => {
-  const squisher = squishers[which]
+const _squish = (which: string, selector: string, op) => {
+  let squisher = squishers[which]
+
+  if (typeof squisher === 'function') {
+    squisher = squisher(selector)
+  }
+
   if (squisher) {
     const impl = (dryRun: boolean) => squisher.map(({ selector, property, value, css }) => {
       const element = document.querySelector(selector)
@@ -123,7 +128,7 @@ const _squish = (which, op) => {
     return doNotSquish
   }
 }
-const squish = which => _squish(which, (dryRun: boolean, element: HTMLElement, property, value, css) => {
+const squish = (which: string, selector: string) => _squish(which, selector, (dryRun: boolean, element: HTMLElement, property, value, css) => {
   if (dryRun) {
     const scrollers = element.querySelectorAll('.overflow-auto')
     for (let idx = 0; idx < scrollers.length; idx++) {
@@ -137,7 +142,7 @@ const squish = which => _squish(which, (dryRun: boolean, element: HTMLElement, p
     if (property) element.style[property] = value
   }
 })
-const unsquish = which => _squish(which, (_, element: HTMLElement, property, value, css) => {
+const unsquish = (which: string, selector: string) => _squish(which, selector, (_, element: HTMLElement, property, value, css) => {
   if (css) element.classList.remove(css)
   if (property) element.style[property] = null
 })
@@ -206,7 +211,7 @@ export default async (commandTree, prequire) => {
       screenshotButton.classList.add('force-no-hover')
 
       // squish down the element to be copied, sizing it to fit
-      const doNotSquish = squish(which)
+      const doNotSquish = squish(which, selector)
 
       // which rectangle to snap; electron's rect schema differs
       // from the underlying dom's schema. sigh
@@ -400,7 +405,7 @@ export default async (commandTree, prequire) => {
 
           // undo any squishing
           if (!doNotSquish) {
-            unsquish(which)
+            unsquish(which, selector)
           }
 
           screenshotButton.classList.remove('force-no-hover')
