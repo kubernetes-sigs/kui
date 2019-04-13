@@ -42,11 +42,20 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
 
   const echoThisString = 'hi'
   localIt('should initiate a command that completes with some delay', async () => {
-    const res = await cli.do(`/bin/sleep 3; echo ${echoThisString}`, this.app)
-    await this.app.client.keys(ui.ctrlC)
-    return this.app.client.waitUntil(async () => {
-      const actualText = await this.app.client.getText(selectors.OUTPUT_N(res.count))
-      return actualText === echoThisString
-    })
+    try {
+      const res = await cli.do(`/bin/sleep 10 && echo ${echoThisString}`, this.app)
+
+      // we want the ctrlC to go to the xterm input; we need to wait for it to be visible
+      // TODO this belongs elsewhere
+      await ui.waitForXtermInput(this.app, res.count)
+
+      await this.app.client.keys(ui.ctrlC)
+      return this.app.client.waitUntil(async () => {
+        const actualText = await this.app.client.getText(selectors.OUTPUT_N(res.count))
+        return /\^C/.test(actualText)
+      })
+    } catch (err) {
+      common.oops(this)(err)
+    }
   })
 })

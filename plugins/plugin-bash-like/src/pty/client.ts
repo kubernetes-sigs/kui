@@ -26,8 +26,9 @@ import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { disableInputQueueing, pasteQueuedInput, scrollIntoView } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
+
+import { Channel, InProcessChannel } from './channel'
 
 const enterApplicationModePattern = /\x1b\[\?1h/
 const exitApplicationModePattern = /\x1b\[\?1l/
@@ -91,11 +92,11 @@ class Resizer {
 
   private quiescent: any
 
-  private readonly ws: WebSocket
+  private readonly ws: Channel
   private readonly terminal: xterm.Terminal
   private readonly resizeNow: any
 
-  constructor (terminal: xterm.Terminal, ws: WebSocket) {
+  constructor (terminal: xterm.Terminal, ws: Channel) {
     this.ws = ws
     this.terminal = terminal
 
@@ -140,6 +141,7 @@ class Resizer {
     // Notes: terminal.write (just above, in 'data') is
     // asynchronous. For now, cascade some calls so that we can
     // get it done ASAP.
+    setTimeout(doHide, 0)
     setTimeout(doHide, 40)
     setTimeout(doHide, 200)
     setTimeout(doHide, 400)
@@ -317,22 +319,39 @@ const injectTheme = (terminal: xterm.Terminal): void => {
 }
 
 /**
- * Create a websocket connection, or reuse if we already have one for the current tab
+ * Create a websocket channel to a remote bash
  *
  */
-const getOrCreateWebSocket = async (cmdline: string) => {
+const remoteChannelFactory = async (): Promise<Channel> => {
+  const url = await $('bash websocket open')
+  debug('websocket url', url)
+  return new WebSocket(url)
+}
+
+const electronChannelFactory = async (): Promise<Channel> => {
+  const channel = new InProcessChannel()
+  channel.init()
+  return channel
+}
+
+/**
+ * websocket factory for remote/proxy connection
+ *
+ */
+const getOrCreateChannel = async (cmdline: string, channelFactory): Promise<Channel> => {
   // tell the server to start a subprocess
-  const doExec = (ws: WebSocket) => ws.send(JSON.stringify({ type: 'exec', cmdline, cwd: process.cwd(), env: process.env }))
+  const doExec = (ws: Channel) => {
+    debug('exec after open')
+    ws.send(JSON.stringify({ type: 'exec', cmdline, cwd: process.cwd(), env: process.env }))
+  }
 
   const tab = document.querySelector('tab.visible')
-  const cachedws = tab['ws']
+  const cachedws = tab['ws'] as Channel
 
   if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
-    debug('allocating new websocket')
-
-    const url = await $('bash websocket open')
-    debug('websocket url', url)
-    const ws = new WebSocket(url)
+    debug('allocating new channel')
+    const ws = await channelFactory()
+    debug('allocated new channel', ws)
     tab['ws'] = ws
 
     // when the websocket is ready, handle any queued input; only then
@@ -352,348 +371,178 @@ const getOrCreateWebSocket = async (cmdline: string) => {
  *
  *
  */
+let alreadyInjectedCSS
 export const doExec = (block: HTMLElement, cmdline: string, argv: Array<String>, execOptions) => new Promise((resolve, reject) => {
-  if (inBrowser()) {
-    injectCSS({ css: require('xterm/dist/xterm.css'), key: 'xtermjs' })
-    injectCSS({ css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'), key: 'kui-xtermjs' })
-  } else {
-    injectCSS({ path: path.join(path.dirname(require.resolve('xterm/package.json')), 'dist/xterm.css'), key: 'xtermjs' })
-    injectCSS({ path: path.join(path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'), key: 'kui-xtermjs' })
+  if (!alreadyInjectedCSS) {
+    if (inBrowser()) {
+      injectCSS({ css: require('xterm/dist/xterm.css'), key: 'xtermjs' })
+      injectCSS({ css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'), key: 'kui-xtermjs' })
+    } else {
+      injectCSS({ path: path.join(path.dirname(require.resolve('xterm/package.json')), 'dist/xterm.css'), key: 'xtermjs' })
+      injectCSS({ path: path.join(path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'), key: 'kui-xtermjs' })
+    }
+    alreadyInjectedCSS = true
   }
 
   // do the rest after injectCSS
   setTimeout(async () => {
     // attach the terminal to the DOM
-    const parent = block.querySelector('.repl-result')
-    const xtermContainer = document.createElement('div')
-    xtermContainer.classList.add('xterm-container')
-    xtermContainer.classList.add('repl-output-like')
-    // xtermContainer.classList.add('zoomable')
-    parent.appendChild(xtermContainer)
+    try {
+      const parent = block.querySelector('.repl-result')
+      const xtermContainer = document.createElement('div')
+      xtermContainer.classList.add('xterm-container')
+      xtermContainer.classList.add('repl-output-like')
+      // xtermContainer.classList.add('zoomable')
+      parent.appendChild(xtermContainer)
 
-    const terminal = new xterm.Terminal({ rendererType: 'dom' })
-    terminal.open(xtermContainer)
+      const terminal = new xterm.Terminal({ rendererType: 'dom' })
+      terminal.open(xtermContainer)
 
-    // theming
-    const inject = () => injectTheme(terminal)
-    inject() // inject once on startup
-    eventBus.on('/theme/change', inject) // and re-inject when the theme changes
-    eventBus.on('/zoom', inject) // respond to font zooming
+      // theming
+      const inject = () => injectTheme(terminal)
+      inject() // inject once on startup
+      eventBus.on('/theme/change', inject) // and re-inject when the theme changes
+      eventBus.on('/zoom', inject) // respond to font zooming
 
-    // const args = argv.slice(1).filter(x => x)
-    const ws = await getOrCreateWebSocket(cmdline)
-    const resizer = new Resizer(terminal, ws)
-    let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
+      const channelFactory = inBrowser() ? remoteChannelFactory : electronChannelFactory
+      const ws: Channel = await getOrCreateChannel(cmdline, channelFactory)
+      const resizer = new Resizer(terminal, ws)
+      let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
 
-    // tell server that we are done, so that it can clean up
-    window.addEventListener('beforeunload', () => {
-      ws.send(JSON.stringify({ type: 'exit', exitCode: 0 }))
-    })
+      // tell server that we are done, so that it can clean up
+      /* window.addEventListener('beforeunload', () => {
+         try {
+         if (ws.readyState === WebSocket.OPEN) {
+         ws.send(JSON.stringify({ type: 'exit', exitCode: 0 }))
+         }
+         } catch (err) {
+         console.error(err)
+         }
+         }) */
 
-    // relay keyboard input to the server
-    let queuedInput
-    terminal.on('key', (key, ev) => {
-      if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
-        debug('queued input out back', key)
-        queuedInput += key
-      } else {
-        ws.send(JSON.stringify({ type: 'data', data: key }))
-      }
-    })
-
-    terminal.on('linefeed', () => {
-      try {
-        if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
-          if (currentScrollAsync) {
-            clearTimeout(currentScrollAsync)
-          }
-          currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 30 })
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    })
-
-    // we need to identify when the application wants us to switch
-    // into and out of "alt buffer" mode; e.g. typing "vi" then :wq
-    // from vi would enter and exit alt buffer mode, respectively.
-    terminal.addCsiHandler('h', resizer.setMode.bind(resizer))
-    terminal.addCsiHandler('l', resizer.resetMode.bind(resizer))
-
-    terminal.element.classList.add('fullscreen')
-
-    const onMessage = (data: string) => {
-      const msg = JSON.parse(data)
-
-      if (msg.type === 'state' && msg.state === 'ready') {
-        const queuedInput = disableInputQueueing()
-        if (queuedInput.length > 0) {
-          debug('queued input up front', queuedInput)
-          setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
-        }
-
-        // now that we've grabbed queued input, focus on the terminal,
-        // and it will handle input for now until the process exits
-        terminal.focus()
-      } else if (msg.type === 'data') {
-        // plain old data flowing out of the PTY; send it on to the xterm UI
-
-        if (enterApplicationModePattern.test(msg.data)) {
-          // e.g. less start
-          resizer.enterApplicationMode()
-        } else if (exitApplicationModePattern.test(msg.data)) {
-          // e.g. less exit
-          resizer.exitApplicationMode()
-        } if (enterAltBufferPattern.test(msg.data)) {
-          // we need to fast-track this; xterm.js does not invoke the
-          // setMode/resetMode handlers till too late; we might've
-          // called raw += ... even though we are in alt buffer mode
-          resizer.enterAltBufferMode()
-        } else if (exitAltBufferPattern.test(msg.data)) {
-          // ... same here
-          resizer.exitAltBufferMode()
-        } else if (!resizer.inAltBufferMode()) {
-          raw += stripClean(msg.data)
-        }
-
-        const maybeUsage = !resizer.inAltBufferMode() && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
-        if (maybeUsage) {
-          pendingUsage = true
+      // relay keyboard input to the server
+      let queuedInput
+      terminal.on('key', (key, ev) => {
+        if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
+          debug('queued input out back', key)
+          queuedInput += key
         } else {
-          terminal.write(msg.data)
+          ws.send(JSON.stringify({ type: 'data', data: key }))
         }
-      } else if (msg.type === 'exit') {
-        // server told us that it is done
-        debug('exit', msg.exitCode)
-        // ws.close()
-        terminal.blur()
+      })
 
-        ws.removeEventListener('message', onMessage)
-
-        resizer.exitAltBufferMode()
-        resizer.exitApplicationMode()
-        resizer.hideCursorOnlyRow()
-
-        resizer.destroy()
-        xtermContainer.classList.add('xterm-terminated')
-
-        if (pendingUsage) {
-          execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
+      terminal.on('linefeed', () => {
+        try {
+          if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
+            if (currentScrollAsync) {
+              clearTimeout(currentScrollAsync)
+            }
+            currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 30 })
+          }
+        } catch (err) {
+          console.error(err)
         }
+      })
 
-        // vi, then :wq, then :q, you will get an exit code of 1, but
-        // with no output (raw===''); note how we treat this as "ok",
-        // i.e. no error thrown
-        if (msg.exitCode !== 0 && raw.length > 0) {
-          const error = new Error('')
-          if (/File exists/i.test(raw)) error['code'] = 409 // re: i18n, this is for tests
-          else if (msg.exitCode !== 127 && (/no such/i.test(raw) || /not found/i.test(raw))) error['code'] = 404 // re: i18n, this is for tests
-          else error['code'] = msg.exitCode
+      // we need to identify when the application wants us to switch
+      // into and out of "alt buffer" mode; e.g. typing "vi" then :wq
+      // from vi would enter and exit alt buffer mode, respectively.
+      terminal.addCsiHandler('h', resizer.setMode.bind(resizer))
+      terminal.addCsiHandler('l', resizer.resetMode.bind(resizer))
 
-          if (msg.exitCode === 127) {
-            xtermContainer.classList.add('hide')
+      terminal.element.classList.add('fullscreen')
+
+      const onMessage = (data: string) => {
+        const msg = JSON.parse(data)
+
+        if (msg.type === 'state' && msg.state === 'ready') {
+          const queuedInput = disableInputQueueing()
+          if (queuedInput.length > 0) {
+            debug('queued input up front', queuedInput)
+            setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
+          }
+
+          // now that we've grabbed queued input, focus on the terminal,
+          // and it will handle input for now until the process exits
+          terminal.focus()
+        } else if (msg.type === 'data') {
+          // plain old data flowing out of the PTY; send it on to the xterm UI
+
+          if (enterApplicationModePattern.test(msg.data)) {
+            // e.g. less start
+            resizer.enterApplicationMode()
+          } else if (exitApplicationModePattern.test(msg.data)) {
+            // e.g. less exit
+            resizer.exitApplicationMode()
+          } if (enterAltBufferPattern.test(msg.data)) {
+            // we need to fast-track this; xterm.js does not invoke the
+            // setMode/resetMode handlers till too late; we might've
+            // called raw += ... even though we are in alt buffer mode
+            resizer.enterAltBufferMode()
+          } else if (exitAltBufferPattern.test(msg.data)) {
+            // ... same here
+            resizer.exitAltBufferMode()
+          } else if (!resizer.inAltBufferMode()) {
+            raw += stripClean(msg.data)
+          }
+
+          const maybeUsage = !resizer.inAltBufferMode() && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
+          if (maybeUsage) {
+            pendingUsage = true
           } else {
-            error['hide'] = true
+            terminal.write(msg.data)
+          }
+        } else if (msg.type === 'exit') {
+          // server told us that it is done
+          debug('exit', msg.exitCode)
+          // ws.close()
+          terminal.blur()
+
+          ws.removeEventListener('message', onMessage)
+
+          resizer.exitAltBufferMode()
+          resizer.exitApplicationMode()
+          resizer.hideCursorOnlyRow()
+
+          resizer.destroy()
+          xtermContainer.classList.add('xterm-terminated')
+
+          if (pendingUsage) {
+            execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
           }
 
-          reject(error)
-        } else {
-          if (queuedInput && queuedInput.length > 0) {
-            pasteQueuedInput(queuedInput)
-          }
+          // vi, then :wq, then :q, you will get an exit code of 1, but
+          // with no output (raw===''); note how we treat this as "ok",
+          // i.e. no error thrown
+          if (msg.exitCode !== 0 && raw.length > 0) {
+            const error = new Error('')
+            if (/File exists/i.test(raw)) error['code'] = 409 // re: i18n, this is for tests
+            else if (msg.exitCode !== 127 && (/no such/i.test(raw) || /not found/i.test(raw))) error['code'] = 404 // re: i18n, this is for tests
+            else error['code'] = msg.exitCode
 
-          resolve(true)
+            if (msg.exitCode === 127) {
+              xtermContainer.classList.add('hide')
+            } else {
+              error['hide'] = true
+            }
+
+            reject(error)
+          } else {
+            if (queuedInput && queuedInput.length > 0) {
+              pasteQueuedInput(queuedInput)
+            }
+
+            resolve(true)
+          }
         }
       }
+
+      let pendingUsage = false
+      let raw = ''
+      ws.on('message', onMessage)
+    } catch (err) {
+      debug('error in client', err)
+      reject('Internal Error')
     }
-
-    let pendingUsage = false
-    let raw = ''
-    ws.on('message', onMessage)
-
-    /* const proc = shell.exec(cmdLine, {
-       async: true,
-       silent: true,
-       env: Object.assign({}, process.env, execOptions.env || {}, {
-       IBMCLOUD_COLOR: true,
-       IBMCLOUD_VERSION_CHECK: false
-       })
-       })
-
-       // accumulate doms from the output of the subcommand
-       const parentNode = document.createElement('div')
-       let rawOut = ''
-       let rawErr = ''
-
-       const ansi2HTML = new Ansi2Html({
-       bg: 'var(--color-ui-01)',
-       fg: 'var(--color-text-01)',
-       colors: {
-       0: 'var(--color-black)',
-       1: 'var(--color-red)',
-       2: 'var(--color-green)',
-       3: 'var(--color-yellow)',
-       4: 'var(--color-blue)',
-       5: 'var(--color-magenta)',
-       6: 'var(--color-cyan)',
-       7: 'var(--color-white)',
-       8: 'var(--color-gray)',
-       9: 'var(--color-light-red)',
-       10: 'var(--color-light-green)',
-       11: 'var(--color-light-yellow)'
-       },
-       stream: true // save state across calls
-       })
-
-       let pendingUsage = false
-       proc.stdout.on('data', async data => {
-       const handleANSI = () => {
-       if (isHeadless()) {
-       return data
-       } else {
-       const span = document.createElement('span')
-       span.setAttribute('class', 'whitespace')
-       span.innerHTML = ansi2HTML.toHtml(data.toString())
-       return span
-       }
-       }
-
-       const out = data.toString()
-
-       if (execOptions.stdout) {
-       const strippedOut = stripControlCharacters(out)
-       const maybeUsage = formatUsage(cmdLine, strippedOut, { drilldownWithPip: true })
-       if (maybeUsage) {
-       pendingUsage = true
-       rawOut += out
-       // no, in case the usage comes in several batches: execOptions.stdout(maybeUsage)
-       } else {
-       const maybeKeyValue = formatKeyValue(strippedOut)
-       if (maybeKeyValue) {
-       debug('formatting as key-value')
-       resolve(maybeKeyValue)
-       } else {
-       debug('formatting as ANSI')
-       execOptions.stdout(handleANSI())
-       }
-       }
-       } else {
-       parentNode.appendChild(handleANSI())
-       rawOut += out
-       }
-       })
-
-       proc.stderr.on('data', data => {
-       rawErr += data
-
-       if (execOptions.stderr) {
-       execOptions.stderr(data.toString())
-       // stderrLines += data.toString()
-       } else {
-       const span = document.createElement('span')
-       parentNode.appendChild(span)
-       span.setAttribute('class', 'whitespace oops')
-       span.innerHTML = ansi2HTML.toHtml(data.toString())
-       }
-       })
-
-       proc.on('close', async exitCode => {
-       if (exitCode === 0) {
-       // great, the process exited normally. resolve!
-       if (execOptions && execOptions.json) {
-       // caller expects JSON back
-       try {
-       resolve(JSON.parse(rawOut))
-       } catch (err) {
-       let error = new Error('unexpected non-JSON')
-       error['value'] = rawOut
-       reject(error)
-       }
-       } else if (execOptions && execOptions.raw) {
-       // caller just wants the raw textual output
-       resolve(rawOut)
-       } else if (!rawOut && !rawErr) {
-       // in this case, the command produced nothing, but it did exit
-       // with a 0 exit code
-       resolve(true)
-       } else {
-       // else, we pass back a formatted form of the output
-       const json = extractJSON(rawOut)
-
-       const command = cmdLine.replace(/^\s*(\S+)\s+/, '$1')
-       const verb = ''
-       const entityType = ''
-       const options = {}
-
-       const noControlCharacters = stripControlCharacters(rawOut)
-       debug('noControlCharacters', noControlCharacters)
-
-       try {
-       const tables = preprocessTable(noControlCharacters.split(/^(?=Name|ID|\n\*)/m))
-       .filter(x => x)
-       debug('tables', tables)
-
-       if (tables && tables.length === 1) {
-       const { rows, trailingString } = tables[0]
-       if (!trailingString) {
-       debug('rows', rows)
-
-       options['no-header'] = true
-       const table = formatTable(command, verb, entityType, options, [rows])
-       debug('table', table)
-       if (table.length >= 1 && table[0].length > 1) {
-       return resolve(table)
-       }
-       }
-       }
-       } catch (err) {
-       console.error(err)
-       }
-
-       try {
-       const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true })
-
-       if (maybeUsage) {
-       // const message = await maybeUsage.message
-       // debug('maybeUsage', message)
-       // const commandWithoutOptions = cmdLine.replace(/\s--?\w+/g, '')
-       // return resolve(asSidecarEntity(commandWithoutOptions, message, {}, undefined, 'usage'))
-       return resolve(maybeUsage)
-       }
-       } catch (err) {
-       console.error(err)
-       }
-
-       if (json) {
-       json['type'] = 'shell'
-       json['verb'] = 'get'
-       resolve(json)
-       } if (reallyLong(rawOut)) {
-       // a lot of output? render in sidecar
-       resolve(asSidecarEntity(cmdLine, parentNode, {
-       sidecarHeader: !document.body.classList.contains('subwindow')
-       }))
-       } else {
-       resolve(parentNode)
-       }
-       }
-       } else {
-       // oops, non-zero exit code. reject!
-       debug('non-zero exit code', exitCode)
-
-       try {
-       const noControlCharacters = stripControlCharacters(rawOut)
-       const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true, stderr: rawErr && parentNode })
-       if (maybeUsage) {
-       maybeUsage['code'] = exitCode
-       reject(maybeUsage)
-       } else {
-       resolve(handleNonZeroExitCode(cmdLine, exitCode, rawOut, rawErr, execOptions, parentNode))
-       }
-       } catch (err) {
-       reject(err)
-       }
-       }
-       }) */
   }, 0)
 })
