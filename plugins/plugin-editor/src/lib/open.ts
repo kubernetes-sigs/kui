@@ -94,7 +94,7 @@ export const openEditor = async (name, options, execOptions) => {
   }
 
   injectTheme(editorWrapper) // inject right now
-  globalEventBus.on('/theme/change', () => injectTheme(editorWrapper)) // and re-inject when the theme changes
+  globalEventBus.on('/theme/change', () => injectTheme(editorWrapper, true)) // and re-inject when the theme changes
 
   /**
    * Given an editor instance, return a function that can update
@@ -296,8 +296,8 @@ const setText = (editor, options, execOptions?) => ({ code, kind }) => {
 let pre = false
 let pre2 = false
 export const preload = () => {
-  pre = true
   injectTheme()
+  pre = true
 }
 
 /**
@@ -305,8 +305,8 @@ export const preload = () => {
  *
  * @param editorWrapper null allows for pre-injecting of CSS (performance optimization)
  */
-const injectTheme = (editorWrapper?: Element) => {
-  if (pre) {
+const injectTheme = (editorWrapper?: Element, force = false) => {
+  if (pre && !force) {
     return
   }
 
