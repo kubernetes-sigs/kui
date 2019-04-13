@@ -283,10 +283,12 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .repl.sidecar-visible p {
     white-space: normal;
 }
+.repl.sidecar-visible .result-as-table .repl-result {
+    /* repl multi-table when sidecar is visible */
+    width: 100%;
+}
 .repl.sidecar-visible .result-as-table .result-table, body.sidecar-is-minimized .result-as-table .result-table {
     /* repl table when sidecar is visible */
-    table-layout: fixed;
-    box-shadow: none;
     width: 100%;
 }
 .repl .result-as-multi-table .result-table {
@@ -527,11 +529,14 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .result-table .entity-name-group {
     padding-left: 0.75em;
-/*    min-width: 18em;
-    max-width: 34em;*/
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+.repl.sidecar-visible .result-table .entity-name-group {
+    /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
+    width: 100%;
+    max-width: 0; /* important! 0 not 0% */
 }
 .result-table .entity-name-group-narrow {
     max-width: 16em;
@@ -654,6 +659,10 @@ body[kui-theme-style="dark"] .result-table:not(.result-table-with-custom-entity-
     display: inline-flex;
     justify-content: center;
     align-items: center;
+}
+badge:only-child {
+    /* we only need margins around badges if there is more than one badge */
+    margin: 0;
 }
 badge {
     transition: color 300ms ease-in-out, background-color 300ms ease-in-out;
@@ -1343,7 +1352,7 @@ code.fancy-code, code.fancy-code.hljs {
 }
 .very-narrow {
     /* please note: used in tandem with not-too-wide */
-    width: 6em;
+    width: 6em !important;
 }
 .a-few-numbers-wide {
     width: 5em;
@@ -1542,6 +1551,9 @@ sidecar .result-as-table .big-top-pad:first-child {
 }
 
 /* activation logs */
+body[kui-theme-style="dark"] .log-lines, body[kui-theme-style="dark"] .list-paginator, body[kui-theme-style="dark"] .repl .log-lines .log-line .log-field, body[kui-theme-style="dark"] .result-as-table .result-table, body[kui-theme-style="dark"] .result-as-table.result-table {
+    border-color: var(--color-ui-03);
+}
 .log-lines {
     border: 1px solid var(--color-ui-04);
 }
@@ -1567,7 +1579,9 @@ sidecar .result-as-table .big-top-pad:first-child {
     white-space: nowrap;
     text-overflow: ellipsis;
     opacity: 1; /* see issue #132 */
-    /* border-top: 1px solid var(--color-ui-04); */
+}
+.repl .log-lines .log-line .log-field {
+    border-top: 1px solid var(--color-ui-04);
 }
 .log-lines .log-line .log-field.log-message {
     vertical-align: middle;
@@ -2949,4 +2963,35 @@ body {
     .log-lines .log-field.start-time-field {
         display: none;
     }
+}
+
+body[kui-theme-option="minimal"] .result-as-table .result-table {
+    border: none;
+}
+body[kui-theme-option="minimal"] .result-as-table .result-table .header-row .header-cell, body[kui-theme-option="minimal"] .result-as-table.result-table .header-row .header-cell {
+    background: none;
+    border-bottom-color: var(--color-base04);
+}
+body[kui-theme-option="minimal"] .result-as-table .log-lines .log-line .log-line-bar-field, body[kui-theme-option="minimal"] .repl .log-lines .log-line .log-field {
+    border: none;
+}
+body[kui-theme-option="minimal"] .result-table .entity td {
+    background: none;
+}
+body[kui-theme-option="minimal"] .log-lines .log-line {
+    height: 2em;
+}
+body[kui-theme-option="minimal"] .result-table .entity .entity-attributes {
+    background: none !important;
+    height: 2em;
+}
+body[kui-theme-option="minimal"] .entity-attributes > span {
+    border: none;
+}
+body[kui-theme-option="minimal"] badge {
+    height: 1.75em;
+    line-height: 1.75em;
+}
+body[kui-theme-option="minimal"] .result-as-table .result-table-title {
+    padding-left: 0.75em;
 }
