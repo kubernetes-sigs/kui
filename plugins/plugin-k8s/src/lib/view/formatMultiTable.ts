@@ -85,7 +85,6 @@ export const formatTable = (model: Array<any>, { usePip = false, viewName = 'pre
     resultDomOuter.classList.add('padding-content')
     resultDomOuter.classList.add('scrollable')
     resultDomOuter.classList.add('scrollable-auto')
-    resultDomOuter.classList.add('somewhat-smaller-text')
     resultDomOuter.appendChild(resultDom)
 
     resultDom.classList.add('result-as-table')
