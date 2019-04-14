@@ -33,7 +33,7 @@
     <meta name="twitter:data2" value="${ogData2}" />
   </head>
 
-  <body class='still-loading ${bodyCss}'><div class="page">
+  <body class='still-loading not-tabbable ${bodyCss}'><div class="page">
     <main class="main">
       <div class='left-tab-stripe'>
         <div class="application-icon" id="about-button" style="background-image:url('${largeIcon}')"></div>
@@ -249,7 +249,7 @@
       </div> <!-- tab-container -->
     </main>
 
-    <textarea id='invisible-global-input' autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+    <textarea id='invisible-global-input' class="not-tabbable" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 
     <div id='restart-needed-warning'>
       <i class='fas fa-heart-broken'></i>

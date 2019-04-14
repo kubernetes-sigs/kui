@@ -35,3 +35,15 @@ tab:not(.xterm-alt-buffer-mode) .xterm-rows > div:empty {
     opacity: 1;
     color: var(--color-text-02);
 }
+
+/* try to disable xterm components for terminated processes */
+.xterm-terminated .xterm-helper-textarea {
+    display: none;
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;    
+}
