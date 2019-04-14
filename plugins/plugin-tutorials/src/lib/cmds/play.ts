@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ const injectHTML = () => {
   let loader
 
   try {
-    loader = loadHTML({ html: require('@kui-shell/plugin-tutorials/web/html/index.html').toString() })
+    loader = Promise.resolve(require('@kui-shell/plugin-tutorials/web/html/index.html').default)
     debug('webpack html inject')
   } catch {
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
