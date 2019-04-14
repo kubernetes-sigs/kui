@@ -203,8 +203,10 @@ exports.cli = {
     return exports.cli.expectOKWithCustom({ expect, exact })(res)
       .catch(err1 => {
         // use .textContent as a backup plan
+        console.error('!!!! nope on innerText', err1)
         return exports.cli.expectOKWithTextContent(expect, exact)(res)
           .catch(err2 => {
+            console.error('!!!! nope on textContext', err2)
             throw err1
           })
       })
