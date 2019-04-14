@@ -1179,6 +1179,14 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
+.not-tabbable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;    
+}
 .map-key {
     color: var(--color-map-key);
 }

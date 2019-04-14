@@ -100,6 +100,13 @@ export default () => {
     }
   }
 
+  /** we don't want document.body to receive focus */
+  window.addEventListener('blur', () => {
+    if (document.activeElement === document.body) {
+      setTimeout(() => getCurrentPrompt().focus(), 0)
+    }
+  })
+
   /**
    * If the user clicks on a blank region, the browser may refocus on
    * document.body; this isn't particularly helpful. This bit of logic
