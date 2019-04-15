@@ -517,19 +517,28 @@ const prepareUsage = async (command: string) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
 interface IOpts {
+  block: Element
   argv: Array<string>
   argvNoOptions: Array<string>
   execOptions
   parsedOptions
   command: string
+  createOutputStream?: any
 }
 const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (resolveBase, reject) => {
-  const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
+  const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
   debug('exec', command)
 
   const verb = argv[1]
   const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
   const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
+
+  if (!isHeadless() && command === 'kubectl' && verb === 'edit') {
+    debug('redirecting kubectl edit to shell')
+    repl.qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
+      .then(resolveBase).catch(reject)
+    return
+  }
 
   //
   // output format option

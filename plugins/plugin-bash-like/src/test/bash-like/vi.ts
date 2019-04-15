@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, keys, selectors, sidecar } = ui
+const { cli, keys, selectors, sidecar, sleep } = ui
 const { localDescribe } = common
 
 import * as assert from 'assert'
@@ -24,11 +24,8 @@ import { readFileSync, unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
 
-/** sleep for the given number of milliseconds */
-const sleep = (millis: number) => new Promise(resolve => setTimeout(resolve, millis))
-
 /** helpful selectors */
-const rows = `${selectors.PROMPT_BLOCK_N(0)} .xterm-container .xterm-rows`
+const rows = selectors.xtermRows(0)
 const lastRow = `${rows} > div:last-child`
 
 localDescribe('xterm vi 1', function (this: common.ISuite) {

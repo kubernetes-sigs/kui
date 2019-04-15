@@ -56,7 +56,7 @@ describe('electron namespace', function (this: common.ISuite) {
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
             if (!errOk) {
-              common.oops(this)(err)
+              return common.oops(this)(err)
             }
           })
       })

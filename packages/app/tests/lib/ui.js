@@ -71,6 +71,7 @@ selectors.LIST_RESULT_BY_N_FOR_NAME = (N, name) => `${selectors.LIST_RESULTS_N(N
 selectors.BY_NAME = name => `.entity:not(.header-row)[data-name="${name}"]`
 selectors.LIST_RESULT_BY_N_AND_NAME = (N, name) => `${selectors.LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
 selectors.OK_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-output .ok`
+selectors.xtermRows = N => `${selectors.PROMPT_BLOCK_N(N)} .xterm-container .xterm-rows`
 exports.selectors = selectors
 
 const expectOK = (appAndCount, opt) => {
@@ -209,7 +210,7 @@ exports.cli = {
           })
       })
   },
-  expectOKWithTextContent: (expect, exact = false, sel = ' ') => async res => {
+  expectOKWithTextContent: (expect, exact = false, failFast = true, sel = ' ') => async res => {
     // Notes: webdriverio's getText seems to use .innerText to extract
     // the text from a given selector; this is quite unreliable in
     // terms of whitespace preservation; e.g. <div><span>
@@ -224,7 +225,11 @@ exports.cli = {
     } else {
       if (txt.indexOf(expect) < 0) {
         console.error(`Expected string not found expected=${expect} idx=${txt.indexOf(expect)} actual=${txt}`)
-        assert.ok(txt.indexOf(expect) >= 0)
+        if (failFast) {
+          assert.ok(txt.indexOf(expect) >= 0)
+        } else {
+          return false
+        }
       }
     }
   },
@@ -555,3 +560,6 @@ exports.waitForActivation = waitForActivationOrSession('activation')
 exports.waitForSession = waitForActivationOrSession('session')
 
 exports.apiHost = constants.API_HOST
+
+/** sleep for the given number of milliseconds */
+exports.sleep = (millis /*: number */) => new Promise(resolve => setTimeout(resolve, millis))
