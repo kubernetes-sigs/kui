@@ -158,18 +158,18 @@ function docker {
 # to our BUILDDIR directory:
 function assembleHTMLPieces {
     cp "$APPDIR"/build/index-webpack.html "$BUILDDIR"/index.html
-    cp -r "$CORE_HOME"/web/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
+    cp -a "$CORE_HOME"/web/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
 
     # if we are using a build config override, then copy in its assets
     THEME="$CLIENT_HOME"/theme
     if [ -d "$THEME"/css ]; then
-        cp -r "$THEME"/css/ "$BUILDDIR" # !!! intentional trailing slash: css/
+        cp -a "$THEME"/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
     fi
     if [ -d "$THEME"/icons ]; then
-        cp -r "$THEME"/icons "$BUILDDIR" # !!! intentional NO trailing slash: icons
+        cp -a "$THEME"/icons "$BUILDDIR" # Note: we want to copy the entire directory here, not just the contents
     fi
     if [ -d "$THEME"/images ]; then
-        cp -r "$THEME"/images "$BUILDDIR" # !!! intentional NO trailing slash: images
+        cp -a "$THEME"/images "$BUILDDIR" # Note: we want to copy the entire directory here, not just the contents
     fi
 }
 
