@@ -26,16 +26,12 @@ const { cli, selectors, sidecar } = ui
 
 /** expect the given folder within the help tree */
 // NOTE: Mengting Yan: webdriverio getText in linux chromium seems to return all texts of a heading element in a single line, fix me if it's not true
-export const header = folder => process.env.MOCHA_RUN_TARGET === 'webpack' && process.platform === 'linux' ?
-`Shell Docs/${folder}` :
-`Shell Docs
+export const header = folder => `Shell Docs
 /
 ${folder}`
 
 /** expect the given sub-folder */
-export const header2 = (folder1, folder2) => process.env.MOCHA_RUN_TARGET === 'webpack' && process.platform === 'linux' ?
-`${header(folder1)}/${folder2}` :
-`${header(folder1)}
+export const header2 = (folder1, folder2) => `${header(folder1)}
 /
 ${folder2}`
 
