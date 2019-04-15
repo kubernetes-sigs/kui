@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,32 @@ const debug = Debug('plugins/bash-like/cmds/catchall')
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 
 /**
+ * Command handler that dispatches to an outer shell
+ *
+ */
+export const dispatchToShell = async ({ block, command, argv, argvNoOptions, execOptions, parsedOptions, createOutputStream }) => {
+  debug('handling catchall', command)
+
+  /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
+  const cleanUpError = err => {
+    if (err.message && typeof err.message === 'string') {
+      err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
+    }
+    throw err
+  }
+
+  if (isHeadless()) {
+    const { doExec } = await import('./bash-like')
+    return doExec(command, argvNoOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
+      .catch(cleanUpError)
+  } else {
+    const { doExec } = await import('../../pty/client')
+    return doExec(block, command.replace(/^!\s+/, ''), Object.assign({}, { stdout: createOutputStream() }, execOptions))
+      .catch(cleanUpError)
+  }
+}
+
+/**
  * On preload, register the catchall handler
  *
  */
@@ -31,27 +57,7 @@ export const preload = (commandTree) => {
     //
     return commandTree.catchall(
       () => true, // we will accept anything
-      async ({ block, command, argv, argvNoOptions, execOptions, parsedOptions, createOutputStream }) => {
-        debug('handling catchall', command)
-
-        /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
-        const cleanUpError = err => {
-          if (err.message && typeof err.message === 'string') {
-            err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
-          }
-          throw err
-        }
-
-        if (isHeadless()) {
-          const { doExec } = await import('./bash-like')
-          return doExec(command, argvNoOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
-            .catch(cleanUpError)
-        } else {
-          const { doExec } = await import('../../pty/client')
-          return doExec(block, command, argv, Object.assign({}, { stdout: createOutputStream() }, execOptions))
-            .catch(cleanUpError)
-        }
-      },
+      dispatchToShell, // command handler dispatches to outer shell
       0, // priority
       { noAuthOk: true })
   }

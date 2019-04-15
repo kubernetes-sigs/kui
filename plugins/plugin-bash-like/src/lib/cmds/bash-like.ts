@@ -38,6 +38,7 @@ import { reallyLong, handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { localFilepath } from '../util/usage-helpers'
+import { dispatchToShell } from './catchall'
 
 /**
  * Strip off ANSI and other control characters from the given string
@@ -316,7 +317,7 @@ const cd = cmd => ({ command, execOptions, parsedOptions }) => {
  */
 export default (commandTree, prequire) => {
   const shellFn = ({ command, execOptions, parsedOptions }) => doShell(repl.split(command, false), parsedOptions, execOptions)
-  commandTree.listen('/!', shellFn, { docs: 'Execute a UNIX shell command', requiresLocal: true })
+  commandTree.listen('/!', dispatchToShell, { docs: 'Execute a UNIX shell command', noAuthOk: true, requiresLocal: true })
 
   commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true, requiresLocal: true })
 }

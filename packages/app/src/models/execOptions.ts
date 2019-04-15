@@ -45,6 +45,7 @@ export interface IExecOptions {
   showHeader?: boolean
   alreadyWatching?: boolean
 
+  createOutputStream?: any
   stdout?: (str: string) => any
   stderr?: (str: string) => any
 

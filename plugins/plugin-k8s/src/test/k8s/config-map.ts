@@ -67,7 +67,7 @@ describe('electron configmap', function (this: common.ISuite) {
             await expectContent(content)
           }
         } catch (err) {
-          common.oops(this)(err)
+          return common.oops(this)(err)
         }
       })
     }

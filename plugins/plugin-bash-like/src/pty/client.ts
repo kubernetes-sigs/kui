@@ -372,7 +372,9 @@ const getOrCreateChannel = async (cmdline: string, channelFactory): Promise<Chan
  *
  */
 let alreadyInjectedCSS
-export const doExec = (block: HTMLElement, cmdline: string, argv: Array<String>, execOptions) => new Promise((resolve, reject) => {
+export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new Promise((resolve, reject) => {
+  debug('doExec', cmdline)
+
   if (!alreadyInjectedCSS) {
     if (inBrowser()) {
       injectCSS({ css: require('xterm/dist/xterm.css'), key: 'xtermjs' })
