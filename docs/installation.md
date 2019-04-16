@@ -12,7 +12,8 @@ provides a seamless transition to graphics, and a lightweight,
 platform-neutral initial download.
 
 **Prerequisites** the headless clients require that you have Node.js
-8.15.0 or greater already installed on your system.
+8.15.0 or greater already installed on your system. To install on your machine,
+consult the official [NodeJS documentation](https://nodejs.org) .
 
 [Kui-headless.tar.bz2](https://tarball.kui-shell.org) **|** [Kui-headless.zip](https://zip.kui-shell.org)
 
