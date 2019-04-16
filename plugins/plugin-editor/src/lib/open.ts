@@ -193,7 +193,7 @@ export const openEditor = async (name, options, execOptions) => {
           isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
           isModifiedPart.setAttribute('data-balloon-pos', 'left')
 
-          addNameToSidecarHeader(sidecar, nameDiv, entity.packageName, undefined, entity.prettyKind || entity.kind || entity.prettyType || entity.viewName)
+          addNameToSidecarHeader(sidecar, nameDiv, entity.packageName, undefined, entity.prettyKind || entity.kind || entity.prettyType || entity.viewName || entity.type)
           addVersionBadge(entity, { clear: true })
         }
       }
