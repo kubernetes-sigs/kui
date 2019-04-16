@@ -65,6 +65,7 @@ module.exports = {
     'dns', // modules/openwhisk/node_modules/retry/example/dns.js
     'tls', // needed by request
     'tap', // wskflow
+    'request', // needed by some apache-composer samples
     'babel-core/register', // wskflow
     'aws-sdk', // wskflow
     'node-pty', // bash-like
@@ -191,7 +192,7 @@ module.exports = {
       // end of ignore-loader
       //
       // { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
-      { test: /samples\/.*\.js$/, use: 'raw-loader' }, // don't try to parse out sample input, e.g. for dependencies
+      // { test: /samples\/.*\.js$/, use: 'raw-loader' }, // don't try to parse out sample input, e.g. for dependencies
       { test: /\.js.map$/, use: 'ignore-loader' },
       { test: /\.py$/, use: 'file-loader' },
       { test: /\.ico$/, use: 'file-loader' },
