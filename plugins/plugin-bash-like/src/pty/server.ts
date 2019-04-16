@@ -19,7 +19,6 @@
 
 import * as fs from 'fs'
 import { promisify } from 'util'
-import { createServer } from 'net'
 import { dirname, join } from 'path'
 import { exec, spawn } from 'child_process'
 
@@ -35,7 +34,9 @@ type ExitHandler = (exitCode: number) => Promise<void>
  * Allocate a port
  *
  */
-const getPort = (): Promise<number> => new Promise((resolve, reject) => {
+const getPort = (): Promise<number> => new Promise(async (resolve, reject) => {
+  const { createServer } = await import('net')
+
   const iter = () => {
     const port = portRange
     portRange += 1

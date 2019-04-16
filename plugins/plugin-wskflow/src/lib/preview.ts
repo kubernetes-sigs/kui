@@ -81,7 +81,7 @@ const registration: PluginRegistration = (commandTree, prequire) => {
       if (filepath.indexOf('@') >= 0) {
         debug('readFile for webpack, built-in', filepath)
         try {
-          const data = await import('@kui-shell/plugin-apache-composer/lib' + filepath.replace(/^\/?plugins\/plugin-apache-composer\/lib/, ''))
+          const data = await import('raw-loader!@kui-shell/plugin-apache-composer/samples' + filepath.replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
 
           resolve(data)
         } catch (err) {
@@ -131,6 +131,8 @@ const registration: PluginRegistration = (commandTree, prequire) => {
 
     // create a fake action/entity record
     const formatForUser = (mode: string) => async (composition: ICompositionWithCode) => {
+      debug('formatForUser', composition)
+
       const { ast } = composition
       const code = await readFile(input)
       // pass through cli options for the wskflow renderer

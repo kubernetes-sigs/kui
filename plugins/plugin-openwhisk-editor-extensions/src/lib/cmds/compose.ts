@@ -224,8 +224,8 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
     // otherwise, we will open the editor showing a template file
     return new Promise((resolve, reject) => {
       const readViaImport = () => {
-        debug('readViaImport', findFile(template), findFile(template).replace(/^plugins\/plugin-apache-composer\/samples\/@demos/, ''))
-        resolve(require('raw-loader!@kui-shell/plugin-apache-composer/samples/@demos' + findFile(template).replace(/^plugins\/plugin-apache-composer\/samples\/@demos/, '')))
+        debug('readViaImport', findFile(template), findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
+        resolve(require('raw-loader!@kui-shell/plugin-apache-composer/samples' + findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')).default)
       }
 
       const readViaFilesystem = () => {
@@ -325,7 +325,7 @@ export const newAction = ({ prequire, cmd = 'new', type = 'actions', _kind = def
 
   // generate AST, if we were given a template
   const compile = () => type === 'compositions' && options.template
-    ? inBrowser() ? import('@kui-shell/plugin-apache-composer/samples/@demos' + findFile(options.template).replace(/^plugins\/plugin-apache-composer\/samples\/@demos/, ''))
+    ? inBrowser() ? import('@kui-shell/plugin-apache-composer/samples' + findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
     : generateAST(code, options.template, options.kind || defaults.kind)
     : Promise.resolve()
 

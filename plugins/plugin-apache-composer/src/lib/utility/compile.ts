@@ -48,7 +48,7 @@ export const sourceToComposition = ({ inputFile, name = '', recursive = false })
   return loadSourceCode(inputFile, localCodePath) // check inputfile extension and existence and then return the source code
     .then(sourceCode => loadComposition(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input
     .then(composition => resolve(compileComposition(composition, name))) // parse and compile composition and get {composition, ast, version} object
-    .catch(err => reject(err))
+    .catch(reject)
 })
 
 const loadSourceCode = (inputFile, localCodePath) => new Promise(async (resolve, reject) => {
@@ -60,7 +60,8 @@ const loadSourceCode = (inputFile, localCodePath) => new Promise(async (resolve,
   } else {
     debug('readFile for webpack', localCodePath)
     try {
-      const data = await import('@kui-shell/plugin-apache-composer/lib' + localCodePath.replace(/^\/?plugins\/plugin-apache-composer\/lib/, ''))
+      const data = await import('@kui-shell/plugin-apache-composer/samples' + localCodePath.replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
+      debug('readFile for webpack done', data)
       resolve(data)
     } catch (err) {
       console.error(err)
@@ -72,7 +73,10 @@ const loadSourceCode = (inputFile, localCodePath) => new Promise(async (resolve,
 })
 
 export const loadComposition = (inputFile, originalCode?, localCodePath?) => {
-  if (inBrowser() && originalCode) return originalCode
+  if (inBrowser() && originalCode) {
+    debug('loadComposition for webpack', originalCode)
+    return originalCode
+  }
 
   const localSourcePath = localCodePath || findFile(expandHomeDir(inputFile))
 
@@ -230,6 +234,8 @@ export const implicitInputFile = (inputFile, name) => {
  *
  */
 export const compileComposition = (composition, name) => {
+  debug('compileComposition', composition)
+
   let result
   try {
     result = Composer.parse(composition)
