@@ -1,8 +1,12 @@
 FROM fholzer/nginx-brotli
 
 RUN mkdir /etc/nginx/certificates
-COPY .keys/ssl.crt /etc/nginx/certificates/cert.pem
-COPY .keys/ssl.key /etc/nginx/certificates/key.pem
+COPY .keys/cert.pem /etc/nginx/certificates/cert.pem
+COPY .keys/key.pem /etc/nginx/certificates/key.pem
+
+# default passphrase for the self-signed certificates; this Dockerfile
+# is intended only for testing, do not use this for production
+RUN echo kuishell > /etc/nginx/certificates/kui.pass
 
 COPY conf.d /etc/nginx/conf.d
 COPY build /usr/share/nginx/html

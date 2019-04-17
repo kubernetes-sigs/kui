@@ -50,15 +50,13 @@ export const dispatchToShell = async ({ block, command, argv, argvNoOptions, exe
  *
  */
 export const preload = (commandTree) => {
-  if (!inBrowser()) {
-    //
-    // if we aren't running in a browser, then pass any command not
-    // found exceptions to the outer shell
-    //
-    return commandTree.catchall(
-      () => true, // we will accept anything
-      dispatchToShell, // command handler dispatches to outer shell
-      0, // priority
-      { noAuthOk: true })
-  }
+  //
+  // if we aren't running in a browser, then pass any command not
+  // found exceptions to the outer shell
+  //
+  return commandTree.catchall(
+    () => true, // we will accept anything
+    dispatchToShell, // command handler dispatches to outer shell
+    0, // priority
+    { noAuthOk: true, inBrowserOk: true })
 }

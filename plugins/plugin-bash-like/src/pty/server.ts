@@ -21,10 +21,11 @@ import * as fs from 'fs'
 import { promisify } from 'util'
 import { dirname, join } from 'path'
 import { exec, spawn } from 'child_process'
+import { createServer } from 'https'
 
 import { Channel } from './channel'
 
-let portRange = 8082
+let portRange = 8083
 const servers = []
 
 /** handler for shell/pty exit */
@@ -192,24 +193,40 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
  * Spawn the shell
  * Compliments of http://krasimirtsonev.com/blog/article/meet-evala-your-terminal-in-the-browser-extension
  */
-export const main = async (N: number) => {
-  const WebSocket = await import('ws')
-  const port = await getPort()
-  const wss = new WebSocket.Server({ port })
+export const main = (N: number) => {
+  console.error('!!!!!!!!!!', process.cwd())
+  const server = createServer({
+    key: fs.readFileSync('.keys/key.pem', 'utf8'),
+    cert: fs.readFileSync('.keys/cert.pem', 'utf8'),
+    passphrase: process.env.PASSPHRASE,
+    requestCert: false,
+    rejectUnauthorized: false
+  })
 
-  const cleanupCallback = await disableBashSessions()
-  const exitNow = async (exitCode: number) => {
-    await cleanupCallback(exitCode)
-    wss.close()
-    servers.splice(idx, 1)
-    process.exit(exitCode)
-  }
+  return new Promise(async resolve => {
+    const port = await getPort()
 
-  const idx = servers.length
-  servers.push(wss)
-  wss.on('connection', onConnection(exitNow))
+    server.listen(port, async () => {
 
-  return port
+      const WebSocket = await import('ws')
+      const wss = new WebSocket.Server({ server })
+
+      const cleanupCallback = await disableBashSessions()
+      const idx = servers.length
+      const exitNow = async (exitCode: number) => {
+        await cleanupCallback(exitCode)
+        wss.close()
+        server.close()
+        servers.splice(idx, 1)
+        // process.exit(exitCode)
+      }
+
+      servers.push({ wss, server })
+      wss.on('connection', onConnection(exitNow))
+
+      resolve(port)
+    })
+  })
 }
 
 /**
@@ -224,63 +241,81 @@ export default (commandTree, prequire) => {
   commandTree.listen('/bash/websocket/open', ({ execOptions }) => new Promise(async (resolve, reject) => {
     const N = count++
 
-    const { ipcRenderer } = await import('electron')
+    /**
+     * Return a websocket URL for the given port
+     *
+     */
+    const resolveWithHost = (port: number) => {
+      resolve(`wss://localhost:${port}/bash/${N}`)
+    }
 
-    ipcRenderer.send('/exec/invoke', JSON.stringify({
-      module: '@kui-shell/plugin-bash-like/pty/server',
-      hash: N
-    }))
+    if (execOptions.isProxied) {
+      return main(N).then(resolveWithHost).catch(reject)
+    } else {
+      const { ipcRenderer } = await import('electron')
 
-    const channel = `/exec/response/${N}`
-    ipcRenderer.once(channel, (event, arg) => {
-      const message = JSON.parse(arg)
-      if (!message.success) {
-        reject(message.error)
-      } else {
-        const port = message.returnValue
-        resolve(`ws://127.0.0.1:${port}/bash/${N}`)
-      }
-    })
-
-    // path to the build version of ourself
-    /*if (!cachedSelf) {
-      let self = require.resolve('@kui-shell/plugin-bash-like/pty/server')
-      if (/\.asar\//.test(self)) {
-      const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
-      cachedSelf = await copyOutFile(self)
-      selfHome = dirname(cachedSelf)
-      } else {
-      const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
-      await copyOutFile(self)
-      cachedSelf = self
-      selfHome = dirname(dirname(dirname(require.resolve('@kui-shell/prescan'))))
-      }
+      if (!ipcRenderer) {
+        const error = new Error('electron not available')
+        error['code'] = 127
+        return reject(error)
       }
 
-      // reinvoke ourselves in a separate process
-      const child = spawn('node', [cachedSelf, N], {
-      cwd: selfHome,
-      env: process.env
-      })
-      children.push(child)
+      ipcRenderer.send('/exec/invoke', JSON.stringify({
+        module: '@kui-shell/plugin-bash-like/pty/server',
+        hash: N
+      }))
 
-      child.stdout.on('data', data => {
-      const readyPattern = /^ready (\d+)\s*$/
-      const match = data.toString().match(readyPattern)
-      if (match) {
-      const port = match[1]
-      resolve(`ws://localhost:${port}/bash/${N}`)
-      }
+      const channel = `/exec/response/${N}`
+      ipcRenderer.once(channel, (event, arg) => {
+        const message = JSON.parse(arg)
+        if (!message.success) {
+          reject(message.error)
+        } else {
+          const port = message.returnValue
+          resolveWithHost(port)
+        }
       })
 
-      child.stderr.on('data', data => {
-      console.error(data.toString())
-      })
+      // path to the build version of ourself
+      /*if (!cachedSelf) {
+        let self = require.resolve('@kui-shell/plugin-bash-like/pty/server')
+        if (/\.asar\//.test(self)) {
+        const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
+        cachedSelf = await copyOutFile(self)
+        selfHome = dirname(cachedSelf)
+        } else {
+        const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
+        await copyOutFile(self)
+        cachedSelf = self
+        selfHome = dirname(dirname(dirname(require.resolve('@kui-shell/prescan'))))
+        }
+        }
 
-      child.on('close', (exitCode: number) => {
-      // debug('exitCode', exitCode)
-      children.splice(N, 1)
-      })*/
+        // reinvoke ourselves in a separate process
+        const child = spawn('node', [cachedSelf, N], {
+        cwd: selfHome,
+        env: process.env
+        })
+        children.push(child)
+
+        child.stdout.on('data', data => {
+        const readyPattern = /^ready (\d+)\s*$/
+        const match = data.toString().match(readyPattern)
+        if (match) {
+        const port = match[1]
+        resolve(`ws://localhost:${port}/bash/${N}`)
+        }
+        })
+
+        child.stderr.on('data', data => {
+        console.error(data.toString())
+        })
+
+        child.on('close', (exitCode: number) => {
+        // debug('exitCode', exitCode)
+        children.splice(N, 1)
+        })*/
+    }
   }), { noAuthOk: true })
 }
 

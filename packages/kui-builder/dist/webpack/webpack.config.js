@@ -74,6 +74,7 @@ module.exports = {
     './es6/crc17_modbus', // k8s, openwhisk
     './es6/crc17_kermit', // k8s, openwhisk
     './es6/crc17_ccitt', // k8s, openwhisk
+    'ws',
     'readline',
     'chokidar',
     'fsevents',

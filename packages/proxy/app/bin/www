@@ -19,8 +19,9 @@ app.set('port', port)
 
 /** server options */
 const options = {
-  key: fs.readFileSync('.keys/ssl.key'),
-  cert: fs.readFileSync('.keys/ssl.crt'),
+  key: fs.readFileSync('.keys/key.pem'),
+  cert: fs.readFileSync('.keys/cert.pem'),
+  passphrase: process.env.PASSPHRASE,
   requestCert: false,
   rejectUnauthorized: false
 }

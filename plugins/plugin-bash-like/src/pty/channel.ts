@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/pty/channel')
 
-import * as WebSocket from 'ws'
+// import * as WebSocket from 'ws'
 import * as EventEmitter from 'events'
 
 import { onConnection, disableBashSessions } from './server'
@@ -26,7 +26,7 @@ export interface Channel {
   send: (msg: string) => void
   on: (eventType: string, handler: any) => void
   removeEventListener: (eventType: string, handler: any) => void
-  readyState: string
+  readyState: number
 }
 
 /**
@@ -69,5 +69,40 @@ export class InProcessChannel extends EventEmitter implements Channel {
 
   removeEventListener (eventType: string, handler: any) {
     this.off(eventType, handler)
+  }
+}
+
+/**
+ * Thin wrapper on top of browser WebSocket impl
+ *
+ */
+export class WebSocketChannel extends WebSocket implements Channel {
+  constructor (url: string) {
+    debug('WebSocketChannel init', url)
+    super(url, undefined /*, { rejectUnauthorized: false } */)
+  }
+
+  on (eventType: string, handler: any) {
+    switch (eventType) {
+      case 'open':
+        debug('WebSocketChannel: installing onopen handler')
+        this.onopen = handler
+        break
+
+      case 'message':
+        debug('WebSocketChannel: installing onmessage handler')
+        this.onmessage = message => handler(message.data)
+        break
+
+      case 'error':
+        debug('WebSocketChannel: installing onerror handler')
+        this.onerror = handler
+        break
+
+      case 'close':
+        debug('WebSocketChannel: installing onclose handler')
+        this.onclose = handler
+        break
+    }
   }
 }

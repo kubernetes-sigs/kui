@@ -40,11 +40,17 @@
       "headless": [
         "asciidoctor.js",
         "marked",
-        "node-pty",
+        "xterm",
         "ws",
+        "node-pty"
+      ],
+      "proxy": [
+        "asciidoctor.js",
+        "marked",
         "xterm"
       ],
       "webpack": [
+        "ws",
         "node-pty"
       ]
     }

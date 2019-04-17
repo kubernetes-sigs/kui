@@ -19,6 +19,10 @@ FROM node:8-alpine
 ENV PORT 3000
 EXPOSE 3000/tcp
 
+# default passphrase for the self-signed certificates; this Dockerfile
+# is intended only for testing, do not use this for production
+ENV PASSPHRASE kuishell
+
 WORKDIR /kui-proxy/kui
 
 # the following from https://github.com/dtzar/helm-kubectl/blob/2.12.2/Dockerfile
@@ -51,6 +55,7 @@ COPY . /kui-proxy
 
 # hmm.. sometimes the npm link command hangs without this extra npm config set
 RUN npm config set registry https://registry.npmjs.org
+RUN cd /kui-proxy/kui && apk add python make g++ && npm rebuild node-pty --update-binary && apk del python make g++
 RUN cd /kui-proxy/kui && npm link ../app --no-package-lock
 
 CMD [ "npx", "start-proxy" ]
