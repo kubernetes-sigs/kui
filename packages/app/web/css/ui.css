@@ -12,10 +12,12 @@ html, body, .page, .main, .repl, sidecar {
 body {
     margin: 0;
     overflow: hidden;
+    user-select: none;
 }
 .page {
     display: flex;
     flex-direction: column;
+    user-select: text;
 }
 body a.plain-anchor {
     color: inherit;
@@ -933,6 +935,11 @@ sidecar .sidecar-header-name {
     display: flex;
     align-items: center;
     margin: 1rem 0 0;
+
+    /* the bit of padding allows for space to initiate a drag-select of
+   the header name text */
+    padding-right: 1em;
+    -webkit-app-region: no-drag !important;
 }
 sidecar .sidecar-header .entity-name-line {
     display: flex;
@@ -1179,7 +1186,7 @@ sidecar.no-limits-data .activation-estimated-cost-container {
 }
 
 /* generic */
-.not-tabbable {
+textarea.not-tabbable, input.not-tabbable {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
