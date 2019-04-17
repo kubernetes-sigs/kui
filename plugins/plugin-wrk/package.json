@@ -32,7 +32,7 @@
     "pretty-ms": "4.0.0",
     "properties-parser": "0.3.1",
     "tmp": "0.1.0",
-    "wrk": "git://github.com/starpit/node-wrk.git#latency_stacks"
+    "wrk": "https://github.com/starpit/node-wrk#latency_stacks"
   },
   "publishConfig": {
     "access": "public"
