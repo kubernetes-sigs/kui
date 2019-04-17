@@ -23,6 +23,7 @@ import { isAbsolute, join } from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
 import UsageError from '@kui-shell/core/core/usage-error'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
@@ -109,7 +110,7 @@ const lsOrOpen = filepath => new Promise((resolve, reject) => {
  * Turn ls output into a REPL table
  *
  */
-const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
+const tabularize = (cmd, parent = '', parentAsGiven = '') => async (output): Promise< true | Table> => {
   debug('tabularize', parent, parentAsGiven)
 
   if (output.length === 0) {
@@ -215,12 +216,10 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
 
   const outerCSS = 'header-cell'
   const outerCSSSecondary = `${outerCSS} hide-with-sidecar`
-  const headerRow = {
+  const headerRow: Row = {
     name: 'NAME',
     type: 'file',
     onclick: false,
-    noSort: true,
-    noEntityColors: true,
     outerCSS,
     attributes: [
       { key: 'owner', value: 'OWNER', outerCSS: outerCSSSecondary },
@@ -230,52 +229,58 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async output => {
     ]
   }
 
-  return [ headerRow ].concat(rows
-                              .map(columns => {
-                                const stats = columns[0]
-                                const isDirectory = stats.charAt(0) === 'd'
-                                const isLink = stats.charAt(0) === 'l'
-                                const isExecutable = stats.indexOf('x') > 0
-                                const isSpecial = stats.charAt(0) !== '-'
+  const body: Row[] = rows.map((columns): Row => {
+    const stats = columns[0]
+    const isDirectory = stats.charAt(0) === 'd'
+    const isLink = stats.charAt(0) === 'l'
+    const isExecutable = stats.indexOf('x') > 0
+    const isSpecial = stats.charAt(0) !== '-'
 
-                                const name = columns[columns.length - 1]
-                                const nameForDisplay = `${name}${isDirectory ? '/' : isLink ? '@' : isExecutable ? '*' : ''}`
+    const name = columns[columns.length - 1]
+    const nameForDisplay = `${name}${isDirectory ? '/' : isLink ? '@' : isExecutable ? '*' : ''}`
 
-                                const css = isDirectory ? 'dir-listing-is-directory'
-                                  : isLink ? 'dir-listing-is-link' // note that links are also x; we choose l first
-                                  : isExecutable ? 'dir-listing-is-executable'
-                                  : isSpecial ? 'dir-listing-is-other-special'
-                                  : ''
+    const css = isDirectory ? 'dir-listing-is-directory'
+      : isLink ? 'dir-listing-is-link' // note that links are also x; we choose l first
+      : isExecutable ? 'dir-listing-is-executable'
+      : isSpecial ? 'dir-listing-is-other-special'
+      : ''
 
-                                const startTrim = 2
-                                const endTrim = 0
-                                const allTrim = startTrim + endTrim + 1
+    const startTrim = 2
+    const endTrim = 0
+    const allTrim = startTrim + endTrim + 1
 
-                                // idx into the attributes; minus 1 because we slice off the name
-                                const ownerIdx = 1 - 1
-                                const groupIdx = 2 - 1
-                                const dateIdx = columns.length - allTrim - 1
+    // idx into the attributes; minus 1 because we slice off the name
+    const ownerIdx = 1 - 1
+    const groupIdx = 2 - 1
+    const dateIdx = columns.length - allTrim - 1
 
-                                return {
-                                  type: cmd,
-                                  name: nameForDisplay,
-                                  onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
-                                  noSort: true,
-                                  css,
-                                  attributes: columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
-                                    value: col,
-                                    outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
-                                    css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
-                                  }))
-                                }
-                              }))
+    return new Row({
+      type: cmd,
+      name: nameForDisplay,
+      onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
+      css,
+      attributes: columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
+        value: col,
+        outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
+        css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
+      }))
+    })
+  })
+
+  return new Table({
+    type: cmd,
+    noEntityColors: true,
+    noSort: true,
+    header: headerRow,
+    body
+  })
 }
 
 /**
  * ls command handler
  *
  */
-const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }) => {
+const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }): Promise<true | Table> => {
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
   const filepath = findFile(expandHomeDir(filepathAsGiven), true, true)
   debug('doLs filepath', filepathAsGiven, filepath)

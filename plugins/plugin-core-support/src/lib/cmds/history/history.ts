@@ -28,6 +28,7 @@ const DEFAULT_HISTORY_N = 20 // the default number of history elements to show w
 
 import * as historyModel from '@kui-shell/core/models/history'
 import UsageError from '@kui-shell/core/core/usage-error'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import * as repl from '@kui-shell/core/core/repl'
 
 const parseN = str => {
@@ -118,35 +119,38 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   debug('filterStr', filterStr)
   debug('got', recent.length, startIdx, endIdx)
 
-  return recent.map((line, idx) => {
+  const body: Row[] = recent.map((line, idx) => {
     if (!filter(line)) return
 
     // some commands can be super long... try to trim them down for the initial display
     const shortForm = line.raw.substring(0, line.raw.indexOf(' =')) || line.raw
     const whitespace = shortForm.indexOf(' ')
-    const shortFormPretty = document.createElement('span')
     const command = document.createElement('strong')
     const rest = document.createElement('span')
 
-    shortFormPretty.appendChild(command)
-    shortFormPretty.appendChild(rest)
     command.innerText = shortForm.substring(0, whitespace === -1 ? shortForm.length : whitespace)
     if (whitespace !== -1) {
       rest.innerText = shortForm.substring(whitespace)
     }
 
-    return Object.assign({}, line, {
+    return new Row({
       beforeAttributes: [ {
         key: 'N',
         value: `${startIdx + idx}`,
         css: 'deemphasize'
       } ],
       fullName: line.raw,
-      name: shortFormPretty,
-      noSort: true,
+      name: line.raw,
+      type: 'history',
       onclick: () => repl.pexec(line.raw)
     })
   }).filter(x => x)
+
+  return new Table({
+    type: 'history',
+    noSort: true,
+    body
+  })
 }
 
 export default (commandTree, prequire) => {

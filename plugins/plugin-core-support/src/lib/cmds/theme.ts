@@ -21,6 +21,7 @@ import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
 import repl = require('@kui-shell/core/core/repl')
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
@@ -75,22 +76,21 @@ const usage = {
  * List themes
  *
  */
-const list = () => {
-  const header: Array<any> = [
-    { type: 'theme',
-      noSort: true,
-      outerCSS: 'header-cell very-narrow',
-      name: 'CURRENT',
-      attributes: [
-        { value: 'THEME', outerCSS: 'header-cell' },
-        { value: 'STYLE', outerCSS: 'header-cell' }
-      ]
-    }
-  ]
+const list = (): Table => {
+  const header: Row = {
+    type: 'theme',
+    outerCSS: 'header-cell very-narrow',
+    name: 'CURRENT',
+    css: '',
+    attributes: [
+      { value: 'THEME', outerCSS: 'header-cell' },
+      { value: 'STYLE', outerCSS: 'header-cell' }
+    ]
+  }
 
   const currentTheme = getPersistedThemeChoice() || getDefaultTheme()
 
-  return [header.concat((settings.themes || []).map(theme => {
+  const body: Row[] = (settings.themes || []).map((theme): Row => {
     const row = {
       type: 'theme',
       name: theme.name,
@@ -115,7 +115,9 @@ const list = () => {
     row.attributes[0].onclick = onclick // <-- clicks on the theme name
 
     return row
-  }))]
+  })
+
+  return new Table({ type: 'theme', noSort: true, header, body })
 }
 
 /**
