@@ -33,7 +33,8 @@ import { element, removeAllDomChildren } from './util/dom'
 import { prettyPrintTime } from './util/time'
 
 import Presentation from './views/presentation'
-import { formatListResult, formatMultiListResult } from './views/table'
+import { formatListResult, formatMultiListResult, formatTableResult } from './views/table'
+import { isTable } from './models/table'
 import { getSidecar, currentSelection, presentAs, showEntity, showCustom } from './views/sidecar'
 
 /**
@@ -436,10 +437,22 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
 
   const render = async (response, { echo, resultDom }) => {
     if (response && response !== true) {
-      if (Array.isArray(response)) {
+      if (isTable(response)) {
         //
         // some sort of list response; format as a table
         //
+        const registeredListView = registeredListViews[response.type]
+        if (registeredListView) {
+          await registeredListView(response, resultDom, parsedOptions) // TODO: change function calling signature here
+          return resultDom.children.length === 0
+        }
+        const rows = await formatTableResult(response)
+        rows.map(row => resultDom.appendChild(row))
+      } else if (Array.isArray(response)) {
+        /**
+         * some sort of list response; format as a table
+         * @deprecated in favor of new models/table.ts
+         */
         if (response.length > 0) {
           const registeredListView = registeredListViews[response[0].type]
           if (registeredListView) {
@@ -544,9 +557,31 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
   } else {
     promise = render(response, { echo, resultDom })
   }
-
-  if (Array.isArray(response)) {
+  if (isTable(response)) {
     // decorate it as a table
+    (resultDom.parentNode as HTMLElement).classList.add('result-as-table')
+    // client wants control over entity-cell coloring
+    if (response.noEntityColors) {
+      resultDom.classList.add('result-table-with-custom-entity-colors')
+    }
+
+    resultDom.classList.add('result-table')
+    if (isPopup()) {
+      presentAs(Presentation.FixedSize)
+    }
+
+    // say "ok"
+    (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+    if (echo) {
+      promise.then(() => {
+        ok(resultDom.parentNode as Element).classList.add('ok-for-list')
+      })
+    }
+  } else if (Array.isArray(response)) {
+    /**
+     * decorate it as a table
+     * @deprecated in favor of new models/table.ts
+     */
     (resultDom.parentNode as HTMLElement).classList.add('result-as-table')
 
     if (response.length > 0 && response[0].noEntityColors) {
