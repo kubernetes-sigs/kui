@@ -21,22 +21,30 @@ set -o pipefail
 
 CLIENT_HOME=${CLIENT_HOME-$(pwd)}
 
-# make .keys/ssl.crt and .keys/ssl.key
 if [ ! -d "$CLIENT_HOME"/.keys ]; then
-    if [ -n "$TRAVIS_JOB_ID" ]; then
-        # we are running in travis; specify a fake subject on the command line
-        echo "using a fake subject for the certificate --- just for travis"
-        SUBJECT="-subj /C=GB/ST=London/L=London/O=GlobalSecurity/OU=ITDepartment/CN=example.com"
-    fi
-
-    mkdir "$CLIENT_HOME"/.keys && \
-        openssl genrsa -out "$CLIENT_HOME"/.keys/ssl.key 2048 && \
-        openssl req -new -key "$CLIENT_HOME"/.keys/ssl.key -x509 -days 999 -out "$CLIENT_HOME"/.keys/ssl.crt ${SUBJECT}
-
-    if [ $? != 0 ]; then exit $?; fi
+    mkdir "$CLIENT_HOME"/.keys
 fi
 
-if [ ! -f "$CLIENT_HOME"/.keys/ssl.key ] || [ ! -f "$CLIENT_HOME"/.keys/ssl.crt ]; then
+if [ ! -f "$CLIENT_HOME"/.keys/key.pem ]  || [ ! -f "$CLIENT_HOME"/.keys/cert.pem ]; then
+    # Notes: the .test TLD is important; it could also be .example and
+    # a few other whitelisted TLDs; but most modern browsers
+    # completely distrust self-signed certs with a non-dev TLD (and
+    # this now includes .dev, because google has now made that a
+    # non-test TLD)
+    SUBJECT="-subj /C=GB/ST=London/L=London/O=GlobalSecurity/OU=ITDepartment/CN=kui.test"
+
+    openssl req -x509 -newkey rsa:2048 \
+            -keyout "$CLIENT_HOME"/.keys/key.pem \
+            -out "$CLIENT_HOME"/.keys/cert.pem \
+            -days 1000 \
+            -passout pass:kuishell \
+            -reqexts SAN \
+            -extensions SAN \
+            -config <(cat /etc/ssl/openssl.cnf <(printf "\n[SAN]\nsubjectAltName=DNS.1:localhost,DNS.2:kui.test,DNS.3:www.kui.test")) \
+            $SUBJECT
+fi
+
+if [ ! -f "$CLIENT_HOME"/.keys/key.pem ] || [ ! -f "$CLIENT_HOME"/.keys/cert.pem ]; then
     echo '!!! KUI ERROR: the self-signed cert was not created successfully'
     echo '!!! Make sure to provide at least one non-empty answer to the cert creation step'
     echo '!!! Please try again'

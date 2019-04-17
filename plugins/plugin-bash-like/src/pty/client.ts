@@ -19,7 +19,7 @@ const debug = Debug('plugins/bash-like/pty/client')
 
 import * as path from 'path'
 import * as xterm from 'xterm'
-import * as WebSocket from 'ws'
+// import * as WebSocket from 'ws'
 
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
@@ -28,12 +28,12 @@ import { disableInputQueueing, pasteQueuedInput, scrollIntoView } from '@kui-she
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 
-import { Channel, InProcessChannel } from './channel'
+import { Channel, InProcessChannel, WebSocketChannel } from './channel'
 
 const enterApplicationModePattern = /\x1b\[\?1h/
 const exitApplicationModePattern = /\x1b\[\?1l/
-const enterAltBufferPattern = /\x1b\[\??(47|1047)h/
-const exitAltBufferPattern = /\x1b\[\??(47|1047)l/
+const enterAltBufferPattern = /\x1b\[\??(47|1047|1049)h/
+const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 
 /**
  * Strip off ANSI and other control characters from the given string
@@ -325,7 +325,7 @@ const injectTheme = (terminal: xterm.Terminal): void => {
 const remoteChannelFactory = async (): Promise<Channel> => {
   const url = await $('bash websocket open')
   debug('websocket url', url)
-  return new WebSocket(url)
+  return new WebSocketChannel(url)
 }
 
 const electronChannelFactory = async (): Promise<Channel> => {
@@ -342,7 +342,7 @@ const getOrCreateChannel = async (cmdline: string, channelFactory): Promise<Chan
   // tell the server to start a subprocess
   const doExec = (ws: Channel) => {
     debug('exec after open')
-    ws.send(JSON.stringify({ type: 'exec', cmdline, cwd: process.cwd(), env: process.env }))
+    ws.send(JSON.stringify({ type: 'exec', cmdline, cwd: !inBrowser() && process.cwd(), env: !inBrowser() && process.env }))
   }
 
   const tab = document.querySelector('tab.visible')
@@ -543,8 +543,13 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       let raw = ''
       ws.on('message', onMessage)
     } catch (err) {
-      debug('error in client', err)
-      reject('Internal Error')
+      if (err['code'] === 127 || err['code'] === 404) {
+        err['code'] = 127
+        reject(err)
+      } else {
+        debug('error in client', err)
+        reject('Internal Error')
+      }
     }
   }, 0)
 })
