@@ -65,8 +65,12 @@ function uninstall {
         echo "Using main target for $PLUGIN"
         TARGET=$TARGET1
     else
-        echo "Using alt target for $PLUGIN"
-        TARGET=$TARGET2
+        if [ -z $TARGET2 ]; then
+            return
+        else
+            TARGET=$TARGET2
+            echo "Using alt target for $PLUGIN"
+        fi
     fi
 
     for j in $(cat "$PLUGIN"/package.json | jq -c .kui.exclude.$TARGET | sed -e 's/\[//' -e 's/\]//' -e 's/"//g' -e 's/,/ /g'); do
