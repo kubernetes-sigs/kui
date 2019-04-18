@@ -21,7 +21,7 @@ set -o pipefail
 
 # create an electron dist to test against
 PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
-cd clients/default && NO_INSTALLER=true npm run build:electron -- ${PLATFORM}
+cd clients/default && NO_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` npm run build:electron -- ${PLATFORM} # we want to test Mac DMG Build
 
 if [ "$PLATFORM" == linux ]; then
   ls dist/electron/*darwin* && exit 1 || exit 0

@@ -66,6 +66,8 @@ if [ -z $PLATFORM ]; then
         (cd "$TOPDIR"/clients/default && npm run build:electron linux)
         (cd "$TOPDIR"/clients/default && npm run build:electron windows)
         (cd "$TOPDIR"/clients/default && npm run build:headless)
+        echo "confirming what we built for headless:"
+        ls "$DISTDIR/headless"
     elif [[ `uname` == Darwin ]]; then
         echo "Building macOS distributions from macOS host"
         (cd "$TOPDIR"/clients/default && npm run build:electron darwin)
@@ -74,11 +76,10 @@ else
     echo "Building $PLATFORM distributions"
     (cd "$TOPDIR"/clients/default && npm run build:electron -- $PLATFORM)
     (cd "$TOPDIR"/clients/default && npm run build:headless)
+    echo "confirming what we built for headless:"
+    ls "$DISTDIR/headless"
 fi
 
-
-echo "confirming what we built for headless:"
-ls "$DISTDIR/headless"
 echo "confirming what we built for electron:"
 ls "$DISTDIR/electron"
 
