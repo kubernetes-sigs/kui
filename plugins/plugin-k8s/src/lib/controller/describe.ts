@@ -130,6 +130,10 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   add('Status', status.phase)
   add('Controlled By', metadata.ownerReferences && metadata.ownerReferences.length === 1 && `${metadata.ownerReferences[0].kind}/${metadata.ownerReferences[0].name}`)
 
+  // Ingress
+  add('Address', status.loadBalancer && status.loadBalancer.ingress)
+  add('Rules', spec.rules)
+
   // configmaps
   add('Data', resource.data)
 
