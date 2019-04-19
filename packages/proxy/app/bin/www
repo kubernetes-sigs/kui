@@ -8,7 +8,7 @@ const debug = require('debug')('kui-proxy/webapp')
 const https = require('https')
 const fs = require('fs')
 
-const app = require('../app')
+const { app, setServer } = require('../app')
 
 /**
  * Get port from environment and store in Express.
@@ -29,13 +29,12 @@ const options = {
 /**
  * Create HTTP server.
  */
-
 const server = https.createServer(options, app)
+setServer(server, port)
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)

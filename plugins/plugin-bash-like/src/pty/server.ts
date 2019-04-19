@@ -21,7 +21,7 @@ import * as fs from 'fs'
 import { promisify } from 'util'
 import { dirname, join } from 'path'
 import { exec, spawn } from 'child_process'
-import { createServer } from 'https'
+import { createServer, Server } from 'https'
 
 import { Channel } from './channel'
 
@@ -62,7 +62,7 @@ const getPort = (): Promise<number> => new Promise(async (resolve, reject) => {
   iter()
 })
 
-// thes bits are to avoid macOS garbage; those lines marked with //* here:
+// these bits are to avoid macOS garbage; those lines marked with //* here:
 // $ bash -i -l -c ls
 // * Restored session: Tue Apr  2 19:24:55 EDT 2019
 //  [[ VALID OUTPUT ]]
@@ -123,6 +123,7 @@ const getLoginShell = async (): Promise<string> => new Promise((resolve, reject)
  *
  */
 export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
+  console.error('onConnection')
   // use require because of the wrong module name in
   // node-pty-prebuilt, see:
   // https://github.com/daviwil/node-pty-prebuilt/issues/10
@@ -133,59 +134,78 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
-    const msg = JSON.parse(data)
+    // console.log('message', data)
+    try {
+      const msg = JSON.parse(data)
 
-    switch (msg.type) {
-      case 'exit':
-        return exitNow(msg.exitCode)
+      switch (msg.type) {
+        case 'exit':
+          return exitNow(msg.exitCode)
 
-      case 'exec':
-        try {
-          shell = pty.spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
-            name: 'xterm-color',
-            cwd: msg.cwd || process.cwd(),
-            env: msg.env || process.env
-          })
-          // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
+        case 'exec':
+          try {
+            shell = pty.spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
+              name: 'xterm-color',
+              cwd: msg.cwd || process.cwd(),
+              env: msg.env || process.env
+            })
+            // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
-          // send all PTY data out to the websocket client
-          shell.on('data', (data) => {
-            ws.send(JSON.stringify({ type: 'data', data }))
-          })
+            // send all PTY data out to the websocket client
+            shell.on('data', (data) => {
+              ws.send(JSON.stringify({ type: 'data', data }))
+            })
 
-          shell.on('exit', (exitCode: number) => {
-            shell = undefined
-            ws.send(JSON.stringify({ type: 'exit', exitCode }))
-            // exitNow(exitCode)
-          })
+            shell.on('exit', (exitCode: number) => {
+              shell = undefined
+              ws.send(JSON.stringify({ type: 'exit', exitCode }))
+              // exitNow(exitCode)
+            })
 
-          ws.send(JSON.stringify({ type: 'state', state: 'ready' }))
+            ws.send(JSON.stringify({ type: 'state', state: 'ready' }))
 
-        } catch (err) {
-          console.error('could not exec', err)
-        }
-        break
-
-      case 'data':
-        try {
-          if (shell) {
-            return shell.write(msg.data)
+          } catch (err) {
+            console.error('could not exec', err)
           }
-        } catch (err) {
-          console.error('could not write to the shell', err)
-        }
-        break
+          break
 
-      case 'resize':
-        try {
-          if (shell) {
-            return shell.resize(msg.cols, msg.rows)
+        case 'data':
+          try {
+            if (shell) {
+              return shell.write(msg.data)
+            }
+          } catch (err) {
+            console.error('could not write to the shell', err)
           }
-        } catch (err) {
-          console.error('could not resize pty', err)
-        }
-        break
+          break
+
+        case 'resize':
+          try {
+            if (shell) {
+              return shell.resize(msg.cols, msg.rows)
+            }
+          } catch (err) {
+            console.error('could not resize pty', err)
+          }
+          break
+      }
+    } catch (err) {
+      console.error(err)
     }
+  })
+}
+
+/**
+ * If we haven't been given an https server instance, create one
+ *
+ */
+const createDefaultServer = (): Server => {
+  return createServer({
+    key: fs.readFileSync('.keys/key.pem', 'utf8'),
+    cert: fs.readFileSync('.keys/cert.pem', 'utf8'),
+    passphrase: process.env.PASSPHRASE,
+    requestCert: false,
+    rejectUnauthorized: false
   })
 }
 
@@ -193,40 +213,56 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
  * Spawn the shell
  * Compliments of http://krasimirtsonev.com/blog/article/meet-evala-your-terminal-in-the-browser-extension
  */
-export const main = (N: number) => {
-  console.error('!!!!!!!!!!', process.cwd())
-  const server = createServer({
-    key: fs.readFileSync('.keys/key.pem', 'utf8'),
-    cert: fs.readFileSync('.keys/cert.pem', 'utf8'),
-    passphrase: process.env.PASSPHRASE,
-    requestCert: false,
-    rejectUnauthorized: false
-  })
+let cachedWss
+let cachedPort
+export const main = async (N: number, server?: Server, preexistingPort?: number) => {
+  if (cachedWss) {
+    return cachedPort
+  } else {
+    const WebSocket = await import('ws')
 
-  return new Promise(async resolve => {
-    const port = await getPort()
-
-    server.listen(port, async () => {
-
-      const WebSocket = await import('ws')
-      const wss = new WebSocket.Server({ server })
-
-      const cleanupCallback = await disableBashSessions()
+    return new Promise(async resolve => {
       const idx = servers.length
+      const cleanupCallback = await disableBashSessions()
       const exitNow = async (exitCode: number) => {
         await cleanupCallback(exitCode)
+        const { wss, server } = servers.splice(idx, 1)[0]
         wss.close()
-        server.close()
-        servers.splice(idx, 1)
+        if (server) {
+          server.close()
+        }
         // process.exit(exitCode)
       }
 
-      servers.push({ wss, server })
-      wss.on('connection', onConnection(exitNow))
+      if (preexistingPort) {
+        cachedWss = new WebSocket.Server({ noServer: true })
+        servers.push({ wss: cachedWss })
 
-      resolve(port)
+        server.on('upgrade', function upgrade (request, socket, head) {
+          console.log('upgrade')
+          cachedWss.handleUpgrade(request, socket, head, function done (ws) {
+            console.log('handleUpgrade')
+            cachedWss.emit('connection', ws, request)
+          })
+        })
+
+        cachedPort = preexistingPort
+        resolve({ port: cachedPort, exitNow })
+
+      } else {
+        cachedPort = await getPort()
+        const server = createDefaultServer()
+        server.listen(cachedPort, async () => {
+          cachedWss = new WebSocket.Server({ server })
+          servers.push({ wss: cachedWss, server })
+          resolve({ port: cachedPort, exitNow })
+        })
+      }
+    }).then(({ port, exitNow }) => {
+      cachedWss.on('connection', onConnection(exitNow))
+      return port
     })
-  })
+  }
 }
 
 /**
@@ -246,11 +282,13 @@ export default (commandTree, prequire) => {
      *
      */
     const resolveWithHost = (port: number) => {
-      resolve(`wss://localhost:${port}/bash/${N}`)
+      const host = execOptions.host || `localhost:${port}`
+      resolve(`wss://${host}/bash/${N}`)
     }
 
     if (execOptions.isProxied) {
-      return main(N).then(resolveWithHost).catch(reject)
+      console.log(`do we have a port? ${execOptions.port}`)
+      return main(N, execOptions.server, execOptions.port).then(resolveWithHost).catch(reject)
     } else {
       const { ipcRenderer } = await import('electron')
 
@@ -321,6 +359,6 @@ export default (commandTree, prequire) => {
 
 // this is the entry point when we re-invoke ourselves as a separate
 // process (see just above)
-if (require.main === module) {
-  main(parseInt(process.argv[2], 10))
-}
+/* if (require.main === module) {
+   main(parseInt(process.argv[2], 10))
+   } */

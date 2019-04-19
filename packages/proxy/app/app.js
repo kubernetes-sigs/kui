@@ -20,8 +20,7 @@ const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const cors = require('cors')
 
-// const indexRouter = require('./routes/index')
-const execRouter = require('./routes/exec')
+const ExecRouter = require('./routes/exec')
 
 const app = express()
 
@@ -36,10 +35,11 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-// app.use('/', indexRouter)
-app.use('/exec', execRouter)
-
-module.exports = app
-
 // helps with ctrl-c when running in a docker container
 process.on('SIGINT', () => process.exit())
+
+exports.setServer = (server, port) => {
+  app.use('/exec', ExecRouter(server, port))
+}
+
+exports.app = app

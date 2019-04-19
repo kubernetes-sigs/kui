@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kui-ui
+spec:
+  selector:
+    matchLabels:
+      app: kui-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kui-ui
+    spec:
+      containers:
+      - name: proxy
+        image: kuishell/proxy
+        imagePullPolicy: Always
+        env:
+        - name: DEBUG
+          value: '*'
+        ports:
+        - name: proxy
+          containerPort: 3000
+
+      - name: client
+        image: kuishell/webpack
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 443
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kui-ui
+  labels:
+    app: kui-ui
+spec:
+  selector:
+    app: kui-ui
+  ports:
+  - name: client
+    port: 9080
+    targetPort: 443
+    protocol: TCP
+  - name: proxy
+    port: 8081
+    targetPort: 3000
+    protocol: TCP
