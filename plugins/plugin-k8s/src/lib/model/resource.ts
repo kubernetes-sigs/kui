@@ -28,6 +28,10 @@ interface IKubeContainerStatus {
   state: any
 }
 
+export interface IKubeLoadBalancer {
+  ingress: string
+}
+
 export interface IKubeStatus {
   message: string
   startTime?: string
@@ -39,6 +43,7 @@ export interface IKubeStatus {
   availableReplicas?: number
   unavailableReplicas?: number
   updatedReplicas?: number
+  loadBalancer?: IKubeLoadBalancer
   containerStatuses?: Array<IKubeContainerStatus>
   conditions?: Array<IKubeStatusCondition>
 }

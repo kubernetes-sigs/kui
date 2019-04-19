@@ -199,6 +199,7 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
     const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
 
     if (kind === 'Secret' ||
+        kind === 'Ingress' ||
         kind === 'ConfigMap' ||
         kind === 'CustomResourceDefinition' ||
         kind === 'ClusterRoleBinding' ||
