@@ -445,7 +445,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       })
 
       terminal.on('paste', (data: string) => {
-        terminal.write(data)
+        ws.send(JSON.stringify({ type: 'data', data }))
       })
 
       terminal.on('selection', () => {
