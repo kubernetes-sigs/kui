@@ -71,7 +71,8 @@ localDescribe('xterm vi 1', function (this: common.ISuite) {
     } catch (err) {
       common.oops(this)(err)
     } finally {
-      return promisify(unlink)(file.name)
+      // DO NOT return a promise here; see https://github.com/mochajs/mocha/issues/3555
+      await promisify(unlink)(file.name)
     }
   })
 })

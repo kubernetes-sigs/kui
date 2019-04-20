@@ -123,7 +123,6 @@ const getLoginShell = async (): Promise<string> => new Promise((resolve, reject)
  *
  */
 export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
-  console.error('onConnection')
   // use require because of the wrong module name in
   // node-pty-prebuilt, see:
   // https://github.com/daviwil/node-pty-prebuilt/issues/10
