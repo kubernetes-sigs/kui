@@ -24,7 +24,7 @@ import * as xterm from 'xterm'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { disableInputQueueing, pasteQueuedInput, scrollIntoView } from '@kui-shell/core/webapp/cli'
+import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 
@@ -431,6 +431,27 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
         } else {
           ws.send(JSON.stringify({ type: 'data', data: key }))
         }
+      })
+
+      const maybeClearSelection = () => {
+        if (!terminal.hasSelection()) {
+          clearPendingTextSelection()
+        }
+      }
+      terminal.on('focus', maybeClearSelection)
+      terminal.on('blur', maybeClearSelection)
+      document.addEventListener('select', (evt: Event) => {
+        terminal.clearSelection()
+      })
+
+      terminal.on('paste', (data: string) => {
+        terminal.write(data)
+      })
+
+      terminal.on('selection', () => {
+        debug('xterm selection', terminal.getSelection())
+        clearTextSelection()
+        setPendingTextSelection(terminal.getSelection())
       })
 
       terminal.on('linefeed', () => {
