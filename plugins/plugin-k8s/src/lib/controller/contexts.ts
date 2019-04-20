@@ -40,6 +40,11 @@ const usage = {
  */
 const addClickHandlers = execOptions => table => {
   debug('table', table)
+
+  if (Array.isArray(table[0])) {
+    return table.map(addClickHandlers(execOptions))
+  }
+
   return [table[0]].concat(table.slice(1).map(row => {
     const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
     const { value: contextName } = nameAttr
@@ -52,6 +57,7 @@ const addClickHandlers = execOptions => table => {
       row.setSelected()
     }
 
+    row.name = contextName
     row.onclick = onclick
     nameAttr.onclick = onclick
 
@@ -66,7 +72,11 @@ const addClickHandlers = execOptions => table => {
 const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions)
   .then(addClickHandlers(opts.execOptions))
   .then(table => {
-    table[0].title = 'Kubernetes Contexts'
+    if (Array.isArray(table[0])) {
+      table[0][0].title = 'Kubernetes Contexts'
+    } else {
+      table[0].title = 'Kubernetes Contexts'
+    }
     return table
   })
 
