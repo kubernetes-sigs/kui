@@ -655,6 +655,41 @@ export const removeAnyTemps = (block: HTMLElement): HTMLElement => {
 }
 
 /**
+ * Clear current text selection
+ *
+ */
+export const clearTextSelection = () => {
+  try {
+    window.getSelection().removeAllRanges()
+  } catch (err) {
+    debug('unable to clear text selection', err)
+  }
+}
+
+/**
+ * Allow for plugins to self-manage text selection
+ *
+ */
+let pendingTextSelection
+export const clearPendingTextSelection = () => {
+  pendingTextSelection = undefined
+}
+export const setPendingTextSelection = (str: string) => {
+  pendingTextSelection = str
+  if (!document.oncopy) {
+    document.addEventListener('select', (evt: Event) => {
+      pendingTextSelection = undefined
+    })
+    document.addEventListener('copy', (evt: ClipboardEvent) => {
+      if (pendingTextSelection) {
+        evt.clipboardData.setData('text', pendingTextSelection)
+        evt.preventDefault()
+      }
+    })
+  }
+}
+
+/**
  * Update the caret position in an html INPUT field
  *
  */
@@ -798,7 +833,7 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
  * User has requested that we paste something from the clipboard
  *
  */
-export const paste = event => {
+export const paste = (event: ClipboardEvent) => {
   debug('got paste', event)
 
   const text = event.clipboardData.getData('text')
