@@ -133,6 +133,7 @@ describe('electron namespace', function (this: common.ISuite) {
     //
 
     deleteIt('yoyo', true)
+    deleteIt('yoyo2', true)
     createIt('yoyo')
     describeIt('yoyo')
     createIt('yoyo2')
