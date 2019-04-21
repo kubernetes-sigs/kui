@@ -93,15 +93,29 @@ export const status2Html = (rawOut: string, stats: Promise<Stats> = numstat()): 
     if (isPartial) {
       exec.onclick = () => partial(`${command} ${relpath}`)
     } else {
-      exec.onclick = event => {
-        // we need to delay the wrapper.parentNode
-        return pip(`${command} ${relpath}`, undefined, wrapper.parentNode.parentNode as Element, 'git status')(event)
+      exec.onclick = (event: MouseEvent) => {
+        // Notes: to distinguish between a click and a text
+        // selection... well... clicks *will* clear the text
+        // selection, but only after this event, for some reason;
+        // hence the setTimeout followed by a check for
+        // no-text-selected.
+        setTimeout(() => {
+          if (noCurrentTextSelection()) {
+            return pip(`${command} ${relpath}`, undefined, wrapper.parentNode.parentNode as Element, 'git status')(event)
+          }
+        }, 0)
       }
     }
   }
 
   return wrapper
 }
+
+/**
+ * Is no text currently selected?
+ *
+ */
+const noCurrentTextSelection = () => window.getSelection().toString().trim().length === 0
 
 /**
  * git status command handler
