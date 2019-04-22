@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build:clean": "if [ -e /tmp/typewiz ]; then rm -rf /tmp/typewiz; fi",
-    "build": "(cd /tmp && if [ ! -d typewiz ]; then git clone https://github.com/starpit/typewiz.git -b coverage-report && cd typewiz && yarn install && yarn build; fi)",
-    "typecov": "SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); TSCONFIG=\"$SCRIPTDIR\"/../../packages/kui-builder/tsconfig.json; npm run build && (cd /tmp/typewiz && node node_modules/typewiz/dist/cli.js coverage \"$TSCONFIG\" -o /tmp/typecov.json)",
+    "build": "./bin/build.sh",
+    "typecov": "./bin/typecov.sh",
     "upload": "./bin/upload.sh"
   },
   "keywords": [],
