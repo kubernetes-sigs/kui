@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('webapp/cli')
+import * as Debug from 'debug'
+const debug = Debug('webapp/cli')
 debug('loading')
 
 declare var hljs
@@ -615,7 +616,7 @@ export const getCurrentBlock = (): HTMLElement => {
 export const getCurrentProcessingBlock = (): HTMLElement => {
   return document.querySelector('tab.visible .repl .repl-block.processing')
 }
-export const getPrompt = (block, noFakes = false) => {
+export const getPrompt = (block, noFakes = false): HTMLInputElement => {
   return (block && block.querySelector && block.querySelector('input')) || (!noFakes && { focus: () => true })
 }
 export const getInitialPrompt = (): HTMLInputElement => {

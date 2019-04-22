@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+[![Type Coverage](https://img.shields.io/endpoint.svg?url=https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/typecov-percent.json)](https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/typecov-model.json)
 
 Kui Shell offers a new development experience for building
 cloud-native applications. By combining the power of familiar CLIs
