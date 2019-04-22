@@ -301,7 +301,7 @@ class InProcessExecutor implements IExecutor {
     const prompt = block && cli.getPrompt(block)
 
     // maybe execOptions has been attached to the prompt dom (e.g. see repl.partial)
-    if (!execOptions) execOptions = prompt.execOptions
+    if (!execOptions) execOptions = prompt['execOptions']
     if (execOptions && execOptions.pip) {
       const { container, returnTo } = execOptions.pip
       try {
