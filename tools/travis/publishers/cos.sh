@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+#
+# Copyright 2018-19 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="$SCRIPTDIR/../../../"
 
@@ -10,7 +26,7 @@ TOPDIR="$SCRIPTDIR/../../../"
 # TODO: For now we hardcoded travis job number in deployment logic. We should consider using Travis Build Stages once ibm travis adds the support.
 if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [[ "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.1" || "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.7" ]]; then
     echo "uploading typecov data"
-    (cd "$SCRIPTDIR"/../../typecov && npm run upload)
+    (cd "$SCRIPTDIR"/../../typecov && npm run typecov && npm run upload)
 
     echo "pushing builds"
     unset TEST_FROM_BUILD

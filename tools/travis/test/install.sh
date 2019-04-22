@@ -19,7 +19,6 @@
 set -e
 set -o pipefail
 
-
 # composer/kui doesn't support travis osx and travis osx doesn't have docker
 if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == composer/kui ] || [ "$NEEDS_OPENWHISK" == true ] || [ "$NEEDS_KUBERNETES" == true ]); then
   exit 0

@@ -11,7 +11,7 @@ os:
 
 env:
   matrix:
-    - SCRIPTS="lint.sh"
+    - SCRIPTS="lint.sh typecov.sh"
       LAYERS="core bash-like core-support field-installed-plugins editor"
       MOCHA_TARGETS="webpack electron"
       KUI_USE_PROXY=false
