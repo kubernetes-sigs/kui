@@ -703,7 +703,7 @@ export const hide = (clearSelectionToo = false) => {
   replView.classList.remove('sidecar-visible')
 
   // we just hid the sidecar. make sure the current prompt is active for text input
-  cli.getCurrentPrompt().focus()
+  // cli.getCurrentPrompt().focus()
 
   // were we asked also to clear the selection?
   if (clearSelectionToo && sidecar.entity) {

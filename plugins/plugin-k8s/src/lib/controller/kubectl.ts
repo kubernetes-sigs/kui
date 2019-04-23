@@ -516,16 +516,7 @@ const prepareUsage = async (command: string) => {
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
-interface IOpts {
-  block: Element
-  argv: Array<string>
-  argvNoOptions: Array<string>
-  execOptions
-  parsedOptions
-  command: string
-  createOutputStream?: any
-}
-const executeLocally = (command: string) => (opts: IOpts) => new Promise(async (resolveBase, reject) => {
+const executeLocally = (command: string) => (opts: repl.IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
   const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
   debug('exec', command)
 

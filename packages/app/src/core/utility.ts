@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+type IOptions = { [key: string]: string | boolean | number }
+
 /**
  * Turn an options struct into a cli string
  *
@@ -21,7 +23,7 @@
  * user.
  *
  */
-export const optionsToString = options => {
+export const optionsToString = (options: IOptions) => {
   let str = ''
   for (let key in options) {
     // underscore comes from minimist
@@ -44,7 +46,7 @@ export const optionsToString = options => {
  * Check for unknown options
  *
  */
-export const hasUnknownOptions = (options, expected) => {
+export const hasUnknownOptions = (options: IOptions, expected: string[]) => {
   const M = expected.reduce((M, key) => { M[key] = true; return M }, {})
   for (let opt in options) {
     // underscore comes from minimist
@@ -58,7 +60,7 @@ export const hasUnknownOptions = (options, expected) => {
  * Error reporting
  *
  */
-export const handleError = (err, reject) => {
+export const handleError = (err: Error, reject) => {
   console.error(err)
   if (reject) {
     reject(err)

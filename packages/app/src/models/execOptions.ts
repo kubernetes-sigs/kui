@@ -17,6 +17,10 @@
 import { ExecType } from '../core/command-tree'
 
 export interface IExecOptions {
+  isProxied?: boolean
+  noDelegation?: boolean
+  delegationOk?: boolean
+
   custom?: any
   rawResponse?: boolean
   isDrilldown?: boolean

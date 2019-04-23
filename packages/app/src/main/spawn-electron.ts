@@ -25,8 +25,12 @@ import * as colors from 'colors/safe'
 
 export interface SubwindowPrefs {
   fullscreen?: boolean
+  useContentSize?: boolean
+  synonymFor?: object
   width?: number
   height?: number
+  position?: { x: number, y: number },
+  bringYourOwnWindow?: () => void
 }
 
 /**
@@ -50,7 +54,7 @@ let app
 export async function initElectron (command = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?, subwindowPrefs?: SubwindowPrefs) {
   debug('initElectron', command, subwindowPlease, subwindowPrefs)
 
-  let promise
+  let promise: Promise<void>
 
   // handle squirrel install and update events
   try {
@@ -60,13 +64,13 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
 
     const spawnGraphics = () => {
       debug('waiting for graphics')
-      return app.graphics.wait().then(graphics => {
+      return app.graphics.wait().then(async graphics => {
         const argv = command.slice(command.indexOf('--') + 1)
           .concat(forceUI ? ['--ui'] : [])
 
         debug('spawning graphics', graphics, argv)
         try {
-          const { spawn } = require('child_process')
+          const { spawn } = await import('child_process')
           const child = spawn(graphics, argv, {
             detached: !debug.enabled,
             env: Object.assign({}, process.env, {
@@ -147,13 +151,13 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
     return promise
   } else if (!electron) {
     debug('loading electron')
-    electron = require('electron')
+    electron = await import('electron')
     app = electron.app
 
     if (!app) {
       // then we're still in pure headless mode; we'll need to fork ourselves to spawn electron
-      const path = require('path')
-      const { spawn } = require('child_process')
+      const path = await import('path')
+      const { spawn } = await import('child_process')
       const appHome = path.resolve(path.join(__dirname, 'main'))
 
       const args = [appHome, '--', ...command]
@@ -302,11 +306,12 @@ export async function initHeadless (argv: Array<string>, force = false, isRunnin
   }
 } /* initHeadless */
 
-function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlease?, subwindowPrefs?) {
+function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlease?, subwindowPrefs?: SubwindowPrefs) {
   debug('createWindow', executeThisArgvPlease)
 
   if (subwindowPrefs && subwindowPrefs.bringYourOwnWindow) {
-    return subwindowPrefs.bringYourOwnWindow()
+    subwindowPrefs.bringYourOwnWindow()
+    return
   }
 
   // Create the browser window.
@@ -343,7 +348,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
   // note: titleBarStyle on macOS needs to be customButtonsOnHover if we want to support cursor:pointer
   // but this doesn't render the inset window buttons
   // see https://github.com/electron/electron/issues/10243
-  promise.then(() => {
+  promise.then(async () => {
     try {
       require('electron-context-menu')()
     } catch (err) {
@@ -351,8 +356,8 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       return
     }
 
-    const { BrowserWindow } = electron
-    const opts = Object.assign({
+    const Electron = await import('electron')
+    const opts: Electron.BrowserWindowConstructorOptions = Object.assign({
       width,
       height,
       webPreferences: {
@@ -370,13 +375,13 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     }
 
     if (process.env.KUI_POSITION_X) {
-      opts.x = process.env.KUI_POSITION_X
+      opts.x = parseInt(process.env.KUI_POSITION_X, 10)
     }
     if (process.env.KUI_POSITION_Y) {
-      opts.y = process.env.KUI_POSITION_Y
+      opts.y = parseInt(process.env.KUI_POSITION_Y, 10)
     }
     debug('createWindow::new BrowserWindow')
-    mainWindow = new BrowserWindow(opts)
+    mainWindow = new Electron.BrowserWindow(opts)
     debug('createWindow::new BrowserWindow success')
 
     mainWindow.once('ready-to-show', () => {
@@ -402,7 +407,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       const { window: existingWindow, url: currentURL } = existing
 
       if (!existingWindow || existingWindow.isDestroyed()) {
-        const window = new BrowserWindow({ width: size.width, height: size.height, frame: true })
+        const window = new Electron.BrowserWindow({ width: size.width, height: size.height, frame: true })
         fixedWindows[type] = { window, url }
         window.setPosition(position.x + 62, position.y + 62)
         // window.on('closed', () => { docsWindow = null })
@@ -590,7 +595,12 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
  * Strip off the command to be executed from the given argv
  *
  */
-export const getCommand = argv => {
+interface ICommand {
+  argv: Array<string>
+  subwindowPlease: boolean
+  subwindowPrefs: SubwindowPrefs
+}
+export const getCommand = (argv: Array<string>): ICommand => {
   debug('getCommand', argv)
   const dashDash = argv.lastIndexOf('--')
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
