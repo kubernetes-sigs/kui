@@ -27,6 +27,7 @@ import { keys } from './keys'
 
 import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
 import * as historyModel from '../models/history'
+import { IReplResponse } from '../models/ReplResponse'
 
 import { element, removeAllDomChildren } from './util/dom'
 import { prettyPrintTime } from './util/time'
@@ -402,7 +403,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
       const { print } = require('../main/headless-pretty-print')
       const { createWriteStream } = require('fs')
       const stream = createWriteStream(process.env.KUI_TEE_TO_FILE)
-      const logger = data => stream.write(data)
+      const logger = (data: string | Buffer) => stream.write(data)
       try {
         print(response, logger, stream)
         if (process.env.KUI_TEE_TO_FILE_END_MARKER) {
@@ -707,7 +708,7 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
   }
 }
 const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
-const updateInputAndMoveCaretToEOL = (input, newValue) => {
+const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string) => {
   input.value = newValue
   setTimeout(() => setCaretPositionToEnd(input), 0)
 }
@@ -953,7 +954,7 @@ export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExec
  * Handle command execution errors
  *
  */
-export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => err => {
+export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err) => {
   const message = oopsMessage(err)
   // const errString = err && err.toString()
 
@@ -1015,7 +1016,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   return false
 }
 
-export const showHelp = (command: string, block: HTMLElement, nextBlock: HTMLElement, error) => {
+export const showHelp = (command: string, block: HTMLElement, nextBlock: HTMLElement, error: Error) => {
   // if the message says command not found, then add on the "enter help to see your options" as a suffix
   const baseMessage = 'Enter help to see your options.'
   if (error.message && error.message === 'Command not found') error.message += `\n${baseMessage}`
@@ -1023,11 +1024,38 @@ export const showHelp = (command: string, block: HTMLElement, nextBlock: HTMLEle
   return oops(command, block, nextBlock)(error) && false
 }
 
+type PromptCompleter = IRepromptSpec | Promise<IReplResponse>
+
+interface IRepromptSpec {
+  completion?: PromptCompletionHandler // for reprompt
+  onpaste?: string
+  placeholder?: string
+  reprompt?: boolean // recursively prompt?
+}
+
+function isRequestingReprompt (spec: PromptCompleter): spec is IRepromptSpec {
+  return (spec as IRepromptSpec).reprompt
+}
+
+interface PromptCompletionData {
+  field: any
+}
+
+export type PromptCompletionHandler = (data: PromptCompletionData) => PromptCompleter
+
+interface IPromptOptions {
+  dangerous?: boolean
+  placeholder?: string
+  onpaste?: string
+  paste?: (evt: ClipboardEvent) => void
+  type?: string // an HTMLInputElement attribute e.g. 'password'
+}
+
 /**
  * Prompt the user for information
  *
  */
-export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, options, completion) => {
+export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, options: IPromptOptions, completion: PromptCompletionHandler) => {
   debug('prompt', options)
 
   const selection = block.querySelector('.repl-selection') as HTMLElement
@@ -1082,14 +1110,14 @@ export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, 
       return false
     }
   } else if (typeof options.paste === 'function') {
-    promptDom.onpaste = options.onpaste
+    promptDom.onpaste = options.paste
   }
 
   if (options.type) {
     promptDom.setAttribute('type', options.type)
   }
 
-  const restorePrompt = (err?) => {
+  const restorePrompt = (err?: Error) => {
     setStatus(block, 'valid-response')
     selection.innerText = currentSelection
     promptDom.value = currentInput
@@ -1107,27 +1135,24 @@ export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, 
   }
   block['restorePrompt'] = restorePrompt
 
-  block['completion'] = value => {
+  block['completion'] = (value: string) => {
     block.className = `${block.getAttribute('data-base-class')} processing`
     unlisten(promptDom)
     promptDom.readOnly = true
     const completer = completion(Object.assign({}, options, { field: value }))
 
-    if (completer.reprompt) {
+    if (isRequestingReprompt(completer)) {
       // then the command needs a second prompt
       restorePrompt()
       return prompt(msg, block, nextBlock, completer, completer.completion)
     } else {
       completer.then(response => {
-        if (response && response.context && nextBlock) {
-          // setContextUI(response, nextBlock)
-        }
         return printResults(block, nextBlock, resultDom)(response)
       })
         .then(() => undefined) // so that restorePrompt sees no input on success
         .then(restorePrompt)
         .then(installBlock(block.parentNode, block, nextBlock)) // <-- create a new input, for the next iter of the Loop
-        .catch(err => { restorePrompt(); oops('', block, nextBlock)(err) })
+        .catch((err: Error) => { restorePrompt(); oops('', block, nextBlock)(err) })
     }
   }
 

@@ -26,6 +26,7 @@ import mimicDom from '../util/mimic-dom'
 import { prequire, preload, init as pluginsInit } from '../core/plugins'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
 import { IExecOptions } from '../models/execOptions'
+import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 // set the headless capability
 import { Media, setMedia } from '../core/capabilities'
@@ -37,7 +38,7 @@ setMedia(Media.Headless)
 let exitCode = 0
 
 // electron pops up a window by default, for uncaught exceptions
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err: Error) => {
   debug('uncaughtException')
   console.error(colors.red(err.toString()))
   process.exit(1)
@@ -90,7 +91,7 @@ const success = quit => async out => {
     debug('graphical shell is open')
   }
 }
-const failure = (quit, execOptions?) => async err => {
+const failure = (quit, execOptions?: IExecOptions) => async err => {
   if (execOptions && execOptions.rethrowErrors) {
     throw err
   }
@@ -150,7 +151,7 @@ const insufficientArgs = (argv: Array<string>) => argv.length === 0
  *
  */
 let electronCreateWindowFn
-export const createWindow = (argv: Array<string>, subwindowPlease: boolean, subwindowPrefs) => {
+export const createWindow = (argv: Array<string>, subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
   try {
     graphicalShellIsOpen = true
     setGraphicalShellIsOpen()
@@ -209,7 +210,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
    * Evaluate the given command
    *
    */
-  const evaluate = cmd => Promise.resolve(repl.exec(cmd, execOptions))
+  const evaluate = (cmd: string) => Promise.resolve(repl.exec(cmd, execOptions))
     .then(success(quit))
 
   console.log = function () {
@@ -269,7 +270,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
 
     await initCommandContext(commandContext)
 
-    const maybeRetry = err => {
+    const maybeRetry = (err: Error) => {
       // nothing, yet
       return failure(quit, execOptions)(err)
     }

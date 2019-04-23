@@ -19,7 +19,8 @@ const debug = Debug('main/main')
 debug('loading')
 
 import { IExecOptions } from '../models/execOptions'
-import { SubwindowPrefs, getCommand, initElectron, initHeadless } from './spawn-electron'
+import { getCommand, initElectron, initHeadless } from './spawn-electron'
+import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 /**
  * This is the main entry point to kui

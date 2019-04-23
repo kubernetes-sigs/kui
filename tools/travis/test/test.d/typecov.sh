@@ -29,7 +29,7 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 (cd "$SCRIPTDIR"/../../../typecov && npm run typecov)
 
 BRANCH=$(cat /tmp/typecov.json | jq .stats.percentage)
-MASTER=$(curl -s https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/typecov-percent.json?which=overall | jq .percentage)
+MASTER=$(curl -s https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/typecov-percent.json?which=overall | jq .percentage)
 
 echo "  branch=$BRANCH"
 echo "  master=$MASTER"

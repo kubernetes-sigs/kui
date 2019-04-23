@@ -32,7 +32,7 @@ interface IMenuItem {
  * Tell the renderer to execute a command
  *
  */
-const tellRendererToExecute = async (command: string) => {
+const tellRendererToExecute = async (command: string, exec = 'qexec') => {
   const { webContents } = await import('electron')
   const focusedWindow = webContents.getFocusedWebContents()
 
@@ -49,7 +49,7 @@ const tellRendererToExecute = async (command: string) => {
     }
   } else {
     // debug('closing kui window')
-    focusedWindow.send('/repl/qexec', { command })
+    focusedWindow.send(`/repl/${exec}`, { command })
   }
 }
 
@@ -188,7 +188,7 @@ export const install = (app, Menu, createWindow) => {
     const about: IMenuItem = { label: `About ${productName}`,
       click: () => {
         try {
-          tellRendererToExecute('about')
+          tellRendererToExecute('about', 'pexec')
         } catch (err) {
           console.log(err)
         }
