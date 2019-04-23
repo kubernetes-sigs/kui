@@ -5,7 +5,7 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 [![Type Coverage Overall](https://img.shields.io/endpoint.svg?url=https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/badge.json?which=overall)](https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/typecov-model.json)
-[![Type Coverage Core](https://img.shields.io/endpoint.svg?url=https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/typecov-percent.json?which=core)](https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/typecov-model.json)
+[![Type Coverage Core](https://img.shields.io/endpoint.svg?url=https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/badge.json?which=core)](https://us-south.functions.cloud.ibm.com/api/v1/web/nickm_foobar/kui/typecov-model.json)
 
 Kui Shell offers a new development experience for building
 cloud-native applications. By combining the power of familiar CLIs
