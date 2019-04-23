@@ -199,7 +199,8 @@ export const setStatus = (block: HTMLElement, status: string) => {
 
       const repl = await import('../core/repl')
       debug(`capturing screenshot for block ${N}`)
-      repl.qexec(`screenshot --nth ${N}`)
+
+      repl.qexec(`screenshot --nth ${N}`, undefined, undefined, { rethrowErrors: true, reportErrors: true })
     }
   }
 }
@@ -957,8 +958,16 @@ export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExec
 export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err) => {
   const message = oopsMessage(err)
   // const errString = err && err.toString()
-
   if (!block) return // we're not attached to a prompt right now
+
+  if (!nextBlock) {
+    nextBlock = block.cloneNode(true) as HTMLElement
+    nextBlock.querySelector('input').value = ''
+  }
+
+  if (getPrompt(block).value === '') { // e.g. we want qexec with reportErrors:true show command in repl
+    getPrompt(block).value = command
+  }
 
   setStatus(block, 'error')
 
