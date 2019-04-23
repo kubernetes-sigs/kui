@@ -18,15 +18,7 @@ const isDev = false// require('electron-is-dev');
 
 import { theme } from '@kui-shell/settings/config.json'
 const { productName } = theme
-
-interface IMenuItem {
-  label?: string
-  click?: () => void
-  accelerator?: string
-  type?: string
-  role?: string,
-  submenu?: Array<IMenuItem>
-}
+import { Menu, MenuItemConstructorOptions } from 'electron'
 
 /**
  * Tell the renderer to execute a command
@@ -65,9 +57,9 @@ const newTab = () => tellRendererToExecute('tab new')
  */
 const closeTab = () => tellRendererToExecute('tab close')
 
-export const install = (app, Menu, createWindow) => {
+export const install = (createWindow: Function) => {
   if (!isDev) {
-    const fileMenuItems: Array<IMenuItem> = [
+    const fileMenuItems: Array<MenuItemConstructorOptions> = [
       { label: 'New Window',
         click: () => createWindow(),
         accelerator: 'CommandOrControl+N'
@@ -88,7 +80,7 @@ export const install = (app, Menu, createWindow) => {
       fileMenuItems.push({ role: 'quit' })
     }
 
-    const helpMenuItems: Array<IMenuItem> = [
+    const helpMenuItems: Array<MenuItemConstructorOptions> = [
       {
         label: 'Getting Started with Composer',
         click: () => {
@@ -136,7 +128,7 @@ export const install = (app, Menu, createWindow) => {
       }
     ]
 
-    const menuTemplate: Array<IMenuItem> = [
+    const menuTemplate: Array<MenuItemConstructorOptions> = [
       {
         label: 'File',
         submenu: fileMenuItems
@@ -185,7 +177,7 @@ export const install = (app, Menu, createWindow) => {
       }
     ]
 
-    const about: IMenuItem = { label: `About ${productName}`,
+    const about: MenuItemConstructorOptions = { label: `About ${productName}`,
       click: () => {
         try {
           tellRendererToExecute('about', 'pexec')

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export interface CodedError extends Error {
-  code?: number
-  statusCode?: number
+export interface IQuittable {
+  quit: () => void
 }

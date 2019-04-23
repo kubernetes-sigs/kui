@@ -27,7 +27,7 @@ import { print } from './headless-pretty-print'
  *
  */
 export const streamTo = () => {
-  return async response => {
+  return async (response: any) => {
     debug('streaming response', response)
     print(response)
   }

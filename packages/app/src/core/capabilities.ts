@@ -71,7 +71,7 @@ export const setMedia = (media: Media): void => {
  * provider
  *
  */
-export const setHasAuth = (provider: string, creds: any): void => {
+export const setHasAuth = (provider: string, creds: object): void => {
   debug('setHasAuth', provider, creds)
   state.validCredentials[provider] = creds
 }

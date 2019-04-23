@@ -493,7 +493,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     mainWindow.loadURL(require('url').format(urlSpec))
 
     debug('install menus')
-    require('./menu').install(app, electron.Menu, createWindow)
+    require('./menu').install(createWindow)
 
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()

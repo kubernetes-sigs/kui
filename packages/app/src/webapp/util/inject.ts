@@ -28,18 +28,20 @@ interface IStylesheetFile {
   path: string
   key: string
 }
-function isAStylesheetDirect (object: any): object is IStylesheetDirect {
+function isAStylesheetDirect (object: StylesheetSpec): object is IStylesheetDirect {
   return typeof object !== 'string' && 'css' in object && 'key' in object
 }
-function isAStylesheetFile (object: any): object is IStylesheetFile {
+function isAStylesheetFile (object: StylesheetSpec): object is IStylesheetFile {
   return typeof object !== 'string' && 'path' in object && 'key' in object
 }
+
+type StylesheetSpec = IStylesheetDirect | IStylesheetFile | string
 
 /**
  * Inject a stylesheet
  *
  */
-export const injectCSS = (file: IStylesheetDirect | IStylesheetFile | string): void => {
+export const injectCSS = (file: StylesheetSpec): void => {
   if (isHeadless()) {
     return
   }
@@ -138,14 +140,15 @@ export const injectScript = (url: any): Promise<any> => new Promise((resolve, re
  * Inject HTML stored in the given local file
  *
  */
-export const loadHTML = (file: any): Promise<string> => new Promise((resolve, reject) => {
+export const loadHTML = (file: any): Promise<string> => new Promise(async (resolve, reject) => {
   if (file.html) {
     // then we have the raw content already
     debug('loadHTML from string')
     resolve(file.html)
   } else {
     debug('loadHTML from file', file)
-    require('fs').readFile(file, (err, data) => {
+    const { readFile } = await import('fs')
+    return readFile(file, (err, data) => {
       if (err) {
         reject(err)
       } else {

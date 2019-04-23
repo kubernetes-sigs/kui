@@ -18,13 +18,20 @@
 // historical artifact, at this point
 const key = 'openwhisk.history'
 
-export let lines = (typeof window !== 'undefined' && JSON.parse(window.localStorage.getItem(key))) || []
+export interface HistoryLine {
+  entityType?: string
+  verb?: string
+  response?: any
+  raw?: string
+}
+
+export let lines: HistoryLine[] = (typeof window !== 'undefined' && JSON.parse(window.localStorage.getItem(key))) || []
 
 let cursor = lines.length // pointer to historic line
-export const getCursor = () => cursor
+export const getCursor = (): number => cursor
 
 /** change the cursor, protecting against under- and overflow */
-const guardedChange = incr => {
+const guardedChange = (incr: number): number => {
   const newCursor = cursor + incr
 
   if (newCursor < 0) cursor = 0
@@ -46,7 +53,7 @@ export const wipe = () => {
 }
 
 /** add a line of repl history */
-export const add = line => {
+export const add = (line: HistoryLine) => {
   if (lines.length === 0 || JSON.stringify(lines[lines.length - 1]) !== JSON.stringify(line)) {
     // don't add sequential duplicates
     lines.push(line)
@@ -58,23 +65,23 @@ export const add = line => {
 }
 
 /** update a line of repl history -- for async operations */
-export const update = (cursor, updateFn) => {
+export const update = (cursor: number, updateFn) => {
   // console.log('history::update', cursor)
   updateFn(lines[cursor])
   window.localStorage.setItem(key, JSON.stringify(lines))
 }
 
 /** return the given line of history */
-export const line = (idx: number) => lines[idx]
-export const lineByIncr = (incr: number) => line(guardedChange(incr))
+export const line = (idx: number): HistoryLine => lines[idx]
+export const lineByIncr = (incr: number): HistoryLine => line(guardedChange(incr))
 
 /** go back/forward one entry */
-export const previous = () => lineByIncr(-1)
-export const next = () => lineByIncr(+1)
-export const first = () => { cursor = 0; return line(cursor) }
-export const last = () => { cursor = lines.length - 1; return line(cursor) }
+export const previous = (): HistoryLine => lineByIncr(-1)
+export const next = (): HistoryLine => lineByIncr(+1)
+export const first = (): HistoryLine => { cursor = 0; return line(cursor) }
+export const last = (): HistoryLine => { cursor = lines.length - 1; return line(cursor) }
 
-type FilterFunction = (Object) => boolean
+type FilterFunction = (line: HistoryLine) => boolean
 
 /**
  * Search the history model
@@ -84,14 +91,14 @@ type FilterFunction = (Object) => boolean
  * search backwards from the given index
  *
  */
-export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: number) => {
+export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: number): number => {
   let filterFn: FilterFunction
 
   if (typeof filter === 'string') {
     const regexp = new RegExp(filter.replace(/([$.])/g, '\\$1'))
-    filterFn = line => line.raw.match(regexp)
+    filterFn = (line: HistoryLine) => regexp.test(line.raw)
   } else if (filter instanceof RegExp) {
-    filterFn = line => line.raw.match(filter)
+    filterFn = (line: HistoryLine) => filter.test(line.raw)
   } else {
     filterFn = filter
   }
@@ -102,7 +109,7 @@ export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: n
     }
   }
 }
-export const find = filter => {
+export const find = (filter: FilterFunction): HistoryLine => {
   const idx = findIndex(filter)
   return idx !== undefined && lines[idx]
 }

@@ -60,7 +60,7 @@ export const hasUnknownOptions = (options: IOptions, expected: string[]) => {
  * Error reporting
  *
  */
-export const handleError = (err: Error, reject) => {
+export const handleError = (err: Error, reject?: (reason: any) => void) => {
   console.error(err)
   if (reject) {
     reject(err)

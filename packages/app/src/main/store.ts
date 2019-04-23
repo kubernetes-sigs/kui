@@ -81,13 +81,13 @@ export default () => {
      * from the something being of value `undefined`.
      *
      */
-    getItem: key => data[key] || null,
+    getItem: (key: string): string => data[key] || null,
 
     /**
      * Update an entry in localStorage
      *
      */
-    setItem: (key, val) => {
+    setItem: (key: string, val: string): string => {
       debug('setItem', key, val)
       data[key] = val
       flush()
@@ -98,7 +98,7 @@ export default () => {
      * Remove an entry from localStorage
      *
      */
-    removeItem: key => {
+    removeItem: (key: string): string => {
       const val = data[key]
       delete data[key]
       flush()

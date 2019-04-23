@@ -313,7 +313,7 @@ export interface IEvent {
   route?: string
   plugin?: string
   isIntention?: boolean
-  error?: Error
+  error?: string
   options?: any
   execType?: ExecType
   isDrilldown?: boolean

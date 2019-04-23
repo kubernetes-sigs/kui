@@ -27,7 +27,7 @@ import eventBus from '../../core/events'
 import { prequire } from '../../core/plugins'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
-import { css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
+import { ISidecarMode, css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
 import { formatOneListResult } from '../views/table'
 import { keys } from '../keys'
 import { IShowOptions, DefaultShowOptions } from './show-options'
@@ -46,7 +46,7 @@ const logPatterns = {
  * Beautify the given stringified json, placing it inside the given dom container
  *
  */
-export const prettyJSON = (raw, container) => {
+export const prettyJSON = (raw: string, container: HTMLElement) => {
   const beautify = require('js-beautify')
   container.innerText = beautify(raw, { wrap_line_length: 80, indent_size: 2 })
   setTimeout(() => hljs.highlightBlock(container), 0)
@@ -56,7 +56,7 @@ export const prettyJSON = (raw, container) => {
  * Beautify any kinds we know how to
  *
  */
-export const beautify = (kind, code) => {
+export const beautify = (kind: string, code: string) => {
   if (kind.indexOf('nodejs') >= 0) {
     return require('js-beautify').js_beautify(code)
   } else {
@@ -111,11 +111,11 @@ export const getActiveView = () => {
   return container
 }
 
-const tryParseDate = s => {
+const tryParseDate = (str: string): number | string => {
   try {
-    return new Date(s).getTime()
+    return new Date(str).getTime()
   } catch (e) {
-    return s
+    return str
   }
 }
 
@@ -141,7 +141,7 @@ export const renderField = async (container: HTMLElement, entity, field: string,
     } else {
       // too big to beautify; try to elide the code bits and
       // then we'll re-check
-      const raw = JSON.stringify(value, (key, value) => {
+      const raw = JSON.stringify(value, (key: string, value: any) => {
         if (key === 'code' && JSON.stringify(value).length > 1024) {
           // maybe this is why we're too big??
           return '\u2026'
@@ -182,7 +182,7 @@ export const renderField = async (container: HTMLElement, entity, field: string,
     container.appendChild(logTable)
 
     let previousTimestamp: Date
-    value.forEach(logLine => {
+    value.forEach((logLine: string) => {
       const lineDom = document.createElement('div')
       lineDom.className = 'log-line'
       logTable.appendChild(lineDom)
@@ -245,7 +245,8 @@ export const renderField = async (container: HTMLElement, entity, field: string,
     // for now, we just render it as raw JSON, TODO: some sort of fancier key-value pair visualization?
     if (field === 'parameters' || field === 'annotations') {
       // special case here: the parameters field is really a map, but stored as an array of key-value pairs
-      value = value.reduce((M, kv) => {
+      type KeyValueMap = { [key: string]: string }
+      value = value.reduce((M: KeyValueMap, kv) => {
         M[kv.key] = kv.value
         return M
       }, {})
@@ -262,7 +263,35 @@ export const renderField = async (container: HTMLElement, entity, field: string,
  * Show custom content in the sidecar
  *
  */
-export const showCustom = async (custom, options, resultDom?: Element) => {
+type CustomContent = string | HTMLElement | Promise<HTMLElement>
+interface ICustomSpec {
+  type: string
+  isEntity?: boolean
+  name?: string
+  packageName?: string
+  subtext?: Formattable
+  prettyName?: string
+  prettyType?: string
+  prettyKind?: string
+  content: CustomContent
+  displayOptions?: string[]
+  badges?: IBadgeSpec[]
+  contentType?: string
+  contentTypeProjection?: string
+  controlHeaders?: boolean | string[]
+  presentation?: Presentation
+  uuid?: string
+  sidecarHeader?: boolean
+  modes: ISidecarMode[]
+}
+function isPromise (content: CustomContent): content is Promise<HTMLElement> {
+  const promise = content as Promise<HTMLElement>
+  return promise.then ? true : false
+}
+function isHTML (content: CustomContent): content is HTMLElement {
+  return typeof content !== 'string'
+}
+export const showCustom = async (custom: ICustomSpec, options, resultDom?: Element) => {
   if (!custom || !custom.content) return
   debug('showCustom', custom, options, resultDom)
 
@@ -307,7 +336,7 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
     }
   } else {
     // plugin will control some headers; it tell us which it wants us to control
-    custom.controlHeaders.forEach(_ => {
+    custom.controlHeaders.forEach((_: string) => {
       const customHeaders = sidecar.querySelectorAll(`${_} .custom-header-content`)
       for (let idx = 0; idx < customHeaders.length; idx++) {
         removeAllDomChildren(customHeaders[idx])
@@ -371,7 +400,7 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
   const container = resultDom || sidecar.querySelector('.custom-content')
   removeAllDomChildren(container)
 
-  if (custom.content.then) {
+  if (isPromise(custom.content)) {
     container.appendChild(await custom.content)
   } else if (custom.contentType || custom.contentTypeProjection) {
     // we were asked ot project out one specific field
@@ -441,7 +470,7 @@ export const showCustom = async (custom, options, resultDom?: Element) => {
         }, 0)
       }
     }
-  } else if (custom.content.nodeName) {
+  } else if (isHTML(custom.content)) {
     container.appendChild(custom.content)
   } else {
     container.appendChild(document.createTextNode(custom.content))
@@ -495,7 +524,7 @@ export const updateSidecarHeader = (update: IHeaderUpdate, sidecar = getSidecar(
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
-export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packageName = '', onclick?, viewName?, subtext?, entity?) => {
+export const addNameToSidecarHeader = async (sidecar = getSidecar(), name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?) => {
   debug('addNameToSidecarHeader', name)
 
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
@@ -550,13 +579,14 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name, packa
  * Call a formatter
  *
  */
+type Formattable = IFormatter | string | Promise<string>
 export interface IFormatter {
   plugin: string
   module: string
   operation: string
   parameters: object
 }
-function isFormatter (spec: IFormatter | string | Promise<string>): spec is IFormatter {
+function isFormatter (spec: Formattable): spec is IFormatter {
   return typeof spec !== 'string' &&
     !(spec instanceof Promise) &&
     spec.plugin !== undefined &&
@@ -564,7 +594,7 @@ function isFormatter (spec: IFormatter | string | Promise<string>): spec is IFor
     spec.operation !== undefined &&
     spec.parameters !== undefined
 }
-const call = async (spec: IFormatter | string | Promise<string>): Promise<string | Element> => {
+const call = async (spec: Formattable): Promise<string | Element> => {
   if (!isFormatter(spec)) {
     return Promise.resolve(spec)
   } else {
@@ -577,10 +607,10 @@ const call = async (spec: IFormatter | string | Promise<string>): Promise<string
  * Find and format links in the given dom tree
  *
  */
-export const linkify = dom => {
+export const linkify = (dom: Element): void => {
   const attrs = dom.querySelectorAll('.hljs-attr')
   for (let idx = 0; idx < attrs.length; idx++) {
-    const attr = attrs[idx]
+    const attr = attrs[idx] as HTMLElement
     if (attr.innerText.indexOf('http') === 0) {
       const link = document.createElement('a')
       link.href = attr.innerText
@@ -731,7 +761,7 @@ const setVisible = (sidecar: Element) => {
   cli.scrollIntoView()
 }
 
-export const show = (block?, nextBlock?) => {
+export const show = (block?: HTMLElement, nextBlock?: HTMLElement) => {
   debug('show')
 
   const sidecar = getSidecar()
@@ -739,7 +769,7 @@ export const show = (block?, nextBlock?) => {
     setVisible(sidecar)
     return true
   } else if (block && nextBlock) {
-    cli.oops(block, nextBlock)({ error: 'You have no entity to show' })
+    cli.oops(undefined, block, nextBlock)({ error: 'You have no entity to show' })
   }
 }
 

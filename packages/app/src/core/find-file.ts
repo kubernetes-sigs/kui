@@ -26,7 +26,11 @@ import { inBrowser } from './capabilities'
  * leading @ character?
  *
  */
-const specialPaths = [] // any special paths added via self.addPath
+interface ISpecialPath {
+  prefix: string
+  filepath: string
+}
+const specialPaths: ISpecialPath[] = [] // any special paths added via self.addPath
 const defaultSpecial = { filepath: join(__dirname, '..') } // default special is the app/ top-level
 
 /**

@@ -39,7 +39,7 @@ const element = (id: string): HTMLElement => {
   return document.querySelector(id) as HTMLElement
 }
 
-function catastrophe (err) {
+function catastrophe (err: Error) {
   console.error('restart needed')
   console.error(err)
   document.body.classList.add('oops-total-catastrophe')

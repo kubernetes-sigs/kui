@@ -168,8 +168,8 @@ interface IOptions {
 const drawGrid = (options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Array<Object>) => {
   debug('drawGrid', redraw)
 
-  const existingContent = document.querySelector(sidecarSelector(`.custom-content .${css.content}`))
-  const content = (redraw && existingContent) || document.createElement('div')
+  const existingContent = document.querySelector(sidecarSelector(`.custom-content .${css.content}`)) as HTMLElement
+  const content: HTMLElement = (redraw && existingContent) || document.createElement('div')
 
   content.classList.add(css.content)
   content.classList.add(css.useDarkTooltips)

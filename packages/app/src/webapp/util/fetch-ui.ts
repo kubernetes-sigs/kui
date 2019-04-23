@@ -44,7 +44,7 @@ const versionFromPackageJson = () => require('@kui-shell/settings/package.json')
  * Return the COS bucket for this version
  *
  */
-const bucket = version => {
+const bucket = (version: string): string => {
   if (version.indexOf('-dev.') > 0) {
     return 'dev'
   } else {
@@ -76,8 +76,8 @@ const app = {
  * Wait for fetch to complete
  *
  */
-const waitForDone = (notifyOfProgress, stagingArea, doneLock) => new Promise((resolve, reject) => {
-  const iter = (idx, doneMessageNeeded = false) => {
+const waitForDone = (notifyOfProgress: boolean, stagingArea: string, doneLock: string) => new Promise((resolve, reject) => {
+  const iter = (idx: number, doneMessageNeeded = false) => {
     debug('waiting for completion')
 
     try {
@@ -130,7 +130,7 @@ const doneWaitOrFetch = (notifyOfProgress = false) => (stagingAreaBase: string) 
   const doneLock = join(stagingArea, 'fetch-ui.done')
   const fetchLock = join(stagingArea, 'fetch-ui.lock')
 
-  const handle = err => {
+  const handle = (err: Error) => {
     console.error(err)
     return fs.rmdir(fetchLock, () => {
       return fs.rmdir(doneLock, () => {
@@ -217,7 +217,7 @@ const mkdir = (filepath: string): Promise<void> => {
 }
 
 export const fetch = doneWaitOrFetch(false)
-export const watch = stagingArea => ({ wait: () => doneWaitOrFetch(true)(stagingArea) })
+export const watch = (stagingArea: string) => ({ wait: () => doneWaitOrFetch(true)(stagingArea) })
 
 // if invoked from the CLI, all we do is call main
 if (require.main === module) {
@@ -227,17 +227,18 @@ if (require.main === module) {
 
   try {
     watch(stagingAreaBase).wait()
-      .then(res => {
+      .then(() => {
         debug('done')
       })
-      .catch(err => {
+      .catch((err: Error) => {
         debug('error', err)
-        console.error(colors.red(err))
+        console.error(colors.red(err.toString()))
         process.exit(1)
       })
-  } catch (err) {
+  } catch (error) {
+    const err = error as Error
     debug('error', err)
-    console.error(colors.red(err))
+    console.error(colors.red(err.toString()))
     process.exit(1)
   }
 } else {
