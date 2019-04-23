@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('webapp/electron-events')
+import * as Debug from 'debug'
+const debug = Debug('webapp/electron-events')
 debug('loading')
 
 import { inElectron, Media, setMedia } from '../core/capabilities'
+import { qexec, pexec } from '../core/repl'
 
 /**
  * Listen for the main process telling us to execute a command
@@ -29,14 +31,12 @@ const listenForRemoteEvents = (ipcRenderer) => {
   if (inElectron() && ipcRenderer) {
     ipcRenderer.on('/repl/pexec', (event, { command }) => {
       debug('remote pexec', command)
-      const repl = require('../core/repl')
-      return repl.pexec(command)
+      return pexec(command)
     })
 
     ipcRenderer.on('/repl/qexec', (event, { command }) => {
       debug('remote qexec', command)
-      const repl = require('../core/repl')
-      return repl.qexec(command)
+      return qexec(command)
     })
   }
 }
@@ -45,11 +45,11 @@ const listenForRemoteEvents = (ipcRenderer) => {
  * Set up the IPC channel to the main process
  *
  */
-const initializeIPC = () => {
+const initializeIPC = async () => {
   debug('initializeIPC')
 
   try {
-    const electron = require('electron')
+    const electron = await import('electron')
     const ipcRenderer = electron.ipcRenderer
     const remote = electron.remote
     if (!ipcRenderer || !remote) {
@@ -121,8 +121,8 @@ const listenForTestEvents = (ipcRenderer?) => {
  * Send a synchronous message to the main process
  *
  */
-export const tellMain = (message, channel?) => new Promise((resolve, reject) => {
-  const electron = require('electron')
+export const tellMain = (message, channel?) => new Promise(async (resolve, reject) => {
+  const electron = await import('electron')
   const ipcRenderer = electron.ipcRenderer
 
   ipcRenderer[channel === 'asynchronous-message' ? 'send' : 'sendSync'](channel || 'synchronous-message',
@@ -145,10 +145,11 @@ export const tellMain = (message, channel?) => new Promise((resolve, reject) => 
   }
 })
 
-export const init = async (prefs = {}) => {
-  const { remote, ipcRenderer } = initializeIPC()
-  listenForRemoteEvents(ipcRenderer)
+export const init = (prefs = {}) => {
+  return initializeIPC().then(({ remote, ipcRenderer }) => {
+    listenForRemoteEvents(ipcRenderer)
 
-  listenForWindowEvents(remote)
-  listenForTestEvents(ipcRenderer)
+    listenForWindowEvents(remote)
+    listenForTestEvents(ipcRenderer)
+  })
 }

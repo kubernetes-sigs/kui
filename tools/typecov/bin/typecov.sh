@@ -22,5 +22,5 @@ set -o pipefail
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TSCONFIG="$SCRIPTDIR"/../../../packages/kui-builder/tsconfig.json
 
-npm run build
+(cd "$SCRIPTDIR"/.. && npm run --silent build)
 (cd /tmp/typewiz && node node_modules/typewiz/dist/cli.js coverage "$TSCONFIG" -o /tmp/typecov.json)

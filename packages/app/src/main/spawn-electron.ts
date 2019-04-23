@@ -20,18 +20,9 @@ debug('loading')
 
 import windowDefaults from '../webapp/defaults'
 import { IExecOptions } from '../models/execOptions'
+import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 import * as colors from 'colors/safe'
-
-export interface SubwindowPrefs {
-  fullscreen?: boolean
-  useContentSize?: boolean
-  synonymFor?: object
-  width?: number
-  height?: number
-  position?: { x: number, y: number },
-  bringYourOwnWindow?: () => void
-}
 
 /**
  * Keep a global reference of the window object, if you don't, the window will
@@ -51,7 +42,7 @@ let app
  * Spawn electron
  *
  */
-export async function initElectron (command = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?, subwindowPrefs?: SubwindowPrefs) {
+export async function initElectron (command = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?, subwindowPrefs?: ISubwindowPrefs) {
   debug('initElectron', command, subwindowPlease, subwindowPrefs)
 
   let promise: Promise<void>
@@ -306,7 +297,7 @@ export async function initHeadless (argv: Array<string>, force = false, isRunnin
   }
 } /* initHeadless */
 
-function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlease?, subwindowPrefs?: SubwindowPrefs) {
+function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
   debug('createWindow', executeThisArgvPlease)
 
   if (subwindowPrefs && subwindowPrefs.bringYourOwnWindow) {
@@ -598,7 +589,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
 interface ICommand {
   argv: Array<string>
   subwindowPlease: boolean
-  subwindowPrefs: SubwindowPrefs
+  subwindowPrefs: ISubwindowPrefs
 }
 export const getCommand = (argv: Array<string>): ICommand => {
   debug('getCommand', argv)
@@ -614,7 +605,7 @@ export const getCommand = (argv: Array<string>): ICommand => {
   debug('isShell', argv, isShell)
 
   let subwindowPlease = true
-  let subwindowPrefs: SubwindowPrefs = { fullscreen: true, width: windowDefaults.width, height: windowDefaults.height }
+  let subwindowPrefs: ISubwindowPrefs = { fullscreen: true, width: windowDefaults.width, height: windowDefaults.height }
 
   if (isShell) {
     // use a full window for 'shell'

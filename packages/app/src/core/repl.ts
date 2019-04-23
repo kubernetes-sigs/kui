@@ -27,6 +27,7 @@ import minimist = require('yargs-parser')
 
 import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
 import { add as addToHistory } from '../models/history'
+import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
 import UsageError from './usage-error'
 
@@ -432,16 +433,19 @@ class InProcessExecutor implements IExecutor {
           {}
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
         const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
-        const optionalAliases = optional && optional.filter(({ alias }) => alias).reduce((M, { name, alias }) => {
+
+        type CanonicalArgs = { [key: string]: string }
+        const optionalAliases = optional && optional.filter(({ alias }) => alias).reduce((M: CanonicalArgs, { name, alias }) => {
           M[unflag(alias)] = unflag(name)
           return M
         }, {})
 
+        type ArgCount = { [key: string]: number }
         const allFlags = {
           configuration: Object.assign({ 'camel-case-expansion': false }, (usage && usage.configuration) || {}),
           boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
           alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
-          narg: optional && optional.reduce((N, { name, alias, narg }) => {
+          narg: optional && optional.reduce((N: ArgCount, { name, alias, narg }) => {
             if (narg) {
               N[unflag(name)] = narg
               N[unflag(alias)] = narg
@@ -734,7 +738,7 @@ class InProcessExecutor implements IExecutor {
                       resolve(response)
                     }
                   })
-                  .catch(err => {
+                  .catch((err: Error) => {
                     console.error(err)
                     if (execOptions && execOptions.noHistory) {
                       // then pass the error upstream
@@ -747,7 +751,7 @@ class InProcessExecutor implements IExecutor {
               })
             }
           })
-          .catch(err => {
+          .catch((err: CodedError) => {
             // console.error('error in command execution', err)
             if (isHeadless()) {
               debug('rethrowing error because we are in headless mode')
@@ -763,7 +767,7 @@ class InProcessExecutor implements IExecutor {
               const reportIt = execOptions && execOptions.reportErrors // report it to the user via the repl
 
               if (returnIt) {
-                debug('returning command execution error', err.code, err, orig.err)
+                debug('returning command execution error', err.code, err, orig)
                 return err
               } else if (!nested && !rethrowIt) {
                 debug('reporting command execution error to user via repl')
@@ -871,12 +875,13 @@ export const encodeComponent = (component: string, quote = '"') => {
  * override the graphical default
  *
  */
-let oopsHandler
-export const installOopsHandler = fn => {
+type OopsHandler = (block: HTMLElement, nextBlock: HTMLElement) => (err: Error) => void
+let oopsHandler: OopsHandler
+export const installOopsHandler = (fn: OopsHandler) => {
   debug('installing oops handler')
   oopsHandler = fn
 }
-const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) => err => {
+const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err: Error) => {
   if (oopsHandler) {
     debug('invoking registered oops handler')
     return oopsHandler(block, nextBlock)(err)

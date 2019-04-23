@@ -25,8 +25,11 @@ TOPDIR="$SCRIPTDIR/../../../"
 #
 # TODO: For now we hardcoded travis job number in deployment logic. We should consider using Travis Build Stages once ibm travis adds the support.
 if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [[ "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.1" || "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.7" ]]; then
-    echo "uploading typecov data"
-    (cd "$SCRIPTDIR"/../../typecov && npm run typecov && npm run upload)
+
+    if [ "$TRAVIS_OS_NAME" == linux ]; then
+        echo "uploading typecov data"
+        (cd "$SCRIPTDIR"/../../typecov && npm run --silent typecov && npm run --silent upload)
+    fi
 
     echo "pushing builds"
     unset TEST_FROM_BUILD

@@ -74,6 +74,7 @@ const add = async ({ block, nextBlock }) => {
                 } else {
                   // all right! we now have the kubeconfig and the PEM
                   setAuth(kubeconfigString, ca, cafile)
+                  return true
 
                   /* const repl = await import('@kui-shell/core/core/repl')
                   const { PACKAGE } = await import('../../actionProxy/deploy')

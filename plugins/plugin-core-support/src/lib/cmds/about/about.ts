@@ -209,6 +209,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     }
   }
 
+  console.error('!!!!!!!')
   return {
     type: 'custom',
     isEntity: true,
