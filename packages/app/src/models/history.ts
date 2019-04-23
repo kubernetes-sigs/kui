@@ -65,8 +65,8 @@ export const update = (cursor, updateFn) => {
 }
 
 /** return the given line of history */
-export const line = idx => lines[idx]
-export const lineByIncr = incr => line(guardedChange(incr))
+export const line = (idx: number) => lines[idx]
+export const lineByIncr = (incr: number) => line(guardedChange(incr))
 
 /** go back/forward one entry */
 export const previous = () => lineByIncr(-1)

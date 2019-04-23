@@ -153,7 +153,7 @@ const toArray = M => {
  * Load one plugin for the given plugin route, located in the given pluginPath on the local filesystem
  *
  */
-const loadPlugin = async (route, pluginPath) => {
+const loadPlugin = async (route: string, pluginPath: string) => {
   debug('loadPlugin %s', route)
 
   const deps = {}
@@ -455,17 +455,17 @@ const makeResolver = prescan => {
 
   /** a plugin resolver impl */
   const resolver = {
-    isOverridden: route => prescan.overrides[route],
+    isOverridden: (route: string): boolean => prescan.overrides[route],
 
     resolveOne,
 
-    disambiguate: command => {
+    disambiguate: (command: string) => {
       debug('attempting to disambiguate command', command)
       return prescan.disambiguator[command]
     },
 
     /** given a partial command, do we have a disambiguation of it? e.g. "gr" => "grid" */
-    disambiguatePartial: partial => {
+    disambiguatePartial: (partial: string) => {
       debug('attempting to disambiguate partial', partial)
       const matches = []
       if (prescan.disambiguator) {
@@ -482,7 +482,7 @@ const makeResolver = prescan => {
     },
 
     /** load any plugins required by the given command */
-    resolve: (command, { subtree = false } = {}) => { // subpath if we are looking for plugins for a subtree, e.g. for cd /auth
+    resolve: (command: string, { subtree = false } = {}) => { // subpath if we are looking for plugins for a subtree, e.g. for cd /auth
       debug('resolve', command)
 
       let plugin
@@ -571,7 +571,7 @@ export const generatePrescanModel = async opts => {
 export const assemble = opts => generatePrescanModel(Object.assign({ assembly: true }, opts))
 
 /** export the prequire function */
-export const prequire = async (route, options?) => {
+export const prequire = async (route: string, options?) => {
   debug('prequire %s', route)
 
   try {

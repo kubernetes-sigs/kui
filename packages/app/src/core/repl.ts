@@ -50,12 +50,31 @@ export interface IExecutor {
 }
 
 /**
+ * Evaluator args
+ *
+ */
+export interface IEvaluatorArgs {
+  block: HTMLElement | boolean
+  nextBlock: HTMLElement
+  parsedOptions: { [key: string]: string }
+  command: string
+  argv: Array<string>
+  argvNoOptions: Array<string>
+  execOptions: IExecOptions
+  createOutputStream: () => WritableStream
+}
+
+interface IEvaluatorImpl {
+  eval: (args: IEvaluatorArgs) => Promise<any>
+}
+
+/**
  * Apply the given evaluator to the given arguments
  *
  */
 export interface IEvaluator {
   name: string
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator, args)
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluatorImpl, args: IEvaluatorArgs)
 }
 
 /**
@@ -65,7 +84,7 @@ export interface IEvaluator {
  */
 export class DirectEvaluator implements IEvaluator {
   name = 'DirectEvaluator'
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator, args) {
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluatorImpl, args: IEvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
@@ -120,14 +139,14 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
-export const qfexec = (command: string, block?, nextBlock?, execOptions?: IExecOptions) => {
+export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: IExecOptions) => {
   // context change ok, final exec in a chain of nested execs
   return qexec(command, block, true, execOptions, nextBlock)
 }
-export const iexec = (command: string, block?, contextChangeOK?, execOptions?: IExecOptions, nextBlock?) => {
+export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement) => {
   return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }
-export const qexec = (command: string, block?, contextChangeOK?, execOptions?: IExecOptions, nextBlock?) => {
+export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement) => {
   return exec(command, Object.assign({
     block: block,
     nextBlock: nextBlock,
@@ -172,7 +191,7 @@ const escape = (str: string) => str.replace(patterns.dash, "'-$1'")
  * value 3.
  *
  */
-const resolveEnvVar = (variable: string) => {
+const resolveEnvVar = (variable: string): string => {
   const envValue = process.env[variable.substring(1)]
   return envValue ? escape(envValue) : variable
 }
@@ -186,9 +205,9 @@ export interface ISplit {
   endIndices: Array<number>
 }
 export const _split = (str: string, removeOuterQuotes = true, returnIndices = false): ISplit | Array<string> => {
-  const A = []
-  const endIndices = []
-  const stack = []
+  const A: Array<string> = []
+  const endIndices: Array<number> = []
+  const stack: Array<string> = []
 
   let cur = ''
 
@@ -202,7 +221,7 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
     return false
   }
 
-  let removedLastOpenQuote = []
+  let removedLastOpenQuote: Array<boolean> = []
   for (let idx = 0; idx < str.length; idx++) {
     const char = str.charAt(idx)
 
@@ -307,18 +326,18 @@ class InProcessExecutor implements IExecutor {
       try {
         return pictureInPicture(commandUntrimmed, undefined, document.querySelector(container), returnTo)()
       } catch (err) {
-        console.error(err)
+        console.error(err as Error)
         // fall through to normal execution, if pip fails
       }
     }
 
     // clone the current block so that we have one for the next
     // prompt, when we're done evaluating the current command
-    let nextBlock
+    let nextBlock: HTMLElement
     if (!execOptions || (!execOptions.noHistory && echo)) {
       // this is a top-level exec
       cli.unlisten(prompt)
-      nextBlock = (execOptions && execOptions.nextBlock) || block.cloneNode(true)
+      nextBlock = (execOptions && execOptions.nextBlock) || (block.cloneNode(true) as HTMLElement)
 
       // since we cloned it, make sure it's all cleaned out
       nextBlock.querySelector('input').value = ''
@@ -433,8 +452,8 @@ class InProcessExecutor implements IExecutor {
 
         // now use minimist to parse the command line options
         // minimist stores the residual, non-opt, args in _
-        const parsedOptions = minimist(argv, allFlags)
-        const argvNoOptions = parsedOptions._
+        const parsedOptions: { [ key: string ]: any } = minimist(argv, allFlags)
+        const argvNoOptions: Array<string> = parsedOptions._
 
         //
         // if the user asked for help, and the plugin registered a
@@ -456,7 +475,7 @@ class InProcessExecutor implements IExecutor {
         if (usage && usage.strict) { // strict: command wants *us* to enforce conformance
           // required and optional parameters
           const { strict: cmd, onlyEnforceOptions = false, required = [], oneof = [], optional: _optional = [] } = usage
-          const optLikeOneOfs = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
+          const optLikeOneOfs: Array<any> = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
           const positionalConsumers = _optional.filter(({ name, alias, consumesPositional }) => consumesPositional && (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)]))
           const optional = builtInOptions.concat(_optional).concat(optLikeOneOfs)
           const positionalOptionals = optional.filter(({ positional }) => positional)

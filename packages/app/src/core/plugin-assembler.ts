@@ -236,10 +236,10 @@ const makeTree = (map, docs) => {
 
   /** create new node */
   const node = (route: string): ILeaf => ({ route })
-  const inner = route => Object.assign(node(route), { children: {} })
+  const inner = (route: string) => Object.assign(node(route), { children: {} })
 
   /** get or create a subtree */
-  const getOrCreate = (tree, pathPrefix) => {
+  const getOrCreate = (tree, pathPrefix: string) => {
     if (!tree.children) {
       tree.children = {}
     }
@@ -328,7 +328,7 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
   const modules = await plugins.assemble({ pluginRoot, externalOnly })
 
   /** make the paths relative to the root directory */
-  const fixupOnePath = filepath => {
+  const fixupOnePath = (filepath: string): string => {
     // NOTE ON relativization: this is important so that webpack can
     // be instructed to pull in the plugins into the build see the
     // corresponding NOTE in ./plugins.ts and ./preloader.ts

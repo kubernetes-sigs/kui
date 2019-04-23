@@ -25,7 +25,7 @@ import sidecarSelector from './views/sidecar-selector'
 import Presentation from './views/presentation'
 import { popupListen } from './cli'
 
-const _highlight = op => highlightThis => {
+const _highlight = op => (highlightThis?) => {
   if (highlightThis) {
     if (Array.isArray(highlightThis)) {
       highlightThis.forEach(_ => _.classList[op]('picture-in-picture-highlight'))
@@ -41,7 +41,7 @@ const highlight = _highlight('add')
  * Make an DOM event handler that will restore the given pippedContainer
  *
  */
-const restore = (pippedContainer, previousPresentation: Presentation, sidecarClass: string, capturedHeaders, highlightThis, escapeHandler, options?) => () => {
+const restore = (pippedContainer: boolean | Element, previousPresentation: Presentation, sidecarClass: string, capturedHeaders, highlightThis, escapeHandler, options?) => () => {
   debug('restore')
 
   const sidecar = getSidecar()
@@ -81,7 +81,7 @@ const restore = (pippedContainer, previousPresentation: Presentation, sidecarCla
   // setTimeout(() => {
   // sidecar.classList.add('custom-content')
   // pippedContainer.classList.remove('picture-in-picture-stage1')
-  if (pippedContainer !== true) {
+  if (pippedContainer !== true && pippedContainer !== false) {
     if (pippedContainer.parentNode) pippedContainer.parentNode.removeChild(pippedContainer)
     parent.appendChild(pippedContainer)
   }
@@ -95,9 +95,9 @@ const restore = (pippedContainer, previousPresentation: Presentation, sidecarCla
  *
  *
  */
-const pip = (container, previousPresentation: Presentation, capturedHeaders, highlightThis, returnTo = 'previous view', options?) => {
+const pip = (container: boolean | Element, previousPresentation: Presentation, capturedHeaders, highlightThis, returnTo = 'previous view', options?) => {
   try {
-    if (container !== true) {
+    if (container !== true && container !== false) {
       container.parentNode.removeChild(container)
     }
   } catch (e) {
@@ -173,15 +173,14 @@ const capture = (selector: string, redraw?) => {
  * populate the new view.
  *
  */
-export default (command, highlightThis, container: string | Element, returnTo?: string, options?) => (event?: Event) => {
-  debug('drilldown', command, container, returnTo)
-
+type StringProducing = () => Promise<string>
+export default (command: string | StringProducing, highlightThis, ccontainer: string | Element, returnTo?: string, options?) => (event?: Event) => {
   if (event) event.stopPropagation()
 
-  if (typeof container === 'string') {
-    // then container is a query selector
-    container = document.querySelector(container)
-  }
+  // maybe ccontainer is a query selector
+  const container = typeof ccontainer === 'string' ? document.querySelector(ccontainer) : ccontainer
+
+  debug('drilldown', command, container, returnTo)
 
   // capture the current header and other DOM state, before the `command` overwrites it
   const alreadyPipped = document.querySelector('body > .picture-in-picture')

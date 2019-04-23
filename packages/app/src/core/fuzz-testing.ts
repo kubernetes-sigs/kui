@@ -20,14 +20,15 @@
  *
  */
 
-const debug = require('debug')('core/fuzz-testing')
+import * as Debug from 'debug'
+const debug = Debug('core/fuzz-testing')
 debug('loading')
 
 /**
  * Block access to a given filepath?
  *
  */
-const nope = filepath => {
+const nope = (filepath: string) => {
   return filepath.toString().indexOf('.wskprops') >= 0 ||
     filepath.toString().indexOf('.cf/config.json') >= 0
 }
@@ -42,7 +43,7 @@ const fuzzies = {
     const rf = fs.readFile
     const rfs = fs.readFileSync
 
-    fs.readFile = function (filepath, options, cb) {
+    fs.readFile = function (filepath: string, options, cb) {
       if (nope(filepath)) {
         debug('fs.readFile blocked', filepath)
         rf('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas', options ? cb : options)
@@ -55,7 +56,7 @@ const fuzzies = {
       }
     }
 
-    fs.readFileSync = function (filepath, options) {
+    fs.readFileSync = function (filepath: string, options) {
       if (nope(filepath)) {
         console.error(`fs.readFileSync blocked ${filepath}`)
         return rfs('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas')

@@ -21,13 +21,14 @@ debug('loading')
 import eventBus from './events'
 import UsageError from './usage-error'
 import { oopsMessage } from './oops'
+import { IExecOptions } from '../models/execOptions'
 
 /**
  * The command tree module
  *
  */
 const root = () => undefined // this will trigger a re-parse using Context.current as the path prefix
-const interior = (x?,y?,z?) => undefined // this will trigger a re-parse using Context.current as the path prefix
+const interior = (x?: string[], y?: number, z?: number) => undefined // this will trigger a re-parse using Context.current as the path prefix
 const newTree = () => ({ $: root(), key: '/', route: '/', children: {} })
 const model = newTree() // this is the model of registered listeners, a tree
 const intentions = newTree() // this is the model of registered intentional listeners
@@ -65,9 +66,6 @@ export const endScan = state => {
   return map
 }
 
-/** shallow array equality */
-const sameArray = (A, B) => A.length === B.length && A.every((element, idx) => element === B[idx])
-
 /**
  * Plugin registry
  *
@@ -85,7 +83,7 @@ export const setPluginResolver = _ => {
  * @param path is what the user typed
  *
  */
-const exactlyTheSameRoute = (route, path) => {
+const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
   const routeAsPath = route.split('/').slice(1)
   for (let idx = 0; idx < routeAsPath.length; idx++) {
     if (routeAsPath[idx] !== path[idx]) {
@@ -156,7 +154,7 @@ const treeMatch = (model, path: Array<string>, readonly = false, hide = false, i
     return cur
   }
 }
-const match = (path, readonly) => {
+const match = (path: string[], readonly: boolean) => {
   return treeMatch(model, path, readonly)
 }
 
@@ -164,7 +162,7 @@ const match = (path, readonly) => {
  * Register a subtree in the command tree
  *
  */
-export const subtree = (route, options) => {
+export const subtree = (route: string, options) => {
   const myListen = options.listen || listen
   const path = route.split('/').splice(1)
   const leaf = match(path, false /*, options*/)
@@ -231,7 +229,7 @@ class DefaultOptions implements IOptions {
  * Register a command handler on the given route
  *
  */
-const _listen = (model, route, handler, options: IOptions = new DefaultOptions()) => {
+const _listen = (model, route: string, handler, options: IOptions = new DefaultOptions()) => {
   const path = route.split('/').splice(1)
   const leaf = treeMatch(model, path, false, options.hide)
 
@@ -273,14 +271,14 @@ const _listen = (model, route, handler, options: IOptions = new DefaultOptions()
     return leaf
   }
 }
-export const listen = (route: string, handler, options) => _listen(model, route, handler, options)
+export const listen = (route: string, handler, options: IOptions) => _listen(model, route, handler, options)
 
 /**
  * Register a command handler on the given route, as a synonym of the given master handler
  *    master is the return value of `listen`
  *
  */
-export const synonym = (route: string, handler, master, options = {}) => {
+export const synonym = (route: string, handler, master, options: IOptions = new DefaultOptions()) => {
   if (route !== master.route) {
     // don't alias to yourself!
     const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
@@ -295,7 +293,7 @@ export const synonym = (route: string, handler, master, options = {}) => {
  * Register an intentional action
  *
  */
-export const intention = (route, handler, options) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
+export const intention = (route: string, handler, options: IOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
 
 /**
  * "top-level", meaning the user hit enter in the CLI,
@@ -359,7 +357,7 @@ const withEvents = (evaluator, leaf, partialMatches?) => {
 
       if (leaf && eventBus) eventBus.emit('/command/resolved', event)
     },
-    error: (command, err) => {
+    error: (command: string, err) => {
       if (err.code === 127) {
         // command not found
         const suggestions = suggestPartialMatches(partialMatches, true, err['hide']) // true: don't throw an exception
@@ -379,7 +377,7 @@ const withEvents = (evaluator, leaf, partialMatches?) => {
  * Parse the given argv, and return an evaluator or throw an Error
  *
  */
-const _read = async (model, argv, contextRetry, originalArgv) => {
+const _read = async (model, argv: string[], contextRetry: string[], originalArgv: string[]) => {
   let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
   let evaluator = leaf && leaf.$
   debug('read', argv)
@@ -486,7 +484,7 @@ export const setDefaultCommandContext = (commandContext: Array<string>) => {
 }
 
 /** read, with retries based on the current context */
-const internalRead = (model, argv) => {
+const internalRead = (model, argv: string[]) => {
   if (argv[0] === 'kui') argv.shift()
   return _read(model, argv, Context.current, argv)
 }
@@ -516,7 +514,7 @@ const areCompatible = (A: Array<string>, B: Array<string>): boolean => {
  * See if a command resolves unambiguously
  *
  */
-const disambiguate = async (argv, noRetry = false) => {
+const disambiguate = async (argv: string[], noRetry = false) => {
   debug('disambiguate')
 
   let idx
@@ -582,7 +580,7 @@ const commandNotFoundMessageWithPartialMatches = 'The following commands are par
  * We could not find a registered command handler
  *
  */
-const commandNotFound = async (argv, partialMatches?, execOptions?) => {
+const commandNotFound = async (argv: string[], partialMatches?, execOptions?: IExecOptions) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
@@ -699,7 +697,7 @@ const removeDuplicates = async (arr: Array<IRoute>): Promise<Array<IRoute>> => {
 }
 
 /** here, we will use implicit context resolutions */
-export const read = async (argv, noRetry = false, noSubtreeRetry = false, execOptions) => {
+export const read = async (argv: string[], noRetry = false, noSubtreeRetry = false, execOptions: IExecOptions) => {
   let cmd = (await disambiguate(argv))
 
   if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
@@ -768,7 +766,7 @@ export const read = async (argv, noRetry = false, noSubtreeRetry = false, execOp
   }
 }
 /** here, we don't use any implicit context resolutions */
-export const readIntention = async (argv, noRetry = false) => {
+export const readIntention = async (argv: string[], noRetry = false) => {
   const cmd = _read(intentions, argv, undefined, argv)
 
   if (!cmd) {
@@ -839,9 +837,9 @@ export const getModel = () => new CommandModel()
  *
  */
 export const proxy = plugin => ({
-  catchall: (offer, handler, prio = 0, options = {}) => catchalls.push({ offer, eval: handler, prio, plugin, options }),
-  listen: (route, handler, options) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
-  intention: (route, handler, options) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
+  catchall: (offer, handler, prio = 0, options: IOptions = new DefaultOptions()) => catchalls.push({ offer, eval: handler, prio, plugin, options }),
+  listen: (route: string, handler, options: IOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
+  intention: (route: string, handler, options: IOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
   synonym,
   subtree,
   subtreeSynonym,

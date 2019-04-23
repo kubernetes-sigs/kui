@@ -239,7 +239,7 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
  * Register a renderer for a given Array<kind>
  *
  */
-export type ViewHandler = (response: Object, resultDom: Element, parsedOptions: Object, execOptions: Object) => void
+export type ViewHandler = (response: Object, resultDom: Element, parsedOptions: object, execOptions: IExecOptions) => void
 const registeredListViews = {}
 export const registerListView = (kind: string, handler: ViewHandler) => {
   registeredListViews[kind] = handler
@@ -383,7 +383,7 @@ export const isPopup = () => document.body.classList.contains('subwindow')
  * Render the results of a command evaluation in the "console"
  *
  */
-export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?, evaluator?) => response => {
+export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?: string, evaluator?) => response => {
   debug('printResults', response)
 
   // does the command handler want to be incognito in the UI?
@@ -607,7 +607,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
   return Promise.resolve()
 }
 
-export const getInitialBlock = () => {
+export const getInitialBlock = (): HTMLElement => {
   return document.querySelector('tab.visible .repl .repl-block.repl-initial')
 }
 export const getCurrentBlock = (): HTMLElement => {
@@ -616,17 +616,17 @@ export const getCurrentBlock = (): HTMLElement => {
 export const getCurrentProcessingBlock = (): HTMLElement => {
   return document.querySelector('tab.visible .repl .repl-block.processing')
 }
-export const getPrompt = (block, noFakes = false): HTMLInputElement => {
-  return (block && block.querySelector && block.querySelector('input')) || (!noFakes && { focus: () => true })
+export const getPrompt = (block: HTMLElement): HTMLInputElement => {
+  return (block && block.querySelector && block.querySelector('input'))
 }
 export const getInitialPrompt = (): HTMLInputElement => {
   return getPrompt(getInitialBlock())
 }
-export const getCurrentPrompt = (noFakes = false): HTMLInputElement => {
+export const getCurrentPrompt = (): HTMLInputElement => {
   if (isPopup()) {
     return getSidecar().querySelector('input')
   } else {
-    return getPrompt(getCurrentBlock(), noFakes)
+    return getPrompt(getCurrentBlock())
   }
 }
 export const getPromptLeft = (block: Element) => {
@@ -694,25 +694,25 @@ export const setPendingTextSelection = (str: string) => {
  * Update the caret position in an html INPUT field
  *
  */
-const setCaretPosition = (ctrl, pos: number) => {
+const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
   if (ctrl.setSelectionRange) {
     ctrl.focus()
     ctrl.setSelectionRange(pos, pos)
-  } else if (ctrl.createTextRange) {
-    let range = ctrl.createTextRange()
+  } else if (ctrl['createTextRange']) {
+    let range = ctrl['createTextRange']()
     range.collapse(true)
     range.moveEnd('character', pos)
     range.moveStart('character', pos)
     range.select()
   }
 }
-const setCaretPositionToEnd = input => setCaretPosition(input, input.value.length)
+const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
 const updateInputAndMoveCaretToEOL = (input, newValue) => {
   input.value = newValue
   setTimeout(() => setCaretPositionToEnd(input), 0)
 }
 
-export const unlisten = prompt => {
+export const unlisten = (prompt: HTMLElement) => {
   if (prompt && !prompt.classList.contains('sidecar-header-input')) {
     prompt.onkeypress = null
   }
@@ -724,10 +724,10 @@ export const popupListen = (text = getSidecar().querySelector('.sidecar-header-t
     nameContainer.value = previousCommand
   }
 
-  const input = text.querySelector('.sidecar-header-input')
+  const input = text.querySelector('.sidecar-header-input') as HTMLInputElement
   listen(input)
 }
-export const listen = prompt => {
+export const listen = (prompt: HTMLInputElement) => {
   debug('listen', prompt)
   prompt.readOnly = false
 
@@ -735,9 +735,10 @@ export const listen = prompt => {
     prompt.focus()
   }
 
-  prompt.parentNode.parentNode.className = `${prompt.parentNode.parentNode.getAttribute('data-base-class')} repl-active`
+  const grandparent = prompt.parentNode.parentNode as Element
+  grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
 
-  prompt.onkeypress = async event => {
+  prompt.onkeypress = async (event: KeyboardEvent) => {
     const char = event.keyCode
     if (char === keys.ENTER) {
       // user typed Enter; we've finished Reading, now Evalute
@@ -934,7 +935,7 @@ export const doCancel = () => {
  *
  */
 export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExecOptions()) => {
-  const prompt = getCurrentPrompt(true)
+  const prompt = getCurrentPrompt()
   if (prompt) {
     debug('applying partial', cmd)
     prompt.value = cmd

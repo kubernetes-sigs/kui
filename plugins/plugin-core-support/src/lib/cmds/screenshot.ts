@@ -383,7 +383,9 @@ export default async (commandTree, prequire) => {
           check.appendChild(checkIcon)
 
           // temporarily disable the repl
-          cli.getCurrentPrompt().readOnly = true
+          if (cli.getCurrentPrompt()) {
+            cli.getCurrentPrompt().readOnly = true
+          }
 
           // temporarily override escape
           const oldHandler = document.onkeyup
