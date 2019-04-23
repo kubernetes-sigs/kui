@@ -25,6 +25,7 @@ import * as repl from '../core/repl'
 import mimicDom from '../util/mimic-dom'
 import { prequire, preload, init as pluginsInit } from '../core/plugins'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
+import { CodedError } from '../models/errors'
 import { IExecOptions } from '../models/execOptions'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
@@ -91,7 +92,7 @@ const success = quit => async out => {
     debug('graphical shell is open')
   }
 }
-const failure = (quit, execOptions?: IExecOptions) => async err => {
+const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) => {
   if (execOptions && execOptions.rethrowErrors) {
     throw err
   }

@@ -35,8 +35,8 @@ export default function () {
 
     const localStorage = {}
     global['localStorage'] = {
-      setItem: (k, v) => { localStorage[k] = v; return v },
-      getItem: k => localStorage[k] || null
+      setItem: (k: string, v: string) => { localStorage[k] = v; return v },
+      getItem: (k: string) => localStorage[k] || null
     }
   } finally {
     global['window'] = { localStorage: global['localStorage'] }
@@ -53,10 +53,10 @@ export default function () {
       className: '',
       _classList: [],
       classList: {
-        add: _ => obj._classList.push(_),
-        contains: _ => obj._classList.indexOf(_) >= 0,
-        remove: _ => {
-          const idx = obj._classList.findIndex(x => x === _)
+        add: (_: string) => obj._classList.push(_),
+        contains: (_: string): boolean => obj._classList.indexOf(_) >= 0,
+        remove: (_: string) => {
+          const idx = obj._classList.findIndex((x: string) => x === _)
           if (idx >= 0) {
             obj._classList.splice(idx, 1)
           }
@@ -69,22 +69,22 @@ export default function () {
       focus: () => { /* empty ok */ },
       appendChild: c => obj.children.push(c),
       getAttribute: (k: string) => obj.attrs[k] || '',
-      setAttribute: (k: string, v) => { obj.attrs[k] = v; return v },
+      setAttribute: (k: string, v: string) => { obj.attrs[k] = v; return v },
       removeAttribute: (k: string) => delete obj.attrs[k],
       cloneNode: () => Object.assign({}, obj),
-      querySelectorAll: selector => [],
-      querySelector: sel => {
+      querySelectorAll: (selector: string) => [],
+      querySelector: (sel: string) => {
         return obj[sel] || dom0()
       },
       addEventListener: () => true,
-      hasStyle: (style, desiredValue) => {
+      hasStyle: (style: string, desiredValue) => {
         const actualValue = obj.style && obj.style[style]
         // intentional double equals, so that 500=='500'
         if (desiredValue) return desiredValue == actualValue // tslint:disable-line
         else return actualValue
       },
       recursiveInnerTextLength: () => {
-        return obj.innerText.length + obj.children.reduce((sum, child) => sum + child.recursiveInnerTextLength(), 0)
+        return obj.innerText.length + obj.children.reduce((sum: number, child) => sum + child.recursiveInnerTextLength(), 0)
       }
     }
 
@@ -99,15 +99,15 @@ export default function () {
 
   const document = {
     body: dom0(),
-    createElement: type => {
+    createElement: (tag: string) => {
       const element = dom0()
-      element.nodeType = type
-      if (type === 'table') {
+      element.nodeType = tag
+      if (tag === 'table') {
         element['rows'] = []
-        element['insertRow'] = idx => {
+        element['insertRow'] = (idx: number) => {
           const row = document.createElement('tr')
           row['cells'] = []
-          row['insertCell'] = idx => {
+          row['insertCell'] = (idx: number) => {
             const cell = document.createElement('td')
             if (idx === -1) row['cells'].push(cell)
             else row['cells'].splice(idx, 0, cell)
@@ -121,8 +121,8 @@ export default function () {
       return element
     },
     addEventListener: () => true,
-    createTextNode: text => { const element = dom0(); element.innerText = text; return element },
-    querySelector: selector => {
+    createTextNode: (text: string) => { const element = dom0(); element.innerText = text; return element },
+    querySelector: (selector: string) => {
       return dom0()
     }
   }

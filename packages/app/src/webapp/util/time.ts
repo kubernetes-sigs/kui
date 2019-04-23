@@ -16,7 +16,7 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-function isDate (object: any): object is Date {
+function isDate (object: Date | string | number): object is Date {
   return object && typeof object !== 'string' && typeof object !== 'number' && 'getMonth' in object
 }
 

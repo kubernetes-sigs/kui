@@ -14,19 +14,80 @@
  * limitations under the License.
  */
 
+interface ErrorWithResultField {
+  error: {
+    response: {
+      result: {
+        error: string
+      }
+    }
+  }
+}
+
+function isErrorWithResultField (error: ErrorLike): error is ErrorWithResultField {
+  const err = error as ErrorWithResultField
+  return err.error && err.error.response && err.error.response.result && err.error.response.result.error ? true : false
+}
+
+interface ErrorWithNestedResultField {
+  error: {
+    response: {
+      result: {
+        error: {
+          error: string
+        }
+      }
+    }
+  }
+}
+
+function isErrorWithNestedResultField (error: ErrorLike): error is ErrorWithNestedResultField {
+  const err = error as ErrorWithNestedResultField
+  return err.error && err.error.response && err.error.response.result && err.error.response.result.error && err.error.response.result.error.error ? true : false
+}
+
+interface ErrorWithNestedErrorField {
+  error: {
+    error: string
+  }
+}
+
+function isErrorWithNestedErrorField (error: ErrorLike): error is ErrorWithNestedErrorField {
+  const err = error as ErrorWithNestedErrorField
+  return err.error && err.error.error ? true : false
+}
+
+interface ErrorWithErrorField {
+  message?: string
+  error: string
+}
+
+function isErrorWithErrorField (error: ErrorLike): error is ErrorWithErrorField {
+  const err = error as ErrorWithErrorField
+  return err.error && !err.message ? true : false
+}
+
+type ErrorLike = string | Error | ErrorWithResultField | ErrorWithNestedResultField | ErrorWithNestedErrorField | ErrorWithErrorField
+
 /**
  * Try to pull out some meaningful message from the given error
  *
  */
-export const oopsMessage = err => {
+export const oopsMessage = (err: ErrorLike): string => {
   try {
-    return (err.error && err.error.response && err.error.response.result && err.error.response.result.error && err.error.response.result.error.error) || // feed creation error. nice
-                (err.error && err.error.response && err.error.response.result && err.error.response.result.error) ||
-                (err.error && err.error.error) ||
-                err.message ||
-                err.error ||
-                err ||
-                'Internal Error'
+    if (typeof err === 'string') {
+      return err
+    } else if (isErrorWithNestedResultField(err)) {
+      return err.error.response.result.error.error // feed creation error. nice
+    } else if (isErrorWithResultField(err)) {
+      return err.error.response.result.error
+    } else if (isErrorWithNestedErrorField(err)) {
+      return err.error.error
+    } else if (isErrorWithErrorField(err)) {
+      return err.error
+    } else {
+      return err.message || 'Internal Error'
+    }
   } catch (err) {
     console.error(err)
     return 'Internal Error'

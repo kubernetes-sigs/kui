@@ -18,7 +18,7 @@
  * Clean out the given DOM node
  *
  */
-export const removeAllDomChildren = node => {
+export const removeAllDomChildren = (node: Node) => {
   while (node.firstChild) {
     node.removeChild(node.firstChild)
   }

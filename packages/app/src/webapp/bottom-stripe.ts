@@ -22,6 +22,9 @@ import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showCustom } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 
+// FIXME
+export type ISidecarMode = any
+
 export const css = {
   buttons: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits'),
   backContainer: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<

@@ -26,7 +26,7 @@ import { extractSearchKey } from '../util/search'
  * We don't (at least not for now) want to support drag and drop at the global scope
  *
  */
-const nope = event => {
+const nope = (event: Event) => {
   event.preventDefault()
   return false
 }

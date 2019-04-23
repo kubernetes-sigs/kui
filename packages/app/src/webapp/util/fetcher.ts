@@ -36,7 +36,7 @@ const fetchElectron = (stagingArea: string, url: string, file: string) => new Pr
   needle
     .get(url)
     .pipe(out)
-    .on('error', err => {
+    .on('error', (err: Error) => {
       console.error(err)
       reject(err)
     })
@@ -64,7 +64,7 @@ const fetchAndExtract = (stagingArea: string, fetchLock: string, doneLock: strin
       }
     })
   })
-  const removeTemps = result => Promise.all([rm(filepath), rmdir(fetchLock)]).then(() => result)
+  const removeTemps = (result: string): Promise<string> => Promise.all([rm(filepath), rmdir(fetchLock)]).then(() => result)
 
   return new Promise<string>((resolve, reject) => {
     const done = () => {
@@ -80,7 +80,7 @@ const fetchAndExtract = (stagingArea: string, fetchLock: string, doneLock: strin
     if (filepath.endsWith('.zip')) {
       debug('extracting zip')
 
-      extract(filepath, { dir: stagingArea }, err => {
+      extract(filepath, { dir: stagingArea }, (err: Error) => {
         if (err) {
           console.error(err)
           reject(new Error(`error unzipping ${err}`))

@@ -1015,7 +1015,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   }
 
   if (isPopup()) {
-    renderPopupContent(command, message.content || resultDom, {}, message.modes)
+    renderPopupContent(command, err.content || resultDom, {}, err.modes)
     popupListen(undefined, command)
   }
 
