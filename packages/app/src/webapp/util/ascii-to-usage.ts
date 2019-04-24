@@ -20,8 +20,8 @@ const debug = Debug('core/webapp/util/ascii-to-usage')
 import UsageError from '../../core/usage-error'
 import { split } from '../../core/repl'
 
-const sectionHeader = /([A-Z ]+):/
-const matcher = /\n([A-Z ]+:)/
+const sectionHeader = /([A-Z ]+):\s*$/
+const matcher = /[\n\r]([A-Z ]+:\s*[\n\r])/
 
 interface IOptions {
   drilldownWithPip?: boolean
@@ -92,8 +92,8 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
     debug('sections', sections)
 
     if (sections.length > 0) {
-      const nameSectionIdx = sections.findIndex(({ title }) => title.match(/Name/i))
-      const usageSectionIdx = sections.findIndex(({ title }) => title.match(/Usage/i))
+      const nameSectionIdx = sections.findIndex(({ title }) => /Name/i.test(title))
+      const usageSectionIdx = sections.findIndex(({ title }) => /Usage/i.test(title))
 
       const rest = sections
         .filter((_, idx) => idx !== nameSectionIdx && idx !== usageSectionIdx)
