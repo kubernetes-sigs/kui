@@ -21,6 +21,7 @@ debug('loading')
 import eventBus from './events'
 import UsageError from './usage-error'
 import { oopsMessage } from './oops'
+import { CodedError } from '../models/errors'
 import { IExecOptions } from '../models/execOptions'
 
 /**
@@ -34,11 +35,14 @@ const model = newTree() // this is the model of registered listeners, a tree
 const intentions = newTree() // this is the model of registered intentional listeners
 let disambiguator = {} // map from command name to disambiguations
 
+/** a catch all handler is presented with an offer to handle a given argv */
+type CatchAllOffer = (argv: Array<string>) => boolean
+
 export interface ICatchAllHandler {
   prio: number
   plugin: string // registered plugin
   options: object
-  offer: (argv: Array<string>) => boolean // does the handler accept the given command?
+  offer: CatchAllOffer // does the handler accept the given command?
   eval // command evaluator
 }
 export const catchalls: Array<ICatchAllHandler> = [] // handlers for command not found
@@ -357,7 +361,7 @@ const withEvents = (evaluator, leaf, partialMatches?) => {
 
       if (leaf && eventBus) eventBus.emit('/command/resolved', event)
     },
-    error: (command: string, err) => {
+    error: (command: string, err: CodedError) => {
       if (err.code === 127) {
         // command not found
         const suggestions = suggestPartialMatches(partialMatches, true, err['hide']) // true: don't throw an exception
@@ -790,7 +794,6 @@ const filter = (M, includeFn) => {
       filtered.push(M[key])
     }
   }
-  // console.log('xxxxxxxx',M, filtered)
   return filtered
 }
 
@@ -837,7 +840,7 @@ export const getModel = () => new CommandModel()
  *
  */
 export const proxy = plugin => ({
-  catchall: (offer, handler, prio = 0, options: IOptions = new DefaultOptions()) => catchalls.push({ offer, eval: handler, prio, plugin, options }),
+  catchall: (offer: CatchAllOffer, handler, prio = 0, options: IOptions = new DefaultOptions()) => catchalls.push({ offer, eval: handler, prio, plugin, options }),
   listen: (route: string, handler, options: IOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
   intention: (route: string, handler, options: IOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
   synonym,

@@ -42,7 +42,7 @@ let app
  * Spawn electron
  *
  */
-export async function initElectron (command = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?, subwindowPrefs?: ISubwindowPrefs) {
+export async function initElectron (command: string[] = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
   debug('initElectron', command, subwindowPlease, subwindowPrefs)
 
   let promise: Promise<void>
@@ -199,7 +199,7 @@ export async function initElectron (command = [], { isRunningHeadless = false, f
 
   // deal with multiple processes
   if (!process.env.RUNNING_SHELL_TEST) {
-    app.on('second-instance', (event, commandLine, workingDirectory) => {
+    app.on('second-instance', (event, commandLine: string[], workingDirectory: string) => {
       // Someone tried to run a second instance, open a new window
       // to handle it
       const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
@@ -273,7 +273,7 @@ export async function initHeadless (argv: Array<string>, force = false, isRunnin
     //
     try {
       return (await import('./headless')).main(app, {
-        createWindow: (executeThisArgvPlease: Array<string>, subwindowPlease: boolean, subwindowPrefs) => {
+        createWindow: (executeThisArgvPlease: Array<string>, subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
           // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
           // because this will be called for cases where we want a headless -> GUI transition
           return createWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
@@ -297,7 +297,7 @@ export async function initHeadless (argv: Array<string>, force = false, isRunnin
   }
 } /* initHeadless */
 
-function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
+function createWindow (noHeadless = false, executeThisArgvPlease?: string[], subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
   debug('createWindow', executeThisArgvPlease)
 
   if (subwindowPrefs && subwindowPrefs.bringYourOwnWindow) {
@@ -328,9 +328,9 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     debug('we need to spawn electron', subwindowPlease, subwindowPrefs)
     delete subwindowPrefs.synonymFor // circular JSON
     promise = initElectron(['--'].concat(executeThisArgvPlease), {}, subwindowPlease, subwindowPrefs)
-      .then(x => {
-        electron = require('electron')
-      }).catch(err => {
+      .then(async () => {
+        electron = await import('electron')
+      }).catch((err: Error) => {
         // headless
         debug('not ready for graphics', err)
       })
@@ -454,7 +454,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     })
 
     /** jump in and manage the way popups create new windows */
-    mainWindow.webContents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
+    mainWindow.webContents.on('new-window', (event, url: string, frameName: string, disposition: string, options /*, additionalFeatures */) => {
       if (url.startsWith('https://youtu.be')) {
         // special handling of youtube links
         openFixedWindow({ type: 'videos', event, url, options, size: { width: 800, height: 600 } })
@@ -464,7 +464,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       }
     })
 
-    let commandContext = executeThisArgvPlease && executeThisArgvPlease.find(_ => _.match(/--command-context/))
+    let commandContext = executeThisArgvPlease && executeThisArgvPlease.find(_ => /--command-context/.test(_))
     if (commandContext) {
       executeThisArgvPlease = executeThisArgvPlease.filter(_ => !_.match(/--command-context/))
 
@@ -521,7 +521,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     // plugin has to pollute main.js
     //
     debug('ipc registration')
-    ipcMain.on('capture-page-to-clipboard', (event, contentsId, rect) => {
+    ipcMain.on('capture-page-to-clipboard', (event, contentsId: string, rect) => {
       try {
         const { clipboard, nativeImage, webContents } = electron
         webContents.fromId(contentsId).capturePage(rect, image => {
@@ -541,7 +541,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
     })
     // end of screenshot logic
 
-    ipcMain.on('synchronous-message', (event, arg) => {
+    ipcMain.on('synchronous-message', (event, arg: string) => {
       const message = JSON.parse(arg)
       switch (message.operation) {
         case 'quit': app.quit(); break
@@ -553,7 +553,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?, subwindowPlea
       }
       event.returnValue = 'ok'
     })
-    ipcMain.on('/exec/invoke', async (event, arg) => {
+    ipcMain.on('/exec/invoke', async (event, arg: string) => {
       const message = JSON.parse(arg)
       const channel = `/exec/response/${message.hash}`
       debug('invoke', message)
