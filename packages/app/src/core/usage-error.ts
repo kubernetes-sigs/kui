@@ -18,7 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('core/usage-error')
 
 import { isHeadless } from './capabilities'
-import pip from '../webapp/picture-in-picture'
+import pip from '@kui-shell/core/webapp/picture-in-picture'
+import repl = require('@kui-shell/core/core/repl')
 
 interface IUsageOptions {
   noHide?: boolean
@@ -30,7 +31,12 @@ class DefaultUsageOptions implements IUsageOptions {
   }
 }
 
-const promiseEach = async function (arr, fn) { // take an array and a function
+/**
+ * Map a asynchronous function to an array sequentially from front to
+ * back.
+ *
+ */
+async function promiseEach<T, R> (arr: Array<T>, fn: (t: T) => R) {
   const result = []
   for (const item of arr) result.push(await fn(item))
   return result
@@ -65,32 +71,32 @@ const span = (str?: string | Element, css?: string) => div(str, css, 'span')
  * The start of every section, e.g. Usage:
  *
  */
-const prefix = str => {
+const prefix = (str: string): HTMLElement => {
   const prefix = div(str, 'usage-error-title', 'h4')
   prefix.setAttribute('data-title', str)
   return prefix
 }
 
 /** A part of the main body of the usage message */
-const bodyPart = (noMargin = false) => {
+const bodyPart = (noMargin = false): HTMLElement => {
   const result = div()
   if (!noMargin) result.style.margin = '2em 0em 0 0'
   return result
 }
 
 /** render the given div with the default san serif font */
-const sans = div => {
+const sans = (div: HTMLElement): HTMLElement => {
   div.classList.add('sans-serif')
   return div
 }
 
 /** render the given div a bit smaller */
-const smaller = div => {
+const smaller = (div: HTMLElement): HTMLElement => {
   div.classList.add('somewhat-smaller-text')
   return div
 }
 /** render the given div with white space line wrapping */
-const wrap = div => {
+const wrap = (div: HTMLElement): HTMLElement => {
   div.style.display = 'block'
   div.style.whiteSpace = 'normal'
   return div
@@ -100,18 +106,18 @@ const wrap = div => {
  * Invoke a given command, and return the raw (i.e. not formatted) usage model
  *
  */
-const usageFromCommand = (command, repl) => repl.qexec(command)
-  .then(_ => {
-    console.error('Invalid usage model', command, _)
+const usageFromCommand = (command: string): Promise<IUsageModel> => repl.qexec(command)
+  .then(() => {
+    console.error('Invalid usage model', command)
     throw new Error('Internal Error')
   })
-  .catch(usageError => usageError.raw)
+  .catch((usageError: UsageError) => usageError.raw)
 
 /**
  * Invoke a given command, and extract the breadcrumb title from the resulting usage model
  *
  */
-const breadcrumbFromCommand = (command, repl) => usageFromCommand(command, repl)
+const breadcrumbFromCommand = (command: string) => usageFromCommand(command)
   .then(usage => usage.breadcrumb || usage.title)
 
 /**
@@ -132,7 +138,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
   } else {
     // these are the fields of the usage message
     const replWrappedAMessageString = message.message && message.usage
-    const usage = replWrappedAMessageString ? message.usage : message
+    const usage: IUsageModel = replWrappedAMessageString ? message.usage : message
     const messageString = replWrappedAMessageString && message.message
 
     const { command, docs, title, breadcrumb = title || command, header = docs && `${docs}.`, example, detailedExample, sampleInputs,
@@ -156,7 +162,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
     const right = div() // required and optional parameters
 
     // if we have a great many detailed examples, place them in a scroll region
-    const scrollableDetailedExamples = detailedExample && detailedExample.length > 4
+    const scrollableDetailedExamples = detailedExample && Array.isArray(detailedExample) && detailedExample.length > 4
 
     if ((sections && sections.length > 1) || (scrollableDetailedExamples && sections && sections.length > 0)) {
       left.classList.add('fifty-fifty')
@@ -199,8 +205,6 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
     resultWrapper.appendChild(result)
 
-    const repl = require('@kui-shell/core/core/repl')
-
     //
     // breadcrumb
     //
@@ -215,7 +219,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       const makeBreadcrumb = options => {
         const stringLabel = typeof options.label === 'string'
         const cmd = options.commandFromLabel ? stringLabel ? options.label : options.label.command : options.command
-        const label = stringLabel ? options.label : breadcrumbFromCommand(options.label.command, repl)
+        const label = stringLabel ? options.label : breadcrumbFromCommand(options.label.command)
 
         return Promise.resolve(label)
           .then(label => {
@@ -244,7 +248,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       }
 
       /** attach the breadcrumb to the dom */
-      const attachBreadcrumb = breadcrumb => container.appendChild(breadcrumb)
+      const attachBreadcrumb = (breadcrumb: Element) => container.appendChild(breadcrumb)
 
       // now we add the breadcrumb chain to the UI
       breadcrumbPromise = promiseEach([{ label: 'Shell Docs', command: 'help' }, // root
@@ -278,7 +282,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
             const Marked = await import('marked')
             const renderer = new Marked.Renderer()
             const marked = _ => Marked(_, { renderer })
-            renderer.link = (href, title, text) => {
+            renderer.link = (href: string, title: string, text: string) => {
               return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
             }
 
@@ -310,7 +314,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       const scrollRegions = []
 
       // any minimally formatted sections? e.g. `intro` and `section` fields
-      const makeSection = (parent = right, noMargin = false) => ({ title, content }) => {
+      const makeSection = (parent = right, noMargin = false) => ({ title, content }: ITitledContent) => {
         const wrapper = bodyPart(noMargin)
         const prePart = prefix(title)
         const contentPart = document.createElement('pre')
@@ -386,7 +390,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
        * Render a table of options
        *
        */
-      const makeTable = (title, rows, parent = right, nRowsInViewport = message.nRowsInViewport || 5): HTMLElement => {
+      const makeTable = (title: string, rows: IUsageRow[], parent = right, nRowsInViewport = message.nRowsInViewport || 5): HTMLElement => {
         const wrapper = bodyPart()
         const prePart = prefix(title)
 
@@ -423,8 +427,8 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
         }
 
         // render the rows
-        const renderRow = rowData => {
-          if (rowData.fn) {
+        const renderRow = (rowData: UsageRow) => {
+          if (isUsageRowGenerator(rowData)) {
             // then rowData is a generator for aliases
             return renderRow(rowData.fn(rowData.command))
           }
@@ -536,7 +540,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       if (sections) {
         // render more general sections, rather than the specific
         // oneof, optional, etc.
-        const defaultNRowsInViewport = (idx, nRows) => {
+        const defaultNRowsInViewport = (idx: number, nRows: number): number => {
           if (idx === sections.length - 1 && sections.length % 2 === 0) {
             return sections.length === 2 ? nRows : 5
           } // otherwise, accept global default
@@ -549,7 +553,7 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
 
         tableSections.sort(({ rows: a }, { rows: b }) => a.length - b.length)
 
-        const nRowsOf = (section, idx) => {
+        const nRowsOf = (section: IUsageSection, idx: number) => {
           debug('nRowsOf', section, section.rows.length, section.nRowsInViewport, defaultNRowsInViewport(idx, section.rows.length))
           return Math.min(section.rows.length,
                           section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length)
@@ -638,13 +642,88 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
   }
 }
 
+interface IDetailedExample {
+  command: string,
+  docs: string
+}
+
+interface IUsageRow {
+  commandPrefix?: string
+  commandSuffix?: string
+  command?: string
+  name?: string
+  label?: string
+  noclick?: boolean
+  synonyms?: string[]
+  alias?: string
+  numeric?: boolean
+  aliases?: string[]
+  hidden?: boolean
+  advanced?: boolean
+  example?: string
+  dir?: boolean
+  title?: string
+  header?: string
+  docs?: string
+  partial?: boolean
+  defaultValue?: any
+  available?: IUsageRow[]
+  allowed?: IUsageRow[]
+}
+
+interface IUsageRowGenerator {
+  command: any
+  fn: (command: any) => IUsageRow
+}
+
+function isUsageRowGenerator (row: UsageRow): row is IUsageRowGenerator {
+  return (row as IUsageRowGenerator).fn ? true : false
+}
+
+type UsageRow = IUsageRow | IUsageRowGenerator
+
+interface IUsageSection {
+  title: string
+  rows: IUsageRow[]
+  nRowsInViewport?: number
+}
+
+interface ITitledContent {
+  title: string
+  content: string
+}
+
+interface IUsageModel {
+  breadcrumb?: string
+  title?: string
+  command: string,
+  docs: string,
+  header?: string,
+  example?: string,
+  detailedExample?: IDetailedExample | IDetailedExample[],
+  sampleInputs?: IUsageRow[],
+  intro?: ITitledContent
+  sections?: IUsageSection[]
+  commandPrefix?: string
+  commandPrefixNotNeeded?: boolean
+  commandSuffix?: string
+  drilldownWithPip?: boolean
+  preserveCase?: boolean // in breadcrumbs
+  parents?: string[]
+  related?: string[]
+  available?: IUsageRow[]
+  required?: IUsageRow[]
+  optional?: IUsageRow[]
+  oneof?: IUsageRow[]
+}
+
 export default class UsageError extends Error {
   isUsageError: boolean
-  raw: any
+  raw: string | Error | IUsageModel
   extra: any
   code: number
 
-  constructor (message, extra?, code = (message && (message.statusCode || message.code)) || 500) {
+  constructor (message, extra?, code: number = (message && (message.statusCode || message.code)) || 500) {
     super()
 
     if (Error.captureStackTrace) {
