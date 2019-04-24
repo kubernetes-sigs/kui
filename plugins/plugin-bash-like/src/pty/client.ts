@@ -138,6 +138,26 @@ class Resizer {
       }
     }
 
+    // logic to hide trailing empty rows: if we have blank rows
+    // following by non-blank rows, pick the list such occurence as
+    // the start of the trailing blanks; if we have no such
+    // sandwiching, then the CSS query in web/css/xterm.css
+    // `.xterm-rows > div:empty` suffices
+    setTimeout(() => {
+      const endOfContent = this.terminal.element.querySelectorAll('.xterm-rows > div:empty + div:not(:empty)')
+      if (endOfContent.length > 0) {
+        // we have a blank followed by not-blank
+        let iter = endOfContent[endOfContent.length - 1].nextSibling as Element
+        while (iter) {
+          if (iter.children.length === 0) {
+            iter.classList.add('hide')
+          }
+          iter = (iter.nextSibling as Element)
+        }
+        this.terminal.element.classList.add('special-handling-of-trailing-empty-rows')
+      }
+    }, 20)
+
     // Notes: terminal.write (just above, in 'data') is
     // asynchronous. For now, cascade some calls so that we can
     // get it done ASAP.
@@ -511,6 +531,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
 
           const maybeUsage = !resizer.inAltBufferMode() && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
           if (maybeUsage) {
+            debug('pending usage')
             pendingUsage = true
           } else {
             terminal.write(msg.data)
