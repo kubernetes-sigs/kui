@@ -23,9 +23,15 @@ import { tellMain } from '@kui-shell/core/webapp/electron-events'
 
 const doQuit = () => tellMain('quit')
 
+const usage = (command: string) => ({
+  command,
+  strict: command,
+  docs: 'Quit the program'
+})
+
 export default (commandTree, prequire) => {
-  const quitCmd = commandTree.listen('/quit', doQuit, { docs: 'Quit the program' })
+  const quitCmd = commandTree.listen('/quit', doQuit, { usage: usage('quit'), noAuthOk: true })
 
   // just for fun, make /exit a synonym for /quit
-  commandTree.synonym('/exit', doQuit, quitCmd)
+  commandTree.synonym('/exit', doQuit, quitCmd, { usage: usage('exit'), noAuthOk: true })
 }
