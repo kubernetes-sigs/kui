@@ -27,7 +27,7 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import eventBus from '@kui-shell/core/core/events'
 import { partial } from '@kui-shell/core/webapp/cli'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import namespace = require('../models/namespace')
 import { apiHost } from '../models/auth'
 

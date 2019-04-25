@@ -20,7 +20,7 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { show as showSidecar, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 /**

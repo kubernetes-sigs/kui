@@ -23,7 +23,7 @@ import * as expandHomeDir from 'expand-home-dir'
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import UsageError from '@kui-shell/core/core/usage-error'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { ExecType } from '@kui-shell/core/core/command-tree'
 

@@ -24,7 +24,7 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { findFile } from '@kui-shell/core/core/find-file'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 import { FinalState } from '../model/states'
 import { IKubeResource, IResource } from '../model/resource'

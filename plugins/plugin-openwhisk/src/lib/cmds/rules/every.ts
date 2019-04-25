@@ -25,7 +25,7 @@
 
 const parse = require('parse-duration')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 const MILLIS_PER_SECOND = 1000
 

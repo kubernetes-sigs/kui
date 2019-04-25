@@ -20,7 +20,7 @@ const debug = Debug('plugins/core-support/theme')
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'

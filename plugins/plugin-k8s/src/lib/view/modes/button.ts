@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 const makeButton = (overrides, fn?) => Object.assign({}, {
   direct: async (args) => {

@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/activations/list')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { registerListView } from '@kui-shell/core/webapp/cli'

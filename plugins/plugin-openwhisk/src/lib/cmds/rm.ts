@@ -26,7 +26,7 @@
 
 import minimist = require('yargs-parser')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 const { isAnonymousLet } = require('./actions/let-core')

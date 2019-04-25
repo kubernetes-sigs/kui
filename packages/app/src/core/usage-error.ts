@@ -19,7 +19,7 @@ const debug = Debug('core/usage-error')
 
 import { isHeadless } from './capabilities'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 interface IUsageOptions {
   noHide?: boolean

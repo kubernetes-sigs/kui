@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/status')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 import { FinalState } from '../../model/states'
 import IResource from '../../model/resource'

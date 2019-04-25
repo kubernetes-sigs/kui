@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/containers')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 

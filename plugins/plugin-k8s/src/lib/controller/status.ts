@@ -21,7 +21,7 @@ debug('loading')
 import { basename, join } from 'path'
 
 import { findFile } from '@kui-shell/core/core/find-file'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 import { withRetryOn404 } from '../util/retry'
 import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'

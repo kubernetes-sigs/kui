@@ -27,7 +27,7 @@
 
 const debug = require('debug')('plugins/openwhisk/cmds/actions/invoke')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { actions } from '../openwhisk-usage'
 
 /**

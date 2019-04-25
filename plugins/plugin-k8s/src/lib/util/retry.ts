@@ -16,7 +16,7 @@
 
 const debug = require('debug')('k8s/util/retry')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
 
 export const withRetryOnCode = (code: number) => (fn, cmd: string) => new Promise((resolve, reject) => {

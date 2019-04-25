@@ -46,7 +46,7 @@ import expandHomeDir = require('expand-home-dir')
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { current as currentNamespace } from '../../models/namespace'
 import { findFile } from '@kui-shell/core/core/find-file'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 import { deployHTMLViaOpenWhisk } from './_html'
 import { ANON_KEY, ANON_KEY_FQN, ANON_CODE, isAnonymousLet, isAnonymousLetFor } from './let-core'

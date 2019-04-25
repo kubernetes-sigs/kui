@@ -19,7 +19,7 @@ const debug = Debug('plugins/tutorial/list')
 
 import { readdir } from 'fs'
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 import { contentDir } from './util'
 

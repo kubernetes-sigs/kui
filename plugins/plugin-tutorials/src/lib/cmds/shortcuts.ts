@@ -22,7 +22,7 @@ const { name: kubernetesBasicsDocs } = require('@kui-shell/plugin-tutorials/samp
 const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/coding-basics/package.json')
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 /**
  * Here we register as a listener for "shortcut" commands, that make
