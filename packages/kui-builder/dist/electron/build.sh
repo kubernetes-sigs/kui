@@ -361,11 +361,18 @@ function tarball {
     wait
 }
 
+# copy the npmrc into the client staging area
+function npmrc {
+    cp "$BUILDER_HOME"/npmrc "$STAGING/.npmrc"
+    (cd "$STAGING" && npm rebuild --update-binary)
+}
+
 # this is the main routine
 function build {
     echo "prereq" && prereq
     echo "init" && init
     echo "tarCopy" && tarCopy
+    echo "npmrc" && npmrc
     echo "configure" && configure
     echo "assembleHTMLPieces" && assembleHTMLPieces
     echo "win32" && win32
