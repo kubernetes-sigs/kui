@@ -37,7 +37,7 @@ import { prettyPrintTime } from './util/time'
 import { isHTML } from '../util/types'
 
 import Presentation from './views/presentation'
-import { formatListResult, formatMultiListResult, formatTableResult } from './views/table'
+import { formatListResult, formatMultiListResult, formatTable } from './views/table'
 import { isTable } from './models/table'
 import { getSidecar, currentSelection, presentAs, showEntity, showCustom } from './views/sidecar'
 
@@ -450,8 +450,14 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
           await registeredListView(response, resultDom, parsedOptions) // TODO: change function calling signature here
           return resultDom.children.length === 0
         }
-        const rows = await formatTableResult(response)
-        rows.map(row => resultDom.appendChild(row))
+
+        (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
+
+        if (response.noEntityColors) { // client wants control over entity-cell coloring
+          resultDom.classList.add('result-table-with-custom-entity-colors')
+        }
+
+        formatTable(response, resultDom)
       } else if (Array.isArray(response)) {
         /**
          * some sort of list response; format as a table
@@ -553,29 +559,34 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
     }
   }
 
-  let promise
-  if (Array.isArray(response) && Array.isArray(response[0])) {
+  let promise: Promise<boolean>
+
+  if (Array.isArray(response) && isTable(response[0])) {
+    (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-multi-table', 'result-vertical')
+
+    if (response[0].flexWrap) {
+      (resultDom.parentNode as HTMLElement).classList.add('result-as-multi-table-flex-wrap')
+    }
     // multi-table output; false means that the renderer hasn't placed
     // anything in the DOM; it's up to us here
+    promise = Promise.all(response.map(table => formatTable(table, resultDom as HTMLElement)))
+      .then(() => false)
+  } else if (Array.isArray(response) && Array.isArray(response[0])) {
+    /**
+     * multi-table output; false means that the renderer hasn't placed
+     * anything in the DOM; it's up to us here
+     * @deprecated in favor of new models/table.ts
+     */
     promise = formatMultiListResult(response, resultDom).then(() => false)
   } else {
     promise = render(response, { echo, resultDom })
   }
-  if (isTable(response)) {
-    // decorate it as a table
-    (resultDom.parentNode as HTMLElement).classList.add('result-as-table')
-    // client wants control over entity-cell coloring
-    if (response.noEntityColors) {
-      resultDom.classList.add('result-table-with-custom-entity-colors')
-    }
 
-    resultDom.classList.add('result-table')
+  if (isTable(response) || (Array.isArray(response) && isTable(response[0]))) {
     if (isPopup()) {
       presentAs(Presentation.FixedSize)
     }
-
     // say "ok"
-    (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
     if (echo) {
       promise.then(() => {
         ok(resultDom.parentNode as Element).classList.add('ok-for-list')

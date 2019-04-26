@@ -18,6 +18,7 @@ const debug = require('debug')('k8s/controller/contexts')
 
 import repl = require('@kui-shell/core/core/repl')
 import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 const usage = {
   context: command => ({
@@ -38,14 +39,8 @@ const usage = {
  * Add click handlers to change context
  *
  */
-const addClickHandlers = execOptions => table => {
-  debug('table', table)
-
-  if (Array.isArray(table[0])) {
-    return table.map(addClickHandlers(execOptions))
-  }
-
-  return [table[0]].concat(table.slice(1).map(row => {
+const addClickHandlers = (table: Table, execOptions): Table => {
+  const body: Row[] = table.body.map((row): Row => {
     const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
     const { value: contextName } = nameAttr
 
@@ -62,7 +57,13 @@ const addClickHandlers = execOptions => table => {
     nameAttr.onclick = onclick
 
     return row
-  }))
+  })
+
+  return new Table({
+    header: table.header,
+    body: body,
+    title: 'Kubernetes Contexts'
+  })
 }
 
 /**
@@ -70,15 +71,8 @@ const addClickHandlers = execOptions => table => {
  *
  */
 const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions)
-  .then(addClickHandlers(opts.execOptions))
-  .then(table => {
-    if (Array.isArray(table[0])) {
-      table[0][0].title = 'Kubernetes Contexts'
-    } else {
-      table[0].title = 'Kubernetes Contexts'
-    }
-    return table
-  })
+  .then((contexts: Table | Table[]) => Array.isArray(contexts) ?
+    contexts.map(context => addClickHandlers(context, opts.execOptions)) : addClickHandlers(contexts, opts.execOptions))
 
 /**
  * Register the commands

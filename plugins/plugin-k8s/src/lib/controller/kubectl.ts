@@ -36,6 +36,8 @@ import createdOn from '../util/created-on'
 
 import IResource from '../model/resource'
 import { FinalState } from '../model/states'
+import { Table } from '@kui-shell/core/webapp/models/table'
+import { IDelete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { redactJSON, redactYAML } from '../view/redact'
 import { registry as formatters } from '../view/registry'
@@ -391,40 +393,38 @@ const dispatch = async (argv: Array<string>, options, FQN, command, execOptions)
  *
  */
 const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options) => {
+  const hasTableVerb = verb === 'ls' ||
+    verb === 'list' ||
+    verb === 'get' ||
+    (verb === 'config' && entityType.match(/^get/))
+
   return !options.help && !options.h &&
     verb !== 'describe' &&
     verb !== 'install' &&
-    (!output || output === 'wide' || output === 'name' || output.match(/^custom-columns/))
+    (!output || output === 'wide' || output === 'name' || output.match(/^custom-columns/)) &&
+    hasTableVerb
 }
 
 /**
  * Display the given string as a REPL table
  *
  */
-const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options, execOptions) => {
+const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options, execOptions): Table | Table[] | HTMLElement | IDelete => {
   debug('displaying as table', verb, entityType)
-
-  // TODO move this to shouldWe...
-  const reallyTabularize = verb === 'ls' ||
-    verb === 'list' ||
-    verb === 'get' ||
-    (verb === 'config' && entityType.match(/^get/))
-
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
   // whitespace
-  const tables = reallyTabularize && preprocessTable(decodedResult.split(/^(?=LAST SEEN|NAMESPACE|NAME\s+)/m))
+  const preTables = preprocessTable(decodedResult.split(/^(?=LAST SEEN|NAMESPACE|NAME\s+)/m))
 
-  if (tables && tables.length === 1 && tables[0].length === 0) {
+  if (preTables && preTables.length === 1 && preTables[0].length === 0) {
     // degenerate case of "really not a table"
     return pre(decodedResult || stderr)
-  } else if (tables && tables.length >= 1) {
+  } else if (preTables && preTables.length >= 1) {
     // try use display this as a table
-    const tablesModel = formatTable(command, verb, entityType, options, tables)
-    if (execOptions.raw) {
-      return tablesModel.length === 1 ? tablesModel[0] : tablesModel
+    if (preTables.length === 1) {
+      return formatTable(command, verb, entityType, options, preTables[0])
     } else {
-      return tablesModel
+      return preTables.map(preTable => formatTable(command, verb, entityType, options, preTable))
     }
   } else if (verb === 'delete') {
     debug('returning delete entity for repl')

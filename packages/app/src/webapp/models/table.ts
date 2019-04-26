@@ -34,7 +34,6 @@ export class Row {
   status?: string
   version?: string
   prettyVersion?: string
-  noEntityColors?: boolean
   beforeAttributes?: Cell[]
   rowCSS?: string | Array<string>
   onclick?: any
@@ -92,6 +91,12 @@ export class Table {
   footer?: Footer
   noSort?: boolean
   noEntityColors?: boolean
+  title?: string
+  flexWrap?: number | boolean
+  tableCSS?: string
+  fontawesome?: string
+  fontawesomeCSS?: string
+  fontawesomeBalloon?: string
 
   constructor (table: Table) {
     Object.assign(this, table)
@@ -99,7 +104,7 @@ export class Table {
 }
 
 export function isTable (model: any): model is Table {
-  return model instanceof Table || (model as Table).body !== undefined
+  return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
 }
 
 export class Icon {

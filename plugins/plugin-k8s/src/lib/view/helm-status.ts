@@ -53,6 +53,7 @@ export const format = (command: string, verb: string, entityType: string, option
       return namespaceFromHelmStatusOutput
     }
   }
+
   const resources = resourcesString
     .split(/==>/)
     .map(_ => _.split(/[\n\r]/))
@@ -82,22 +83,22 @@ export const format = (command: string, verb: string, entityType: string, option
                            verb,
                            entityType,
                            Object.assign({}, options, { namespace: namespaceFor(entityType) }),
-                           preprocessTable([A.slice(1).join('\n')]))[0]
+                           preprocessTable([A.slice(1).join('\n')])[0])
       }
     })
   debug('resources', resources)
 
   return resources
         .map(({ kind, table }) => {
-          table[0].title = kind
-          table[0].flexWrap = true
+          table.title = kind
+          table.flexWrap = true
           return table
         }).sort((a, b) => {
             // number of columns
-          const diff1 = a[0].attributes.length - b[0].attributes.length
+          const diff1 = a.header.attributes.length - b.header.attributes.length
 
           if (diff1 === 0) {
-            return - (width(a) - width(b))
+            return - (width(a.body) - width(b.body))
           } else {
             return -diff1
           }
