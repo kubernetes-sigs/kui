@@ -212,9 +212,6 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
     }
   }
 
-  // protocol handlers
-  import('./protocol-handlers').then(init => init.default(argv => createWindow(true, argv)))
-
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
