@@ -38,11 +38,9 @@ let disambiguator = {} // map from command name to disambiguations
 /** a catch all handler is presented with an offer to handle a given argv */
 type CatchAllOffer = (argv: Array<string>) => boolean
 
-export interface ICatchAllHandler {
-  route: string
+export interface ICatchAllHandler extends ICommandBase {
   prio: number
   plugin: string // registered plugin
-  options: ICommandOptions
   offer: CatchAllOffer // does the handler accept the given command?
   eval // command evaluator
 }
@@ -109,7 +107,7 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
  * Navigate the given tree model, following the given path as [n1,n2,n3]
  *
  */
-const treeMatch = (model, path: Array<string>, readonly = false, hide = false, idxStart = 0, noWildcard = false) => {
+const treeMatch = (model, path: Array<string>, readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
   let parent = model
   let cur
 
@@ -159,14 +157,21 @@ const treeMatch = (model, path: Array<string>, readonly = false, hide = false, i
     return cur
   }
 }
-const match = (path: string[], readonly: boolean) => {
+const match = (path: string[], readonly: boolean): ICommand => {
   return treeMatch(model, path, readonly)
 }
 
-interface ICommand {
+interface ICommandBase {
   route: string
-  synonyms?: { [key: string]: ICommand }
   options?: ICommandOptions
+}
+
+interface ICommand extends ICommandBase {
+  $: Function
+  key: string
+  parent: ICommand
+  children?: ICommand[]
+  synonyms?: { [key: string]: ICommand }
 }
 
 interface ICommandOptions {
@@ -179,6 +184,7 @@ interface ICommandOptions {
   plugin?: string
   okOptions?: string[]
   isIntention?: boolean
+  requiresFullyQualifiedRoute?: boolean
 }
 class DefaultCommandOptions implements ICommandOptions {
   constructor () {
@@ -335,7 +341,7 @@ export interface IEvent {
   isDrilldown?: boolean
 }
 
-const withEvents = (evaluator, leaf: ICommand, partialMatches?) => {
+const withEvents = (evaluator, leaf: ICommandBase, partialMatches?) => {
   // let the world know we have resolved a command, and are about to evaluate it
   const event: IEvent = {
     // context: currentContext()
