@@ -26,6 +26,7 @@ import mimicDom from '../util/mimic-dom'
 import { prequire, preload, init as pluginsInit } from '../core/plugins'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
 import { CodedError } from '../models/errors'
+import UsageError from '../core/usage-error'
 import { IExecOptions } from '../models/execOptions'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
@@ -105,22 +106,30 @@ const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) =>
   if (!noAuth) {
     // we're not in a corner case of having no credentials, so print
     // the error
-    const { oopsMessage } = await import('../core/oops')
-    const msg = oopsMessage(err)
 
     if (process.env.TEST_CODE_ONLY && err.statusCode) {
       // client asked us to emit only the error code
       error(err.statusCode)
-    } else if (typeof msg === 'string') {
-      if (process.env.TEST_INCLUDE_CODE && err.statusCode) {
-        // client asked for the code and the message
-        error(colors.blue(err.statusCode.toString()) + ' ' + colors.red(msg))
-      } else {
-        // client did not ask for the error code
-        error(colors.red(msg))
-      }
     } else {
-      completion = print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
+      let msg
+      if (UsageError.isUsageError(err)) {
+        msg = err.getFormattedMessage()
+      } else {
+        const { oopsMessage } = await import('../core/oops')
+        msg = oopsMessage(err)
+      }
+
+      if (typeof msg === 'string') {
+        if (process.env.TEST_INCLUDE_CODE && err.statusCode) {
+          // client asked for the code and the message
+          error(colors.blue(err.statusCode.toString()) + ' ' + colors.red(msg))
+        } else {
+          // client did not ask for the error code
+          error(colors.red(msg))
+        }
+      } else {
+        completion = print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
+      }
     }
   } else {
     error(`No credentials found. Consider trying again with "kui help" command.`)

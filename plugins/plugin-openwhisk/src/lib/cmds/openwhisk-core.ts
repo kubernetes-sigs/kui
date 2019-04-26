@@ -20,7 +20,7 @@ debug('loading')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
-import UsageError from '@kui-shell/core/core/usage-error'
+import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
@@ -1212,7 +1212,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
             const code = err.statusCode || err.code
             const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity] // tslint:disable-line
             const _usageModel = __usageModel.available && __usageModel.available.find(({ command }) => command === verb)
-            const usageModel = _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
+            const usageModel: IUsageModel = _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
 
             console.error(err)
             if (!usageModel) {

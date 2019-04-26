@@ -19,6 +19,7 @@ const debug = Debug('plugins/core-support/help')
 debug('loading')
 
 import UsageError from '@kui-shell/core/core/usage-error'
+import { CodedError } from '@kui-shell/core/models/errors'
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
 
@@ -67,12 +68,12 @@ const help = (usage, docs) => ({ argvNoOptions: args }) => {
     }
 
     debug('generated top-level usage model')
-    throw new UsageError(topLevelUsage)
+    throw new UsageError({ usage: topLevelUsage })
   } else {
     debug('no usage model')
 
-    const error = new Error('No documentation found')
-    error['code'] = 404
+    const error: CodedError = new Error('No documentation found')
+    error.code = 404
     throw error
   }
 }

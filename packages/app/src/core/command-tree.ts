@@ -19,7 +19,7 @@ const debug = Debug('core/command-tree')
 debug('loading')
 
 import eventBus from './events'
-import UsageError from './usage-error'
+import { UsageError, IUsageModel } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { IExecOptions } from '../models/execOptions'
@@ -39,9 +39,10 @@ let disambiguator = {} // map from command name to disambiguations
 type CatchAllOffer = (argv: Array<string>) => boolean
 
 export interface ICatchAllHandler {
+  route: string
   prio: number
   plugin: string // registered plugin
-  options: object
+  options: ICommandOptions
   offer: CatchAllOffer // does the handler accept the given command?
   eval // command evaluator
 }
@@ -162,11 +163,34 @@ const match = (path: string[], readonly: boolean) => {
   return treeMatch(model, path, readonly)
 }
 
+interface ICommand {
+  route: string
+  synonyms?: { [key: string]: ICommand }
+  options?: ICommandOptions
+}
+
+interface ICommandOptions {
+  listen?: any // FIXME
+  usage?: IUsageModel
+  docs?: string
+  synonymFor?: ICommand
+  hide?: boolean
+  override?: any
+  plugin?: string
+  okOptions?: string[]
+  isIntention?: boolean
+}
+class DefaultCommandOptions implements ICommandOptions {
+  constructor () {
+    // empty
+  }
+}
+
 /**
  * Register a subtree in the command tree
  *
  */
-export const subtree = (route: string, options) => {
+export const subtree = (route: string, options: ICommandOptions) => {
   const myListen = options.listen || listen
   const path = route.split('/').splice(1)
   const leaf = match(path, false /*, options*/)
@@ -181,16 +205,15 @@ export const subtree = (route: string, options) => {
     const help = () => {
       debug('subtree help', route, options)
 
-      // the usage message:
-      const usageMessage = options.usage || options.docs ||
-                  (options.synonymFor && options.synonymFor.options &&
-                      (options.synonymFor.options.usage || options.synonymFor.options.docs))
+      // the usage message
+      const usage = options.usage ||
+        (options.synonymFor && options.synonymFor.options && options.synonymFor.options.usage)
 
-      if (options.synonymFor) {
+      /* if (options.synonymFor) {
         usageMessage.synonymFor = options.synonymFor
-      }
+      } */
 
-      throw new UsageError(usageMessage)
+      throw new UsageError({ usage })
     }
 
     //
@@ -208,7 +231,7 @@ export const subtree = (route: string, options) => {
  * Register a synonym of a subtree
  *
  */
-export const subtreeSynonym = (route: string, master, options) => {
+export const subtreeSynonym = (route: string, master: ICommand, options = master.options) => {
   if (route !== master.route) { // <-- don't alias to yourself!
     const mySubtree = subtree(route, Object.assign({}, options, { synonymFor: master }))
 
@@ -218,22 +241,11 @@ export const subtreeSynonym = (route: string, master, options) => {
   }
 }
 
-interface IOptions {
-  hide?: boolean
-  override?: any
-  synonymFor?: any
-}
-class DefaultOptions implements IOptions {
-  constructor () {
-    // empty
-  }
-}
-
 /**
  * Register a command handler on the given route
  *
  */
-const _listen = (model, route: string, handler, options: IOptions = new DefaultOptions()) => {
+const _listen = (model, route: string, handler, options: ICommandOptions = new DefaultCommandOptions()) => {
   const path = route.split('/').splice(1)
   const leaf = treeMatch(model, path, false, options.hide)
 
@@ -275,14 +287,14 @@ const _listen = (model, route: string, handler, options: IOptions = new DefaultO
     return leaf
   }
 }
-export const listen = (route: string, handler, options: IOptions) => _listen(model, route, handler, options)
+export const listen = (route: string, handler, options: ICommandOptions) => _listen(model, route, handler, options)
 
 /**
  * Register a command handler on the given route, as a synonym of the given master handler
  *    master is the return value of `listen`
  *
  */
-export const synonym = (route: string, handler, master, options: IOptions = new DefaultOptions()) => {
+export const synonym = (route: string, handler, master: ICommand, options = master.options) => {
   if (route !== master.route) {
     // don't alias to yourself!
     const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
@@ -297,7 +309,7 @@ export const synonym = (route: string, handler, master, options: IOptions = new 
  * Register an intentional action
  *
  */
-export const intention = (route: string, handler, options: IOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
+export const intention = (route: string, handler, options: ICommandOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
 
 /**
  * "top-level", meaning the user hit enter in the CLI,
@@ -323,7 +335,7 @@ export interface IEvent {
   isDrilldown?: boolean
 }
 
-const withEvents = (evaluator, leaf, partialMatches?) => {
+const withEvents = (evaluator, leaf: ICommand, partialMatches?) => {
   // let the world know we have resolved a command, and are about to evaluate it
   const event: IEvent = {
     // context: currentContext()
@@ -840,9 +852,9 @@ export const getModel = () => new CommandModel()
  *
  */
 export const proxy = plugin => ({
-  catchall: (offer: CatchAllOffer, handler, prio = 0, options: IOptions = new DefaultOptions()) => catchalls.push({ offer, eval: handler, prio, plugin, options }),
-  listen: (route: string, handler, options: IOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
-  intention: (route: string, handler, options: IOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
+  catchall: (offer: CatchAllOffer, handler, prio = 0, options: ICommandOptions = new DefaultCommandOptions()) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
+  listen: (route: string, handler, options: ICommandOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
+  intention: (route: string, handler, options: ICommandOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
   synonym,
   subtree,
   subtreeSynonym,

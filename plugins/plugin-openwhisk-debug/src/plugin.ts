@@ -31,7 +31,7 @@ import dockerConfig from './config'
 import * as strings from './strings'
 import { main as usage } from './docs'
 
-import UsageError from '@kui-shell/core/core/usage-error'
+import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { qexec, pexec } from '@kui-shell/core/core/repl'
 import { addNameToSidecarHeader, clearSelection, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
@@ -239,16 +239,16 @@ const local = wsk => async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions,
 
   if (argvWithoutOptions.length === 1) {
     debug('overall usage requested')
-    throw new UsageError(printDocs())
+    throw new UsageError({ usage })
   } else if (Object.keys(strings).indexOf(argvWithoutOptions[1]) < 1) {
     // missing will be -1, 'overall' will be 0. so none of that
     debug('unknown command')
-    throw new UsageError(printDocs())
+    throw new UsageError({ usage })
   } else if (argvWithoutOptions.length === 2 &&
              !needsNoArgs.find(_ => _ === argvWithoutOptions[1]) &&
              !fillInWithImplicitEntity(argvWithoutOptions, 2)) { // has the user has already selected an entity in the sidecar?
     debug('insufficient args')
-    throw new UsageError(printDocs(argvWithoutOptions[1]))
+    throw new UsageError({ usage })
   } else {
     //
     // otherwise, we are good to go with executing the command
@@ -590,18 +590,6 @@ const getActionCode = (actionName: string, spinnerDiv: Element) => {
       }
       return Object.assign(action.exec, { param: param })
     })
-}
-
-/**
- * Returns a DOM that documents this plugin
- *
- */
-const printDocs = (name?: string): Object => {
-  /* if (name && docs[name]) {
-    return docs[name]
-  } else */ {
-    return usage
-  }
 }
 
 /**

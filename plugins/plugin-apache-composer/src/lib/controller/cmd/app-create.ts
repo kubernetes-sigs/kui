@@ -39,7 +39,7 @@ export default async (commandTree, prequire) => {
 
       if (!name || !inputFile) {
         debug('insufficient inputs')
-        throw new UsageError(create('create'), undefined, 497)
+        throw new UsageError({ message: 'Insufficient inputs', usage: create('create'), code: 497 })
       }
     }
 
@@ -61,7 +61,7 @@ export default async (commandTree, prequire) => {
 
       if (!name || !inputFile) {
         debug('insufficient inputs')
-        throw new UsageError(create('update'), undefined, 497)
+        throw new UsageError({ message: 'Insufficient inputs', usage: create('update'), code: 497 })
       }
     }
 

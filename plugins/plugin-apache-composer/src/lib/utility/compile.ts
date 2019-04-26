@@ -40,7 +40,7 @@ export const sourceToComposition = ({ inputFile, name = '', recursive = false })
   } else if (extension === 'js' || extension === 'py') {
     debug('input is composer library client', extension)
   } else {
-    return reject(new UsageError({ message: messages.unknownInput, usage: create('create') }, undefined, 497))
+    return reject(new UsageError({ message: messages.unknownInput, usage: create('create'), code: 497 }))
   }
 
   const localCodePath = findFile(expandHomeDir(inputFile))

@@ -86,9 +86,9 @@ class ProxyEvaluator implements IEvaluator {
       } catch (err) {
         debug('proxy execution resulted in an error, recasting to local exception', err.code, err.message, err.body, err)
 
-        if (err.body && err.body.isUsageError) {
+        if (err.body && UsageError.isUsageError(err.body)) {
           debug('the error is a usage error, rethrowing as such')
-          throw new UsageError(err.body.raw, err.body.extra, err.body.code)
+          throw new UsageError({ message: err.body.raw, code: err.body.code, extra: err.body.extra })
         } else {
           const error = new Error((err.body && err.body.message) || (typeof err.body === 'string' ? err.body : err.message || 'Internal error'))
           error['code'] = error['statusCode'] = (err.body && err.body.code) || err.code || err.statusCode

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 IBM Corporation
+ * Copyright 2017-2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ const debug = Debug('core/usage-error')
 import { isHeadless } from './capabilities'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
 import repl = require('@kui-shell/core/core/repl')
+import { CodedError } from '../models/errors'
+import { isHTML } from '../util/types'
 
 interface IUsageOptions {
   noHide?: boolean
@@ -36,9 +38,11 @@ class DefaultUsageOptions implements IUsageOptions {
  * back.
  *
  */
-async function promiseEach<T, R> (arr: Array<T>, fn: (t: T) => R) {
+async function promiseEach<T, R> (arr: T[], fn: (t: T) => Promise<R>): Promise<R[]> {
   const result = []
-  for (const item of arr) result.push(await fn(item))
+  for (const item of arr) {
+    result.push(await fn(item))
+  }
   return result
 }
 
@@ -65,7 +69,7 @@ const div = (str?: string | Promise<string> | Element, css: string | Array<strin
   }
   return result
 }
-const span = (str?: string | Element, css?: string) => div(str, css, 'span')
+const span = (str?: string | Element, css?: string): HTMLElement => div(str, css, 'span')
 
 /**
  * The start of every section, e.g. Usage:
@@ -103,51 +107,93 @@ const wrap = (div: HTMLElement): HTMLElement => {
 }
 
 /**
- * Invoke a given command, and return the raw (i.e. not formatted) usage model
- *
- */
-const usageFromCommand = (command: string): Promise<IUsageModel> => repl.qexec(command)
-  .then(() => {
-    console.error('Invalid usage model', command)
-    throw new Error('Internal Error')
-  })
-  .catch((usageError: UsageError) => usageError.raw)
-
-/**
  * Invoke a given command, and extract the breadcrumb title from the resulting usage model
  *
  */
-const breadcrumbFromCommand = (command: string) => usageFromCommand(command)
-  .then(usage => usage.breadcrumb || usage.title)
+const breadcrumbFromCommand = async (command: string): Promise<string> => {
+  const usageError: UsageError = await repl.qexec(command, undefined, undefined, { failWithUsage: true })
+
+  if (isMessageWithUsageModel(usageError.raw)) {
+    const usage = usageError.raw.usage
+    return usage.breadcrumb || usage.title
+  } else {
+    return usageError.message
+  }
+}
+
+/** make a single breadcrumb for the UI; defaultCommand means use the string as a command */
+interface ICrumbOptions {
+  breadcrumb: BreadcrumbLabel
+  preserveCase?: boolean
+  noSlash?: boolean
+}
+const makeBreadcrumb = (options: ICrumbOptions): Promise<Element> => {
+  let cmd: string
+  let label: string | Promise<string>
+
+  if (typeof options.breadcrumb === 'string') {
+    cmd = label = options.breadcrumb
+  } else if (isBreadcrumbWithClickCommand(options.breadcrumb)) {
+    cmd = options.breadcrumb.command
+    label = options.breadcrumb.label
+  } else {
+    cmd = options.breadcrumb.command
+    label = breadcrumbFromCommand(cmd)
+  }
+
+  return Promise.resolve(label)
+    .then(label => {
+      const item = span()
+      item.classList.add('bx--breadcrumb-item')
+
+      if (!options.preserveCase) {
+        item.classList.add('capitalize')
+      }
+
+      const dom = span(label, 'bx--no-link')
+      dom.setAttribute('data-label', label)
+      item.appendChild(dom)
+
+      if (!options.noSlash) {
+        item.appendChild(span('/', 'bx--breadcrumb-item--slash'))
+      }
+
+      if (cmd) {
+        dom.classList.add('bx--link')
+        dom.onclick = () => repl.pexec(cmd)
+      }
+
+      return item
+    })
+}
 
 /**
  * Format the given usage message
  *
  */
-const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => {
-  debug('format', typeof message === 'string' ? message : message.title)
+const format = async (message: UsageLike, options: IUsageOptions = new DefaultUsageOptions()): Promise<HTMLElement> => {
+  debug('format message', message)
 
   if (typeof message === 'string') {
-    return message
-  } else if (message.nodeName) {
-    // then this is a pre-formatted HTML
-    return message
-  } else if (message.fn) {
+    // then the content is already formatted
+    return Promise.resolve(span(message))
+  } else if (isHTML(message)) {
+    // same...
+    return Promise.resolve(message)
+    /*} else if (isGenerator<UsageLike>(message)) {
     // then message.fn is a generator, e.g. for command aliases
-    return format(message.fn(message.command))
+    return format(message.fn(message.command), undefined, options)*/
   } else {
     // these are the fields of the usage message
-    const replWrappedAMessageString = message.message && message.usage
-    const usage: IUsageModel = replWrappedAMessageString ? message.usage : message
-    const messageString = replWrappedAMessageString && message.message
+    const usage: IUsageModel = message.usage
 
     const { command, docs, title, breadcrumb = title || command, header = docs && `${docs}.`, example, detailedExample, sampleInputs,
-      intro, sections, // the more general case: the usage model has custom sections
-      commandPrefix, commandPrefixNotNeeded,
-      commandSuffix = '',
-      drilldownWithPip = false,
-      preserveCase = false, // in breadcrumbs
-      available, parents = [], related, required, optional, oneof } = usage
+            intro, sections, // the more general case: the usage model has custom sections
+            commandPrefix, commandPrefixNotNeeded,
+            commandSuffix = '',
+            drilldownWithPip = false,
+            preserveCase = false, // in breadcrumbs
+            available, related, required, optional, oneof } = usage
     const outerCommandPrefix = commandPrefix
     const outerCommandSuffix = commandSuffix
     const outerCommand = command
@@ -171,11 +217,20 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
       left.style.marginRight = '2em'
     }
 
-    if (messageString) {
+    if (message.message) {
       // then the repl wrapped around the usage model, adding an extra message string
+      const messageString = message.message
       const messageDom = div(undefined, '', 'div')
       const prefacePart = span('')
+
       const messagePart = span(messageString, 'red-text usage-error-message-string')
+      if (message.messageDom) {
+        if (typeof message.messageDom === 'string') {
+          messagePart.appendChild(document.createTextNode(message.messageDom))
+        } else {
+          messagePart.appendChild(message.messageDom)
+        }
+      }
 
       if (!options.noHide) {
         result.classList.add('hidden')
@@ -208,437 +263,402 @@ const format = (message, options: IUsageOptions = new DefaultUsageOptions()) => 
     //
     // breadcrumb
     //
-    let breadcrumbPromise
-    if (options.noBreadcrumb) {
-      breadcrumbPromise = Promise.resolve()
-    } else {
+    if (!options.noBreadcrumb) {
+      // breadcrumb model chain
+      const rootCrumb = { breadcrumb: { label: 'Shell Docs', command: 'help' } }
+      const parentChain = (usage.parents || []).map(breadcrumb => ({ breadcrumb }))
+      const thisCommand = { breadcrumb, noSlash: true, preserveCase }
+      const breadcrumbs: ICrumbOptions[] = [
+        rootCrumb,
+        ...parentChain,
+        thisCommand
+      ]
+
+      // generate the breadcrumb Elements from the model
+      const crumbs = await promiseEach(breadcrumbs, makeBreadcrumb)
+
+      // attach the breadcrumb to the view
       const container = div(undefined, 'bx--breadcrumb bx--breadcrumb--no-trailing-slash', 'h2')
       result.appendChild(container)
-
-      /** make a single breadcrumb for the UI; defaultCommand means use the string as a command */
-      const makeBreadcrumb = options => {
-        const stringLabel = typeof options.label === 'string'
-        const cmd = options.commandFromLabel ? stringLabel ? options.label : options.label.command : options.command
-        const label = stringLabel ? options.label : breadcrumbFromCommand(options.label.command)
-
-        return Promise.resolve(label)
-          .then(label => {
-            const item = span()
-            item.classList.add('bx--breadcrumb-item')
-
-            if (!preserveCase) {
-              item.classList.add('capitalize')
-            }
-
-            const dom = span(label, 'bx--no-link')
-            dom.setAttribute('data-label', label)
-            item.appendChild(dom)
-
-            if (!options.noSlash) {
-              item.appendChild(span('/', 'bx--breadcrumb-item--slash'))
-            }
-
-            if (cmd) {
-              dom.classList.add('bx--link')
-              dom.onclick = () => repl.pexec(cmd)
-            }
-
-            return item
-          })
-      }
-
-      /** attach the breadcrumb to the dom */
-      const attachBreadcrumb = (breadcrumb: Element) => container.appendChild(breadcrumb)
-
-      // now we add the breadcrumb chain to the UI
-      breadcrumbPromise = promiseEach([{ label: 'Shell Docs', command: 'help' }, // root
-        ...parents.map(label => ({ label, commandFromLabel: true })),
-        { label: breadcrumb, noSlash: true }
-      ], makeBreadcrumb)
-        .then(crumbs => crumbs.map(attachBreadcrumb))
+      crumbs.forEach(breadcrumb => container.appendChild(breadcrumb))
     }
 
-    return breadcrumbPromise.then(async () => {
-      //
-      // title
-      //
-      /* if (title) {
-            const dom = div(title, 'capitalize', 'h1')
-            dom.style.fontSize = '1.629em'
-            dom.style.fontWeight = 300
-            dom.style.color = 'var(--color-brand-01)'
-            dom.style.margin = '0 0 .3rem'
-            result.appendChild(dom)
-        } */
+    //
+    // title
+    //
+    /* if (title) {
+       const dom = div(title, 'capitalize', 'h1')
+       dom.style.fontSize = '1.629em'
+       dom.style.fontWeight = 300
+       dom.style.color = 'var(--color-brand-01)'
+       dom.style.margin = '0 0 .3rem'
+       result.appendChild(dom)
+       } */
 
-      //
-      // header message
-      //
-      if (header) {
-        let headerDiv = div(header, 'normal-text sans-serif')
+    //
+    // header message
+    //
+    if (header) {
+      let headerDiv = div(header, 'normal-text sans-serif')
 
-        if (!isHeadless()) {
-          try {
-            const Marked = await import('marked')
-            const renderer = new Marked.Renderer()
-            const marked = _ => Marked(_, { renderer })
-            renderer.link = (href: string, title: string, text: string) => {
-              return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
+      if (!isHeadless()) {
+        try {
+          const Marked = await import('marked')
+          const renderer = new Marked.Renderer()
+          const marked = (_: string): string => Marked(_, { renderer })
+          renderer.link = (href: string, title: string, text: string) => {
+            return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
+          }
+
+          headerDiv = div('', 'normal-text sans-serif marked-content')
+          headerDiv.innerHTML = marked(header)
+        } catch (err) {
+          debug('error using marked', err)
+        }
+      }
+
+      if (message.exitCode > 0 && message.exitCode !== 200) {
+        // the underlying command emitted some sort of usage model in response to an error
+        // e.g. `kubectl get pods --bogus
+        headerDiv.classList.add('red-text')
+      }
+
+      result.appendChild(headerDiv)
+    }
+
+    body.style.display = 'flex'
+    body.style.flexWrap = 'wrap'
+    body.style.marginTop = '0.375em'
+    body.appendChild(left)
+    body.appendChild(right)
+    result.appendChild(body)
+
+    // keep track of the scroll regions we have created; if not
+    // many, maybe we use outer scrolling inside of inner scrolling
+    const scrollRegions = []
+
+    // any minimally formatted sections? e.g. `intro` and `section` fields
+    const makeSection = (parent = right, noMargin = false) => ({ title, content }: ITitledContent) => {
+      const wrapper = bodyPart(noMargin)
+      const prePart = prefix(title)
+      const contentPart = document.createElement('pre')
+      contentPart.classList.add('pre-wrap')
+      contentPart.innerText = content
+      wrapper.appendChild(prePart)
+      wrapper.appendChild(contentPart)
+      parent.appendChild(wrapper)
+    }
+
+    // top-most intro section?
+    if (intro) {
+      makeSection(left)(intro)
+    }
+
+    // example command
+    if (example) {
+      const examplePart = bodyPart()
+      const prePart = prefix('Usage')
+
+      const html = example
+        .trim()
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/(\[[^\[\]]+\])/g, '<span class="even-lighter-text">$1</span>') // lighter text for [optional args]
+      const textPart = div()
+      textPart.innerHTML = html
+
+      left.appendChild(examplePart)
+      examplePart.appendChild(prePart)
+      examplePart.appendChild(textPart)
+
+      textPart.style.color = 'var(--color-base0C)'
+    }
+
+    // detailed example command
+    if (detailedExample) {
+      const examples = !Array.isArray(detailedExample) ? [detailedExample] : detailedExample
+
+      const examplePart = bodyPart()
+      const prePart = prefix(examples.length === 1 ? 'Example' : 'Examples')
+      left.appendChild(examplePart)
+      examplePart.appendChild(prePart)
+
+      // only if we there are other sections to show, render the
+      // detailed examples in a scroll region
+      const examplesInScrollRegion = examples.length > 4 && sections && sections.length > 0
+
+      const rowsPart = examplesInScrollRegion ? div(undefined, ['scrollable', 'scrollable-auto']) : examplePart
+      if (examplesInScrollRegion) {
+        scrollRegions.push(rowsPart)
+
+        const nRowsInViewport = 6
+        examplePart.appendChild(rowsPart)
+        rowsPart.style.maxHeight = `calc(${nRowsInViewport} * 3em + 1px)`
+      }
+
+      examples.forEach(({ command, docs }, idx) => {
+        const exampleContainer = div(undefined, 'present-as-quotation')
+        rowsPart.appendChild(exampleContainer)
+
+        const textPart = div(command)
+        const docPart = sans(div(docs, 'lighter-text'))
+
+        exampleContainer.appendChild(textPart)
+        exampleContainer.appendChild(docPart)
+
+        textPart.classList.add('example-command-text')
+      })
+    }
+
+    /**
+     * Render a table of options
+     *
+     */
+    const makeTable = (title: string, rows: IUsageRow[], parent = right, nRowsInViewport = (usage && usage.nRowsInViewport) || 5): HTMLElement => {
+      const wrapper = bodyPart()
+      const prePart = prefix(title)
+
+      wrapper.appendChild(prePart)
+      parent.appendChild(wrapper)
+
+      if (typeof rows === 'string') {
+        // then we have a degenerate case where the "rows" is a
+        // plain string
+        debug('plain string body', rows)
+        const content = document.createElement('div')
+        content.innerText = rows
+        wrapper.appendChild(content)
+
+        return
+      }
+
+      const table = document.createElement('table')
+      table.className = 'log-lines'
+
+      // make the table scrollable, showing only a max number of
+      // rows at a time: e.g. 5 rows, plus a bit (1px) for the
+      // bottom border; the 3em part must .log-line's height in
+      // ui.css; nRowsInViewport = true means disable inner scrolling
+      if (rows.length > nRowsInViewport && nRowsInViewport !== true) {
+        const tableScrollable = div(undefined, ['scrollable', 'scrollable-auto'])
+        const nRows = (sections && (sections.length === 2 || (sections.length === 1 && scrollableDetailedExamples))) ? 8 : nRowsInViewport
+        tableScrollable.style.maxHeight = `calc(${nRows} * 3em + 1px)`
+        tableScrollable.appendChild(table)
+        wrapper.appendChild(tableScrollable)
+        scrollRegions.push(tableScrollable)
+      } else {
+        wrapper.appendChild(table)
+      }
+
+      // render the rows
+      const renderRow = (rowData: UsageRow) => {
+        if (isGenerator(rowData)) {
+          // then rowData is a generator for aliases
+          return renderRow(rowData.fn(rowData.command))
+        }
+
+        // fields of the row model
+        // debug('row', rowData)
+        const { commandPrefix = outerCommandPrefix, commandSuffix = outerCommandSuffix,
+                command = outerCommand,
+                name = command, label = name,
+                noclick = false,
+                synonyms, alias, numeric, aliases = (synonyms || [alias]).filter(x => x), hidden = false, advanced = false,
+                available,
+                example = numeric && 'N', dir: isDir = available || false,
+                title, header, docs = header || title, partial = false, allowed, defaultValue } = rowData
+
+        // row is either hidden or only shown for advanced users
+        if (hidden) return
+        if (advanced) return // for now
+
+        const row = table.insertRow(-1)
+        row.className = 'log-line entity'
+
+        const cmdCell = row.insertCell(-1)
+        const docsCell = row.insertCell(-1)
+        const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap')
+        const dirPart = isDir && label && span('/')
+        const examplePart = example && span(example, label || dirPart ? 'left-pad lighter-text smaller-text' : '') // for -p key value, "key value"
+        const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'lighter-text smaller-text small-left-pad')
+        const docsPart = span(docs)
+        const allowedPart = allowed && smaller(span(undefined))
+
+        // for repl.exec,
+        const commandForExec = (alias: string, cmd = ''): string => {
+          return `${commandPrefix && !commandPrefixNotNeeded ? commandPrefix + ' ' : ''}${alias} ${cmd} ${commandSuffix}`
+        }
+
+        cmdCell.className = 'log-field'
+        docsCell.className = 'log-field'
+
+        cmdPart.style.fontWeight = '500'
+        wrap(sans(docsPart))
+
+        // command aliases
+        if (aliases) {
+          aliases.filter(x => x).forEach(alias => {
+            const cmdCell = span()
+            const cmdPart = span(alias /* noclick ? '' : 'clickable clickable-blatant' */) // don't make aliases clickable
+            const dirPart = isDir && span('/')
+
+            if (!noclick) {
+              cmdPart.onclick = () => repl.pexec(commandForExec(alias))
             }
 
-            headerDiv = div('', 'normal-text sans-serif marked-content')
-            headerDiv.innerHTML = marked(header)
-          } catch (err) {
-            debug('error using marked', err)
-          }
+            aliasesPart.appendChild(cmdCell)
+            cmdCell.appendChild(cmdPart)
+            if (dirPart) cmdCell.appendChild(smaller(dirPart))
+          })
         }
 
-        if (message.exitCode > 0 && message.exitCode !== 200) {
-          // the underlying command emitted some sort of usage model in response to an error
-          // e.g. `kubectl get pods --bogus
-          headerDiv.classList.add('red-text')
+        // allowed and default values
+        if (allowed) {
+          allowedPart.style.color = 'var(--color-text-02)'
+          allowedPart.appendChild(span('options: '))
+          allowed.forEach((value, idx) => {
+            const option = span(`${idx > 0 ? ', ' : ''}${value}${value !== defaultValue ? '' : '*'}`)
+            allowedPart.appendChild(option)
+          })
         }
 
-        result.appendChild(headerDiv)
-      }
+        cmdCell.appendChild(cmdPart)
+        if (dirPart) cmdCell.appendChild(smaller(dirPart))
+        if (aliasesPart) cmdCell.appendChild(smaller(aliasesPart))
+        if (examplePart) cmdCell.appendChild(examplePart)
+        docsCell.appendChild(docsPart)
+        if (allowedPart) docsCell.appendChild(allowedPart)
 
-      body.style.display = 'flex'
-      body.style.flexWrap = 'wrap'
-      body.style.marginTop = '0.375em'
-      body.appendChild(left)
-      body.appendChild(right)
-      result.appendChild(body)
-
-      // keep track of the scroll regions we have created; if not
-      // many, maybe we use outer scrolling inside of inner scrolling
-      const scrollRegions = []
-
-      // any minimally formatted sections? e.g. `intro` and `section` fields
-      const makeSection = (parent = right, noMargin = false) => ({ title, content }: ITitledContent) => {
-        const wrapper = bodyPart(noMargin)
-        const prePart = prefix(title)
-        const contentPart = document.createElement('pre')
-        contentPart.classList.add('pre-wrap')
-        contentPart.innerText = content
-        wrapper.appendChild(prePart)
-        wrapper.appendChild(contentPart)
-        parent.appendChild(wrapper)
-      }
-
-      // top-most intro section?
-      if (intro) {
-        makeSection(left)(intro)
-      }
-
-      // example command
-      if (example) {
-        const examplePart = bodyPart()
-        const prePart = prefix('Usage')
-
-        const html = example
-          .trim()
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/(\[[^\[\]]+\])/g, '<span class="even-lighter-text">$1</span>') // lighter text for [optional args]
-        const textPart = div()
-        textPart.innerHTML = html
-
-        left.appendChild(examplePart)
-        examplePart.appendChild(prePart)
-        examplePart.appendChild(textPart)
-
-        textPart.style.color = 'var(--color-base0C)'
-      }
-
-      // detailed example command
-      if (detailedExample) {
-        const examples = !Array.isArray(detailedExample) ? [detailedExample] : detailedExample
-
-        const examplePart = bodyPart()
-        const prePart = prefix(examples.length === 1 ? 'Example' : 'Examples')
-        left.appendChild(examplePart)
-        examplePart.appendChild(prePart)
-
-        // only if we there are other sections to show, render the
-        // detailed examples in a scroll region
-        const examplesInScrollRegion = examples.length > 4 && sections && sections.length > 0
-
-        const rowsPart = examplesInScrollRegion ? div(undefined, ['scrollable', 'scrollable-auto']) : examplePart
-        if (examplesInScrollRegion) {
-          scrollRegions.push(rowsPart)
-
-          const nRowsInViewport = 6
-          examplePart.appendChild(rowsPart)
-          rowsPart.style.maxHeight = `calc(${nRowsInViewport} * 3em + 1px)`
-        }
-
-        examples.forEach(({ command, docs }, idx) => {
-          const exampleContainer = div(undefined, 'present-as-quotation')
-          rowsPart.appendChild(exampleContainer)
-
-          const textPart = div(command)
-          const docPart = sans(div(docs, 'lighter-text'))
-
-          exampleContainer.appendChild(textPart)
-          exampleContainer.appendChild(docPart)
-
-          textPart.classList.add('example-command-text')
-        })
-      }
-
-      /**
-       * Render a table of options
-       *
-       */
-      const makeTable = (title: string, rows: IUsageRow[], parent = right, nRowsInViewport = message.nRowsInViewport || 5): HTMLElement => {
-        const wrapper = bodyPart()
-        const prePart = prefix(title)
-
-        wrapper.appendChild(prePart)
-        parent.appendChild(wrapper)
-
-        if (typeof rows === 'string') {
-          // then we have a degenerate case where the "rows" is a
-          // plain string
-          debug('plain string body', rows)
-          const content = document.createElement('div')
-          content.innerText = rows
-          wrapper.appendChild(content)
-
-          return
-        }
-
-        const table = document.createElement('table')
-        table.className = 'log-lines'
-
-        // make the table scrollable, showing only a max number of
-        // rows at a time: e.g. 5 rows, plus a bit (1px) for the
-        // bottom border; the 3em part must .log-line's height in
-        // ui.css; nRowsInViewport = true means disable inner scrolling
-        if (rows.length > nRowsInViewport && nRowsInViewport !== true) {
-          const tableScrollable = div(undefined, ['scrollable', 'scrollable-auto'])
-          const nRows = (sections && (sections.length === 2 || (sections.length === 1 && scrollableDetailedExamples))) ? 8 : nRowsInViewport
-          tableScrollable.style.maxHeight = `calc(${nRows} * 3em + 1px)`
-          tableScrollable.appendChild(table)
-          wrapper.appendChild(tableScrollable)
-          scrollRegions.push(tableScrollable)
-        } else {
-          wrapper.appendChild(table)
-        }
-
-        // render the rows
-        const renderRow = (rowData: UsageRow) => {
-          if (isUsageRowGenerator(rowData)) {
-            // then rowData is a generator for aliases
-            return renderRow(rowData.fn(rowData.command))
-          }
-
-          // fields of the row model
-          // debug('row', rowData)
-          const { commandPrefix = outerCommandPrefix, commandSuffix = outerCommandSuffix,
-            command = outerCommand,
-            name = command, label = name,
-            noclick = false,
-            synonyms, alias, numeric, aliases = (synonyms || [alias]).filter(x => x), hidden = false, advanced = false,
-            available,
-            example = numeric && 'N', dir: isDir = available || false,
-            title, header, docs = header || title, partial = false, allowed, defaultValue } = rowData
-
-          // row is either hidden or only shown for advanced users
-          if (hidden) return
-          if (advanced) return // for now
-
-          const row = table.insertRow(-1)
-          row.className = 'log-line entity'
-
-          const cmdCell = row.insertCell(-1)
-          const docsCell = row.insertCell(-1)
-          const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap')
-          const dirPart = isDir && label && span('/')
-          const examplePart = example && span(example, label || dirPart ? 'left-pad lighter-text smaller-text' : '') // for -p key value, "key value"
-          const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'lighter-text smaller-text small-left-pad')
-          const docsPart = span(docs)
-          const allowedPart = allowed && smaller(span(undefined))
-
-          // for repl.exec,
-          const commandForExec = (alias: string, cmd = ''): string => {
-            return `${commandPrefix && !commandPrefixNotNeeded ? commandPrefix + ' ' : ''}${alias} ${cmd} ${commandSuffix}`
-          }
-
-          cmdCell.className = 'log-field'
-          docsCell.className = 'log-field'
-
-          cmdPart.style.fontWeight = '500'
-          wrap(sans(docsPart))
-
-          // command aliases
-          if (aliases) {
-            aliases.filter(x => x).forEach(alias => {
-              const cmdCell = span()
-              const cmdPart = span(alias /* noclick ? '' : 'clickable clickable-blatant' */) // don't make aliases clickable
-              const dirPart = isDir && span('/')
-
-              if (!noclick) {
-                cmdPart.onclick = () => repl.pexec(commandForExec(alias))
-              }
-
-              aliasesPart.appendChild(cmdCell)
-              cmdCell.appendChild(cmdPart)
-              if (dirPart) cmdCell.appendChild(smaller(dirPart))
-            })
-          }
-
-          // allowed and default values
-          if (allowed) {
-            allowedPart.style.color = 'var(--color-text-02)'
-            allowedPart.appendChild(span('options: '))
-            allowed.forEach((value, idx) => {
-              const option = span(`${idx > 0 ? ', ' : ''}${value}${value !== defaultValue ? '' : '*'}`)
-              allowedPart.appendChild(option)
-            })
-          }
-
-          cmdCell.appendChild(cmdPart)
-          if (dirPart) cmdCell.appendChild(smaller(dirPart))
-          if (aliasesPart) cmdCell.appendChild(smaller(aliasesPart))
-          if (examplePart) cmdCell.appendChild(examplePart)
-          docsCell.appendChild(docsPart)
-          if (allowedPart) docsCell.appendChild(allowedPart)
-
-          if (command) {
-            if (!isDir) cmdPart.classList.add('semi-bold')
-            if (!noclick) {
-              cmdPart.classList.add('clickable')
-              cmdPart.classList.add('clickable-blatant')
-              cmdPart.onclick = async event => {
-                if (partial) {
-                  const cli = await import('../webapp/cli')
-                  return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
+        if (command) {
+          if (!isDir) cmdPart.classList.add('semi-bold')
+          if (!noclick) {
+            cmdPart.classList.add('clickable')
+            cmdPart.classList.add('clickable-blatant')
+            cmdPart.onclick = async event => {
+              if (partial) {
+                const cli = await import('../webapp/cli')
+                return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
+              } else {
+                if (drilldownWithPip) {
+                  return pip(commandForExec(command, name !== command ? name : undefined),
+                             undefined,
+                             resultWrapper.parentNode.parentNode as Element,
+                             'Previous Usage')(event)
                 } else {
-                  // console.error('CP', commandPrefix)
-                  // console.error('CCC', command)
-                  // console.error('NNN', name)
-                  if (drilldownWithPip) {
-                    return pip(commandForExec(command, name !== command ? name : undefined),
-                               undefined,
-                               resultWrapper.parentNode.parentNode as Element,
-                              'Previous Usage')(event)
-                  } else {
-                    return repl.pexec(commandForExec(command, name !== command ? name : undefined))
-                  }
+                  return repl.pexec(commandForExec(command, name !== command ? name : undefined))
                 }
               }
             }
           }
-        } /* renderRow */
-
-        rows.forEach(renderRow)
-
-        return wrapper
-      }
-
-      if (sections) {
-        // render more general sections, rather than the specific
-        // oneof, optional, etc.
-        const defaultNRowsInViewport = (idx: number, nRows: number): number => {
-          if (idx === sections.length - 1 && sections.length % 2 === 0) {
-            return sections.length === 2 ? nRows : 5
-          } // otherwise, accept global default
         }
+      } /* renderRow */
 
-        const stringSections = sections.filter(_ => typeof _.rows === 'string')
-        const tableSections = sections.filter(_ => Array.isArray(_.rows))
-        debug('string', stringSections)
-        debug('table', tableSections)
+      rows.forEach(renderRow)
 
-        tableSections.sort(({ rows: a }, { rows: b }) => a.length - b.length)
+      return wrapper
+    }
 
-        const nRowsOf = (section: IUsageSection, idx: number) => {
-          debug('nRowsOf', section, section.rows.length, section.nRowsInViewport, defaultNRowsInViewport(idx, section.rows.length))
-          return Math.min(section.rows.length,
-                          section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length)
-        }
-
-        const totalRows = tableSections.reduce((total, section, idx) => {
-          return total + nRowsOf(section, idx)
-        }, 0)
-
-        stringSections.forEach((section, idx) => {
-          const { title, rows, nRowsInViewport } = section
-          makeTable(title,
-                    rows,
-                    left)
-        })
-
-        let runningSum = 0
-        tableSections.forEach((section, idx) => {
-          const { title, rows, nRowsInViewport } = section
-
-          runningSum += nRowsOf(section, idx)
-          debug('running', runningSum, totalRows)
-          makeTable(title,
-                    rows,
-                    runningSum < totalRows / 2 ? left : right,
-                    nRowsInViewport || defaultNRowsInViewport(idx, rows.length))
-        })
+    if (sections) {
+      // render more general sections, rather than the specific
+      // oneof, optional, etc.
+      const defaultNRowsInViewport = (idx: number, nRows: number): number => {
+        if (idx === sections.length - 1 && sections.length % 2 === 0) {
+          return sections.length === 2 ? nRows : 5
+        } // otherwise, accept global default
       }
 
-      if (available) {
-        const table = makeTable('Available Commands', available)
-        table.classList.add('user-error-available-commands')
-        if (!title && !header) {
-          table.style.marginTop = '0'
-        }
+      const stringSections = sections.filter(_ => typeof _.rows === 'string')
+      const tableSections = sections.filter(_ => Array.isArray(_.rows))
+      debug('string', stringSections)
+      debug('table', tableSections)
+
+      tableSections.sort(({ rows: a }, { rows: b }) => a.length - b.length)
+
+      const nRowsOf = (section: IUsageSection, idx: number) => {
+        debug('nRowsOf', section, section.rows.length, section.nRowsInViewport, defaultNRowsInViewport(idx, section.rows.length))
+        return Math.min(section.rows.length,
+                        section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length)
       }
 
-      if (required) {
-        makeTable('Required Parameters', required)
+      const totalRows = tableSections.reduce((total, section, idx) => {
+        return total + nRowsOf(section, idx)
+      }, 0)
+
+      stringSections.forEach((section, idx) => {
+        const { title, rows, nRowsInViewport } = section
+        makeTable(title,
+                  rows,
+                  left)
+      })
+
+      let runningSum = 0
+      tableSections.forEach((section, idx) => {
+        const { title, rows, nRowsInViewport } = section
+
+        runningSum += nRowsOf(section, idx)
+        debug('running', runningSum, totalRows)
+        makeTable(title,
+                  rows,
+                  runningSum < totalRows / 2 ? left : right,
+                  nRowsInViewport || defaultNRowsInViewport(idx, rows.length))
+      })
+    }
+
+    if (available) {
+      const table = makeTable('Available Commands', available)
+      table.classList.add('user-error-available-commands')
+      if (!title && !header) {
+        table.style.marginTop = '0'
       }
+    }
 
-      if (oneof) {
-        makeTable('Required Parameters (choose one of the following)', oneof)
-      }
+    if (required) {
+      makeTable('Required Parameters', required)
+    }
 
-      if (optional) {
-        makeTable('Optional Parameters', optional)
-      }
+    if (oneof) {
+      makeTable('Required Parameters (choose one of the following)', oneof)
+    }
 
-      if (sampleInputs) {
-        // attach this to the left side, along with usage
-        makeTable('Sample Inputs', sampleInputs, left)
-      }
+    if (optional) {
+      makeTable('Optional Parameters', optional)
+    }
 
-      if (related) {
-        const relatedPart = bodyPart()
-        const prePart = prefix('Related Commands')
-        const listPart = div()
+    if (sampleInputs) {
+      // attach this to the left side, along with usage
+      makeTable('Sample Inputs', sampleInputs, left)
+    }
 
-        relatedPart.appendChild(prePart)
-        relatedPart.appendChild(listPart)
-        result.appendChild(relatedPart) // note that we append to result not body; body is for the flex-wrap bits
+    if (related) {
+      const relatedPart = bodyPart()
+      const prePart = prefix('Related Commands')
+      const listPart = div()
 
-        related.forEach((command, idx) => {
-          const commandPart = span(undefined, '')
-          const commaPart = span(idx === 0 ? '' : ', ', '')
-          const clickablePart = span(command, 'clickable')
+      relatedPart.appendChild(prePart)
+      relatedPart.appendChild(listPart)
+      result.appendChild(relatedPart) // note that we append to result not body; body is for the flex-wrap bits
 
-          commandPart.appendChild(commaPart)
-          commandPart.appendChild(clickablePart)
-          clickablePart.onclick = () => repl.pexec(command)
+      related.forEach((command, idx) => {
+        const commandPart = span(undefined, '')
+        const commaPart = span(idx === 0 ? '' : ', ', '')
+        const clickablePart = span(command, 'clickable')
 
-          listPart.appendChild(commandPart)
-        })
-      }
+        commandPart.appendChild(commaPart)
+        commandPart.appendChild(clickablePart)
+        clickablePart.onclick = () => repl.pexec(command)
 
-      // only one scroll region? then we might as well use outer scrolling
-      if (scrollRegions.length === 1) {
-        scrollRegions[0].classList.remove('scrollable')
-        scrollRegions[0].classList.remove('scrollable-auto')
-        scrollRegions[0].style.maxHeight = ''
-      }
+        listPart.appendChild(commandPart)
+      })
+    }
 
-      return resultWrapper
-    })
+    // only one scroll region? then we might as well use outer scrolling
+    if (scrollRegions.length === 1) {
+      scrollRegions[0].classList.remove('scrollable')
+      scrollRegions[0].classList.remove('scrollable-auto')
+      scrollRegions[0].style.maxHeight = ''
+    }
+
+    return resultWrapper
   }
 }
 
@@ -668,19 +688,19 @@ interface IUsageRow {
   partial?: boolean
   defaultValue?: any
   available?: IUsageRow[]
-  allowed?: IUsageRow[]
+  allowed?: Array<number | string | boolean>
 }
 
-interface IUsageRowGenerator {
-  command: any
-  fn: (command: any) => IUsageRow
+interface IGenerator {
+  command: string
+  fn: (command: string) => IUsageRow
 }
 
-function isUsageRowGenerator (row: UsageRow): row is IUsageRowGenerator {
-  return (row as IUsageRowGenerator).fn ? true : false
+function isGenerator (row: UsageRow): row is IGenerator {
+  return (row as IGenerator).fn ? true : false
 }
 
-type UsageRow = IUsageRow | IUsageRowGenerator
+type UsageRow = IUsageRow | IGenerator
 
 interface IUsageSection {
   title: string
@@ -693,11 +713,25 @@ interface ITitledContent {
   content: string
 }
 
-interface IUsageModel {
+interface BreadcrumbWithClickCommand {
+  label: string
+  command: string
+}
+interface BreadcrumbWithLabelProvider {
+  command: string
+}
+type BreadcrumbLabel = string | BreadcrumbWithLabelProvider | BreadcrumbWithClickCommand
+function isBreadcrumbWithClickCommand (crumb: BreadcrumbLabel): crumb is BreadcrumbWithClickCommand {
+  const breadcrumb = (crumb as BreadcrumbWithClickCommand)
+  return breadcrumb.label && breadcrumb.command ? true : false
+}
+
+export interface IUsageModel {
   breadcrumb?: string
   title?: string
-  command: string,
-  docs: string,
+  command?: string,
+  strict?: string,
+  docs?: string,
   header?: string,
   example?: string,
   detailedExample?: IDetailedExample | IDetailedExample[],
@@ -709,34 +743,81 @@ interface IUsageModel {
   commandSuffix?: string
   drilldownWithPip?: boolean
   preserveCase?: boolean // in breadcrumbs
-  parents?: string[]
+  parents?: BreadcrumbLabel[]
   related?: string[]
   available?: IUsageRow[]
   required?: IUsageRow[]
   optional?: IUsageRow[]
   oneof?: IUsageRow[]
+  nRowsInViewport?: number | boolean
 }
 
-export default class UsageError extends Error {
-  isUsageError: boolean
-  raw: string | Error | IUsageModel
-  extra: any
+interface MessageWithCode {
+  message?: string
+
+  // support a couple of variants of "code"
+  code?: number
+  exitCode?: number
+  statusCode?: number
+}
+
+interface MessageWithUsageModel extends MessageWithCode {
+  messageDom?: MessageLike
+
+  usage?: IUsageModel
+
+  // allow for arbitrary attachments to help with error reporting
+  extra?: any
+}
+
+function isMessageWithCode (msg: UsageLike): msg is MessageWithCode {
+  const message = msg as MessageWithCode
+  return message.message && (message.code || message.statusCode || message.exitCode) ? true : false
+}
+
+function isMessageWithUsageModel (msg: UsageLike): msg is MessageWithUsageModel {
+  const message = msg as MessageWithUsageModel
+  return message.usage ? true : false
+}
+
+type MessageLike = string | HTMLElement
+type UsageLike = MessageLike | MessageWithUsageModel //  | IUsageRowGenerator
+
+export class UsageError extends Error implements CodedError {
+  private formattedMessage: Promise<HTMLElement>
+  raw: UsageLike
+  private extra: IUsageOptions
   code: number
 
-  constructor (message, extra?, code: number = (message && (message.statusCode || message.code)) || 500) {
+  constructor (message: UsageLike, extra?: IUsageOptions) {
     super()
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor)
     }
-    this.isUsageError = true
     this.raw = message
     this.extra = extra
-    this.code = code
+    this.code = isMessageWithCode(message) ? message.statusCode || message.code || message.exitCode : 500
 
-    if (message.usage instanceof UsageError) {
-      message.usage = message.usage.raw
+    if (typeof message === 'string') {
+      this.message = message
+    } else {
+      this.formattedMessage = format(message, extra)
     }
-    this.message = format(message, extra)
+  }
+
+  getUsageModel (): IUsageModel {
+    return (this.raw as MessageWithUsageModel).usage
+  }
+
+  getFormattedMessage (): Promise<HTMLElement> {
+    return this.formattedMessage ? this.formattedMessage : Promise.resolve(span(this.message))
+  }
+
+  static isUsageError (error: Error): error is UsageError {
+    const err = error as UsageError
+    return err.formattedMessage && err.code ? true : false
   }
 }
+
+export default UsageError

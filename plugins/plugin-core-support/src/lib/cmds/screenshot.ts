@@ -182,7 +182,7 @@ export default async (commandTree, prequire) => {
 
       if (!selector) {
         // either we couldn't find the area to
-        return reject(new UsageError(usage))
+        return reject(new UsageError({ usage }))
       } else if (which === 'sidecar' && !isSidecarVisible()) {
         // sanity check the sidecar option
         return reject(new Error('You requested to screenshot the sidecar, but it is not currently open'))

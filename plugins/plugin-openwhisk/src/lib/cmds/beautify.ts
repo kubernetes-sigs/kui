@@ -34,11 +34,9 @@ export default async (commandTree, wsk) => {
 
     const selection = currentSelection()
     if (!selection) {
-      cli.oops(block, nextBlock)({ error: 'You have not yet selected an entity' })
-      return false
+      throw new Error('You have not yet selected an entity')
     } else if (!(selection && selection.exec && selection.exec.code)) {
-      cli.oops(block, nextBlock)('no action code selected')
-      return false
+      throw new Error('no action code selected')
     } else {
       // beautify
       const beautify = require('js-beautify').js_beautify
