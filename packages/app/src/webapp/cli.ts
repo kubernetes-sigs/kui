@@ -22,15 +22,18 @@ declare var hljs
 
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
+import UsageError from '../core/usage-error'
 import { inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 
 import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
 import * as historyModel from '../models/history'
 import { IReplResponse } from '../models/ReplResponse'
+import { CodedError, isCodedError } from '../models/errors'
 
 import { element, removeAllDomChildren } from './util/dom'
 import { prettyPrintTime } from './util/time'
+import { isHTML } from '../util/types'
 
 import Presentation from './views/presentation'
 import { formatListResult, formatMultiListResult, formatTableResult } from './views/table'
@@ -272,7 +275,7 @@ export const streamTo = (block: Element) => {
   // so we can scroll this into view as streaming output arrives
   const spinner = element('.repl-result-spinner', block)
 
-  let previousLine
+  let previousLine: HTMLElement
   return async (response, killLine = false) => {
     //
     debug('stream', response)
@@ -282,12 +285,12 @@ export const streamTo = (block: Element) => {
       previousLine = undefined
     }
 
-    if (response.isUsageError) {
-      previousLine = await response.message
+    if (UsageError.isUsageError(response)) {
+      previousLine = await response.getFormattedMessage()
       pre.appendChild(previousLine)
       pre.classList.add('oops')
-      pre.setAttribute('data-status-code', response.statusCode || response.code || 500)
-    } else if (response.nodeName) {
+      pre.setAttribute('data-status-code', response.code.toString())
+    } else if (isHTML(response)) {
       previousLine = response
       pre.appendChild(previousLine)
     } else {
@@ -463,7 +466,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
             rows.map(row => resultDom.appendChild(row))
           }
         }
-      } else if (response.nodeName) { // TODO is this the best way to detect response is a dom??
+      } else if (isHTML(response)) { // TODO is this the best way to detect response is a dom??
         // pre-formatted DOM element
         if (echo) {
           resultDom.appendChild(response);
@@ -990,9 +993,7 @@ export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExec
  * Handle command execution errors
  *
  */
-export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err) => {
-  const message = oopsMessage(err)
-  // const errString = err && err.toString()
+export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => async (err: Error | CodedError | UsageError) => {
   if (!block) return // we're not attached to a prompt right now
 
   if (!nextBlock) {
@@ -1009,36 +1010,43 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   const resultDom = isPopup() ? createPopupContentContainer(['error']) : block.querySelector('.repl-result')
   const oopsDom = document.createElement('div')
   oopsDom.className = 'oops'
+  resultDom.appendChild(oopsDom)
 
   if (err['hide']) {
     // we were instructed not to show any message
-  } else if (err.message && err.message.nodeName) {
+  } else if (UsageError.isUsageError(err)) {
+    oopsDom.appendChild(await err.getFormattedMessage())
+  /* } else if (isHTML(err.message)) {
     // err.message is a DOM
-    oopsDom.appendChild(err.message)
-  } else if (err.html) {
+    oopsDom.appendChild(err.message) */
+  /* } else if (err.html) {
     // pre-rendered HTML
     oopsDom.classList.add('oops-as-html')
-    oopsDom.appendChild(err.html)
-  } else if (err.message && err.message.then) {
+    oopsDom.appendChild(err.html) */
+  /* } else if (err.message && err.message.then) {
     err.message.then(message => {
       err.message = message
       oops(command, block, nextBlock)(err)
     })
-    return
-  } else if (err.nodeName) {
+    return */
+  } else if (isHTML(err)) {
     // err is a DOM
     oopsDom.appendChild(err)
   } else {
     // we'll go with our formatted message
     // wrap in a span so that drag text selection works; see shell issue #249
+    const message = oopsMessage(err)
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(message))
     oopsDom.appendChild(span)
   }
-  resultDom.appendChild(oopsDom)
 
   // add the http status code, if we have it (helps with testing)
-  oopsDom.setAttribute('data-status-code', err.statusCode || err.code || 0)
+  if (isCodedError(err)) {
+    oopsDom.setAttribute('data-status-code', (err.statusCode || err.code).toString())
+  } else {
+    oopsDom.setAttribute('data-status-code', '0')
+  }
 
   if (resultDom.hasAttribute('data-stream')) {
     // then the command has been streaming its output; copy any such output
@@ -1050,7 +1058,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   }
 
   if (isPopup()) {
-    renderPopupContent(command, err.content || resultDom, {}, err.modes)
+    renderPopupContent(command, err['content'] || resultDom, {}, err['modes'])
     popupListen(undefined, command)
   }
 

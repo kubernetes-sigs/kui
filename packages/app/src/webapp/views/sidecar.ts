@@ -769,7 +769,7 @@ export const show = (block?: HTMLElement, nextBlock?: HTMLElement) => {
     setVisible(sidecar)
     return true
   } else if (block && nextBlock) {
-    cli.oops(undefined, block, nextBlock)({ error: 'You have no entity to show' })
+    cli.oops(undefined, block, nextBlock)(new Error('You have no entity to show'))
   }
 }
 

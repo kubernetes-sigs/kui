@@ -25,7 +25,7 @@ const matcher = /[\n\r]([A-Z ]+:\s*[\n\r])/
 
 interface IOptions {
   drilldownWithPip?: boolean
-  stderr?: string | Element
+  stderr?: string | HTMLElement
 }
 class DefaultOptions implements IOptions {
   constructor () {
@@ -128,7 +128,7 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
         preserveCase: true
       }, options)
 
-      return new UsageError(options.stderr ? { message: options.stderr, usage: model } : model)
+      return new UsageError({ messageDom: options.stderr, usage: model })
     }
   }
 

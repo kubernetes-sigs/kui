@@ -22,7 +22,7 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
-import UsageError from '@kui-shell/core/core/usage-error'
+import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { ExecType } from '@kui-shell/core/core/command-tree'
@@ -491,12 +491,12 @@ const usage = command => ({
   ]
 })
 
-const prepareUsage = async (command: string) => {
+const prepareUsage = async (command: string): Promise<IUsageModel> => {
   debug('prepareUsage', command)
 
   try {
-    const usage = await repl.qexec(`${command} -h`, undefined, undefined, { failWithUsage: true })
-    return usage
+    const usage: UsageError = await repl.qexec(`${command} -h`, undefined, undefined, { failWithUsage: true })
+    return usage.getUsageModel()
   } catch (err) {
     console.error('Error preparing usage')
     return undefined

@@ -77,14 +77,13 @@ const usage = {
     command: 'set',
     strict: 'set',
     docs: 'Set the current font zoom level',
-    required: [
-      { name: 'level',
-        numeric: true,
-        docs: 'A zoom level',
-        allowed: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, -2 ],
-        defaultValue: 1
-      }
-    ]
+    required: [{
+      name: 'level',
+      numeric: true,
+      docs: 'A zoom level',
+      allowed: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, -2 ],
+      defaultValue: 1
+    }]
   }
 }
 

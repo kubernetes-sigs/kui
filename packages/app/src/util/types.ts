@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import UsageError from '../core/usage-error'
-
-export interface CodedError extends Error {
-  code?: number
-  statusCode?: number
-}
-
-export function isCodedError (err: Error): err is CodedError {
-  const error = err as CodedError
-  return UsageError.isUsageError(err) || error.code || error.statusCode ? true : false
+export function isHTML (message: object): message is HTMLElement {
+  return (message as HTMLElement).innerText ? true : false
 }

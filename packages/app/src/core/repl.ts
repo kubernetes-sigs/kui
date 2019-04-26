@@ -411,7 +411,7 @@ class InProcessExecutor implements IExecutor {
         // debug('usage', usage)
 
         if (execOptions && execOptions.failWithUsage && !usage) {
-          debug('caller needs usage model, but none exists for this command')
+          debug('caller needs usage model, but none exists for this command', evaluator)
           return false
         }
 
@@ -469,7 +469,7 @@ class InProcessExecutor implements IExecutor {
           if (execOptions && execOptions.failWithUsage) {
             return evaluator.options.usage
           } else {
-            return oops(command, block, nextBlock)(new UsageError(evaluator.options.usage))
+            return oops(command, block, nextBlock)(new UsageError({ usage: evaluator.options.usage }))
           }
         }
 
@@ -704,7 +704,7 @@ class InProcessExecutor implements IExecutor {
               }
             }
 
-            if (response.isUsageError) {
+            if (UsageError.isUsageError(response)) {
               throw response
             }
 
@@ -752,8 +752,15 @@ class InProcessExecutor implements IExecutor {
             }
           })
           .catch((err: CodedError) => {
-            // console.error('error in command execution', err)
-            if (isHeadless()) {
+            // how should we handle the error?
+            const returnIt = execOptions && execOptions.failWithUsage // return to caller; it'll take care of things from now
+            const rethrowIt = execOptions && execOptions.rethrowErrors // rethrow the exception
+            const reportIt = execOptions && execOptions.reportErrors // report it to the user via the repl
+
+            if (returnIt) {
+              debug('returning command execution error', err.code, err)
+              return err
+            } else if (isHeadless()) {
               debug('rethrowing error because we are in headless mode')
               throw err
             } else {
@@ -761,15 +768,7 @@ class InProcessExecutor implements IExecutor {
               const orig = err
               err = evaluator.error(command, err)
 
-              // how should we handle the error?
-              const returnIt = execOptions && execOptions.failWithUsage // return to caller; it'll take care of things from now
-              const rethrowIt = execOptions && execOptions.rethrowErrors // rethrow the exception
-              const reportIt = execOptions && execOptions.reportErrors // report it to the user via the repl
-
-              if (returnIt) {
-                debug('returning command execution error', err.code, err, orig)
-                return err
-              } else if (!nested && !rethrowIt) {
+              if (!nested && !rethrowIt) {
                 debug('reporting command execution error to user via repl')
                 console.error(err)
                 oops(command, block, nextBlock)(err)

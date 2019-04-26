@@ -173,15 +173,17 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
 
   return new UsageError({
     exitCode,
-    commandPrefix: command, // for onclick handlers, e.g. when clicking on "get", we want to exec "kubectl get"
-    commandSuffix: '-h', // we really want "kubectl get -h"
-    breadcrumb: verb || command,
-    parents: verb ? [command] : [],
-    header,
-    intro,
-    sections,
-    detailedExample,
-    example: usageSection && usageSection[0] && usageSection[0].content.replace(/\s+$/, '')
+    usage: {
+      commandPrefix: command, // for onclick handlers, e.g. when clicking on "get", we want to exec "kubectl get"
+      commandSuffix: '-h', // we really want "kubectl get -h"
+      breadcrumb: verb || command,
+      parents: verb ? [command] : [],
+      header,
+      intro,
+      sections,
+      detailedExample,
+      example: usageSection && usageSection[0] && usageSection[0].content.replace(/\s+$/, '')
+    }
   })
 }
 
