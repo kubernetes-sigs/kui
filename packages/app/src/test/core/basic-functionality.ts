@@ -20,6 +20,7 @@
  */
 
 import * as assert from 'assert'
+import { Application } from 'spectron'
 
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
@@ -41,13 +42,13 @@ const selectors = {
 }
 selectors.PROMPT = `${selectors.PROMPT_BLOCK} input`
 
-describe('Basic Functionality', function (this: ISuite) {
+common.localDescribe('Basic Functionality', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  const openWindow = app => app.client.getWindowCount()
+  const openWindow = (app: Application) => app.client.getWindowCount()
     .then(count => assert.strictEqual(count, 1)) // Verify that one window is open
-    .then(() => this.app.browserWindow.isVisible()) // Check if the window is visible
+    .then(() => app.browserWindow.isVisible()) // Check if the window is visible
     .then(isVisible => assert.strictEqual(isVisible, true)) // Verify the window is visible
     .then(() => app.client.getTitle()) // Get the window's title
     .then(title => assert.strictEqual(title, APP_TITLE)) // Verify the window's title

@@ -92,8 +92,8 @@ localDescribe('xterm copy paste', function (this: common.ISuite) {
       // open vi, so we have an xterm to receive a paste event
       const res = cli.do(`vi ${file.name}`, this.app)
 
-      // hmm.. for some reason we can't type keys right away
-      await sleep(1000)
+      // wait for vi to come up in alt buffer mode
+      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       await this.app.client.keys('i')
@@ -111,10 +111,14 @@ localDescribe('xterm copy paste', function (this: common.ISuite) {
         const txt = await this.app.client.getText(lastRow(1))
         return txt.length === 0
       })
+
       await this.app.client.keys(':wq')
       await this.app.client.keys(keys.ENTER)
 
       await res.then(cli.expectBlank)
+
+      await cli.do(`cat ${file.name}`, this.app)
+        .then(cli.expectOKWithString(text))
 
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), text)
