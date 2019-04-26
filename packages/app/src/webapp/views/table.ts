@@ -24,6 +24,82 @@ import drilldown from '../picture-in-picture'
 import { getActiveView } from './sidecar'
 import { Table, Row, Cell, Icon } from '../models/table'
 
+export const formatTable = (table: Table, resultDom: HTMLElement): void => {
+  const tableDom = document.createElement('div')
+  tableDom.classList.add('result-table')
+
+  let container
+  if (table.title) {
+    const tableOuterWrapper = document.createElement('div')
+    const tableOuter = document.createElement('div')
+    const titleOuter = document.createElement('div')
+    const titleInner = document.createElement('div')
+
+    tableOuterWrapper.classList.add('result-table-outer-wrapper')
+    tableOuter.appendChild(titleOuter)
+    titleOuter.appendChild(titleInner)
+    tableOuterWrapper.appendChild(tableOuter)
+    resultDom.appendChild(tableOuterWrapper)
+
+    if (table.flexWrap) {
+      const tableScroll = document.createElement('div')
+      tableScroll.classList.add('scrollable')
+      tableScroll.classList.add('scrollable-auto')
+      tableScroll.setAttribute('data-table-max-rows', typeof table.flexWrap === 'number' ? table.flexWrap.toString() : '8')
+      tableScroll.appendChild(tableDom)
+      tableOuter.appendChild(tableScroll)
+    } else {
+      tableOuter.appendChild(tableDom)
+    }
+
+    tableOuter.classList.add('result-table-outer')
+    titleOuter.classList.add('result-table-title-outer')
+    titleInner.classList.add('result-table-title')
+    titleInner.innerText = table.title
+
+    if (table.tableCSS) {
+      tableOuterWrapper.classList.add(table.tableCSS)
+    }
+
+    if (table.fontawesome) {
+      const awesomeWrapper = document.createElement('div')
+      const awesome = document.createElement('i')
+      awesomeWrapper.appendChild(awesome)
+      titleOuter.appendChild(awesomeWrapper)
+
+      awesome.className = table.fontawesome
+
+      if (table.fontawesomeCSS) {
+        awesomeWrapper.classList.add(table.fontawesomeCSS)
+        delete table.fontawesomeCSS
+      }
+
+      if (table.fontawesomeBalloon) {
+        awesomeWrapper.setAttribute('data-balloon', table.fontawesomeBalloon)
+        awesomeWrapper.setAttribute('data-balloon-pos', 'left')
+        delete table.fontawesomeBalloon
+      }
+
+      // otherwise, the header row renderer will pick this up
+      delete table.fontawesome
+    }
+
+    container = tableOuterWrapper
+  } else {
+    resultDom.appendChild(tableDom)
+    container = tableDom
+  }
+
+  container.classList.add('big-top-pad')
+
+  const rows = formatTableResult(table)
+  rows.map(row => tableDom.appendChild(row))
+
+  const rowSelection = tableDom.querySelector('.selected-row')
+  if (rowSelection) {
+    tableDom.classList.add('has-row-selection')
+  }
+}
 /**
  * Format one row in the table
  *
@@ -845,7 +921,7 @@ export const formatTableResult = (response: Table) => {
   // (don't sort lists of activations. i wish there were a better way to do this)
   const sort = (rows: Row[]): Row[] => {
     return rows.sort((a, b) =>
-      (a.prettyType || a.type).localeCompare(b.prettyType || b.type) ||
+      (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
       (a.packageName || '').localeCompare(b.packageName || '') ||
       a.name.localeCompare(b.name))
   }

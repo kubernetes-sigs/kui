@@ -27,6 +27,7 @@ import { withRetryOn404 } from '../util/retry'
 import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
 
 import { States, FinalState } from '../model/states'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 import { formatContextAttr, formatEntity } from '../view/formatEntity'
 
@@ -115,12 +116,12 @@ interface IContext {
  *
  */
 const allContexts = async (execOptions): Promise<Array<IContext>> => {
-  return (await repl.qexec(`k8s contexts`, undefined, undefined, execOptions))[0]
-    .slice(1)
-    .map(({ name, attributes }) => ({
-      name: attributes.find(({ key }) => key === 'NAME').value,
-      namespace: attributes.find(({ key }) => key === 'NAMESPACE').value
-    }))
+  const table: Table = await repl.qexec(`k8s contexts`, undefined, undefined, execOptions)
+
+  return table.body.map(({ attributes }) => ({
+    name: attributes.find(({ key }) => key === 'NAME').value,
+    namespace: attributes.find(({ key }) => key === 'NAMESPACE').value
+  }))
 }
 
 /**

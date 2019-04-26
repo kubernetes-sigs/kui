@@ -17,6 +17,7 @@
 const debug = require('debug')('k8s/formatters/formatTable')
 
 import repl = require('@kui-shell/core/core/repl')
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length, maxColumns) => {
@@ -148,7 +149,8 @@ interface IPair {
   key: string
   value: string
 }
-const split = (str: string, splits: Array<number>, headerCells?: Array<string>): Array<IPair> => {
+
+const split = (str: string, splits: number[], headerCells?: string[]): IPair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
@@ -161,13 +163,13 @@ const split = (str: string, splits: Array<number>, headerCells?: Array<string>):
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: Array<string>) => {
+export const preprocessTable = (raw: string[]) => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
     const header = table.substring(0, table.indexOf('\n'))
     const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
-    const columnStarts: Array<number> = []
+    const columnStarts: number[] = []
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) { // tslint:disable-line
       jdx = header.indexOf(headerCells[idx] + ' ', jdx)
       if (jdx < 0) {
@@ -186,7 +188,8 @@ export const preprocessTable = (raw: Array<string>) => {
   })
 }
 
-export const formatTable = (command: string, verb: string, entityType: string, options, tables: Array<any>): Array<any> => {
+export const formatTable = (command: string, verb: string, entityType: string, options, preTable: IPair[][]): Table => {
+  debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -218,65 +221,68 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     }
   }
 
-  return tables.map(lines => {
-    // maximum column count across all rows
-    const nameColumnIdx = Math.max(0, lines[0].findIndex(({ key }) => key === 'NAME'))
-    const namespaceColumnIdx = lines[0].findIndex(({ key }) => key === 'NAMESPACE')
-    const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
+  // maximum column count across all rows
+  const nameColumnIdx = Math.max(0, preTable[0].findIndex(({ key }) => key === 'NAME'))
+  const namespaceColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAMESPACE')
+  const maxColumns = preTable.reduce((max, columns) => Math.max(max, columns.length), 0)
 
-    return lines.map((columns, idx) => {
-      const name = columns[nameColumnIdx].value
-      const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
-      const nameForDisplay = columns[0].value
-      const nameForDrilldown = nameSplit[1] || name
-      const css = ''
-      const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT'
-        ? css : 'selected-entity'
+  const rowsResult = preTable.map((rows, idx): Row => {
+    const name = rows[nameColumnIdx].value
+    const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
+    const nameForDisplay = rows[0].value
+    const nameForDrilldown = nameSplit[1] || name
+    const css = ''
+    const firstColumnCSS = idx === 0 || rows[0].key !== 'CURRENT'
+      ? css : 'selected-entity'
 
-      const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
-      const rowKey = columns[0].key
-      const rowValue = columns[0].value
-      const rowCSS = [
-        (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
-        rowIsSelected ? 'selected-row' : ''
-      ]
+    const rowIsSelected = rows[0].key === 'CURRENT' && nameForDisplay === '*'
+    const rowKey = rows[0].key
+    const rowValue = rows[0].value
+    const rowCSS = [
+      (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
+      rowIsSelected ? 'selected-row' : ''
+    ]
 
-      // if there isn't a global namespace specifier, maybe there is a row namespace specifier
-      // we use the row specifier in preference to a global specifier -- is that right?
-      const ns = (namespaceColumnIdx >= 0 &&
-                  command !== 'helm' &&
-                  `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
+    // if there isn't a global namespace specifier, maybe there is a row namespace specifier
+    // we use the row specifier in preference to a global specifier -- is that right?
+    const ns = (namespaceColumnIdx >= 0 &&
+                command !== 'helm' &&
+                `-n ${repl.encodeComponent(rows[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
 
-      // idx === 0: don't click on header row
-      const onclick = idx === 0 ? false
-        : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`
-        : false
+    // idx === 0: don't click on header row
+    const onclick = idx === 0 ? false
+      : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`
+      : false
 
-      const header = idx === 0 ? 'header-cell' : ''
+    const header = idx === 0 ? 'header-cell' : ''
 
-      return {
-        key: columns[0].key,
-        name: nameForDisplay,
-        fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
-        onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
-        noSort: true,
-        css: firstColumnCSS,
-        rowCSS,
-        title: tables.length > 1 && idx === 0 && lines.length > 1 ? kindFromResourceName(lines[1][0].value) : entityType,
-        outerCSS: `${header} ${outerCSSForKey[columns[0].key] || ''}`,
-        attributes: columns.slice(1).map(({ key, value: column }, colIdx) => ({
-          key,
-          tag: idx > 0 && tagForKey[key],
-          onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
-          outerCSS: header + ' ' + outerCSSForKey[key] +
-            (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of columns.slice(1)
-          css: css
-            + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
-          value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
-        })).concat(fillTo(columns.length, maxColumns))
-      }
-    })
+    return {
+      key: rows[0].key,
+      name: nameForDisplay,
+      fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-network-wired',
+      onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
+      css: firstColumnCSS,
+      rowCSS,
+      outerCSS: `${header} ${outerCSSForKey[rows[0].key] || ''}`,
+      attributes: rows.slice(1).map(({ key, value: column }, colIdx) => ({
+        key,
+        tag: idx > 0 && tagForKey[key],
+        onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
+        outerCSS: header + ' ' + outerCSSForKey[key] +
+          (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
+        css: css
+          + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
+        value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
+      })).concat(fillTo(rows.length, maxColumns))
+    }
   })
+
+  return {
+    header: rowsResult[0],
+    body: rowsResult.slice(1),
+    noSort: true,
+    title: entityType
+  }
 }
 
 /** normalize the status badge by capitalization */
