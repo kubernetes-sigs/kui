@@ -28,7 +28,8 @@ const actionName6 = 'foo6'
 const actionName7 = 'foo7'
 const actionName8 = 'foo8'
 
-describe('Execute commands via paste', function (this: common.ISuite) {
+// electron 5 seems to require localDescribe on linux
+common.localDescribe('Execute commands via paste', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

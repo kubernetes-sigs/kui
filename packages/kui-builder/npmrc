@@ -1,4 +1,4 @@
 runtime=electron
-target=4.0.4
+target=5.0.0
 build_from_source=true
 disturl=https://atom.io/download/electron

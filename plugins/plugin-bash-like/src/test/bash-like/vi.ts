@@ -43,8 +43,8 @@ localDescribe('xterm vi 1', function (this: common.ISuite) {
       // wait for vi to come up
       await this.app.client.waitForExist(rows)
 
-      // hmm.. for some reason we can't type 'i' right away
-      await sleep(1000)
+      // wait for vi to come up in alt buffer mode
+      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       await this.app.client.keys('i')
@@ -65,6 +65,9 @@ localDescribe('xterm vi 1', function (this: common.ISuite) {
       await this.app.client.keys(keys.ENTER)
 
       await res.then(cli.expectBlank)
+
+      await cli.do(`cat ${file.name}`, this.app)
+        .then(cli.expectOKWithString('hello there'))
 
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), 'hello there')
@@ -87,8 +90,8 @@ localDescribe('xterm vi 2', function (this: common.ISuite) {
       // wait for vi to come up
       await this.app.client.waitForExist(rows)
 
-      // hmm.. for some reason we can't type keys right away
-      await sleep(1000)
+      // wait for vi to come up in alt buffer mode
+      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
 
       // :wq
       await this.app.client.keys(':wq')
