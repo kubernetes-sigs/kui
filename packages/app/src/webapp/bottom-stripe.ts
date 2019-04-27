@@ -19,11 +19,62 @@ const debug = Debug('webapp/picture-in-picture')
 
 import repl = require('../core/repl')
 import { removeAllDomChildren } from './util/dom'
-import { getSidecar, showCustom } from './views/sidecar'
+import { getSidecar, showCustom, ICustomSpec } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
+import { IExecOptions } from '../models/execOptions'
 
-// FIXME
-export type ISidecarMode = any
+/**
+ * Bottom stripe button specification
+ *
+ */
+export interface ISidecarMode {
+  mode: string
+  label?: string
+
+  // weak: if we have exclusively flush:right buttons, then snap them all left
+  // right: always place this button flush:right
+  // default: normal flex LTR flow rules
+  flush?: 'right' | 'weak'
+
+  selected?: boolean
+  selectionController?: any
+  visibleWhen?: any,
+  leaveBottomStripeAlone?: boolean
+
+  // icon label?
+  fontawesome?: string
+
+  // show label below the fontawesome?
+  labelBelow?: boolean
+
+  // tooltip text
+  balloon?: string
+  balloonLength?: string
+
+  data?: any
+
+  command?: any
+  direct?: any
+
+  execOptions?: IExecOptions,
+
+  defaultMode?: boolean
+
+  actAsButton?: boolean
+
+  radioButton?: boolean
+
+  echo?: boolean
+
+  noHistory?: boolean
+
+  replSilence?: boolean
+}
+
+interface IBottomStripOptions {
+  show?: string
+  preserveBackButton?: boolean
+}
 
 export const css = {
   buttons: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits'),
@@ -38,7 +89,7 @@ export const css = {
   hidden: 'hidden'
 }
 
-const _addModeButton = (bottomStripe, opts, entity, show) => {
+const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show: string) => {
   const { mode, label, flush, selected, selectionController, visibleWhen,
     leaveBottomStripeAlone = false,
     fontawesome, labelBelow, // show label below the fontawesome?
@@ -68,7 +119,7 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
     }
 
     if (selectionController) {
-      selectionController.on('change', selected => {
+      selectionController.on('change', (selected: boolean) => {
         const op = selected ? 'add' : 'remove'
         button.classList[op](css.selected)
       })
@@ -166,7 +217,7 @@ const _addModeButton = (bottomStripe, opts, entity, show) => {
             if (direct.isEntity || leaveBottomStripeAlone) {
               changeActiveButton()
             }
-            Promise.resolve(view).then(custom => showCustom(custom, { leaveBottomStripeAlone }))
+            Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(custom, { leaveBottomStripeAlone }))
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
               const button = bottomStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
@@ -228,7 +279,7 @@ interface IDirectViewControllerSpec {
  * Call a "direct" impl
  *
  */
-const callDirect = async (makeView: DirectViewController, entity, execOptions) => {
+const callDirect = async (makeView: DirectViewController, entity, execOptions: IExecOptions) => {
   if (typeof makeView === 'string') {
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
@@ -248,24 +299,24 @@ const callDirect = async (makeView: DirectViewController, entity, execOptions) =
   }
 }
 
-export const addModeButton = (mode, entity) => {
+export const addModeButton = (mode: ISidecarMode, entity) => {
   const bottomStripe = document.querySelector(css.modeContainer)
   return _addModeButton(bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (modesUnsorted = [], entity, options) => {
+export const addModeButtons = (modesUnsorted: ISidecarMode[] = [], entity, options?: IBottomStripOptions) => {
   // place flush:right items at the end
   const modes = modesUnsorted.sort((a, b) => {
-    if (a.flush !== b.flush) {
-      if (a.flush === 'right') {
-        return 1
-      } else if (b.flush === 'right') {
-        return -1
-      } else {
-        return a.flush - b.flush
-      }
-    } else {
+    if (a.flush === b.flush ||
+        a.flush === 'weak' && b.flush === 'right' ||
+        a.flush === 'right' && b.flush === 'weak') {
       return 0
+    } else {
+      if (a.flush === 'right' || a.flush === 'weak') {
+        return 1
+      } else {
+        return -1
+      }
     }
   })
 
@@ -277,7 +328,7 @@ export const addModeButtons = (modesUnsorted = [], entity, options) => {
   }
 
   // for going back
-  const addModeButtons = (modes, entity, show) => {
+  const addModeButtons = (modes: ISidecarMode[], entity, show: string) => {
     const bottomStripe = document.querySelector(css.modeContainer)
     removeAllDomChildren(bottomStripe)
 

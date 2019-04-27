@@ -40,6 +40,9 @@ export interface IExecOptions {
   reportErrors?: boolean
   preserveBackButton?: boolean
   type?: ExecType
+
+  exec?: 'pexec' | 'qexec'
+
   container?: Element
   raw?: boolean
   createOnly?: boolean

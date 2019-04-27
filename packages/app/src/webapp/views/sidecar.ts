@@ -264,7 +264,7 @@ export const renderField = async (container: HTMLElement, entity, field: string,
  *
  */
 type CustomContent = string | HTMLElement | Promise<HTMLElement>
-interface ICustomSpec {
+export interface ICustomSpec {
   type: string
   isEntity?: boolean
   name?: string
