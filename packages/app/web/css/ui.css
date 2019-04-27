@@ -2755,6 +2755,9 @@ sidecar .sidecar-header-icon {
 .log-lines .log-line .log-line-bar.is-waitTime, .legend-icon.is-waitTime {
     background: var(--color-ui-05);
 }
+body[kui-theme-style="dark"] .log-lines .log-line .log-line-bar.is-waitTime, body[kui-theme-style="dark"] .legend-icon.is-waitTime {
+    opacity: 0.5;
+}
 .log-lines .log-line .log-line-bar.is-initTime.is-success-true, .legend-icon.is-initTime {
     /*background: var(--color-support-04);*/
     background: repeating-linear-gradient(

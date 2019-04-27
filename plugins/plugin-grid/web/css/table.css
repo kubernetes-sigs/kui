@@ -420,7 +420,7 @@ body.subwindow .activation-viz-plugin {
 .activation-viz-plugin .grid {
     display: flex;
     flex-direction: column;
-    padding: 1em 1.5em 0 0;
+    padding: 1em 1.5em 0;
     /* want this, but it's not yet supported z-index: attr(data-grid-index number);*/
 }
 
