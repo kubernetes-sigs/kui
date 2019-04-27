@@ -25,7 +25,7 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
-import { ExecType } from '@kui-shell/core/core/command-tree'
+import { ExecType, IEvaluatorArgs } from '@kui-shell/core/core/command-tree'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -479,7 +479,7 @@ const confirmFileExistence = async (filepathAsGiven, command) => {
   }
 }
 
-const usage = command => ({
+const usage = (command: string): IUsageModel => ({
   title: command,
   command,
   strict: command,
@@ -516,7 +516,7 @@ const prepareUsage = async (command: string): Promise<IUsageModel> => {
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
-const executeLocally = (command: string) => (opts: repl.IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
+const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
   const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
   debug('exec', command)
 
@@ -830,7 +830,7 @@ const executeLocally = (command: string) => (opts: repl.IEvaluatorArgs) => new P
           mode: 'previous',
           direct: `${rawCommand} --previous`,
           execOptions: {
-            exec: 'pexec'
+            type: 'pexec'
           }
         })
 

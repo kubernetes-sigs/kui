@@ -667,7 +667,7 @@ interface IDetailedExample {
   docs: string
 }
 
-interface IUsageRow {
+export interface IUsageRow {
   commandPrefix?: string
   commandSuffix?: string
   command?: string
@@ -676,7 +676,34 @@ interface IUsageRow {
   noclick?: boolean
   synonyms?: string[]
   alias?: string
+
+  // yargs-parser-style narg; how many positional parameters are consumed?
+  narg?: number
+
+  // implicit entity ok for this attribute?
+  implicitOK?: Array<string>
+
+  // this attribute is not required if we match an implicit entity
+  notNeededIfImplicit?: boolean
+
+  // optional arg that consumes one of the required positional slots?
+  consumesPositional?: boolean
+
+  // positional optional?
+  positional?: boolean
+
+  // boolean form of string allowed?
+  booleanOK?: boolean
+
+  // assert true | false
+  boolean?: boolean
+
+  // assert numeric
   numeric?: boolean
+
+  // assert argument names a local file
+  file?: boolean
+
   aliases?: string[]
   hidden?: boolean
   advanced?: boolean
@@ -688,6 +715,11 @@ interface IUsageRow {
   partial?: boolean
   defaultValue?: any
   available?: IUsageRow[]
+
+  // allow users to provide a prefix substring of an `allowed` value
+  allowedIsPrefixMatch?: boolean
+
+  // enumeration of allowed values
   allowed?: Array<number | string | boolean>
 }
 
@@ -727,6 +759,21 @@ function isBreadcrumbWithClickCommand (crumb: BreadcrumbLabel): crumb is Breadcr
 }
 
 export interface IUsageModel {
+  // usage generator
+  fn?: (command: string) => IUsageModel
+
+  // don't offer --help
+  noHelp?: boolean
+
+  // don't offer -h help alias
+  noHelpAlias?: boolean
+
+  // only enforce the given options
+  onlyEnforceOptions?: boolean | string[]
+
+  // yargs-parser configuration to override the default settings
+  configuration?: { [key: string]: string }
+
   breadcrumb?: string
   title?: string
   command?: string,

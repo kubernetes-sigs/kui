@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
-import UsageError from './usage-error'
+import { UsageError, IUsageModel, IUsageRow } from './usage-error'
 
 import { isHeadless, inBrowser, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support'
@@ -51,31 +51,12 @@ export interface IExecutor {
 }
 
 /**
- * Evaluator args
- *
- */
-export interface IEvaluatorArgs {
-  block: HTMLElement | boolean
-  nextBlock: HTMLElement
-  parsedOptions: { [key: string]: string }
-  command: string
-  argv: Array<string>
-  argvNoOptions: Array<string>
-  execOptions: IExecOptions
-  createOutputStream: () => WritableStream
-}
-
-interface IEvaluatorImpl {
-  eval: (args: IEvaluatorArgs) => Promise<any>
-}
-
-/**
  * Apply the given evaluator to the given arguments
  *
  */
 export interface IEvaluator {
   name: string
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluatorImpl, args: IEvaluatorArgs)
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: commandTree.IEvaluator, args: commandTree.IEvaluatorArgs)
 }
 
 /**
@@ -85,7 +66,7 @@ export interface IEvaluator {
  */
 export class DirectEvaluator implements IEvaluator {
   name = 'DirectEvaluator'
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluatorImpl, args: IEvaluatorArgs) {
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: commandTree.IEvaluator, args: commandTree.IEvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
@@ -399,15 +380,17 @@ class InProcessExecutor implements IExecutor {
 
       // the Read part of REPL
       const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-      const evaluator = await (execOptions && execOptions.intentional ? commandTree.readIntention(argvNoOptions) : commandTree.read(argvNoOptions, false, false, execOptions))
-      // debug('evaluator', evaluator)
+      const evaluator: commandTree.CommandTreeResolution = await (
+        execOptions && execOptions.intentional
+          ? commandTree.readIntention(argvNoOptions)
+          : commandTree.read(argvNoOptions, false, false, execOptions))
 
-      if (evaluator && evaluator.eval) {
+      if (commandTree.isSuccessfulCommandResolution(evaluator)) {
         //
         // fetch the usage model for the command
         //
-        const _usage = evaluator.options && evaluator.options.usage
-        const usage = _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
+        const _usage: IUsageModel = evaluator.options && evaluator.options.usage
+        const usage: IUsageModel = _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
         // debug('usage', usage)
 
         if (execOptions && execOptions.failWithUsage && !usage) {
@@ -415,7 +398,7 @@ class InProcessExecutor implements IExecutor {
           return false
         }
 
-        const builtInOptions: Array<any> = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
+        const builtInOptions: Array<IUsageRow> = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
         if (!usage || !usage.noHelp) {
           // usage might tell us not to add help, or not to add the -h help alias
           const help = { name: '--help', hidden: true, boolean: true }
@@ -427,10 +410,10 @@ class InProcessExecutor implements IExecutor {
 
         // here, we encode some common aliases, and then overlay any flags from the command
         // narg: any flags that take more than one argument e.g. -p key value would have { narg: { p: 2 } }
-        const commandFlags = (evaluator.options && evaluator.options.flags) ||
+        const commandFlags: commandTree.YargsParserFlags = (evaluator.options && evaluator.options.flags) ||
           (evaluator.options && evaluator.options.synonymFor &&
            evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
-          {}
+          ({} as commandTree.YargsParserFlags)
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
         const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
 
@@ -479,7 +462,7 @@ class InProcessExecutor implements IExecutor {
         if (usage && usage.strict) { // strict: command wants *us* to enforce conformance
           // required and optional parameters
           const { strict: cmd, onlyEnforceOptions = false, required = [], oneof = [], optional: _optional = [] } = usage
-          const optLikeOneOfs: Array<any> = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
+          const optLikeOneOfs: IUsageRow[] = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
           const positionalConsumers = _optional.filter(({ name, alias, consumesPositional }) => consumesPositional && (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)]))
           const optional = builtInOptions.concat(_optional).concat(optLikeOneOfs)
           const positionalOptionals = optional.filter(({ positional }) => positional)
@@ -503,9 +486,10 @@ class InProcessExecutor implements IExecutor {
             }
 
             // should we enforce this option?
-            const enforceThisOption = !!(!onlyEnforceOptions ||
-                                         onlyEnforceOptions === true ||
-                                         onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`))
+            const enforceThisOption =
+              onlyEnforceOptions === undefined || typeof onlyEnforceOptions === 'boolean' ? true
+              : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
+
             if (!enforceThisOption) {
               // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)
               // nor did the spec said only to enforce options, but enforce them all (onlyEnforceOptions === true)
@@ -514,7 +498,7 @@ class InProcessExecutor implements IExecutor {
             }
 
             // find a matching declared optional arg
-            const match: any = optional.find(({ name, alias }) => {
+            const match = optional.find(({ name, alias }) => {
               return stripTrailer(alias) === `-${optionalArg}` ||
                 stripTrailer(name) === `-${optionalArg}` ||
                 stripTrailer(name) === `--${optionalArg}`
@@ -579,7 +563,7 @@ class InProcessExecutor implements IExecutor {
             if (! (nActualArgs >= nRequiredArgs &&
                    nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
-              const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK)
+              const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
               const selection = currentSelection()
 
               let nActualArgsWithImplicit = nActualArgs

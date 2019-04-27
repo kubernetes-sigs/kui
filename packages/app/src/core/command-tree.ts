@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ const debug = Debug('core/command-tree')
 debug('loading')
 
 import eventBus from './events'
-import { UsageError, IUsageModel } from './usage-error'
+import { UsageError, IUsageModel, IUsageRow } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { IExecOptions } from '../models/execOptions'
@@ -30,10 +30,15 @@ import { IExecOptions } from '../models/execOptions'
  */
 const root = () => undefined // this will trigger a re-parse using Context.current as the path prefix
 const interior = (x?: string[], y?: number, z?: number) => undefined // this will trigger a re-parse using Context.current as the path prefix
-const newTree = () => ({ $: root(), key: '/', route: '/', children: {} })
-const model = newTree() // this is the model of registered listeners, a tree
-const intentions = newTree() // this is the model of registered intentional listeners
-let disambiguator = {} // map from command name to disambiguations
+const newTree = (): ICommand => ({ $: root(), key: '/', route: '/', children: {}, parent: undefined })
+const model: ICommand = newTree() // this is the model of registered listeners, a tree
+const intentions: ICommand = newTree() // this is the model of registered intentional listeners
+
+type CommandKey = string
+type CommandKeyMap = { [key: string]: ICommand } // we can't use CommandKey here; yay tsc; TS1336
+
+type Disambiguator = { [key: string]: ICommandBase[] } // we can't use CommandKey here; yay tsc; TS1336
+let disambiguator: Disambiguator = {} // map from command name to disambiguations
 
 /** a catch all handler is presented with an offer to handle a given argv */
 type CatchAllOffer = (argv: Array<string>) => boolean
@@ -49,15 +54,15 @@ export const catchalls: Array<ICatchAllHandler> = [] // handlers for command not
 debug('finished loading modules')
 
 // for plugins.js
-export const startScan = () => {
+export const startScan = (): Disambiguator => {
   const state = disambiguator
   disambiguator = {}
   debug('startScan', disambiguator)
   return state
 }
-export const endScan = state => {
+export const endScan = (state: Disambiguator): Disambiguator => {
   debug('finishing up')
-  const map = {}
+  const map: Disambiguator = {}
   for (let command in disambiguator) {
     map[command] = disambiguator[command].map(({ route, options }) => ({
       route, plugin: options && options.plugin
@@ -107,7 +112,7 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
  * Navigate the given tree model, following the given path as [n1,n2,n3]
  *
  */
-const treeMatch = (model, path: Array<string>, readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
+const treeMatch = (model: ICommand, path: Array<string>, readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
   let parent = model
   let cur
 
@@ -161,22 +166,62 @@ const match = (path: string[], readonly: boolean): ICommand => {
   return treeMatch(model, path, readonly)
 }
 
-interface ICommandBase {
+/**
+ * Evaluator args
+ *
+ */
+export interface IEvaluatorArgs {
+  block: HTMLElement | boolean
+  nextBlock: HTMLElement
+  parsedOptions: { [key: string]: string }
+  command: string
+  argv: Array<string>
+  argvNoOptions: Array<string>
+  execOptions: IExecOptions
+  createOutputStream: () => WritableStream
+}
+
+/** base command handler */
+export type CommandHandler = (args: IEvaluatorArgs) => Promise<any>
+
+/**
+ * Evaluator
+ *
+ */
+export interface IEvaluator {
+  eval: CommandHandler
+}
+
+export interface ICommandBase {
   route: string
   options?: ICommandOptions
 }
 
-interface ICommand extends ICommandBase {
-  $: Function
-  key: string
+export interface ICommand extends ICommandBase {
+  $: CommandHandler
+  key: CommandKey
   parent: ICommand
-  children?: ICommand[]
-  synonyms?: { [key: string]: ICommand }
+  children?: CommandKeyMap
+  synonyms?: CommandKeyMap
 }
 
-interface ICommandOptions {
-  listen?: any // FIXME
+export interface ICapabilityRequirements {
+  needsUI?: boolean
+  requiresLocal?: boolean
+  noAuthOk?: boolean
+  fullscreen?: boolean
+}
+
+export type YargsParserFlags = { [key in 'boolean' | 'alias']: string[] }
+
+export interface ICommandOptions extends ICapabilityRequirements {
+  // explicitly provided usage model?
   usage?: IUsageModel
+
+  // yargs-parser flags
+  flags?: YargsParserFlags
+
+  listen?: any // FIXME
   docs?: string
   synonymFor?: ICommand
   hide?: boolean
@@ -251,7 +296,7 @@ export const subtreeSynonym = (route: string, master: ICommand, options = master
  * Register a command handler on the given route
  *
  */
-const _listen = (model, route: string, handler, options: ICommandOptions = new DefaultCommandOptions()) => {
+const _listen = (model: ICommand, route: string, handler: CommandHandler, options: ICommandOptions = new DefaultCommandOptions()) => {
   const path = route.split('/').splice(1)
   const leaf = treeMatch(model, path, false, options.hide)
 
@@ -293,14 +338,14 @@ const _listen = (model, route: string, handler, options: ICommandOptions = new D
     return leaf
   }
 }
-export const listen = (route: string, handler, options: ICommandOptions) => _listen(model, route, handler, options)
+export const listen = (route: string, handler: CommandHandler, options: ICommandOptions) => _listen(model, route, handler, options)
 
 /**
  * Register a command handler on the given route, as a synonym of the given master handler
  *    master is the return value of `listen`
  *
  */
-export const synonym = (route: string, handler, master: ICommand, options = master.options) => {
+export const synonym = (route: string, handler: CommandHandler, master: ICommand, options = master.options) => {
   if (route !== master.route) {
     // don't alias to yourself!
     const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
@@ -315,7 +360,7 @@ export const synonym = (route: string, handler, master: ICommand, options = mast
  * Register an intentional action
  *
  */
-export const intention = (route: string, handler, options: ICommandOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
+export const intention = (route: string, handler: CommandHandler, options: ICommandOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
 
 /**
  * "top-level", meaning the user hit enter in the CLI,
@@ -341,7 +386,20 @@ export interface IEvent {
   isDrilldown?: boolean
 }
 
-const withEvents = (evaluator, leaf: ICommandBase, partialMatches?) => {
+interface ICommandHandlerWithEvents extends IEvaluator {
+  subtree: ICommandBase
+  route: string
+  options: ICommandOptions
+  success: (args: { type: ExecType, command: string, isDrilldown: boolean, parsedOptions: { [ key: string ]: any } }) => void
+  error: (command: string, err: CodedError) => CodedError
+}
+
+/**
+ *
+ * @return a command handler with success and failure event handlers
+ *
+ */
+const withEvents = (evaluator: CommandHandler, leaf: ICommandBase, partialMatches?: ICommand[]): ICommandHandlerWithEvents => {
   // let the world know we have resolved a command, and are about to evaluate it
   const event: IEvent = {
     // context: currentContext()
@@ -379,7 +437,7 @@ const withEvents = (evaluator, leaf: ICommandBase, partialMatches?) => {
 
       if (leaf && eventBus) eventBus.emit('/command/resolved', event)
     },
-    error: (command: string, err: CodedError) => {
+    error: (command: string, err: CodedError): CodedError => {
       if (err.code === 127) {
         // command not found
         const suggestions = suggestPartialMatches(partialMatches, true, err['hide']) // true: don't throw an exception
@@ -399,7 +457,7 @@ const withEvents = (evaluator, leaf: ICommandBase, partialMatches?) => {
  * Parse the given argv, and return an evaluator or throw an Error
  *
  */
-const _read = async (model, argv: string[], contextRetry: string[], originalArgv: string[]) => {
+const _read = async (model: ICommand, argv: string[], contextRetry: string[], originalArgv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
   let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
   let evaluator = leaf && leaf.$
   debug('read', argv)
@@ -506,7 +564,7 @@ export const setDefaultCommandContext = (commandContext: Array<string>) => {
 }
 
 /** read, with retries based on the current context */
-const internalRead = (model, argv: string[]) => {
+const internalRead = (model: ICommand, argv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
   if (argv[0] === 'kui') argv.shift()
   return _read(model, argv, Context.current, argv)
 }
@@ -602,7 +660,7 @@ const commandNotFoundMessageWithPartialMatches = 'The following commands are par
  * We could not find a registered command handler
  *
  */
-const commandNotFound = async (argv: string[], partialMatches?, execOptions?: IExecOptions) => {
+const commandNotFound = async (argv: string[], partialMatches?: ICommand[], execOptions?: IExecOptions) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
@@ -626,15 +684,15 @@ const commandNotFound = async (argv: string[], partialMatches?, execOptions?: IE
   return suggestPartialMatches(partialMatches)
 }
 
-export const suggestPartialMatches = (partialMatches?, noThrow = false, hide = false) => {
+export const suggestPartialMatches = (partialMatches?: ICommand[], noThrow = false, hide = false): CodedError => {
   debug('suggestPartialMatches', partialMatches)
 
   // filter out any partial matches without usage info
   const availablePartials = (partialMatches || []).filter(({ options }) => options.usage)
   const anyPartials = availablePartials.length > 0
 
-  const error = anyPartials ? formatPartialMatches(availablePartials) : new Error(commandNotFoundMessage)
-  error['code'] = 404
+  const error: CodedError = anyPartials ? formatPartialMatches(availablePartials) : new Error(commandNotFoundMessage)
+  error.code = 404
 
   // to allow for programmatic use of the partial matches, e.g. for tab completion
   if (anyPartials) {
@@ -661,7 +719,7 @@ export const suggestPartialMatches = (partialMatches?, noThrow = false, hide = f
  * command completions to what they typed.
  *
  */
-const formatPartialMatches = partialMatches => {
+const formatPartialMatches = (partialMatches: ICommand[]): UsageError => {
   return new UsageError({
     message: commandNotFoundMessage,
     usage: {
@@ -677,7 +735,7 @@ const formatPartialMatches = partialMatches => {
  * for some command at this root. Return all such prefix matches.
  *
  */
-const findPartialMatchesAt = (subtree, partial) => {
+const findPartialMatchesAt = (subtree: ICommand, partial: string): ICommand[] => {
   debug('scanning for partial matches', partial, subtree)
 
   const matches = []
@@ -718,8 +776,14 @@ const removeDuplicates = async (arr: Array<IRoute>): Promise<Array<IRoute>> => {
     }, { M: {}, A: [] })['A']
 }
 
+export type CommandTreeResolution = boolean | ICommandHandlerWithEvents | CodedError
+
+export function isSuccessfulCommandResolution (resolution: CommandTreeResolution): resolution is ICommandHandlerWithEvents {
+  return (resolution as ICommandHandlerWithEvents).eval !== undefined
+}
+
 /** here, we will use implicit context resolutions */
-export const read = async (argv: string[], noRetry = false, noSubtreeRetry = false, execOptions: IExecOptions) => {
+export const read = async (argv: string[], noRetry = false, noSubtreeRetry = false, execOptions: IExecOptions): Promise<CommandTreeResolution> => {
   let cmd = (await disambiguate(argv))
 
   if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
@@ -788,7 +852,7 @@ export const read = async (argv: string[], noRetry = false, noSubtreeRetry = fal
   }
 }
 /** here, we don't use any implicit context resolutions */
-export const readIntention = async (argv: string[], noRetry = false) => {
+export const readIntention = async (argv: string[], noRetry = false): Promise<CommandTreeResolution> => {
   const cmd = _read(intentions, argv, undefined, argv)
 
   if (!cmd) {
@@ -805,28 +869,18 @@ export const readIntention = async (argv: string[], noRetry = false) => {
   }
 }
 
-const filter = (M, includeFn) => {
-  const filtered = []
-  for (let key in M) {
-    if (includeFn(M[key])) {
-      filtered.push(M[key])
-    }
-  }
-  return filtered
-}
-
 /** command filters */
-const isAnAlias = command => command.options && command.options.synonymFor
-const isDirFilter = command => command.children && !isAnAlias(command)
-const isFileFilter = command => command.$ && !isAnAlias(command)
+const isAnAlias = (command: ICommand): boolean => command.options && command.options.synonymFor ? true : false
+const isDirFilter = (command: ICommand): boolean => command.children && !isAnAlias(command) ? true : false
+const isFileFilter = (command: ICommand): boolean => command.$ && !isAnAlias(command)
 
 class CommandModel {
   /**
    * Call the given callback function `fn` for each node in the command tree
    *
    */
-  forEachNode (fn) {
-    const iter = root => {
+  forEachNode (fn: (command: ICommand) => void) {
+    const iter = (root: ICommand) => {
       if (root) {
         fn(root)
         if (root.children) {
@@ -857,10 +911,10 @@ export const getModel = () => new CommandModel()
  * To help with remembering from which plugin calls to listen emanate
  *
  */
-export const proxy = plugin => ({
-  catchall: (offer: CatchAllOffer, handler, prio = 0, options: ICommandOptions = new DefaultCommandOptions()) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
-  listen: (route: string, handler, options: ICommandOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
-  intention: (route: string, handler, options: ICommandOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
+export const proxy = (plugin: string) => ({
+  catchall: (offer: CatchAllOffer, handler: CommandHandler, prio = 0, options: ICommandOptions = new DefaultCommandOptions()) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
+  listen: (route: string, handler: CommandHandler, options: ICommandOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
+  intention: (route: string, handler: CommandHandler, options: ICommandOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
   synonym,
   subtree,
   subtreeSynonym,
