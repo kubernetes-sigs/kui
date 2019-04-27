@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// TODO
+export type KuiPlugin = any
+
 export type PluginRequire = (route: string, options?: Object) => Promise<any>
 
 export type PluginRegistration = (commandTree, prequire: PluginRequire, options?) => Promise<any>

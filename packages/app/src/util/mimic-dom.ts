@@ -20,6 +20,119 @@ debug('loading')
 
 import Store from '../main/store'
 
+/*export interface ElementMimic {
+  _isFakeDom: boolean
+  cells?: ElementMimic[]
+  children: ElementMimic[]
+  className: string
+  innerText: string
+  hasStyle: (style: string, desiredValue?: number | string) => boolean | string
+  nodeType: string
+  rows?: ElementMimic[]
+  style: { [key: string]: string }
+  recursiveInnerTextLength: () => number
+  }*/
+
+class ClassList {
+  private classList: string[] = []
+
+  add (_: string) {
+    return this.classList.push(_)
+  }
+
+  contains (_: string): boolean {
+    return this.classList.indexOf(_) >= 0
+  }
+
+  remove (_: string) {
+    const idx = this.classList.findIndex((x: string) => x === _)
+    if (idx >= 0) {
+      this.classList.splice(idx, 1)
+    }
+  }
+}
+
+/** generic clone */
+function clone<T> (instance: T): T {
+  const copy = new (instance.constructor as { new (): T })()
+  Object.assign(copy, instance)
+  return copy
+}
+
+export class ElementMimic {
+  _isFakeDom = true
+  value = ''
+  innerText = ''
+  innerHTML = ''
+  className = ''
+  classList = new ClassList()
+  nodeType = ''
+  style: { [key: string]: string } = {}
+  children: ElementMimic[] = []
+  cells: ElementMimic[] = []
+  rows: ElementMimic[] = []
+
+  private _attrs: { [key: string]: string } = {}
+
+  focus () {
+    /* empty ok */
+  }
+
+  appendChild (c: ElementMimic) {
+    return this.children.push(c)
+  }
+
+  getAttribute (k: string): string {
+    return this._attrs[k] || ''
+  }
+
+  setAttribute (k: string, v: string): string {
+    this._attrs[k] = v
+    return v
+  }
+
+  removeAttribute (k: string): string {
+    const attr = this._attrs[k]
+    delete this._attrs[k]
+    return attr
+  }
+
+  cloneNode (): ElementMimic {
+    return clone(this)
+  }
+
+  querySelectorAll (selector: string): ElementMimic[] {
+    return []
+  }
+
+  querySelector (sel: string): ElementMimic {
+    return this[sel] || new ElementMimic()
+  }
+
+  addEventListener () {
+    return true
+  }
+
+  hasStyle (style: string, desiredValue?: number | string): boolean | string {
+    const actualValue = this.style && this.style[style]
+    // intentional double equals, so that 500=='500'
+    if (desiredValue) return desiredValue == actualValue // tslint:disable-line
+    else return actualValue
+  }
+
+  recursiveInnerTextLength (): number {
+    return this.innerText.length + this.children.reduce((sum: number, child) => sum + child.recursiveInnerTextLength(), 0)
+  }
+
+  static isFakeDom (dom: object): dom is ElementMimic {
+    return (dom as ElementMimic)._isFakeDom
+  }
+}
+
+class ElementMimic2 extends ElementMimic {
+  input: ElementMimic = new ElementMimic()
+}
+
 /**
  * Create structures to mimic having a head
  *
@@ -44,58 +157,12 @@ export default function () {
 
   global['window'].addEventListener = () => true
 
-  const dom0 = () => {
-    const obj = {
-      _isFakeDom: true,
-      value: '',
-      innerText: '',
-      innerHTML: '',
-      className: '',
-      _classList: [],
-      classList: {
-        add: (_: string) => obj._classList.push(_),
-        contains: (_: string): boolean => obj._classList.indexOf(_) >= 0,
-        remove: (_: string) => {
-          const idx = obj._classList.findIndex((x: string) => x === _)
-          if (idx >= 0) {
-            obj._classList.splice(idx, 1)
-          }
-        }
-      },
-      nodeType: '',
-      attrs: {},
-      style: {},
-      children: [],
-      focus: () => { /* empty ok */ },
-      appendChild: c => obj.children.push(c),
-      getAttribute: (k: string) => obj.attrs[k] || '',
-      setAttribute: (k: string, v: string) => { obj.attrs[k] = v; return v },
-      removeAttribute: (k: string) => delete obj.attrs[k],
-      cloneNode: () => Object.assign({}, obj),
-      querySelectorAll: (selector: string) => [],
-      querySelector: (sel: string) => {
-        return obj[sel] || dom0()
-      },
-      addEventListener: () => true,
-      hasStyle: (style: string, desiredValue) => {
-        const actualValue = obj.style && obj.style[style]
-        // intentional double equals, so that 500=='500'
-        if (desiredValue) return desiredValue == actualValue // tslint:disable-line
-        else return actualValue
-      },
-      recursiveInnerTextLength: () => {
-        return obj.innerText.length + obj.children.reduce((sum: number, child) => sum + child.recursiveInnerTextLength(), 0)
-      }
-    }
-
-    return obj
+  const dom0 = (): ElementMimic => {
+    return new ElementMimic()
   }
-  const dom = () => Object.assign(dom0(), {
-    input: dom0()
-  })
-  const block = () => Object.assign(dom(), {
-    '.repl-result': dom0()
-  })
+  const dom = (): ElementMimic2 => {
+    return new ElementMimic2()
+  }
 
   const document = {
     body: dom0(),

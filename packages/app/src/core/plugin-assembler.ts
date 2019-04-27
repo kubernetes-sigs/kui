@@ -136,8 +136,8 @@ interface IFile {
  * Find js files in root/modules
  *
  */
-const scanModules = (root: string): Array<IFile> => {
-  const { plugins: modules = {} } = plugins.scanForModules(root, true) // eslint-disable-line
+const scanModules = async (root: string): Promise<Array<IFile>> => {
+  const { plugins: modules = {} } = await plugins.scanForModules(root, true) // eslint-disable-line
 
   const files = []
 
@@ -321,7 +321,7 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
   if (!externalOnly) {
     // uglify
     await Promise.all([
-      ...uglify({ flat: scanModules(pluginRoot) })
+      ...uglify({ flat: await scanModules(pluginRoot) })
     ])
   }
 

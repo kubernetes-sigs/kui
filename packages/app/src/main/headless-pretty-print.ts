@@ -20,6 +20,8 @@ debug('loading')
 import { fstatSync } from 'fs'
 import * as colors from 'colors/safe'
 
+import { ElementMimic } from '../util/mimic-dom'
+
 const log = console.log
 const error = console.error
 
@@ -76,7 +78,7 @@ class DefaultPrettyOptions implements IPrettyOptions {
   }
 }
 let firstPrettyDom = true // so we can avoid initial newlines for headers
-const prettyDom = (dom, logger = log, stream = process.stdout, _color, { columnWidths, extraColor: _extraColor }: IPrettyOptions = new DefaultPrettyOptions()) => {
+const prettyDom = (dom: ElementMimic, logger = log, stream = process.stdout, _color: string, { columnWidths, extraColor: _extraColor }: IPrettyOptions = new DefaultPrettyOptions()) => {
   debug('prettyDom')
 
   const isHeader = dom.nodeType === 'h1' || dom.nodeType === 'h2' || dom.nodeType === 'h3' || dom.nodeType === 'h4'
@@ -94,7 +96,7 @@ const prettyDom = (dom, logger = log, stream = process.stdout, _color, { columnW
     : dom.hasStyle('fontWeight', 500) ? 'green'
     : dom.hasStyle('fontSize', '0.875em') ? 'gray'
     : _extraColor || 'reset'
-  const colorCode = dom.hasStyle('color') || _color
+  const colorCode = (dom.hasStyle('color') as string) || _color
   const color = colorMap[colorCode] || colorCode
   // debug('colors', isHeader, colorCode, color, extraColor)
 
@@ -208,7 +210,7 @@ const pn = (actionName: string, packageName?: string) => colors.dim(`${packageNa
  * Render a date; if it is from today, show just the time
  *
  */
-const prettyDate = millis => {
+const prettyDate = (millis: number): string => {
   const date = new Date(millis)
   const now = new Date()
   if (date.getUTCFullYear() === now.getUTCFullYear() &&
@@ -282,7 +284,7 @@ export const print = (msg, logger = log, stream = process.stdout, color = 'reset
       } else if (typeof msg === 'object') {
         debug('printing some sort of javascript object')
 
-        if (msg._isFakeDom) {
+        if (ElementMimic.isFakeDom(msg)) {
           // msg is a DOM facade
           debug('printing fake dom')
 

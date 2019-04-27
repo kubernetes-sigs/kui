@@ -19,7 +19,7 @@ const debug = Debug('core/plugins')
 debug('loading')
 
 import * as commandTree from './command-tree'
-import { PluginRegistration } from '../models/plugin'
+import { KuiPlugin, PluginRegistration } from '../models/plugin'
 
 debug('modules loaded')
 
@@ -32,7 +32,7 @@ const topological = {} // topological sort of the plugins (order they resolved)
 const overrides = {} // some plugins override the behavior of others
 const usage = {} // as we scan for plugins, we'll memoize their usage models
 const flat = []
-const registrar = {} // this is the registrar for plugins
+const registrar: { [key: string]: KuiPlugin } = {} // this is the registrar for plugins
 
 let prescanned
 
@@ -49,18 +49,18 @@ let prescan
  *
  */
 type Filter = (path: string) => boolean
-export const scanForModules = (dir: string, quiet = false, filter: Filter = _ => true) => {
+export const scanForModules = async (dir: string, quiet = false, filter: Filter = _ => true) => {
   debug('scanForModules %s', dir)
 
-  const fs = require('fs')
-  const path = require('path')
-  const colors = require('colors/safe')
+  const fs = await import('fs')
+  const path = await import('path')
+  const colors = await import('colors/safe')
 
   try {
     const plugins = {}
     const preloads = {}
 
-    const doScan = ({ modules, moduleDir }) => {
+    const doScan = ({ modules, moduleDir }: { modules: string[], moduleDir: string }) => {
       modules.forEach(module => {
         const modulePath = path.join(moduleDir, module)
 
@@ -130,7 +130,7 @@ export const scanForModules = (dir: string, quiet = false, filter: Filter = _ =>
  * Allow one plugin to require another
  *
  */
-const _prequire = module => {
+const _prequire = (module: string): KuiPlugin => {
   debug('_prequire %s', module)
 
   if (registrar.hasOwnProperty(module)) return registrar[module]
@@ -159,7 +159,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
   const deps = {}
 
   // for assembly mode, override prequire
-  const preq = module => {
+  const preq = (module: string): KuiPlugin => {
     deps[module] = true
     return _prequire(module)
   }
@@ -234,7 +234,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
  * @param lastError so we don't repeat making the same mistake 100 times!
  *
  */
-const topologicalSortForScan = async (pluginPaths, iter: number, lastError?: Error, lastErrorAlreadyEmitted?: boolean) => {
+const topologicalSortForScan = async (pluginPaths: string[], iter: number, lastError?: Error, lastErrorAlreadyEmitted?: boolean) => {
   debug('topologicalSortForScan', iter)
 
   if (iter >= 100) {
@@ -311,15 +311,15 @@ const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}, quiet = fals
   debug('pluginRootAbsolute', pluginRootAbsolute)
 
   // this scan looks for plugins offered by the client
-  const clientHosted = scanForModules(opts.pluginRootAbsolute || pluginRootAbsolute)
+  const clientHosted = await scanForModules(opts.pluginRootAbsolute || pluginRootAbsolute)
 
   // this scan looks for plugins npm install'd by the client
   let clientRequired
   try {
     const secondary = path.dirname(path.dirname(require.resolve('@kui-shell/core/package.json')))
-    clientRequired = scanForModules(secondary,
-                                    false,
-                                    (filename: string) => !!filename.match(/^plugin-/))
+    clientRequired = await scanForModules(secondary,
+                                          false,
+                                          (filename: string) => !!filename.match(/^plugin-/))
   } catch (err) {
     if (err.code !== 'ENOENT') {
       console.error('error scanning for client-required plugins', err)
@@ -416,7 +416,7 @@ const makeResolver = prescan => {
   const isResolved = {}
 
   /** resolve one given plugin */
-  const resolveOne = async plugin => {
+  const resolveOne = async (plugin: string): Promise<KuiPlugin> => {
     debug('resolveOne', plugin)
 
     try {
