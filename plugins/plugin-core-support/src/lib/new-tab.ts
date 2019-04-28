@@ -29,7 +29,7 @@ import { element } from '@kui-shell/core/webapp/util/dom'
 import { listen, getCurrentPrompt, setStatus } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
-import { IEvent, ExecType } from '@kui-shell/core/core/command-tree'
+import { IEvent, ExecType } from '@kui-shell/core/models/command'
 
 const usage = {
   strict: 'switch',

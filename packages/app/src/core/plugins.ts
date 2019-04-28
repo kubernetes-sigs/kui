@@ -20,6 +20,7 @@ debug('loading')
 
 import * as commandTree from './command-tree'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
+import { Disambiguator, ICatchAllHandler, ICommandOptions } from '../models/command'
 
 debug('modules loaded')
 
@@ -34,7 +35,7 @@ const usage = {} // as we scan for plugins, we'll memoize their usage models
 const flat = []
 const registrar: { [key: string]: KuiPlugin } = {} // this is the registrar for plugins
 
-let prescanned
+let prescanned: IPrescanModel
 
 debug('globals initialized')
 
@@ -42,7 +43,7 @@ debug('globals initialized')
  * when in live (not scanning) mode, this will store the result of a
  * previous plugin scan
  */
-let prescan
+let prescan: IPrescanModel
 
 /**
  * Scan for plugins incorporated via app/plugins/package.json
@@ -141,8 +142,8 @@ const _prequire = (module: string): KuiPlugin => {
  * Turn a map {k1:true, k2:true} into an array of the keys
  *
  */
-const toArray = M => {
-  const A = []
+function toArray<T> (M: { [key: string]: T }): string[] {
+  const A: string[] = []
   for (let key in M) {
     A.push(key)
   }
@@ -156,7 +157,7 @@ const toArray = M => {
 const loadPlugin = async (route: string, pluginPath: string) => {
   debug('loadPlugin %s', route)
 
-  const deps = {}
+  const deps: { [key: string]: boolean } = {}
 
   // for assembly mode, override prequire
   const preq = (module: string): KuiPlugin => {
@@ -300,7 +301,7 @@ const topologicalSortForScan = async (pluginPaths: string[], iter: number, lastE
  * Look for plugins by scanning the local filesystem
  *
  */
-interface ILocalOptions {
+interface ILocalOptions extends IPrescanOptions {
   pluginRootAbsolute?: string
 }
 const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}, quiet = false) => {
@@ -346,7 +347,7 @@ export const init = async () => {
   debug('init')
 
   // global
-  prescan = await loadPrescan(pluginRoot)
+  prescan = (await loadPrescan(pluginRoot)) as IPrescanModel
 
   // disabled: userData plugins
   /* .then(builtins => loadPrescan(path.join(app.getPath('userData'), 'plugins'))
@@ -366,9 +367,9 @@ export const init = async () => {
  * Load the prescan model, in preparation for loading the shell
  *
  */
-const loadPrescan = async (userDataDir: string) => {
+const loadPrescan = async (userDataDir: string): Promise<IPrescanModel> => {
   try {
-    prescanned = await import('@kui-shell/prescan')
+    prescanned = (await import('@kui-shell/prescan')) as IPrescanModel
     return prescanned
   } catch (err) {
     debug('prescanned does not exist or is not valid JSON', err)
@@ -409,7 +410,7 @@ const loadPrescan = async (userDataDir: string) => {
  * Make a plugin resolver from a given prescan model
  *
  */
-const makeResolver = prescan => {
+const makeResolver = (prescan: IPrescanModel) => {
   debug('makeResolver')
 
   /** memoize resolved plugins */
@@ -428,7 +429,7 @@ const makeResolver = prescan => {
             const prereqs = prescan.topological[plugin]
             if (prereqs) {
               debug('resolveOne loading prereqs', plugin)
-              await Promise.all(prereqs.map(prequire))
+              await Promise.all(prereqs.map(route => prequire(route)))
             }
 
             debug('resolveOne loading plugin', plugin)
@@ -455,7 +456,7 @@ const makeResolver = prescan => {
 
   /** a plugin resolver impl */
   const resolver = {
-    isOverridden: (route: string): boolean => prescan.overrides[route],
+    isOverridden: (route: string): boolean => prescan.overrides[route] !== undefined,
 
     resolveOne,
 
@@ -512,11 +513,34 @@ const makeResolver = prescan => {
   return resolver
 } /* makeResolver */
 
+interface IPrescanCommandDefinition {
+  route: string
+  path: string
+}
+export type PrescanCommandDefinitions = IPrescanCommandDefinition[]
+export type PrescanDocs = { [key: string]: string }
+export type PrescanUsage = any // FIXME something like: { [key: string]: ICommandOptions }
+export interface IPrescanModel {
+  docs: PrescanDocs
+  preloads: PrescanCommandDefinitions
+  commandToPlugin: { [key: string]: string }
+  topological: { [key: string]: string[] }
+  flat: PrescanCommandDefinitions
+  overrides: { [key: string]: string }
+  usage: PrescanUsage
+  disambiguator: Disambiguator
+  catchalls: ICatchAllHandler[]
+}
+
+interface IPrescanOptions {
+  externalOnly?: boolean
+}
+
 /**
  * Generate a prescan model
  *
  */
-export const generatePrescanModel = async opts => {
+export const generatePrescanModel = async (opts: IPrescanOptions): Promise<IPrescanModel> => {
   debug('generatePrescanModel', opts)
 
   const state = opts.externalOnly && commandTree.startScan()
@@ -560,7 +584,8 @@ export const generatePrescanModel = async opts => {
     overrides,
     usage,
     disambiguator: commandTree.endScan(state),
-    catchalls: commandTree.catchalls
+    catchalls: commandTree.catchalls,
+    docs: undefined // plugin-assembler will fill this in
   }
 }
 
@@ -568,10 +593,12 @@ export const generatePrescanModel = async opts => {
  * Assemble the plugins for faster loading
  *
  */
-export const assemble = opts => generatePrescanModel(Object.assign({ assembly: true }, opts))
+export const assemble = (opts: IPrescanOptions): Promise<IPrescanModel> => {
+  return generatePrescanModel(Object.assign({ assembly: true }, opts))
+}
 
 /** export the prequire function */
-export const prequire = async (route: string, options?) => {
+export const prequire = async (route: string, options?: object) => {
   debug('prequire %s', route)
 
   try {

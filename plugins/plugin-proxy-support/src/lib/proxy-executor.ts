@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/proxy-support/executor')
 
 import UsageError from '@kui-shell/core/core/usage-error'
-import { IEvaluator, DirectEvaluator } from '@kui-shell/core/core/repl'
+import { IReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
 import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
@@ -37,13 +37,13 @@ const proxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
 debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */
-const directEvaluator = new DirectEvaluator()
+const directEvaluator = new DirectReplEval()
 
 /**
  * A repl.exec implementation that proxies to the packages/proxy container
  *
  */
-class ProxyEvaluator implements IEvaluator {
+class ProxyEvaluator implements IReplEval {
   name = 'ProxyEvaluator'
 
   async apply (command: string, execOptions: IExecOptions, evaluator, args) {

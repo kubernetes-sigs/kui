@@ -651,8 +651,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
               pictureInPicture(`wsk action get "${d.name}"`,
                 d3.event.currentTarget.parentNode, // highlight this node
                 $('#wskflowContainer')[0], // container to pip
-                'App Visualization',
-                { sidecarPrevious: 'get myApp', echo: true }
+                'App Visualization'
               )(d3.event) // pass along the raw dom event
             } else {
               debug(`clicking on an inline function: ${d.label}`)

@@ -42,7 +42,7 @@ const prescanned = (): string => require.resolve('@kui-shell/prescan')
  * Write the plugin list to the .pre-scanned.json file in app/plugins/.pre-scanned.json
  *
  */
-const writeToFile = async (modules): Promise<void> => {
+const writeToFile = async (modules: plugins.IPrescanModel): Promise<void> => {
   debug('writeToFile', process.cwd(), prescanned())
 
   let str
@@ -107,15 +107,12 @@ const diff = (beforeModel: IPrescan, afterModel: IPrescan, reverseDiff = false):
  *
  */
 const readDirRecursively = (dir: string): Array<string> => {
-  const fs = require('fs')
-  const path = require('path')
-
   if (path.basename(dir) !== 'helpers' &&
       path.basename(dir) !== 'bin' &&
       path.basename(dir) !== 'modules' &&
       path.basename(dir) !== 'node_modules' &&
       fs.statSync(dir).isDirectory()) {
-    return Array.prototype.concat(...fs.readdirSync(dir).map(f => readDirRecursively(path.join(dir, f))))
+    return Array.prototype.concat(...fs.readdirSync(dir).map((f: string) => readDirRecursively(path.join(dir, f))))
   } else {
     return [ dir ] // was dir
   }
@@ -153,63 +150,17 @@ const scanModules = async (root: string): Promise<Array<IFile>> => {
   return files
 }
 
-/**
- * Scan files in app/build
- */
-const scanRoot = (root: string): Array<IFile> => {
-  debug('scanRoot', root)
-  const files = []
-  scanForJsFiles(path.join(root, 'build')).forEach(f => {
-    const subdirs = f.split('/')
-    files.push({ root: true, path: f.replace(root + '/', '') })
-  })
-
-  debug('scanRoot', files)
-  return files
-}
-/**
- * Uglify the javascript
- *
- */
-const uglify = modules => modules.flat.map(module => Promise.resolve())
-const uglifyNope = modules => modules.flat.map(module => new Promise((resolve, reject) => {
-  const src = module.root ? path.join(__dirname, '..', '..', module.path) : path.join(__dirname, '../../../plugins', module.path)
-  const target = src // we'll copy it aside, and overwrite the original
-  const tmpPath = module.root ? path.join(TMA, module.path) : path.join(path.join(TMA, TMP), module.path)
-  const tmpDir = path.join(tmpPath, '..') // we want the name of the enclosing directory
-
-  debug('uglify %s %s', module.path, tmpPath)
-
-  mkdirp(tmpDir, async err => {
-    if (err) {
-      reject(err)
-    } else {
-      debug('copying', src, tmpPath)
-      try {
-        await fs.copy(src, tmpPath)
-
-        debug('calling terser')
-        exec(`${path.join(__dirname, '..', '..', 'node_modules', '.bin', 'terser')} --compress --mangle -o "${target}" -- "${tmpPath}"`,
-             (err, stdout, stderr) => {
-               if (err) reject(err)
-               else resolve()
-             })
-      } catch (err) {
-        debug('error', err)
-        reject(err)
-      }
-    }
-  })
-}))
-
-interface ILeaf {
+interface INode {
   route: string
   usage?: Object
   docs?: string
+  children?: { [key: string]: INode }
 }
+
 interface IPrescan {
   commandToPlugin?: Object
 }
+
 type PrescanDiff = Array<string>
 
 /**
@@ -218,7 +169,7 @@ type PrescanDiff = Array<string>
  * structure based on the "/path/hierarchy"
  *
  */
-const makeTree = (map, docs) => {
+const makeTree = (map: plugins.PrescanUsage, docs: plugins.PrescanDocs) => {
   const keys = Object.keys(map)
   if (keys.length === 0) {
     debug('interesting, not a single command registered a usage model')
@@ -226,8 +177,7 @@ const makeTree = (map, docs) => {
     // incomplete plugin design; so let's warn the developer (note
     // that this command is executed as part of plugin precompilation
     // so the user in this case is the plugin developer)
-    const colors = require('colors')
-    console.error(colors.yellow('Warning') + ': none of your commands registered a usage model')
+    console.error('Warning: none of your commands registered a usage model')
     return {}
   }
 
@@ -235,17 +185,17 @@ const makeTree = (map, docs) => {
   keys.sort()
 
   /** create new node */
-  const node = (route: string): ILeaf => ({ route })
-  const inner = (route: string) => Object.assign(node(route), { children: {} })
+  const newLeaf = (route: string): INode => ({ route })
+  const newNode = (route: string): INode => Object.assign(newLeaf(route), { children: {} })
 
   /** get or create a subtree */
-  const getOrCreate = (tree, pathPrefix: string) => {
+  const getOrCreate = (tree: INode, pathPrefix: string) => {
     if (!tree.children) {
       tree.children = {}
     }
     const entry = tree.children[pathPrefix]
     if (!entry) {
-      tree.children[pathPrefix] = inner(pathPrefix)
+      tree.children[pathPrefix] = newNode(pathPrefix)
       return tree.children[pathPrefix]
     } else {
       return entry
@@ -262,12 +212,12 @@ const makeTree = (map, docs) => {
     }
 
     if (!subtree.children) subtree.children = {}
-    const leaf = subtree.children[route] = node(route)
+    const leaf = subtree.children[route] = newLeaf(route)
     leaf.usage = map[route]
     leaf.docs = map[route].header || docs[route]
 
     return tree
-  }, inner('/'))
+  }, newNode('/'))
 
   return tree.children[''].children[''].children
 }
@@ -279,7 +229,7 @@ const makeTree = (map, docs) => {
  * of commands.
  *
  */
-const amendWithUsageModels = modules => {
+const amendWithUsageModels = (modules: plugins.IPrescanModel) => {
   modules.docs = {}
   modules.usage = {}
 
@@ -318,14 +268,7 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
   const before = await readFile()
   debug('before', before)
 
-  if (!externalOnly) {
-    // uglify
-    await Promise.all([
-      ...uglify({ flat: await scanModules(pluginRoot) })
-    ])
-  }
-
-  const modules = await plugins.assemble({ pluginRoot, externalOnly })
+  const modules = await plugins.assemble({ /* pluginRoot, */ externalOnly })
 
   /** make the paths relative to the root directory */
   const fixupOnePath = (filepath: string): string => {
@@ -337,11 +280,11 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
       .replace(/\/src/, '') // client-hosted plugins
       .replace(/^(.*\/)(plugin-.*)$/, '$2') // client-required plugins
   }
-  const fixupPaths = pluginList => pluginList.map(plugin => Object.assign(plugin, {
+  const fixupPaths = (pluginList: plugins.PrescanCommandDefinitions) => pluginList.map(plugin => Object.assign(plugin, {
     path: fixupOnePath(plugin.path)
   }))
 
-  const model = Object.assign(modules, {
+  const model: plugins.IPrescanModel = Object.assign(modules, {
     preloads: fixupPaths(modules.preloads),
     flat: fixupPaths(modules.flat)
   })
@@ -350,7 +293,6 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
 
   await Promise.all([
     writeToFile(modelWithUsage)
-    // ...uglify(modelWithUsage)
   ])
 
   // resolve with what is new

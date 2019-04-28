@@ -25,7 +25,7 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
-import { ExecType, IEvaluatorArgs } from '@kui-shell/core/core/command-tree'
+import { ExecType, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'

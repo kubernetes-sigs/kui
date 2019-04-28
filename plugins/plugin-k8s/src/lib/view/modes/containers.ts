@@ -216,7 +216,7 @@ const bodyModel = (resource: IResource): Array<any> => {
  * Return a drilldown function that shows container logs
  *
  */
-const showLogs = ({ pod, container }, exec = 'pexec') => {
+const showLogs = ({ pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
   const podName = repl.encodeComponent(pod.metadata.name)
   const containerName = repl.encodeComponent(container.name)
   const ns = repl.encodeComponent(pod.metadata.namespace)

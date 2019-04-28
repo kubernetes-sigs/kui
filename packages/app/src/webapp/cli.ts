@@ -26,7 +26,8 @@ import UsageError from '../core/usage-error'
 import { inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 
-import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
+import { ICommandHandlerWithEvents } from '../models/command'
+import { IExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
 import * as historyModel from '../models/history'
 import { IReplResponse } from '../models/ReplResponse'
 import { CodedError, isCodedError } from '../models/errors'
@@ -245,7 +246,7 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
  * Register a renderer for a given Array<kind>
  *
  */
-export type ViewHandler = (response: Object, resultDom: Element, parsedOptions: object, execOptions: IExecOptions) => void
+export type ViewHandler = (response: Object, resultDom: Element, parsedOptions: ParsedOptions, execOptions: IExecOptions) => void
 const registeredListViews = {}
 export const registerListView = (kind: string, handler: ViewHandler) => {
   registeredListViews[kind] = handler
@@ -256,7 +257,7 @@ export const registerListView = (kind: string, handler: ViewHandler) => {
  *
  */
 const registeredEntityViews = {}
-export const registerEntityView = (kind: string, handler) => {
+export const registerEntityView = (kind: string, handler: ViewHandler) => {
   registeredEntityViews[kind] = handler
 }
 
@@ -304,7 +305,7 @@ export const streamTo = (block: Element) => {
 }
 
 /** create a popup content container */
-export const createPopupContentContainer = (css = [], presentation?: Presentation): HTMLElement => {
+export const createPopupContentContainer = (css: string[] = [], presentation?: Presentation): HTMLElement => {
   const container = document.createElement('div')
   container.classList.add('padding-content')
 
@@ -389,7 +390,7 @@ export const isPopup = () => document.body.classList.contains('subwindow')
  * Render the results of a command evaluation in the "console"
  *
  */
-export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?, command?: string, evaluator?) => response => {
+export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultDom: Element, echo = true, execOptions?: IExecOptions, parsedOptions?: ParsedOptions, command?: string, evaluator?: ICommandHandlerWithEvents) => response => {
   debug('printResults', response)
 
   // does the command handler want to be incognito in the UI?

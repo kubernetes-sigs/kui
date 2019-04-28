@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExecType } from '../core/command-tree'
+import { ExecType } from './command'
 
 export interface IExecOptions {
   isProxied?: boolean
@@ -67,3 +67,6 @@ export class DefaultExecOptions implements IExecOptions {
     // nothing to do
   }
 }
+
+/** command line options */
+export type ParsedOptions = { [ key: string ]: any }
