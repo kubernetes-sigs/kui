@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export function isHTML (message: object): message is HTMLElement {
+export function isHTML (message: any): message is HTMLElement {
   return (message as HTMLElement).innerText ? true : false
 }

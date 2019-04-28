@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('webapp/pip')
+import * as Debug from 'debug'
+const debug = Debug('webapp/pip')
 debug('loading')
 
 import repl = require('../core/repl')
@@ -24,8 +25,9 @@ import { getSidecar, showEntity } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import Presentation from './views/presentation'
 import { popupListen } from './cli'
+import { IExecOptions } from '../models/execOptions'
 
-const _highlight = op => (highlightThis?) => {
+const _highlight = (op: string) => (highlightThis?: Element | Element[]) => {
   if (highlightThis) {
     if (Array.isArray(highlightThis)) {
       highlightThis.forEach(_ => _.classList[op]('picture-in-picture-highlight'))
@@ -37,11 +39,17 @@ const _highlight = op => (highlightThis?) => {
 const dehighlight = _highlight('remove')
 const highlight = _highlight('add')
 
+interface PipOptions {
+  parent?: Element
+  exec?: 'qexec' | 'pexec'
+  execOptions?: IExecOptions
+}
+
 /**
  * Make an DOM event handler that will restore the given pippedContainer
  *
  */
-const restore = (pippedContainer: boolean | Element, previousPresentation: Presentation, sidecarClass: string, capturedHeaders, highlightThis, escapeHandler, options?) => () => {
+const restore = (pippedContainer: boolean | Element, previousPresentation: Presentation, sidecarClass: string, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], escapeHandler: (evt: KeyboardEvent) => boolean, options?: PipOptions) => () => {
   debug('restore')
 
   const sidecar = getSidecar()
@@ -95,7 +103,7 @@ const restore = (pippedContainer: boolean | Element, previousPresentation: Prese
  *
  *
  */
-const pip = (container: boolean | Element, previousPresentation: Presentation, capturedHeaders, highlightThis, returnTo = 'previous view', options?) => {
+const pip = (container: boolean | Element, previousPresentation: Presentation, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], returnTo = 'previous view', options?: PipOptions) => {
   try {
     if (container !== true && container !== false) {
       container.parentNode.removeChild(container)
@@ -154,17 +162,24 @@ const pip = (container: boolean | Element, previousPresentation: Presentation, c
     container.onclick = restoreFn
 } */
 
+interface ICapturedHeader {
+  selector: string
+  node: Element
+  redraw: Function
+  nextSibling: Element
+}
+
 /**
  * Capture and clone the given selector
  *
  */
-const capture = (selector: string, redraw?) => {
+const capture = (selector: string, redraw?: Function): ICapturedHeader => {
   const node = document.querySelector(selector)
   return {
     selector, // remember how to find the replacement
-    node: node.cloneNode(true), // capture the current dom via deep clone
+    node: node.cloneNode(true) as Element, // capture the current dom via deep clone
     redraw, // any redraw helper that might've been registered
-    nextSibling: node.nextSibling // remember this, so we can reattach in the right place (using insertBefore)
+    nextSibling: node.nextSibling as Element // remember this, so we can reattach in the right place (using insertBefore)
   }
 }
 
@@ -174,7 +189,7 @@ const capture = (selector: string, redraw?) => {
  *
  */
 type StringProducing = () => Promise<string>
-export default (command: string | StringProducing, highlightThis, ccontainer: string | Element, returnTo?: string, options?) => (event?: Event) => {
+export default (command: string | StringProducing, highlightThis: Element | Element[], ccontainer: string | Element, returnTo?: string, options?: PipOptions) => (event?: Event) => {
   if (event) event.stopPropagation()
 
   // maybe ccontainer is a query selector
@@ -214,12 +229,18 @@ export default (command: string | StringProducing, highlightThis, ccontainer: st
   if (typeof command === 'string') {
     debug('drilling down with string command')
 
-    return repl[(options && options.exec) || 'pexec'](command, Object.assign({}, {
+    const execOptions: IExecOptions = Object.assign({}, {
       isDrilldown: true,
       preserveBackButton: true,
       rethrowErrors: true,
       reportErrors: true
-    }, (options && options.execOptions) || {})).catch(restoreFn)
+    }, (options && options.execOptions) || {})
+
+    if (!options || options.exec === 'pexec') {
+      return repl.pexec(command, execOptions).catch(restoreFn)
+    } else {
+      return repl.qexec(command, undefined, undefined, execOptions).catch(restoreFn)
+    }
   } else if (typeof command === 'function') {
     return command().catch(restoreFn)
   } else {

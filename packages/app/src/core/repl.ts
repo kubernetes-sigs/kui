@@ -25,7 +25,9 @@ debug('loading')
 
 import minimist = require('yargs-parser')
 
-import { IExecOptions, DefaultExecOptions } from '../models/execOptions'
+import { CommandTreeResolution, ExecType, IEvaluator, IEvaluatorArgs, YargsParserFlags } from '../models/command'
+
+import { IExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
@@ -37,6 +39,8 @@ import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
 import { element } from '../webapp/util/dom' // FIXME
+
+import { isHTML } from '../util/types'
 
 debug('finished loading modules')
 
@@ -54,9 +58,9 @@ export interface IExecutor {
  * Apply the given evaluator to the given arguments
  *
  */
-export interface IEvaluator {
+export interface IReplEval {
   name: string
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: commandTree.IEvaluator, args: commandTree.IEvaluatorArgs)
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
 }
 
 /**
@@ -64,15 +68,15 @@ export interface IEvaluator {
  * the default evaluator implementation.
  *
  */
-export class DirectEvaluator implements IEvaluator {
-  name = 'DirectEvaluator'
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: commandTree.IEvaluator, args: commandTree.IEvaluatorArgs) {
+export class DirectReplEval implements IReplEval {
+  name = 'DirectReplEval'
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
-let currentEvaluatorImpl: IEvaluator = new DirectEvaluator()
+let currentEvaluatorImpl: IReplEval = new DirectReplEval()
 
-export const setEvaluatorImpl = (impl: IEvaluator): void => {
+export const setEvaluatorImpl = (impl: IReplEval): void => {
   debug('setting evaluator impl', impl.name)
   currentEvaluatorImpl = impl
 }
@@ -135,7 +139,7 @@ export const qexec = (command: string, block?: HTMLElement | boolean, contextCha
     noHistory: true,
     contextChangeOK
   }, execOptions, {
-    type: commandTree.ExecType.Nested
+    type: ExecType.Nested
   }))
 }
 
@@ -152,7 +156,7 @@ export const rexec = (command: string, execOptions = emptyExecOptions()) => {
  *
  */
 export const pexec = (command: string, execOptions?: IExecOptions) => {
-  return exec(command, Object.assign({ echo: true, type: commandTree.ExecType.ClickHandler }, execOptions))
+  return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions))
 }
 
 const patterns = {
@@ -380,7 +384,7 @@ class InProcessExecutor implements IExecutor {
 
       // the Read part of REPL
       const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-      const evaluator: commandTree.CommandTreeResolution = await (
+      const evaluator: CommandTreeResolution = await (
         execOptions && execOptions.intentional
           ? commandTree.readIntention(argvNoOptions)
           : commandTree.read(argvNoOptions, false, false, execOptions))
@@ -410,10 +414,10 @@ class InProcessExecutor implements IExecutor {
 
         // here, we encode some common aliases, and then overlay any flags from the command
         // narg: any flags that take more than one argument e.g. -p key value would have { narg: { p: 2 } }
-        const commandFlags: commandTree.YargsParserFlags = (evaluator.options && evaluator.options.flags) ||
+        const commandFlags: YargsParserFlags = (evaluator.options && evaluator.options.flags) ||
           (evaluator.options && evaluator.options.synonymFor &&
            evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
-          ({} as commandTree.YargsParserFlags)
+          ({} as YargsParserFlags)
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
         const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
 
@@ -439,7 +443,7 @@ class InProcessExecutor implements IExecutor {
 
         // now use minimist to parse the command line options
         // minimist stores the residual, non-opt, args in _
-        const parsedOptions: { [ key: string ]: any } = minimist(argv, allFlags)
+        const parsedOptions: ParsedOptions = minimist(argv, allFlags)
         const argvNoOptions: Array<string> = parsedOptions._
 
         //
@@ -694,7 +698,7 @@ class InProcessExecutor implements IExecutor {
 
             // indicate that the command was successfuly completed
             evaluator.success({
-              type: (execOptions && execOptions.type) || commandTree.ExecType.TopLevel,
+              type: (execOptions && execOptions.type) || ExecType.TopLevel,
               isDrilldown: execOptions.isDrilldown,
               command,
               parsedOptions
@@ -769,7 +773,9 @@ class InProcessExecutor implements IExecutor {
           })
 
       }
-    } catch (e) {
+    } catch (err) {
+      const e = err as Error
+
       if (isHeadless()) {
         try {
           debug('attempting to run the command graphically', e)
@@ -800,7 +806,7 @@ class InProcessExecutor implements IExecutor {
       const blockForError = block || cli.getCurrentProcessingBlock()
 
       return Promise.resolve(e.message).then(message => {
-        if (message.nodeName) {
+        if (isHTML(message)) {
           e.message = message
           oops(command, block, nextBlock)(e)
         } else {

@@ -33,7 +33,7 @@ import { expectedVersion } from '../core/version'
  *                   or: expect the sidecar icon to be "sidecar"
  *
  */
-export const expectSuggestionsFor = function (cmd, expectedAvailable, { click = undefined, expectedBreadcrumb = undefined, sidecar: expectedIcon = undefined, expectedString = undefined } = {}) {
+export const expectSuggestionsFor = function (cmd: string, expectedAvailable: string[], { click = undefined, expectedBreadcrumb = undefined, sidecar: expectedIcon = undefined, expectedString = undefined } = {}) {
   return cli.do(cmd, this.app)
     .then(cli.expectError(404, 'Command not found', true)) // true means we want N back rather than app
     .then(N => {

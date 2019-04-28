@@ -18,6 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('core/command-tree')
 debug('loading')
 
+import { CommandHandler, CommandTree, CommandTreeResolution, Disambiguator, ExecType, CatchAllOffer, ICatchAllHandler, ICommand, ICommandBase, ICommandHandlerWithEvents, ICommandOptions, IEvaluatorArgs, IEvent } from '../models/command'
+
 import eventBus from './events'
 import { UsageError, IUsageModel, IUsageRow } from './usage-error'
 import { oopsMessage } from './oops'
@@ -30,26 +32,12 @@ import { IExecOptions } from '../models/execOptions'
  */
 const root = () => undefined // this will trigger a re-parse using Context.current as the path prefix
 const interior = (x?: string[], y?: number, z?: number) => undefined // this will trigger a re-parse using Context.current as the path prefix
-const newTree = (): ICommand => ({ $: root(), key: '/', route: '/', children: {}, parent: undefined })
-const model: ICommand = newTree() // this is the model of registered listeners, a tree
-const intentions: ICommand = newTree() // this is the model of registered intentional listeners
+const newTree = (): CommandTree => ({ $: root(), key: '/', route: '/', children: {}, parent: undefined })
+const model: CommandTree = newTree() // this is the model of registered listeners, a tree
+const intentions: CommandTree = newTree() // this is the model of registered intentional listeners
 
-type CommandKey = string
-type CommandKeyMap = { [key: string]: ICommand } // we can't use CommandKey here; yay tsc; TS1336
-
-type Disambiguator = { [key: string]: ICommandBase[] } // we can't use CommandKey here; yay tsc; TS1336
 let disambiguator: Disambiguator = {} // map from command name to disambiguations
-
-/** a catch all handler is presented with an offer to handle a given argv */
-type CatchAllOffer = (argv: Array<string>) => boolean
-
-export interface ICatchAllHandler extends ICommandBase {
-  prio: number
-  plugin: string // registered plugin
-  offer: CatchAllOffer // does the handler accept the given command?
-  eval // command evaluator
-}
-export const catchalls: Array<ICatchAllHandler> = [] // handlers for command not found
+export const catchalls: ICatchAllHandler[] = [] // handlers for command not found
 
 debug('finished loading modules')
 
@@ -112,7 +100,7 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
  * Navigate the given tree model, following the given path as [n1,n2,n3]
  *
  */
-const treeMatch = (model: ICommand, path: Array<string>, readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
+const treeMatch = (model: CommandTree, path: Array<string>, readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
   let parent = model
   let cur
 
@@ -164,77 +152,6 @@ const treeMatch = (model: ICommand, path: Array<string>, readonly = false, hide 
 }
 const match = (path: string[], readonly: boolean): ICommand => {
   return treeMatch(model, path, readonly)
-}
-
-/**
- * Evaluator args
- *
- */
-export interface IEvaluatorArgs {
-  block: HTMLElement | boolean
-  nextBlock: HTMLElement
-  parsedOptions: { [key: string]: string }
-  command: string
-  argv: Array<string>
-  argvNoOptions: Array<string>
-  execOptions: IExecOptions
-  createOutputStream: () => WritableStream
-}
-
-/** base command handler */
-export type CommandHandler = (args: IEvaluatorArgs) => Promise<any>
-
-/**
- * Evaluator
- *
- */
-export interface IEvaluator {
-  eval: CommandHandler
-}
-
-export interface ICommandBase {
-  route: string
-  options?: ICommandOptions
-}
-
-export interface ICommand extends ICommandBase {
-  $: CommandHandler
-  key: CommandKey
-  parent: ICommand
-  children?: CommandKeyMap
-  synonyms?: CommandKeyMap
-}
-
-export interface ICapabilityRequirements {
-  needsUI?: boolean
-  requiresLocal?: boolean
-  noAuthOk?: boolean
-  fullscreen?: boolean
-}
-
-export type YargsParserFlags = { [key in 'boolean' | 'alias']: string[] }
-
-export interface ICommandOptions extends ICapabilityRequirements {
-  // explicitly provided usage model?
-  usage?: IUsageModel
-
-  // yargs-parser flags
-  flags?: YargsParserFlags
-
-  listen?: any // FIXME
-  docs?: string
-  synonymFor?: ICommand
-  hide?: boolean
-  override?: any
-  plugin?: string
-  okOptions?: string[]
-  isIntention?: boolean
-  requiresFullyQualifiedRoute?: boolean
-}
-class DefaultCommandOptions implements ICommandOptions {
-  constructor () {
-    // empty
-  }
 }
 
 /**
@@ -292,11 +209,17 @@ export const subtreeSynonym = (route: string, master: ICommand, options = master
   }
 }
 
+class DefaultCommandOptions implements ICommandOptions {
+  constructor () {
+    // empty
+  }
+}
+
 /**
  * Register a command handler on the given route
  *
  */
-const _listen = (model: ICommand, route: string, handler: CommandHandler, options: ICommandOptions = new DefaultCommandOptions()) => {
+const _listen = (model: CommandTree, route: string, handler: CommandHandler, options: ICommandOptions = new DefaultCommandOptions()) => {
   const path = route.split('/').splice(1)
   const leaf = treeMatch(model, path, false, options.hide)
 
@@ -363,38 +286,6 @@ export const synonym = (route: string, handler: CommandHandler, master: ICommand
 export const intention = (route: string, handler: CommandHandler, options: ICommandOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
 
 /**
- * "top-level", meaning the user hit enter in the CLI,
- * "click-handler", meaning that the user clicked on a UI element
- * "nested", meaning that some evaluator uses the repl in its internal implementation
- *
- */
-export enum ExecType {
-  TopLevel,
-  ClickHandler,
-  Nested
-}
-
-export interface IEvent {
-  // context: string
-  command?: string
-  route?: string
-  plugin?: string
-  isIntention?: boolean
-  error?: string
-  options?: any
-  execType?: ExecType
-  isDrilldown?: boolean
-}
-
-interface ICommandHandlerWithEvents extends IEvaluator {
-  subtree: ICommandBase
-  route: string
-  options: ICommandOptions
-  success: (args: { type: ExecType, command: string, isDrilldown: boolean, parsedOptions: { [ key: string ]: any } }) => void
-  error: (command: string, err: CodedError) => CodedError
-}
-
-/**
  *
  * @return a command handler with success and failure event handlers
  *
@@ -457,7 +348,7 @@ const withEvents = (evaluator: CommandHandler, leaf: ICommandBase, partialMatche
  * Parse the given argv, and return an evaluator or throw an Error
  *
  */
-const _read = async (model: ICommand, argv: string[], contextRetry: string[], originalArgv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
+const _read = async (model: CommandTree, argv: string[], contextRetry: string[], originalArgv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
   let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
   let evaluator = leaf && leaf.$
   debug('read', argv)
@@ -564,7 +455,7 @@ export const setDefaultCommandContext = (commandContext: Array<string>) => {
 }
 
 /** read, with retries based on the current context */
-const internalRead = (model: ICommand, argv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
+const internalRead = (model: CommandTree, argv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
   if (argv[0] === 'kui') argv.shift()
   return _read(model, argv, Context.current, argv)
 }
@@ -775,8 +666,6 @@ const removeDuplicates = async (arr: Array<IRoute>): Promise<Array<IRoute>> => {
       return state
     }, { M: {}, A: [] })['A']
 }
-
-export type CommandTreeResolution = boolean | ICommandHandlerWithEvents | CodedError
 
 export function isSuccessfulCommandResolution (resolution: CommandTreeResolution): resolution is ICommandHandlerWithEvents {
   return (resolution as ICommandHandlerWithEvents).eval !== undefined
