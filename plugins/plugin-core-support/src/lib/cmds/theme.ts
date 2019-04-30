@@ -22,6 +22,7 @@ import { WebContents } from 'electron'
 
 import repl = require('@kui-shell/core/core/repl')
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
@@ -229,7 +230,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
  * REPL command to switch themes
  *
  */
-const set = async ({ argvNoOptions }) => {
+const set = async ({ argvNoOptions }: IEvaluatorArgs) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
   await switchTo(theme)
@@ -252,7 +253,7 @@ const resetToDefault = async () => {
  * The command handlers
  *
  */
-export const plugin = (commandTree, prequire) => {
+export const plugin = (commandTree: CommandRegistrar) => {
   debug('plugin')
 
   commandTree.listen('/theme/list', list, { usage: usage.list, noAuthOk: true, inBrowserOk: true })

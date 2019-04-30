@@ -27,6 +27,7 @@ debug('loading')
 const DEFAULT_HISTORY_N = 20 // the default number of history elements to show with /history
 
 import * as historyModel from '@kui-shell/core/models/history'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import * as repl from '@kui-shell/core/core/repl'
@@ -52,7 +53,7 @@ const usage = {
     ]
   },
 
-  again: command => ({
+  again: (command: string) => ({
     command,
     strict: command,
     docs: 'Re-execute a given command index',
@@ -153,7 +154,7 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   })
 }
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   debug('init')
 
   commandTree.listen('/history', showHistory, { usage: usage.history, noAuthOk: true })
@@ -167,6 +168,6 @@ export default (commandTree, prequire) => {
     console.error(execOptions)
     return again(N, execOptions && execOptions.history)
   }
-  const cmd = commandTree.listen('/!!', againCmd('!!'), { usage: usage.again, noAuthOk: true })
-  commandTree.synonym('/again', againCmd('again'), cmd)
+  const cmd = commandTree.listen('/!!', againCmd('!!'), { usage: usage.again('!!'), noAuthOk: true })
+  commandTree.synonym('/again', againCmd('again'), cmd, { usage: usage.again('again'), noAuthOk: true })
 }

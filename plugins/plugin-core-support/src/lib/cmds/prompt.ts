@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/prompt')
 
 import cli = require('@kui-shell/core/webapp/cli')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * The command usage model
@@ -36,12 +37,12 @@ const usage = {
  * The command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/prompt', ({ argvNoOptions, parsedOptions: options, block, nextBlock }) => {
     const placeholder = argvNoOptions[1] || 'Test prompt'
     debug('placeholder', placeholder, argvNoOptions)
 
-    return cli.prompt('Prompt', block, nextBlock, {
+    return cli.prompt('Prompt', block as HTMLElement, nextBlock, {
       placeholder
     }, options => {
       debug('response', options.field)

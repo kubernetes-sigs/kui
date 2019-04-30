@@ -15,9 +15,10 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { PluginRequire } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import run from './lib/cmds/run'
-import echo from './lib/cmds/echo'
 import quit from './lib/cmds/quit'
 import clear from './lib/cmds/clear'
 import about from './lib/cmds/about/about'
@@ -34,26 +35,25 @@ import history from './lib/cmds/history/history'
  * This is the module
  *
  */
-export default async (commandTree, prequire, options) => {
-  await window(commandTree, prequire)
-  await openui(commandTree, prequire)
+export default async (commandTree: CommandRegistrar, prequire: PluginRequire, options) => {
+  await window(commandTree)
+  await openui(commandTree)
 
   await Promise.all([
-    run(commandTree, prequire),
-    echo(commandTree, prequire),
-    quit(commandTree, prequire),
-    clear(commandTree, prequire),
-    base64(commandTree, prequire),
-    prompt(commandTree, prequire),
-    sleep(commandTree, prequire),
-    history(commandTree, prequire),
-    about(commandTree, prequire)
+    run(commandTree),
+    quit(commandTree),
+    clear(commandTree),
+    base64(commandTree),
+    prompt(commandTree),
+    sleep(commandTree),
+    history(commandTree),
+    about(commandTree)
   ])
 
   if (!isHeadless()) {
     await Promise.all([
-      import('./lib/cmds/screenshot').then(_ => _.default(commandTree, prequire)),
-      import('./lib/cmds/theme').then(_ => _.plugin(commandTree, prequire))
+      import('./lib/cmds/screenshot').then(_ => _.default(commandTree)),
+      import('./lib/cmds/theme').then(_ => _.plugin(commandTree))
     ])
   }
 

@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/base64')
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 /**
  * The command usage model
  *
@@ -55,7 +57,7 @@ const breakout = (str: string, options) => {
  * The command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   debug('init')
 
   commandTree.listen('/base64', ({ argvNoOptions, parsedOptions: options }) => {
@@ -67,7 +69,7 @@ export default (commandTree, prequire) => {
       return breakout(Buffer.from(str, 'base64').toString(), options)
     } else {
       debug('encoding')
-      return breakout(str.toString('base64'), options)
+      return breakout(Buffer.from(str).toString('base64'), options)
     }
   }, { usage, noAuthOk: true })
 }

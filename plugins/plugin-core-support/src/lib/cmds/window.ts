@@ -16,12 +16,13 @@
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { tellMain } from '@kui-shell/core/webapp/electron-events'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * This plugin introduces commands to control the window size.
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.subtree('/window', { docs: 'Window sizing commands, e.g. "window max" and "window unmax"' })
 
   // commandTree.listen('/window/bigger', () => tellMain('enlarge-window'))

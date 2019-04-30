@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/clear')
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
 const usage = {
@@ -60,6 +61,6 @@ const clear = ({ parsedOptions }) => {
  * This plugin introduces the /clear command, which clear the consoles
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/clear', clear, { usage, noAuthOk: true, inBrowserOk: true })
 }

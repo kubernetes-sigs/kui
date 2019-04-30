@@ -20,6 +20,7 @@
  */
 
 import { tellMain } from '@kui-shell/core/webapp/electron-events'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 const doQuit = () => tellMain('quit')
 
@@ -29,7 +30,7 @@ const usage = (command: string) => ({
   docs: 'Quit the program'
 })
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   const quitCmd = commandTree.listen('/quit', doQuit, { usage: usage('quit'), noAuthOk: true })
 
   // just for fun, make /exit a synonym for /quit
