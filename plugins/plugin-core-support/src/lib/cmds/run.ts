@@ -19,11 +19,11 @@ const debug = Debug('plugins/core-support/run')
 
 import { readFile } from 'fs'
 import { dirname } from 'path'
-
 import * as expandHomeDir from 'expand-home-dir'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 
 const execInSequence = async function (arr, status, idx: number) {
@@ -157,7 +157,7 @@ const usage = {
   ]
 }
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/run', doRun, { usage, noAuthOk: true })
   commandTree.listen('/show',
                      ({ execOptions }) => {

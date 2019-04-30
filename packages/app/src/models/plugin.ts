@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { CommandTree } from './command'
+import { CommandTree, CommandRegistrar } from './command'
 
 // TODO
 export type KuiPlugin = any
 
 export type PluginRequire = (route: string, options?: Object) => Promise<KuiPlugin>
 
-export type PluginRegistration = (commandTree /*: TODO: CommandTree */, prequire: PluginRequire, options?) => Promise<any>
+export type PluginRegistration = (commandTree: CommandRegistrar, prequire: PluginRequire, options?) => Promise<any>
 
-export type PreloadRegistration = (commandTree: CommandTree, prequire: PluginRequire, options?) => Promise<void>
+export type PreloadRegistration = (commandTree: CommandRegistrar, prequire: PluginRequire, options?) => Promise<void>

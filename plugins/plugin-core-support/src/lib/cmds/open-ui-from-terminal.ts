@@ -15,6 +15,7 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 const usage = {
   command: 'shell',
@@ -30,7 +31,7 @@ const docs = { usage, needsUI: true, fullscreen: false, noEcho: true, noHistory:
  * This plugin allows opening the graphical shell from the terminal
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   /** command handler */
   const doIt = cmd => ({ execOptions }) => {
     if (!isHeadless() && (!execOptions || !execOptions.causedByHeadless)) {

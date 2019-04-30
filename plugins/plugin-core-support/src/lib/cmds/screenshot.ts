@@ -23,6 +23,7 @@ import { keys } from '@kui-shell/core/webapp/keys'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * Usage message
@@ -157,7 +158,7 @@ const dateString = ts => `${ts.getUTCFullYear()}-${fill(1 + ts.getUTCMonth())}-$
 const timeString = ts => ts.toLocaleTimeString('en-us').replace(/:/g, '.')
 
 /** this is the handler body */
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   commandTree.listen('/screenshot', ({ argvNoOptions, parsedOptions: options }) => new Promise(async (resolve, reject) => {
     if (inBrowser()) {
       const error = new Error('Command not yet supported when running in a browser')
@@ -219,7 +220,7 @@ export default async (commandTree, prequire) => {
       // note that all four values must be integral, hence the rounding bits
       const snap = () => {
         const domRect = dom.getBoundingClientRect()
-        const rect = { x: round(domRect.left) + (options.offset || 0), // see #346 for options.offset
+        const rect = { x: round(domRect.left) + (options.offset ? parseInt(options.offset, 10) : 0), // see #346 for options.offset
           y: round(domRect.top),
           width: round(domRect.width),
           height: round(domRect.height)

@@ -37,8 +37,26 @@ export interface ICommandOptions extends ICapabilityRequirements {
   // yargs-parser flags
   flags?: YargsParserFlags
 
+  // hide this command from the help system
+  hidden?: boolean
+
   // should we register in the UI that this command was executed?
-  incognito?: 'popup'
+  incognito?: Array<'popup'>
+
+  // optional name for the view being presented
+  viewName?: string
+
+  // hint for screen width in popup mode
+  width?: number
+
+  // hint for screen height in popup mode
+  height?: number
+
+  // request that the REPL be cleared of the initial command in popup mode
+  clearREPLOnLoad?: boolean
+
+  // show this placeholder text when executing the command in popup mode (instead of the command line)
+  placeholder?: string
 
   listen?: any // FIXME
   docs?: string
@@ -78,8 +96,11 @@ export interface IEvaluatorArgs {
   createOutputStream: () => WritableStream
 }
 
+// TODO
+export type CommandResponse = any
+
 /** base command handler */
-export type CommandHandler = (args: IEvaluatorArgs) => Promise<any>
+export type CommandHandler = (args: IEvaluatorArgs) => CommandResponse | Promise<CommandResponse>
 
 /**
  * Evaluator
@@ -111,8 +132,9 @@ export type CommandTree = ICommand
 
 export interface ICapabilityRequirements {
   needsUI?: boolean
+  inBrowserOk?: boolean
   requiresLocal?: boolean
-  noAuthOk?: boolean
+  noAuthOk?: boolean | string[]
   fullscreen?: boolean
 }
 
@@ -136,4 +158,10 @@ export interface ICatchAllHandler extends ICommandBase {
   plugin: string // registered plugin
   offer: CatchAllOffer // does the handler accept the given command?
   eval // command evaluator
+}
+
+export interface CommandRegistrar {
+  listen: (route: string, handler: CommandHandler, options: ICommandOptions) => ICommand
+  synonym: (route: string, handler: CommandHandler, master: ICommand, options: ICommandOptions) => void
+  subtree: (route: string, options: ICommandOptions) => void
 }

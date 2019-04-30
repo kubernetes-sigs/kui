@@ -24,6 +24,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import usage from './usage'
 import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
@@ -210,7 +211,6 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     }
   }
 
-  console.error('!!!!!!!')
   return {
     type: 'custom',
     isEntity: true,
@@ -286,7 +286,7 @@ const reportVersion = ({ argv }) => {
  * Here we install the command handlers for /version and /about
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   debug('init')
 
   // for menu

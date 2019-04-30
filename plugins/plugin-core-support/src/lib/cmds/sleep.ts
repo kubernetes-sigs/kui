@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/sleep')
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 /**
  * The command usage model
  *
@@ -33,7 +35,7 @@ const usage = {
  * The command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/sleep', ({ argvNoOptions }) => new Promise((resolve, reject) => {
     const nSeconds = parseInt(argvNoOptions[1], 10)
     const nMillis = nSeconds * 1000
