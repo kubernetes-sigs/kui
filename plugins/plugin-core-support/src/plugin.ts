@@ -15,7 +15,6 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { PluginRequire } from '@kui-shell/core/models/plugin'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import run from './lib/cmds/run'
@@ -35,7 +34,7 @@ import history from './lib/cmds/history/history'
  * This is the module
  *
  */
-export default async (commandTree: CommandRegistrar, prequire: PluginRequire, options) => {
+export default async (commandTree: CommandRegistrar) => {
   await window(commandTree)
   await openui(commandTree)
 

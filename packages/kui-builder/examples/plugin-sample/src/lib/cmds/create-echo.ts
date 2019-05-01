@@ -19,7 +19,8 @@
  *
  */
 
-import * as repl from '@kui-shell/core/core/repl'
+import { qexec as $ } from '@kui-shell/core/core/repl'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 /**
  * This is the command handler. Handlers can return plain strings,
@@ -34,14 +35,19 @@ import * as repl from '@kui-shell/core/core/repl'
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
-const createEcho = ({ argv, command, argvNoOptions, parsedOptions }) => {
-  return repl.qfexec('wsk action let echo = x => x')
+const createEcho = ({ argv, command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+  return $('wsk action let echo = x => x')
+}
+
+const usage = {
+  command: 'action',
+  docs: 'Create an OpenWhisk action'
 }
 
 /**
  * This is the exported module. It registers a handler for "sample create action" commands
  *
  */
-export default (commandTree, prequire) => {
-  commandTree.listen('/sample/create/action', createEcho, { docs: 'Make an echo action' })
+export default (commandTree: CommandRegistrar) => {
+  commandTree.listen('/sample/create/action', createEcho, { usage, noAuthOk: true })
 }

@@ -19,11 +19,13 @@
  *
  */
 
-const usage = {
-  command: 'hello',
-  strict: 'hello',
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
+const usage = (command: string) => ({
+  command,
+  strict: command,
   docs: 'Say hello!'
-}
+})
 
 /**
  * This is the command handler. Handlers can return plain strings,
@@ -38,7 +40,7 @@ const usage = {
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
-const sayHello = ({ argv, command, argvNoOptions, parsedOptions }) => {
+const sayHello = ({ argv, command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   return 'hello world'
 }
 
@@ -46,7 +48,9 @@ const sayHello = ({ argv, command, argvNoOptions, parsedOptions }) => {
  * This is the exported module. It registers a handler for "sample hello" commands
  *
  */
-export default (commandTree, prequire) => {
-  const cmd = commandTree.listen('/sample/hello', sayHello, { usage, noAuthOk: true })
-  commandTree.synonym('/sample/hi', sayHello, cmd)
+export default (commandTree: CommandRegistrar) => {
+  const options = (cmd: string) => ({ usage: usage(cmd), noAuthOk: true })
+
+  const cmd = commandTree.listen('/sample/hello', sayHello, options('hello'))
+  commandTree.synonym('/sample/hi', sayHello, cmd, options('hi'))
 }

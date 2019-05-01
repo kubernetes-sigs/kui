@@ -21,8 +21,9 @@
  */
 
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
-import * as repl from '@kui-shell/core/core/repl'
+import { qexec as $ } from '@kui-shell/core/core/repl'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 const usage = {
   command: 'sidecar',
@@ -43,19 +44,24 @@ const usage = {
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
-const openSidecar = ({ argv, command, argvNoOptions, parsedOptions }) => {
-  if (isHeadless()) throw new Error(`Can't open sidecar in headless mode. Suggested command: sample sidecar --ui.`)
-  return repl.qexec('sample create action') // qexec will use the repl to perform a nested evaluation
-    .then(action => {
-      action.demo = { sampleField: 'This is a sample sidecar mode' } // here we add a field
-      return showEntity(action, { show: 'demo' }) // and open the sidecar, specifying that our new field should be shown
-    })
+const openSidecar = async ({ argv, command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+  if (isHeadless()) {
+    throw new Error(`Can't open sidecar in headless mode. Suggested command: sample sidecar --ui.`)
+  }
+
+  const action = await $('sample create action')
+  console.error('!!!!!', action)
+
+  // here we add a field
+  action.demo = { sampleField: 'This is a sample sidecar mode' }
+
+  return action
 }
 
 /**
  * This is the exported module. It registers a handler for "sample sidecar" commands
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/sample/sidecar', openSidecar, { usage, noAuthOk: true })
 }
