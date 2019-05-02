@@ -23,6 +23,7 @@ import IResource from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 /**
  * Add a Conditions mode button to the given modes model, if called
@@ -90,17 +91,15 @@ export const renderConditions = async (command: string, resource: IResource) => 
     }
   }
 
-  const headerModel: Array<any> = [{
+  const headerModel: Row = {
     type: 'condition',
     name: 'CONDITION',
     outerCSS: 'header-cell',
-    noSort: true,
-    title: 'Conditions',
     attributes: probeHeader.concat([
       { value: 'TRANSITION TIME', outerCSS: 'header-cell min-width-date-like' },
       { value: 'STATUS', outerCSS: 'header-cell very-narrow text-center' }
     ])
-  }]
+  }
 
   resource.yaml.status.conditions.sort((a,b) => {
     if (!a.lastTransitionTime && b.lastTransitionTime) {
@@ -114,7 +113,7 @@ export const renderConditions = async (command: string, resource: IResource) => 
     }
   })
 
-  const bodyModel = resource.yaml.status.conditions.map(condition => ({
+  const bodyModel: Row[] = resource.yaml.status.conditions.map(condition => ({
     type: 'condition',
     name: condition.type,
     onclick: false,
@@ -130,9 +129,17 @@ export const renderConditions = async (command: string, resource: IResource) => 
       }
     ])
   }))
-  debug('table model', bodyModel)
 
-  const view = formatTable([headerModel.concat(bodyModel)])
+  const tableModel: Table = {
+    header: headerModel,
+    body: bodyModel,
+    noSort: true,
+    title: 'Conditions'
+  }
+
+  debug('table model', tableModel)
+
+  const view = formatTable(tableModel)
   debug('table view', view)
 
   return view

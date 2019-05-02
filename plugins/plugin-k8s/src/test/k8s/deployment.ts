@@ -19,6 +19,7 @@ import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
 
+import * as assert from 'assert'
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
@@ -36,6 +37,11 @@ describe('electron deployment', function (this: common.ISuite) {
         const selector = await cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
 
+        const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
+
+        await this.app.client.getText(`${selectorPrefix} .result-table-title`)
+          .then(titles => assert.ok(titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS'))
+
         await this.app.client.waitForExist(`${selector} badge.green-background`)
 
         await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
@@ -43,6 +49,37 @@ describe('electron deployment', function (this: common.ISuite) {
         await sidecar.expectOpen(this.app)
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing('myapp', undefined, undefined, 'default'))
+      } catch (err) {
+        common.oops(this)(err)
+      }
+    })
+  }
+
+  const listIt = () => {
+    it('should list deployments', async () => {
+      try {
+        const selector = await cli.do(`kubectl get deployment`, this.app)
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
+
+        await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
+
+        const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
+
+        await this.app.client.getText(`${selectorPrefix} .result-table-title`)
+          .then((title: string) => assert.ok(title === 'DEPLOYMENT'))
+
+        await sidecar.expectOpen(this.app)
+          .then(sidecar.expectMode(defaultModeForGet))
+          .then(sidecar.expectShowing('myapp', undefined, undefined, 'default'))
+          .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('pods')))
+          .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="pods"]`))
+          .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
+          .then((title: string) => assert.ok(title === 'PODS'))
+          .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
+          .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="Deployment pods"]`))
+          .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
+          .then((titles: string[]) => assert.ok(titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS'))
+
       } catch (err) {
         common.oops(this)(err)
       }
@@ -74,6 +111,7 @@ describe('electron deployment', function (this: common.ISuite) {
   // here start the tests
   //
   createIt()
+  listIt()
   deleteItByName()
 
   createIt()
