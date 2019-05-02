@@ -38,7 +38,7 @@ import { isHTML } from '../util/types'
 
 import Presentation from './views/presentation'
 import { formatListResult, formatMultiListResult, formatTable } from './views/table'
-import { isTable } from './models/table'
+import { isTable, isMultiTable } from './models/table'
 import { getSidecar, currentSelection, presentAs, showEntity, showCustom } from './views/sidecar'
 
 /**
@@ -561,7 +561,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
 
   let promise: Promise<boolean>
 
-  if (Array.isArray(response) && isTable(response[0])) {
+  if (isMultiTable(response)) {
     (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-multi-table', 'result-vertical')
 
     if (response[0].flexWrap) {
@@ -582,7 +582,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
     promise = render(response, { echo, resultDom })
   }
 
-  if (isTable(response) || (Array.isArray(response) && isTable(response[0]))) {
+  if (isTable(response) || isMultiTable(response)) {
     if (isPopup()) {
       presentAs(Presentation.FixedSize)
     }

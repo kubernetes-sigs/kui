@@ -28,6 +28,7 @@ import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
 import { getActiveView, formatTable } from '../formatMultiTable'
+import { Table } from '@kui-shell/core/webapp/models/table'
 
 /** for drilldown back button */
 const viewName = 'Pods'
@@ -72,6 +73,7 @@ interface IParameters {
   command: string
   resource: IResource
 }
+
 export const renderAndViewPods = async (parameters: IParameters) => {
   const { command, resource } = parameters
   debug('renderAndViewPods', command, resource)
@@ -84,7 +86,8 @@ export const renderAndViewPods = async (parameters: IParameters) => {
     const getPods = `kubectl get pods ${selectorToString(selector)} -n "${resource.yaml.metadata.namespace}"`
     debug('getPods', getPods)
 
-    const tableModel = await $$(getPods)
+    const tableModel: Table = await $$(getPods)
+
     const tableView = formatTable(tableModel, { usePip: true, viewName, execOptions: { delegationOk: true } })
     return insertView(tableView)
   }

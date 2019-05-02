@@ -20,6 +20,7 @@ const debug = Debug('k8s/view/modes/containers')
 import repl = require('@kui-shell/core/core/repl')
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 import IResource from '../../model/resource'
 
@@ -84,14 +85,19 @@ const formatTimestamp = (timestamp: string): string => {
 export const renderContainers = async (command: string, resource: IResource) => {
   debug('renderContainers', command, resource)
 
-  return formatTable([headerModel(resource).concat(bodyModel(resource))])
+  return formatTable({
+    header: headerModel(resource),
+    body: bodyModel(resource),
+    noSort: true,
+    title: 'Containers'
+  })
 }
 
 /**
  * Render the table header model
  *
  */
-const headerModel = (resource: IResource): Array<any> => {
+const headerModel = (resource: IResource): Row => {
   const statuses = resource.yaml.status && resource.yaml.status.containerStatuses
 
   const specAttrs = [
@@ -105,28 +111,26 @@ const headerModel = (resource: IResource): Array<any> => {
     { value: 'MESSAGE', outerCSS: 'header-cell' }
   ]
 
-  return [{
+  return {
     type: 'container',
     name: 'IMAGE',
     outerCSS: 'header-cell not-too-wide',
-    noSort: true,
-    title: 'Containers',
     attributes: specAttrs.concat(statusAttrs)
-  }]
+  }
 }
 
 /**
  * Render the table body model
  *
  */
-const bodyModel = (resource: IResource): Array<any> => {
+const bodyModel = (resource: IResource): Row[] => {
   const pod = resource.yaml
   const statuses = pod.status && pod.status.containerStatuses
 
   const podName = repl.encodeComponent(pod.metadata.name)
   const ns = repl.encodeComponent(pod.metadata.namespace)
 
-  const bodyModel = pod.spec.containers.map(container => {
+  const bodyModel: Row[] = pod.spec.containers.map(container => {
     const status = statuses && statuses.find(_ => _.name === container.name)
     debug('container status', container.name, status.restartCount, status)
 

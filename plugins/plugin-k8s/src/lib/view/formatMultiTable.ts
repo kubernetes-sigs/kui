@@ -19,7 +19,8 @@ const debug = Debug('k8s/view/formatMultiTable')
 
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
-import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+import { formatTable as format } from '@kui-shell/core/webapp/views/table'
+import { Table, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 
 /** this will help us with finding our own view instances */
 const attr = 'k8s-table'
@@ -32,12 +33,13 @@ export const getActiveView = () => {
  * Update table for picture-in-picture style drilldowns
  *
  */
-const updateTableForPip = (viewName: string, execOptions) => (table: Array<any>) => {
+const updateTableForPip = (viewName: string, execOptions) => (table: Table) => {
   debug('pip update for table', table)
 
-  table.forEach(row => {
+  table.body.forEach(row => {
     if (row.onclick) {
       const command = row.onclick
+      debug('command', command)
       row.onclick = (evt: Event) => {
         return drilldown(command, undefined, getActiveView(), viewName, { execOptions })(evt)
       }
@@ -57,27 +59,27 @@ const updateTableForPip = (viewName: string, execOptions) => (table: Array<any>)
 }
 
 /**
- * Return a multi-table view for the given table model
+ * Return a table view for the given table model
  *
  */
-export const formatTable = (model: Array<any>, { usePip = false, viewName = 'previous view', execOptions = {} } = {}): HTMLElement => {
-  debug('formatTable', model)
+export const formatTable = (model: Table | Table[], { usePip = false, viewName = 'previous view', execOptions = {} } = {}): HTMLElement => {
+  debug('formatTable model', model)
 
   const resultDomOuter = document.createElement('div')
-  if (model.length > 0) {
+
+  if (isTable(model) || isMultiTable(model)) {
     const resultDom = document.createElement('div')
 
     // e.g. establish an attribute [k8s-table="Containers"]
-    resultDomOuter.setAttribute(attr, (model[0] && model[0][0] && model[0][0].title) || model[0] && model[0].title)
+    resultDomOuter.setAttribute(attr, isTable(model) ? model.title : model.map(m => m.title).join(' '))
 
     // modify onclick links to use the "picture in picture" drilldown module
     if (usePip) {
       debug('pip update')
-
-      if (Array.isArray(model[0])) {
-        model.forEach(updateTableForPip(viewName, execOptions))
-      } else {
+      if (isTable(model)) {
         updateTableForPip(viewName, execOptions)(model)
+      } else {
+        model.forEach(updateTableForPip(viewName, execOptions))
       }
     }
 
@@ -92,11 +94,11 @@ export const formatTable = (model: Array<any>, { usePip = false, viewName = 'pre
     resultDom.classList.add('repl-result')
     resultDom.classList.add('monospace')
 
-    if (Array.isArray(model[0])) {
-      formatMultiListResult(model, resultDom)
+    if (isTable(model)) {
+      format(model, resultDom)
     } else {
-      formatMultiListResult([ model ], resultDom)
-            // formatListResult(model).forEach(row => resultDom.appendChild(row));
+      resultDom.classList.add('result-as-multi-table')
+      model.forEach(m => format(m, resultDom))
     }
   }
 

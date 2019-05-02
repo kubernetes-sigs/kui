@@ -58,7 +58,7 @@ export const renderStatus = async (command: string, resource: IResource, finalSt
   debug('issuing command', fetchModels)
 
   const model = await repl.qexec(fetchModels)
-  // debug('renderStatus.models', models);
+  debug('renderStatus.models', model)
 
   const view = formatTable(model)
 

@@ -470,6 +470,38 @@ const findControlledResources = async (args, kubeEntities: Array<any>): Promise<
 }
 
 /**
+ * port status entities to table module
+ *
+ */
+const statusTable = (entities) => {
+  if (Array.isArray(entities) && entities.length > 1) {
+    const headerRow = entities[0]
+    const entitiesRows = entities.slice(1)
+    const header: Row = {
+      name: headerRow.name,
+      attributes: headerRow.attributes,
+      outerCSS: headerRow.outerCSS,
+      fontawesome: headerRow.fontawesome,
+      fontawesomeCSS: headerRow.fontawesomeCSS
+    }
+
+    return new Table({
+      title: headerRow.title,
+      noSort: headerRow.noSort,
+      tableCSS: headerRow.tableCSS,
+      fontawesome,
+      fontawesomeCSS,
+      fontawesomeBalloon: headerRow.fontawesomeBalloon,
+      header,
+      body: entitiesRows
+    })
+  } else {
+    debug('not a valid table', entities)
+    return entities
+  }
+}
+
+/**
  * k status command handler
  *
  */
@@ -477,9 +509,10 @@ export const status = (command: string) => async args => {
   debug('constructing status', args)
 
   const direct = await getDirectReferences(command)(args)
+
+  debug('getDirectReferences', direct)
   if (Array.isArray(direct)) {
-    debug('direct', direct)
-    return args.parsedOptions.multi || Array.isArray(direct[0]) ? direct : [direct]
+    return args.parsedOptions.multi || Array.isArray(direct[0]) ? direct.map(d => statusTable(d)) : statusTable(direct)
   }
 
   const maybe = await (direct.entities || direct)
@@ -496,7 +529,7 @@ export const status = (command: string) => async args => {
     } else {
       const formattedEntities = directEntities.map(formatEntity(args.parsedOptions))
       if (direct.headerRow) {
-        return Promise.all([ direct.headerRow ].concat(...formattedEntities))
+        return statusTable([ direct.headerRow ].concat(...formattedEntities))
       } else {
         return formattedEntities
       }
@@ -508,10 +541,9 @@ export const status = (command: string) => async args => {
       const directRows = directEntities.map(formatEntity(args.parsedOptions))
 
       if (direct.headerRow) {
-        // direct.headerRow.flexWrap = 5;
-        // controlled[0].flexWrap = 5;
-        const directTable = [ direct.headerRow ].concat(directRows)
-        return [ directTable, controlled ]
+        const directTable = statusTable([ direct.headerRow ].concat(directRows))
+        const controlledTable = statusTable(controlled)
+        return [ directTable, controlledTable ]
       } else {
         console.error('internal error: expected headerRow for direct')
         return directRows.concat(controlled)

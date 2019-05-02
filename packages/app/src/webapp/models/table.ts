@@ -23,6 +23,7 @@ export class Row {
   prettyType?: string
   watch?: any
   fontawesome?: string
+  fontawesomeCSS?: string
   setSelected?: () => void
   setUnselected?: () => void
   nameCss?: any
@@ -105,6 +106,10 @@ export class Table {
 
 export function isTable (model: any): model is Table {
   return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
+}
+
+export function isMultiTable (model: any) {
+  return model !== undefined && Array.isArray(model) && model.length > 0 && model.filter(m => !isTable(m)).length === 0
 }
 
 export class Icon {
