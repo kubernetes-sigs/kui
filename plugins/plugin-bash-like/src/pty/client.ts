@@ -79,7 +79,10 @@ const alpha = (hex, alpha) => {
 }
 
 class Resizer {
-  private currentAsync: any
+  private currentAsync: NodeJS.Timeout
+
+  /** exit alt buffer mode async */
+  private exitAlt?: NodeJS.Timeout
 
   /** have we already hidden the cursor? */
   private hiddenCursorRow: Element
@@ -189,10 +192,14 @@ class Resizer {
       clearTimeout(this.currentAsync)
     }
 
+    this.currentAsync = undefined
+
     if (when === 0) {
       this.resize()
     } else {
-      this.currentAsync = setTimeout(() => this.resize(), when)
+      this.currentAsync = setTimeout(() => {
+        this.resize()
+      }, when)
     }
   }
 
@@ -224,7 +231,7 @@ class Resizer {
     debug('resize', cols, rows, width, height)
 
     this.terminal.resize(cols, rows)
-    this.currentAsync = false
+    this.currentAsync = undefined
 
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
@@ -239,49 +246,37 @@ class Resizer {
     return this.alt
   }
 
-  /** ANSI control characters of the "h" class, i.e. setMode control */
-  setMode (params: number[], collect: string): boolean {
-    if (collect === '?' && params.find(_ => _ === 47 || _ === 1047)) {
-      // switching to alt screen buffer
-      this.enterAltBufferMode()
-      this.scheduleResize()
-      return true
-    }
-  }
-
-  /** ANSI control characters of the "l" class, i.e. resetMode control */
-  resetMode (params: number[], collect: string): boolean {
-    if (collect === '?' && params.find(_ => _ === 47 || _ === 1047)) {
-      // switching to normal screen buffer
-      this.exitAltBufferMode()
-      this.terminal.clear()
-      this.scheduleResize()
-      return true
-    }
-  }
-
   enterApplicationMode () {
     debug('switching to application mode')
     this.app = true
     document.querySelector('tab.visible').classList.add('xterm-application-mode')
+    this.scheduleResize()
   }
 
   exitApplicationMode () {
     debug('switching out of application mode')
     this.app = false
     document.querySelector('tab.visible').classList.remove('xterm-application-mode')
+    this.scheduleResize()
   }
 
   enterAltBufferMode () {
     debug('switching to alt buffer mode')
     this.alt = true
+    if (this.exitAlt) {
+      clearTimeout(this.exitAlt)
+    }
     document.querySelector('tab.visible').classList.add('xterm-alt-buffer-mode')
+    this.scheduleResize()
   }
 
   exitAltBufferMode () {
     debug('switching to normal buffer mode')
     this.alt = false
-    document.querySelector('tab.visible').classList.remove('xterm-alt-buffer-mode')
+    this.exitAlt = setTimeout(() => {
+      document.querySelector('tab.visible').classList.remove('xterm-alt-buffer-mode')
+      this.scheduleResize()
+    }, 50)
   }
 }
 
@@ -338,12 +333,14 @@ const injectTheme = (terminal: xterm.Terminal): void => {
   }
 }
 
+type ChannelFactory = () => Promise<Channel>
+
 /**
  * Create a websocket channel to a remote bash
  *
  */
 const remoteChannelFactory = async (): Promise<Channel> => {
-  const url = await $('bash websocket open')
+  const url: string = await $('bash websocket open')
   debug('websocket url', url)
   return new WebSocketChannel(url)
 }
@@ -358,14 +355,13 @@ const electronChannelFactory = async (): Promise<Channel> => {
  * websocket factory for remote/proxy connection
  *
  */
-const getOrCreateChannel = async (cmdline: string, channelFactory): Promise<Channel> => {
+const getOrCreateChannel = async (cmdline: string, channelFactory: ChannelFactory, tab: Element): Promise<Channel> => {
   // tell the server to start a subprocess
   const doExec = (ws: Channel) => {
     debug('exec after open')
     ws.send(JSON.stringify({ type: 'exec', cmdline, cwd: !inBrowser() && process.cwd(), env: !inBrowser() && process.env }))
   }
 
-  const tab = document.querySelector('tab.visible')
   const cachedws = tab['ws'] as Channel
 
   if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
@@ -391,7 +387,7 @@ const getOrCreateChannel = async (cmdline: string, channelFactory): Promise<Chan
  *
  *
  */
-let alreadyInjectedCSS
+let alreadyInjectedCSS: boolean
 export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new Promise((resolve, reject) => {
   debug('doExec', cmdline)
 
@@ -405,6 +401,11 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
     }
     alreadyInjectedCSS = true
   }
+
+  // make sure to grab currently visible tab right away (i.e. before
+  // any asyncs), so that we can store a reference before the user
+  // switches away to another tab
+  const tab = document.querySelector('tab.visible')
 
   // do the rest after injectCSS
   setTimeout(async () => {
@@ -427,7 +428,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       eventBus.on('/zoom', inject) // respond to font zooming
 
       const channelFactory = inBrowser() ? remoteChannelFactory : electronChannelFactory
-      const ws: Channel = await getOrCreateChannel(cmdline, channelFactory)
+      const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab)
       const resizer = new Resizer(terminal, ws)
       let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
 
@@ -443,7 +444,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
          }) */
 
       // relay keyboard input to the server
-      let queuedInput
+      let queuedInput: string
       terminal.on('key', (key, ev) => {
         if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
           debug('queued input out back', key)
@@ -480,18 +481,15 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
             if (currentScrollAsync) {
               clearTimeout(currentScrollAsync)
             }
-            currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 30 })
+            const scrollRegion = tab.querySelector('.repl-inner')
+            currentScrollAsync = setTimeout(() => {
+              scrollRegion.scrollTop = scrollRegion.scrollHeight
+            }, 10)
           }
         } catch (err) {
           console.error(err)
         }
       })
-
-      // we need to identify when the application wants us to switch
-      // into and out of "alt buffer" mode; e.g. typing "vi" then :wq
-      // from vi would enter and exit alt buffer mode, respectively.
-      terminal.addCsiHandler('h', resizer.setMode.bind(resizer))
-      terminal.addCsiHandler('l', resizer.resetMode.bind(resizer))
 
       terminal.element.classList.add('fullscreen')
 
