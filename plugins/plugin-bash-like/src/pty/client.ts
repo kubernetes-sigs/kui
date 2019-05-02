@@ -19,6 +19,7 @@ const debug = Debug('plugins/bash-like/pty/client')
 
 import * as path from 'path'
 import * as xterm from 'xterm'
+import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 // import * as WebSocket from 'ws'
 
 import eventBus from '@kui-shell/core/core/events'
@@ -420,6 +421,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
 
       const terminal = new xterm.Terminal({ rendererType: 'dom' })
       terminal.open(xtermContainer)
+      webLinksInit(terminal)
 
       // theming
       const inject = () => injectTheme(terminal)
