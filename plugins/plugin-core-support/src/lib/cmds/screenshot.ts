@@ -84,7 +84,8 @@ const hideCurrentReplBlock = [
 ]
 const squishRepl = (selector: string) => [
   { selector: 'body', css: 'screenshot-squish' },
-  { selector: `${selector} .repl-input`, property: 'display', value: 'none' }
+  { selector: `${selector} .repl-input`, property: 'display', value: 'none' },
+  { selector: 'tab.visible', css: 'screenshot-squish' }
 ]
 const squishers = {
   sidecar: [
@@ -376,7 +377,7 @@ export default async (commandTree: CommandRegistrar) => {
           snapImg.classList.add('screenshot-image')
 
           message.classList.add('screenshot-success-message')
-          message.innerText = 'Screenshot successfully copied to clipboard'
+          message.innerText = 'Screenshot copied to clipboard'
 
           check.classList.add('screenshot-check-icon')
           const checkIcon = document.createElement('i')
