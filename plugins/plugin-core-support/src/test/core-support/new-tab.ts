@@ -80,3 +80,21 @@ common.localDescribe('new tab from active tab via button click', function (this:
      .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
      .catch(common.oops(this)))
 })
+
+common.localDescribe('new tab from active tab that is emitting output via button click', function (this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
+
+  it('start an echo loop, then new tab via button click', () => cli.do('while true; do echo hi; sleep 1; done', this.app)
+     .then(() => new Promise(resolve => setTimeout(resolve, 4000)))
+     .then(() => this.app.client.click('.new-tab-button'))
+     .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
+     .then(() => cli.waitForRepl(this.app)) // should have an active repl
+     .then(() => this.app.client.waitForExist(`${selectors.CURRENT_TAB} .xterm`, 5000, true)) // no xterm DOM in the new tab
+     .catch(common.oops(this)))
+
+  it('should execute echo in new tab', () => cli.do('echo hi', this.app)
+     .then(cli.expectOKWithString('hi'))
+     .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
+     .catch(common.oops(this)))
+})

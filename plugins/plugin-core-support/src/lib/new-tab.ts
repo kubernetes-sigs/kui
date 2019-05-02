@@ -25,7 +25,7 @@ import { isVisible as isSidecarVisible,
          toggleMaximization,
          clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { element } from '@kui-shell/core/webapp/util/dom'
+import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { listen, getCurrentPrompt, setStatus } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
@@ -169,6 +169,8 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   const newTab = currentVisibleTab.cloneNode(true) as HTMLElement
   const newTabId = (nTabs + 1).toString()
   newTab.setAttribute('data-tab-index', newTabId)
+
+  removeAllDomChildren(newTab.querySelector('.repl-result'))
 
   currentVisibleTab.classList.remove('visible')
   currentVisibleTab.parentNode.appendChild(newTab)
