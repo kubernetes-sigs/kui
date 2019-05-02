@@ -28,6 +28,7 @@ exports.aliases = {
 const selectors = {
   APIHOST: '#openwhisk-api-host',
   NAMESPACE: '#openwhisk-namespace',
+  CURENT_TAB: 'tab.visible',
   SIDECAR_BASE: 'tab.visible sidecar',
   SIDECAR_FULLSCREEN: 'tab.visible.sidecar-full-screen sidecar.visible',
   PROMPT_BLOCK: 'tab.visible .repl .repl-block',
