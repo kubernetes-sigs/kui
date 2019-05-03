@@ -85,9 +85,6 @@ class Resizer {
   /** exit alt buffer mode async */
   private exitAlt?: NodeJS.Timeout
 
-  /** have we already hidden the cursor? */
-  private hiddenCursorRow: Element
-
   /** are we in alt buffer mode? */
   private alt = false
 
@@ -96,22 +93,28 @@ class Resizer {
 
   private quiescent: any
 
-  private readonly ws: Channel
   private readonly terminal: xterm.Terminal
+  private _ws: Channel
   private readonly resizeNow: any
 
-  constructor (terminal: xterm.Terminal, ws: Channel) {
-    this.ws = ws
+  constructor (terminal: xterm.Terminal) {
     this.terminal = terminal
 
-    this.scheduleResize(100)
+    const resizeNow = this.scheduleResize.bind(this)
+    window.addEventListener('resize', resizeNow) // window resize
+    eventBus.on('/sidecar/toggle', resizeNow) // sidecar resize
 
-    this.resizeNow = () => {
-      return this.scheduleResize()
-    }
+    this.alt = true
+    resizeNow()
+    this.alt = false
+  }
 
-    window.addEventListener('resize', this.resizeNow) // window resize
-    eventBus.on('/sidecar/toggle', this.resizeNow) // sidecar resize
+  get ws (): Channel {
+    return this._ws
+  }
+
+  set ws (ws: Channel) {
+    this._ws = ws
   }
 
   destroy () {
@@ -127,67 +130,34 @@ class Resizer {
    *
    */
   hideCursorOnlyRow () {
-    const doHide = () => {
-      const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
-      const cursorRow = cursor && (cursor.parentNode as Element)
-      if (cursorRow) {
-        if (cursorRow != this.hiddenCursorRow) { // tslint:disable-line:triple-equals
-          this.maybeUnhideCursorRow()
-        }
-
-        if (cursorRow.children.length === 1) {
-          cursorRow.classList.add('hide')
-          this.hiddenCursorRow = cursorRow
-        }
-      }
-    }
-
     // logic to hide trailing empty rows: if we have blank rows
     // following by non-blank rows, pick the list such occurence as
     // the start of the trailing blanks; if we have no such
     // sandwiching, then the CSS query in web/css/xterm.css
     // `.xterm-rows > div:empty` suffices
-    setTimeout(() => {
-      const endOfContent = this.terminal.element.querySelectorAll('.xterm-rows > div:empty + div:not(:empty)')
-      if (endOfContent.length > 0) {
-        // we have a blank followed by not-blank
-        let iter = endOfContent[endOfContent.length - 1].nextSibling as Element
-        while (iter) {
-          if (iter.children.length === 0) {
-            iter.classList.add('hide')
-          }
-          iter = (iter.nextSibling as Element)
+    const endOfContent = this.terminal.element.querySelectorAll('.xterm-rows > div:empty + div:not(:empty)')
+    if (endOfContent.length > 0) {
+      // we have a blank followed by not-blank
+      let iter = endOfContent[endOfContent.length - 1].nextSibling as Element
+      while (iter) {
+        if (iter.children.length === 0) {
+          iter.classList.add('hide')
         }
-        this.terminal.element.classList.add('special-handling-of-trailing-empty-rows')
+        iter = (iter.nextSibling as Element)
       }
-    }, 20)
+      this.terminal.element.classList.add('special-handling-of-trailing-empty-rows')
+    }
 
-    // Notes: terminal.write (just above, in 'data') is
-    // asynchronous. For now, cascade some calls so that we can
-    // get it done ASAP.
-    setTimeout(doHide, 0)
-    setTimeout(doHide, 40)
-    setTimeout(doHide, 200)
-    setTimeout(doHide, 400)
-    setTimeout(doHide, 800)
-  }
-
-  /**
-   * Due to a race with exit versus data events, we need to be careful
-   * to unhide the hiddenCursorRow if new data flows in
-   *
-   */
-  maybeUnhideCursorRow () {
-    if (this.hiddenCursorRow) {
-      this.hiddenCursorRow.classList.remove('hide')
-      this.hiddenCursorRow = undefined
+    const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
+    const cursorRow = cursor && (cursor.parentNode as Element)
+    if (cursorRow) {
+      if (cursorRow.children.length === 1) {
+        cursorRow.classList.add('hide')
+      }
     }
   }
 
   scheduleResize (when = 0) {
-    const altBuffer = this.inAltBufferMode()
-    debug('scheduleResize', altBuffer, when)
-
     if (this.currentAsync) {
       debug('cancelling current resize')
       clearTimeout(this.currentAsync)
@@ -204,22 +174,20 @@ class Resizer {
     }
   }
 
-  private paddingHorizontal (elt: Element) {
+  static paddingHorizontal (elt: Element) {
     const style = window.getComputedStyle(elt)
     return parseInt(style.getPropertyValue('padding-left') || '0', 10)
       + parseInt(style.getPropertyValue('padding-right') || '0', 10)
   }
 
-  private paddingVertical (elt: Element) {
+  static paddingVertical (elt: Element) {
     const style = window.getComputedStyle(elt)
     return parseInt(style.getPropertyValue('padding-top') || '0', 10)
       + parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
   }
 
-  private resize () {
-    const altBuffer = this.inAltBufferMode()
-
-    const selectorForWidth = altBuffer ? 'tab.visible .repl' : 'tab.visible .repl-inner .repl-block .repl-output'
+  static getSize (terminal: xterm.Terminal, altBuffer = false) {
+    const selectorForWidth = altBuffer ? '.tab-container' : 'tab.visible .repl-inner .repl-block .repl-output'
     const widthElement = document.querySelector(selectorForWidth)
     const width = widthElement.getBoundingClientRect().width - this.paddingHorizontal(widthElement)
 
@@ -227,15 +195,25 @@ class Resizer {
     const heightElement = selectorForHeight === selectorForWidth ? widthElement : document.querySelector(selectorForHeight)
     const height = heightElement.getBoundingClientRect().height - this.paddingVertical(heightElement)
 
-    const cols = Math.floor(width / this.terminal['_core'].renderer.dimensions.actualCellWidth)
-    const rows = Math.floor(height / this.terminal['_core'].renderer.dimensions.actualCellHeight)
-    debug('resize', cols, rows, width, height)
+    const cols = Math.floor(width / terminal['_core'].renderer.dimensions.actualCellWidth)
+    const rows = Math.floor(height / terminal['_core'].renderer.dimensions.actualCellHeight)
 
-    this.terminal.resize(cols, rows)
-    this.currentAsync = undefined
+    debug('getSize', cols, rows, width, height, altBuffer, this.paddingVertical(heightElement))
+    console.error('pty/client')
+    return { rows, cols }
+  }
 
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
+  private resize () {
+    const { rows, cols } = Resizer.getSize(this.terminal, this.inAltBufferMode())
+    debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
+
+    if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
+      this.terminal.resize(cols, rows)
+      this.currentAsync = undefined
+
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
+      }
     }
   }
 
@@ -251,14 +229,13 @@ class Resizer {
     debug('switching to application mode')
     this.app = true
     document.querySelector('tab.visible').classList.add('xterm-application-mode')
-    this.scheduleResize()
+    this.scheduleResize(20)
   }
 
   exitApplicationMode () {
     debug('switching out of application mode')
     this.app = false
     document.querySelector('tab.visible').classList.remove('xterm-application-mode')
-    this.scheduleResize()
   }
 
   enterAltBufferMode () {
@@ -268,16 +245,13 @@ class Resizer {
       clearTimeout(this.exitAlt)
     }
     document.querySelector('tab.visible').classList.add('xterm-alt-buffer-mode')
-    this.scheduleResize()
+    this.scheduleResize(20)
   }
 
   exitAltBufferMode () {
     debug('switching to normal buffer mode')
     this.alt = false
-    this.exitAlt = setTimeout(() => {
-      document.querySelector('tab.visible').classList.remove('xterm-alt-buffer-mode')
-      this.scheduleResize()
-    }, 50)
+    document.querySelector('tab.visible').classList.remove('xterm-alt-buffer-mode')
   }
 }
 
@@ -356,11 +330,19 @@ const electronChannelFactory = async (): Promise<Channel> => {
  * websocket factory for remote/proxy connection
  *
  */
-const getOrCreateChannel = async (cmdline: string, channelFactory: ChannelFactory, tab: Element): Promise<Channel> => {
+const getOrCreateChannel = async (cmdline: string, channelFactory: ChannelFactory, tab: Element, terminal: xterm.Terminal): Promise<Channel> => {
   // tell the server to start a subprocess
   const doExec = (ws: Channel) => {
-    debug('exec after open')
-    ws.send(JSON.stringify({ type: 'exec', cmdline, cwd: !inBrowser() && process.cwd(), env: !inBrowser() && process.env }))
+    debug('exec after open', terminal.cols, terminal.rows)
+
+    ws.send(JSON.stringify({
+      type: 'exec',
+      cmdline,
+      rows: terminal.rows,
+      cols: terminal.cols,
+      cwd: !inBrowser() && process.cwd(),
+      env: !inBrowser() && process.env
+    }))
   }
 
   const cachedws = tab['ws'] as Channel
@@ -394,10 +376,10 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
 
   if (!alreadyInjectedCSS) {
     if (inBrowser()) {
-      injectCSS({ css: require('xterm/dist/xterm.css'), key: 'xtermjs' })
+      injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
       injectCSS({ css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'), key: 'kui-xtermjs' })
     } else {
-      injectCSS({ path: path.join(path.dirname(require.resolve('xterm/package.json')), 'dist/xterm.css'), key: 'xtermjs' })
+      injectCSS({ path: path.join(path.dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'), key: 'xtermjs' })
       injectCSS({ path: path.join(path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'), key: 'kui-xtermjs' })
     }
     alreadyInjectedCSS = true
@@ -407,6 +389,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
   // any asyncs), so that we can store a reference before the user
   // switches away to another tab
   const tab = document.querySelector('tab.visible')
+  const scrollRegion = tab.querySelector('.repl-inner')
 
   // do the rest after injectCSS
   setTimeout(async () => {
@@ -419,7 +402,15 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       // xtermContainer.classList.add('zoomable')
       parent.appendChild(xtermContainer)
 
+      debug('creating terminal')
       const terminal = new xterm.Terminal({ rendererType: 'dom' })
+
+      // used to manage the race between pending writes to the
+      // terminal canvas and process exit; see
+      // https://github.com/IBM/kui/issues/1272
+      let cbAfterPendingWrites: () => void
+      let pendingWrites = 0
+
       terminal.open(xtermContainer)
       webLinksInit(terminal)
 
@@ -429,9 +420,11 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       eventBus.on('/theme/change', inject) // and re-inject when the theme changes
       eventBus.on('/zoom', inject) // respond to font zooming
 
+      const resizer = new Resizer(terminal)
+
       const channelFactory = inBrowser() ? remoteChannelFactory : electronChannelFactory
-      const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab)
-      const resizer = new Resizer(terminal, ws)
+      const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal)
+      resizer.ws = ws
       let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
 
       // tell server that we are done, so that it can clean up
@@ -477,25 +470,42 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
         setPendingTextSelection(terminal.getSelection())
       })
 
-      terminal.on('linefeed', () => {
+      const doScroll = () => {
         try {
           if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
             if (currentScrollAsync) {
               clearTimeout(currentScrollAsync)
             }
-            const scrollRegion = tab.querySelector('.repl-inner')
-            currentScrollAsync = setTimeout(() => {
-              scrollRegion.scrollTop = scrollRegion.scrollHeight
-            }, 10)
+            scrollRegion.scrollTop = scrollRegion.scrollHeight
           }
         } catch (err) {
           console.error(err)
         }
+      }
+
+      const notifyOfWriteCompletion = (evt: { start: number, end: number }) => {
+        if (pendingWrites > 0) {
+          pendingWrites = 0
+          if (cbAfterPendingWrites) {
+            cbAfterPendingWrites()
+            cbAfterPendingWrites = undefined
+          }
+        }
+      }
+
+      // xtermjs writes are asynchronous, and ultimately occur in an
+      // animation frame; the result is that the terminal canvas may
+      // receive updates after we receive a process exit event; but we
+      // will always receive a `refresh` event when the animation
+      // frame is done. see https://github.com/IBM/kui/issues/1272
+      terminal.on('refresh', (evt: { start: number, end: number }) => {
+        doScroll()
+        notifyOfWriteCompletion(evt)
       })
 
       terminal.element.classList.add('fullscreen')
 
-      const onMessage = (data: string) => {
+      const onMessage = async (data: string) => {
         const msg = JSON.parse(data)
 
         if (msg.type === 'state' && msg.state === 'ready') {
@@ -534,49 +544,57 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
             debug('pending usage')
             pendingUsage = true
           } else {
+            pendingWrites++
             terminal.write(msg.data)
           }
         } else if (msg.type === 'exit') {
           // server told us that it is done
           debug('exit', msg.exitCode)
-          // ws.close()
-          terminal.blur()
 
-          ws.removeEventListener('message', onMessage)
+          const finishUp = async () => {
+            ws.removeEventListener('message', onMessage)
+            terminal.blur()
 
-          resizer.exitAltBufferMode()
-          resizer.exitApplicationMode()
-          resizer.hideCursorOnlyRow()
+            resizer.exitAltBufferMode()
+            resizer.exitApplicationMode()
+            resizer.hideCursorOnlyRow()
 
-          resizer.destroy()
-          xtermContainer.classList.add('xterm-terminated')
+            resizer.destroy()
+            xtermContainer.classList.add('xterm-terminated')
 
-          if (pendingUsage) {
-            execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
+            if (pendingUsage) {
+              execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
+            }
+
+            // vi, then :wq, then :q, you will get an exit code of 1, but
+            // with no output (raw===''); note how we treat this as "ok",
+            // i.e. no error thrown
+            if (msg.exitCode !== 0 && raw.length > 0) {
+              const error = new Error('')
+              if (/File exists/i.test(raw)) error['code'] = 409 // re: i18n, this is for tests
+              else if (msg.exitCode !== 127 && (/no such/i.test(raw) || /not found/i.test(raw))) error['code'] = 404 // re: i18n, this is for tests
+              else error['code'] = msg.exitCode
+
+              if (msg.exitCode === 127) {
+                xtermContainer.classList.add('hide')
+              } else {
+                error['hide'] = true
+              }
+
+              reject(error)
+            } else {
+              if (queuedInput && queuedInput.length > 0) {
+                pasteQueuedInput(queuedInput)
+              }
+
+              resolve(true)
+            }
           }
 
-          // vi, then :wq, then :q, you will get an exit code of 1, but
-          // with no output (raw===''); note how we treat this as "ok",
-          // i.e. no error thrown
-          if (msg.exitCode !== 0 && raw.length > 0) {
-            const error = new Error('')
-            if (/File exists/i.test(raw)) error['code'] = 409 // re: i18n, this is for tests
-            else if (msg.exitCode !== 127 && (/no such/i.test(raw) || /not found/i.test(raw))) error['code'] = 404 // re: i18n, this is for tests
-            else error['code'] = msg.exitCode
-
-            if (msg.exitCode === 127) {
-              xtermContainer.classList.add('hide')
-            } else {
-              error['hide'] = true
-            }
-
-            reject(error)
+          if (pendingWrites > 0) {
+            cbAfterPendingWrites = finishUp
           } else {
-            if (queuedInput && queuedInput.length > 0) {
-              pasteQueuedInput(queuedInput)
-            }
-
-            resolve(true)
+            finishUp()
           }
         }
       }

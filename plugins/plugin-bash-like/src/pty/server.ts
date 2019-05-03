@@ -145,6 +145,8 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
           try {
             shell = pty.spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
               name: 'xterm-color',
+              rows: parseInt(msg.rows, 10),
+              cols: parseInt(msg.cols, 10),
               cwd: msg.cwd || process.cwd(),
               env: msg.env || process.env
             })
