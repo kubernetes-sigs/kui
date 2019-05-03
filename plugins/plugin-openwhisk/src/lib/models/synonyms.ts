@@ -42,7 +42,7 @@ export const synonymsTable = {
   }
 }
 
-export const synonyms = (type, T?) => {
+export const synonyms = (type: string, T?: string): string[] => {
   // either T === entities or T === verbs
   return synonymsTable[T || 'entities'][type].concat([type])
 }

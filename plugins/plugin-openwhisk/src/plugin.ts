@@ -59,7 +59,7 @@ export default async (commandTree, prequire) => {
 
   // action extensions
   await letCommand(commandTree, wsk)
-  await invoke(commandTree, wsk)
+  await invoke(commandTree)
   await webbify(commandTree, wsk)
 
   // activation extensions
