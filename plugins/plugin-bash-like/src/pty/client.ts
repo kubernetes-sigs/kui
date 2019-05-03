@@ -295,7 +295,7 @@ const injectTheme = (terminal: xterm.Terminal): void => {
     foreground: val('text-01'),
     background: val('ui-01'),
     cursor:  val('support-01'),
-    selection: alpha(val('selection-background'), 0.2),
+    selection: alpha(val('selection-background'), 0.3),
 
     black: val('black'),
     red: val('red'),

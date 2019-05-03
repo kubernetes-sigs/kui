@@ -9,7 +9,7 @@ body[kui-theme="Lucario"] {
     --color-base01: hsl(209, 30%, 18%);
     --color-base02: #2b3e50;
     --color-base03: #354758;
-    --color-base04: hsl(204, 7%, 68%); /* dialed L from 60% #929ba1 */
+    --color-base04: #a8afb3; /* hsl(204, 7%, 68%); which is dialed with L from 60% #929ba1 */
     --color-base05: #eeeeee;
     --color-base06: #f8f8f2;
     --color-base07: #ffffff;
