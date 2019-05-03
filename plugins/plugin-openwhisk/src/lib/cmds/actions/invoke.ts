@@ -25,16 +25,19 @@
  *
  */
 
-const debug = require('debug')('plugins/openwhisk/cmds/actions/invoke')
+import * as Debug from 'debug'
+const debug = Debug('plugins/openwhisk/cmds/actions/invoke')
 
 import repl = require('@kui-shell/core/core/repl')
+import { CommandHandler, CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { actions } from '../openwhisk-usage'
+import { synonyms } from '../../models/synonyms'
 
 /**
  * Make a documentation struct
  *
  */
-const docs = syn => ({
+const docs = (syn: string) => ({
   usage: actions.available.find(({ command }) => command === 'invoke')
 })
 
@@ -60,7 +63,7 @@ const fetchFromError = error => {
  *
  *
  */
-const respond = options => response => {
+const respond = (options: ParsedOptions) => response => {
   debug('responding to caller', response)
 
   if (options.quiet) {
@@ -80,7 +83,7 @@ const respond = options => response => {
  * impl to perform a blocking invocation.
  *
  */
-const doInvoke = rawInvoke => (opts) => {
+const doInvoke = (rawInvoke: CommandHandler) => (opts: IEvaluatorArgs) => {
   if (!opts.argv.find(opt => opt === '-b' || opt === '--blocking')) {
     // doInvoke means blocking invoke, so make sure that the argv
     // indicates that we want a blocking invocation
@@ -110,12 +113,12 @@ const doInvoke = rawInvoke => (opts) => {
  * `invoke.
  *
  */
-const doAsync = rawInvoke => (opts) => {
+const doAsync = (rawInvoke: CommandHandler) => (opts: IEvaluatorArgs) => {
   const idx = opts.argv.findIndex(arg => arg === 'async')
   opts.argv[idx] = 'invoke'
   opts.command = opts.command.slice(0).replace(/^async/, 'invoke') // clone it, via slice, to avoid contaminating command history
   return rawInvoke(opts).then(_ => Object.assign(_, { verb: 'async' }))
-    .catch(error => Promise.reject(error))
+    .catch((error: Error) => Promise.reject(error))
 }
 
 /**
@@ -123,7 +126,7 @@ const doAsync = rawInvoke => (opts) => {
  * delegate, i.e. the underlying invoke impl.
  *
  */
-export default async (commandTree, { synonyms }) => {
+export default async (commandTree: CommandRegistrar) => {
   const rawInvoke = await commandTree.find('/wsk/action/invoke') // this is the command impl we're overriding, we'll delegate to it
   const rawHandler = rawInvoke.$
   const syncInvoke = doInvoke(rawHandler) // the command handler for sync invokes

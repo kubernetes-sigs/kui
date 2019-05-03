@@ -81,6 +81,8 @@ export interface IEvent {
   isDrilldown?: boolean
 }
 
+export type ParsedOptions = { [key: string]: string }
+
 /**
  * Evaluator args
  *
@@ -88,7 +90,7 @@ export interface IEvent {
 export interface IEvaluatorArgs {
   block: HTMLElement | boolean
   nextBlock: HTMLElement
-  parsedOptions: { [key: string]: string }
+  parsedOptions: ParsedOptions
   command: string
   argv: Array<string>
   argvNoOptions: Array<string>
@@ -161,6 +163,7 @@ export interface ICatchAllHandler extends ICommandBase {
 }
 
 export interface CommandRegistrar {
+  find: (route: string, noOverride?: boolean) => Promise<ICommand>
   listen: (route: string, handler: CommandHandler, options: ICommandOptions) => ICommand
   synonym: (route: string, handler: CommandHandler, master: ICommand, options: ICommandOptions) => void
   subtree: (route: string, options: ICommandOptions) => void
