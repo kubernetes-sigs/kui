@@ -33,7 +33,7 @@
     "node-pty": "0.8.1",
     "shelljs": "0.8.3",
     "ws": "6.2.1",
-    "xterm": "3.12.0"
+    "xterm": "^3.13.0-beta7"
   },
   "kui": {
     "exclude": {
