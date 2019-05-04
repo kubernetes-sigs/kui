@@ -18,6 +18,7 @@ import Presentation from '@kui-shell/core/webapp/views/presentation'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { addNameToSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import * as prettyPrintDuration from 'pretty-ms'
 import * as events from 'events'
@@ -638,9 +639,8 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
  * This is the module
  *
  */
-export default async (commandTree, prequire) => {
-  const wsk = await prequire('plugin-openwhisk')
-  const tableIt = cmd => visualize(wsk, commandTree, cmd, 'summary', drawTable,
+export default async (commandTree: CommandRegistrar) => {
+  const tableIt = cmd => visualize(cmd, 'summary', drawTable,
     '\t-w|--w     wider action name column\n\t--ww       even wider action name column')
 
   const opts = {

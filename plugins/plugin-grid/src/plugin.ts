@@ -17,18 +17,19 @@
 import { toplevel as usage } from './usage'
 import grid from './lib/cmds/grid'
 import table from './lib/cmds/table'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * This is the module
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   // register the top-level usage handler
   commandTree.subtree('/visualize', { usage })
 
   // register the command handlers
   return Promise.all([
-    grid(commandTree, prequire),
-    table(commandTree, prequire)
+    grid(commandTree),
+    table(commandTree)
   ])
 }
