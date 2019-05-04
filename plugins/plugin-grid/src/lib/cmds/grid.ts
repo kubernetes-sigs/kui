@@ -25,6 +25,7 @@ import windowDefaults from '@kui-shell/core/webapp/defaults'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
 import { drilldownWith } from '../drilldown'
@@ -545,7 +546,7 @@ const drawAsTimeline = (timelineData, content, gridGrid, zoomLevelForDisplay, op
  * This is the module
  *
  */
-export default async (commandTree, prequire, options?) => {
+export default async (commandTree: CommandRegistrar, options?) => {
   debug('init')
 
   if (options && options.activations) {
@@ -555,8 +556,7 @@ export default async (commandTree, prequire, options?) => {
     return
   }
 
-  const wsk = await prequire('plugin-openwhisk')
-  const mkCmd = (cmd, extraOptions?) => visualize(wsk, commandTree, cmd, viewName, drawGrid, null, extraOptions)
+  const mkCmd = (cmd, extraOptions?) => visualize(cmd, viewName, drawGrid, null, extraOptions)
   const fixedGrid = mkCmd('grid')
   const pollingGrid = mkCmd('...', { live: true })
 

@@ -166,5 +166,5 @@ export interface CommandRegistrar {
   find: (route: string, noOverride?: boolean) => Promise<ICommand>
   listen: (route: string, handler: CommandHandler, options: ICommandOptions) => ICommand
   synonym: (route: string, handler: CommandHandler, master: ICommand, options: ICommandOptions) => void
-  subtree: (route: string, options: ICommandOptions) => void
+  subtree: (route: string, options: ICommandOptions) => ICommand
 }

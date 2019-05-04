@@ -30,6 +30,7 @@ import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as namespace from '@kui-shell/plugin-openwhisk/lib/models/namespace'
 import { range as rangeParser } from './time'
@@ -143,7 +144,7 @@ const filterBySuccess = ({ success, failure }) => activations => {
  * Fetch the activation data from the OpenWhisk API
  *
  */
-export const fetchActivationData /* FromBackend */ = (wsk, N, options) => {
+export const fetchActivationData /* FromBackend */ = (N, options) => {
   const { nocrawl = false, path, filter, include, exclude, skip = 0, batchSize = defaults.batchSize, all } = options
   let { name = '' } = options
 
@@ -203,7 +204,7 @@ export const fetchActivationData /* FromBackend */ = (wsk, N, options) => {
     return repl.qexec(`app get "${name}"`)
       .then(extractTasks)
       .then(tasks => all ? tasks.concat([name]) : tasks) // if options.all, then add the app to the list of actions
-      .then(tasks => Promise.all(tasks.map(task => fetchActivationData(wsk, N, { nocrawl: true, name: task, filter, include, exclude, skip, upto, since, batchSize }))))
+      .then(tasks => Promise.all(tasks.map(task => fetchActivationData(N, { nocrawl: true, name: task, filter, include, exclude, skip, upto, since, batchSize }))))
       .then(flatten)
       .then(filterByLatencyBucket(options))
       .then(filterBySuccess(options))
@@ -316,7 +317,7 @@ export const prepareHeader = (isRedraw = false): IHeader => {
  *
  */
 export type Renderer = (options: Object, header: IHeader, uuid: string, isRedraw?: boolean) => void
-export const visualize = (wsk, commandTree, cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ argv: fullArgv, argvNoOptions, parsedOptions: options }) => {
+export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ argv: fullArgv, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
@@ -353,7 +354,7 @@ export const visualize = (wsk, commandTree, cmd, viewName: string, draw: Rendere
     if (N > defaults.maxN) {
       throw new Error(`Please provide a maximum value of ${defaults.maxN}`)
     }
-    return fetchActivationData(wsk, N, Object.assign(options, { name: appName }))
+    return fetchActivationData(N, Object.assign(options, { name: appName }))
     /* .then(data => {
                 if (!isRedraw) {
                     // remember the time range, so that the redraw can
