@@ -91,7 +91,8 @@ class Resizer {
   /** are we in application mode? e.g. less */
   private app = false
 
-  private quiescent: any
+  /** have we already deleted empty rows? */
+  private frozen = false
 
   private readonly terminal: xterm.Terminal
   private _ws: Channel
@@ -126,28 +127,46 @@ class Resizer {
   }
 
   /**
+   * Hide trailing empty blanks
+   *
+   */
+  hideTrailingEmptyBlanks (remove = false, from = 0) {
+    if (this.frozen) {
+      // we have already trimmed trailing empty blanks by removal from
+      // the DOM; this is irreversible
+      return
+    }
+
+    debug('hideTrailingEmptyBlanks', remove, from)
+
+    if (!remove) {
+      const hidden = this.terminal.element.querySelectorAll('.xterm-rows > .xterm-hidden-row')
+      for (let idx = 0; idx < hidden.length; idx++) {
+        hidden[idx].classList.remove('xterm-hidden-row')
+      }
+    } else {
+      this.frozen = true
+    }
+
+    const rows = this.terminal.element.querySelector('.xterm-rows').children
+    for (let idx = rows.length - 1; idx >= from; idx--) {
+      if (rows[idx].children.length === 0) {
+        if (remove) {
+          rows[idx].parentNode.removeChild(rows[idx])
+        } else {
+          rows[idx].classList.add('xterm-hidden-row')
+        }
+      } else {
+        break
+      }
+    }
+  }
+
+  /**
    * Render a row that contains only the cursor as invisible
    *
    */
   hideCursorOnlyRow () {
-    // logic to hide trailing empty rows: if we have blank rows
-    // following by non-blank rows, pick the list such occurence as
-    // the start of the trailing blanks; if we have no such
-    // sandwiching, then the CSS query in web/css/xterm.css
-    // `.xterm-rows > div:empty` suffices
-    const endOfContent = this.terminal.element.querySelectorAll('.xterm-rows > div:empty + div:not(:empty)')
-    if (endOfContent.length > 0) {
-      // we have a blank followed by not-blank
-      let iter = endOfContent[endOfContent.length - 1].nextSibling as Element
-      while (iter) {
-        if (iter.children.length === 0) {
-          iter.classList.add('hide')
-        }
-        iter = (iter.nextSibling as Element)
-      }
-      this.terminal.element.classList.add('special-handling-of-trailing-empty-rows')
-    }
-
     const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
     const cursorRow = cursor && (cursor.parentNode as Element)
     if (cursorRow) {
@@ -198,8 +217,7 @@ class Resizer {
     const cols = Math.floor(width / terminal['_core'].renderer.dimensions.actualCellWidth)
     const rows = Math.floor(height / terminal['_core'].renderer.dimensions.actualCellHeight)
 
-    debug('getSize', cols, rows, width, height, altBuffer, this.paddingVertical(heightElement))
-    console.error('pty/client')
+    debug('getSize', cols, rows, width, height, altBuffer)
     return { rows, cols }
   }
 
@@ -208,11 +226,15 @@ class Resizer {
     debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
 
     if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
-      this.terminal.resize(cols, rows)
-      this.currentAsync = undefined
+      try {
+        this.terminal.resize(cols, rows)
+        this.currentAsync = undefined
 
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
+        }
+      } catch (err) {
+        debug(err.message)
       }
     }
   }
@@ -422,10 +444,17 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
 
       const resizer = new Resizer(terminal)
 
+      // heuristic for hiding empty rows
+      terminal.element.classList.add('xterm-empty-row-heuristic')
+      setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
+
       const channelFactory = inBrowser() ? remoteChannelFactory : electronChannelFactory
       const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal)
       resizer.ws = ws
-      let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
+
+      let currentScrollAsync
+      // let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
+      // scrollRegion.scrollTop = scrollRegion.scrollHeight
 
       // tell server that we are done, so that it can clean up
       /* window.addEventListener('beforeunload', () => {
@@ -476,7 +505,15 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
             if (currentScrollAsync) {
               clearTimeout(currentScrollAsync)
             }
-            scrollRegion.scrollTop = scrollRegion.scrollHeight
+
+            currentScrollAsync = setTimeout(() => {
+              if (!xtermContainer.classList.contains('xterm-terminated')) {
+                // scrollRegion.scrollTop = scrollRegion.scrollHeight
+                scrollIntoView({ which: '.repl-block:last-child', when: 0 })
+              } else {
+                debug('skipping scroll to bottom for terminated xterm')
+              }
+            }, 50)
           }
         } catch (err) {
           console.error(err)
@@ -499,6 +536,8 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       // will always receive a `refresh` event when the animation
       // frame is done. see https://github.com/IBM/kui/issues/1272
       terminal.on('refresh', (evt: { start: number, end: number }) => {
+        // debug('refresh', evt.start, evt.end)
+        resizer.hideTrailingEmptyBlanks()
         doScroll()
         notifyOfWriteCompletion(evt)
       })
@@ -557,6 +596,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
 
             resizer.exitAltBufferMode()
             resizer.exitApplicationMode()
+            resizer.hideTrailingEmptyBlanks(true)
             resizer.hideCursorOnlyRow()
 
             resizer.destroy()

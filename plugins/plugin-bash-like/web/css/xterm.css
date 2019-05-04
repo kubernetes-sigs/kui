@@ -27,13 +27,22 @@ tab.xterm-alt-buffer-mode .repl-output, tab.xterm-alt-buffer-mode .repl-block, t
     padding: 0;
 }
 
-tab:not(.xterm-alt-buffer-mode) .xterm:not(.special-handling-of-trailing-empty-rows) .xterm-rows > div:empty {
+tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
+    display: none;
+}
+
+.xterm .xterm-rows .xterm-hidden-row {
     display: none;
 }
 
 .xterm-container .xterm-fg-7.xterm-dim {
     opacity: 1;
     color: var(--color-text-02);
+}
+
+/* hide cursor block for terminated processes */
+.xterm-terminated .xterm-rows .xterm-cursor {
+    display: none;
 }
 
 /* try to disable xterm components for terminated processes */
