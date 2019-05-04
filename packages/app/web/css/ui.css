@@ -222,8 +222,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .scrollable[data-table-max-rows="10"], .scrollable-auto[data-table-max-rows="10"] {
     max-height: calc(10 * 3em + 2px);
 }
-.result-as-table .result-table-outer {
-    /* repl table */
+.result-as-multi-table .result-table-outer {
     display: table-cell;
 }
 .result-as-fixed-tables.result-as-table .result-table-outer {
