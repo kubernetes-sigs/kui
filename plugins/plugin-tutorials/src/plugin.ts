@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-module.exports = (commandTree, prequire) => {
-  require('./lib/cmds/list')(commandTree, prequire)
-  require('./lib/cmds/get')(commandTree, prequire)
-  require('./lib/cmds/play')(commandTree, prequire)
-  require('./lib/cmds/shortcuts')(commandTree, prequire)
+import list from './lib/cmds/list'
+import get from './lib/cmds/get'
+import play from './lib/cmds/play'
+import shortcuts from './lib/cmds/shortcuts'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
+export default async (commandTree: CommandRegistrar) => {
+  return Promise.all([
+    list(commandTree),
+    get(commandTree),
+    play(commandTree),
+    shortcuts(commandTree)
+  ])
 }

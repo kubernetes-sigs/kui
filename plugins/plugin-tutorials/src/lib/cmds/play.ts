@@ -41,6 +41,7 @@ import cli = require('@kui-shell/core/webapp/cli')
 import repl = require('@kui-shell/core/core/repl')
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 // TODO eliminate this jquery dependence
 let $
@@ -838,10 +839,7 @@ const usage = cmd => ({
  * Here we register as a listener for commands
  *
  */
-module.exports = (commandTree, prequire) => {
-  // prefetch wskflow
-  setTimeout(() => prequire('plugin-wskflow'), 200)
-
+export default async (commandTree: CommandRegistrar) => {
   // synonyms for playing a tutorial
   const cmd = commandTree.listen('/tutorial/play', use('play'), { usage: usage('play'), needsUI: true, noAuthOk: true })
   commandTree.synonym('/tutorial/use', use('use'), cmd, { usage: usage('use'), needsUI: true, noAuthOk: true })

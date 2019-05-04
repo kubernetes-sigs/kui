@@ -23,30 +23,31 @@ const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
 
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * Here we register as a listener for "shortcut" commands, that make
  * it a bit easier to launch of some of the entry-level tutorials.
  *
  */
-module.exports = (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
     // getting started shortcut
   commandTree.listen('/getting/started',
                        () => repl.qexec('tutorial play @tutorials/getting-started'),
-                       { usage: { cmd: 'started', docs: gettingStartedDocs }, needsUI: true, noAuthOk: true })
+                       { usage: { command: 'started', docs: gettingStartedDocs }, needsUI: true, noAuthOk: true })
 
   // kubernetes coding basics shortcut
   commandTree.listen('/tutorial/kubernetes/starter',
                        () => repl.qexec('tutorial play @tutorials/kubernetes-basics'),
-                       { usage: { cmd: 'basics', docs: kubernetesBasicsDocs }, needsUI: true, noAuthOk: true })
+                       { usage: { command: 'basics', docs: kubernetesBasicsDocs }, needsUI: true, noAuthOk: true })
 
   // coding basics shortcut
   commandTree.listen('/tutorial/composer/basics',
                        () => repl.qexec('tutorial play @tutorials/coding-basics'),
-                       { usage: { cmd: 'basics', docs: codingBasicsDocs }, needsUI: true, noAuthOk: true })
+                       { usage: { command: 'basics', docs: codingBasicsDocs }, needsUI: true, noAuthOk: true })
 
     // combinators shortcut
   commandTree.listen('/tutorial/combinators',
                        () => repl.qexec('tutorial play @tutorials/combinators'),
-                       { usage: { cmd: 'started', docs: combinatorsDocs }, needsUI: true, noAuthOk: true })
+                       { usage: { command: 'started', docs: combinatorsDocs }, needsUI: true, noAuthOk: true })
 }

@@ -20,6 +20,7 @@ const debug = Debug('plugins/tutorial/list')
 import { readdir } from 'fs'
 
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { contentDir } from './util'
 
@@ -134,7 +135,7 @@ const usage = {
  * Here we register as a listener for commands
  *
  */
-module.exports = (commandTree, require) => {
+export default async (commandTree: CommandRegistrar) => {
   const opts = { usage, noAuthOk: true }
 
   commandTree.listen(`/tutorial/list`, doList, opts)

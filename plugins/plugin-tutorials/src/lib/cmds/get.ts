@@ -28,6 +28,7 @@ import marked = require('marked')                      // markdown to
 
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 debug('finished loading modules')
 
@@ -254,6 +255,6 @@ const doGet = async ({ argvNoOptions }) => {
     })
 }
 
-module.exports = (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(`/tutorial/get`, doGet, { usage: usage.get })
 }
