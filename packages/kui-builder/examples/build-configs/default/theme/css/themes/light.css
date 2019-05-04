@@ -41,9 +41,12 @@ body[kui-theme="Light"] {
     --color-support-04: #5aaafa;
     --color-brand-01-10: hsla(214, 49%, 47%, 0.1); /* 10% opacity */
     --color-brand-02: #5596e6;
-    --color-ui-01: var(--color-white);
+    --color-ui-01: var(--color-base07);
     --color-ui-04: var(--color-light-gray); /* 206 3 90 */
     --color-ui-05: var(--color-dark-gray); /* 204 15 65 */
+
+    --color-black: var(--color-base07);
+    --color-white: var(--color-base00);
 
     --color-scrollbar-thumb: #7A7B7D;
     --color-scrollbar-thumb-border: #A8AAAC;
