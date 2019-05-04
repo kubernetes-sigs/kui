@@ -871,7 +871,10 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
   parentNode.appendChild(nextBlock)
   listen(getPrompt(nextBlock))
   nextBlock.querySelector('input').focus()
-  nextBlock.setAttribute('data-input-count', (parseInt(currentBlock.getAttribute('data-input-count'), 10) + 1).toString())
+
+  // the currentBlock might've been detached; if so, re-start from 0
+  const currentIndex = currentBlock.parentNode ? parseInt(currentBlock.getAttribute('data-input-count'), 10) : -1
+  nextBlock.setAttribute('data-input-count', (currentIndex + 1).toString())
 
   // if you want to have the current directory displayed with the prompt
   // nextBlock.querySelector('.repl-context').innerText = process.cwd() === process.env.HOME ? '~' : basename(process.cwd());
