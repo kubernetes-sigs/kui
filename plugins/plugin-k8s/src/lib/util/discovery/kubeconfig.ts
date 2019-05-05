@@ -83,6 +83,15 @@ const fillInKUBECONFIG = (env) => {
  *
  */
 export const fillInTheBlanks = (env) => {
-  fillInPATH(env)
-  fillInKUBECONFIG(env)
+  try {
+    fillInPATH(env)
+  } catch (err) {
+    debug('giving up trying to fill in PATH for kubectl', err)
+  }
+
+  try {
+    fillInKUBECONFIG(env)
+  } catch (err) {
+    debug('giving up trying to fill in KUBECONFIG for kubectl', err)
+  }
 }

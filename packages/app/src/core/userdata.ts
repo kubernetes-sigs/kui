@@ -19,7 +19,8 @@ const debug = Debug('core/userdata')
 
 import { join } from 'path'
 
-import { inBrowser, inElectron } from '../core/capabilities'
+import store from '@kui-shell/core/models/store'
+import { inBrowser, inElectron } from '@kui-shell/core/core/capabilities'
 
 type Preferences = { [key: string]: string }
 
@@ -58,7 +59,7 @@ const preferences = (): Preferences => {
   if (inBrowser()) {
     debug('reading preferences from browser localStorage')
 
-    const prefs = localStorage.getItem('kui.userprefs')
+    const prefs = store().getItem('kui.userprefs')
     if (!prefs) {
       return {}
     } else {
@@ -102,7 +103,7 @@ const preferences = (): Preferences => {
  */
 const fsyncPreferences = (prefs: Preferences): Preferences => {
   if (inBrowser()) {
-    localStorage.setItem('kui.userprefs', JSON.stringify(prefs))
+    store().setItem('kui.userprefs', JSON.stringify(prefs))
   } else {
     const { mkdirp, writeFileSync } = require('fs-extra')
     mkdirp(userDataDir())
@@ -120,7 +121,7 @@ const purgePreferences = (): void => {
   debug('purgePreferences')
 
   if (inBrowser()) {
-    localStorage.removeItem('kui.userprefs')
+    store().removeItem('kui.userprefs')
   } else {
     const { unlinkSync } = require('fs-extra')
     unlinkSync(preferencesFilepath())

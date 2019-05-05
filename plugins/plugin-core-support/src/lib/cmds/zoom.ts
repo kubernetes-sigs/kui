@@ -157,7 +157,7 @@ export default (commandTree, prequire) => {
   // inject our CSS
   //
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/zoom.css'), key: 'zoom.css' })
+    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(), key: 'zoom.css' })
   } else {
     const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
     injectCSS(path.join(root, 'web/css/zoom.css'))

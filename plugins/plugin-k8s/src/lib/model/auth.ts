@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import store from '@kui-shell/core/models/store'
 import { setHasAuth } from '@kui-shell/core/core/capabilities'
 
 const localStorageKey = {
@@ -32,7 +33,7 @@ export const setAuth = (kubeconfigString: string, ca: string, cafile: string): v
   }
 
   setHasAuth('k8s', auth)
-  window.localStorage.setItem(localStorageKey.auth, JSON.stringify(auth))
+  store().setItem(localStorageKey.auth, JSON.stringify(auth))
 }
 
 /**
@@ -40,7 +41,7 @@ export const setAuth = (kubeconfigString: string, ca: string, cafile: string): v
  *
  */
 export const restoreAuth = (): void => {
-  const maybe = window.localStorage.getItem(localStorageKey.auth)
+  const maybe = store().getItem(localStorageKey.auth)
   if (maybe) {
     try {
       setHasAuth('k8s', JSON.parse(maybe))

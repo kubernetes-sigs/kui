@@ -21,6 +21,7 @@ import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import cli = require('@kui-shell/core/webapp/cli')
 import repl = require('@kui-shell/core/core/repl')
 import { prequire } from '@kui-shell/core/core/plugins'
+import store from '@kui-shell/core/models/store'
 
 import { apiHost } from './auth'
 
@@ -37,7 +38,7 @@ const read = () => apiHost.get().then(host => {
   let model = cached
   if (!model) {
     debug('read:not cached')
-    const raw = window.localStorage.getItem(key)
+    const raw = store().getItem(key)
     try {
       model = raw ? JSON.parse(raw) : {}
     } catch (e) {
@@ -63,7 +64,7 @@ const read = () => apiHost.get().then(host => {
 
 const write = model => {
   cached = model._full
-  window.localStorage.setItem(key, JSON.stringify(model._full))
+  store().setItem(key, JSON.stringify(model._full))
 }
 
 /**
@@ -71,9 +72,9 @@ const write = model => {
  *
  */
 const writeSelectedNS = selectedNS => {
-  if (window.localStorage.getItem('selectedNS') !== selectedNS) {
-    window.localStorage.setItem('selectedNS', selectedNS)
-    debug('stored selected namespace to local storage', window.localStorage.getItem('selectedNS'))
+  if (store().getItem('selectedNS') !== selectedNS) {
+    store().setItem('selectedNS', selectedNS)
+    debug('stored selected namespace to local storage', store().getItem('selectedNS'))
   }
 }
 
@@ -115,7 +116,7 @@ const setNamespace = (namespace, wsk = _wsk) => {
   currentNS = namespace
 
   // persistence bits
-  return store(namespace, wsk.auth.get())
+  return persist(namespace, wsk.auth.get())
 }
 
 /**
@@ -173,7 +174,7 @@ export const setNeedsNamespace = async (err?: Error) => {
   }
 
   debug('setNeedsNamespace')
-  const localSelectedNS = window.localStorage.getItem('selectedNS')
+  const localSelectedNS = store().getItem('selectedNS')
   if (localSelectedNS) {
     debug('user selected one namespace previously, so auto-selecting it from local storage', localSelectedNS)
     try {
@@ -210,7 +211,7 @@ export const setNeedsNamespace = async (err?: Error) => {
  * Record namespace to local store
  *
  */
-const store = (namespace, auth) => {
+const persist = (namespace, auth) => {
   return read().then(model => {
     let hostModel = model._full[model._host]
     if (!hostModel) {
