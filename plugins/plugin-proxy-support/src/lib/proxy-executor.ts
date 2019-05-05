@@ -65,12 +65,18 @@ class ProxyEvaluator implements IReplEval {
       debug('sending body', body)
 
       try {
-        const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
+        const invokeRemote = () => {
+          const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
+          return needle('post',
+                        proxyURL.href,
+                        body,
+                        Object.assign({ json: true }, proxyServerConfig.needleOptions))
+        }
 
-        const response = await needle('post',
-                                      proxyURL.href,
-                                      body,
-                                      Object.assign({ json: true }, proxyServerConfig.needleOptions))
+        const response = await (window['webview-proxy']
+                                ? window['webview-proxy'](body)
+                                : invokeRemote())
+
         debug('response', response)
 
         if (response.statusCode !== 200) {
@@ -88,7 +94,7 @@ class ProxyEvaluator implements IReplEval {
 
         if (err.body && UsageError.isUsageError(err.body)) {
           debug('the error is a usage error, rethrowing as such')
-          throw new UsageError({ message: err.body.raw, code: err.body.code, extra: err.body.extra })
+          throw new UsageError({ message: err.body.raw.message, usage: err.body.raw.usage, code: err.body.code, extra: err.body.extra })
         } else {
           const error = new Error((err.body && err.body.message) || (typeof err.body === 'string' ? err.body : err.message || 'Internal error'))
           error['code'] = error['statusCode'] = (err.body && err.body.code) || err.code || err.statusCode

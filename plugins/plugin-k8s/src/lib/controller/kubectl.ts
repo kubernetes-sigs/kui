@@ -25,7 +25,8 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
-import { ExecType, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -49,6 +50,16 @@ import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
 
+interface KubeExecOptions extends IExecOptions {
+  credentials?: {
+    k8s: {
+      kubeconfig: string
+      ca: string
+      cafile: string
+    }
+  }
+}
+
 /** lazily load js-yaml and invoke its yaml parser */
 const parseYAML = async (str: string): Promise<any> => {
   const { safeLoad } = await import('js-yaml')
@@ -56,7 +67,7 @@ const parseYAML = async (str: string): Promise<any> => {
 }
 
 /** add the user's option to the command line */
-const dashify = str => {
+const dashify = (str: string): string => {
   if (str.length === 1) {
     return `-${str}`
   } else {
@@ -69,7 +80,7 @@ const dashify = str => {
  *
  */
 type CleanupFunction = () => void
-const possiblyExportCredentials = (execOptions, env): Promise<CleanupFunction> => new Promise(async (resolve, reject) => {
+const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.ProcessEnv): Promise<CleanupFunction> => new Promise(async (resolve, reject) => {
   debug('possiblyExportCredentials', process.env.KUBECONFIG, execOptions && execOptions.credentials)
 
   if (!process.env.KUBECONFIG && execOptions && execOptions.credentials && execOptions.credentials.k8s) {
@@ -105,294 +116,13 @@ const possiblyExportCredentials = (execOptions, env): Promise<CleanupFunction> =
 })
 
 /**
- * Dispatch the given cmdline to the action proxy
- *
- */
-const dispatch = async (argv: Array<string>, options, FQN, command, execOptions) => {
-  //
-  // output format option
-  //
-  const output = options.output || options.o
-
-  //
-  // parameters to the invoke of the kubectl action proxy
-  //
-  const parameters = {}
-
-  const verb = argv[1]
-  const entityType = command === 'helm' ? command : argv[2]
-  const entity = command === 'helm' ? argv[2] : argv[3]
-
-  /** strip trailing e.g. .app */
-  const entityTypeWithoutTrailingSuffix = entityType && entityType.replace(/\..*$/, '')
-
-  /** what we want to display for the entity kind */
-  const entityTypeForDisplay = abbreviations[entityTypeWithoutTrailingSuffix] || entityTypeWithoutTrailingSuffix
-
-  if (!inBrowser()) {
-    const { readFile } = require('fs-extra')
-    const { join, dirname, basename } = require('path')
-
-    //
-    // filepath to the CA. if the user doesn't provide this as an
-    // explicit argument, we will attempt to find this filepath inside
-    // the kubeconfig file... below
-    //
-    let CA_FILE = options.cafile
-    delete options.cafile
-
-    // filepath to the kubeconfig
-    const kubeconfigFile = options.kubeconfig || process.env.KUBECONFIG
-    delete options.kubeconfig
-    if (!kubeconfigFile) {
-      throw new UsageError({ message: 'Missing kubeconfig', usage: usage(command) })
-    }
-
-    // contents of the kubeconfig file
-    const kubeconfigContents = await readFile(kubeconfigFile)
-
-    if (!CA_FILE && kubeconfigFile) {
-      //
-      // here is where we hunt for the CA by inspecting the kubeconfig
-      //
-      const kubeconfig = await parseYAML(kubeconfigContents)
-      debug('kubeconfig contents', kubeconfig)
-
-      // the ca is located in the same directory as the kubeconfig file
-      const caFileBase = kubeconfig.clusters[0].cluster['certificate-authority']
-      CA_FILE = join(dirname(kubeconfigFile), caFileBase)
-    }
-
-    parameters['ca'] = (await readFile(CA_FILE)).toString('base64') // base64-encoded content of the CA pem
-    parameters['cafile'] = basename(CA_FILE) // name of the CA pem file
-
-    parameters['kubeconfig'] = kubeconfigContents.toString('base64') // base64-encoded content of the kube config
-  }
-
-  const push = (key, value) => {
-    const equals = (key === 'f' || command === 'helm') ? ' ' : '='
-    argv.push(`${dashify(key)}${equals}${value}`)
-  }
-  for (const key in options) {
-    if (key !== '_') { // skip yargs-parser artifact
-      const value = options[key]
-
-      if (Array.isArray(value)) {
-        // yargs-parser oddity with repeated keys
-        value.forEach(_ => push(key, _))
-      } else {
-        push(key, value)
-      }
-    }
-  }
-
-  // slice(1) skips over "kubectl"; the action proxy expects it to be gone
-  const cmdlineForDisplay = argv.slice(1).join(' ')
-  parameters['cmdline'] = cmdlineForDisplay // we may add or modify this below e.g. for -f support
-
-  parameters['output'] = output // so that the action knows whether the output is json
-
-  //
-  // prepare a -f argument
-  //
-  debug('checking for -f', options.f || options.file)
-  if (!inBrowser()) {
-    const addFile = async filepathAsGiven => {
-      const { readFile } = require('fs-extra')
-      const { basename } = require('path')
-
-      if (!parameters['filename']) {
-        parameters['filename'] = []
-        parameters['fileIsLocal'] = []
-        // parameters['fileIsDirectory'] = [];
-        parameters['file'] = []
-      }
-
-      const isRemote = filepathAsGiven.startsWith('http')
-      parameters['fileIsLocal'].push(!isRemote)
-
-      if (!isRemote) {
-        // user is pointing to a local file?
-        const filepath = findFile(expandHomeDir(filepathAsGiven))
-        const base = basename(filepath)
-        debug('using local file', filepath)
-
-        const { lstat } = require('fs-extra')
-        const isDirectory = (await lstat(filepath)).isDirectory()
-        // parameters['fileIsDirectory'].push(isDirectory);
-
-        if (!isDirectory) {
-          parameters['filename'].push(base)
-          parameters['file'].push((await readFile(filepath)).toString('base64'))
-        } else {
-          debug('file is a directory')
-
-          const generateZip = async () => new Promise((resolve, reject) => {
-            const tmp = require('tmp')
-            const archiver = require('archiver')
-            const { createWriteStream } = require('fs')
-
-            tmp.file(async (err, zipfile, fd, cleanupCallback) => {
-              if (err) {
-                console.error(err)
-                reject(err)
-              }
-
-              const output = createWriteStream(zipfile)
-              const archive = archiver('tar', { gzip: true })
-
-              output.on('close', async () => {
-                parameters['filename'].push(`${base}.tgz`)
-                parameters['file'].push((await readFile(zipfile)).toString('base64'))
-
-                // cleanupCallback();
-                resolve()
-              })
-              archive.on('error', err => {
-                cleanupCallback()
-                reject(err)
-              })
-              archive.on('warning', function (err) {
-                console.error(err)
-
-                if (err.code === 'ENOENT') {
-                  // log warning
-                } else {
-                  // throw error
-                  cleanupCallback()
-                  reject(err)
-                }
-              })
-
-              archive.pipe(output)
-              archive.directory(filepath, base)
-              archive.finalize()
-            })
-          })
-
-          await generateZip()
-        }
-
-        // update cmdline to use -f <nameForCmdline>
-        const nameForCmdline = parameters['filename'][parameters['filename'].length - 1]
-        parameters['cmdline'] = parameters['cmdline'].replace(new RegExp(filepathAsGiven), nameForCmdline)
-      } else {
-        // user is pointing to an http file
-        debug('using remote file', filepathAsGiven)
-        parameters['filename'].push(filepathAsGiven)
-        parameters['file'].push(false) // not used for remote files, but we need to fill the slot
-        // parameters['fileIsDirectory'].push(false);
-      }
-    }
-
-    if (verb !== 'logs' && (options.f || options.file)) {
-      const filepath = options.f || options.file
-      if (Array.isArray(filepath)) {
-        await Promise.all(filepath.map(addFile))
-      } else {
-        await addFile(filepath)
-      }
-    }
-
-    if (command === 'helm' && verb === 'install') {
-      await addFile(entity)
-    }
-
-    parameters['numFiles'] = (parameters['file'] || []).length
-  }
-
-  debug('FQN', FQN)
-  debug('parameters', parameters)
-  debug('options', options)
-
-  const result = await repl.qexec(`action invoke "${FQN}"`, undefined, undefined, {
-    parameters
-  })
-  debug('result', result)
-
-  if (result.response && !result.response.success) {
-    debug('oops', result)
-
-    const message = oopsMessage({ error: result })
-    const code = message.match(/no resources found/i) || message.match(/not found/i) || message.match(/doesn't have/i) ? 404
-      : message.match(/already exists/i) ? 409
-      : 500
-
-    throw new UsageError({ message, usage: usage(command), code })
-  }
-
-  if (execOptions.raw) {
-    // caller asked for the raw output
-    debug('returning raw output', result)
-    return result.response.result.items || Buffer.from(result.response.result.result, 'base64').toString().replace(/\n$/, '')
-  } else if (output === 'json') {
-    //
-    // yay, we should already have good JSON; display this in the sidecar
-    //
-    result.prettyType = entityTypeForDisplay || command
-    result.activationId = cmdlineForDisplay
-    result.name = entity || verb
-    result.noCost = true // don't display the cost in the UI
-    return result
-  } else if ((options.f || options.file) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
-    //
-    // then this was a create or delete from file; show the status of the operation
-    //
-    if (!execOptions.noStatus) {
-      debug('fetching status')
-
-      const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
-      const finalState = `--final-state ${expectedState.toString()}`
-      return repl.qexec(`{statusCommand} status ${repl.encodeComponent(options.f || options.file)} ${finalState}`,
-                        undefined, undefined, { parameters: execOptions.parameters })
-        .catch(err => {
-          if (err.code === 404 && expectedState === FinalState.OfflineLike) {
-            // that's ok!
-            debug('resource not found after status check, but that is ok because that is what we wanted')
-            return result
-          } else {
-            throw err
-          }
-        })
-    } else {
-      return Promise.resolve(true)
-    }
-  } else {
-    // otherwise, the output will be { result: <base64> }
-    const decodedResult = new Buffer(result.response.result.result, 'base64').toString().replace(/\n$/, '')
-
-    const tryThis = formatters[command] && formatters[command][verb]
-    if (tryThis) {
-      return tryThis(command, verb, entityType, options, decodedResult)
-    }
-
-    if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
-      return table(decodedResult, '', command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions)
-    } else {
-      //
-      // generic handling of other output formats, for now
-      //
-      result.prettyType = entityTypeForDisplay || command
-      result.activationId = cmdlineForDisplay
-      result.name = entity || verb
-
-      result.noCost = true // don't display the cost in the UI
-      result.contentType = output
-      result.contentTypeProjection = 'result'
-      result.response.result.result = decodedResult
-      return result
-    }
-  }
-}
-
-/**
  * Should we attempt to display this entity as a REPL table?
  *
  * @param verb the kubectl verb, e.g. kubectl <get>
  * @param output the optional output type, e.g. kubectl get pods -o <json>
  *
  */
-const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options) => {
+const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options: ParsedOptions) => {
   const hasTableVerb = verb === 'ls' ||
     verb === 'list' ||
     verb === 'get' ||
@@ -409,7 +139,7 @@ const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string
  * Display the given string as a REPL table
  *
  */
-const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options, execOptions): Table | Table[] | HTMLElement | IDelete => {
+const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options: ParsedOptions, execOptions: KubeExecOptions): Table | Table[] | HTMLElement | IDelete => {
   debug('displaying as table', verb, entityType)
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
@@ -442,7 +172,7 @@ const table = (decodedResult: string, stderr: string, command: string, verb: str
  * Ensure that the given string is display in a whitespace-preserving way
  *
  */
-const pre = str => {
+const pre = (str: string): HTMLElement => {
   const pre = document.createElement('div')
   pre.classList.add('whitespace')
   pre.innerText = str
@@ -455,7 +185,7 @@ const pre = str => {
  * that the specified -f file exists
  *
  */
-const confirmFileExistence = async (filepathAsGiven, command) => {
+const confirmFileExistence = async (filepathAsGiven: string, command: string): Promise<boolean> => {
   debug('confirmFileExistence', filepathAsGiven)
 
   if (!filepathAsGiven || filepathAsGiven.startsWith('http')) {
@@ -630,7 +360,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   debug('argvWithFileReplacements', argvWithFileReplacements)
 
   const env = Object.assign({}, process.env)
-  const cleanupCallback = await possiblyExportCredentials(execOptions, env)
+  const cleanupCallback = await possiblyExportCredentials(execOptions as KubeExecOptions, env)
   const resolve = async val => {
     await cleanupCallback()
     resolveBase(val)
@@ -921,7 +651,7 @@ const helm = executeLocally('helm')
  * Delegate 'k8s <verb>' to 'kubectl verb'
  *
  */
-const dispatchViaDelegationTo = delegate => opts => {
+const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: IEvaluatorArgs) => {
   if (opts.argv[0] === 'k8s') {
     opts.argv[0] = 'kubectl'
     opts.argvNoOptions[0] = 'kubectl'
@@ -940,11 +670,11 @@ const dispatchViaDelegationTo = delegate => opts => {
  * Register the commands
  *
  */
-export default async (commandTree, prequire) => {
-  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
-  await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
+export default async (commandTree: CommandRegistrar) => {
+  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
+  await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
 
-  await commandTree.listen('/k8s/helm', helm, { usage: usage('helm'), noAuthOk: [ 'openwhisk' ] })
+  await commandTree.listen('/k8s/helm', helm, { usage: usage('helm'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
 
   //
   // register some of the common verbs so that the kubectl plugin works more gracefully:
@@ -961,6 +691,6 @@ export default async (commandTree, prequire) => {
   await Promise.all(shorthands.map(verb => {
     return commandTree.listen(`/k8s/${verb}`,
                               dispatchViaDelegationTo(kubectl),
-                              { usage: usage('kubectl'), noAuthOk: [ 'openwhisk' ] })
+                              { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
   }))
 }

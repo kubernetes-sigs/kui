@@ -16,11 +16,13 @@
 
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
+
 const webCompress = process.env.WEB_COMPRESS
-console.log("compression", webCompress)
-const useGzip = webCompress === "gzip"
-console.log("useGzip", useGzip)
-const CompressionPlugin = require(useGzip? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
+console.log('compression', webCompress)
+const noCompression = webCompress === 'none'
+const useGzip = webCompress === 'gzip'
+console.log('useGzip', useGzip)
+const CompressionPlugin = !noCompression && require(useGzip ? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
 
 // const Visualizer = require('webpack-visualizer-plugin')
 
@@ -49,6 +51,39 @@ const pluginEntries = require('fs').readdirSync(pluginBase).map(dir => {
 }).filter(x => x)
 const entry = Object.assign({ main }, ...pluginEntries)
 console.log('entry', entry)
+
+const plugins = []
+
+// any compression plugins?
+if (CompressionPlugin) {
+  plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
+}
+
+// for debugging, webpack stats plugin
+/* plugins.push(new Visualizer({ filename: './webpack-stats.html' })) */
+
+// the Kui builder plugin
+plugins.push({
+  apply: compiler => {
+    compiler.hooks.compilation.tap('KuiHtmlBuilder', compilation => {
+      compilation.hooks.afterHash.tap('KuiHtmlBuilder', () => {
+        // we need to inject the name of the main bundle into the configuration
+        const hash = compilation.hash
+        const main = `main.${hash}.bundle.js` // <-- this is the name of the main bundle
+        console.log('KuiHtmlBuilder using this build hash', hash)
+
+        const overrides = {
+          build: { writeConfig: false },
+          env: { main }
+        }
+
+        // and this will inject it
+        const Builder = require(path.join(process.env.KUI_BUILDER_HOME, 'lib/configure'))
+        new Builder().build('webpack', overrides)
+      })
+    })
+  }
+})
 
 module.exports = {
   context: stageDir,
@@ -205,7 +240,7 @@ module.exports = {
       { test: /\.jpg$/, use: 'file-loader' },
       { test: /\.png$/, use: 'file-loader' },
       { test: /\.svg$/, use: 'svg-inline-loader' },
-      { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] },
+      { test: /\.css$/, use: [ 'to-string-loader', 'css-loader' ] },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },
@@ -216,31 +251,7 @@ module.exports = {
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
     ]
   },
-  plugins: [
-    new CompressionPlugin({ deleteOriginalAssets: true }),
-    /* new Visualizer({ filename: './webpack-stats.html' }), */
-    {
-      apply: compiler => {
-        compiler.hooks.compilation.tap('KuiHtmlBuilder', compilation => {
-          compilation.hooks.afterHash.tap('KuiHtmlBuilder', () => {
-            // we need to inject the name of the main bundle into the configuration
-            const hash = compilation.hash
-            const main = `main.${hash}.bundle.js` // <-- this is the name of the main bundle
-            console.log('KuiHtmlBuilder using this build hash', hash)
-
-            const overrides = {
-              build: { writeConfig: false },
-              env: { main }
-            }
-
-            // and this will inject it
-            const Builder = require(path.join(process.env.KUI_BUILDER_HOME, 'lib/configure'))
-            new Builder().build('webpack', overrides)
-          })
-        })
-      }
-    }
-  ],
+  plugins,
   output: {
     globalObject: 'self', // for monaco
     path: buildDir,

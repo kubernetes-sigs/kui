@@ -14,8 +14,8 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "compression-webpack-plugin": "2.0.0",
     "brotli-webpack-plugin": "1.1.0",
+    "compression-webpack-plugin": "2.0.0",
     "css-loader": "2.1.1",
     "file-loader": "3.0.1",
     "ibm-cos-sdk": "1.4.5",
@@ -24,9 +24,9 @@
     "raw-loader": "2.0.0",
     "shebang-loader": "0.0.1",
     "source-map-loader": "0.2.4",
-    "style-loader": "0.23.1",
     "svg-inline-loader": "0.8.0",
     "terser-webpack-plugin": "1.2.3",
+    "to-string-loader": "^1.1.5",
     "webpack": "4.30.0",
     "webpack-cli": "3.3.0",
     "webpack-visualizer-plugin": "0.1.11"

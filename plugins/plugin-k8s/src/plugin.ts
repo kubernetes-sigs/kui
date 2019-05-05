@@ -27,13 +27,14 @@ import kiali from './lib/controller/kiali'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-export default async (commandTree, prequire: PluginRequire) => {
+export default async (commandTree: CommandRegistrar, prequire: PluginRequire) => {
   return Promise.all([
     auth(commandTree, prequire),
     contexts(commandTree, prequire),
     status(commandTree, prequire),
-    kubectl(commandTree, prequire),
+    kubectl(commandTree),
     istio(commandTree, prequire),
     kiali(commandTree, prequire),
     inBrowser() ? Promise.resolve() : (await import('./lib/controller/kedit')).default(commandTree, prequire)

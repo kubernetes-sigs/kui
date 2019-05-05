@@ -71,9 +71,9 @@ export const injectCSS = (file: StylesheetSpec): void => {
       link = document.createElement('link')
       link.rel = rel
       if (isAStylesheetFile(file)) {
-        link.href = file.path
+        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file.path}`
       } else {
-        link.href = file
+        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file}`
       }
     }
 

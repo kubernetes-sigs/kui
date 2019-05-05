@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import store from '@kui-shell/core/models/store'
+
 // localStorage key; note: the value here holds no meaning, it is a
 // historical artifact, at this point
 const key = 'openwhisk.history'
@@ -25,7 +27,7 @@ export interface HistoryLine {
   raw?: string
 }
 
-export let lines: HistoryLine[] = (typeof window !== 'undefined' && JSON.parse(window.localStorage.getItem(key))) || []
+export let lines: HistoryLine[] = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || []
 
 let cursor = lines.length // pointer to historic line
 export const getCursor = (): number => cursor
@@ -48,7 +50,7 @@ const guardedChange = (incr: number): number => {
  */
 export const wipe = () => {
   lines = []
-  window.localStorage.setItem(key, JSON.stringify(lines))
+  store().setItem(key, JSON.stringify(lines))
   return true
 }
 
@@ -57,7 +59,7 @@ export const add = (line: HistoryLine) => {
   if (lines.length === 0 || JSON.stringify(lines[lines.length - 1]) !== JSON.stringify(line)) {
     // don't add sequential duplicates
     lines.push(line)
-    window.localStorage.setItem(key, JSON.stringify(lines))
+    store().setItem(key, JSON.stringify(lines))
     // console.log('history::add', cursor)
   }
   cursor = lines.length
@@ -68,7 +70,7 @@ export const add = (line: HistoryLine) => {
 export const update = (cursor: number, updateFn) => {
   // console.log('history::update', cursor)
   updateFn(lines[cursor])
-  window.localStorage.setItem(key, JSON.stringify(lines))
+  store().setItem(key, JSON.stringify(lines))
 }
 
 /** return the given line of history */
