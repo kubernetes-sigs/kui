@@ -195,9 +195,9 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
       const pretty75 = prettyPrintDuration(this75)
       const split25 = pretty25.match(/[^\d]/).index
       const split75 = pretty75.match(/[^\d]/).index
-      const num25 = pretty25.substring(0, split25)
+      const num25 = parseInt(pretty25.substring(0, split25), 10)
       const unit25 = pretty25.substring(split25)
-      const num75 = pretty75.substring(0, split75)
+      const num75 = parseInt(pretty75.substring(0, split75), 10)
       const unit75 = pretty75.substring(split75)
       const sameUnit = unit25 === unit75
       const rangeLessThanOne = sameUnit && num75 - num25 < 1
@@ -218,7 +218,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
       } else if (veryNarrow && sameUnit) {
         // or close together? here, we need a prettyPrint on
         // the lower bound; e.g. 1.2-1.6s
-        xAxisFocusLabelLeft.innerText = num25
+        xAxisFocusLabelLeft.innerText = num25.toString()
         xAxisFocusLabelMiddle.innerText = enDash
         xAxisFocusLabelRight.innerText = pretty75
       } else {

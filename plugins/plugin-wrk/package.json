@@ -29,7 +29,7 @@
     "columnify": "1.5.4",
     "expand-home-dir": "0.0.3",
     "parse-duration": "0.1.1",
-    "pretty-ms": "4.0.0",
+    "pretty-ms": "5.0.0",
     "properties-parser": "0.3.1",
     "tmp": "0.1.0",
     "wrk": "https://github.com/starpit/node-wrk#latency_stacks"

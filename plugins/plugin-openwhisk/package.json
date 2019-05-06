@@ -31,10 +31,10 @@
     "debug": "4.1.1",
     "expand-home-dir": "0.0.3",
     "htmlparser2": "3.10.1",
-    "needle": "2.3.0",
+    "needle": "2.3.1",
     "openwhisk": "3.18.0",
     "parse-duration": "0.1.1",
-    "pretty-ms": "4.0.0",
+    "pretty-ms": "5.0.0",
     "promise-retry": "1.1.1",
     "tmp": "0.1.0"
   },
