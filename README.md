@@ -20,16 +20,16 @@ The fastest option is to install a prebuilt release.
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org)
 
-Visit [this section](docs/installation.md) to know
+Visit [this section](docs/installation.md) to learn
 more about the setup or if you need alternative
-methods (ie: headless).
+installation methods.
 
 ## Contributing
 
 If you want to help please take a look to our
 [developer guide](docs/dev/README.md).
 
-c## The Kui Experience
+## The Kui Experience
 
 [![Kui screenshot](docs/readme/images/kubectl-examples.jpg)](https://youtu.be/jcV0csyzGdY)
 
