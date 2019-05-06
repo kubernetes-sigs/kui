@@ -149,9 +149,11 @@ function webpack {
 
 # build a docker image that can serve the webpack client
 function docker {
-    pushd "$STAGING_DIR" > /dev/null
-    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
-    popd > /dev/null
+    if [ -z "${NO_DOCKER}" ]; then
+        pushd "$STAGING_DIR" > /dev/null
+        CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
+        popd > /dev/null
+    fi
 }
 
 # some of the assets are in sibling directories; let's copy them here
