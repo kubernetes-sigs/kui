@@ -41,7 +41,7 @@
     "elkjs": "0.3.0",
     "es6-promise-pool": "2.5.0",
     "expand-home-dir": "0.0.3",
-    "jquery": "3.4.0",
+    "jquery": "3.4.1",
     "tmp": "0.1.0"
   },
   "kui": {
