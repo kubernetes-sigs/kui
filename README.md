@@ -14,15 +14,14 @@ manipulate complex JSON and YAML data models, integrate disparate
 tooling, and provides quick access to aggregate views of operational
 data.
 
-## Install
+## Quick Install
 
 The fastest option is to install a prebuilt release.
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org)
 
-Visit [this section](docs/installation.md) to learn
-more about the setup or if you need alternative
-installation methods.
+Visit the [Kui Installation Guide](docs/installation.md)
+for installation details and alternative installation options.
 
 ## Contributing
 
