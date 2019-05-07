@@ -125,6 +125,14 @@ localDescribe('shell commands', function (this: ISuite) {
     .then(cli.expectError(409))
     .catch(common.oops(this)))
 
+  it('should cd with quotes and spaces', () => cli.do(`cd "foo bar"`, this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
+
+  it('should cd back with quotes', () => cli.do(`cd ..`, this.app)
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
+
   it('should echo ho to a file', () => cli.do(`echo ho > "foo bar"/testTmp`, this.app)
     .then(cli.expectOK)
     .catch(common.oops(this)))

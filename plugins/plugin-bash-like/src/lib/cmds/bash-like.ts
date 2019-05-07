@@ -305,7 +305,7 @@ const usage = {
  *
  */
 const cd = cmd => ({ command, execOptions, parsedOptions }) => {
-  return doShell(['!', 'cd', ...repl.split(command, false).slice(1)],
+  return doShell(['!', 'cd', ...repl.split(command).slice(1)],
     parsedOptions,
     Object.assign({}, execOptions, { nested: true }))
     .catch(err => { throw new UsageError({ message: err.message, usage: usage.cd(cmd) }) })
