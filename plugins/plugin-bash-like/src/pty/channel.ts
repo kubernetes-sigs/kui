@@ -29,12 +29,19 @@ export interface Channel {
   readyState: number
 }
 
+export enum ReadyState {
+  CONNECTING,
+  OPEN,
+  CLOSING,
+  CLOSED
+}
+
 /**
  * Channel impl for direct, in-electron communication
  *
  */
 export class InProcessChannel extends EventEmitter implements Channel {
-  readyState = WebSocket.OPEN
+  readyState = ReadyState.OPEN
   private otherSide: InProcessChannel
 
   constructor (otherSide?: InProcessChannel) {
@@ -58,7 +65,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
 
   /** emit 'message' on the other side */
   send (msg: string) {
-    if (this.otherSide.readyState === WebSocket.OPEN) {
+    if (this.otherSide.readyState === ReadyState.OPEN) {
       try {
         this.otherSide.emit('message', msg)
       } catch (err) {
@@ -73,36 +80,44 @@ export class InProcessChannel extends EventEmitter implements Channel {
 }
 
 /**
- * Thin wrapper on top of browser WebSocket impl
+ * Thin wrapper on top of WebView postMessage
  *
  */
-export class WebSocketChannel extends WebSocket implements Channel {
-  constructor (url: string) {
-    debug('WebSocketChannel init', url)
-    super(url, undefined /*, { rejectUnauthorized: false } */)
+export class WebViewChannelRendererSide extends EventEmitter implements Channel {
+  readyState = ReadyState.OPEN
+  private channelId: number
+
+  constructor () {
+    super()
   }
 
-  on (eventType: string, handler: any) {
-    switch (eventType) {
-      case 'open':
-        debug('WebSocketChannel: installing onopen handler')
-        this.onopen = handler
-        break
+  async init () {
+    debug('IPC init')
+    const { body } = await window['webview-proxy']({
+      command: 'init',
+      provider: 'pty',
+      channel: this
+    })
+    this.channelId = body.channelId
+    console.log(`CHANNELID ${this.channelId}`)
 
-      case 'message':
-        debug('WebSocketChannel: installing onmessage handler')
-        this.onmessage = message => handler(message.data)
-        break
+    // emit 'open' on our side
+    this.emit('open')
+    debug('IPC init done')
+  }
 
-      case 'error':
-        debug('WebSocketChannel: installing onerror handler')
-        this.onerror = handler
-        break
+  /** emit 'message' on the other side */
+  send (body: string) {
+    console.log(`SEND ${this.channelId}`)
+    window['webview-proxy']({
+      command: 'send',
+      provider: 'pty',
+      channelId: this.channelId,
+      body
+    })
+  }
 
-      case 'close':
-        debug('WebSocketChannel: installing onclose handler')
-        this.onclose = handler
-        break
-    }
+  removeEventListener (eventType: string, handler: any) {
+    this.off(eventType, handler)
   }
 }

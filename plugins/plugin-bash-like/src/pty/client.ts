@@ -29,7 +29,7 @@ import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection,
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 
-import { Channel, InProcessChannel, WebSocketChannel } from './channel'
+import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 
 const enterApplicationModePattern = /\x1b\[\?1h/
 const exitApplicationModePattern = /\x1b\[\?1l/
@@ -336,14 +336,22 @@ type ChannelFactory = () => Promise<Channel>
  * Create a websocket channel to a remote bash
  *
  */
-const remoteChannelFactory = async (): Promise<Channel> => {
+const remoteChannelFactory: ChannelFactory = async () => {
   const url: string = await $('bash websocket open')
   debug('websocket url', url)
+  const WebSocketChannel = (await import('./websocket-channel')).default
   return new WebSocketChannel(url)
 }
 
-const electronChannelFactory = async (): Promise<Channel> => {
+const electronChannelFactory: ChannelFactory = async () => {
   const channel = new InProcessChannel()
+  channel.init()
+  return channel
+}
+
+const webviewChannelFactory: ChannelFactory = async () => {
+  console.log('webviewChannelFactory')
+  const channel = new WebViewChannelRendererSide()
   channel.init()
   return channel
 }
@@ -448,7 +456,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       terminal.element.classList.add('xterm-empty-row-heuristic')
       setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
-      const channelFactory = inBrowser() ? remoteChannelFactory : electronChannelFactory
+      const channelFactory = inBrowser() ? window['webview-proxy'] !== undefined ? webviewChannelFactory : remoteChannelFactory : electronChannelFactory
       const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal)
       resizer.ws = ws
 
