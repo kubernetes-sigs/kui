@@ -44,15 +44,16 @@ const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 const pluginEntries = require('fs').readdirSync(pluginBase).map(dir => {
   try {
-    const { webpack } = require(path.join(pluginBase, dir, 'package.json'))
-    return webpack && webpack.entry
+    const pjson = path.join(pluginBase, dir, 'package.json')
+    const { kui } = require(pjson)
+    return kui && kui.webpack && kui.webpack.entry
   } catch (err) {
   }
 }).filter(x => x)
 const entry = Object.assign({ main }, ...pluginEntries)
 console.log('entry', entry)
 
-const plugins = []
+const plugins = [ ]
 
 // any compression plugins?
 if (CompressionPlugin) {
@@ -74,7 +75,7 @@ plugins.push({
 
         const overrides = {
           build: { writeConfig: false },
-          env: { main }
+          env: { main, hash }
         }
 
         // and this will inject it

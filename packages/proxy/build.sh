@@ -39,6 +39,8 @@ function init {
 function initProxy {
     pushd "$STAGING_DIR" > /dev/null
     cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,.dockerignore,app} .
+    if [ -d ~/.kube ]; then cp -a ~/.kube .; fi
+    if [ -d ~/.bluemix/plugins/container-service/clusters ]; then mkdir -p .bluemix/plugins/container-service && cp -a ~/.bluemix/plugins/container-service/clusters .bluemix/plugins/container-service; fi
     npm install --no-package-lock
     popd > /dev/null
 }

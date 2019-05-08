@@ -57,10 +57,7 @@ export const openEditor = async (name, options, execOptions) => {
   }
 
   if (!pre2) {
-    if (inBrowser()) {
-      // const mp = require('./edit-webpack')
-      injectScript({ src: require('monaco-editor/min/vs/loader.js'), key: 'editor.monaco' })
-    } else {
+    if (!inBrowser()) {
       const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
       injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
     }
@@ -228,11 +225,12 @@ export const openEditor = async (name, options, execOptions) => {
       const relayout = editor.relayout = () => {
         const go = () => {
           const { width, height } = editorWrapper.getBoundingClientRect()
+          debug('relayout', width, height)
           editor.layout({ width, height })
         }
 
         editor.updateOptions({ automaticLayout: false })
-        setTimeout(go, 0)
+        go()
       }
 
       globalEventBus.on('/sidecar/maximize', relayout)
@@ -240,8 +238,9 @@ export const openEditor = async (name, options, execOptions) => {
 
       if (isSidecarVisible()) {
         relayout()
+        setTimeout(relayout, 600) // race with sidecar sweeping in
       } else {
-        setTimeout(relayout, 400)
+        globalEventBus.once('/sidecar/toggle', relayout)
       }
 
       return Promise.resolve({ getEntity, editor, content, eventBus })
