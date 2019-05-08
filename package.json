@@ -5,7 +5,7 @@
   "main": "build/packages/app/src/main/main.js",
   "scripts": {
     "lint": "./packages/kui-builder/bin/lint.sh",
-    "test": "cd packages/tests && npm run test",
+    "test": "lerna run test --scope @kui-shell/test",
     "compile": "MONOREPO_MODE=true CLIENT_HOME=./clients/default ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
     "preinstall": "cp packages/kui-builder/npmrc .npmrc",
