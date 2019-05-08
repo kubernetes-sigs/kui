@@ -19,7 +19,7 @@ export interface IShowOptions {
   echo?: boolean
   leaveBottomStripeAlone?: boolean
   preserveBackButton?: boolean
-  modes?: Array<any>
+  modes?: any[]
 }
 
 export class DefaultShowOptions implements IShowOptions {

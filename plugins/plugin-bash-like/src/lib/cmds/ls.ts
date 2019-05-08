@@ -65,7 +65,7 @@ const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx =
  * Return the contents of the given directory
  *
  */
-const myreaddir = (dir: string): Promise<Array<string>> => new Promise((resolve, reject) => {
+const myreaddir = (dir: string): Promise<string[]> => new Promise((resolve, reject) => {
   debug('readdir', dir)
 
   lstat(dir, (err, stats) => {

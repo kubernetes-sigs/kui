@@ -154,14 +154,14 @@ const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) =>
  * Insufficient arguments provided?
  *
  */
-const insufficientArgs = (argv: Array<string>) => argv.length === 0
+const insufficientArgs = (argv: string[]) => argv.length === 0
 
 /**
  * Opens the full UI
  *
  */
 let electronCreateWindowFn
-export const createWindow = (argv: Array<string>, subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
+export const createWindow = (argv: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
   try {
     graphicalShellIsOpen = true
     setGraphicalShellIsOpen()

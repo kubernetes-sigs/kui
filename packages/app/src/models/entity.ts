@@ -67,4 +67,4 @@ export type SimpleEntity = Error | string | number | HTMLElement | IMessageBeari
  * Note: Array<any> will go away once we have fully typed tables
  *
  */
-export type Entity = SimpleEntity | IEntitySpec | ICustomSpec | boolean | Array<any> | Table
+export type Entity = SimpleEntity | IEntitySpec | ICustomSpec | boolean | any[] | Table

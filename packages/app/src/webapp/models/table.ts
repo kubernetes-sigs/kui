@@ -35,7 +35,7 @@ export class Row {
   version?: string
   prettyVersion?: string
   beforeAttributes?: Cell[]
-  rowCSS?: string | Array<string>
+  rowCSS?: string | string[]
   onclick?: any
   css?: string
   outerCSS?: string

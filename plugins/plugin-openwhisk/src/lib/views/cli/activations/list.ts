@@ -46,7 +46,7 @@ const mapToOptions = (baseMap, overrides = {}) => {
  * Fetch activation records
  *
  */
-const fetch = async (activationIds: Array<string>) => {
+const fetch = async (activationIds: string[]) => {
   debug('fetching', activationIds)
 
   const activations = await Promise.all(activationIds.map(_ => {
@@ -575,7 +575,7 @@ const _render = args => {
  * A handler intended to be passed to cli.registerListView
  *
  */
-export const renderActivationListView = (tab: ITab, activations: Array<Object>, container: Element, parsedOptions, execOptions) => {
+export const renderActivationListView = (tab: ITab, activations: Object[], container: Element, parsedOptions, execOptions) => {
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)

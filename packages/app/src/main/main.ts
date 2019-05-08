@@ -26,7 +26,7 @@ import ISubwindowPrefs from '../models/SubwindowPrefs'
  * This is the main entry point to kui
  *
  */
-export const main = (argv: Array<string>, env = process.env, execOptions?: IExecOptions) => {
+export const main = (argv: string[], env = process.env, execOptions?: IExecOptions) => {
   const forceUI = !!argv.find(arg => arg === '--ui') || !!env.KUI_POPUP
   const isShell = !!argv.find(arg => arg === 'shell')
   const kuiShell = forceUI || isShell

@@ -47,7 +47,7 @@ const choices = [
   // { bottom: 25, top: 99 },
   { bottom: 'min', top: 'max', label: 'Min-Max', text: 'mininum to maximum', fontawesome: 'fas fa-thermometer-full' }
 ]
-const choicesArray: Array<any> = choices.map((choice, idx) => {
+const choicesArray: any[] = choices.map((choice, idx) => {
   const { bottom, top, label, text, fontawesome } = choice
   return { label: label || `${bottom}-${top}`,
     flush: 'right',

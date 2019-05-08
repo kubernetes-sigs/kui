@@ -71,7 +71,7 @@ export enum FinalState {
 
 /** definitions of these groups */
 const stateGroups = {}
-const groupOf = (A: Array<State>) => A.reduce((group, state) => {
+const groupOf = (A: State[]) => A.reduce((group, state) => {
   group[state] = true
   return group
 }, {})

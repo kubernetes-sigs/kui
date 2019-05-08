@@ -348,7 +348,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   const cmdlineForDisplay = argv.slice(1).join(' ')
 
   // replace @seed/yo.yaml with full path
-  const argvWithFileReplacements: Array<string> = await Promise.all(rawArgv.slice(1).map(async (_: string): Promise<string> => {
+  const argvWithFileReplacements: string[] = await Promise.all(rawArgv.slice(1).map(async (_: string): Promise<string> => {
     if (_.match(/^!.*/)) {
       // !foo params mean they flow programatically via execOptions.parameters.foo
       // we will pass this via stdin, which kubectl represents with a '-'
@@ -574,7 +574,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         return resolve(result)
       }
 
-      const modes: Array<ISidecarMode> = [{
+      const modes: ISidecarMode[] = [{
         mode: 'result',
         direct: rawCommand,
         label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,

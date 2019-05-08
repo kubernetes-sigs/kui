@@ -204,7 +204,7 @@ interface IApplicationList {
   namespace: {
     name: string
   }
-  applications: Array<IApplication>
+  applications: IApplication[]
 }
 
 /**
@@ -223,7 +223,7 @@ interface IWorkplaceStatus {
 }
 
 interface IApplicationHealth {
-  workloadStatuses: Array<IWorkplaceStatus>
+  workloadStatuses: IWorkplaceStatus[]
   requests: {
     errorRatio: number
     inboundErrorRatio: number

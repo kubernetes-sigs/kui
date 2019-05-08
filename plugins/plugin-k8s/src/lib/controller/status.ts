@@ -117,7 +117,7 @@ interface IContext {
  * Return an [IContext] model for all known contexts
  * @param {Boolean} fetchAllNS If set to true, fetch all the namespaces of a cluster
  */
-const allContexts = async (execOptions: IExecOptions, { fetchAllNS = false } = {}): Promise<Array<IContext>> => {
+const allContexts = async (execOptions: IExecOptions, { fetchAllNS = false } = {}): Promise<IContext[]> => {
   const table: Table = await repl.qexec(`k8s contexts`, undefined, undefined, execOptions)
 
   if (!fetchAllNS) {
@@ -146,7 +146,7 @@ const removeDuplicateResources = L => L.filter((item, idx) => {
  * Fetch the status for a given list of contexts
  *
  */
-const getStatusForKnownContexts = (execOptions: IExecOptions, parsedOptions: ParsedOptions) => async (contexts: Array<IContext> = []) => {
+const getStatusForKnownContexts = (execOptions: IExecOptions, parsedOptions: ParsedOptions) => async (contexts: IContext[] = []) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
   const currentContext = repl.qexec(`kubectl config current-context`, undefined, undefined, raw)
@@ -460,7 +460,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
  * Add any kube-native resources that might be associated with the controllers
  *
  */
-const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: Array<any>): Promise<Array<any>> => {
+const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: any[]): Promise<any[]> => {
   debug('findControlledResources', kubeEntities)
 
   const raw = Object.assign({}, args.execOptions, { raw: true })

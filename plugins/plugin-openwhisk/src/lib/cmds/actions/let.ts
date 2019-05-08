@@ -543,7 +543,7 @@ export default async (commandTree, wsk) => {
     interface IEntity {
       name: string,
       namespace?: string,
-      annotations?: Array<IKeyValue>
+      annotations?: IKeyValue[]
     }
     const furlSequenceComponent = (parentActionName: string) => (component: string, idx: number): Promise<IEntity> => {
       const intentionMatch = component.match(patterns.intention.inline)
@@ -574,7 +574,7 @@ export default async (commandTree, wsk) => {
         }
       }
     }
-    const furl = (components: Array<string>, parentActionName: string): Promise<Array<IEntity>> => {
+    const furl = (components: string[], parentActionName: string): Promise<IEntity[]> => {
       return Promise.all(components.map(furlSequenceComponent(parentActionName)))
     }
 

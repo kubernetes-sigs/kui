@@ -85,8 +85,8 @@ export const renderConditions = async (tab: ITab, command: string, resource: IRe
   debug('renderConditions', command, resource)
 
   const anyProbeTimes = resource.yaml.status.conditions.some(_ => !!_.lastProbeTime)
-  const probeHeader: Array<any> = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
-  const probeBody = (condition): Array<any> => {
+  const probeHeader: any[] = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
+  const probeBody = (condition): any[] => {
     if (anyProbeTimes) {
       return [{
         key: 'lastProbeTime',

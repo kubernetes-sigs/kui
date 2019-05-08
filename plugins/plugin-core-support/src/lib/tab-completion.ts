@@ -267,7 +267,7 @@ interface TemporaryContainer extends HTMLDivElement {
   partial?: string
   dirname?: string
   cleanup?: () => void
-  currentMatches?: Array<IMatch>
+  currentMatches?: IMatch[]
 }
 
 /**

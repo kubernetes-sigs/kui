@@ -42,7 +42,7 @@ export interface ICommandOptions extends ICapabilityRequirements {
   hidden?: boolean
 
   // should we register in the UI that this command was executed?
-  incognito?: Array<'popup'>
+  incognito?: 'popup'[]
 
   // optional name for the view being presented
   viewName?: string
@@ -97,8 +97,8 @@ export interface IEvaluatorArgs {
   nextBlock: HTMLElement
   parsedOptions: ParsedOptions
   command: string
-  argv: Array<string>
-  argvNoOptions: Array<string>
+  argv: string[]
+  argvNoOptions: string[]
   execOptions: IExecOptions
   createOutputStream: () => WritableStream
 }
@@ -164,7 +164,7 @@ export type CommandTreeResolution = boolean | ICommandHandlerWithEvents | CodedE
 export type YargsParserFlags = { [key in 'boolean' | 'alias']: string[] }
 
 /** a catch all handler is presented with an offer to handle a given argv */
-export type CatchAllOffer = (argv: Array<string>) => boolean
+export type CatchAllOffer = (argv: string[]) => boolean
 
 export interface ICatchAllHandler extends ICommandBase {
   prio: number

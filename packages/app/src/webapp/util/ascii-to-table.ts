@@ -27,7 +27,7 @@ import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: Array<string>): { rows?: IPair[][], trailingString?: string }[] => {
+export const preprocessTable = (raw: string[]): { rows?: IPair[][], trailingString?: string }[] => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
@@ -40,7 +40,7 @@ export const preprocessTable = (raw: Array<string>): { rows?: IPair[][], trailin
       .map(_ => _.trim())
 
     // now we scan the header row to determine the column start indices
-    const columnStarts: Array<number> = []
+    const columnStarts: number[] = []
 
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
       const { offset, prefix } = idx === 0
@@ -241,7 +241,7 @@ interface IPair {
   key: string
   value: string
 }
-const split = (str: string, splits: Array<number>, headerCells?: Array<string>): Array<IPair> => {
+const split = (str: string, splits: number[], headerCells?: string[]): IPair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
