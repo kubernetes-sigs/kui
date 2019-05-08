@@ -74,9 +74,9 @@ function getDefaultApiHost () {
 
 let authKey = process.env.__OW_API_KEY || wskprops.AUTH || store().getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 
-let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething' // tslint:disable-line
+let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
 
-let apigw_space_guid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID // tslint:disable-line
+let apigw_space_guid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
 export let ow
 
 let userRequestedIgnoreCerts = store().getItem(localStorageKey.ignoreCerts) !== undefined

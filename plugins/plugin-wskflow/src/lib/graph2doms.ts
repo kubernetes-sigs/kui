@@ -167,7 +167,7 @@ export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, i
         const nodes = []
         let parent
         // note that svg z-index is document order, literally
-        while ((parent = queue.pop()) != null) { // tslint:disable-line
+        while ((parent = queue.pop()) != null) {
           nodes.push(parent);
 
           (parent.children || []).forEach(function (c) {

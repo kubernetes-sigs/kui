@@ -78,7 +78,7 @@ class Occupancy {
     const cells = document.createElement('div')
     cells.className = 'grid-row'
     grid.appendChild(cells)
-    for (let count = 0, rowIdx = 0; rowIdx < height; rowIdx++) { // tslint:disable-line:one-variable-per-declaration
+    for (let count = 0, rowIdx = 0; rowIdx < height; rowIdx++) {
       for (let colIdx = 0; colIdx < width && count < nCells; colIdx++, count++) {
         const cellDom = makeCellDom()
         cells.appendChild(cellDom)
@@ -110,7 +110,7 @@ class Occupancy {
     const rowExtent = Math.min(this.height, y + height)
     const colExtent = Math.min(this.width, x + width)
 
-    for (let C = 0, rowIdx = y; rowIdx < rowExtent; rowIdx++) { // tslint:disable-line:one-variable-per-declaration
+    for (let C = 0, rowIdx = y; rowIdx < rowExtent; rowIdx++) {
       for (let colIdx = x; colIdx < colExtent && C < count; colIdx++, C++) {
         const cell = this.rows[rowIdx * this.width + colIdx]
         // peripheral = /*this.width > 20 &&*/ colIdx < 3 ? 'grid-cell-far-left'
@@ -476,7 +476,7 @@ const drawAsTimeline = (tab: ITab, timelineData: { activations: Record<string, a
   }
 
   // for each column in the timeline... idx here is a column index
-  for (let idx = 0, currentEmptyRunLength = 0, currentRunMinTime; idx < nBuckets; idx++) { // tslint:disable-line:one-variable-per-declaration
+  for (let idx = 0, currentEmptyRunLength = 0, currentRunMinTime; idx < nBuckets; idx++) {
     if (activations[idx].length === 0) {
       // empty column
       if (currentEmptyRunLength++ === 0 && idx > 0) {
