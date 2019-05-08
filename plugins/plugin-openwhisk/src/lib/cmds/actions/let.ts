@@ -172,8 +172,8 @@ const annotations = options => {
   }
   return options.annotations
 }
-const boolean = key => options => annotations(options).push({ key: key, value: true }) // tslint:disable-line
-const string = (key, value) => options => annotations(options).push({ key: key, value: value }) // tslint:disable-line
+const boolean = key => options => annotations(options).push({ key: key, value: true })
+const string = (key, value) => options => annotations(options).push({ key: key, value: value })
 const web = extension => [ boolean('web-export'), string('content-type-extension', extension) ]
 const annotators = {
   'const': [ boolean('final') ],

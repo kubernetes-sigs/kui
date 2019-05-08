@@ -449,7 +449,7 @@ class InProcessExecutor implements IExecutor {
            evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
           ({} as YargsParserFlags)
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
-        const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
+        const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name))
 
         type CanonicalArgs = { [key: string]: string }
         const optionalAliases = optional && optional.filter(({ alias }) => alias).reduce((M: CanonicalArgs, { name, alias }) => {

@@ -187,7 +187,7 @@ const addWskflow = (tab: ITab) => (opts) => {
  *
  */
 const differentASTs = (ast1, ast2) => {
-  if (!!ast1 !== !!ast2) { // tslint:disable-line
+  if (!!ast1 !== !!ast2) {
     // one or the other is null
     return true
   } else if (typeof ast1 !== typeof ast2) {

@@ -237,7 +237,7 @@ const param = handleKeyValuePairAsArray('parameters')
 const annotation = handleKeyValuePairAsArray('annotations')
 function isNumeric (input) {
   // a rough approximation
-  return (input - 0) == input && ('' + input).trim().length > 0 // tslint:disable-line
+  return (input - 0) == input && ('' + input).trim().length > 0
 }
 const limits = key => (M, idx, argv, type) => {
   if (!M[type]) M[type] = {}
@@ -1024,7 +1024,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       // mucked things up) argvFull, looking for an arg that is
       // ==, but not === the one that minimist gave us.
       // THUS NOTE THE USE OF == in `arg == options.name` <-- important
-      options.name = argvFull.find(arg => arg == options.name && arg !== options.name) // tslint:disable-line
+      options.name = argvFull.find(arg => arg == options.name && arg !== options.name)
     }
   } else if (!noImplicitName[verb]) {
     //
@@ -1199,7 +1199,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
             //
             const message = oopsMessage(err)
             const code = err.statusCode || err.code
-            const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity] // tslint:disable-line
+            const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity]
             const _usageModel = __usageModel.available && __usageModel.available.find(({ command }) => command === verb)
             const usageModel: IUsageModel = _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
 
