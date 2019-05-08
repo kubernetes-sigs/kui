@@ -143,7 +143,7 @@ const bodyModel = (tab: ITab, resource: IResource): Row[] => {
     const stateKey = Object.keys(status.state)[0]
     const stateBody = status.state[stateKey]
 
-    const statusAttrs: Array<any> = !status ? [] : [
+    const statusAttrs: any[] = !status ? [] : [
       {
         key: 'restartCount',
         value: status.restartCount,

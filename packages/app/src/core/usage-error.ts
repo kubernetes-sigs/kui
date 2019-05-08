@@ -48,7 +48,7 @@ async function promiseEach<T, R> (arr: T[], fn: (t: T) => Promise<R>): Promise<R
 }
 
 /** Create an HTML DIV to wrap around the given string */
-const div = (str?: string | Promise<string> | Element, css: string | Array<string> = undefined, tag = 'div'): HTMLElement => {
+const div = (str?: string | Promise<string> | Element, css: string | string[] = undefined, tag = 'div'): HTMLElement => {
   const result = document.createElement(tag)
 
   if (str) {
@@ -683,7 +683,7 @@ export interface IUsageRow {
   narg?: number
 
   // implicit entity ok for this attribute?
-  implicitOK?: Array<string>
+  implicitOK?: string[]
 
   // this attribute is not required if we match an implicit entity
   notNeededIfImplicit?: boolean
@@ -722,7 +722,7 @@ export interface IUsageRow {
   allowedIsPrefixMatch?: boolean
 
   // enumeration of allowed values
-  allowed?: Array<number | string | boolean>
+  allowed?: (number | string | boolean)[]
 }
 
 interface IGenerator {

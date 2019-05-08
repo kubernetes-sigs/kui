@@ -55,7 +55,7 @@ const stripControlCharacters = (str: string): string => {
     .replace(/^\W*OK\W*\n/, '') // OK at the beginning
 }
 
-export const doShell = (argv: Array<string>, options, execOptions?: IExecOptions) => new Promise(async (resolve, reject) => {
+export const doShell = (argv: string[], options, execOptions?: IExecOptions) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
     reject(new Error('Local file access not supported when running in a browser'))
   }

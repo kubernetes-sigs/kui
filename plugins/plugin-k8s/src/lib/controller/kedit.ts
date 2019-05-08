@@ -142,7 +142,7 @@ const showResource = async (yaml, filepath: string, tab: ITab, parsedOptions: Pa
  * Render the resources as a REPL table
  *
  */
-const showAsTable = (yamls: Array<any>, filepathAsGiven: string, parsedOptions): Table => {
+const showAsTable = (yamls: any[], filepathAsGiven: string, parsedOptions): Table => {
   debug('showing as table', yamls)
 
   const ourOptions = {

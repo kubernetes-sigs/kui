@@ -53,7 +53,7 @@ export interface IEntity {
   exec: IExecSpec
   persister: any
   gotoReadonlyView?: (Getter) => any
-  annotations: Array<IKeyValuePair>
+  annotations: IKeyValuePair[]
 }
 
 export type IFetcher = (name: string, parsedOptions?, execOptions?) => Promise<IEntity>

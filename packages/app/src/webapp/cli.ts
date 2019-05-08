@@ -259,7 +259,7 @@ export type ViewHandler = (tab: ITab, response: Entity, resultDom: Element, pars
 interface ViewRegistrar { [key: string]: ViewHandler }
 
 /**
- * Register a renderer for a given Array<kind>
+ * Register a renderer for a given kind[]
  *
  */
 const registeredListViews: ViewRegistrar = {}

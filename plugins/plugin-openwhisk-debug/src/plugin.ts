@@ -44,7 +44,7 @@ import { addActivationModes } from '@kui-shell/plugin-openwhisk/lib/models/modes
 
 interface IProtoActivation {
   result?: any
-  logs?: Array<string>
+  logs?: string[]
   init_time?: number
 }
 
@@ -146,7 +146,7 @@ export default async (commandTree: CommandRegistrar) => {
   })
 }
 
-const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: Array<string>, spinnerDiv: Element) => new Promise(async () => {
+const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: string[], spinnerDiv: Element) => new Promise(async () => {
   try {
     debug('executing invoke command')
 
@@ -179,7 +179,7 @@ const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: Array<stri
  * Local debug
  *
  */
-const doDebug = (tab: ITab, input: Object, argvWithoutOptions: Array<string>, dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
+const doDebug = (tab: ITab, input: Object, argvWithoutOptions: string[], dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
   debug('executing debug command')
 
   resolve([{

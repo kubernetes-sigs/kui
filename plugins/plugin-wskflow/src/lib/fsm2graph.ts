@@ -86,10 +86,10 @@ interface INode {
   height?: number
   layoutOptions?: any
   properties?: any
-  ports?: Array<string>
-  visited?: Array<string>
-  children?: Array<INode>
-  edges?: Array<IEdge>
+  ports?: string[]
+  visited?: string[]
+  children?: INode[]
+  edges?: IEdge[]
   deployed?: boolean
 }
 
@@ -366,7 +366,7 @@ function drawEdgeNew (sourceId: string, targetId: string, layer, type?: string, 
   }
 }
 
-function ir2graph (ir, gm, id: string, prevId: Array<string>, options = {}) { // ir and graph model
+function ir2graph (ir, gm, id: string, prevId: string[], options = {}) { // ir and graph model
   if (ir.type === 'sequence' || ir.type === 'seq' || Array.isArray(ir)) {
     // for an array of things, prevId is the previous element
     // console.log(ir, gm, id, prevId);
@@ -724,7 +724,7 @@ export default async function fsm2graph (tab: ITab, ir: Record<string, any>, con
       .then(result => {
         const notDeployed = []
 
-        const graphChildrenStatus = (childrens: Array<INode>, id: string, deployed: boolean) => {
+        const graphChildrenStatus = (childrens: INode[], id: string, deployed: boolean) => {
           return childrens.forEach((children: INode) => {
             if (children.id === id) children.deployed = deployed
             else if (children.children) return graphChildrenStatus(children.children, id, deployed)

@@ -34,11 +34,11 @@ interface IOptional {
   boolean?: boolean
   booleanOK?: boolean
   hidden?: boolean
-  allowed?: Array<string | number>
+  allowed?: (string | number)[]
 }
 
 /** optional arguments */
-const optional: Array<IOptional> = [
+const optional: IOptional[] = [
   { name: 'action|app', positional: true, docs: 'include only activity for the given action or composition', entity: 'action' },
   { name: '--success', boolean: true, docs: 'include only successful activations' },
   { name: '--failure', boolean: true, docs: 'include only failed activations' },

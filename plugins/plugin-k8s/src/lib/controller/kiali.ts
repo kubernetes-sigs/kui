@@ -82,7 +82,7 @@ const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
 
   const rateInterval = parsedOptions.interval
 
-  const headerRows: Array<any> = [{
+  const headerRows: any[] = [{
     type: 'application',
     noSort: true,
     name: 'NAME',

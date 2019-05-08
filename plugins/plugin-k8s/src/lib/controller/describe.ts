@@ -166,7 +166,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     }
   }))
 
-  const modes: Array<ISidecarMode> = [
+  const modes: ISidecarMode[] = [
     {
       mode: 'summary',
       defaultMode: true,

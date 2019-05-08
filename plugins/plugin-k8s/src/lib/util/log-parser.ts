@@ -131,7 +131,7 @@ function findIndex (A: string[], pattern: RegExp, startIdx: number): number {
  * @return undefined if we don't have any log entries
  *
  */
-const parseZapr = (raw: string): Array<IZaprEntry> => {
+const parseZapr = (raw: string): IZaprEntry[] => {
   const pattern = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(DEBUG|INFO|ERROR)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/m
 
   const records = raw.split(pattern).filter(x => x !== '\n')
@@ -187,7 +187,7 @@ const parseZapr = (raw: string): Array<IZaprEntry> => {
  * @return undefined if we don't have any log entries
  *
  */
-const parseCloudLens = (raw: string, options: IOptions): Array<any> => {
+const parseCloudLens = (raw: string, options: IOptions): any[] => {
   const pattern = /^(?=[IEF][0-9]+)/m
   const linesByCloudLens = raw.split(pattern)
 

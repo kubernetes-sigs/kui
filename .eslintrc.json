@@ -12,7 +12,6 @@
     "@typescript-eslint/eslint-plugin"
   ],
   "rules": {
-    "@typescript-eslint/array-type": "off",
     "block-spacing": "off",
     "comma-spacing": "off",
     "eqeqeq": "off",

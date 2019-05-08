@@ -193,13 +193,13 @@ const resolveEnvVar = (variable: string): string => {
  *
  */
 export interface ISplit {
-  A: Array<string>
-  endIndices: Array<number>
+  A: string[]
+  endIndices: number[]
 }
-export const _split = (str: string, removeOuterQuotes = true, returnIndices = false, removeInlineOuterQuotes = false): ISplit | Array<string> => {
-  const A: Array<string> = []
-  const endIndices: Array<number> = []
-  const stack: Array<string> = []
+export const _split = (str: string, removeOuterQuotes = true, returnIndices = false, removeInlineOuterQuotes = false): ISplit | string[] => {
+  const A: string[] = []
+  const endIndices: number[] = []
+  const stack: string[] = []
 
   let cur = ''
 
@@ -213,7 +213,7 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
     return false
   }
 
-  let removedLastOpenQuote: Array<boolean> = []
+  let removedLastOpenQuote: boolean[] = []
   let escapeActive = false
   for (let idx = 0; idx < str.length; idx++) {
     const char = str.charAt(idx)
@@ -290,8 +290,8 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
     return A
   }
 }
-export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): Array<string> => {
-  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as Array<string>
+export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): string[] => {
+  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as string[]
 }
 
 /** an empty promise, for blank lines */
@@ -432,7 +432,7 @@ class InProcessExecutor implements IExecutor {
           return false
         }
 
-        const builtInOptions: Array<IUsageRow> = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
+        const builtInOptions: IUsageRow[] = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
         if (!usage || !usage.noHelp) {
           // usage might tell us not to add help, or not to add the -h help alias
           const help = { name: '--help', hidden: true, boolean: true }
@@ -478,7 +478,7 @@ class InProcessExecutor implements IExecutor {
         // now use minimist to parse the command line options
         // minimist stores the residual, non-opt, args in _
         const parsedOptions: ParsedOptions = minimist(argv, allFlags)
-        const argvNoOptions: Array<string> = parsedOptions._
+        const argvNoOptions: string[] = parsedOptions._
 
         //
         // if the user asked for help, and the plugin registered a

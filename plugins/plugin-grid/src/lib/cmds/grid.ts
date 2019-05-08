@@ -67,7 +67,7 @@ const makeCellDom = () => {
 class Occupancy {
   width: number
   height: number
-  rows: Array<HTMLElement>
+  rows: HTMLElement[]
   gridGrid: Element
 
   constructor (width, height, nCells, grid, gridGrid) {
@@ -167,7 +167,7 @@ interface IOptions {
   timeline?: boolean
   zoom?: number
 }
-const drawGrid = (tab: ITab, options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Array<Object>) => {
+const drawGrid = (tab: ITab, options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Object[]) => {
   debug('drawGrid', redraw)
 
   const existingContent = sidecarSelector(tab, `.custom-content .${css.content}`) as HTMLElement

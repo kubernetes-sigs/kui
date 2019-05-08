@@ -31,7 +31,7 @@ interface IMode {
 }
 
 /** view modes */
-const _modes: Array<IMode> = [
+const _modes: IMode[] = [
     { mode: 'get', label: 'About' },
     { mode: 'api', label: 'API' },
     { mode: 'config', label: 'Configure' }
@@ -40,7 +40,7 @@ const _modes: Array<IMode> = [
 }))
 
 /** flush-right buttons for the bottom stripe */
-const buttons: Array<IMode> = [
+const buttons: IMode[] = [
     /*{ mode: 'deploy', label: 'Deploy', //fontawesome: 'fas fa-cloud-upload-alt',
       balloon: 'Deploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} deploy "${name}"` },
@@ -60,9 +60,9 @@ const buttons: Array<IMode> = [
 ]
 
 /** Combined mode model (for the bottom stripe) */
-export const modes = (defaultMode: string, api, choices): Array<IMode> => {
+export const modes = (defaultMode: string, api, choices): IMode[] => {
     // add the defaultMode attribute to the matching IMode
-  const modes: Array<IMode> = _modes
+  const modes: IMode[] = _modes
         .filter(({ mode }) => mode === 'get' || mode === 'api' && api || mode === 'config' && choices)
         .map(_ => _.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _)
 
