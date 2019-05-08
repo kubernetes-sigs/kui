@@ -4,7 +4,7 @@
   "description": "This is the monorepo for Kui, the hybrid command-line/GUI electron-based Kubernetes tool",
   "main": "build/packages/app/src/main/main.js",
   "scripts": {
-    "lint": "./packages/kui-builder/bin/lint.sh",
+    "lint": "tslint --config ./packages/kui-builder/tslint.json --project ./packages/kui-builder",
     "test": "cd packages/tests && npm run test",
     "compile": "MONOREPO_MODE=true CLIENT_HOME=./clients/default ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
@@ -18,7 +18,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "lerna": "3.13.2"
+    "lerna": "3.13.2",
+    "tslint": "5.16.0",
+    "tslint-config-standard": "8.0.1",
+    "typescript": "3.4.5"
   },
   "repository": {
     "type": "git",
