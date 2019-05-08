@@ -1,3 +1,10 @@
 {
-  "extends": "tslint-config-standard"
+  "extends": "tslint-config-standard",
+
+  "rules": {
+    "await-promise": false,
+    "no-floating-promises": false,
+    "no-unnecessary-type-assertion": false,
+    "deprecation": false
+  }
 }
