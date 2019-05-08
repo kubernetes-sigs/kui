@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.0.38 (2019-05-08)
+
+
+### Bug Fixes
+
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **packages/app:** make annoying 'ok' invisible ([0a0f7f7](https://github.com/IBM/kui/commit/0a0f7f7)), closes [#597](https://github.com/IBM/kui/issues/597)
+
+
+
+
+
 ## 0.0.37 (2019-05-07)
 
 

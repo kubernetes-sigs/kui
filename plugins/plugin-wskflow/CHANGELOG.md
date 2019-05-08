@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.21.0 (2019-05-08)
+
+
+### Bug Fixes
+
+* **apache-composer:** compose yoyo -t @demos/if.js broken in webpack mode ([14ac816](https://github.com/IBM/kui/commit/14ac816)), closes [#332](https://github.com/IBM/kui/issues/332)
+* **plugin-wskflow:** add preview notice to sidecar header ([a65cae5](https://github.com/IBM/kui/commit/a65cae5)), closes [#455](https://github.com/IBM/kui/issues/455) [#386](https://github.com/IBM/kui/issues/386)
+* **plugins/plugin-wskflow:** fix for overflowing inline function labels ([278d2cd](https://github.com/IBM/kui/commit/278d2cd)), closes [#737](https://github.com/IBM/kui/issues/737)
+* **plugins/plugin-wskflow:** fix for Y and N coloring in wskflow ([5da48d8](https://github.com/IBM/kui/commit/5da48d8)), closes [#529](https://github.com/IBM/kui/issues/529)
+* **wskflow:** fix for preview [@demos](https://github.com/demos) in webpack mode ([adc685f](https://github.com/IBM/kui/commit/adc685f)), closes [#329](https://github.com/IBM/kui/issues/329)
+* apache-composer versus webpack fixes ([0a97daf](https://github.com/IBM/kui/commit/0a97daf)), closes [#584](https://github.com/IBM/kui/issues/584)
+* node-pty versus electron ([1263c74](https://github.com/IBM/kui/commit/1263c74)), closes [#1155](https://github.com/IBM/kui/issues/1155)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* wskflow theming and css cleanup ([28fed89](https://github.com/IBM/kui/commit/28fed89)), closes [#1025](https://github.com/IBM/kui/issues/1025)
+* wskflow versus popup mode ([629bf44](https://github.com/IBM/kui/commit/629bf44)), closes [#1107](https://github.com/IBM/kui/issues/1107)
+
+
+### Features
+
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+* add a few more themes ([92199d3](https://github.com/IBM/kui/commit/92199d3)), closes [#608](https://github.com/IBM/kui/issues/608)
+
+
+
+
+
 # 0.20.0 (2019-05-07)
 
 
