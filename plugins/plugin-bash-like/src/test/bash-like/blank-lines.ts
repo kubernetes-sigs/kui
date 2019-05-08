@@ -20,7 +20,7 @@
  */
 
 import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 const { localIt } = common
@@ -32,24 +32,20 @@ describe('Comments and blank line handling', function (this: ISuite) {
   it('should handle blank lines', () => cli.do('', this.app)
     .then(cli.expectBlank))
 
-  // tslint:disable-next-line:no-multi-spaces
   it('should handle blank lines with prefix whitespace', () => cli.do('    ', this.app)
     .then(cli.expectBlank))
 
   it('should handle comment-only lines', () => cli.do('# hello', this.app)
     .then(cli.expectBlank))
 
-  // tslint:disable-next-line:no-multi-spaces
   it('should handle comment-only lines with surrounding whitespace', () => cli.do('  #hello  ', this.app)
     .then(cli.expectBlank))
 
-  // tslint:disable-next-line:no-multi-spaces
   localIt('should handle a command with suffix comment', () => cli.do(`open ../../README.md  #hello  `, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('Kui Shell', undefined, undefined, 'README.md')))
 
-  // tslint:disable-next-line:no-multi-spaces
   localIt('should handle a command with suffix comment', () => cli.do(`open ../../LICENSE ### ### # #    hello  `, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
@@ -65,19 +61,16 @@ describe('Comments and blank line handling', function (this: ISuite) {
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
 
-  // tslint:disable-next-line:no-multi-spaces
   localIt('should handle a commented-out command with suffix comment', () => cli.do(`#open ../../README.md ### ### # #    hello  `, this.app)
     .then(cli.expectBlank)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
 
-  // tslint:disable-next-line:no-multi-spaces
   localIt('should handle a commented-out parse-error', () => cli.do(`#openfoobar ../../README.md ### ### # #    hello  `, this.app)
     .then(cli.expectBlank)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
 
-  // tslint:disable-next-line:no-multi-spaces
   localIt('should handle a commented-out parse-error 2', () => cli.do(`#open ../../README.md =))))- -(((( x=>x ### ### # #    hello  `, this.app)
     .then(cli.expectBlank)
     .then(sidecar.expectOpen)

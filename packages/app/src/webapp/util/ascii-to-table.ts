@@ -38,7 +38,6 @@ export const preprocessTable = (raw: Array<string>) => {
     // now we scan the header row to determine the column start indices
     const columnStarts: Array<number> = []
 
-    // tslint:disable-next-line:one-variable-per-declaration
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
       jdx = header.indexOf(headerCells[idx] + ' ', jdx)
       if (jdx < 0) {

@@ -170,7 +170,7 @@ export const preprocessTable = (raw: string[]) => {
     const header = table.substring(0, table.indexOf('\n'))
     const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
     const columnStarts: number[] = []
-    for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) { // tslint:disable-line
+    for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
       jdx = header.indexOf(headerCells[idx] + ' ', jdx)
       if (jdx < 0) {
         // last column

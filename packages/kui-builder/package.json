@@ -21,7 +21,6 @@
     "kui-link-artifacts.sh": "./bin/kui-link-artifacts.sh",
     "link-source-assets.sh": "./bin/link-source-assets.sh",
     "link-build-assets.sh": "./bin/link-build-assets.sh",
-    "kui-lint": "./bin/lint.sh",
     "kui-watch": "./bin/watch.sh"
   },
   "scripts": {
@@ -44,9 +43,19 @@
     "fs-extra": "7.0.1",
     "spectron": "5.0.0",
     "terser": "3.17.0",
-    "tslint": "5.16.0",
-    "tslint-config-standard": "8.0.1",
     "typescript": "3.4.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
+    "eslint": "^5.16.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "husky": "^2.3.0",
+    "lint-staged": "^8.1.7"
   },
   "kui": {
     "exclude": {

@@ -16,7 +16,7 @@
 
 import { Application, SpectronClient } from 'spectron'
 import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
 const { cli, selectors, sidecar } = ui
