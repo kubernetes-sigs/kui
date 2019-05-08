@@ -5,6 +5,7 @@
     "await-promise": false,
     "no-floating-promises": false,
     "no-unnecessary-type-assertion": false,
-    "deprecation": false
+    "deprecation": false,
+    "strict-type-predicates": false
   }
 }
