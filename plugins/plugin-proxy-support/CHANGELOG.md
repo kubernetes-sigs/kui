@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.32.0 (2019-05-08)
+
+
+### Bug Fixes
+
+* fixes for auth in browser+proxy mode ([a441c33](https://github.com/IBM/kui/commit/a441c33)), closes [#287](https://github.com/IBM/kui/issues/287) [#286](https://github.com/IBM/kui/issues/286) [#289](https://github.com/IBM/kui/issues/289)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **packages/kui-builder:** theming fixes for webpack ([5254b73](https://github.com/IBM/kui/commit/5254b73)), closes [#524](https://github.com/IBM/kui/issues/524)
+* **plugin-proxy-support:** needle url issue ([d17856f](https://github.com/IBM/kui/commit/d17856f)), closes [#310](https://github.com/IBM/kui/issues/310)
+* **plugins/plugin-proxy-executor:** error handling fixes for proxy-executor ([de67a7c](https://github.com/IBM/kui/commit/de67a7c)), closes [#651](https://github.com/IBM/kui/issues/651)
+* **plugins/plugin-proxy-support:** webpack+proxy versus usage errors ([4557a72](https://github.com/IBM/kui/commit/4557a72)), closes [#733](https://github.com/IBM/kui/issues/733)
+
+
+### Features
+
+* **plugins/plugin-k8s:** support a gamut of helm client versions in proxy ([abc00d8](https://github.com/IBM/kui/commit/abc00d8)), closes [#570](https://github.com/IBM/kui/issues/570)
+* allow for client-provided localStorage impl ([829bc1d](https://github.com/IBM/kui/commit/829bc1d)), closes [#1294](https://github.com/IBM/kui/issues/1294)
+* kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
+
+
+
+
+
 # 0.31.0 (2019-05-07)
 
 
