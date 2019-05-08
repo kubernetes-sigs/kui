@@ -867,6 +867,11 @@ sidecar .sidecar-header .header-main-content {
     /* this is needed, as we rotate the "sidecar-header-icon", which confuses chrome in terms of width occupancy;
        see sidecar .sidecar-header-icon-wrapper; the 4em parts must match! */
     width: calc(100% - 4em);
+
+    /* this is needed to work around firefox's odd behavior with nested
+   flex boxes versus text-overflow; see
+   https://github.com/IBM/kui/issues/1334 */
+    min-width: 0;
 }
 sidecar .header-right-bits {
     white-space: nowrap;
