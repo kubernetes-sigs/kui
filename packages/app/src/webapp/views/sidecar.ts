@@ -753,12 +753,13 @@ const setVisible = (sidecar: Element) => {
   element('tab.visible').classList.remove('sidecar-is-minimized')
   sidecar.classList.remove('minimized')
   document.body.classList.add('sidecar-visible')
-  setTimeout(() => eventBus.emit('/sidecar/toggle'), 600)
 
   const replView = document.querySelector('tab.visible .repl')
   replView.classList.add('sidecar-visible')
 
   cli.scrollIntoView()
+
+  setTimeout(() => eventBus.emit('/sidecar/toggle'), 600)
 }
 
 export const show = (block?: HTMLElement, nextBlock?: HTMLElement) => {

@@ -23,4 +23,4 @@ if [ $? != 0 ]; then
 fi
 
 echo 'starting proxy'
-docker run -e DEBUG=$DEBUG --name kui-proxy --rm -p 8081:3000 -p 8082:8082 -p 8083:8083 -p 8084:8084 -p 8085:8085 -p 8086:8086 -p 8087:8087 kui-proxy
+docker run -e DEBUG=$DEBUG -e KUBECONFIG=${KUBECONFIG//$HOME/\/root} --name kui-proxy --rm -p 8081:3000 kui-proxy

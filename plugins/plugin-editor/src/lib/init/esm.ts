@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/editor/init/esm')
 
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+
 import * as monaco from 'monaco-editor'
 
 import languages from '../language-scan'
@@ -33,19 +35,21 @@ let initDone
 // bundles that contain the web workers.
 self['MonacoEnvironment'] = {
   getWorkerUrl: function (moduleId, label) {
+    const hash: string = window['_kuiWebpackHash']
+
     if (label === 'json') {
-      return './json.worker.bundle.js'
+      return `./json.worker.${hash}.bundle.js`
     }
     if (label === 'css') {
-      return './css.worker.bundle.js'
+      return `./css.worker.${hash}.bundle.js`
     }
     if (label === 'html') {
-      return './html.worker.bundle.js'
+      return `./html.worker.${hash}.bundle.js`
     }
     if (label === 'typescript' || label === 'javascript') {
-      return './ts.worker.bundle.js'
+      return `./ts.worker.${hash}.bundle.js`
     }
-    return './editor.worker.bundle.js'
+    return `./editor.worker.${hash}.bundle.js`
   }
 }
 
@@ -56,6 +60,8 @@ export default (editorWrapper: HTMLElement, options) => {
   //
   let editor
   const ready = () => new Promise((resolve, reject) => {
+    injectCSS({ css: require('monaco-editor/min/vs/editor/editor.main.css').toString(), key: 'editor.monaco.core' })
+
     /**
      *
      */

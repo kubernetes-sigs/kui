@@ -369,7 +369,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   const { spawn } = await import('child_process')
   delete env.DEBUG // don't pass this through to kubectl or helm; helm in particular emits crazy output
 
-  fillInTheBlanks(env)
+  fillInTheBlanks(env || {})
 
   debug('kubeconfig', env.KUBECONFIG)
 

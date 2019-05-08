@@ -52,6 +52,8 @@ RUN apk add --no-cache ca-certificates bash git \
 ###########
 
 COPY . /kui-proxy
+COPY .kube /root/.kube
+COPY .bluemix /root/.bluemix
 
 # hmm.. sometimes the npm link command hangs without this extra npm config set
 RUN npm config set registry https://registry.npmjs.org
