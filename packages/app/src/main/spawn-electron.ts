@@ -29,7 +29,7 @@ import * as colors from 'colors/safe'
  * be closed automatically when the JavaScript object is garbage collected.
  *
  */
-let mainWindow
+let nWindows = 0
 
 /**
  * Keep refs to the electron app around
@@ -37,6 +37,11 @@ let mainWindow
  */
 let electron
 let app
+
+interface ISize {
+  width: number
+  height: number
+}
 
 /**
  * Spawn electron
@@ -247,7 +252,7 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
   app.on('activate', function () {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) {
+    if (nWindows === 0) {
       createWindow()
     }
   })
@@ -369,7 +374,8 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
       opts.y = parseInt(process.env.KUI_POSITION_Y, 10)
     }
     debug('createWindow::new BrowserWindow')
-    mainWindow = new Electron.BrowserWindow(opts)
+    const mainWindow = new Electron.BrowserWindow(opts)
+    nWindows++
     debug('createWindow::new BrowserWindow success')
 
     mainWindow.once('ready-to-show', () => {
@@ -390,7 +396,9 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...
     let fixedWindows = {}
-    const openFixedWindow = ({ type, event, url, options, size = mainWindow.getBounds(), position = mainWindow.getBounds() }) => {
+    const openFixedWindow = (opts) => {
+      const { type, event, url, options, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
+
       const existing = fixedWindows[type] || {}
       const { window: existingWindow, url: currentURL } = existing
 
@@ -471,11 +479,11 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
 
     if (noHeadless === true && executeThisArgvPlease) {
       debug('setting argv', executeThisArgvPlease)
-      mainWindow.executeThisArgvPlease = executeThisArgvPlease
+      mainWindow['executeThisArgvPlease'] = executeThisArgvPlease
     }
     debug('subwindowPrefs', subwindowPrefs)
     if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
-      mainWindow.subwindow = subwindowPrefs
+      mainWindow['subwindow'] = subwindowPrefs
     }
 
     // and load the index.html of the app.
@@ -500,7 +508,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-      mainWindow = null
+      nWindows--
     })
 
     //
@@ -543,8 +551,8 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
       switch (message.operation) {
         case 'quit': app.quit(); break
         case 'open-graphical-shell': createWindow(true); break
-        case 'enlarge-window': mainWindow.setContentSize(1400, 1050, { animate: true }); break
-        case 'reduce-window': mainWindow.setContentSize(1024, 768, { animate: true }); break
+        case 'enlarge-window': mainWindow.setContentSize(1400, 1050, true); break
+        case 'reduce-window': mainWindow.setContentSize(1024, 768, true); break
         case 'maximize-window': mainWindow.maximize(); break
         case 'unmaximize-window': mainWindow.unmaximize(); break
       }
