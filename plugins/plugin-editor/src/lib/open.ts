@@ -83,7 +83,8 @@ export const openEditor = async (name, options, execOptions) => {
     editorWrapper.focus()
   }
 
-  editorWrapper['baseFontSize'] = 14.4
+  const theme = getComputedStyle(document.body)
+  editorWrapper['baseFontSize'] = parseInt(theme.getPropertyValue('font-size').replace(/px$/, ''), 10) * 0.875
 
   // override the repl's capturing of the focus
   content.onclick = evt => {
