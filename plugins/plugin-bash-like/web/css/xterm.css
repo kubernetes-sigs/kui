@@ -26,6 +26,10 @@ tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mod
 tab.xterm-alt-buffer-mode .repl-output, tab.xterm-alt-buffer-mode .repl-block, tab.xterm-alt-buffer-mode .repl.sidecar-visible .repl-output, tab.xterm-alt-buffer-mode .repl.sidecar-visible .repl-result {
     padding: 0;
 }
+tab.xterm-alt-buffer-mode .repl {
+    /* give a little bit of left-pad for emacs, vi, etc. see https://github.com/IBM/kui/issues/1331 */
+    padding-left: 4px;
+}
 
 tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
     display: none;
