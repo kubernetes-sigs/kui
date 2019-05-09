@@ -79,3 +79,11 @@ realize your changes.
     ```bash
     > cd app && npm run build
     ```
+
+## Tests
+
+Please confirm the changes don't break anything running the test suite. You need to [install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-kubectl) before.
+
+```bash
+> npm test
+```
