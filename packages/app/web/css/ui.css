@@ -46,9 +46,6 @@ body .page > .header {
     padding: 0 1.1875em;
     font-weight: 300;
     font-size: 1rem;
-    -webkit-font-smoothing: antialiased;  /* chrome */
-    -moz-osx-font-smoothing: grayscale;   /* firefox */
-    font-smoothing: antialiased;
 }
 .header .deemphasize {
     font-size: 55%;
@@ -736,10 +733,7 @@ body[kui-theme-style="dark"] sidecar:not(.minimized) .sidecar-bottom-stripe {
     min-height: 3rem; /* important for screenshot, which tries to maximally squish the sidecar height */
     display: flex;
     z-index: 5;
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;  /* chrome */
-    -moz-osx-font-smoothing: grayscale;   /* firefox */
-    font-smoothing: antialiased;
+    font-weight: 300;
 }
 sidecar .sidecar-bottom-stripe > div {
     font-size: 0.875em;
