@@ -22,19 +22,20 @@ import UsageError from '@kui-shell/core/core/usage-error'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 /**
  * Respond with a top-level usage document
  *
  */
-const help = (usage, docs) => ({ argvNoOptions: args }) => {
+const help = (usage, docs) => ({ argvNoOptions: args }: IEvaluatorArgs) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 
   if (rest.length > 0) {
     // then the user asked e.g. "help foo"; interpret this as "foo help"
     debug('reversal')
-    return repl.qexec(rest.concat('help').map(repl.encodeComponent).join(' '))
+    return repl.qexec(rest.concat('help').map(val => repl.encodeComponent(val)).join(' '))
 
     // } else if (args.length !== 1) {
   } else if (usage) {
@@ -82,7 +83,7 @@ const help = (usage, docs) => ({ argvNoOptions: args }) => {
  * The module. Here, we register as a listener for commands.
  *
  */
-export default async (commandTree, prequire, { usage, docs }) => {
-  const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true, inBrowserOK: true })
-  commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true, inBrowserOK: true })
+export default async (commandTree: CommandRegistrar, _, { usage, docs }) => {
+  const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true, inBrowserOk: true })
+  commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true, inBrowserOk: true })
 }

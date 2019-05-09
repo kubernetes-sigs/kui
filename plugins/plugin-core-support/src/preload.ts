@@ -18,21 +18,22 @@ import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 
 import help from './lib/cmds/help'
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
+const registration: PreloadRegistration = async (commandTree: CommandRegistrar, _: PluginRequire, options?) => {
   await Promise.all([
-    help(commandTree, prequire, options)
+    help(commandTree, _, options)
   ])
 
   if (!isHeadless()) {
     await Promise.all([
-      import('./lib/cmds/zoom').then(_ => _.default(commandTree, prequire)),
-      import('./lib/new-tab').then(_ => _.default(commandTree, prequire)),
+      import('./lib/cmds/zoom').then(_ => _.default(commandTree)),
+      import('./lib/new-tab').then(_ => _.default(commandTree)),
       import('./lib/cmds/history/reverse-i-search').then(_ => _.default()),
       import('./lib/cmds/theme').then(_ => _.preload()),
       import('./lib/cmds/about/about').then(_ => _.preload()),

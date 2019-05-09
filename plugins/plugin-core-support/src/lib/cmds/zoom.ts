@@ -21,6 +21,7 @@ import eventBus from '@kui-shell/core/core/events'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as path from 'path'
 
@@ -41,13 +42,20 @@ const keys = {
 const listener = (event: KeyboardEvent): void => {
   const char = event.keyCode
 
+  if (event.shiftKey) {
+    // if the shift key include in the chord, then this does not
+    // represent a zoom event
+    debug('ignoring due to shift key', char)
+    return
+  }
+
   if (char === keys.ZOOM_RESET && (event.ctrlKey || event.metaKey)) {
     // zooming
     debug('reset zoom')
     event.preventDefault()
     reset()
     setTimeout(() => eventBus.emit('/zoom', 1), 100)
-  } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey)) {
+  } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
     event.preventDefault()
     const main = document.querySelector('body > .page')
@@ -91,7 +99,7 @@ const usage = {
  * Command handler for zoom set
  *
  */
-const set = ({ argvNoOptions }) => {
+const set = ({ argvNoOptions }: IEvaluatorArgs) => {
   const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   return _set(newZoom)
 }
@@ -141,7 +149,7 @@ const get = () => {
  * Plugin registration
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/zoom/get', get, { usage: usage.get })
   commandTree.listen('/zoom/set', set, { usage: usage.set })
   commandTree.listen('/zoom/reset', reset, { usage: usage.reset })
