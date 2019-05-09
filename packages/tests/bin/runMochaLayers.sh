@@ -34,14 +34,15 @@ else
 fi
 
 if [ -z "$API_HOST" ]; then
-    . ~/.wskprops
-    export API_HOST=$APIHOST
-fi
-
-if [ ! -f ~/.wskprops ]; then
+    if [ -f ~/.wskprops ]; then
+        . ~/.wskprops
+        export API_HOST=$APIHOST
+    fi
+else
     echo "APIHOST=$API_HOST" > ~/.wskprops
     echo "INSECURE_SSL=true" >> ~/.wskprops
 fi
+
 
 export PATH=./node_modules/.bin:$PATH
 
