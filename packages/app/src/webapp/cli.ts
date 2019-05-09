@@ -257,7 +257,7 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
 
 /** plugins can register view handlers for a given type: string */
 export type ViewHandler = (tab: ITab, response: Entity, resultDom: Element, parsedOptions: ParsedOptions, execOptions: IExecOptions) => Promise<any> | void
-type ViewRegistrar = { [key: string]: ViewHandler }
+interface ViewRegistrar { [key: string]: ViewHandler }
 
 /**
  * Register a renderer for a given Array<kind>

@@ -17,7 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/view/util/selectors')
 
-type Selector = { [ key: string ]: string | Selector }
+interface Selector {
+  [ key: string ]: string | Selector
+}
 
 export const selectorToString = (selector: Selector): string => {
   if (selector.matchLabels) {

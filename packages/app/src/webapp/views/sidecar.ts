@@ -245,7 +245,9 @@ export const renderField = async (container: HTMLElement, entity: IEntitySpec, f
     // for now, we just render it as raw JSON, TODO: some sort of fancier key-value pair visualization?
     if (field === 'parameters' || field === 'annotations') {
       // special case here: the parameters field is really a map, but stored as an array of key-value pairs
-      type KeyValueMap = { [key: string]: string }
+      interface KeyValueMap {
+        [key: string]: string
+      }
       value = value.reduce((M: KeyValueMap, kv) => {
         M[kv.key] = kv.value
         return M

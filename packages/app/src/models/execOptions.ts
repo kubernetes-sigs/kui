@@ -78,4 +78,6 @@ export class DefaultExecOptions implements IExecOptions {
 }
 
 /** command line options */
-export type ParsedOptions = { [ key: string ]: any }
+export interface ParsedOptions {
+  [ key: string ]: any
+}
