@@ -687,6 +687,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
   return Promise.resolve()
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ITab extends HTMLElement { }
 const tabTagPattern = /tab/i
 export function isTab (node: Element): node is ITab {

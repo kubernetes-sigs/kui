@@ -49,6 +49,7 @@ import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
 import { apply as addRelevantModes } from '../view/modes/registrar'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends IExecOptions {
 /*  credentials?: {
     k8s: {
