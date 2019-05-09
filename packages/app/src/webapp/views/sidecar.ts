@@ -945,6 +945,7 @@ export const init = async () => {
   document.addEventListener('keyup', (evt: KeyboardEvent) => {
     if (document.activeElement &&
         !(document.activeElement === document.body ||
+          document.activeElement.classList.contains('inputarea') || // monaco-editor
           document.activeElement.classList.contains('repl-input-element'))) {
       // not focused on repl
       return

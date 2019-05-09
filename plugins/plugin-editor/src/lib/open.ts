@@ -240,7 +240,7 @@ export const openEditor = async (name, options, execOptions) => {
         relayout()
         setTimeout(relayout, 600) // race with sidecar sweeping in
       } else {
-        globalEventBus.once('/sidecar/toggle', relayout)
+        setTimeout(relayout, 600)
       }
 
       return Promise.resolve({ getEntity, editor, content, eventBus })
