@@ -29,7 +29,7 @@ import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { listen, getCurrentPrompt, setStatus } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
-import { IEvent, ExecType } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvent, ExecType } from '@kui-shell/core/models/command'
 
 const usage = {
   strict: 'switch',
@@ -312,17 +312,17 @@ const closeTab = () => {
   return true
 }
 
-const registerCommandHandlers = (commandTree, prequire) => {
-  commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(argvNoOptions[argvNoOptions.length - 1]),
+const registerCommandHandlers = (commandTree: CommandRegistrar) => {
+  commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
                      { usage, needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/new', newTabAsync, { needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/close', closeTab, { needsUI: true, noAuthOk: true })
 }
 
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   if (typeof document !== 'undefined') {
     oneTimeInit()
 
-    return registerCommandHandlers(commandTree, prequire)
+    return registerCommandHandlers(commandTree)
   }
 }
