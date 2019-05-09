@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-type IOptions = { [key: string]: string | boolean | number }
+interface IOptions {
+  [key: string]: string | boolean | number
+}
 
 /**
  * Turn an options struct into a cli string

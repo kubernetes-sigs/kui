@@ -123,8 +123,14 @@ export interface ICommandBase {
 }
 
 type CommandKey = string
-type CommandKeyMap = { [key: string]: ICommand } // we can't use CommandKey here; yay tsc; TS1336
-export type Disambiguator = { [key: string]: ICommandBase[] } // we can't use CommandKey here; yay tsc; TS1336
+// we can't use CommandKey here; yay tsc; TS1336
+interface CommandKeyMap {
+  [key: string]: ICommand
+}
+// we can't use CommandKey here; yay tsc; TS1336
+export interface Disambiguator {
+  [key: string]: ICommandBase[]
+}
 
 export interface ICommand extends ICommandBase {
   $: CommandHandler

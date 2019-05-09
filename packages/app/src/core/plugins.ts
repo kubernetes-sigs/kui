@@ -518,7 +518,9 @@ interface IPrescanCommandDefinition {
   path: string
 }
 export type PrescanCommandDefinitions = IPrescanCommandDefinition[]
-export type PrescanDocs = { [key: string]: string }
+export interface PrescanDocs {
+  [key: string]: string
+}
 export type PrescanUsage = any // FIXME something like: { [key: string]: ICommandOptions }
 export interface IPrescanModel {
   docs: PrescanDocs

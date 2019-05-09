@@ -451,13 +451,17 @@ class InProcessExecutor implements IExecutor {
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
         const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name))
 
-        type CanonicalArgs = { [key: string]: string }
+        interface CanonicalArgs {
+          [key: string]: string
+        }
         const optionalAliases = optional && optional.filter(({ alias }) => alias).reduce((M: CanonicalArgs, { name, alias }) => {
           M[unflag(alias)] = unflag(name)
           return M
         }, {})
 
-        type ArgCount = { [key: string]: number }
+        interface ArgCount {
+          [key: string]: number
+        }
         const allFlags = {
           configuration: Object.assign({ 'camel-case-expansion': false }, (usage && usage.configuration) || {}),
           boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),

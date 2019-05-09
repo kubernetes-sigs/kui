@@ -166,7 +166,9 @@ interface IStat {
   added: string
   deleted: string
 }
-type Stats = { [key: string]: IStat }
+interface Stats {
+  [key: string]: IStat
+}
 const numstat = (): Promise<Stats> => new Promise<Stats>((resolve, reject) => {
   const child = spawn('git', ['diff', '--numstat']) // `--relative=${path.basename(process.cwd())}`])
 
