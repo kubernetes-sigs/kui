@@ -36,20 +36,21 @@ let initDone
 self['MonacoEnvironment'] = {
   getWorkerUrl: function (moduleId, label) {
     const hash: string = window['_kuiWebpackHash']
+    const root: string = window['_kuiWebpackResourceRoot'] || '.'
 
     if (label === 'json') {
-      return `./json.worker.${hash}.bundle.js`
+      return `${root}/json.worker.${hash}.bundle.js`
     }
     if (label === 'css') {
-      return `./css.worker.${hash}.bundle.js`
+      return `${root}/css.worker.${hash}.bundle.js`
     }
     if (label === 'html') {
-      return `./html.worker.${hash}.bundle.js`
+      return `${root}/html.worker.${hash}.bundle.js`
     }
     if (label === 'typescript' || label === 'javascript') {
-      return `./ts.worker.${hash}.bundle.js`
+      return `${root}/ts.worker.${hash}.bundle.js`
     }
-    return `./editor.worker.${hash}.bundle.js`
+    return `${root}/editor.worker.${hash}.bundle.js`
   }
 }
 
