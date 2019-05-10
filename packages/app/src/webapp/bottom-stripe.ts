@@ -257,7 +257,7 @@ const _addModeButton = (tab: ITab, bottomStripe: Element, opts: ISidecarMode, en
         }
       } else {
         try {
-          await repl.pexec(command(entity), { /* leaveBottomStripeAlonex true,*/ echo, noHistory, replSilence })
+          await repl.pexec(command(entity), { echo, noHistory, replSilence })
           if (leaveBottomStripeAlone) {
             changeActiveButton()
           }

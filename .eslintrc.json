@@ -48,7 +48,6 @@
     "promise/param-names": "off",
 
     "standard/array-bracket-even-spacing": "off",
-    "standard/object-curly-even-spacing": "off",
 
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/camelcase": "off",

@@ -409,7 +409,8 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
       const tryToUseEditor = true
       if (tryToUseEditor) {
         try {
-          const { edit /*, IEditorEntity */ } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
+          // const { edit, IEditorEntity } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
+          const { edit } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
           debug('successfully loaded editor', custom)
 
           const entity /*: IEditorEntity */ = {

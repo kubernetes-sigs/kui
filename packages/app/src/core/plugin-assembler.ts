@@ -268,7 +268,8 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
   const before = await readFile()
   debug('before', before)
 
-  const modules = await plugins.assemble({ /* pluginRoot, */ externalOnly })
+  // const modules = await plugins.assemble({ pluginRoot, externalOnly })
+  const modules = await plugins.assemble({ externalOnly })
 
   /** make the paths relative to the root directory */
   const fixupOnePath = (filepath: string): string => {
