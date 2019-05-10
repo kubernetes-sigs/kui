@@ -19,6 +19,7 @@ const debug = Debug('plugins/wskflow/session-flow')
 debug('loading')
 
 import * as repl from '@kui-shell/core/core/repl'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
 
@@ -81,7 +82,7 @@ const fetchTrace = activation => new Promise((resolve, reject) => {
   pool.start().then(() => resolve(data))
 })
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   // register the "session flow" command
   commandTree.listen('/wsk/session/flow', ({ argvNoOptions }) => {
     const sessionId = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
