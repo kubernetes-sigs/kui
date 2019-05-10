@@ -25,6 +25,8 @@ import { createServer, Server } from 'https'
 
 import { Channel } from './channel'
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 let portRange = 8083
 const servers = []
 
@@ -274,7 +276,7 @@ let count = 0
 // const children = []
 let cachedSelf
 let selfHome
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/bash/websocket/open', ({ execOptions }) => new Promise(async (resolve, reject) => {
     const N = count++
 
@@ -283,13 +285,13 @@ export default (commandTree, prequire) => {
      *
      */
     const resolveWithHost = (port: number) => {
-      const host = execOptions.host || `localhost:${port}`
+      const host = execOptions['host'] || `localhost:${port}`
       resolve(`wss://${host}/bash/${N}`)
     }
 
     if (execOptions.isProxied) {
-      console.log(`do we have a port? ${execOptions.port}`)
-      return main(N, execOptions.server, execOptions.port).then(resolveWithHost).catch(reject)
+      console.log(`do we have a port? ${execOptions['port']}`)
+      return main(N, execOptions['server'], execOptions['port']).then(resolveWithHost).catch(reject)
     } else {
       const { ipcRenderer } = await import('electron')
 

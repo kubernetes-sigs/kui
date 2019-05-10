@@ -24,7 +24,7 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
-import { IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
 import { findFile, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
@@ -264,7 +264,11 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     // idx into the attributes; minus 1 because we slice off the name
     const ownerIdx = 1 - 1
     const groupIdx = 2 - 1
+    const sizeIdx = 3 - 1
     const dateIdx = columns.length - allTrim - 1
+
+    // user asked to sort by time?
+    const sortByTime = parsedOptions.t
 
     const permissionAttribute = !parsedOptions.l ? [] : [{
       value: columns[0],
@@ -274,7 +278,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     const normalAttributes = columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
       value: col,
       outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
-      css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
+      css: (idx === ownerIdx || idx === groupIdx || (idx === dateIdx && !sortByTime) || (idx === sizeIdx && sortByTime)) ? 'slightly-deemphasize' : ''
     }))
 
     return new Row({
@@ -311,9 +315,11 @@ const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions:
   }
 
   const dashFlags = '-lh' +
-    (options.t ? 't' : '') +
+    (options.a ? 'a' : '') +
+    (options.c ? 'c' : '') +
     (options.r ? 'r' : '') +
-    (options.a ? 'a' : '')
+    (options.S ? 'S' : '') +
+    (options.t ? 't' : '')
 
   const platformFlags = []
 
@@ -336,10 +342,13 @@ const usage = command => ({
   noHelpAlias: true,
   optional: localFilepath.concat([
     { name: '-a', boolean: true, docs: 'Include directory entries whose names begin with a dot (.)' },
+    { name: '-c', boolean: true, docs: 'Use time when file status was last changed for sorting (-t)' },
     { name: '-l', boolean: true, hidden: true },
     { name: '-h', boolean: true, hidden: true },
     { name: '-t', boolean: true, docs: 'Sort by time modified (most recently modified first)' },
-    { name: '-r', boolean: true, docs: 'Reverse the natural sort order' }
+    { name: '-r', boolean: true, docs: 'Reverse the natural sort order' },
+    { name: '-s', boolean: true, hidden: true }, // "show size", which we always do; so hidden: true
+    { name: '-S', boolean: true, docs: 'Sort files by size' }
   ])
 })
 
@@ -347,7 +356,7 @@ const usage = command => ({
  * Register command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   const ls = commandTree.listen('/ls', doLs('ls'), { usage: usage('ls'), noAuthOk: true, requiresLocal: true })
   commandTree.synonym('/lls', doLs('lls'), ls, { usage: usage('lls'), noAuthOk: true, requiresLocal: true })
 }

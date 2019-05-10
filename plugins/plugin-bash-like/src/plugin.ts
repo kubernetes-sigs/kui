@@ -21,17 +21,19 @@ import gitDiff from './lib/cmds/git-diff'
 import gitStatus from './lib/cmds/git-status'
 import ptyServer from './pty/server'
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 /**
  * This is the module
  *
  */
-export default async (commandTree, prequire, options) => {
+export default async (commandTree: CommandRegistrar) => {
   return Promise.all([
-    ls(commandTree, prequire),
-    open(commandTree, prequire),
-    bash(commandTree, prequire),
-    ptyServer(commandTree, prequire),
-    gitDiff(commandTree, prequire),
-    gitStatus(commandTree, prequire)
+    ls(commandTree),
+    open(commandTree),
+    bash(commandTree),
+    ptyServer(commandTree),
+    gitDiff(commandTree),
+    gitStatus(commandTree)
   ])
 }

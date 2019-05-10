@@ -33,6 +33,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import formatKeyValue from '../util/ascii-key-value-to-table'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { reallyLong, handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -315,7 +316,7 @@ const cd = cmd => ({ command, execOptions, parsedOptions }) => {
  * Register command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   const shellFn = ({ command, execOptions, parsedOptions }) => doShell(repl.split(command, false), parsedOptions, execOptions)
   commandTree.listen('/!', dispatchToShell, { docs: 'Execute a UNIX shell command', noAuthOk: true, requiresLocal: true })
 
