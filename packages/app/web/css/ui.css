@@ -365,7 +365,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     font-size: 0.875em;
 }
 .repl input, .repl-input-like {
-    font-weight: 500; /* make it a bit more substantial; IBM Plex Mono 400 is too light */
     color: var(--color-text-01);
     background: transparent;
     border: none;
