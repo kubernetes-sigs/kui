@@ -26,6 +26,7 @@ import * as expandHomeDir from 'expand-home-dir'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { qexec } from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
@@ -121,7 +122,7 @@ const usage = {
  * Register command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/open', ({ argvNoOptions: argv }) => {
     return open(argv[argv.indexOf('open') + 1], hljs)
   }, { usage, needsUI: true, noAuthOk: true })

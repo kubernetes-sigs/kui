@@ -2998,11 +2998,11 @@ body {
     background: none;
 }
 .log-lines[kui-table-style="Light"] .log-line {
-    height: 2em;
+    height: 1.5em;
 }
 .result-table[kui-table-style="Light"] .entity .entity-attributes {
     background: none !important;
-    height: 2em;
+    height: 1.5em;
 }
 [kui-table-style="Light"] .entity-attributes > span {
     border: none;

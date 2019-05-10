@@ -22,12 +22,13 @@ import * as path from 'path'
 import { split } from '@kui-shell/core/core/repl'
 import { isPopup } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { onbranch, injectCSS } from '../util/git-support'
 
-const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, reject) => {
+const doDiff = async ({ command, execOptions }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
   const injector = injectCSS()
 
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
@@ -93,6 +94,6 @@ const doDiff = async ({ command, execOptions }) => new Promise(async (resolve, r
  * Register command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/git/diff', doDiff, { needsUI: true, requiresLocal: true, noAuthOk: true })
 }
