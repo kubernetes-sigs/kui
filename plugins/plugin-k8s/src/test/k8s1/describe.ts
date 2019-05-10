@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import assert = require('assert')
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectYAMLSubset, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
+import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -27,11 +24,9 @@ describe('electron describe', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should wipe k8s', () => {
-    return wipe(this)
-  })
-
   synonyms.forEach(kubectl => {
+    const ns: string = createNS()
+
     /** return the editor text */
     const getText = (ctx: common.ISuite) => {
       return ctx.app.client.execute(() => {
@@ -53,7 +48,7 @@ describe('electron describe', function (this: common.ISuite) {
             kind: 'Pod',
             metadata: {
               name: 'nginx',
-              namespace: 'default'
+              namespace: ns
             }
           }, false))
 
@@ -82,6 +77,8 @@ describe('electron describe', function (this: common.ISuite) {
       })
     }
 
+    allocateNS(this, ns)
+
     it(`should fail with 404 for unknown resource type via ${kubectl}`, () => {
       const fakeType = 'yoyoyo1334u890724'
       return cli.do(`${kubectl} describe ${fakeType} productPage`, this.app)
@@ -89,18 +86,18 @@ describe('electron describe', function (this: common.ISuite) {
     })
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+      return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
         .catch(common.oops(this))
     })
 
     it(`should describe that pod via ${kubectl}`, () => {
-      return cli.do(`${kubectl} describe pod nginx`, this.app)
+      return cli.do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectMode(defaultModeForGet))
-        .then(sidecar.expectShowing('nginx', undefined, undefined, 'default'))
+        .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
         .catch(common.oops(this))
     })
 
@@ -115,5 +112,7 @@ describe('electron describe', function (this: common.ISuite) {
         common.oops(this)(err)
       }
     })
+
+    deleteNS(this, ns)
   })
 })

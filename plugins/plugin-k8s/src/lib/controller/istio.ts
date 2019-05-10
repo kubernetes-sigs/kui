@@ -19,6 +19,7 @@ const debug = Debug('k8s/controller/istio')
 
 import { join } from 'path'
 import { exec } from 'child_process'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
 
@@ -223,7 +224,7 @@ const statusBookinfo = async () => {
  * Register the commands
  *
  */
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   commandTree.listen('/istio/install', installIstio106, { noAuthOk: true })
   commandTree.listen('/istio/uninstall', uninstallIstio106, { noAuthOk: true })
   commandTree.listen('/istio/delete', uninstallIstio106, { noAuthOk: true })

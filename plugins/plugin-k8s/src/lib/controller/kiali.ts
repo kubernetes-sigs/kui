@@ -19,6 +19,7 @@ const debug = Debug('k8s/controller/kiali')
 
 import { exec } from 'child_process'
 import parseDuration = require('parse-duration')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { pexec, rexec as $, qexec as $$, encodeComponent } from '@kui-shell/core/core/repl'
 
@@ -184,7 +185,7 @@ const sendFirstArgTo = (command: string, handler: Handler) => ({ argvNoOptions: 
  * Register the commands
  *
  */
-export default async (commandTree, prequire) => {
+export default async (commandTree) => {
   commandTree.listen('/kiali/install', installKiali, { noAuthOk: true })
 
   const deleteCmd = commandTree.listen('/kiali/delete', uninstallKiali, { noAuthOk: true })
@@ -196,5 +197,5 @@ export default async (commandTree, prequire) => {
   commandTree.synonym('/k/get/app', getApps, getAppsCmd2, { noAuthOk: true })
 
   commandTree.listen('/kiali/console', () => client.consoleView(), { noAuthOk: true })
-  commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView(parsedOptions), { noAuthOk: true })
+  commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView(parsedOptions), { noAuthOk: true }) // FIXME: parsedOptions is not of type IOption
 }

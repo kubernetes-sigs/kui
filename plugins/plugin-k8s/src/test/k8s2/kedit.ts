@@ -16,7 +16,6 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar, expectYAML } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 
 import { Application } from 'spectron'
 

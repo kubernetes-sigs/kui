@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import assert = require('assert')
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectYAMLSubset, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
+import { defaultModeForGet, createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
+const ns1: string = createNS()
+const ns2: string = createNS()
 const synonyms = ['kubectl']
 
 describe('electron namespace', function (this: common.ISuite) {
@@ -131,16 +131,13 @@ describe('electron namespace', function (this: common.ISuite) {
     //
     // now start the tests
     //
-
-    deleteIt('yoyo', true)
-    deleteIt('yoyo2', true)
-    createIt('yoyo')
-    describeIt('yoyo')
-    createIt('yoyo2')
-    describeIt('yoyo2')
-    createPod('yoyo')
-    createPod('yoyo2')
-    deleteIt('yoyo')
-    deleteIt('yoyo2')
+    createIt(ns1)
+    describeIt(ns1)
+    createIt(ns2)
+    describeIt(ns2)
+    createPod(ns1)
+    createPod(ns2)
+    deleteIt(ns1)
+    deleteIt(ns2)
   })
 })

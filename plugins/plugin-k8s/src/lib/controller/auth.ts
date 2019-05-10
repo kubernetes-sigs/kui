@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/controller/auth')
 
 import { setAuth } from '../model/auth'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 const usage = {
   add: {
@@ -105,6 +106,6 @@ const add = async ({ block, nextBlock }) => {
  * Register the commands
  *
  */
-export default (commandTree, prequire) => {
-  commandTree.listen('/k8s/auth/add', add, { usage, noAuthOk: [ 'openwhisk' ], inBrowserOK: true })
+export default (commandTree: CommandRegistrar) => {
+  commandTree.listen('/k8s/auth/add', add, { usage: usage.add, noAuthOk: [ 'openwhisk' ], inBrowserOk: true })
 }

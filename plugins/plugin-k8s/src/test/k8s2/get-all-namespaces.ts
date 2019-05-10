@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-import assert = require('assert')
-
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
-
-// unimportant names, though they must be different
-const ns1 = 'ns1'
-const ns2 = 'ns2'
+import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
+import { defaultModeForGet, createNS as create } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
 describe('electron get all-namespaces', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
-
-  it('should wipe k8s', () => {
-    return wipe(this)
-  })
 
   synonyms.forEach(kubectl => {
     /** create the given namespace */
@@ -108,8 +98,8 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
     //
     // here start the tests
     //
-    deleteNs(ns1, true) // ok if it doesn't exist
-    deleteNs(ns2, true) // ok if it doesn't exist
+    const ns1: string = create()
+    const ns2: string = create()
 
     createNs(ns1)
     createNs(ns2)
