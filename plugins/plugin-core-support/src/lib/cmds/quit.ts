@@ -19,10 +19,10 @@
  *
  */
 
-import { tellMain } from '@kui-shell/core/webapp/electron-events'
+import { qexec as $$ } from '@kui-shell/core/core/repl'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-const doQuit = () => tellMain('quit')
+const doQuit = () => $$('tab close')
 
 const usage = (command: string) => ({
   command,

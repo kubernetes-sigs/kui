@@ -51,7 +51,7 @@ common.localDescribe('new tab from quiescent tab via command', function (this: c
      .then(cli.expectOKWithString(CWD2))
      .catch(common.oops(this)))
 
-  it('should close tab via command', () => cli.do('tab close', this.app)
+  it('should close tab via "exit" command', () => cli.do('exit', this.app)
      .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true))
      .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
      .then(() => cli.waitForRepl(this.app)) // should have an active repl
@@ -106,7 +106,7 @@ common.localDescribe('new tab from quiescent tab via button click', function (th
      .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
      .catch(common.oops(this)))
 
-  it('should close tab via command', () => cli.do('tab close', this.app)
+  it('should close tab via "tab close" command', () => cli.do('tab close', this.app)
      .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true))
      .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
      .then(() => cli.waitForRepl(this.app)) // should have an active repl
