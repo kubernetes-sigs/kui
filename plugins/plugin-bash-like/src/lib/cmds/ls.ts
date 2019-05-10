@@ -22,9 +22,10 @@ import { isAbsolute, join } from 'path'
 
 import * as expandHomeDir from 'expand-home-dir'
 
-import UsageError from '@kui-shell/core/core/usage-error'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import * as repl from '@kui-shell/core/core/repl'
+import UsageError from '@kui-shell/core/core/usage-error'
+import { IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
 import { findFile, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
 import { doShell } from './bash-like'
@@ -77,7 +78,7 @@ const myreaddir = (dir: string): Promise<Array<string>> => new Promise((resolve,
         if (err) {
           reject(err)
         } else {
-          resolve(files)
+          resolve(['.', '..'].concat(files))
         }
       })
     }
@@ -110,7 +111,7 @@ const lsOrOpen = filepath => new Promise((resolve, reject) => {
  * Turn ls output into a REPL table
  *
  */
-const tabularize = (cmd, parent = '', parentAsGiven = '') => async (output): Promise< true | Table> => {
+const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', parentAsGiven = '') => async (output: string): Promise< true | Table> => {
   debug('tabularize', parent, parentAsGiven)
 
   if (output.length === 0) {
@@ -216,17 +217,28 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async (output): Pro
 
   const outerCSS = 'header-cell'
   const outerCSSSecondary = `${outerCSS} hide-with-sidecar`
+
+  const headerAttributes = [
+    { key: 'owner', value: 'OWNER', outerCSS: outerCSSSecondary },
+    { key: 'group', value: 'GROUP', outerCSS: outerCSSSecondary },
+    { key: 'size', value: 'SIZE', outerCSS: outerCSSSecondary },
+    { key: 'lastmod', value: 'LAST MODIFIED', outerCSS: `${outerCSS} badge-width` }
+  ]
+
+  if (parsedOptions.l) {
+    headerAttributes.splice(0, 0, {
+      key: 'permissions',
+      value: 'PERMISSIONS',
+      outerCSS: outerCSSSecondary
+    })
+  }
+
   const headerRow: Row = {
     name: 'NAME',
     type: 'file',
     onclick: false,
     outerCSS,
-    attributes: [
-      { key: 'owner', value: 'OWNER', outerCSS: outerCSSSecondary },
-      { key: 'group', value: 'GROUP', outerCSS: outerCSSSecondary },
-      { key: 'size', value: 'SIZE', outerCSS: outerCSSSecondary },
-      { key: 'lastmod', value: 'LAST MODIFIED', outerCSS: `${outerCSS} badge-width` }
-    ]
+    attributes: headerAttributes
   }
 
   const body: Row[] = rows.map((columns): Row => {
@@ -254,21 +266,29 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async (output): Pro
     const groupIdx = 2 - 1
     const dateIdx = columns.length - allTrim - 1
 
+    const permissionAttribute = !parsedOptions.l ? [] : [{
+      value: columns[0],
+      css: 'slightly-deemphasize'
+    }]
+
+    const normalAttributes = columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
+      value: col,
+      outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
+      css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
+    }))
+
     return new Row({
       type: cmd,
       name: nameForDisplay,
       onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
       css,
-      attributes: columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
-        value: col,
-        outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
-        css: (idx === ownerIdx || idx === groupIdx) ? 'slightly-deemphasize' : idx === dateIdx && 'slightly-deemphasize'
-      }))
+      attributes: permissionAttribute.concat(normalAttributes)
     })
   })
 
   return new Table({
     type: cmd,
+    style: TableStyle.Light,
     noEntityColors: true,
     noSort: true,
     header: headerRow,
@@ -280,7 +300,7 @@ const tabularize = (cmd, parent = '', parentAsGiven = '') => async (output): Pro
  * ls command handler
  *
  */
-const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }): Promise<true | Table> => {
+const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs): Promise<true | Table> => {
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
   const filepath = findFile(expandHomeDir(filepathAsGiven), true, true)
   debug('doLs filepath', filepathAsGiven, filepath)
@@ -304,7 +324,7 @@ const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions:
       LS_COLWIDTHS: '100:100:100:100:100:100:100:100'
     }
   }))
-    .then(tabularize(command, filepath, filepathAsGiven))
+    .then(tabularize(command, options, filepath, filepathAsGiven))
     .catch(message => { throw new UsageError({ message, usage: usage(command) }) })
 }
 

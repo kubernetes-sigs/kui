@@ -22,7 +22,7 @@ import { isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
 import { getActiveView } from './sidecar'
-import { Table, Row, Cell, Icon } from '../models/table'
+import { Table, Row, Cell, Icon, TableStyle } from '../models/table'
 
 export const formatTable = (table: Table, resultDom: HTMLElement): void => {
   const tableDom = document.createElement('div')
@@ -95,17 +95,22 @@ export const formatTable = (table: Table, resultDom: HTMLElement): void => {
   const rows = formatTableResult(table)
   rows.map(row => tableDom.appendChild(row))
 
+  if (table.style !== undefined) {
+    tableDom.setAttribute('kui-table-style', TableStyle[table.style].toString())
+  }
+
   const rowSelection = tableDom.querySelector('.selected-row')
   if (rowSelection) {
     tableDom.classList.add('has-row-selection')
   }
 }
+
 /**
  * Format one row in the table
  *
  */
 export const formatOneRowResult = (options?) => (entity: Row) => {
-  debug('formatOneRowResult', entity)
+  // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
   dom.setAttribute('data-name', entity.name)
@@ -974,6 +979,10 @@ export const formatMultiListResult = async (response, resultDom) => {
       tableOuterWrapper.classList.add('result-table-outer-wrapper')
       if (tables.length > 1) {
         tableOuterWrapper.classList.add('row-selection-context')
+      }
+
+      if (table[0].style !== undefined) {
+        tableOuter.setAttribute('kui-table-style', TableStyle[table[0].style].toString())
       }
 
       tableOuter.appendChild(titleOuter)
