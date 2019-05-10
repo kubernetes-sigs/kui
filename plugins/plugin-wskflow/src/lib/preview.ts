@@ -24,7 +24,7 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import * as usage from '../usage'
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { PluginRegistration } from '@kui-shell/core/models/plugin'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -235,7 +235,7 @@ export default (commandTree: CommandRegistrar) => {
   })
 
   /** command handler */
-  const doIt = (cmd, mode = defaultMode) => ({ execOptions, argvNoOptions, parsedOptions: options }) => new Promise((resolve, reject) => {
+  const doIt = (cmd: string, mode = defaultMode) => ({ execOptions, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => new Promise((resolve, reject) => {
     const idx = argvNoOptions.indexOf(cmd)
     const inputFile = argvNoOptions[idx + 1]
 
@@ -336,7 +336,7 @@ export default (commandTree: CommandRegistrar) => {
     placeholder: 'Loading visualization ...' })
   commandTree.synonym(`/wsk/app/viz`, doIt('viz'), vizCmd, { usage: usage.preview('viz'), noAuthOk: true })
 
-  commandTree.listen('/wsk/app/source', doIt('source', 'source'), { usage: usage.source('source'), noAuthOk: true })
+  commandTree.listen('/wsk/app/src', doIt('src', 'src'), { usage: usage.source('src'), noAuthOk: true })
 
   return Promise.resolve()
 }
