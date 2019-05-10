@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('wskflow')
+import * as Debug from 'debug'
+const debug = Debug('plugins/wskflow/init')
 debug('loading')
+
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import flowCommand from './lib/flowCommand'
 import preview from './lib/preview'
 import visualize from './lib/visualize'
 
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   debug('initializing')
 
-  await flowCommand(commandTree, prequire)
-  await preview(commandTree, prequire)
+  await flowCommand(commandTree)
+  await preview(commandTree)
 
   try {
     // the require of lib/visualize may fail in headless mode; that's ok!

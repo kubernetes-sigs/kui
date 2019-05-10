@@ -18,13 +18,14 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/visualize')
 debug('loading')
 
-import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
+
+import injectCSS from './inject'
 
 type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
 
 import fsm2graph from './fsm2graph'
-import { dirname, join } from 'path'
+
 /**
  * Create the wskflow visualization for the given fsm
  *
@@ -36,12 +37,7 @@ export default async (passedFsm, container, w, h, activations, options, rule) =>
 
   debug('visualize', passedFsm, options, rule)
 
-  if (inBrowser()) {
-    injectCSS({ css: require('@kui-shell/plugin-wskflow/web/css/wskflow.css').toString(), key: 'wskflow' })
-  } else {
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-wskflow/package.json'))
-    injectCSS(join(ourRoot, 'web/css/wskflow.css'))
-  }
+  injectCSS()
 
   // create a copy - all annotations make by wskflow will not affect the original object.
   const ir = JSON.parse(JSON.stringify(passedFsm))

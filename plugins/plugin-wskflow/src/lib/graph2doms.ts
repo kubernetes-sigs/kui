@@ -26,7 +26,7 @@ import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import { textualPropertiesOfCode } from './util'
 
-const maxLabelLength = 10
+const defaultMaxLabelLength = 10
 
 const wfColorAct = {
   active: '#81C784',
@@ -41,6 +41,9 @@ const wfColorAct = {
 const containerId = 'wskflowDiv'
 
 export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activations?) {
+  const maxLabelLength = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
+  const defaultFontSize = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
+
   let zoom = d3.behavior.zoom()
     .on('zoom', redraw)
 
@@ -463,10 +466,10 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
             if (d.properties && d.properties.kind === 'trigger') {
               qtipText = `<span class='qtip-prefix ${d.type}' style='padding-right:5px; color: #85C1E9'>Trigger |</span> ${d.properties.kindDetail}`
             } else {
-              qtipText = 'The composition starts here'
+              qtipText = d.properties.title || 'The composition starts here'
             }
           } else if (d.type === 'Exit') {
-            qtipText = 'The composition ends here'
+            qtipText = d.properties.title || 'The composition ends here'
           } else if (d.type === 'let' || d.type === 'literal') {
             qtipText = `<div class='qtip-prefix let' style="margin-bottom:1ex; padding-right:5px; ">${d.type}</div>${d.label || d.tooltip}`
             qtipPre = true // use white-space: pre
@@ -675,7 +678,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         if (d.children) { return 8 } else if (d.multiLineLabel) { return (d.height - d.multiLineLabel.length * 6) / 2 } else { return d.height / 2 + (d.type === 'Entry' || d.type === 'Exit' ? 1.5 : d.type === 'Dummy' ? 1.5 : d.type === 'let' ? 3.5 : 2) }
       })
       .attr('font-size', function (d) {
-        if (d.children) { return '6px' } else if (d.type === 'Entry' || d.type === 'Exit') { return '6px' } else { return '7px' }
+        if (d.children) { return '6px' } else if (d.type === 'Entry' || d.type === 'Exit') { return '6px' } else if (d.properties && d.properties.fontSize) { return d.properties.fontSize } else { return defaultFontSize }
       })
       .style('text-anchor', function (d) {
         if (!d.children && !d.multiLineLabel) { return 'middle' }

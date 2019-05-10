@@ -119,7 +119,10 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry text, body[kui-theme-s
     fill: var(--color-base02);
 }
 body[kui-theme-style="dark"] #wskflowSVG .node .atom {
-    fill: var(--color-base04);
+    fill: var(--color-base03);
+}
+body[kui-theme-style="dark"] #wskflowSVG .node.leaf .atom {
+    stroke: var(--color-base02) !important;
 }
 body[kui-theme-style="dark"] #wskflowSVG .action[data-deployed="not-deployed"] .atom {
     opacity: 0.7;
@@ -195,7 +198,7 @@ body[kui-theme-style="dark"] #wskflowSVG .action[data-deployed="not-deployed"] .
 }
 #wskflowSVG .action[data-deployed="not-deployed"] .atom {
     mask: url(#mask-stripe);
-    /*fill: var(--color-support-03);*/
+    fill: var(--color-base04) !important;
 }
 
 #wskflowSVG .node.leaf.let .atom, #wskflowSVG .node.leaf.literal .atom {

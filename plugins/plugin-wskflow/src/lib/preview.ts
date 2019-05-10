@@ -24,6 +24,7 @@ import * as expandHomeDir from 'expand-home-dir'
 
 import * as usage from '../usage'
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { PluginRegistration } from '@kui-shell/core/models/plugin'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -62,7 +63,7 @@ interface ICompositionWithCode {
  * handlers.
  *
  */
-const registration: PluginRegistration = (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   const readFile = (input: string): Promise<string> => new Promise(async (resolve, reject) => {
     const filepath = findFile(expandHomeDir(input))
 
@@ -339,5 +340,3 @@ const registration: PluginRegistration = (commandTree, prequire) => {
 
   return Promise.resolve()
 }
-
-export default registration
