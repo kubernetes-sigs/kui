@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Debug from 'debug'
 
 export class Row {
   attributes?: Cell[]
