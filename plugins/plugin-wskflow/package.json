@@ -38,7 +38,7 @@
   "dependencies": {
     "chokidar": "2.1.5",
     "d3": "3.5.17",
-    "debug": "^4.1.1",
+    "debug": "4.1.1",
     "elkjs": "0.3.0",
     "es6-promise-pool": "2.5.0",
     "expand-home-dir": "0.0.3",
