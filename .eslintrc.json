@@ -44,8 +44,6 @@
 
     "promise/param-names": "off",
 
-    "standard/array-bracket-even-spacing": "off",
-
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": "off",

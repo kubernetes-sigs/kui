@@ -345,7 +345,8 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
   // debug('watchStatus', finalStateStr, FinalState[finalState], kind, name);
 
   try {
-    const [ status /*, detail*/ ] = await Promise.all([
+    // const [ status, detail ] = await Promise.all([
+    const [ status ] = await Promise.all([
       getStatus(finalState, watch.apiVersion, kind, name, namespace, context)
       // type !== 'unknown' ? getOpenWhiskStatus(type, fqn) : undefined
     ])
@@ -360,7 +361,7 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
     // debug('watchStatus newState', newState);
 
     // other cells to update
-    const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' }]
+    const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' } ]
       : status.message ? [ { key: 'message', value: maybeAsDate(status.message) } ]
       : status.startTime ? [ { key: 'message', value: maybeAsDate(status.startTime) } ]
       : newState === States.Offline ? [ { key: 'message', value: finalState === FinalState.OnlineLike ? 'resource not yet available' : 'resource is offline' } ]
