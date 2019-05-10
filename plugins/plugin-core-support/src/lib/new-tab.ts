@@ -47,9 +47,35 @@ const getCurrentTab = () => element('.main > .tab-container > tab.visible')
 const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
 const getCurrentTabButtonLabel = () => element('.left-tab-stripe-button-label', getCurrentTabButton())
 
+/**
+ * Otherwise global state that we want to keep per tab
+ *
+ */
+class TabState {
+  /** environment variables */
+  readonly env: Record<string, string>
+
+  /** current working directory */
+  readonly cwd: string
+
+  constructor () {
+    this.env = Object.assign({}, process.env)
+    this.cwd = process.cwd().slice(0) // just in case, copy the string
+
+    debug('captured tab state', this.cwd)
+  }
+
+  restore () {
+    debug('changing cwd', process.cwd(), this.cwd)
+    process.chdir(this.cwd)
+    process.env = this.env
+  }
+}
+
 const switchTab = (tabIndex: number, activateOnly = false) => {
   debug('switchTab', tabIndex)
 
+  const currentTab = getCurrentTab()
   const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-index="${tabIndex}"]`)
   const nextTabButton = document.querySelector(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${tabIndex}"]`)
   debug('nextTab', nextTab)
@@ -68,6 +94,13 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
 
     nextTab.classList.add('visible')
     nextTabButton.classList.add('left-tab-stripe-button-selected')
+
+    if (currentTab) {
+      currentTab['state'] = new TabState()
+    }
+    if (nextTab['state']) {
+      (nextTab['state'] as TabState).restore()
+    }
 
     return true
   }
@@ -164,6 +197,8 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   }
 
   const currentVisibleTab = getCurrentTab()
+  currentVisibleTab['state'] = new TabState()
+
   const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
 
   const newTab = currentVisibleTab.cloneNode(true) as HTMLElement

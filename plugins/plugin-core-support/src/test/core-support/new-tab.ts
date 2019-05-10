@@ -22,6 +22,13 @@ common.localDescribe('new tab from quiescent tab via command', function (this: c
   before(common.before(this))
   after(common.after(this))
 
+  const CWD1 = process.cwd()
+  const CWD2 = '/tmp'
+
+  it(`cd to ${CWD1} in tab1`, () => cli.do(`cd ${CWD1}`, this.app)
+     .then(cli.expectOKWithString(CWD1))
+     .catch(common.oops(this)))
+
   it('new tab via command', () => cli.do('tab new', this.app)
      .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
      .then(() => cli.waitForRepl(this.app)) // should have an active repl
@@ -32,10 +39,56 @@ common.localDescribe('new tab from quiescent tab via command', function (this: c
      .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
      .catch(common.oops(this)))
 
+  it(`pwd should show CWD1 ${CWD1} in tab2`, () => cli.do(`pwd`, this.app)
+     .then(cli.expectOKWithString(CWD1))
+     .catch(common.oops(this)))
+
+  it(`cd to ${CWD2} in tab2`, () => cli.do(`cd ${CWD2}`, this.app)
+     .then(cli.expectOKWithString(CWD2))
+     .catch(common.oops(this)))
+
+  it(`pwd should show CWD2 ${CWD2} in tab2`, () => cli.do(`pwd`, this.app)
+     .then(cli.expectOKWithString(CWD2))
+     .catch(common.oops(this)))
+
   it('should close tab via command', () => cli.do('tab close', this.app)
      .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true))
      .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+     .catch(common.oops(this)))
+
+  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () => cli.do(`pwd`, this.app)
+     .then(cli.expectOKWithString(CWD1))
+     .catch(common.oops(this)))
+
+  it('new tab via command', () => cli.do('tab new', this.app)
+     .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
+     .then(() => cli.waitForRepl(this.app)) // should have an active repl
+     .catch(common.oops(this)))
+
+  it(`cd to ${CWD2} in tab2`, () => cli.do(`cd ${CWD2}`, this.app)
+     .then(cli.expectOKWithString(CWD2))
+     .catch(common.oops(this)))
+
+  it(`switch back to first tab via command`, () => cli.do('tab switch 1', this.app)
+     .catch(common.oops(this)))
+
+  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () => cli.do('pwd', this.app)
+     .then(cli.expectOKWithString(CWD1))
+     .catch(common.oops(this)))
+
+  it(`switch back to second tab via command`, () => cli.do('tab switch 2', this.app)
+     .catch(common.oops(this)))
+
+  it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () => cli.do('pwd', this.app)
+     .then(cli.expectOKWithString(CWD2))
+     .catch(common.oops(this)))
+
+  it(`switch back to first tab via command`, () => cli.do('tab switch 1', this.app)
+     .catch(common.oops(this)))
+
+  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () => cli.do('pwd', this.app)
+     .then(cli.expectOKWithString(CWD1))
      .catch(common.oops(this)))
 })
 
