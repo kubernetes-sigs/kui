@@ -34,7 +34,8 @@ env:
       MOCHA_TARGETS="electron"
       NEEDS_OPENWHISK=true
 
-    - LAYERS="k8s"
+    - WAIT_LAYERS="k8s"
+      LAYERS="k8s1 k8s2"
       MOCHA_TARGETS="electron"
       NEEDS_HEADLESS=true
       NEEDS_KUBERNETES=true

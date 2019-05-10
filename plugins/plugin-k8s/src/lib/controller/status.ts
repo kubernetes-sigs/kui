@@ -22,6 +22,7 @@ import { basename, join } from 'path'
 
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { withRetryOn404 } from '../util/retry'
 import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
@@ -556,7 +557,7 @@ export const status = (command: string) => async args => {
  * Register the commands
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   const cmd = commandTree.listen('/k8s/status', status('status'), {
     usage: usage('status'),
     inBrowserOk: true,

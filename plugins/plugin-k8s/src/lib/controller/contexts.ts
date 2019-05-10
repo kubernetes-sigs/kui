@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/controller/contexts')
+import * as Debug from 'debug'
+const debug = Debug('k8s/controller/contexts')
 
 import repl = require('@kui-shell/core/core/repl')
-import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 const usage = {
   context: command => ({
@@ -78,14 +79,14 @@ const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined
  * Register the commands
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/k8s/context',
                      async ({ execOptions }) => {
                        return (await repl.qexec(`kubectl config current-context`,
                                                 undefined, undefined, Object.assign({}, execOptions, { raw: true }))).trim()
                      },
     { usage: usage.context('context'),
-      inBrowserOK: true,
+      inBrowserOk: true,
       noAuthOk: [ 'openwhisk' ] })
 
   commandTree.listen('/k8s/contexts',
@@ -93,6 +94,6 @@ export default (commandTree, prequire) => {
     { usage: usage.contexts('contexts'),
       width: 1024,
       height: 600,
-      inBrowserOK: true,
+      inBrowserOk: true,
       noAuthOk: [ 'openwhisk' ] })
 }

@@ -25,6 +25,7 @@ import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { FinalState } from '../model/states'
 import { IKubeResource, IResource } from '../model/resource'
@@ -193,7 +194,7 @@ const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
  * Register the commands
  *
  */
-const registration: PluginRegistration = (commandTree, prequire: PluginRequire, options?): Promise<any> => {
+const registration: PluginRegistration = (commandTree: CommandRegistrar): Promise<any> => {
   commandTree.listen('/k8s/kedit', kedit, {
     usage: usage.kedit,
     noAuthOk: [ 'openwhisk' ]

@@ -24,7 +24,7 @@ import { safeDump, safeLoad as parseYAML } from 'js-yaml'
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectYAMLSubset, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
+import { createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -202,17 +202,16 @@ describe('electron context switching', function (this: common.ISuite) {
     //
     // now start the tests
     //
-
+    const ns: string = createNS()
     listContextsAndExpectDefault()
-    deleteIt('yoyo', true)
-    createIt('yoyo')
-    addNamespaceToKUBECONFIG('yoyo', 'holla') // add yoyo to the KUBECONFIG contexts
+    createIt(ns)
+    addNamespaceToKUBECONFIG(ns, 'holla') // add yoyo to the KUBECONFIG contexts
     listContextsAndExpectGiven('holla')
-    listPodsAndExpectNone('yoyo')
-    createPod('yoyo') // create a pod in yoyo
-    listPodsAndExpectOne('nginx', 'yoyo')
+    listPodsAndExpectNone(ns)
+    createPod(ns) // create a pod in yoyo
+    listPodsAndExpectOne('nginx', ns)
     switchToContext('holla')
     listPodsAndExpectOne('nginx')
-    deleteIt('yoyo')
+    deleteIt(ns)
   })
 })

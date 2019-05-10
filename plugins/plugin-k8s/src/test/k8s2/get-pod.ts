@@ -18,18 +18,13 @@ import assert = require('assert')
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
+import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
 describe('electron get pod', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
-
-  it('should wipe k8s', () => {
-    return wipe(this)
-  })
 
   synonyms.forEach(kubectl => {
     /**
@@ -72,10 +67,14 @@ describe('electron get pod', function (this: common.ISuite) {
           kind: 'Pod',
           metadata: {
             name: 'nginx',
-            namespace: 'default'
+            namespace: ns
           }
         }))
     }
+
+    const ns: string = createNS()
+    const inNamespace = `-n ${ns}`
+    allocateNS(this, ns)
 
     // do this a few times, as we might get lucky and have the
     // containers ready by the time we click on the row; we are trying
@@ -85,7 +84,7 @@ describe('electron get pod', function (this: common.ISuite) {
     for (let idx = 0; idx < 5; idx++) {
       it(`should eventually show ready containers if we click mid-creation iter=${idx}`, async () => {
         try {
-          const selector = await cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+          const selector = await cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
           await this.app.client.waitForExist(`${selector} .clickable`)
@@ -99,7 +98,7 @@ describe('electron get pod', function (this: common.ISuite) {
       })
 
       it(`should delete the sample pod from URL via ${kubectl} iter=${idx}`, () => {
-        return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+        return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
           .catch(common.oops(this))
@@ -107,7 +106,7 @@ describe('electron get pod', function (this: common.ISuite) {
     }
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+      return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
         .catch(common.oops(this))
@@ -115,7 +114,7 @@ describe('electron get pod', function (this: common.ISuite) {
 
     it(`should list pods via ${kubectl} then click`, async () => {
       try {
-        const selector = await cli.do(`${kubectl} get pods`, this.app)
+        const selector = await cli.do(`${kubectl} get pods ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
         // wait for the badge to become green
@@ -167,10 +166,12 @@ describe('electron get pod', function (this: common.ISuite) {
     it(`should click on containers sidecar tab and show containers table`, testContainersTab)
 
     it(`should delete the sample pod from URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+      return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
         .catch(common.oops(this))
     })
+
+    deleteNS(this, ns)
   })
 })

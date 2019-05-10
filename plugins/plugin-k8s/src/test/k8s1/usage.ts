@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 
 describe('k8s usage', function (this: common.ISuite) {
   before(common.before(this))

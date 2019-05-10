@@ -16,7 +16,6 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli } from '@kui-shell/core/tests/lib/ui'
-import * as assert from 'assert'
 
 describe('helm commands', function (this: common.ISuite) {
   before(common.before(this))

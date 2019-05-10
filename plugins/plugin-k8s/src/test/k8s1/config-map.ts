@@ -19,7 +19,7 @@ import assert = require('assert')
 import * as common from '@kui-shell/core/tests/lib/common'
 import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
+import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -28,6 +28,8 @@ describe('electron configmap', function (this: common.ISuite) {
   after(common.after(this))
 
   synonyms.forEach(kubectl => {
+    const ns: string = createNS()
+    const inNamespace = `-n ${ns}`
     /** return the editor text */
     const getText = () => {
       return this.app.client.execute(() => {
@@ -53,7 +55,7 @@ describe('electron configmap', function (this: common.ISuite) {
     const listAndClick = (name: string, content?: object) => {
       it(`should list configmaps via ${kubectl} then click on ${name}`, async () => {
         try {
-          const selector = await cli.do(`${kubectl} get cm`, this.app)
+          const selector = await cli.do(`${kubectl} get cm ${inNamespace}`, this.app)
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
 
           // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
@@ -74,12 +76,12 @@ describe('electron configmap', function (this: common.ISuite) {
 
     /** delete the given configmap */
     const deleteIt = (name: string, errOk = false) => {
-      it(`should delete the configmap ${name} via ${kubectl}`, () => {
+      it(`should delete the configmap ${name} via ${kubectl} `, () => {
         const expectResult = errOk ? cli.expectAny : cli.expectOKWithString('deleted')
 
-        return cli.do(`${kubectl} delete cm ${name}`, this.app)
+        return cli.do(`${kubectl} delete cm ${name} ${inNamespace}`, this.app)
           .then(expectResult)
-          .then(() => waitTillNone('configmap', undefined, name))
+          .then(() => waitTillNone('configmap', undefined, name, undefined, inNamespace))
           .catch(common.oops(this))
       })
     }
@@ -87,7 +89,7 @@ describe('electron configmap', function (this: common.ISuite) {
     /** create the given configmap with optional literal parameters */
     const createIt = (name: string, literals = '') => {
       it(`should create a configmap ${name} via ${kubectl}`, () => {
-        return cli.do(`${kubectl} create configmap ${name} ${literals}`, this.app)
+        return cli.do(`${kubectl} create configmap ${name} ${literals} ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
           .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
           .catch(common.oops(this))
@@ -97,9 +99,7 @@ describe('electron configmap', function (this: common.ISuite) {
     //
     // now start the tests
     //
-
-    deleteIt('yoyo', true) // errOk: it's ok if the configmap does not exist
-    deleteIt('momo', true) // errOk: it's ok if the configmap does not exist
+    allocateNS(this, ns)
 
     createIt('yoyo')
     createIt('momo', '--from-literal hello=world')
@@ -113,5 +113,7 @@ describe('electron configmap', function (this: common.ISuite) {
 
     deleteIt('yoyo')
     deleteIt('momo')
+
+    deleteNS(this, ns)
   })
 })
