@@ -33,7 +33,7 @@ import * as expandHomeDir from 'expand-home-dir'
  * overlap at the beginning.
  *
  */
-const completeWith = (partial, match, addSpace = false) => {
+const completeWith = (partial: string, match: string, addSpace = false) => {
   const partialIdx = match.indexOf(partial)
   return (partialIdx >= 0 ? match.substring(partialIdx + partial.length) : match) + (addSpace ? ' ' : '')
 }
@@ -42,7 +42,7 @@ const completeWith = (partial, match, addSpace = false) => {
  * Is the given filepath a directory?
  *
  */
-const isDirectory = filepath => new Promise((resolve, reject) => {
+const isDirectory = (filepath: string) => new Promise((resolve, reject) => {
   fs.lstat(filepath, (err, stats) => {
     if (err) {
       reject(err)
@@ -72,7 +72,7 @@ const isDirectory = filepath => new Promise((resolve, reject) => {
  * prompt, which is an <input>.
  *
  */
-const complete = (match, prompt, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, addSpace = false }) => {
+const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, addSpace = false }: { temporaryContainer?: TemporaryContainer, partial?: string, dirname?: false | string, addSpace?: boolean }) => {
   debug('completion', match, partial, dirname)
 
   // in case match includes partial as a prefix
@@ -88,6 +88,10 @@ const complete = (match, prompt, { temporaryContainer = undefined, partial = tem
       + extra
       + prompt.value.substring(prompt.selectionStart)
     prompt.setSelectionRange(pos, pos)
+
+    // make sure the new text is visible
+    // see https://github.com/IBM/kui/issues/1367
+    prompt.scrollLeft = prompt.scrollWidth * Math.max(0, (pos - partial.length - extra.length - 1)) / prompt.value.length
   }
 
   if (dirname) {
@@ -118,7 +122,7 @@ const complete = (match, prompt, { temporaryContainer = undefined, partial = tem
  * Install keyboard event handlers into the given REPL prompt.
  *
  */
-const installKeyHandlers = prompt => {
+const installKeyHandlers = (prompt: HTMLInputElement) => {
   if (prompt) {
     return [ listenForUpDown(prompt),
       listenForEscape(prompt)
@@ -134,12 +138,12 @@ const installKeyHandlers = prompt => {
  * common prefix of the matches
  *
  */
-const updateReplToReflectLongestPrefix = (prompt, matches, temporaryContainer, partial = temporaryContainer.partial) => {
+const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: string[], temporaryContainer: TemporaryContainer, partial = temporaryContainer.partial) => {
   if (matches.length > 0) {
-    const shortest = matches.reduce((minLength, match) => !minLength ? match.length : Math.min(minLength, match.length), false)
+    const shortest = matches.reduce((minLength: false | number, match) => !minLength ? match.length : Math.min(minLength, match.length), false)
     let idx = 0
 
-    const partialComplete = idx => {
+    const partialComplete = (idx: number) => {
       // debug('partial complete', idx)
       const completion = completeWith(partial, matches[0].substring(0, idx))
       temporaryContainer.partial = temporaryContainer.partial + completion
@@ -177,8 +181,8 @@ const updateReplToReflectLongestPrefix = (prompt, matches, temporaryContainer, p
  * the equivalent handlers in the prompt as well.
  *
  */
-const listenForUpDown = prompt => {
-  const moveTo = (nextOp, evt) => {
+const listenForUpDown = (prompt: HTMLInputElement) => {
+  const moveTo = (nextOp: string, evt: Event) => {
     const block = cli.getCurrentBlock()
     let temporaryContainer = block && block.querySelector('.tab-completion-temporary')
 
@@ -220,7 +224,7 @@ const listenForUpDown = prompt => {
  * visible
  *
  */
-const listenForEscape = prompt => {
+const listenForEscape = (prompt: HTMLInputElement) => {
   // listen for escape key
   const previousKeyup = document.onkeyup
   const cleanup = () => { document.onkeyup = previousKeyup }
@@ -260,7 +264,7 @@ interface TemporaryContainer extends HTMLDivElement {
  * Make a container UI for tab completions
  *
  */
-const makeCompletionContainer = (block, prompt, partial, dirname?, lastIdx?) => {
+const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, partial: string, dirname?: string, lastIdx?: number) => {
   const input = block.querySelector('input')
 
   const temporaryContainer = document.createElement('div') as TemporaryContainer
@@ -360,7 +364,7 @@ const makeCompletionContainer = (block, prompt, partial, dirname?, lastIdx?) => 
  * Add a suggestion to the suggestion container
  *
  */
-const addSuggestion = (temporaryContainer: TemporaryContainer, dirname, prompt) => (match, idx) => {
+const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, prompt: HTMLInputElement) => (match, idx: number) => {
   const matchLabel = match.label || match
   const matchCompletion = match.completion || matchLabel
 
@@ -412,7 +416,7 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, dirname, prompt) 
  * Suggest completions for a local file
  *
  */
-const suggestLocalFile = (last, block, prompt, temporaryContainer, lastIdx) => {
+const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number) => {
   // dirname will "foo" in the above example; it
   // could also be that last is itself the name
   // of a directory
@@ -482,7 +486,7 @@ const suggestLocalFile = (last, block, prompt, temporaryContainer, lastIdx) => {
  * Given a list of entities, filter them and present options
  *
  */
-const filterAndPresentEntitySuggestions = (last, block, prompt, temporaryContainer, lastIdx) => entities => {
+const filterAndPresentEntitySuggestions = (last: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number) => entities => {
   debug('filtering these entities', entities)
   debug('against this filter', last)
 
@@ -524,7 +528,7 @@ const filterAndPresentEntitySuggestions = (last, block, prompt, temporaryContain
  * Command not found, but we have command completions to offer the user
  *
  */
-const suggestCommandCompletions = (matches, partial, block, prompt, temporaryContainer) => {
+const suggestCommandCompletions = (matches, partial: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer) => {
   // don't suggest anything without a usage model, and then align to
   // the addSuggestion model
   matches = matches.filter(({ usage, docs }) => usage || docs)
@@ -554,7 +558,7 @@ const suggestCommandCompletions = (matches, partial, block, prompt, temporaryCon
  * Suggest options
  *
  */
-const suggest = (param, last, block, prompt, temporaryContainer, lastIdx) => {
+const suggest = (param, last: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number) => {
   if (param.file) {
     // then the expected parameter is a file; we can auto-complete
     // based on the contents of the local filesystem
