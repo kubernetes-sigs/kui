@@ -1,5 +1,10 @@
 .xterm-container .xterm-rows {
     font-family: var(--font-monospace) !important;
+    transition: font-size 10ms ease-in-out;
+}
+
+.xterm-screen, .xterm-container .xterm-rows > div {
+    transition: width 10ms ease-in-out, height 10ms ease-in-out;
 }
 
 tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
@@ -14,7 +19,11 @@ tab.xterm-alt-buffer-mode .repl-inner {
     -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
 }
 tab.xterm-alt-buffer-mode .repl-inner .repl-block.processing {
+    padding: 0;
     -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
+}
+tab.xterm-alt-buffer-mode .repl-inner .repl-block.processing .xterm-container {
+    border: 1px solid var(--color-base02);
 }
 tab.xterm-alt-buffer-mode .repl {
     background: var(--color-stripe-01);
@@ -36,11 +45,11 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     color: var(--color-text-02);
 }
 
+/* rules for terminated xterm */
 /* hide cursor block for terminated processes */
 .xterm-terminated .xterm-rows .xterm-cursor {
     display: none;
 }
-
 /* try to disable xterm components for terminated processes */
 .xterm-terminated .xterm-helper-textarea {
     display: none;
@@ -51,4 +60,21 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;    
+}
+.xterm-terminated .xterm {
+    user-select: unset;
+    -webkit-user-select: unset;
+}
+
+/* override the width and height pixel sizing from DomRenderer */
+.xterm-terminated .xterm-rows {
+    font-size: 1em !important;
+}
+.xterm-terminated .xterm-rows > div {
+    height: 1.2875em !important;
+    line-height: 1.2875em !important;
+}
+.xterm-container .xterm-rows > div > span {
+    width: auto !important;
+    white-space: pre;
 }

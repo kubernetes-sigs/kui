@@ -75,7 +75,7 @@ class Resizer {
   private app = false
 
   /** have we already deleted empty rows? */
-  private frozen = false
+  private _frozen = false
 
   private readonly terminal: xterm.Terminal
   private _ws: Channel
@@ -126,7 +126,7 @@ class Resizer {
         hidden[idx].classList.remove('xterm-hidden-row')
       }
     } else {
-      this.frozen = true
+      this._frozen = true
     }
 
     const rows = this.terminal.element.querySelector('.xterm-rows').children
@@ -198,8 +198,12 @@ class Resizer {
     const cols = Math.floor(width / terminal['_core'].renderer.dimensions.actualCellWidth)
     const rows = Math.floor(height / terminal['_core'].renderer.dimensions.actualCellHeight)
 
-    debug('getSize', cols, rows, width, height)
+    debug('getSize', cols, rows, width, height, terminal['_core'].renderer.dimensions.actualCellWidth)
     return { rows, cols }
+  }
+
+  get frozen (): boolean {
+    return this._frozen
   }
 
   private resize () {
@@ -263,6 +267,27 @@ class Resizer {
 }
 
 /**
+ * Inject current font settings
+ *
+ */
+const injectFont = (terminal: xterm.Terminal) => {
+  try {
+    const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
+    const fontSize = parseFloat(fontTheme.fontSize.replace(/px$/, ''))
+    terminal.setOption('fontSize', fontSize)
+    // terminal.setOption('lineHeight', )//parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10))
+
+    debug('fontSize', fontSize)
+
+    // FIXME. not tied to theme
+    terminal.setOption('fontWeight', 400)
+    terminal.setOption('fontWeightBold', 600)
+  } catch (err) {
+    console.error('Error setting terminal font size', err)
+  }
+}
+
+/**
  * Convert the current theme to an xterm.js ITheme
  *
  */
@@ -302,17 +327,7 @@ const injectTheme = (terminal: xterm.Terminal): void => {
   terminal.setOption('theme', itheme)
   terminal.setOption('fontFamily', val('monospace', 'font'))
 
-  try {
-    const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
-    terminal.setOption('fontSize', parseInt(fontTheme.fontSize.replace(/px$/, ''), 10))
-    // terminal.setOption('lineHeight', )//parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10))
-
-    // FIXME. not tied to theme
-    terminal.setOption('fontWeight', 400)
-    terminal.setOption('fontWeightBold', 600)
-  } catch (err) {
-    console.error('Error setting terminal font size', err)
-  }
+  injectFont(terminal)
 }
 
 type ChannelFactory = () => Promise<Channel>
@@ -404,7 +419,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
   // any asyncs), so that we can store a reference before the user
   // switches away to another tab
   const tab = document.querySelector('tab.visible')
-  const scrollRegion = tab.querySelector('.repl-inner')
+  const scrollRegion = tab.querySelector('.repl-inner .repl-block.processing')
 
   // do the rest after injectCSS
   setTimeout(async () => {
@@ -433,9 +448,19 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       const inject = () => injectTheme(terminal)
       inject() // inject once on startup
       eventBus.on('/theme/change', inject) // and re-inject when the theme changes
-      eventBus.on('/zoom', inject) // respond to font zooming
 
       const resizer = new Resizer(terminal)
+
+      // respond to font zooming
+      const doZoom = () => {
+        injectFont(terminal)
+        resizer.scheduleResize()
+      }
+      eventBus.on('/zoom', doZoom)
+
+      const cleanupEventHandlers = () => {
+        eventBus.off('/zoom', doZoom)
+      }
 
       // heuristic for hiding empty rows
       terminal.element.classList.add('xterm-empty-row-heuristic')
@@ -500,9 +525,8 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
             }
 
             currentScrollAsync = setTimeout(() => {
-              if (!xtermContainer.classList.contains('xterm-terminated')) {
-                // scrollRegion.scrollTop = scrollRegion.scrollHeight
-                scrollIntoView({ which: '.repl-block:last-child', when: 0 })
+              if (!resizer.frozen) {
+                scrollIntoView({ which: '.repl-block.processing', when: 0, how: 'scrollIntoView' })
               } else {
                 debug('skipping scroll to bottom for terminated xterm')
               }
@@ -587,6 +611,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
             ws.removeEventListener('message', onMessage)
             terminal.blur()
 
+            cleanupEventHandlers()
             resizer.exitAltBufferMode()
             resizer.exitApplicationMode()
             resizer.hideTrailingEmptyBlanks(true)
@@ -598,6 +623,15 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
             if (pendingUsage) {
               execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
             }
+
+            // grab a copy of the terminal now that it has terminated;
+            // see https://github.com/IBM/kui/issues/1393
+            const copy = terminal.element.cloneNode(true) as HTMLElement
+            const viewport = copy.querySelector('.xterm-viewport')
+            copy.removeChild(viewport)
+            copy.classList.remove('enable-mouse-events')
+            xtermContainer.removeChild(terminal.element)
+            xtermContainer.appendChild(copy)
 
             // vi, then :wq, then :q, you will get an exit code of 1, but
             // with no output (raw===''); note how we treat this as "ok",
