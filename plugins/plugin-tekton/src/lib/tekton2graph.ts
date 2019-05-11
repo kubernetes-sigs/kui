@@ -89,7 +89,7 @@ interface IEdge {
   readonly visited?: boolean
 }
 
-type SymbolTable<N> = { [key: string]: N }
+interface SymbolTable<N> { [key: string]: N }
 
 const maxWidth = 100
 const defaultHeight = 20
