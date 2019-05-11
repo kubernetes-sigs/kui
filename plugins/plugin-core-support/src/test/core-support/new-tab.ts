@@ -134,6 +134,23 @@ common.localDescribe('new tab from active tab via button click', function (this:
      .catch(common.oops(this)))
 })
 
+common.localDescribe('new tab from pty active tab via button click', function (this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
+
+  it('start vi, then new tab via button click', () => cli.do('vi', this.app)
+     .then(() => this.app.client.waitForExist('tab.visible.xterm-alt-buffer-mode'))
+     .then(() => this.app.client.click('.new-tab-button'))
+     .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
+     .then(() => cli.waitForRepl(this.app)) // should have an active repl
+     .catch(common.oops(this)))
+
+  it('should execute echo in new tab', () => cli.do('echo hi', this.app)
+     .then(cli.expectOKWithString('hi'))
+     .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
+     .catch(common.oops(this)))
+})
+
 common.localDescribe('new tab from active tab that is emitting output via button click', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
