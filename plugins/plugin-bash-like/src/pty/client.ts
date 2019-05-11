@@ -20,7 +20,6 @@ const debug = Debug('plugins/bash-like/pty/client')
 import * as path from 'path'
 import * as xterm from 'xterm'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
-// import * as WebSocket from 'ws'
 
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
@@ -51,7 +50,7 @@ const stripClean = (str: string): string => {
  * Take a hex color string and return the corresponding RGBA with the given alpha
  *
  */
-const alpha = (hex, alpha) => {
+const alpha = (hex: string, alpha: number): string => {
   if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
     const red = parseInt(hex.slice(1,3), 16)
     const green = parseInt(hex.slice(3,5), 16)
@@ -89,9 +88,7 @@ class Resizer {
     window.addEventListener('resize', resizeNow) // window resize
     eventBus.on('/sidecar/toggle', resizeNow) // sidecar resize
 
-    this.alt = true
     resizeNow()
-    this.alt = false
   }
 
   get ws (): Channel {
@@ -121,7 +118,7 @@ class Resizer {
       return
     }
 
-    debug('hideTrailingEmptyBlanks', remove, from)
+    // debug('hideTrailingEmptyBlanks', remove, from)
 
     if (!remove) {
       const hidden = this.terminal.element.querySelectorAll('.xterm-rows > .xterm-hidden-row')
@@ -189,24 +186,28 @@ class Resizer {
       + parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
   }
 
-  static getSize (terminal: xterm.Terminal, altBuffer = false) {
-    const selectorForWidth = altBuffer ? '.tab-container' : 'tab.visible .repl-inner .repl-block .repl-output'
+  static getSize (terminal: xterm.Terminal) {
+    const selectorForWidth = 'tab.visible .repl-inner .repl-block.processing .repl-output'
     const widthElement = document.querySelector(selectorForWidth)
     const width = widthElement.getBoundingClientRect().width - this.paddingHorizontal(widthElement)
 
-    const selectorForHeight = altBuffer ? selectorForWidth : 'tab.visible .repl-inner'
-    const heightElement = selectorForHeight === selectorForWidth ? widthElement : document.querySelector(selectorForHeight)
+    const selectorForHeight = 'tab.visible .repl-inner'
+    const heightElement = document.querySelector(selectorForHeight)
     const height = heightElement.getBoundingClientRect().height - this.paddingVertical(heightElement)
 
     const cols = Math.floor(width / terminal['_core'].renderer.dimensions.actualCellWidth)
     const rows = Math.floor(height / terminal['_core'].renderer.dimensions.actualCellHeight)
 
-    debug('getSize', cols, rows, width, height, altBuffer)
+    debug('getSize', cols, rows, width, height)
     return { rows, cols }
   }
 
   private resize () {
-    const { rows, cols } = Resizer.getSize(this.terminal, this.inAltBufferMode())
+    if (this.frozen) {
+      return
+    }
+
+    const { rows, cols } = Resizer.getSize(this.terminal)
     debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
 
     if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
