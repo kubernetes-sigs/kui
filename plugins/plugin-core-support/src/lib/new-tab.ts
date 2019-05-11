@@ -204,6 +204,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   const newTab = currentVisibleTab.cloneNode(true) as HTMLElement
   const newTabId = (nTabs + 1).toString()
   newTab.setAttribute('data-tab-index', newTabId)
+  newTab.className = 'visible'
 
   removeAllDomChildren(newTab.querySelector('.repl-result'))
 
