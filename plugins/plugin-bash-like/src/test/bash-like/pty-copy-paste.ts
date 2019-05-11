@@ -33,24 +33,25 @@ localDescribe('xterm copy paste', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should execute pwd', async () => {
+  const emittedText = 'roadhouse'
+
+  it(`should echo ${emittedText}`, async () => {
     try {
-      const res = cli.do(`pwd`, this.app)
+      const res = cli.do(`echo ${emittedText}`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows(0))
 
-      const expectedPwd = new RegExp(process.cwd(), 'i')
       await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(firstRow(0))
-        return expectedPwd.test(txt)
+        const actualText = await this.app.client.getText(firstRow(0))
+        return actualText === emittedText
       })
     } catch (err) {
       return common.oops(this)(err)
     }
   })
 
-  it('should copy from xterm and paste outside of xterm', async () => {
+  it('should copy from xterm output and paste outside of xterm', async () => {
     try {
       await this.app.client.doubleClick(`${firstRow(0)} > span:first-child`)
       await this.app.client.execute(() => document.execCommand('copy'))
