@@ -37,22 +37,6 @@ const enterAltBufferPattern = /\x1b\[\??(47|1047|1049)h/
 const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 
 /**
- * Strip off ANSI and other control characters from the given string
- *
- */
-const stripControlCharacters = (str: string): string => {
-  return str.replace(/\x1b\[(\d+;)?\d+m/g, '') // ansi color codes
-    .replace(/^\x08+/, '') // control characters
-    .replace(/^\x1b\[[012]?K/, '')
-    .replace(/^\x1b\[\(B/, '')
-    .replace(/^\x1b\[38;5;(\d+)m/, '')
-    .replace(/^\x1b\[\d?J/, '')
-    .replace(/^\x1b\[\d{0,3};\d{0,3}f/, '')
-    .replace(/^\x1b\[?[\d;]{0,3}/, '')
-    .replace(/^\W*OK\W*\n/, '') // OK at the beginning
-}
-
-/**
  * Strip off ANSI control characters and color codes
  *
  */

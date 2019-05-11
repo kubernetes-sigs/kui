@@ -190,7 +190,7 @@ export interface ISplit {
   A: Array<string>
   endIndices: Array<number>
 }
-export const _split = (str: string, removeOuterQuotes = true, returnIndices = false): ISplit | Array<string> => {
+export const _split = (str: string, removeOuterQuotes = true, returnIndices = false, removeInlineOuterQuotes = false): ISplit | Array<string> => {
   const A: Array<string> = []
   const endIndices: Array<number> = []
   const stack: Array<string> = []
@@ -200,7 +200,7 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
   const endsWithQuoteSpace = (idx: number, lookFor: string): boolean => {
     for (let ii = idx + 1; ii < str.length; ii++) {
       if (str.charAt(ii) === lookFor) {
-        return ii === str.length - 1 || !!str.charAt(ii + 1).match(/\s/)
+        return ii === str.length - 1 || /\s/.test(str.charAt(ii + 1))
       }
     }
 
@@ -208,10 +208,24 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
   }
 
   let removedLastOpenQuote: Array<boolean> = []
+  let escapeActive = false
   for (let idx = 0; idx < str.length; idx++) {
     const char = str.charAt(idx)
 
-    if (stack.length === 0 && char.match(patterns.whitespace)) {
+    if (char === '\\') {
+      if (!escapeActive) {
+        escapeActive = true
+      } else {
+        escapeActive = false
+        cur += '\\'
+      }
+
+      continue
+    } else if (!escapeActive) {
+      escapeActive = false
+    }
+
+    if (stack.length === 0 && !escapeActive && patterns.whitespace.test(char)) {
       if (cur.length > 0) {
         A.push(resolveEnvVar(cur))
         endIndices.push(idx)
@@ -228,7 +242,7 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
       stack.pop()
     }
 
-    if (char === '\'' || char === '"') {
+    if (!escapeActive && (char === '\'' || char === '"')) {
       if (char === last) {
         // found matching close quote
         stack.pop()
@@ -242,7 +256,7 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
         // found open quote
         const removeQuote = removeOuterQuotes &&
           endsWithQuoteSpace(idx, char) &&
-          (idx === 0 || (stack.length === 0 && !!str.charAt(idx - 1).match(patterns.whitespace)))
+          (idx === 0 || (stack.length === 0 && (removeInlineOuterQuotes || patterns.whitespace.test(str.charAt(idx - 1)))))
 
         removedLastOpenQuote.push(removeQuote)
 
@@ -270,8 +284,8 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
     return A
   }
 }
-export const split = (str: string, removeOuterQuotes = true): Array<string> => {
-  return _split(str, removeOuterQuotes) as Array<string>
+export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): Array<string> => {
+  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as Array<string>
 }
 
 /** an empty promise, for blank lines */
@@ -850,7 +864,7 @@ export const encodeComponent = (component: string, quote = '"') => {
   if (component === undefined) {
     return ''
   } else if (typeof component === 'string' &&
-             component.match(patterns.whitespace) &&
+             patterns.whitespace.test(component) &&
              component.charAt(0) !== quote &&
              component.charAt(component.length - 1) !== quote) {
     return `${quote}${component}${quote}`

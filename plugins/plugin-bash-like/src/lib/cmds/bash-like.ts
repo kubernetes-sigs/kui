@@ -33,7 +33,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import formatKeyValue from '../util/ascii-key-value-to-table'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { reallyLong, handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -282,7 +282,9 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
           maybeUsage['code'] = exitCode
           reject(maybeUsage)
         } else {
-          resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, rawErr, execOptions))
+          // strip off e.g. /bin/sh: line 0:
+          const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
+          resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, cleanErr, execOptions))
         }
       } catch (err) {
         reject(err)
@@ -292,24 +294,27 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
 })
 
 const usage = {
-  cd: command => ({
-    strict: command,
-    command,
+  cd: {
+    strict: 'cd',
+    command: 'cd',
     title: 'change working directory',
     header: 'Update the current working directory for local filesystem manipulations',
     optional: localFilepath
-  })
+  }
 }
 
 /**
  * cd command
  *
  */
-const cd = cmd => ({ command, execOptions, parsedOptions }) => {
-  return doShell(['!', 'cd', ...repl.split(command, false).slice(1)],
-    parsedOptions,
-    Object.assign({}, execOptions, { nested: true }))
-    .catch(err => { throw new UsageError({ message: err.message, usage: usage.cd(cmd) }) })
+const cd = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) => {
+  const dir = repl.split(command, true, true)[1] || ''
+  debug('cd dir', dir)
+  return doShell(['!', 'cd', dir], parsedOptions, execOptions)
+    .catch(err => {
+      err['code'] = 500
+      throw err
+    })
 }
 
 /**
@@ -320,5 +325,5 @@ export default (commandTree: CommandRegistrar) => {
   const shellFn = ({ command, execOptions, parsedOptions }) => doShell(repl.split(command, false), parsedOptions, execOptions)
   commandTree.listen('/!', dispatchToShell, { docs: 'Execute a UNIX shell command', noAuthOk: true, requiresLocal: true })
 
-  commandTree.listen('/cd', cd('cd'), { usage: usage.cd('cd'), noAuthOk: true, requiresLocal: true })
+  commandTree.listen('/cd', cd, { usage: usage.cd, noAuthOk: true, requiresLocal: true })
 }

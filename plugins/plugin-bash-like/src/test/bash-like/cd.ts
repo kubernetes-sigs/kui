@@ -22,6 +22,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 const { localDescribe } = common
 
+import { existsSync, unlinkSync } from 'fs'
 import { dirname, join, normalize } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = dir => join(ROOT, dir)
@@ -30,21 +31,51 @@ localDescribe('Change local shell directory', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
+  const previous = () => {
+    it(`should execute 'cd -' to change to previous dir`, () => cli.do(`cd -`, this.app)
+       .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
+       .catch(common.oops(this)))
+  }
+
+  let offset = 0
+  while (existsSync(`/tmp/foo bar${offset}`)) {
+    offset++
+  }
+
+  const bar = `bar${offset}`
+  it('should mkdir with spaces', () => cli.do(`mkdir /tmp/"foo ${bar}"`, this.app)
+     .then(cli.expectOK)
+     .catch(common.oops(this)))
+
+  it(`should execute 'cd /tmp/"foo ${bar}"'`, () => cli.do(`cd /tmp/"foo ${bar}"`, this.app)
+     .then(cli.expectOKWithString('foo bar'))
+     .catch(common.oops(this)))
+
+  previous()
+
+  it(`should execute 'cd "/tmp/foo ${bar}"'`, () => cli.do(`cd "/tmp/foo ${bar}"`, this.app)
+     .then(cli.expectOKWithString('foo bar'))
+     .catch(common.oops(this)))
+
+  previous()
+
+  it(`should execute 'cd /tmp/foo\ ${bar}'`, () => cli.do(`cd /tmp/foo\\ ${bar}`, this.app)
+     .then(cli.expectOKWithString('foo bar'))
+     .catch(common.oops(this)))
+
+  previous()
+
   it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
     .catch(common.oops(this)))
 
-  it(`should execute 'cd -' to change to previous dir`, () => cli.do(`cd -`, this.app)
-    .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
-    .catch(common.oops(this)))
+  previous()
 
   it(`should execute 'cd -' again to change to previous-previous dir`, () => cli.do(`cd -`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
     .catch(common.oops(this)))
 
-  it(`should execute 'cd -' one more time to change to previous dir`, () => cli.do(`cd -`, this.app)
-    .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
-    .catch(common.oops(this)))
+  previous()
 
   // now we should be able to change back to data
   it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
