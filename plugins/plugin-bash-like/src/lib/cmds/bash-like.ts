@@ -34,6 +34,7 @@ import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import formatKeyValue from '../util/ascii-key-value-to-table'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { reallyLong, handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -57,7 +58,7 @@ const stripControlCharacters = (str: string): string => {
     .replace(/^\W*OK\W*\n/, '') // OK at the beginning
 }
 
-export const doShell = (argv: Array<string>, options, execOptions?) => new Promise(async (resolve, reject) => {
+export const doShell = (argv: Array<string>, options, execOptions?: IExecOptions) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
     reject(new Error('Local file access not supported when running in a browser'))
   }
@@ -110,7 +111,7 @@ export const doShell = (argv: Array<string>, options, execOptions?) => new Promi
       } else {
         // otherwise, respond with the output of the command;
         if (output && output.length > 0) {
-          if (execOptions && execOptions.json) {
+          if (execOptions && execOptions['json']) {
             resolve(JSON.parse(output))
           } else {
             resolve(output.toString())
@@ -131,27 +132,17 @@ export const doShell = (argv: Array<string>, options, execOptions?) => new Promi
   const cmdLine = rest.map(_ => repl.encodeComponent(_)).join(' ')
   debug('cmdline', cmdLine, rest)
 
-  doExec(cmdLine, rest, execOptions).then(resolve, reject)
+  doExec(cmdLine, execOptions).then(resolve, reject)
 })
 
-export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOptions) => new Promise(async (resolve, reject) => {
+export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
   const shell = await import('shelljs')
-
-  const cmdLineOrig = cmdLine
-  if (cmdLine.match(/^\s*git\s+/)) {
-    // force git to output ANSI color codes, even though it is feeding
-    // us via a pipe
-    cmdLine = cmdLine.replace(/^(\s*git)(\s+)/, '$1 -c color.ui=always$2')
-    debug('altered cmdline for git', cmdLine)
-  } else if (cmdLine.match(/^\s*tree(\s+.*)?$/) && process.platform !== 'win32') {
-    cmdLine = cmdLine.replace(/^(\s*tree)(\s*)/, `$1 -C -F -I '*~' --dirsfirst $2`)
-  }
 
   const proc = shell.exec(cmdLine, {
     async: true,
     silent: true,
-    env: Object.assign({}, process.env, execOptions.env || {}, {
+    env: Object.assign({}, process.env, execOptions['env'] || {}, {
       IBMCLOUD_COLOR: true,
       IBMCLOUD_VERSION_CHECK: false
     })
@@ -199,7 +190,7 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
   proc.on('close', async exitCode => {
     if (exitCode === 0) {
       // great, the process exited normally. resolve!
-      if (execOptions && execOptions.json) {
+      if (execOptions && execOptions['json']) {
         // caller expects JSON back
         try {
           resolve(JSON.parse(rawOut))
@@ -255,7 +246,7 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
           if (maybeUsage) {
             // const message = await maybeUsage.message
             // debug('maybeUsage', message)
-            // const commandWithoutOptions = cmdLineOrig.replace(/\s--?\w+/g, '')
+            // const commandWithoutOptions = cmdLine.replace(/\s--?\w+/g, '')
             // return resolve(asSidecarEntity(commandWithoutOptions, message, {}, undefined, 'usage'))
             return resolve(maybeUsage)
           }
@@ -284,7 +275,7 @@ export const doExec = (cmdLine: string, argvNoOptions: Array<String>, execOption
         } else {
           // strip off e.g. /bin/sh: line 0:
           const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
-          resolve(handleNonZeroExitCode(cmdLineOrig, exitCode, rawOut, cleanErr, execOptions))
+          resolve(handleNonZeroExitCode(cmdLine, exitCode, rawOut, cleanErr, execOptions))
         }
       } catch (err) {
         reject(err)

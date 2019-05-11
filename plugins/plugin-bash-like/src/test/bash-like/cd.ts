@@ -63,6 +63,14 @@ localDescribe('Change local shell directory', function (this: ISuite) {
      .then(cli.expectOKWithString('foo bar'))
      .catch(common.oops(this)))
 
+  // ls with space and trailing slash; see https://github.com/IBM/kui/issues/1389
+  it(`should execute 'ls /tmp/foo\ ${bar}/'`, () => cli.do(`ls /tmp/foo\\ ${bar}/`, this.app)
+     .then(cli.expectOKWithAny)
+     .catch(common.oops(this)))
+  it(`should execute 'ls /tmp/"foo ${bar}"/'`, () => cli.do(`ls /tmp/"foo ${bar}"/`, this.app)
+     .then(cli.expectOKWithAny)
+     .catch(common.oops(this)))
+
   previous()
 
   it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
