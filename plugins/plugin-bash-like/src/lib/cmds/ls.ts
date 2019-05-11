@@ -32,14 +32,16 @@ import { doShell } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
 
 /** flatten an array of arrays */
-const flatten = arrays => [].concat.apply([], arrays)
+function flatten<T> (arrays: T[][]): T[] {
+  return [].concat.apply([], arrays)
+}
 
 /**
  * From the end of the given string, scan for the idx that marks the
  * start of some filename in the given fileMap
  *
  */
-const scanForFilename = (str: string, fileMap, endIdx = str.length - 1) => {
+const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx = str.length - 1) => {
   let candidate
   let candidateIdx
 
@@ -89,7 +91,7 @@ const myreaddir = (dir: string): Promise<Array<string>> => new Promise((resolve,
  * If the given filepath is a directory, then ls it, otherwise cat it
  *
  */
-const lsOrOpen = filepath => new Promise((resolve, reject) => {
+const lsOrOpen = (filepath: string) => new Promise((resolve, reject) => {
   const fullpath = findFile(expandHomeDir(filepath))
   const filepathForRepl = repl.encodeComponent(filepath)
 
@@ -304,7 +306,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
  * ls command handler
  *
  */
-const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs): Promise<true | Table> => {
+const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs): Promise<true | Table> => {
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
   const filepath = findFile(expandHomeDir(filepathAsGiven), true, true)
   debug('doLs filepath', filepathAsGiven, filepath)
@@ -334,7 +336,7 @@ const doLs = cmd => ({ command, execOptions, argvNoOptions: argv, parsedOptions:
     .catch(message => { throw new UsageError({ message, usage: usage(command) }) })
 }
 
-const usage = command => ({
+const usage = (command: string) => ({
   strict: command,
   command,
   title: 'local file list',

@@ -137,10 +137,10 @@ const doStatus = async ({ command, execOptions }) => new Promise(async (resolve,
 
   let rawOut = ''
   let rawErr = ''
-  proc.stdout.on('data', data => {
+  proc.stdout.on('data', (data: Buffer) => {
     rawOut += data.toString()
   })
-  proc.stderr.on('data', data => {
+  proc.stderr.on('data', (data: Buffer) => {
     rawErr += data.toString()
   })
   proc.on('close', exitCode => {

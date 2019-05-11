@@ -116,7 +116,7 @@ localDescribe('local plugin', function (this: common.ISuite) {
     .then(sidecar.expectShowing('foo2'))
     .catch(common.oops(this)))
 
-  it('should debug that action locally', () => cli.do('debug foo2 -p lol cats', this.app)
+  /* it('should debug that action locally', () => cli.do('debug foo2 -p lol cats', this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('foo2'))
@@ -124,5 +124,5 @@ localDescribe('local plugin', function (this: common.ISuite) {
     .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('stop-debugger')))
     .then(() => this.app)
     .then(sidecar.expectFullyClosed)
-    .catch(common.oops(this)))
+    .catch(common.oops(this))) */
 })
