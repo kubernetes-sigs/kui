@@ -36,7 +36,7 @@ export const dispatchToShell = async ({ block, command, argv, argvNoOptions, exe
 
   if (isHeadless()) {
     const { doExec } = await import('./bash-like')
-    return doExec(command, argvNoOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
+    return doExec(command, Object.assign({}, { stdout: createOutputStream() }, execOptions))
       .catch(cleanUpError)
   } else {
     const { doExec } = await import('../../pty/client')

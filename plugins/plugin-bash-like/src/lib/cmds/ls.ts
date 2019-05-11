@@ -28,7 +28,7 @@ import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
 import { findFile, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
-import { doShell } from './bash-like'
+import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
 
 /** flatten an array of arrays */
@@ -309,6 +309,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
 const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs): Promise<true | Table> => {
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
   const filepath = findFile(expandHomeDir(filepathAsGiven), true, true)
+
   debug('doLs filepath', filepathAsGiven, filepath)
 
   if (filepath.match(/app.asar/) && isSpecialDirectory(filepathAsGiven)) {
@@ -316,16 +317,8 @@ const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, pars
     throw new Error('File not found')
   }
 
-  const dashFlags = '-lh' +
-    (options.a ? 'a' : '') +
-    (options.c ? 'c' : '') +
-    (options.r ? 'r' : '') +
-    (options.S ? 'S' : '') +
-    (options.t ? 't' : '')
-
-  const platformFlags = []
-
-  return doShell(['!', 'ls', dashFlags, ...platformFlags, filepath], options, Object.assign({}, execOptions, {
+  const rest = command.replace(/^\s*(l)?ls/, '')
+  return doExec(`ls -lh ${rest}`, Object.assign({}, execOptions, {
     nested: true,
     raw: true,
     env: {
@@ -333,7 +326,6 @@ const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, pars
     }
   }))
     .then(tabularize(command, options, filepath, filepathAsGiven))
-    .catch(message => { throw new UsageError({ message, usage: usage(command) }) })
 }
 
 const usage = (command: string) => ({
@@ -343,6 +335,7 @@ const usage = (command: string) => ({
   header: 'Directory listing of your local filesystem',
   noHelpAlias: true,
   optional: localFilepath.concat([
+    { name: '-A', boolean: true, docs: 'List all entries except for . and ..' },
     { name: '-a', boolean: true, docs: 'Include directory entries whose names begin with a dot (.)' },
     { name: '-c', boolean: true, docs: 'Use time when file status was last changed for sorting (-t)' },
     { name: '-l', boolean: true, hidden: true },
