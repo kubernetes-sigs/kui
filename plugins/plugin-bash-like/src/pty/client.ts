@@ -198,7 +198,7 @@ class Resizer {
     const cols = Math.floor(width / terminal['_core'].renderer.dimensions.actualCellWidth)
     const rows = Math.floor(height / terminal['_core'].renderer.dimensions.actualCellHeight)
 
-    debug('getSize', cols, rows, width, height, terminal['_core'].renderer.dimensions.actualCellWidth)
+    debug('getSize', cols, rows, width, height)
     return { rows, cols }
   }
 
