@@ -29,20 +29,30 @@ import * as path from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
 /**
+ * Escape the given string for bash happiness
+ *
+ */
+const shellescape = (str: string): string => {
+  return str.replace(/ /g, '\\ ')
+}
+
+/**
  * Return partial updated with the given match; there may be some
  * overlap at the beginning.
  *
  */
-const completeWith = (partial: string, match: string, addSpace = false) => {
-  const partialIdx = match.indexOf(partial)
-  return (partialIdx >= 0 ? match.substring(partialIdx + partial.length) : match) + (addSpace ? ' ' : '')
+const completeWith = (partial: string, match: string, doEscape = false, addSpace = false): string => {
+  const escapedMatch = !doEscape ? match : shellescape(match) // partial is escaped already, so escape the match, too
+  const partialIdx = escapedMatch.indexOf(partial)
+  const remainder = (partialIdx >= 0 ? escapedMatch.substring(partialIdx + partial.length) : escapedMatch)
+  return remainder + (addSpace ? ' ' : '')
 }
 
 /**
  * Is the given filepath a directory?
  *
  */
-const isDirectory = (filepath: string) => new Promise((resolve, reject) => {
+const isDirectory = (filepath: string): Promise<boolean> => new Promise((resolve, reject) => {
   fs.lstat(filepath, (err, stats) => {
     if (err) {
       reject(err)
@@ -72,11 +82,11 @@ const isDirectory = (filepath: string) => new Promise((resolve, reject) => {
  * prompt, which is an <input>.
  *
  */
-const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, addSpace = false }: { temporaryContainer?: TemporaryContainer, partial?: string, dirname?: false | string, addSpace?: boolean }) => {
+const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, doEscape = false, addSpace = false }: { temporaryContainer?: TemporaryContainer, partial?: string, dirname?: false | string, doEscape?: boolean, addSpace?: boolean }) => {
   debug('completion', match, partial, dirname)
 
   // in case match includes partial as a prefix
-  const completion = completeWith(partial, match, addSpace)
+  const completion = completeWith(partial, match, doEscape, addSpace)
 
   if (temporaryContainer) {
     temporaryContainer.cleanup()
@@ -145,7 +155,7 @@ const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: str
 
     const partialComplete = (idx: number) => {
       // debug('partial complete', idx)
-      const completion = completeWith(partial, matches[0].substring(0, idx))
+      const completion = completeWith(partial, matches[0].substring(0, idx), true)
       temporaryContainer.partial = temporaryContainer.partial + completion
       prompt.value = prompt.value + completion
     }
@@ -364,7 +374,7 @@ const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, p
  * Add a suggestion to the suggestion container
  *
  */
-const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, prompt: HTMLInputElement) => (match, idx: number) => {
+const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, prompt: HTMLInputElement, doEscape = false) => (match, idx: number) => {
   const matchLabel = match.label || match
   const matchCompletion = match.completion || matchLabel
 
@@ -398,12 +408,13 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, 
 
   // onclick, use this match as the completion
   option.addEventListener('click', () => {
-    complete(matchCompletion, prompt, { temporaryContainer, dirname, addSpace: match.addSpace })
+    complete(matchCompletion, prompt, { temporaryContainer, dirname, doEscape, addSpace: match.addSpace })
   })
 
   option.setAttribute('data-match', matchLabel)
   option.setAttribute('data-completion', matchCompletion)
   if (match.addSpace) option.setAttribute('data-add-space', match.addSpace)
+  if (doEscape) option.setAttribute('data-do-escape', 'true')
   option.setAttribute('data-value', optionInner.innerText)
 
   // for incremental completion; see onChange handler above
@@ -431,11 +442,15 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
       if (err) {
         debug('fs.readdir error', err)
       } else {
-        debug('fs.readdir success')
-
         const partial = path.basename(last)
-        const matches = files.filter(f => (lastIsDir || f.indexOf(partial) === 0) &&
-                                     !f.endsWith('~') && f !== '.' && f !== '..')
+        const matches: string[] = files
+          .filter(_f => {
+            const f = shellescape(_f)
+            return (lastIsDir || f.indexOf(partial) === 0) &&
+              !f.endsWith('~') && f !== '.' && f !== '..'
+          })
+
+        debug('fs.readdir success', partial, matches)
 
         if (matches.length === 1) {
           //
@@ -443,7 +458,7 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
           // completion will be the bit we have to append to the current prompt.value
           //
           debug('singleton file completion', matches[0])
-          complete(matches[0], prompt, { temporaryContainer, partial, dirname })
+          complete(matches[0], prompt, { temporaryContainer, doEscape: true, partial, dirname })
         } else if (matches.length > 1) {
           //
           // then there are multiple matches, present the choices
@@ -460,7 +475,7 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
 
           // add each match to that temporary div
           matches.forEach((match, idx) => {
-            const { option, optionInner } = addSuggestion(temporaryContainer, dirname, prompt)(match, idx)
+            const { option, optionInner } = addSuggestion(temporaryContainer, dirname, prompt, true)(match, idx)
 
             // see if the match is a directory, so that we add a trailing slash
             const filepath = path.join(dirname, match)
@@ -600,10 +615,11 @@ export default () => {
         const current = temporaryContainer.querySelector('.selected')
         if (current) {
           const completion = current.getAttribute('data-completion')
+          const doEscape = current.hasAttribute('data-do-escape')
           const addSpace = current.hasAttribute('data-add-space')
           const prompt = cli.getCurrentPrompt()
 
-          complete(completion, prompt, { temporaryContainer, addSpace })
+          complete(completion, prompt, { temporaryContainer, doEscape, addSpace })
         }
 
         // prevent the REPL from evaluating the expr
@@ -663,13 +679,13 @@ export default () => {
 
               debug('positionals', positionals)
               if (positionals.length > 0) {
-                const args = repl.split(prompt.value) // this is the "argv", for the current prompt value
-                const commandIdx = args.indexOf(usage.command) + 1 // the terminal command of the prompt
-                const nActuals = args.length - commandIdx
+                const args = repl.split(prompt.value).filter(_ => !/^-/.test(_)) // this is the "argv", for the current prompt value
+                const commandIdx = args.indexOf(usage.command) // the terminal command of the prompt
+                const nActuals = args.length - commandIdx - 1
                 const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
                 const param = positionals[lastIdx]
 
-                debug('maybe', args.length, commandIdx, param, args[commandIdx + lastIdx])
+                debug('maybe', args, commandIdx, lastIdx, nActuals, param, args[commandIdx + lastIdx])
 
                 if (commandIdx === args.length && !prompt.value.match(/\s+$/)) {
                   // then the prompt has e.g. "wsk package" with no terminal whitespace; nothing to do yet
@@ -678,7 +694,7 @@ export default () => {
                   // great, there is a positional we can help with
                   try {
                     // we found a required positional parameter, now suggest values for this parameter
-                    suggest(param, findFile(args[commandIdx + lastIdx], true),
+                    suggest(param, findFile(args[commandIdx + lastIdx + 1], true),
                       block, prompt, temporaryContainer, commandIdx + lastIdx)
                   } catch (err) {
                     console.error(err)
@@ -686,13 +702,14 @@ export default () => {
                 }
               }
             } else if (!inBrowser()) {
-              debug('falling back on local file completion')
               const { A: args, endIndices } = repl._split(prompt.value, true, true) as repl.ISplit
               const lastIdx = prompt.selectionStart
+              debug('falling back on local file completion', args, lastIdx)
 
               for (let ii = 0; ii < endIndices.length; ii++) {
                 if (endIndices[ii] >= lastIdx) {
-                  const last = prompt.value.substring(endIndices[ii - 1], lastIdx).trim()
+                  // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
+                  const last = prompt.value.substring(endIndices[ii - 1], lastIdx).replace(/^\s+/, '')
                   suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
                   break
                 }

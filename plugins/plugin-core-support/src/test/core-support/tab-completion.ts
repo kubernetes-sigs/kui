@@ -20,8 +20,15 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, keys, selectors, sidecar } = ui
 const { localIt, remoteIt } = common
 
-import { dirname } from 'path'
+import { dirSync as tmpDirSync } from 'tmp'
+import { dirname, join } from 'path'
+import { openSync, closeSync } from 'fs'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
+
+/** touch the given filepath */
+const touch = (filepath: string) => {
+  closeSync(openSync(filepath, 'w'))
+}
 
 /** execute the given async task n times */
 const doTimes = (n, task) => {
@@ -131,6 +138,61 @@ describe('Tab completion', function (this: ISuite) {
   const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/']
 
   const fileOptions = ['empty1.js', 'empty2.js']
+
+  const tmp1 = tmpDirSync()
+  touch(join(tmp1.name, 'foo bar'))
+
+  const tmp2 = tmpDirSync()
+  touch(join(tmp2.name, 'foo bar1'))
+  touch(join(tmp2.name, 'foo bar2'))
+
+  localIt('should tab complete file with spaces unique', () => {
+    return tabby(this.app,
+                 `ls ${join(tmp1.name, 'foo')}`,
+                 `ls ${join(tmp1.name, 'foo bar')}`)
+  })
+
+  localIt('should tab complete file with spaces unique with dash option', () => {
+    return tabby(this.app,
+                 `ls -l ${join(tmp1.name, 'foo')}`,
+                 `ls -l ${join(tmp1.name, 'foo bar')}`)
+  })
+
+  localIt('should tab complete file with spaces unique with backslash escape', () => {
+    return tabby(this.app,
+                 `ls ${join(tmp1.name, 'foo\\ ')}`,
+                 `ls ${join(tmp1.name, 'foo bar')}`)
+  })
+
+  localIt('should tab complete file with spaces non-unique', () => {
+    return tabbyWithOptions(this.app,
+                            `ls ${join(tmp2.name, 'foo')}`,
+                            ['foo bar1', 'foo bar2'],
+                            `ls ${join(tmp2.name, 'foo bar1')}`,
+                            { click: 0 })
+  })
+
+  localIt('should tab complete file with spaces non-unique with dash option', () => {
+    return tabbyWithOptions(this.app,
+                            `ls -l ${join(tmp2.name, 'foo')}`,
+                            ['foo bar1', 'foo bar2'],
+                            `ls -l ${join(tmp2.name, 'foo bar1')}`,
+                            { click: 0 })
+  })
+
+  localIt('should tab complete file with spaces non-unique with backslash escape', () => {
+    return tabbyWithOptions(this.app,
+                            `ls ${join(tmp2.name, 'foo\\ ')}`,
+                            ['foo bar1', 'foo bar2'],
+                            `ls ${join(tmp2.name, 'foo bar2')}`,
+                            { click: 1 })
+  })
+
+  localIt('should tab complete file with spaces unique with backslash escape variant 2', () => {
+    return tabby(this.app,
+                 `ls ${join(tmp2.name, 'foo\\ bar1')}`,
+                 `ls ${join(tmp2.name, 'foo bar1')}`)
+  })
 
   // tab completion using default file completion handler (i.e. if the
   // command does not register a usage model, then always tab
