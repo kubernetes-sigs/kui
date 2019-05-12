@@ -27,9 +27,9 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
-    "debug": "^4.1.1",
+    "debug": "4.1.1",
     "expand-home-dir": "0.0.3",
-    "js-yaml": "^3.13.1"
+    "js-yaml": "3.13.1"
   },
   "kui": {
     "headless": false
