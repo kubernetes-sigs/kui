@@ -177,6 +177,7 @@ sidecar .sidecar-header-name-content {
 }
 
 .horizontal-landing-zone {
+    display: none;
     flex-basis: 1.5em;
     -webkit-app-region: drag;
 }
@@ -187,12 +188,12 @@ body.subwindow .repl .horizontal-landing-zone {
 .repl {
     padding-top: 0;
 }
-.repl-block:first-child {
-    padding-top: 0;
-}
 .repl-input, .repl-output {
-    padding: 0 1em 0 1.8125em;
+    padding: 0 0 0 1em;
     transition: padding 150ms ease-in-out;
+}
+.repl-prompt-right-elements {
+    padding-right: 1em;
 }
 .repl.sidecar-visible .repl-input, .repl.sidecar-visible .repl-output {
     padding-left: 1em;
