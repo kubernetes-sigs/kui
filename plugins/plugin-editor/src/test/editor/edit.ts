@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Application } from 'spectron'
+import { Application, SpectronClient } from 'spectron'
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
 import * as ui from '@kui-shell/core/tests/lib/ui'
@@ -26,7 +26,7 @@ import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
 /** set the monaco editor text */
-const setValue = (client, text) => {
+const setValue = (client: SpectronClient, text: string) => {
   return client.execute(text => {
     document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
   }, text)
@@ -41,7 +41,7 @@ const save = (app: Application) => () => {
 }
 
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
-const verifyTextExist = (selector: string, expectedText: string) => async (app: Application) => {
+const verifyTextExist = (selector: string, expectedText: string) => async (app: Application): Promise<Application> => {
   await app.client.waitUntil(async () => {
     const actualText = await app.client.getText(selector)
     return actualText.replace(/\s+$/, '') === expectedText
@@ -100,6 +100,7 @@ localDescribe('editor', function (this: ISuite) {
   it('should edit but not save the content of an existing file', () => cli.do(`edit ${tmpFilepath}`, this.app)
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
+     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
      .then(() => setValue(this.app.client, 'should not be saved'))
      .catch(common.oops(this)))
 
@@ -112,6 +113,7 @@ localDescribe('editor', function (this: ISuite) {
   it('should edit and save the content', () => cli.do('edit /tmp/edit-file.txt', this.app)
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
+     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
      .then(() => setValue(this.app.client, updatedText))
      .then(save(this.app))
      .catch(common.oops(this)))
