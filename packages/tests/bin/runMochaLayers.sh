@@ -37,12 +37,13 @@ if [ -z "$API_HOST" ]; then
     if [ -f ~/.wskprops ]; then
         . ~/.wskprops
         export API_HOST=$APIHOST
+    else
+        export LAYERS="core bash-like core-support field-installed-plugins editor k8s"
     fi
 else
     echo "APIHOST=$API_HOST" > ~/.wskprops
     echo "INSECURE_SSL=true" >> ~/.wskprops
 fi
-
 
 export PATH=./node_modules/.bin:$PATH
 
