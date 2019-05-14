@@ -17,8 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/controller/auth')
 
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
 import { setAuth } from '../model/auth'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 const usage = {
   add: {
@@ -29,9 +30,9 @@ const usage = {
   }
 }
 
-const add = async ({ block, nextBlock }) => {
+const add = async ({ block, nextBlock }: IEvaluatorArgs) => {
   const { prompt } = await import('@kui-shell/core/webapp/cli')
-  return prompt('kubectl auth add', block, nextBlock, {
+  return prompt('kubectl auth add', block as HTMLElement, nextBlock, {
     placeholder: 'Paste the contents of your kubeconfig: cat $KUBECONFIG',
     onpaste: 'capture'
   }, ({ field: kubeconfigString }) => {

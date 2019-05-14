@@ -22,7 +22,7 @@ import { basename, join } from 'path'
 
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { withRetryOn404 } from '../util/retry'
 import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
@@ -278,7 +278,7 @@ const errorEntity = (execOptions, base, backupNamespace?: string) => err => {
  *   5. in a given file (local or remote)
  *
  */
-const getDirectReferences = (command: string) => async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
+const getDirectReferences = (command: string) => async ({ execOptions, argv, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
   const idx = argvNoOptions.indexOf(command) + 1
@@ -450,7 +450,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
  * Add any kube-native resources that might be associated with the controllers
  *
  */
-const findControlledResources = async (args, kubeEntities: Array<any>): Promise<Array<any>> => {
+const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: Array<any>): Promise<Array<any>> => {
   debug('findControlledResources', kubeEntities)
 
   const raw = Object.assign({}, args.execOptions, { raw: true })
@@ -506,7 +506,7 @@ const statusTable = (entities) => {
  * k status command handler
  *
  */
-export const status = (command: string) => async args => {
+export const status = (command: string) => async (args: IEvaluatorArgs) => {
   debug('constructing status', args)
 
   const direct = await getDirectReferences(command)(args)
