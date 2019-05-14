@@ -23,7 +23,7 @@ import * as parseDuration from 'parse-duration'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
 
-interface IOptions {
+export interface IKialiOptions {
   local: boolean
   kialiNamespace: string
   duration: string
@@ -37,7 +37,7 @@ interface IOptions {
   namespace?: string
 }
 
-class DefaultOptions implements IOptions {
+class DefaultOptions implements IKialiOptions {
   local = false
   kialiNamespace = 'istio-system'
   duration = '10m'
@@ -73,7 +73,7 @@ const get = fetch('get')
  *
  */
 let cachedApihost: string
-const apihost = async (options: IOptions = new DefaultOptions()) => {
+const apihost = async (options: IKialiOptions = new DefaultOptions()) => {
   if (options.local) {
     return `http://localhost:3000`
   }
@@ -114,7 +114,7 @@ const apihost = async (options: IOptions = new DefaultOptions()) => {
  * @return the endpoint of the Kiali console
  *
  */
-export const consoleView = async (options: IOptions = new DefaultOptions()) => {
+export const consoleView = async (options: IKialiOptions = new DefaultOptions()) => {
   return `${await apihost(options)}/kiali/console`
 }
 
@@ -123,7 +123,7 @@ export const consoleView = async (options: IOptions = new DefaultOptions()) => {
  * e.g. graph/namespaces/?edges=noEdgeLabels&graphType=versionedApp&namespaces=default&injectServiceNodes=true&duration=60&pi=15000&layout=dagre
  *
  */
-export const graphView = async (_options: IOptions = new DefaultOptions()) => {
+export const graphView = async (_options: IKialiOptions = new DefaultOptions()) => {
   const options = Object.assign({}, new DefaultOptions(), _options)
 
   // the graph view seems to accept duration in units of seconds, weird. the graph model API accepts prometheus strings etc.
@@ -188,7 +188,7 @@ export const modes = (defaultMode: string) => _modes.map(_ => Object.assign({}, 
  * @param namespace application namespace
  *
  */
-export const graphModel = async (options: IOptions = new DefaultOptions()) => {
+export const graphModel = async (options: IKialiOptions = new DefaultOptions()) => {
   // e.g. https://10.10.10.10:9080/kiali/api/namespaces/graph?duration=60s&graphType=versionedApp&injectServiceNodes=true&groupBy=app&appenders=deadNode,sidecarsCheck,serviceEntry,istio&namespaces=default
 
   const url = `${apihost(options)}/kiali/api/namespaces/graph?duration=${options.duration}&graphType=${options.graphType}&injectServiceNodes=${options.injectServiceNodes}&groupBy=${options.groupBy}&appenders=${options.appenders}&namespaces=${options.namespaces}`
@@ -211,7 +211,7 @@ interface IApplicationList {
  * Applications model
  *
  */
-export const appList = async (options: IOptions = new DefaultOptions()): Promise<IApplicationList> => {
+export const appList = async (options: IKialiOptions = new DefaultOptions()): Promise<IApplicationList> => {
   const url = `${await apihost(options)}/kiali/api/namespaces/${options.namespace}/apps`
   return get(url)
 }
@@ -235,7 +235,7 @@ interface IApplicationHealth {
  * Application health model
  *
  */
-export const appHealth = async (app: string, options: IOptions = new DefaultOptions(), rateInterval = '10m'): Promise<IApplicationHealth> => {
+export const appHealth = async (app: string, options: IKialiOptions = new DefaultOptions(), rateInterval = '10m'): Promise<IApplicationHealth> => {
   const url = `${await apihost(options)}/kiali/api/namespaces/${options.namespace}/apps/${app}/health?rateInterval=${rateInterval}`
   return get(url)
 }

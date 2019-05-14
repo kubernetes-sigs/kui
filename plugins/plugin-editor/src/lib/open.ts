@@ -286,9 +286,9 @@ const setText = (editor, options, execOptions?) => ({ code, kind }) => {
   // see https://github.com/Microsoft/monaco-editor/issues/194 we need
   // to re-grab focus after a model update; but don't bother if we are
   // in readOnly mode
-  if (!options.readOnly) {
-    setTimeout(() => editor.focus(), 500)
-  }
+  //  if (!options.readOnly) {
+  // setTimeout(() => editor.focus(), 500)
+  //  }
 
   return code
 }

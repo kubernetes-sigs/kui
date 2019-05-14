@@ -19,8 +19,8 @@ const debug = Debug('k8s/controller/kiali')
 
 import { exec } from 'child_process'
 import parseDuration = require('parse-duration')
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { pexec, rexec as $, qexec as $$, encodeComponent } from '@kui-shell/core/core/repl'
 
 import * as client from '../clients/kiali'
@@ -30,7 +30,7 @@ import { States, TrafficLight } from '../model/states'
  * Install Kiali
  *
  */
-const installKiali = async ({ parsedOptions }) => {
+const installKiali = async ({ parsedOptions }: IEvaluatorArgs) => {
   const tmp = '/tmp' // FIXME
 
   // const ns = 'default' // FIXME
@@ -55,7 +55,7 @@ const installKiali = async ({ parsedOptions }) => {
  * Uninstall Kiali
  *
  */
-const uninstallKiali = async ({ parsedOptions }) => {
+const uninstallKiali = async ({ parsedOptions }: IEvaluatorArgs) => {
   return $$('kubectl delete all,secrets,sa,configmaps,deployments,ingresses,clusterroles,clusterrolebindings,virtualservices,destinationrules,customresourcedefinitions --selector=app=kiali -n istio-system')
 }
 
@@ -76,7 +76,7 @@ const errorRatioToTextCss = (errorRatio: number): string => {
  * `kiali get apps` command handler
  *
  */
-const getApps = async ({ parsedOptions }) => {
+const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
   const pollingInterval = parsedOptions.watch ? parseDuration(parsedOptions.watch) : 10000
   const list = await client.appList(parsedOptions.namespace && new client.Namespace(parsedOptions.namespace))
 
@@ -185,7 +185,7 @@ const sendFirstArgTo = (command: string, handler: Handler) => ({ argvNoOptions: 
  * Register the commands
  *
  */
-export default async (commandTree) => {
+export default async (commandTree: CommandRegistrar) => {
   commandTree.listen('/kiali/install', installKiali, { noAuthOk: true })
 
   const deleteCmd = commandTree.listen('/kiali/delete', uninstallKiali, { noAuthOk: true })
@@ -197,5 +197,5 @@ export default async (commandTree) => {
   commandTree.synonym('/k/get/app', getApps, getAppsCmd2, { noAuthOk: true })
 
   commandTree.listen('/kiali/console', () => client.consoleView(), { noAuthOk: true })
-  commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView(parsedOptions), { noAuthOk: true }) // FIXME: parsedOptions is not of type IOption
+  commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView((parsedOptions as any) as client.IKialiOptions), { noAuthOk: true })
 }
