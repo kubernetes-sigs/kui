@@ -296,6 +296,7 @@ export const showCustom = async (custom: ICustomSpec, options, resultDom?: Eleme
   debug('showCustom', custom, options, resultDom)
 
   const sidecar = getSidecar()
+  const tab = getEnclosingTab(sidecar)
 
   // tell the current view that they're outta here
   if (sidecar.entity || sidecar.uuid) {
@@ -394,7 +395,7 @@ export const showCustom = async (custom: ICustomSpec, options, resultDom?: Eleme
     custom.badges.forEach(badge => addBadge(badge, { badgesDom }))
   }
 
-  const replView = document.querySelector('tab.visible .repl')
+  const replView = tab.querySelector('.repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
   const container = resultDom || sidecar.querySelector('.custom-content')
@@ -715,21 +716,34 @@ export const clearBadges = () => {
   removeAllDomChildren(header.querySelector('.badges'))
 }
 
+/**
+ * @return the enclosing tab for the given sidecar
+ *
+ */
+export const getEnclosingTab = (sidecar: ISidecar): cli.ITab => {
+  let parent: HTMLElement = sidecar
+  while (parent && !cli.isTab(parent)) {
+    parent = parent.parentElement
+  }
+  return parent
+}
+
 export const hide = (clearSelectionToo = false) => {
   debug('hide')
 
   const sidecar = getSidecar()
+  const tab = getEnclosingTab(sidecar)
   sidecar.classList.remove('visible')
 
   if (!clearSelectionToo) {
     // only minimize if we weren't asked to clear the selection
     sidecar.classList.add('minimized')
-    element('tab.visible').classList.add('sidecar-is-minimized')
+    tab.classList.add('sidecar-is-minimized')
   } else {
     document.body.classList.remove('sidecar-visible')
   }
 
-  const replView = document.querySelector('tab.visible .repl')
+  const replView = tab.querySelector('.repl')
   replView.classList.remove('sidecar-visible')
 
   // we just hid the sidecar. make sure the current prompt is active for text input
@@ -740,26 +754,28 @@ export const hide = (clearSelectionToo = false) => {
     delete sidecar.entity
   }
 
-  setTimeout(() => eventBus.emit('/sidecar/toggle'), 300)
+  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 300)
   return true
 }
 
-const setVisibleClass = (sidecar: Element) => {
+const setVisibleClass = (sidecar: ISidecar) => {
   sidecar.classList.add('visible')
 }
 
-const setVisible = (sidecar: Element) => {
+const setVisible = (sidecar: ISidecar) => {
+  const tab = getEnclosingTab(sidecar)
+
   setVisibleClass(sidecar)
-  element('tab.visible').classList.remove('sidecar-is-minimized')
+  tab.classList.remove('sidecar-is-minimized')
   sidecar.classList.remove('minimized')
   document.body.classList.add('sidecar-visible')
 
-  const replView = document.querySelector('tab.visible .repl')
+  const replView = tab.querySelector('.repl')
   replView.classList.add('sidecar-visible')
 
   cli.scrollIntoView()
 
-  setTimeout(() => eventBus.emit('/sidecar/toggle'), 600)
+  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 600)
 }
 
 export const show = (block?: HTMLElement, nextBlock?: HTMLElement) => {
@@ -830,6 +846,7 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
   debug('showGenericEntity', entity, options)
 
   const sidecar = getSidecar()
+  const tab = getEnclosingTab(sidecar)
   // const header = sidecar.querySelector('.sidecar-header')
 
   // tell the current view that they're outta here
@@ -855,7 +872,7 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
   sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} entity-is-${entity.prettyType} entity-is-${entity.type}`)
   setVisibleClass(sidecar)
 
-  const replView = document.querySelector('tab.visible .repl')
+  const replView = tab.querySelector('.repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
   const viewProviderDesiresFullscreen = document.body.classList.contains('subwindow')

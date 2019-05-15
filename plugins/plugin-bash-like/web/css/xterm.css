@@ -69,8 +69,8 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     font-size: 1em !important;
 }
 .xterm-terminated .xterm-rows > div {
-    height: 1.2875em !important;
-    line-height: 1.2875em !important;
+    height: auto !important;
+    line-height: normal !important;
 }
 .xterm-container .xterm-rows > div > span {
     width: auto !important;

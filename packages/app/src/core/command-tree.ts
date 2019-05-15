@@ -313,7 +313,8 @@ const withEvents = (evaluator: CommandHandler, leaf: ICommandBase, partialMatche
     route: leaf.route,
     eval: evaluator,
     options: leaf && leaf.options,
-    success: ({ type: execType, command, isDrilldown = false, parsedOptions }) => {
+    success: ({ tab, type: execType, command, isDrilldown = false, parsedOptions }) => {
+      event.tab = tab
       event.execType = execType
       event.command = command
       event.isDrilldown = isDrilldown

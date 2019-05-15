@@ -24,7 +24,8 @@ import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView } from '@kui-shell/core/webapp/cli'
+import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, ITab } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 
@@ -65,6 +66,9 @@ const alpha = (hex: string, alpha: number): string => {
 class Resizer {
   private currentAsync: NodeJS.Timeout
 
+  /** our tab */
+  private tab: ITab
+
   /** exit alt buffer mode async */
   private exitAlt?: NodeJS.Timeout
 
@@ -81,12 +85,22 @@ class Resizer {
   private _ws: Channel
   private readonly resizeNow: any
 
-  constructor (terminal: xterm.Terminal) {
+  constructor (terminal: xterm.Terminal, tab: ITab) {
+    this.tab = tab
     this.terminal = terminal
 
     const resizeNow = this.scheduleResize.bind(this)
     window.addEventListener('resize', resizeNow) // window resize
-    eventBus.on('/sidecar/toggle', resizeNow) // sidecar resize
+
+    const ourTab = tab
+    eventBus.on('/sidecar/toggle', ({ tab }: { tab: ITab }) => {
+      // sidecar resize
+      if (sameTab(tab, ourTab)) {
+        resizeNow()
+      } else {
+        debug('toggle event, but not for our sidecar')
+      }
+    })
 
     resizeNow()
   }
@@ -186,13 +200,13 @@ class Resizer {
       + parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
   }
 
-  static getSize (terminal: xterm.Terminal) {
-    const selectorForWidth = 'tab.visible .repl-inner .repl-block.processing .repl-output'
-    const widthElement = document.querySelector(selectorForWidth)
+  static getSize (terminal: xterm.Terminal, tab: Element) {
+    const selectorForWidth = '.repl-inner .repl-block.processing .repl-output'
+    const widthElement = tab.querySelector(selectorForWidth)
     const width = widthElement.getBoundingClientRect().width - this.paddingHorizontal(widthElement)
 
-    const selectorForHeight = 'tab.visible .repl-inner'
-    const heightElement = document.querySelector(selectorForHeight)
+    const selectorForHeight = '.repl-inner'
+    const heightElement = tab.querySelector(selectorForHeight)
     const height = heightElement.getBoundingClientRect().height - this.paddingVertical(heightElement)
 
     const cols = Math.floor(width / terminal['_core'].renderer.dimensions.actualCellWidth)
@@ -211,7 +225,7 @@ class Resizer {
       return
     }
 
-    const { rows, cols } = Resizer.getSize(this.terminal)
+    const { rows, cols } = Resizer.getSize(this.terminal, this.tab)
     debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
 
     if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
@@ -239,14 +253,14 @@ class Resizer {
   enterApplicationMode () {
     debug('switching to application mode')
     this.app = true
-    document.querySelector('tab.visible').classList.add('xterm-application-mode')
+    this.tab.classList.add('xterm-application-mode')
     this.scheduleResize(20)
   }
 
   exitApplicationMode () {
     debug('switching out of application mode')
     this.app = false
-    document.querySelector('tab.visible').classList.remove('xterm-application-mode')
+    this.tab.classList.remove('xterm-application-mode')
   }
 
   enterAltBufferMode () {
@@ -255,14 +269,14 @@ class Resizer {
     if (this.exitAlt) {
       clearTimeout(this.exitAlt)
     }
-    document.querySelector('tab.visible').classList.add('xterm-alt-buffer-mode')
+    this.tab.classList.add('xterm-alt-buffer-mode')
     this.scheduleResize(20)
   }
 
   exitAltBufferMode () {
     debug('switching to normal buffer mode')
     this.alt = false
-    document.querySelector('tab.visible').classList.remove('xterm-alt-buffer-mode')
+    this.tab.classList.remove('xterm-alt-buffer-mode')
   }
 }
 
@@ -275,7 +289,6 @@ const injectFont = (terminal: xterm.Terminal) => {
     const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
     const fontSize = parseFloat(fontTheme.fontSize.replace(/px$/, ''))
     terminal.setOption('fontSize', fontSize)
-    // terminal.setOption('lineHeight', )//parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10))
 
     debug('fontSize', fontSize)
 
@@ -401,7 +414,7 @@ const getOrCreateChannel = async (cmdline: string, channelFactory: ChannelFactor
  *
  */
 let alreadyInjectedCSS: boolean
-export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new Promise((resolve, reject) => {
+export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptions) => new Promise((resolve, reject) => {
   debug('doExec', cmdline)
 
   if (!alreadyInjectedCSS) {
@@ -418,7 +431,6 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
   // make sure to grab currently visible tab right away (i.e. before
   // any asyncs), so that we can store a reference before the user
   // switches away to another tab
-  const tab = document.querySelector('tab.visible')
   const scrollRegion = tab.querySelector('.repl-inner .repl-block.processing')
 
   // do the rest after injectCSS
@@ -449,7 +461,7 @@ export const doExec = (block: HTMLElement, cmdline: string, execOptions) => new 
       inject() // inject once on startup
       eventBus.on('/theme/change', inject) // and re-inject when the theme changes
 
-      const resizer = new Resizer(terminal)
+      const resizer = new Resizer(terminal, tab)
 
       // respond to font zooming
       const doZoom = () => {
