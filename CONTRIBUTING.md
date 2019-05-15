@@ -32,8 +32,21 @@ If you want to own and work on an issue, add a comment or “#dibs” it asking
 about ownership. A maintainer will then add the Assigned label and modify
 the first comment in the issue to include `Assigned to: @person`
 
+### Git Commit Guidelines
 
-### Sign your work
+#### Conventional Commits
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org) as a guide for commit messages. Please ensure that your commit message follows this structure:
+
+```
+type(component?): message
+```
+
+*type* is one of: feat, fix, docs, chore, style, refactor, perf, test
+
+*component* optionally is the name of the module you are fixing; either "core" or a named module in `plugins/` directory. Note: Please specify the full name of the module (e.g. plugin-bash-like) instead of abbreviation. It helps us generate the correct CHANGELOG.md.
+
+#### Sign your work
 
 The sign-off is a simple line at the end of the explanation for the patch. Your
 signature certifies that you wrote the patch or otherwise have the right to pass
@@ -95,7 +108,7 @@ Note: If your git config information is set properly then viewing the
 Author: Joe Smith <joe.smith@email.com>
 Date:   Thu Feb 2 11:41:15 2018 -0800
 
-    Update README
+    docs: Update README
 
     Signed-off-by: Joe Smith <joe.smith@email.com>
 ```
