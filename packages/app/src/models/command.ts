@@ -17,6 +17,7 @@
 import { CodedError } from './errors'
 import { IExecOptions } from './execOptions'
 import { IUsageModel } from '../core/usage-error'
+import { ITab } from '../webapp/cli'
 
 /**
  * "top-level", meaning the user hit enter in the CLI,
@@ -71,6 +72,7 @@ export interface ICommandOptions extends ICapabilityRequirements {
 
 export interface IEvent {
   // context: string
+  tab?: ITab
   command?: string
   route?: string
   plugin?: string
@@ -88,6 +90,7 @@ export type ParsedOptions = { [key: string]: string }
  *
  */
 export interface IEvaluatorArgs {
+  tab: ITab
   block: HTMLElement | boolean
   nextBlock: HTMLElement
   parsedOptions: ParsedOptions
@@ -144,7 +147,7 @@ export interface ICommandHandlerWithEvents extends IEvaluator {
   subtree: ICommandBase
   route: string
   options: ICommandOptions
-  success: (args: { type: ExecType, command: string, isDrilldown: boolean, parsedOptions: { [ key: string ]: any } }) => void
+  success: (args: { tab: ITab, type: ExecType, command: string, isDrilldown: boolean, parsedOptions: { [ key: string ]: any } }) => void
   error: (command: string, err: CodedError) => CodedError
 }
 

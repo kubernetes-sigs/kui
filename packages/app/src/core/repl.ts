@@ -310,6 +310,7 @@ class InProcessExecutor implements IExecutor {
   async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
+    const tab = cli.getCurrentTab()
 
     const echo = !execOptions || execOptions.echo !== false
     const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
@@ -671,7 +672,7 @@ class InProcessExecutor implements IExecutor {
         debug('eval', currentEvaluatorImpl.name)
         return Promise.resolve().then(() => {
           return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
-            block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
+            tab, block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
             createOutputStream: execOptions.createOutputStream || (() => isHeadless() ? headlessStreamTo() : cli.streamTo(block))
           })
         })
@@ -712,6 +713,7 @@ class InProcessExecutor implements IExecutor {
 
             // indicate that the command was successfuly completed
             evaluator.success({
+              tab,
               type: (execOptions && execOptions.type) || ExecType.TopLevel,
               isDrilldown: execOptions.isDrilldown,
               command,
