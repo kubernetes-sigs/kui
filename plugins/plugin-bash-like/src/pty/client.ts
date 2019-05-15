@@ -270,7 +270,6 @@ class Resizer {
       clearTimeout(this.exitAlt)
     }
     this.tab.classList.add('xterm-alt-buffer-mode')
-    this.scheduleResize(20)
   }
 
   exitAltBufferMode () {
