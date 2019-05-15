@@ -20,6 +20,7 @@ import bash from './lib/cmds/bash-like'
 import gitDiff from './lib/cmds/git-diff'
 import gitStatus from './lib/cmds/git-status'
 import ptyServer from './pty/server'
+import exportCommand from './lib/cmds/export'
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -34,6 +35,7 @@ export default async (commandTree: CommandRegistrar) => {
     bash(commandTree),
     ptyServer(commandTree),
     gitDiff(commandTree),
-    gitStatus(commandTree)
+    gitStatus(commandTree),
+    exportCommand(commandTree)
   ])
 }

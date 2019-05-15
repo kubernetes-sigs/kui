@@ -20,10 +20,12 @@ const debug = Debug('plugins/core-support/new-tab')
 import installReplFocusHandlers from './repl-focus'
 
 import { keys } from '@kui-shell/core/webapp/keys'
-import { isVisible as isSidecarVisible,
-         toggle,
-         toggleMaximization,
-         clearSelection } from '@kui-shell/core/webapp/views/sidecar'
+import {
+  isVisible as isSidecarVisible,
+  toggle,
+  toggleMaximization,
+  clearSelection
+} from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, ITab, setStatus } from '@kui-shell/core/webapp/cli'
@@ -31,6 +33,7 @@ import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, IEvent, ExecType, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
+import sessionStore from '@kui-shell/core/models/sessionStore'
 const usage = {
   strict: 'switch',
   command: 'switch',
@@ -58,14 +61,14 @@ class TabState {
   /** current working directory */
   readonly cwd: string
 
-  constructor () {
+  constructor() {
     this.env = Object.assign({}, process.env)
     this.cwd = process.cwd().slice(0) // just in case, copy the string
 
     debug('captured tab state', this.cwd)
   }
 
-  restore () {
+  restore() {
     debug('changing cwd', process.cwd(), this.cwd)
     process.chdir(this.cwd)
     process.env = this.env
@@ -111,15 +114,15 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
  *
  */
 const addKeyboardListeners = (): void => {
-/* this is now done in the main process; see src/main/menu.js
-  document.addEventListener('keydown', async event => {
-    if (event.keyCode === keys.T &&
-        ((event.ctrlKey && process.platform !== 'darwin') || (event.metaKey && process.platform === 'darwin'))) {
-      // true means that this is based on an event, rather than a repl.exec
-      newTab(true)
-    }
-  })
-*/
+  /* this is now done in the main process; see src/main/menu.js
+    document.addEventListener('keydown', async event => {
+      if (event.keyCode === keys.T &&
+          ((event.ctrlKey && process.platform !== 'darwin') || (event.metaKey && process.platform === 'darwin'))) {
+        // true means that this is based on an event, rather than a repl.exec
+        newTab(true)
+      }
+    })
+  */
 }
 
 /**
@@ -129,9 +132,9 @@ const addKeyboardListeners = (): void => {
 const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/resolved', (event: IEvent) => {
     if (event.execType !== undefined &&
-        event.execType !== ExecType.Nested &&
-        !event.isDrilldown &&
-        event.route) {
+      event.execType !== ExecType.Nested &&
+      !event.isDrilldown &&
+      event.route) {
       // ignore nested, which means one plugin calling another
       // ignore drilldown events; keep the top-level command in the display
       debug('got event', event)
@@ -139,8 +142,8 @@ const addCommandEvaluationListeners = (): void => {
       const tab = event.tab || getCurrentTab()
 
       if (event.route !== undefined
-          && !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
-         ) {
+        && !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
+      ) {
         if (event.route.match(/^\/clear/)) {
           // nbsp in the case of clear, except if the sidecar is open;
           // then attempt to continue displaying the command that
@@ -322,7 +325,7 @@ const reindexTabs = () => {
     button.onclick = () => qexec(`tab switch ${id}`)
   }
 }
-
+const key = 'openwhisk.export'
 /**
  * Close the current tab
  *
@@ -339,6 +342,11 @@ const closeTab = () => {
   const currentTabButton = getCurrentTabButton()
   const currentTabId = parseInt(currentTabButton.getAttribute('data-tab-button-index'), 10)
 
+  // remove environment varible for the tab
+  const storage = JSON.parse(sessionStore().getItem(key)) || {}
+  delete storage[currentTabId]
+  sessionStore().setItem(key, JSON.stringify(storage))
+
   currentVisibleTab.parentNode.removeChild(currentVisibleTab)
   currentTabButton.parentNode.removeChild(currentTabButton)
 
@@ -354,7 +362,7 @@ const closeTab = () => {
 
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
   commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
-                     { usage, needsUI: true, noAuthOk: true })
+    { usage, needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/new', newTabAsync, { needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/close', closeTab, { needsUI: true, noAuthOk: true })
 }
