@@ -37,7 +37,7 @@ if [ -z "$API_HOST" ]; then
     if [ -f ~/.wskprops ]; then
         . ~/.wskprops
         export API_HOST=$APIHOST
-    else
+    elif [ -z "$LAYERS" ]; then
         export LAYERS="core bash-like core-support field-installed-plugins editor k8s"
     fi
 else
