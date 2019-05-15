@@ -28,8 +28,10 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 (cd "$SCRIPTDIR"/../../../typecov && npm run typecov)
 
+MASTER_RAW=$(curl -s https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/typecov-percent.json?which=overall)
+
 BRANCH=$(cat /tmp/typecov.json | jq .stats.percentage)
-MASTER=$(curl -s https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/typecov-percent.json?which=overall | jq .percentage)
+MASTER=$(echo $MASTER_RAW | jq .percentage)
 
 echo "  branch=$BRANCH"
 echo "  master=$MASTER"
@@ -38,8 +40,36 @@ echo "  master=$MASTER"
 COMPARO=$(echo $MASTER'<='$BRANCH | bc -l)
 
 if [ $COMPARO == 0 ]; then
-    echo "failed: type coverage regression"
-    exit 1
+    # branch has lower typecov percentage.
+    BRANCH_KNOWN=$(cat /tmp/typecov.json | jq .stats.knownTypes)
+    BRANCH_TOTAL=$(cat /tmp/typecov.json | jq .stats.totalTypes)
+
+    MASTER_KNOWN=$(echo $MASTER_RAW | jq .knownTypes)
+    MASTER_TOTAL=$(echo $MASTER_RAW | jq .totalTypes)
+
+    KNOWN_DELTA=$(( MASTER_KNOWN - BRANCH_KNOWN ))
+    TOTAL_DELTA=$(( MASTER_TOTAL - BRANCH_TOTAL ))
+
+    if [[ $KNOWN_DELTA != $TOTAL_DELTA ]]; then
+        echo "failed: type coverage regression"
+        exit 1
+    else
+        #
+        # Notes: if master percentage < branch percentage, this could
+        # be caused by an innocuous removal of well-typed code; this
+        # condition would be indicated by a lock-step change in the
+        # known and total type counts.
+        #
+        # For example, if master has 8 known types and 10 total
+        # identifiers that could be typed, and the branch has 7 known
+        # types and 9 total identifiers that could be typed... this is
+        # a reduction in percentage (80% -> 78%), but not indicative
+        # of a regression. The known delta in this example is 1 and
+        # the total delta is also 1. We have one less known type, but
+        # also one less identifier that could have been typed.
+        #
+        echo "warning: type coverage change; you probably removed some well-typed code"
+    fi
 else
     echo "ok: type coverage looks good"
 fi
