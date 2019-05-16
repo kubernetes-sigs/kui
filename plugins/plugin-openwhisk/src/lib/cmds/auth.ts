@@ -30,6 +30,7 @@ import { partial } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
 import namespace = require('../models/namespace')
 import { apiHost } from '../models/auth'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 /**
  * Location of the wskprops file
@@ -218,7 +219,7 @@ const updateLocalWskProps = (wsk, auth?: string, subject?: string): Promise<stri
  * List registered namespaces
  *
  */
-const list = async () => {
+const list = async (): Promise<Table> => {
   debug('list')
 
   const list = await namespace.list()
@@ -229,9 +230,8 @@ const list = async () => {
   const type = 'namespaces'
   const current = await repl.qexec('wsk namespace current')
 
-  const headerRow = {
+  const headerRow: Row = {
     type,
-    noSort: true,
     name: 'CURRENT',
     outerCSS: 'header-cell very-narrow',
     attributes: [
@@ -239,8 +239,8 @@ const list = async () => {
     ]
   }
 
-  const body = list.map(ns => {
-    const row = Object.assign({}, ns, {
+  const body: Row[] = list.map((ns): Row => {
+    const row: Row = {
       type,
       name: ns.namespace,
       fontawesome: 'fas fa-check',
@@ -251,7 +251,7 @@ const list = async () => {
       attributes: [
         { value: ns.namespace, onclick: undefined }
       ]
-    })
+    }
 
     const onclick = async () => {
       await repl.qexec(`auth switch ${repl.encodeComponent(ns.namespace)}`)
@@ -259,12 +259,12 @@ const list = async () => {
     }
 
     row.onclick = onclick // <-- clicks on the "check mark"
-    row.attributes[0].onclick = onclick // <-- clicks on the theme name
+    row.attributes[0].onclick = onclick // <-- clicks on the namespace
 
     return row
   })
 
-  return [headerRow].concat(body)
+  return { header: headerRow, body, noSort: true, type, title: type }
 }
 
 /** return the argv sliced after the index of verb */
