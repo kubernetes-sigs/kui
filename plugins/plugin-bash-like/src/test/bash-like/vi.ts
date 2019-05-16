@@ -20,6 +20,7 @@ const { cli, keys, selectors, sidecar, sleep } = ui
 const { localDescribe } = common
 
 import * as assert from 'assert'
+import { dirname, join } from 'path'
 import { readFileSync, unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
@@ -27,6 +28,9 @@ import { promisify } from 'util'
 /** helpful selectors */
 const rows = selectors.xtermRows(0)
 const lastRow = `${rows} > div:last-child`
+
+/** we have a custom vimrc, to make sure INSERT shows up */
+const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
 
 localDescribe('xterm vi 1', function (this: common.ISuite) {
   before(common.before(this))
@@ -38,7 +42,7 @@ localDescribe('xterm vi 1', function (this: common.ISuite) {
     const file = tmpFile()
 
     try {
-      const res = cli.do(`vi ${file.name}`, this.app)
+      const res = cli.do(`vi -u "${vimrc}" ${file.name}`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows)
@@ -85,7 +89,7 @@ localDescribe('xterm vi 2', function (this: common.ISuite) {
   after(common.after(this))
   it('open vi :wq then :q, and expect no error', async () => {
     try {
-      const res = cli.do(`vi`, this.app)
+      const res = cli.do(`vi -u "${vimrc}"`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows)

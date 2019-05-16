@@ -20,6 +20,7 @@ const debug = Debug('k8s/controller/istio')
 import { join } from 'path'
 import { exec } from 'child_process'
 
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
 
 const defaultIstioVersion = '1.1'
@@ -69,7 +70,7 @@ const downloadIstio = async (version = '1.1.1'): Promise<string> => {
  * Install istio
  *
  */
-const installIstio106 = async ({ parsedOptions }) => {
+const installIstio106 = async ({ parsedOptions }: IEvaluatorArgs) => {
   const tmp = '/tmp' // FIXME
   const platform = process.platform === 'darwin' ? 'osx' : process.platform === 'win32' ? 'win' : 'linux'
   const version = parsedOptions.version || '1.0.6'
@@ -114,7 +115,7 @@ const installIstio106 = async ({ parsedOptions }) => {
   return $$(`helm install ${chart} --name istio --namespace istio-system --set grafana.enabled=true --set tracing.enabled=true`)
 }
 
-const installIstio11 = async ({ argvNoOptions, parsedOptions }) => {
+const installIstio11 = async ({ argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   const profile = argvNoOptions[argvNoOptions.indexOf('install') + 1] || 'default'
 
   const dir = await downloadIstio(parsedOptions.version)
@@ -143,7 +144,7 @@ const installIstio11 = async ({ argvNoOptions, parsedOptions }) => {
  * Uninstall istio
  *
  */
-const uninstallIstio11 = async ({ parsedOptions }) => {
+const uninstallIstio11 = async ({ parsedOptions }: IEvaluatorArgs) => {
   debug('removing istio')
   try {
     return Promise.all([
@@ -159,7 +160,7 @@ const uninstallIstio11 = async ({ parsedOptions }) => {
  * Uninstall istio
  *
  */
-const uninstallIstio106 = async ({ parsedOptions }) => {
+const uninstallIstio106 = async ({ parsedOptions }: IEvaluatorArgs) => {
   const version = parsedOptions.version || '1.0.6'
 
   await Promise.all([
@@ -194,7 +195,7 @@ const uninstallBookinfo = async () => {
  * Return the istio ingress URL
  *
  */
-const ingress = async ({ argvNoOptions: args }) => {
+const ingress = async ({ argvNoOptions: args }: IEvaluatorArgs) => {
   const [ ingressHost, ingressPort, secureIngressPort ] = await Promise.all([
     $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`),
     $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}'`),
@@ -223,7 +224,7 @@ const statusBookinfo = async () => {
  * Register the commands
  *
  */
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   commandTree.listen('/istio/install', installIstio106, { noAuthOk: true })
   commandTree.listen('/istio/uninstall', uninstallIstio106, { noAuthOk: true })
   commandTree.listen('/istio/delete', uninstallIstio106, { noAuthOk: true })

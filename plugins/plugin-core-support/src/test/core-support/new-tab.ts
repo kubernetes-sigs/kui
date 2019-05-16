@@ -18,6 +18,37 @@ import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-lin
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
+// test that new tab does not copy any output over from the cloned tab
+common.localDescribe('new tab from pty active tab via click', function (this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
+
+  it('should open sidecar with about', () => cli.do('about', this.app)
+     .then(cli.expectJustOK)
+     .then(sidecar.expectOpen)
+     .catch(common.oops(this)))
+
+  it('should less README.md', async () => {
+    try {
+      cli.do('less ../../README.md', this.app)
+
+      const selector = `${selectors.OUTPUT_N(1)} .xterm`
+      await this.app.client.waitForExist(selector)
+    } catch (err) {
+      return common.oops(this)(err)
+    }
+  })
+
+  it('click new tab button', () => this.app.client.click('.new-tab-button')
+     .then(() => this.app.client.waitForVisible(selectors.TAB_N(2)))
+     .then(() => cli.waitForRepl(this.app)) // should have an active repl
+     .catch(common.oops(this)))
+
+  // no xterm copied over!
+  it('should have a clean tab', () => this.app.client.waitForVisible(`${selectors.CURRENT_TAB} .xterm`, 5000, true)
+     .catch(common.oops(this)))
+})
+
 common.localDescribe('new tab from quiescent tab via command', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))

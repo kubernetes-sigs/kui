@@ -202,6 +202,7 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
         kind === 'Ingress' ||
         kind === 'ConfigMap' ||
         kind === 'CustomResourceDefinition' ||
+        kind === 'HorizontalPodAutoscaler' ||
         kind === 'ClusterRoleBinding' ||
         kind === 'VirtualService' ||
         kind === 'ServiceAccount') {

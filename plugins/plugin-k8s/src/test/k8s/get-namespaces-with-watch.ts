@@ -16,11 +16,9 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
-
+import { createNS as create } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 /** name of the namespace */
-const nsName = 'yoyo'
+const nsName: string = create()
 
 enum Status {
   Offline = 'red-background',

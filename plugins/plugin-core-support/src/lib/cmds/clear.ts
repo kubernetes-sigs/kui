@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/clear')
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
 const usage = {
@@ -31,25 +31,25 @@ const usage = {
   ]
 }
 
-const clear = ({ parsedOptions }) => {
+const clear = ({ parsedOptions, tab }: IEvaluatorArgs) => {
   if (!isHeadless()) {
     if (!parsedOptions.k) {
       // don't keep the current active prompt
       debug('clearing everything, the repl loop will set up the next prompt for us')
-      removeAllDomChildren(document.querySelector('tab.visible .repl-inner'))
+      removeAllDomChildren(tab.querySelector('.repl-inner'))
     } else {
       // keep the current active prompt
       debug('preserving the current active prompt')
-      const selector = 'tab.visible .repl-inner .repl-block:not(.repl-active):not(.processing)'
+      const selector = '.repl-inner .repl-block:not(.repl-active):not(.processing)'
 
-      const blocks = document.querySelectorAll(selector)
+      const blocks = tab.querySelectorAll(selector)
       for (let idx = 0; idx < blocks.length; idx++) {
         blocks[idx].parentNode.removeChild(blocks[idx])
       }
 
       // return the current processing block, if there is one
-      const processing = 'tab.visible .repl-inner .repl-block.processing'
-      return document.querySelector(processing) || true
+      const processing = '.repl-inner .repl-block.processing'
+      return tab.querySelector(processing) || true
     }
   }
 

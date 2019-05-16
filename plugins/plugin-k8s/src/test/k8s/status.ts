@@ -22,6 +22,7 @@ import { kubectl, cli as kui, CLI } from '@kui-shell/core/tests/lib/headless'
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
+// NOTE: k status only works in defualt namespace
 const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))
 

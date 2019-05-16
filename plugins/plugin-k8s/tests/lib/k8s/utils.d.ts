@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli } from '@kui-shell/core/tests/lib/ui'
-import * as assert from 'assert'
+import { ISuite } from '@kui-shell/core/tests/lib/common'
 
-describe('helm commands', function (this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+/**
+ * Which sidecar mode should be visible upon loading a kubernetes entity
+ *
+ */
+declare var defaultModeForGet: string
 
-  const lists = ['list', 'ls']
+/**
+ * Allocate a new unique namespace name
+ *
+ */
+declare function createNS (): string
 
-  lists.forEach(list => {
-    it(`should list empty releases via helm ${list}`, () => cli.do(`helm ${list}`, this.app)
-      .then(cli.expectBlank)
-      .catch(common.oops(this)))
-  })
-})
+/**
+ * Install a mocha test to allocate the given namespace `ns`
+ *
+ */
+declare function allocateNS (ctx: ISuite, ns: string, theCli?: any): string
+
+/**
+ * Install a mocha test to delete the given namespace `ns`
+ *
+ */
+declare function deleteNS (ctx: ISuite, ns: string, theCli?: any): void

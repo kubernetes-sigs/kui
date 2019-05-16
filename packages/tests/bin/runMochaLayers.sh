@@ -34,11 +34,13 @@ else
 fi
 
 if [ -z "$API_HOST" ]; then
-    . ~/.wskprops
-    export API_HOST=$APIHOST
-fi
-
-if [ ! -f ~/.wskprops ]; then
+    if [ -f ~/.wskprops ]; then
+        . ~/.wskprops
+        export API_HOST=$APIHOST
+    elif [ -z "$LAYERS" ]; then
+        export LAYERS="core bash-like core-support field-installed-plugins editor k8s"
+    fi
+else
     echo "APIHOST=$API_HOST" > ~/.wskprops
     echo "INSECURE_SSL=true" >> ~/.wskprops
 fi

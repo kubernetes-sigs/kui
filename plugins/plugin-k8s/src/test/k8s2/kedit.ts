@@ -15,14 +15,14 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar, expectYAML } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar, expectYAML, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
 import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 
 import { Application } from 'spectron'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
-import { safeLoad, safeDump } from 'js-yaml'
+import { safeLoad, safeLoadAll, safeDump } from 'js-yaml'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
@@ -37,24 +37,31 @@ interface Resource {
     name: string
   }
 }
-const initialContent: Resource = safeLoad(readFileSync(initialFilepath))
+
+const initialContentRaw = readFileSync(initialFilepath).toString()
+const initialContent: Resource = safeLoad(initialContentRaw)
 const updatedContent: Resource = Object.assign({}, initialContent, { metadata: { name: 'camera-shy' }, kind: 'hello there' })
 // NOTE: the space in 'hello there' is intentional; it tests that the sidecar etc. logic can handle a kind with spaces!
 
 const initialResourceName = initialContent.metadata.name
 const updatedResourceName = updatedContent.metadata.name
 
+const singleParagraphFilepath = join(ROOT, 'data', 'k8s', 'single-paragraph.yaml')
+const trailingEmptyFilepath = join(ROOT, 'data', 'k8s', 'trailing-dash-dash-dash.yaml')
+
 /** get the monaco editor text */
-const getValue = (app: Application) => {
-  return app.client.execute(() => {
+const getValue = async (app: Application): Promise<string> => {
+  const response = await app.client.execute(() => {
     return document.querySelector('.monaco-editor-wrapper')['editor'].getValue()
-  }).then(_ => _.value)
+  })
+
+  return response.value
 }
 
 // FROM plugin-editor/src/test/editor/edit.ts
 /** set the monaco editor text */
 const setValue = (app: Application, text: string) => {
-  return app.client.execute(text => {
+  return app.client.execute((text: string) => {
     document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
   }, text)
 }
@@ -84,8 +91,8 @@ describe('electron kedit', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  const makeACopy = () => {
-    it('should copy the edit input', () => cli.do(`cp "${initialFilepath}" "${tmpFilepath}"`, this.app)
+  const makeACopy = (filepath = initialFilepath, tmp = tmpFilepath) => {
+    it('should copy the edit input', () => cli.do(`cp "${filepath}" "${tmp}"`, this.app)
      .then(cli.expectJustOK)
      .catch(common.oops(this)))
   }
@@ -107,21 +114,26 @@ describe('electron kedit', function (this: common.ISuite) {
     return this.app
   }
 
-  const editWithoutSaving = () => {
-    it('should kedit but not save the content of an existing file', () => cli.do(`kedit "${tmpFilepath}"`, this.app)
+  const editWithoutSaving = (filepath = tmpFilepath, expectedResource = initialContent) => {
+    it('should kedit but not save the content of an existing file', () => cli.do(`kedit "${filepath}"`, this.app)
        .then(cli.expectJustOK)
        .then(sidecar.expectOpen)
        .then(sidecar.expectShowing(initialResourceName))
        .then(switchToRaw('kedit'))
+       .then(verifyYAML(expectedResource))
        .then(() => setValue(this.app, 'should not be saved'))
        .then(() => this.app)
        .then(sidecar.expectShowing(initialResourceName))
+       .then(() => this.app.client.waitUntil(async () => {
+         const actualText = await getValueFromMonaco(this.app)
+         return actualText === 'should not be saved'
+       }))
        .catch(common.oops(this)))
   }
 
-  const reopenWith = (cmd: string) => ({
+  const reopenWith = (cmd: string, tmp = tmpFilepath) => ({
     andExpect: (expected: Resource, displayedName = expected.metadata.name) => {
-      it(`should re-open the file and see resource named ${expected.metadata.name} using "${cmd}"`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
+      it(`should re-open the file and see resource named ${expected.metadata.name} using "${cmd}"`, () => cli.do(`${cmd} "${tmp}"`, this.app)
          .then(cli.expectJustOK)
          .then(sidecar.expectOpen)
          .then(sidecar.expectShowing(displayedName))
@@ -131,8 +143,8 @@ describe('electron kedit', function (this: common.ISuite) {
     }
   })
 
-  const updateWith = (cmd: string) => {
-    it(`should edit and save the content using "${cmd}"`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
+  const updateWith = (cmd: string, tmp = tmpFilepath) => {
+    it(`should edit and save the content using "${cmd}"`, () => cli.do(`${cmd} "${tmp}"`, this.app)
        .then(cli.expectJustOK)
        .then(sidecar.expectOpen)
        .then(() => cmd === 'kedit' && sidecar.expectShowing(initialResourceName)(this.app))
@@ -143,11 +155,11 @@ describe('electron kedit', function (this: common.ISuite) {
        .catch(common.oops(this)))
   }
 
-  const updateViaForm = () => {
+  const updateViaForm = (tmp = tmpFilepath) => {
     const cmd = 'kedit'
     const intermediateResourceName = 'funny-money'
 
-    it(`should edit and save the content via form`, () => cli.do(`${cmd} "${tmpFilepath}"`, this.app)
+    it(`should edit and save the content via form`, () => cli.do(`${cmd} "${tmp}"`, this.app)
        .then(cli.expectJustOK)
        .then(sidecar.expectOpen)
        .then(sidecar.expectShowing(initialResourceName))
@@ -168,6 +180,18 @@ describe('electron kedit', function (this: common.ISuite) {
   //
   // here start the tests
   //
+
+  // single-paragraph yaml
+  it('should kedit a single-paragraph yaml', () => cli.do(`kedit "${singleParagraphFilepath}"`, this.app)
+     .then(cli.expectJustOK)
+     .then(sidecar.expectOpen)
+     .then(sidecar.expectShowing('reviews'))
+     .catch(common.oops(this)))
+
+  // trailing empty paragraph
+  it('should kedit a multi-paragraph yaml with trailing empty paragraph', () => cli.do(`kedit "${trailingEmptyFilepath}"`, this.app)
+     .then(cli.expectOKWith('details-v1'))
+     .catch(common.oops(this)))
 
   // make sure editing without saving works
   makeACopy()

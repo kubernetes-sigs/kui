@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/controller/kedit')
+import * as Debug from 'debug'
+const debug = Debug('k8s/controller/kedit')
 debug('loading')
 
 import { basename, dirname, join } from 'path'
 import expandHomeDir = require('expand-home-dir')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { PluginRegistration, PluginRequire } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 import { FinalState } from '../model/states'
 import { IKubeResource, IResource } from '../model/resource'
@@ -53,7 +56,7 @@ const usage = {
  * Show a customized view of a given yaml in the editor
  *
  */
-const showResource = async (yaml, filepath: string, parsedOptions, execOptions) => {
+const showResource = async (yaml, filepath: string, parsedOptions: ParsedOptions, execOptions: IExecOptions) => {
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
@@ -138,7 +141,7 @@ const showResource = async (yaml, filepath: string, parsedOptions, execOptions) 
  * Render the resources as a REPL table
  *
  */
-const showAsTable = (yamls: Array<any>, filepathAsGiven: string, parsedOptions) => {
+const showAsTable = (yamls: Array<any>, filepathAsGiven: string, parsedOptions): Table => {
   debug('showing as table', yamls)
 
   const ourOptions = {
@@ -151,14 +154,16 @@ const showAsTable = (yamls: Array<any>, filepathAsGiven: string, parsedOptions) 
     }
   }
 
-  return yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))
+  return new Table({
+    body: yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))
+  })
 }
 
 /**
  * kedit command handler
  *
  */
-const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
+const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]
@@ -167,7 +172,7 @@ const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
 
   const { safeLoadAll: parseYAML } = await import('js-yaml')
   const { readFile } = await import('fs-extra') // 22ms or so to load fs-extra, so defer it
-  const yamls = parseYAML(await readFile(filepath))
+  const yamls = parseYAML(await readFile(filepath)).filter(x => x)
   debug('yamls', yamls)
 
   if (yamls.length === 0) {
@@ -193,13 +198,11 @@ const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }) => {
  * Register the commands
  *
  */
-const registration: PluginRegistration = (commandTree, prequire: PluginRequire, options?): Promise<any> => {
+const registration = (commandTree: CommandRegistrar) => {
   commandTree.listen('/k8s/kedit', kedit, {
     usage: usage.kedit,
     noAuthOk: [ 'openwhisk' ]
   })
-
-  return Promise.resolve()
 }
 
 export default registration

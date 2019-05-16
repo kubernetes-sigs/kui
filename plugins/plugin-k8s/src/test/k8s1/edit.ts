@@ -16,11 +16,8 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, keys, selectors, sidecar, sleep } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet } from '@kui-shell/plugin-k8s/tests/lib/k8s/defaults'
-
-import { dirname } from 'path'
-const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
+import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const kubectl = 'kubectl'
 
@@ -31,10 +28,10 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   /** delete the given pod */
   const deleteIt = (name: string, errOk = false) => {
     it(`should delete the pod ${name} via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete pod ${name}`, this.app)
+      return cli.do(`${kubectl} delete pod ${name} ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
-        .then(() => waitTillNone('pod', undefined, name))
+        .then(() => waitTillNone('pod', undefined, name, undefined, inNamespace))
         .catch(err => {
           if (!errOk) {
             return common.oops(this)(err)
@@ -46,7 +43,7 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   const createIt = (name: string) => {
     it(`should create sample pod ${name} from URL via ${kubectl}`, async () => {
       try {
-        const selector = await cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod`, this.app)
+        const selector = await cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
 
         // wait for the badge to become green
@@ -63,7 +60,7 @@ describe('electron kubectl edit', function (this: common.ISuite) {
 
   const editItWithoutSaving = (name: string, N: number, quit: string) => {
     it(`should edit it via ${kubectl} edit`, async () => {
-      const res = cli.do(`${kubectl} edit pod ${name}`, this.app)
+      const res = cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
 
       const rows = selectors.xtermRows(N)
 
@@ -89,10 +86,14 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   //
   // here come the tests
   //
+  const ns: string = createNS()
+  const inNamespace = `-n ${ns}`
+  allocateNS(this, ns)
+
   const nginx = 'nginx'
-  deleteIt(nginx, true) // errOk = true
   createIt(nginx)
   editItWithoutSaving(nginx, 3, ':wq!')
   editItWithoutSaving(nginx, 4, ':wq')
-  deleteIt(nginx)
+
+  deleteNS(this, ns)
 })

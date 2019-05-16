@@ -55,8 +55,14 @@ if [ -n "$LAYERS" ]; then
           if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
             echo "skip travis osx Webpack test since travis doesn't support docker on osx"
           else
-            echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
             export MOCHA_RUN_TARGET
+
+            if [ -n "$WAIT_LAYERS" ]; then
+              echo "running these non-headless layers and wait: $WAIT_LAYERS"
+              (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
+            fi
+
+            echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
             (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS)
           fi
         done

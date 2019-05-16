@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/controller/auth')
 
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
 import { setAuth } from '../model/auth'
 
 const usage = {
@@ -28,9 +30,9 @@ const usage = {
   }
 }
 
-const add = async ({ block, nextBlock }) => {
+const add = async ({ block, nextBlock }: IEvaluatorArgs) => {
   const { prompt } = await import('@kui-shell/core/webapp/cli')
-  return prompt('kubectl auth add', block, nextBlock, {
+  return prompt('kubectl auth add', block as HTMLElement, nextBlock, {
     placeholder: 'Paste the contents of your kubeconfig: cat $KUBECONFIG',
     onpaste: 'capture'
   }, ({ field: kubeconfigString }) => {
@@ -105,6 +107,6 @@ const add = async ({ block, nextBlock }) => {
  * Register the commands
  *
  */
-export default (commandTree, prequire) => {
-  commandTree.listen('/k8s/auth/add', add, { usage, noAuthOk: [ 'openwhisk' ], inBrowserOK: true })
+export default (commandTree: CommandRegistrar) => {
+  commandTree.listen('/k8s/auth/add', add, { usage: usage.add, noAuthOk: [ 'openwhisk' ], inBrowserOk: true })
 }

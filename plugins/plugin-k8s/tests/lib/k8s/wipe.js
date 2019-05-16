@@ -27,9 +27,9 @@ const okToSurvive = [ null, null, null ] /* , 'kubernetes' */
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive) => app => new Promise(resolve => {
+exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace = '') => app => new Promise(resolve => {
   // fetch the entities
-  const fetch = () => theCli.do(`kubectl get "${kind}" ${name}`, app, { errOk: theCli.exitCode(404) })
+  const fetch = () => theCli.do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, { errOk: theCli.exitCode(404) })
 
   // verify the entities
   const verify = okToSurvive

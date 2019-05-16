@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-// the default tab we expect to see on "get"
-exports.defaultModeForGet = 'summary'
+import * as common from '@kui-shell/core/tests/lib/common'
+import { cli } from '@kui-shell/core/tests/lib/ui'
 
+describe('helm commands', function (this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
+
+  const lists = ['list', 'ls']
+
+  lists.forEach(list => {
+    it(`should list empty releases via helm ${list}`, () => cli.do(`helm ${list}`, this.app)
+      .then(cli.expectBlank)
+      .catch(common.oops(this)))
+  })
+})

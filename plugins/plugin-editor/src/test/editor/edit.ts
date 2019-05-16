@@ -26,10 +26,12 @@ import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
 /** set the monaco editor text */
-const setValue = (client: SpectronClient, text: string) => {
-  return client.execute(text => {
+const setValue = async (app: Application, text: string) => {
+  await app.client.execute(text => {
     document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
   }, text)
+
+  return grabFocus(app)
 }
 
 /** click the save buttom */
@@ -50,7 +52,13 @@ const verifyTextExist = (selector: string, expectedText: string) => async (app: 
   return app
 }
 
-localDescribe('editor', function (this: ISuite) {
+/** grab focus for the editor */
+const grabFocus = async (app: Application) => {
+  const selector = `${ui.selectors.SIDECAR} .monaco-editor-wrapper .view-lines`
+  await app.client.click(selector).then(() => app.client.waitForEnabled(selector))
+}
+
+localDescribe('editor basics', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -101,7 +109,7 @@ localDescribe('editor', function (this: ISuite) {
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-     .then(() => setValue(this.app.client, 'should not be saved'))
+     .then(() => setValue(this.app, 'should not be saved'))
      .catch(common.oops(this)))
 
   it('should re-open the file and see the unchanged content', () => cli.do(`open ${tmpFilepath}`, this.app)
@@ -114,7 +122,7 @@ localDescribe('editor', function (this: ISuite) {
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-     .then(() => setValue(this.app.client, updatedText))
+     .then(() => setValue(this.app, updatedText))
      .then(save(this.app))
      .catch(common.oops(this)))
 
@@ -144,7 +152,7 @@ localDescribe('editor', function (this: ISuite) {
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
-     .then(() => setValue(this.app.client, ''))
+     .then(() => setValue(this.app, ''))
      .then(() => this.app.electron.clipboard.writeText(textToPaste))
      .then(() => this.app.client.execute(() => document.execCommand('paste')))
      .then(() => this.app)

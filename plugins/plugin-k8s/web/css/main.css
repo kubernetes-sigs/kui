@@ -229,9 +229,6 @@
     margin-right: 1rem;
     margin-bottom: 1.5rem;
 }
-.bx--form-item ~ .bx--form-item:last-child {
-    margin-bottom: 0;
-}
 .bx--form-item:last-child {
     margin-right: 0;
 }

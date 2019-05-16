@@ -150,7 +150,7 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
               rows: msg.rows && parseInt(msg.rows, 10),
               cols: msg.cols && parseInt(msg.cols, 10),
               cwd: msg.cwd || process.cwd(),
-              env: msg.env || process.env
+              env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
             })
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 

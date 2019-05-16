@@ -18,12 +18,13 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 /**
  * Command handler that dispatches to an outer shell
  *
  */
-export const dispatchToShell = async ({ block, command, argv, argvNoOptions, execOptions, parsedOptions, createOutputStream }) => {
+export const dispatchToShell = async ({ tab, block, command, argv, argvNoOptions, execOptions, parsedOptions, createOutputStream }: IEvaluatorArgs) => {
   debug('handling catchall', command)
 
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
@@ -40,7 +41,7 @@ export const dispatchToShell = async ({ block, command, argv, argvNoOptions, exe
       .catch(cleanUpError)
   } else {
     const { doExec } = await import('../../pty/client')
-    return doExec(block, command.replace(/^!\s+/, ''), Object.assign({}, { stdout: createOutputStream() }, execOptions))
+    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), Object.assign({}, { stdout: createOutputStream() }, execOptions))
       .catch(cleanUpError)
   }
 }

@@ -659,33 +659,43 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, resultD
   return Promise.resolve()
 }
 
-export const getInitialBlock = (): HTMLElement => {
-  return document.querySelector('tab.visible .repl .repl-block.repl-initial')
+export interface ITab extends HTMLElement { }
+export const isTab = (node: Element): boolean => /tab/i.test(node.tagName)
+export const getTabIndex = (tab: ITab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
+export const sameTab = (tab1: ITab, tab2: ITab): boolean => {
+  return getTabIndex(tab1) === getTabIndex(tab2)
 }
-export const getCurrentBlock = (): HTMLElement => {
-  return document.querySelector('tab.visible .repl-active')
+export const getCurrentTab = (): ITab => {
+  return document.querySelector('tab.visible')
 }
-export const getCurrentProcessingBlock = (): HTMLElement => {
-  return document.querySelector('tab.visible .repl .repl-block.processing')
+
+export const getInitialBlock = (tab = getCurrentTab()): HTMLElement => {
+  return tab.querySelector('.repl .repl-block.repl-initial')
+}
+export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
+  return tab.querySelector('.repl-active')
+}
+export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
+  return tab.querySelector('.repl .repl-block.processing')
 }
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return (block && block.querySelector && block.querySelector('input'))
 }
-export const getInitialPrompt = (): HTMLInputElement => {
-  return getPrompt(getInitialBlock())
+export const getInitialPrompt = (tab = getCurrentTab()): HTMLInputElement => {
+  return getPrompt(getInitialBlock(tab))
 }
-export const getCurrentPrompt = (): HTMLInputElement => {
+export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
   if (isPopup()) {
     return getSidecar().querySelector('input')
   } else {
-    return getPrompt(getCurrentBlock())
+    return getPrompt(getCurrentBlock(tab))
   }
 }
 export const getPromptLeft = (block: Element) => {
   return block.querySelector('.repl-prompt-righty')
 }
-export const getCurrentPromptLeft = () => {
-  return getPromptLeft(getCurrentBlock())
+export const getCurrentPromptLeft = (tab = getCurrentTab()) => {
+  return getPromptLeft(getCurrentBlock(tab))
 }
 
 /**

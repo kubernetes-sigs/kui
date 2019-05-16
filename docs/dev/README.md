@@ -79,3 +79,19 @@ realize your changes.
     ```bash
     > cd app && npm run build
     ```
+
+## Local Testing
+
+### Setup:
+* To install Kubernetes on your local machine, consult the official [Kubernetes Local Machine Solutions](https://kubernetes.io/docs/setup/pick-right-solution/#local-machine-solutions) .  
+
+### Testing:
+* Go to the root of the project folder
+* Run all the test suites
+```bash
+> npm test
+```
+* Filter test execution
+```bash
+> TEST_FILTER='About command' npm test # Only run test suites containing 'About command' in suite titles
+```
