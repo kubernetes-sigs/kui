@@ -3,6 +3,7 @@ import { CommandRegistrar, IEvaluatorArgs } from "@kui-shell/core/models/command
 import sessionStore from '@kui-shell/core/models/sessionStore'
 
 import * as Debug from 'debug'
+import { getTabIndex, getCurrentTab } from '@kui-shell/core/webapp/cli'
 const debug = Debug('plugins/bash-like/cmds/general')
 
 const key = 'export'
@@ -11,7 +12,10 @@ const key = 'export'
  *
  */
 const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) => {
-    const curDic = JSON.parse(sessionStore().getItem(key)) || {}
+    const storage = JSON.parse(sessionStore().getItem(key)) || {}
+
+    const tabId = getTabIndex(getCurrentTab());
+    const curDic = storage[tabId] || {}
     const toBeParsed = parsedOptions._[1]
 
     // TO DO:
@@ -22,8 +26,9 @@ const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) 
     const val = arr[1]
     debug(k, val)
     curDic[k] = val
-    sessionStore().setItem(key, JSON.stringify(curDic))
-    debug("hereeee", window.sessionStorage.getItem('export'))
+
+    storage[tabId] = curDic
+    sessionStore().setItem(key, JSON.stringify(storage))
     return true;
 }
 

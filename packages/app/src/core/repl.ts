@@ -313,10 +313,10 @@ class InProcessExecutor implements IExecutor {
     debug('exec', commandUntrimmed)
     const tab = cli.getCurrentTab()
 
-    const curDic = JSON.parse(sessionStore().getItem('export')) || {}
-
+    const storage = JSON.parse(sessionStore().getItem('export')) || {}
+    const curDic = storage[cli.getTabIndex(cli.getCurrentTab())]
     process.env = Object.assign({}, process.env, curDic)
-    debug('olivia test', process.env)
+
     const echo = !execOptions || execOptions.echo !== false
     const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
     if (nested) execOptions.nested = nested
