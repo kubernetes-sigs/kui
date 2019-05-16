@@ -198,6 +198,9 @@ body.subwindow .repl .horizontal-landing-zone {
 .repl.sidecar-visible .repl-input, .repl.sidecar-visible .repl-output {
     padding-left: 1em;
 }
+.repl.sidecar-visible .repl-output {
+    padding-right: 1em;
+}
 
 #help-button.left-tab-stripe-button {
     display: flex;
