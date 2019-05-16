@@ -1,6 +1,6 @@
 
 import { CommandRegistrar, IEvaluatorArgs } from "@kui-shell/core/models/command";
-import store from '@kui-shell/core/models/store'
+import sessionStore from '@kui-shell/core/models/sessionStore'
 
 import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/cmds/general')
@@ -11,7 +11,7 @@ const key = 'export'
  *
  */
 const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) => {
-    const curDic = JSON.parse(store().getItem(key)) || {}
+    const curDic = JSON.parse(sessionStore().getItem(key)) || {}
     const toBeParsed = parsedOptions._[1]
 
     // TO DO:
@@ -22,7 +22,8 @@ const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) 
     const val = arr[1]
     debug(k, val)
     curDic[k] = val
-    store().setItem(key, JSON.stringify(curDic))
+    sessionStore().setItem(key, JSON.stringify(curDic))
+    debug("hereeee", window.sessionStorage.getItem('export'))
     return true;
 }
 

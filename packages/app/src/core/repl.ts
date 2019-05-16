@@ -41,6 +41,7 @@ import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // F
 import { element } from '../webapp/util/dom' // FIXME
 
 import { isHTML } from '../util/types'
+import sessionStore from '@kui-shell/core/models/sessionStore'
 
 debug('finished loading modules')
 
@@ -51,7 +52,7 @@ debug('finished loading modules')
  */
 export interface IExecutor {
   name: string
-  exec (commandUntrimmed: string, execOptions: IExecOptions)
+  exec(commandUntrimmed: string, execOptions: IExecOptions)
 }
 
 /**
@@ -60,7 +61,7 @@ export interface IExecutor {
  */
 export interface IReplEval {
   name: string
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
+  apply(commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
 }
 
 /**
@@ -70,7 +71,7 @@ export interface IReplEval {
  */
 export class DirectReplEval implements IReplEval {
   name = 'DirectReplEval'
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
+  apply(commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
@@ -139,8 +140,8 @@ export const qexec = (command: string, block?: HTMLElement | boolean, contextCha
     noHistory: true,
     contextChangeOK
   }, execOptions, {
-    type: ExecType.Nested
-  }))
+      type: ExecType.Nested
+    }))
 }
 
 /**
@@ -307,10 +308,14 @@ const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
 class InProcessExecutor implements IExecutor {
   name = 'InProcessExecutor'
 
-  async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
+  async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
 
+    const curDic = JSON.parse(sessionStore().getItem('export')) || {}
+
+    process.env = Object.assign({}, process.env, curDic)
+    debug('olivia test', process.env)
     const echo = !execOptions || execOptions.echo !== false
     const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
     if (nested) execOptions.nested = nested
@@ -430,7 +435,7 @@ class InProcessExecutor implements IExecutor {
         // narg: any flags that take more than one argument e.g. -p key value would have { narg: { p: 2 } }
         const commandFlags: YargsParserFlags = (evaluator.options && evaluator.options.flags) ||
           (evaluator.options && evaluator.options.synonymFor &&
-           evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
+            evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
           ({} as YargsParserFlags)
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
         const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
@@ -499,14 +504,14 @@ class InProcessExecutor implements IExecutor {
           for (let optionalArg in parsedOptions) {
             // skip over minimist's _
             if (optionalArg === '_' ||
-                parsedOptions[optionalArg] === false) { // minimist nonsense
+              parsedOptions[optionalArg] === false) { // minimist nonsense
               continue
             }
 
             // should we enforce this option?
             const enforceThisOption =
               onlyEnforceOptions === undefined || typeof onlyEnforceOptions === 'boolean' ? true
-              : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
+                : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
 
             if (!enforceThisOption) {
               // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)
@@ -538,19 +543,19 @@ class InProcessExecutor implements IExecutor {
                 return oops(command, block, nextBlock)(err)
               }
             } else if ((match.boolean && typeof parsedOptions[optionalArg] !== 'boolean') ||
-                       (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
-                       (match.booleanOK && !(typeof parsedOptions[optionalArg] === 'boolean' || typeof parsedOptions[optionalArg] === 'string')) ||
-                       (match.numeric && typeof parsedOptions[optionalArg] !== 'number') ||
-                       (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
-                       (!match.boolean && !match.booleanOK && !match.numeric && (!match.narg || match.narg === 1) &&
-                        !(typeof parsedOptions[optionalArg] === 'string' ||
-                          typeof parsedOptions[optionalArg] === 'number' ||
-                          typeof parsedOptions[optionalArg] === 'boolean')) ||
+              (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
+              (match.booleanOK && !(typeof parsedOptions[optionalArg] === 'boolean' || typeof parsedOptions[optionalArg] === 'string')) ||
+              (match.numeric && typeof parsedOptions[optionalArg] !== 'number') ||
+              (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
+              (!match.boolean && !match.booleanOK && !match.numeric && (!match.narg || match.narg === 1) &&
+                !(typeof parsedOptions[optionalArg] === 'string' ||
+                  typeof parsedOptions[optionalArg] === 'number' ||
+                  typeof parsedOptions[optionalArg] === 'boolean')) ||
 
-                       // is the given option not one of the allowed options
-                       (match.allowed && !match.allowed.find(_ => _ === parsedOptions[optionalArg] ||
-                                                             _ === '...' ||
-                                                             (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)))) {
+              // is the given option not one of the allowed options
+              (match.allowed && !match.allowed.find(_ => _ === parsedOptions[optionalArg] ||
+                _ === '...' ||
+                (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)))) {
               //
               // then the user passed an option, but of the wrong type
               //
@@ -558,8 +563,8 @@ class InProcessExecutor implements IExecutor {
 
               const expectedMessage = match.boolean ? ', expected boolean'
                 : match.numeric ? ', expected a number'
-                : match.file ? ', expected a file path'
-                : ''
+                  : match.file ? ', expected a file path'
+                    : ''
 
               const message = `Bad value for option ${optionalArg}${expectedMessage}${typeof parsedOptions[optionalArg] === 'boolean' ? '' : ', got ' + parsedOptions[optionalArg]}${match.allowed ? ' expected one of: ' + match.allowed.join(', ') : ''}`
               const error = new UsageError({ message, usage })
@@ -578,8 +583,8 @@ class InProcessExecutor implements IExecutor {
           //
           if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
             // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
-            if (! (nActualArgs >= nRequiredArgs &&
-                   nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
+            if (!(nActualArgs >= nRequiredArgs &&
+              nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
               const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
               const selection = currentSelection()
@@ -587,7 +592,7 @@ class InProcessExecutor implements IExecutor {
               let nActualArgsWithImplicit = nActualArgs
 
               if (implicitIdx >= 0 && selection && required[implicitIdx].implicitOK.find(_ => _ === selection.type ||
-                                                                                         _ === selection.prettyType)) {
+                _ === selection.prettyType)) {
                 nActualArgsWithImplicit++
 
                 // if implicit, maybe other required parameters aren't needed
@@ -603,7 +608,7 @@ class InProcessExecutor implements IExecutor {
                 const message = nRequiredArgs === 0 && nPositionalOptionals === 0
                   ? 'This command accepts no positional arguments'
                   : nPositionalOptionals > 0 ? 'This command does not accept this number of arguments'
-                  : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
+                    : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
                 const err = new UsageError({ message, usage })
                 err.code = 497
                 debug(message, cmd, nActualArgs, nRequiredArgs, args, optLikeActuals)
@@ -651,8 +656,8 @@ class InProcessExecutor implements IExecutor {
         // that we ignore this needsUI constraint if the user is
         // asking for help
         if (isHeadless() && !parsedOptions.cli && !parsedOptions.help &&
-            ((process.env.DEFAULT_TO_UI && !parsedOptions.cli)
-             || (evaluator.options && evaluator.options.needsUI))) {
+          ((process.env.DEFAULT_TO_UI && !parsedOptions.cli)
+            || (evaluator.options && evaluator.options.needsUI))) {
           import('../main/headless').then(({ createWindow }) => createWindow(argv, evaluator.options.fullscreen, evaluator.options))
           return Promise.resolve(true)
         }
@@ -864,9 +869,9 @@ export const encodeComponent = (component: string, quote = '"') => {
   if (component === undefined) {
     return ''
   } else if (typeof component === 'string' &&
-             patterns.whitespace.test(component) &&
-             component.charAt(0) !== quote &&
-             component.charAt(component.length - 1) !== quote) {
+    patterns.whitespace.test(component) &&
+    component.charAt(0) !== quote &&
+    component.charAt(component.length - 1) !== quote) {
     return `${quote}${component}${quote}`
   } else {
     return component
