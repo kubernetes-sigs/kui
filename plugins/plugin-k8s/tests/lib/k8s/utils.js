@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+const uuid = require('uuid/v4')
+
 const common = require('@kui-shell/core/tests/lib/common')
 const ui = require('@kui-shell/core/tests/lib/ui')
 const { cli, selectors } = ui
-const uuid = require('uuid/v4')
 
 // the default tab we expect to see on "get"
 exports.defaultModeForGet = 'summary'

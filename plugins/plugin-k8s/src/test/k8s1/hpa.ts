@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/pl
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
-const synonyms = ['kubectl', 'k']
+const synonyms = ['kubectl']
 
-describe('electron create pod', function (this: common.ISuite) {
+describe('electron create hpa HorizontalPodAutoscaler', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -35,39 +35,25 @@ describe('electron create pod', function (this: common.ISuite) {
 
     allocateNS(this, ns)
 
-    it(`should create sample pod from URL via ${kubectl}`, async () => {
+    it(`should create a HorizontalPodAutoscaler hpa via ${kubectl}`, async () => {
       try {
-        const selector = await cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        const selector: string = await cli.do(`${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('travelapp-hpa') }))
 
         // wait for the badge to become green
         await this.app.client.waitForExist(`${selector} badge.green-background`)
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
-        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('nginx'))
+        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('travelapp-hpa'))
       } catch (err) {
         common.oops(this)(err)
       }
     })
 
-    it(`should delete the sample pod from URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
-        .catch(common.oops(this))
-    })
-
-    it(`should create sample pod from local file via ${kubectl}`, () => {
-      return cli.do(`${kubectl} create -f "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
-        .catch(common.oops(this))
-    })
-
-    it(`should delete the sample pod by name via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete pod nginx ${inNamespace}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+    it(`should delete the HorizontalPodAutoscaler hpa from URL via ${kubectl}`, () => {
+      return cli.do(`${kubectl} delete -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('travelapp-hpa') }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
         .catch(common.oops(this))
     })
