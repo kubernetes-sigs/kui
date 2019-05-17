@@ -220,20 +220,23 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
   const outerCSS = 'header-cell'
   const outerCSSSecondary = `${outerCSS} hide-with-sidecar`
 
-  const headerAttributes = [
+  const ownerAttrs = !parsedOptions.l ? [] : [
     { key: 'owner', value: 'OWNER', outerCSS: outerCSSSecondary },
-    { key: 'group', value: 'GROUP', outerCSS: outerCSSSecondary },
+    { key: 'group', value: 'GROUP', outerCSS: outerCSSSecondary }
+  ]
+
+  const permissionAttrs = !parsedOptions.l ? [] : [{
+    key: 'permissions',
+    value: 'PERMISSIONS',
+    outerCSS: outerCSSSecondary
+  }]
+
+  const normalAttrs = [
     { key: 'size', value: 'SIZE', outerCSS: outerCSSSecondary },
     { key: 'lastmod', value: 'LAST MODIFIED', outerCSS: `${outerCSS} badge-width` }
   ]
 
-  if (parsedOptions.l) {
-    headerAttributes.splice(0, 0, {
-      key: 'permissions',
-      value: 'PERMISSIONS',
-      outerCSS: outerCSSSecondary
-    })
-  }
+  const headerAttributes = permissionAttrs.concat(ownerAttrs).concat(normalAttrs)
 
   const headerRow: Row = {
     name: 'NAME',
@@ -272,23 +275,27 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     // user asked to sort by time?
     const sortByTime = parsedOptions.t
 
-    const permissionAttribute = !parsedOptions.l ? [] : [{
+    const permissionAttrs = !parsedOptions.l ? [] : [{
       value: columns[0],
       css: 'slightly-deemphasize'
     }]
 
-    const normalAttributes = columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => ({
-      value: col,
-      outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
-      css: (idx === ownerIdx || idx === groupIdx || (idx === dateIdx && !sortByTime) || (idx === sizeIdx && sortByTime)) ? 'slightly-deemphasize' : ''
-    }))
+    const normalAttributes = columns.slice(startTrim, columns.length - endTrim - 1).map((col, idx) => {
+      if (parsedOptions.l || (idx !== ownerIdx && idx !== groupIdx)) {
+        return {
+          value: col,
+          outerCSS: idx !== dateIdx ? 'hide-with-sidecar' : 'badge-width',
+          css: (idx === ownerIdx || idx === groupIdx || (idx === dateIdx && !sortByTime) || (idx === sizeIdx && sortByTime)) ? 'slightly-deemphasize' : ''
+        }
+      }
+    }).filter(x => x)
 
     return new Row({
       type: cmd,
       name: nameForDisplay,
       onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
       css,
-      attributes: permissionAttribute.concat(normalAttributes)
+      attributes: permissionAttrs.concat(normalAttributes)
     })
   })
 
