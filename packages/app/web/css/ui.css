@@ -2984,7 +2984,6 @@ body {
 }
 .result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell, .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
     background: none;
-    border-bottom-color: var(--color-base04);
 }
 .result-as-table .log-lines[kui-table-style="Light"] .log-line .log-line-bar-field, .repl .log-lines[kui-table-style="Light"] .log-line .log-field {
     border: none;
