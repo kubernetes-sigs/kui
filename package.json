@@ -42,5 +42,8 @@
   "bugs": {
     "url": "https://github.com/IBM/kui/issues"
   },
-  "homepage": "https://github.com/IBM/kui#readme"
+  "homepage": "https://github.com/IBM/kui#readme",
+  "engines": {
+    "node": ">=10"
+  }
 }
