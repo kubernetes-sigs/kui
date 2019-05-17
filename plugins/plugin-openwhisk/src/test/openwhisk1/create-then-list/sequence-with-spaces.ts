@@ -66,8 +66,13 @@ localDescribe('Create a sequence with whitespacey names', function (this: common
     .catch(common.oops(this)))
 
   // click on a sequence component bubble
-  it('should show action after clicking on bubble', () => this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
-    .then(() => sidecar.expectOpen(this.app))
-    .then(sidecar.expectShowing(actionName1))
-    .catch(common.oops(this)))
+  it('should show action after clicking on bubble', async () => {
+    try {
+      await this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(actionName1))
+    } catch (err) {
+      return common.oops(this)(err)
+    }
+  })
 })

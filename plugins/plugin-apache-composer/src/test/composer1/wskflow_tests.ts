@@ -42,7 +42,7 @@ describe('bring up the composer visualization when the sidecar is minimized', fu
   after(common.after(this))
 
   it('should show the if composition graph', () => cli.do(`preview ${ROOT}/data/composer/composer-source/if.js`, this.app)
-    .then(verifyTheBasicStuff('if.js', 'composerLib')) // verify basic things
+    .then(verifyTheBasicStuff('if.js')) // verify basic things
     .catch(common.oops(this)))
 
   it('should minimize the sidecar', () => this.app.client.keys(keys.ESCAPE)
@@ -72,7 +72,7 @@ describe('app preview should actively watching an external file', function (this
   })
 
   it('should preview the temp file', () => cli.do(`preview ${tempFileName}`, this.app)
-    .then(verifyTheBasicStuff(tempFileName, 'composerLib')) // verify basic things
+    .then(verifyTheBasicStuff(tempFileName)) // verify basic things
     .then(verifyNodeExists('a'))
     .then(verifyNodeExists('b'))
     .catch(common.oops(this)))
@@ -96,17 +96,33 @@ describe('app preview should actively watching an external file', function (this
     })
   })
 
-  it('should update preview', () => this.app.client.waitForVisible(ui.selectors.SIDECAR_CUSTOM_CONTENT)
-    .then(() => verifyNodeExists('a')(this.app))
-    .then(verifyNodeExists('c'))
-    .catch(common.oops(this)))
+  it('should update preview', async () => {
+    try {
+      await this.app.client.waitForVisible(ui.selectors.SIDECAR_CUSTOM_CONTENT)
+    } catch (err) {
+      return common.oops(this)(err)
+    }
+    return Promise.resolve(this.app)
+      .then(verifyNodeExists('a'))
+      .then(verifyNodeExists('c'))
+      .catch(common.oops(this))
+  })
 
   // should be able to switch JSON tab and switch back
-  it('should switch to the JSON tab', () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('ast'))
-    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization')))
-    .then(() => verifyNodeExists('a')(this.app))
-    .then(verifyNodeExists('c'))
-    .catch(common.oops(this)))
+  it('should switch to the JSON tab', async () => {
+    try {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('ast'))
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
+    } catch (err) {
+      return common.oops(this)(err)
+    }
+
+    return Promise.resolve(this.app)
+      .then(verifyNodeExists('a'))
+      .then(verifyNodeExists('c'))
+      .catch(common.oops(this))
+  })
+
   // update file again, and verify that preview updates too
   it('should update the temp file to composer.sequence("a", "b")', () => {
     return new Promise((resolve, reject) => {
@@ -115,10 +131,17 @@ describe('app preview should actively watching an external file', function (this
       })
     })
   })
-  it('should update preview', () => this.app.client.waitForVisible(ui.selectors.SIDECAR_CUSTOM_CONTENT)
-    .then(() => verifyNodeExists('a')(this.app))
-    .then(verifyNodeExists('b'))
-    .catch(common.oops(this)))
+  it('should update preview', async () => {
+    try {
+      await this.app.client.waitForVisible(ui.selectors.SIDECAR_CUSTOM_CONTENT)
+      return Promise.resolve(this.app)
+        .then(verifyNodeExists('a'))
+        .then(verifyNodeExists('b'))
+        .catch(common.oops(this))
+    } catch (err) {
+      return common.oops(this)(err)
+    }
+  })
 
   it('should delete the temp file', () => {
     return new Promise((resolve, reject) => {
@@ -151,30 +174,34 @@ describe('create a if composition, invoke, verify session flow is shown correctl
     .then(sidecar.expectOpen)
     .catch(common.oops(this)))
 
-  it(`should be able to click on the mode button to switch to session flow, and see the true path highlighted`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
-     .then(() => this.app)
-     .then(sidecar.expectOpen)
-     .then(sidecar.expectShowing(appName))
-     .then(app => this.app.client.waitForExist('#wskflowSVG', 5000))
-     .then(() => this.app)
-     .then(verifyNodeStatusExists('p=>({path:true})', 'success'))
-     .then(verifyNodeStatusExists('p=>({path:false})', 'not-run'))
-     .catch(common.oops(this)))
+  it(`should be able to click on the mode button to switch to session flow, and see the true path highlighted`, async () => {
+    await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
+    return Promise.resolve(this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName))
+      .then(app => this.app.client.waitForExist('#wskflowSVG', 5000))
+      .then(() => this.app)
+      .then(verifyNodeStatusExists('p=>({path:true})', 'success'))
+      .then(verifyNodeStatusExists('p=>({path:false})', 'not-run'))
+      .catch(common.oops(this))
+  })
 
   it(`should invoke ${appName} with condition equals false`, () => cli.do(`app invoke ${appName} -p condition false`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .catch(common.oops(this)))
 
-  it(`should be able to click on the mode button to switch to session flow, and see the false path highlighted`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
-    .then(() => this.app)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(appName))
-    .then(() => this.app.client.waitForExist('#wskflowSVG', 5000))
-    .then(() => this.app)
-    .then(verifyNodeStatusExists('p=>({path:true})', 'not-run'))
-    .then(verifyNodeStatusExists('p=>({path:false})', 'success'))
-    .catch(common.oops(this)))
+  it(`should be able to click on the mode button to switch to session flow, and see the false path highlighted`, async () => {
+    await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
+    return Promise.resolve(this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName))
+      .then(() => this.app.client.waitForExist('#wskflowSVG', 5000))
+      .then(() => this.app)
+      .then(verifyNodeStatusExists('p=>({path:true})', 'not-run'))
+      .then(verifyNodeStatusExists('p=>({path:false})', 'success'))
+      .catch(common.oops(this))
+  })
 })
 
 // click on node in wskflow and show action
@@ -227,14 +254,16 @@ describe('test if pressing a node, dragging and releasing triggers the clicking 
     .then(sidecar.expectOpen)
     .catch(common.oops(this)))
 
-  it(`should be able to click on the mode button to switch to session flow`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
-    .then(() => this.app)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(appName))
-    .then(app => this.app.client.waitForExist('#wskflowSVG', 5000))
-    .then(() => this.app)
-    .then(verifyNodeStatusExists('Exit', 'success'))
-    .catch(common.oops(this)))
+  it(`should be able to click on the mode button to switch to session flow`, async () => {
+    await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
+    return Promise.resolve(this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName))
+      .then(app => this.app.client.waitForExist('#wskflowSVG', 5000))
+      .then(() => this.app)
+      .then(verifyNodeStatusExists('Exit', 'success'))
+      .catch(common.oops(this))
+  })
 
   it(`should press, drag and release exist node and still stay at session flow`, () => this.app.client.moveToObject('#Exit')
     .then(() => this.app.client.buttonDown())

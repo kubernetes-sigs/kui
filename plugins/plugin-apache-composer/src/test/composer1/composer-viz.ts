@@ -15,6 +15,7 @@
  */
 
 import * as fs from 'fs'
+import { Application } from 'spectron'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
@@ -56,10 +57,10 @@ const fsRead = composerInput('fs-read.js')
 const addSubscription = composerErrorInput('addSubscription.js')
 const owComposerErr = composerErrorInput('openwhisk-composer-throw-err.js')
 
-const verifyPreviewNoticeExist = (checkExist = true) => app => {
-  return app.client.waitUntil(() => {
-    return app.client.getText('.sidecar-header-secondary-content .custom-header-content')
-        .then(expectedText => expectedText.match(/^This is a preview of your composition, it is not yet deployed/) || !checkExist)
+const verifyPreviewNoticeExist = (checkExist = true) => (app: Application) => {
+  return app.client.waitUntil(async () => {
+    const actualText = await app.client.getText('.sidecar-header-secondary-content .custom-header-content')
+    return /^This is a preview of your composition, it is not yet deployed/.test(actualText) || !checkExist
   }, 2000)
 }
 /**
@@ -75,22 +76,22 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .catch(common.oops(this)))
 
   it('should preview an empty composition', () => cli.do(`app preview ${ROOT}/data/composer/composer-source/empty.js`, this.app)
-    .then(verifyTheBasicStuff('empty.js', 'composerLib'))
+    .then(verifyTheBasicStuff('empty.js'))
     .then(verifyEdgeExists('Entry', 'Exit'))
-    .then(verifyPreviewNoticeExist)
+    .then(verifyPreviewNoticeExist())
     .catch(common.oops(this)))
 
   /** test: @demos/seq.js file */
   if (!process.env.LOCAL_OPENWHISK) {
     // no openwhisk catalog in local openwhisk travis
     it(`show visualization from javascript source ${demoSeq.path}`, () => cli.do(`app viz ${demoSeq.path}`, this.app)
-       .then(verifyTheBasicStuff(demoSeq.file, 'composerLib'))
+       .then(verifyTheBasicStuff(demoSeq.file))
        .then(verifyNodeExists('date', true))
        .then(verifyNodeExists('echo', true))
        .then(verifyEdgeExists('Entry', 'date'))
        .then(verifyOutgoingEdgeExists('date'))
        .then(verifyEdgeExists('echo', 'Exit'))
-       .then(verifyPreviewNoticeExist)
+       .then(verifyPreviewNoticeExist())
        .catch(common.oops(this)))
   }
 
@@ -98,7 +99,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   const syns = ['preview', 'app viz', 'app preview', 'wsk app viz', 'wsk app preview']
   syns.forEach(cmd => {
     it(`show visualization via ${cmd} from FSM file ${fsm.path}`, () => cli.do(`${cmd} ${fsm.path}`, this.app)
-      .then(verifyTheBasicStuff(fsm.file, 'fsm'))
+      .then(verifyTheBasicStuff(fsm.file))
       .then(verifyNodeExists('foo1'))
       .then(verifyNodeExists('foo2'))
       .then(verifyNodeExists('foo3'))
@@ -106,7 +107,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
       .then(verifyEdgeExists('foo1', 'foo2'))
       .then(verifyEdgeExists('foo2', 'foo3'))
       .then(verifyEdgeExists('foo3', 'Exit'))
-      .then(verifyPreviewNoticeExist)
+      .then(verifyPreviewNoticeExist())
       .catch(common.oops(this)))
   })
 
@@ -136,11 +137,11 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** tests: we have a bunch of variants of a simple input js file; here we iterate over the variants */
   baseComposerInputs.forEach(input => {
     it(`show visualization from javascript source ${input.path}`, () => cli.do(`app viz ${input.path}`, this.app)
-      .then(verifyTheBasicStuff(input.file, 'composerLib'))
+      .then(verifyTheBasicStuff(input.file))
       .then(verifyNodeExists('RandomError', false)) // is not deployed
       .then(verifyEdgeExists('Entry', 'Try-Catch'))
       .then(verifyEdgeExists('Try-Catch', 'Exit'))
-      .then(verifyPreviewNoticeExist)
+      .then(verifyPreviewNoticeExist())
       .catch(common.oops(this)))
   })
   //
@@ -150,7 +151,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   //
   /** test: sequence js file */
   it(`show visualization from javascript source ${seq.path}`, () => cli.do(`app viz ${seq.path}`, this.app)
-    .then(verifyTheBasicStuff(seq.file, 'composerLib'))
+    .then(verifyTheBasicStuff(seq.file))
     .then(verifyNodeExists('seq1'))
     .then(verifyNodeExists('seq2'))
     .then(verifyNodeExists('seq3'))
@@ -160,7 +161,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   /** test: viz, then create with no args, testing for handling of implicit entity */
   it(`should create with implicit entity`, () => cli.do('app create', this.app)
-    .then(verifyTheBasicStuff(seq.file, 'composerLib'))
+    .then(verifyTheBasicStuff(seq.file))
     .then(verifyNodeExists('seq1', false)) // not deployed
     .then(verifyNodeExists('seq2', false)) // not deployed
     .then(verifyNodeExists('seq3', false)) // not deployed
@@ -171,7 +172,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   /** test: preview wookiechat */
   it(`show visualization from javascript source ${seq.path}`, () => cli.do(`app preview @demos/wookie/app.js`, this.app)
-    .then(verifyTheBasicStuff('app.js', 'composerLib'))
+    .then(verifyTheBasicStuff('app.js'))
     .then(verifyNodeExists('swapi', false)) // not yet deployed
     .then(verifyNodeExists('stapi', false)) // not yet deployed
     .then(verifyNodeExists('validate-swapi', false)) // not yet deployed
@@ -184,12 +185,12 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(verifyEdgeExists('report-empty', 'dummy_0'))
     .then(verifyEdgeExists('dummy_0', 'dummy_1'))
     .then(verifyEdgeExists('dummy_1', 'Exit'))
-    .then(verifyPreviewNoticeExist)
+    .then(verifyPreviewNoticeExist())
     .catch(common.oops(this)))
 
   /** test: viz, then create with -r, testing for handling of implicit entity and auto-deploy */
   it(`should create wookiechat and dependent actions with implicit entity`, () => cli.do('app update', this.app)
-    .then(verifyTheBasicStuff('app.js', 'composerLib'))
+    .then(verifyTheBasicStuff('app.js'))
     .then(verifyNodeExists('swapi', false)) // expect not to be deployed
     .then(verifyNodeExists('stapi', false)) // expect not to be deployed
     .then(verifyNodeExists('validate-swapi', false)) // expect not to be deployed
@@ -202,7 +203,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   // /** test: if js file */
   it(`show visualization from javascript source ${If.path}`, () => cli.do(`app viz ${If.path}`, this.app)
-    .then(verifyTheBasicStuff(If.file, 'composerLib'))
+    .then(verifyTheBasicStuff(If.file))
     .then(verifyNodeExists('seq1'))
     .then(verifyNodeExists('seq2'))
     .then(verifyNodeExists('seq3'))
@@ -215,7 +216,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .then(verifyEdgeExists('seq3', 'dummy_0'))
     .then(verifyEdgeExists('seq5', 'dummy_0'))
     .then(verifyEdgeExists('dummy_0', 'Exit'))
-    .then(verifyPreviewNoticeExist)
+    .then(verifyPreviewNoticeExist())
     .catch(common.oops(this)))
 
   /** test: while with nested sequence, from js file */
@@ -223,7 +224,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   const loopers = [whileSeq, looper]
   loopers.forEach(({ file, path }) => {
     it(`show visualization from javascript source ${path}`, () => cli.do(`app viz ${path}`, this.app)
-      .then(verifyTheBasicStuff(file, 'composerLib'))
+      .then(verifyTheBasicStuff(file))
       .then(verifyNodeExists('seq1'))
       .then(verifyNodeExists('seq2'))
       .then(verifyNodeExists('seq3'))
@@ -245,24 +246,24 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   /* this one manifests a wskflow bug, disabling for now
     it(`show visualization from javascript source ${retry5Times.path}`, () => cli.do(`app viz ${retry5Times.path}`, this.app)
-       .then(verifyTheBasicStuff(retry5Times.file, 'composerLib'))
+       .then(verifyTheBasicStuff(retry5Times.file))
        .catch(common.oops(this)))
     */
 
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${demo.path}`, () => cli.do(`app viz ${demo.path}`, this.app)
-    .then(verifyTheBasicStuff(demo.file, 'composerLib'))
+    .then(verifyTheBasicStuff(demo.file))
     .then(verifyNodeExists('isNotOne'))
     .then(verifyNodeExists('isEven'))
     .then(verifyNodeExists('DivideByTwo'))
     .then(verifyNodeExists('TripleAndIncrement'))
-    .then(verifyOutgoingEdgeExists('TripleAndIncrement', 'isNotOne')) // if we find a way to name the "dummy" node, change this to verifyEdge
-    .then(verifyOutgoingEdgeExists('DivideByTwo', 'isNotOne')) // ibid
+    .then(verifyOutgoingEdgeExists('TripleAndIncrement')) // if we find a way to name the "dummy" node, change this to verifyEdge
+    .then(verifyOutgoingEdgeExists('DivideByTwo')) // ibid
     .catch(common.oops(this)))
 
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${demoRetain.path}`, () => cli.do(`app viz ${demoRetain.path}`, this.app)
-    .then(verifyTheBasicStuff(demoRetain.file, 'composerLib'))
+    .then(verifyTheBasicStuff(demoRetain.file))
     .then(verifyNodeExists('DivideByTwo'))
     .then(verifyNodeExists('TripleAndIncrement'))
     .then(verifyEdgeExists('TripleAndIncrement', 'DivideByTwo'))
@@ -271,7 +272,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${mask.path}`, () => cli.do(`app viz ${mask.path}`, this.app)
-    .then(verifyTheBasicStuff(mask.file, 'composerLib'))
+    .then(verifyTheBasicStuff(mask.file))
     .then(verifyNodeExists('echo1'))
     .then(verifyNodeExists('echo2'))
     .then(verifyEdgeExists('echo1', 'echo2'))
@@ -279,7 +280,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${requireAbsolute.path}`, () => cli.do(`app viz ${requireAbsolute.path}`, this.app)
-    .then(verifyTheBasicStuff(requireAbsolute.file, 'composerLib'))
+    .then(verifyTheBasicStuff(requireAbsolute.file))
     .then(verifyNodeExists('echo1'))
     .then(verifyNodeExists('echo2'))
     .then(verifyEdgeExists('echo1', 'echo2'))
@@ -287,21 +288,21 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${requireRelative.path}`, () => cli.do(`app viz ${requireRelative.path}`, this.app)
-    .then(verifyTheBasicStuff(requireRelative.file, 'composerLib'))
+    .then(verifyTheBasicStuff(requireRelative.file))
     .then(verifyNodeExists('echo1'))
     .then(verifyNodeExists('echo2'))
     .then(verifyEdgeExists('echo1', 'echo2'))
-    .then(verifyPreviewNoticeExist)
+    .then(verifyPreviewNoticeExist())
     .catch(common.oops(this)))
 
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${fsRead.path}`, () => cli.do(`app viz ${fsRead.path}`, this.app)
-    .then(verifyTheBasicStuff(fsRead.file, 'composerLib'))
+    .then(verifyTheBasicStuff(fsRead.file))
     .catch(common.oops(this)))
 
   it(`fail to show visualization for addSubscription without -e for env var assignment`, () => cli.do(`preview ${addSubscription.path}`, this.app)
     .then(cli.expectError(0, 'SLACK_TOKEN required in environment'))
-    .then(verifyPreviewNoticeExist)
+    .then(verifyPreviewNoticeExist())
     .catch(common.oops(this)))
 
   it(`fail to show visualization for addSubscription with partial -e for env var assignment`, () => cli.do(`preview ${addSubscription.path} -e SLACK_TOKEN yo`, this.app)
@@ -309,7 +310,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     .catch(common.oops(this)))
 
   it(`show visualization for addSubscription using -e for env var assignment`, () => cli.do(`preview ${addSubscription.path} -e SLACK_TOKEN yo -e CLOUDANT_PACKAGE_BINDING mo`, this.app)
-    .then(verifyTheBasicStuff(addSubscription.file, 'composerLib'))
+    .then(verifyTheBasicStuff(addSubscription.file))
     .then(verifyNodeExists('write'))
     .then(verifyNodeExists('read-document'))
     .then(verifyNodeExists('post'))

@@ -17,6 +17,9 @@
 const ui = require('./ui')
 require('colors')
 
+/** when we are running travis tests, we have a fixed version string */
+exports.expectedVersion = process.env.MOCHA_RUN_TARGET === undefined ? require('@kui-shell/settings/package.json').version : '0.0.1'
+
 /**
  * Mimic the request-promise functionality, but with retry
  *

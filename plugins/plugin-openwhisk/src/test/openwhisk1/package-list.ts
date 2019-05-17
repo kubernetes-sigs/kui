@@ -37,7 +37,7 @@ describe('wsk package list tests', function (this: common.ISuite) {
   it(`should create ${action} in ${pckage}`, () => cli.do(`let ${pckage}/${action} = x=>x`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(action, undefined, pckage))
+    .then(sidecar.expectShowing(action, undefined, undefined, pckage))
     .catch(common.oops(this)))
 
   it(`should list ${pckage} with wsk package list`, () => cli.do(`wsk package list`, this.app)

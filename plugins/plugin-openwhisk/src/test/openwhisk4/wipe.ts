@@ -43,7 +43,10 @@ describe('wipe command', function (this: common.ISuite) {
     .catch(common.oops(this)))
 
   it('should successfully execute the wipe command', () => cli.do('wipe', this.app)
-    .then(res => this.app.client.keys(`yes${keys.ENTER}`).then(() => res))
+    .then(async res => {
+      await this.app.client.keys(`yes${keys.ENTER}`)
+      return res
+    })
     .then(cli.expectOK)
     .catch(common.oops(this)))
 
@@ -52,7 +55,10 @@ describe('wipe command', function (this: common.ISuite) {
     .catch(common.oops(this)))
 
   it('should successfully cancel the wipe command', () => cli.do('wipe', this.app)
-    .then(res => this.app.client.keys(`no${keys.ENTER}`).then(() => res))
+    .then(async res => {
+      await this.app.client.keys(`no${keys.ENTER}`)
+      return res
+    })
     .then(cli.expectError(0))
     .catch(common.oops(this)))
 
@@ -64,7 +70,11 @@ describe('wipe command', function (this: common.ISuite) {
     .catch(common.oops(this)))
 
   it('should successfully cancel the wipe command again', () => cli.do('wipe', this.app)
-    .then(res => this.app.client.keys(`${keys.ENTER}`).then(() => res)) // just enter this time
+    .then(async res => {
+      // just enter this time
+      await this.app.client.keys(`${keys.ENTER}`)
+      return res
+    })
     .then(cli.expectError(0))
     .catch(common.oops(this)))
 
@@ -86,11 +96,19 @@ describe('wipe command', function (this: common.ISuite) {
 
     // the repl wipe
     cli.do('wipe', this.app)
-      .then(res => this.app.client.keys(`yes${keys.ENTER}`).then(() => res)),
+      .then(async res => {
+        await this.app.client.keys(`yes${keys.ENTER}`)
+        return res
+      }),
 
     // start up a wipe on our side, with a bit of a delay, 200ms
-    new Promise((resolve, reject) => setTimeout(() => {
-      openwhisk.cleanAll(process.env.AUTH).then(resolve, reject)
+    new Promise((resolve, reject) => setTimeout(async () => {
+      try {
+        await openwhisk.cleanAll(process.env.AUTH)
+        resolve()
+      } catch (err) {
+        reject(err)
+      }
     }, 200))
   ])
     .then(([res]) => res) // project out the repl response

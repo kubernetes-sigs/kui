@@ -18,15 +18,13 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, keys, selectors } = ui
 
-export const { version: expectedVersion } = require('@kui-shell/settings/package.json')
-
 describe('input queueing', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   const queueUp = (textWhileQueued: string, N: number, sleepTime = 2) => {
     return {
-      thenType: (textAfterQueued: string, verify = cli.expectOKWithCustom({ expected: expectedVersion })) => {
+      thenType: (textAfterQueued: string, verify = cli.expectOKWithCustom({ expect: common.expectedVersion })) => {
         it(`should queue ${textWhileQueued} while we sleep, then ${textAfterQueued}`, async () => {
           try {
             // do something that takes a while

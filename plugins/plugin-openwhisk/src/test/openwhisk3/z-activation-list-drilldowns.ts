@@ -34,13 +34,16 @@ describe('List activations, then drill down to summary views', function (this: c
       .then(N => sidecar.expectClosed(this.app)
         .then(() => `${ui.selectors.OUTPUT_N(N)} .list-paginator-left-buttons span[data-button-command="${command}"]`)
         .then(sel => { console.error(`Looking for ${sel}`); return sel })
-        .then(sel => this.app.client.waitForEnabled(sel).then(() => sel))
+        .then(async sel => {
+          await this.app.client.waitForEnabled(sel)
+          return sel
+        })
         .then(sel => this.app.client.click(sel))
-        .catch(err => this.app.client.getText(ui.selectors.OUTPUT_N(N))
-          .then(txt => {
-            console.log(`huh, got this ${txt}`)
-            throw err
-          })))
+        .catch(async err => {
+          const txt = await this.app.client.getText(ui.selectors.OUTPUT_N(N))
+          console.log(`huh, got this ${txt}`)
+          throw err
+        }))
       .then(() => this.app)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('Recent Activity'))

@@ -17,7 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, rp, selectors, sidecar } = ui
+const { cli, selectors, sidecar } = ui
 
 const actionName1 = 'foo1'
 const actionName1b = 'foo1b'
