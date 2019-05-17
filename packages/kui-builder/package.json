@@ -42,10 +42,7 @@
     "electron": "5.0.1",
     "fs-extra": "7.0.1",
     "spectron": "5.0.0",
-    "terser": "3.17.0",
-    "tslint": "5.16.0",
-    "tslint-config-standard": "8.0.1",
-    "typescript": "3.4.5"
+    "terser": "3.17.0"
   },
   "kui": {
     "exclude": {
