@@ -22,10 +22,7 @@ const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) 
     // escape quoted equal sign
     const arr = toBeParsed.split('=')
 
-    const k = arr[0]
-    const val = arr[1]
-    debug(k, val)
-    curDic[k] = val
+    curDic[arr[0]] = arr[1]
 
     storage[tabId] = curDic
     sessionStore().setItem(key, JSON.stringify(storage))
