@@ -35,19 +35,22 @@ describe('activation list, activation get, click on header', function (this: com
 
   it('should async that action and click on the activation id', () => cli.do(`async ${actionName}`, this.app)
     .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(selector => this.app.client.getText(selector)
-      .then(activationId => this.app.client.click(selector)
-        .then(() => sidecar.expectOpen(this.app))
-        .then(sidecar.expectShowing(actionName, activationId))))
+    .then(async selector => {
+      const activationId = await this.app.client.getText(selector)
+      await this.app.client.click(selector)
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(actionName, activationId))
+    })
     .catch(common.oops(this)))
 
-  it(`click on action name in sidecar header and show action source`, () => this.app.client.click(ui.selectors.SIDECAR_TITLE)
-    .then(() => this.app)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .then(() => this.app.client.waitUntil(async () => {
-      const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
-      return actionSrc.trim() === expectedSrc
-    }))
-    .catch(common.oops(this)))
+  it(`click on action name in sidecar header and show action source`, async () => {
+    await this.app.client.click(ui.selectors.SIDECAR_TITLE)
+    return sidecar.expectOpen(this.app)
+      .then(sidecar.expectShowing(actionName))
+      .then(() => this.app.client.waitUntil(async () => {
+        const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
+        return actionSrc.trim() === expectedSrc
+      }))
+      .catch(common.oops(this))
+  })
 })

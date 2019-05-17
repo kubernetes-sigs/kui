@@ -33,7 +33,7 @@ describe('wsk package bind tests', function (this: common.ISuite) {
   it('should create an action in a package', () => cli.do(`let package/action = x=>x`, this.app)
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('action', undefined, 'package'))
+    .then(sidecar.expectShowing('action', undefined, undefined, 'package'))
     .catch(common.oops(this)))
 
   it('should bind that package', () => cli.do(`wsk package bind package binder`, this.app)

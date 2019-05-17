@@ -95,7 +95,9 @@ describe('edit compositions', function (this: common.ISuite) {
     .then(deploy(this.app, 'compSimple'))
     .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
     .then(() => this.app.client.waitUntil(() => cli.do('app invoke compSimple', this.app)
-      .then(cli.expectOK)))
+      .then(cli.expectOK)
+      .then(() => true)
+      .catch(() => false)))
     .catch(common.oops(this)))
 
   // test parse error decoration
@@ -158,6 +160,8 @@ describe('edit compositions', function (this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('compFromTpl'))
-      .then(sidecar.expectResult({ 'msg': 'hello compose!' }, false, false))))
+      .then(sidecar.expectResult({ 'msg': 'hello compose!' }, false))
+      .then(() => true)
+      .catch(() => false)))
     .catch(common.oops(this)))
 })

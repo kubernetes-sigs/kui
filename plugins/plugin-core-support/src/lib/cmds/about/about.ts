@@ -24,7 +24,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
 import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
@@ -237,7 +237,7 @@ const getVersion = () => {
  * Report the current version, and availability of updates
  *    For headless, return a textual concatenation of the two.
  */
-const reportVersion = ({ argv }) => {
+const reportVersion = ({ argv }: IEvaluatorArgs) => {
   debug('reportVersion')
 
   const checkForUpdates = argv.find(_ => _ === '-u' || _ === '--update-check')

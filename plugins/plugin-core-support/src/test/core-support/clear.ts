@@ -87,9 +87,10 @@ describe('Clear the console', function (this: ISuite) {
 
   const JUNK = 'junk text that should stay'
   it('should clear the console with ctrl+l', () => cli.do(JUNK, this.app, true)
-    .then(() => this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL'])) // use control-l to clear
-    .then(() => ({ app: this.app }))
-    .then(expectConsoleToBeClear)
+    .then(async () => {
+      await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
+      return expectConsoleToBeClear({ app: this.app })
+    })
     .then(() => this.app.client.getValue(selectors.CURRENT_PROMPT))
     .then(text => assert.strictEqual(text, JUNK))
     .catch(common.oops(this)))
@@ -107,8 +108,9 @@ describe('Clear the console', function (this: ISuite) {
     .catch(common.oops(this)))
 
   it('should clear properly despite existing prompt', () => cli.do('prompt', this.app) // wipe will change the placeholder text
-    .then(() => this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL'])) // use control-l to clear
-    .then(() => ({ app: this.app }))
-    .then(expectConsoleToBeClear)
+    .then(async () => {
+      await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
+      return expectConsoleToBeClear({ app: this.app })
+    })
     .catch(common.oops(this)))
 })

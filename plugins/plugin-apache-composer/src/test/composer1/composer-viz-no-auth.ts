@@ -48,13 +48,13 @@ describe('show the composer visualization with no wskauth', function (this: comm
 
   /** test: load @demos/hello */
   it(`show visualization via ${cmd} from file ${hello.path}`, () => cli.do(`${cmd} ${hello.path}`, this.app)
-    .then(verifyTheBasicStuff(hello.file, 'composerLib'))
+    .then(verifyTheBasicStuff(hello.file))
     .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
     .catch(common.oops(this)))
 
   /** test: load an if.js */
   it(`show visualization via ${cmd} from FSM file ${If.file}`, () => cli.do(`${cmd} ${If.path}`, this.app)
-    .then(verifyTheBasicStuff(If.file, 'composerLib'))
+    .then(verifyTheBasicStuff(If.file))
     .then(verifyNodeExists('seq1'))
     .then(verifyNodeExists('seq2'))
     .then(verifyNodeExists('seq3'))
@@ -72,7 +72,7 @@ describe('show the composer visualization with no wskauth', function (this: comm
 
   /** test: while with nested sequence, from js file */
   it(`show visualization from javascript source ${whileSeq.path}`, () => cli.do(`app viz ${whileSeq.path}`, this.app)
-    .then(verifyTheBasicStuff(whileSeq.file, 'composerLib'))
+    .then(verifyTheBasicStuff(whileSeq.file))
     .then(verifyNodeExists('seq1'))
     .then(verifyNodeExists('seq2'))
     .then(verifyNodeExists('seq3'))

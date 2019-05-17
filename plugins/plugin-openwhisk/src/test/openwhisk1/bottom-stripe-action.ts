@@ -45,31 +45,34 @@ localDescribe('Sidecar bottom stripe interactions for actions', function (this: 
   /** verify the mode buttons work */
   const verify = (name, expectedParams, expectedAnnotations, expectedSrc) => {
     // click on parameters mode button
-    it(`should show parameters for ${name} by clicking on bottom stripe`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('parameters'))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct(expectedParams))
-      .catch(common.oops(this)))
+    it(`should show parameters for ${name} by clicking on bottom stripe`, async () => {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('parameters'))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(name))
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+        .then(ui.expectStruct(expectedParams))
+        .catch(common.oops(this))
+    })
 
     // click on annotations mode button
-    it(`should show annotations for ${name} by clicking on bottom stripe`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectSubset(expectedAnnotations))
-      .catch(common.oops(this)))
+    it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(name))
+        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+        .then(ui.expectSubset(expectedAnnotations))
+        .catch(common.oops(this))
+    })
 
     // click on code mode button
-    it(`should show annotations for ${actionName} by clicking on bottom stripe`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('code'))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(code => assert.strictEqual(code.replace(/\s+/g, ''), expectedSrc.replace(/\s+/g, '')))
-      .catch(common.oops(this)))
+    it(`should show annotations for ${actionName} by clicking on bottom stripe`, async () => {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('code'))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(name))
+        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+        .then(code => assert.strictEqual(code.replace(/\s+/g, ''), expectedSrc.replace(/\s+/g, '')))
+        .catch(common.oops(this))
+    })
   }
 
   // create an action, using the implicit entity type

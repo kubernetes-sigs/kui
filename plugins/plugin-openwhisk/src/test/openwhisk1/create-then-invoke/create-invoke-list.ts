@@ -43,19 +43,28 @@ localDescribe('Create an action with implicit entity type, then invoke it, then 
   // invoke it asynchronously with no params
   it('should async that action', () => cli.do(`async foo`, this.app)
     .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(selector => this.app.client.getText(selector)
-      .then(activationId => this.app.client.click(selector)
-        .then(() => sidecar.expectOpen(this.app))
-        .then(sidecar.expectShowing('foo', activationId))))
+    .then(async selector => {
+      const activationId = await this.app.client.getText(selector)
+      await this.app.client.click(selector)
+      return sidecar.expectOpen(this.app)
+          .then(sidecar.expectShowing('foo', activationId))
+    })
     .catch(common.oops(this)))
 
   // list tests
   ui.aliases.list.forEach(cmd => {
     it(`should find the new action with "$ ${cmd}"`, () => this.app.client.waitUntil(() => {
-      return cli.do(`$ ${cmd}`, this.app).then(cli.expectOKWith('foo'))
+      return cli.do(`$ ${cmd}`, this.app)
+        .then(cli.expectOKWith('foo'))
+        .then(() => true)
+        .catch(() => false)
     }))
+
     it(`should find the new action with "activation ${cmd}"`, () => this.app.client.waitUntil(() => {
-      return cli.do(`activation ${cmd}`, this.app).then(cli.expectOKWith('foo'))
+      return cli.do(`activation ${cmd}`, this.app)
+        .then(cli.expectOKWith('foo'))
+        .then(() => true)
+        .catch(() => false)
     }))
   })
 })

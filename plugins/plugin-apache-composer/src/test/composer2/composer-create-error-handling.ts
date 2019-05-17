@@ -32,9 +32,10 @@ describe('app create error handling', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('if'))
-    .then(app => app.client.waitUntil(() => {
-      return app.client.getText('.wskflow-undeployed-action-warning-text')
-          .then(expectedText => expectedText === 'This composition depends on 3 undeployed components')
+    .then(app => app.client.waitUntil(async () => {
+      const ok: boolean = await app.client.getText('.wskflow-undeployed-action-warning-text')
+        .then(expectedText => expectedText === 'This composition depends on 3 undeployed components')
+      return ok
     }, 2000))
     .catch(common.oops(this)))
 
@@ -42,10 +43,11 @@ describe('app create error handling', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('if'))
-    .then(app => app.client.waitUntil(() => {
-      return app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-          .then(activationResult => activationResult.includes('Failed to resolve action'))
-    }), 2000)
+    .then(app => app.client.waitUntil(async () => {
+      const ok: boolean = await app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+        .then(activationResult => activationResult.includes('Failed to resolve action'))
+      return ok
+    }, 2000))
     .catch(common.oops(this)))
 
   it('should deploy action authenticate', () => cli.do('action create authenticate @demos/authenticate.js', this.app)
@@ -64,10 +66,11 @@ describe('app create error handling', function (this: common.ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('if'))
-    .then(app => app.client.waitUntil(() => {
-      return app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-          .then(ui.expectStruct({ html: '<html><body>please say the magic word.</body></html>' }))
-    }), 2000)
+    .then(app => app.client.waitUntil(async () => {
+      const ok: boolean = await await app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+        .then(ui.expectStruct({ html: '<html><body>please say the magic word.</body></html>' }))
+      return ok
+    }, 2000))
     .catch(common.oops(this)))
   /* it('should initialize composer', () => cli.do(`app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
         .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))

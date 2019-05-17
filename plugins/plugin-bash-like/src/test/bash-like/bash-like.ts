@@ -62,11 +62,11 @@ localDescribe('shell commands', function (this: ISuite) {
 
   if (hasExe('ibmcloud')) {
     it('should give usage for ibmcloud config', () => cli.do(`ibmcloud config`, this.app)
-       .then(cli.expectError(2, undefined, { passthrough: true }))
+       .then(cli.expectError(2, undefined))
        .catch(common.oops(this)))
 
     it('should give usage for ibmcloud app', () => cli.do(`ibmcloud app`, this.app)
-       .then(cli.expectError(500, undefined, { passthrough: true }))
+       .then(cli.expectErrorWithPassthrough(500))
        .then(N => Promise.all([
          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`),

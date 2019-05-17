@@ -39,13 +39,17 @@ localDescribe('Create action with implicit entity type, then list it', function 
     .then(sidecar.expectShowing('foo')))
 
   // toggle sidebar closed
-  it('should toggle the sidebar closed with escape', () => this.app.client.keys(keys.ESCAPE)
-    .then(() => sidecar.expectClosed(this.app)))
+  it('should toggle the sidebar closed with escape', async () => {
+    await this.app.client.keys(keys.ESCAPE)
+    return sidecar.expectClosed(this.app)
+  })
 
   // toggle sidebar back open
-  it('should toggle the sidebar back open with escape', () => this.app.client.keys(keys.ESCAPE)
-    .then(() => sidecar.expectOpen(this.app))
-    .then(sidecar.expectShowing('foo')))
+  it('should toggle the sidebar back open with escape', async () => {
+    await this.app.client.keys(keys.ESCAPE)
+    return sidecar.expectOpen(this.app)
+      .then(sidecar.expectShowing('foo'))
+  })
 
   // list tests
   ui.aliases.list.forEach(cmd => {

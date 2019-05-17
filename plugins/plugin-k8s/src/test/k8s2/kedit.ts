@@ -60,20 +60,18 @@ const getValue = async (app: Application): Promise<string> => {
 
 // FROM plugin-editor/src/test/editor/edit.ts
 /** set the monaco editor text */
-const setValue = (app: Application, text: string) => {
-  return app.client.execute((text: string) => {
+const setValue = async (app: Application, text: string): Promise<void> => {
+  await app.client.execute((text: string) => {
     document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
   }, text)
 }
 /** click the save buttom */
-const save = (app: Application) => () => {
-  return app.client.click(selectors.SIDECAR_MODE_BUTTON('Save'))
-    .then(() => app.client.waitForExist(`${selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`))
-    .then(() => app)
-    .catch(err => { throw err })
+const save = (app: Application) => async (): Promise<void> => {
+  await app.client.click(selectors.SIDECAR_MODE_BUTTON('Save'))
+  await app.client.waitForExist(`${selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`)
 }
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
-const verifyYAML = (expected: object) => async (app: Application) => {
+const verifyYAML = (expected: object) => async (app: Application): Promise<void> => {
   const selector = `${selectors.SIDECAR} .monaco-editor .view-lines`
 
   await app.client.waitUntil(async () => {
@@ -82,8 +80,6 @@ const verifyYAML = (expected: object) => async (app: Application) => {
 
     return ok
   })
-
-  return app
 }
 // done with clone
 
@@ -164,8 +160,10 @@ describe('electron kedit', function (this: common.ISuite) {
        .then(sidecar.expectOpen)
        .then(sidecar.expectShowing(initialResourceName))
        .then(() => `${selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`)
-       .then(selector => this.app.client.waitForVisible(selector).then(() => selector))
-       .then(selector => this.app.client.setValue(selector, intermediateResourceName))
+       .then(async selector => {
+         await this.app.client.waitForVisible(selector)
+         return this.app.client.setValue(selector, intermediateResourceName)
+       })
        .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('save')))
        .then(() => this.app)
        .then(sidecar.expectShowing(intermediateResourceName))
@@ -173,7 +171,7 @@ describe('electron kedit', function (this: common.ISuite) {
        .then(sidecar.expectShowing(intermediateResourceName))
        .then(() => setValue(this.app, safeDump(updatedContent)))
        .then(save(this.app))
-       .then(sidecar.expectShowing(updatedResourceName))
+       .then(() => sidecar.expectShowing(updatedResourceName)(this.app))
        .catch(common.oops(this)))
   }
 

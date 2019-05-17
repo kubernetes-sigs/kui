@@ -77,7 +77,7 @@ describe('electron configmap', function (this: common.ISuite) {
     /** delete the given configmap */
     const deleteIt = (name: string, errOk = false) => {
       it(`should delete the configmap ${name} via ${kubectl} `, () => {
-        const expectResult = errOk ? cli.expectAny : cli.expectOKWithString('deleted')
+        const expectResult = errOk ? cli.expectOKWithAny : cli.expectOKWithString('deleted')
 
         return cli.do(`${kubectl} delete cm ${name} ${inNamespace}`, this.app)
           .then(expectResult)

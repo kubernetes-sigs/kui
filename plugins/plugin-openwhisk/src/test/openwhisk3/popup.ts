@@ -87,7 +87,7 @@ const waitForInvoke = function (this: common.ISuite, spec: IInvokeSpec) {
 
   it(`should wait for invocation of resource named ${name}`, async () => {
     return this.app.client.waitUntil(async () => {
-      return sidecar.expectResult(spec.result, false)
+      return sidecar.expectResult(spec.result, false) ? true : false
     })
   })
 }

@@ -43,8 +43,9 @@ localDescribe('wsk activation result and wsk activation logs', function (this: c
 
   it(`should async that action then show its logs and result`, () => cli.do(`async ${actionName1}`, this.app)
     .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(selector => this.app.client.getText(selector)
-      .then(activationId => this.app.client.waitUntil(() => {
+    .then(async selector => {
+      const activationId = await this.app.client.getText(selector)
+      return this.app.client.waitUntil(() => {
         return cli.do(`wsk activation logs ${activationId}`, this.app)
           .then(cli.expectOK)
           .then(() => sidecar.expectOpen(this.app))
@@ -60,6 +61,9 @@ localDescribe('wsk activation result and wsk activation logs', function (this: c
           .then(() => sidecar.expectOpen(this.app))
           .then(sidecar.expectShowing(actionName1, activationId))
           .then(sidecar.expectMode('result'))
-      })))
+          .then(() => true)
+          .catch(() => false)
+      })
+    })
     .catch(common.oops(this)))
 })

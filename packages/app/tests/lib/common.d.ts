@@ -28,9 +28,13 @@ interface IBeforeOptions {
 
 declare function before (ctx: Suite, options?: IBeforeOptions): HookFunction
 declare function after (ctx: Suite, f?: () => void): HookFunction
-declare function oops (ctx: Suite): ((err: Error) => void)
 declare function localIt (msg: String, f: Function): TestFunction
 declare function localDescribe (msg: String, f: Function): SuiteFunction
 declare function remoteIt (msg: String, f: Function): TestFunction
 
+// never versus void? https://github.com/Microsoft/TypeScript/issues/13625#issuecomment-274566197
+declare function oops (ctx: Suite): ((err: Error) => never)
+
 declare function rp (opts: Object): any
+
+declare var expectedVersion: string

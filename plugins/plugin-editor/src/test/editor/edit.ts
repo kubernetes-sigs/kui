@@ -26,20 +26,18 @@ import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
 /** set the monaco editor text */
-const setValue = async (app: Application, text: string) => {
+const setValue = async (app: Application, text: string): Promise<void> => {
   await app.client.execute(text => {
     document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
   }, text)
 
-  return grabFocus(app)
+  await grabFocus(app)
 }
 
 /** click the save buttom */
-const save = (app: Application) => () => {
-  return app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Save'))
-    .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`))
-    .then(() => app)
-    .catch(err => { throw err })
+const save = (app: Application) => async (): Promise<void> => {
+  await app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Save'))
+  await app.client.waitForExist(`${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`)
 }
 
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
@@ -157,10 +155,12 @@ localDescribe('editor basics', function (this: ISuite) {
      .then(() => this.app.client.execute(() => document.execCommand('paste')))
      .then(() => this.app)
      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, textToPaste))
-     .then(() => this.app.client.keys(textToTypeAfterPaste))
-     .then(() => this.app)
-     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
-     .then(save(this.app)))
+     .then(async () => {
+       await this.app.client.keys(textToTypeAfterPaste)
+       return Promise.resolve(this.app)
+         .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
+         .then(save(this.app))
+     }))
   refresh()
   it('should have that pasted text after refresh', () => cli.do(`edit ${tmpFilepath}`, this.app)
      .then(cli.expectJustOK)
