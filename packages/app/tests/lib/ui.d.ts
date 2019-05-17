@@ -18,9 +18,8 @@ import { Application } from 'spectron'
 
 import { ISuite } from './common'
 
-declare var keys: any
-declare var aliases: any
-declare var selectors: any
+declare var keys: Record<string, string>
+declare var aliases: Record<string, string[]>
 
 declare var apiHost: string
 
@@ -139,6 +138,57 @@ declare class CLI {
   expectOKWithTextContent: (expect: string, exact?: boolean, failFast?: boolean, sel?: string) => AppAndCountVerifier
 }
 declare var cli: CLI
+
+declare class Selectors {
+  APIHOST: string
+  NAMESPACE: string
+  CURRENT_TAB: string
+  TAB_N: (N: number) => string
+  SIDECAR_BASE: string
+  SIDECAR_FULLSCREEN: string
+  PROMPT_BLOCK: string
+  OOPS: string
+  SIDECAR: string
+  SIDECAR_WITH_FAILURE: string
+  SIDECAR_HIDDEN: string
+  SIDECAR_FULLY_HIDDEN: string
+  SIDECAR_ACTIVATION_TITLE: string
+  SIDECAR_TITLE: string
+  SIDECAR_PACKAGE_NAME_TITLE: string
+  SIDECAR_CONTENT: string
+  SIDECAR_WEB_ACTION_URL: string
+  SIDECAR_ACTION_SOURCE: string
+  SIDECAR_PACKAGE_PARAMETERS: string
+  SIDECAR_ACTIVATION_RESULT: string
+  SIDECAR_ACTIVATION_ID: string
+  SIDECAR_RULE_CANVAS: string
+  SIDECAR_RULE_CANVAS_NODES: string
+  SIDECAR_SEQUENCE_CANVAS: string
+  SIDECAR_SEQUENCE_CANVAS_NODES: string
+  SIDECAR_SEQUENCE_CANVAS_NODE_N: (N: number) => string
+  SIDECAR_LIMIT: (type: string) => string
+  SIDECAR_BADGES: string
+  SIDECAR_CUSTOM_CONTENT: string
+  SIDECAR_MODE_BUTTONS: string
+  SIDECAR_MODE_BUTTON: (mode: string) => string
+  SIDECAR_BACK_BUTTON: string
+  SIDECAR_CLOSE_BUTTON: string
+  PROCESSING_PROMPT_BLOCK: string
+  CURRENT_PROMPT_BLOCK: string
+  PROMPT_BLOCK_N: (N: number) => string
+  PROCESSING_N: (N: number) => string
+  CURRENT_PROMPT: string
+  PROMPT_N: (N: number) => string
+  OUTPUT_N: (N: number) => string
+  LIST_RESULTS_N: (N: number) => string
+  LIST_RESULTS_BY_NAME_N: (N: number) => string
+  LIST_RESULT_BY_N_FOR_NAME: (N: number, name: string) => string
+  BY_NAME: (name: string) => string
+  LIST_RESULT_BY_N_AND_NAME: (N: number, name: string) => string
+  OK_N: (N: number) => string
+  xtermRows: (N: number) => string
+}
+declare var selectors: Selectors
 
 declare function verifyTextExists (this: ISuite, expectedSubstring: string)
 
