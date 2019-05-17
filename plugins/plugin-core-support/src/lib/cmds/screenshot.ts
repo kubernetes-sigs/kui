@@ -70,9 +70,9 @@ const selectors = {
   'default': 'body > .page', // everything but header
   sidecar: sidecarSelector(), // entire sidecar region
   repl: 'tab.visible .repl', // entire REPL region
-  nth: n => `tab.visible .repl .repl-block:nth-child(${n}) .repl-output`, // this will include only the non-ok region
+  nth: n => `tab.visible .repl .repl-block:nth-child(${n}) .repl-output .repl-result`, // this will include only the non-ok region
   'last-full': 'tab.visible .repl .repl-block:nth-last-child(2)', // this will include the 'ok' part
-  last: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-output' // this will include only the non-ok region
+  last: 'tab.visible .repl .repl-block:nth-last-child(2) .repl-output .repl-result' // this will include only the non-ok region
 }
 
 /**
@@ -247,7 +247,6 @@ export default async (commandTree: CommandRegistrar) => {
           const finish = () => {
             cleanupMouseEvents()
 
-            document.onkeyup = oldHandler
             cli.getCurrentPrompt().readOnly = false
             snapDom.classList.add('go-away')
             setTimeout(() => document.body.removeChild(snapDom), 1000) // match go-away-able transition-duration; see ui.css
@@ -389,15 +388,19 @@ export default async (commandTree: CommandRegistrar) => {
             cli.getCurrentPrompt().readOnly = true
           }
 
-          // temporarily override escape
-          const oldHandler = document.onkeyup
+          // to capture the Escape key event
+          const hiddenInput = document.createElement('input')
+          hiddenInput.classList.add('hidden')
+          snapDom.appendChild(hiddenInput)
+          hiddenInput.focus()
 
           // we'll do a finish when the user hits escape
-          document.onkeyup = evt => {
+          hiddenInput.addEventListener('keyup', (evt: KeyboardEvent) => {
             if (evt.keyCode === keys.ESCAPE) {
+              evt.preventDefault()
               finish()
             }
-          }
+          }, { capture: true, once: true })
 
           // also, if the user clicks on the close button, finish up
           closeButton.onclick = finish
