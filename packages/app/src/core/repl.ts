@@ -300,7 +300,7 @@ const stripTrailer = (str: string) => str && str.replace(/\s+.*$/, '')
 
 /** turn --foo into foo and -f into f */
 const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
-
+const key = 'openwhisk.export'
 /**
  * Execute the given command-line directly in this process
  *
@@ -313,7 +313,7 @@ class InProcessExecutor implements IExecutor {
     debug('exec', commandUntrimmed)
     const tab = cli.getCurrentTab()
 
-    const storage = JSON.parse(sessionStore().getItem('export')) || {}
+    const storage = JSON.parse(sessionStore().getItem(key)) || {}
     const curDic = storage[cli.getTabIndex(cli.getCurrentTab())]
     process.env = Object.assign({}, process.env, curDic)
 

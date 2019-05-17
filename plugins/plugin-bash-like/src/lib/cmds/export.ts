@@ -1,12 +1,9 @@
 
 import { CommandRegistrar, IEvaluatorArgs } from "@kui-shell/core/models/command";
 import sessionStore from '@kui-shell/core/models/sessionStore'
-
-import * as Debug from 'debug'
 import { getTabIndex, getCurrentTab } from '@kui-shell/core/webapp/cli'
-const debug = Debug('plugins/bash-like/cmds/general')
 
-const key = 'export'
+const key = 'openwhisk.export'
 /**
  * export command
  *

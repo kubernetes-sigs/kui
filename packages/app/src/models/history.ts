@@ -15,7 +15,9 @@
  */
 
 import store from '@kui-shell/core/models/store'
-
+import { getTabIndex, getCurrentTab } from '@kui-shell/core/webapp/cli'
+import * as Debug from 'debug'
+const debug = Debug('plugins/history')
 // localStorage key; note: the value here holds no meaning, it is a
 // historical artifact, at this point
 const key = 'openwhisk.history'
@@ -27,13 +29,21 @@ export interface HistoryLine {
   raw?: string
 }
 
-export let lines: HistoryLine[] = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || []
 
+export let history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
+
+export let lines: HistoryLine[] = history[getTabIndex(getCurrentTab())] || []
 let cursor = lines.length // pointer to historic line
 export const getCursor = (): number => cursor
 
+const syncHistory = () => {
+  history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
+  lines = history[getTabIndex(getCurrentTab())] || []
+  cursor = lines.length
+}
 /** change the cursor, protecting against under- and overflow */
 const guardedChange = (incr: number): number => {
+  syncHistory()
   const newCursor = cursor + incr
 
   if (newCursor < 0) cursor = 0
@@ -49,17 +59,21 @@ const guardedChange = (incr: number): number => {
  *
  */
 export const wipe = () => {
-  lines = []
-  store().setItem(key, JSON.stringify(lines))
+  const curStorage = JSON.parse(store().getItem(key))
+  delete curStorage[getTabIndex(getCurrentTab())]
+  store().setItem(key, JSON.stringify(curStorage))
   return true
 }
 
 /** add a line of repl history */
 export const add = (line: HistoryLine) => {
+  syncHistory()
   if (lines.length === 0 || JSON.stringify(lines[lines.length - 1]) !== JSON.stringify(line)) {
     // don't add sequential duplicates
     lines.push(line)
-    store().setItem(key, JSON.stringify(lines))
+    const curStorage = JSON.parse(store().getItem(key))
+    curStorage[getTabIndex(getCurrentTab())] = lines
+    store().setItem(key, JSON.stringify(curStorage))
     // console.log('history::add', cursor)
   }
   cursor = lines.length
@@ -68,20 +82,23 @@ export const add = (line: HistoryLine) => {
 
 /** update a line of repl history -- for async operations */
 export const update = (cursor: number, updateFn) => {
+  syncHistory
   // console.log('history::update', cursor)
   updateFn(lines[cursor])
-  store().setItem(key, JSON.stringify(lines))
+  const curStorage = JSON.parse(store().getItem(key))
+  curStorage[getTabIndex(getCurrentTab())] = lines
+  store().setItem(key, JSON.stringify(curStorage))
 }
 
 /** return the given line of history */
-export const line = (idx: number): HistoryLine => lines[idx]
-export const lineByIncr = (incr: number): HistoryLine => line(guardedChange(incr))
+export const line = (idx: number): HistoryLine => { syncHistory(); return lines[idx] }
+export const lineByIncr = (incr: number): HistoryLine => { syncHistory(); return line(guardedChange(incr)) }
 
 /** go back/forward one entry */
 export const previous = (): HistoryLine => lineByIncr(-1)
 export const next = (): HistoryLine => lineByIncr(+1)
-export const first = (): HistoryLine => { cursor = 0; return line(cursor) }
-export const last = (): HistoryLine => { cursor = lines.length - 1; return line(cursor) }
+export const first = (): HistoryLine => { syncHistory(); cursor = 0; return line(cursor) }
+export const last = (): HistoryLine => { syncHistory(); cursor = lines.length - 1; return line(cursor) }
 
 type FilterFunction = (line: HistoryLine) => boolean
 
@@ -95,6 +112,7 @@ type FilterFunction = (line: HistoryLine) => boolean
  */
 export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: number): number => {
   let filterFn: FilterFunction
+  syncHistory()
 
   if (typeof filter === 'string') {
     const regexp = new RegExp(filter.replace(/([$.])/g, '\\$1'))
@@ -112,6 +130,7 @@ export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: n
   }
 }
 export const find = (filter: FilterFunction): HistoryLine => {
+  syncHistory()
   const idx = findIndex(filter)
   return idx !== undefined && lines[idx]
 }

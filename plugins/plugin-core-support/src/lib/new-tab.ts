@@ -325,7 +325,7 @@ const reindexTabs = () => {
     button.onclick = () => qexec(`tab switch ${id}`)
   }
 }
-
+const key = 'openwhisk.export'
 /**
  * Close the current tab
  *
@@ -342,9 +342,11 @@ const closeTab = () => {
   const currentTabButton = getCurrentTabButton()
   const currentTabId = parseInt(currentTabButton.getAttribute('data-tab-button-index'), 10)
 
-  const storage = JSON.parse(sessionStore().getItem('export'))
+  // remove environment varible for the tab
+  const storage = JSON.parse(sessionStore().getItem(key)) || {}
   delete storage[currentTabId]
-  sessionStore().setItem('export', JSON.stringify(storage))
+  sessionStore().setItem(key, JSON.stringify(storage))
+
   currentVisibleTab.parentNode.removeChild(currentVisibleTab)
   currentTabButton.parentNode.removeChild(currentTabButton)
 
