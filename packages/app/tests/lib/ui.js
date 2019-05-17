@@ -217,7 +217,8 @@ exports.cli = {
 
   /** wait for the result of a cli.do */
   makeCustom: (selector, expect, exact) => ({ selector: selector, expect: expect, exact: exact }),
-  expectError: (statusCode, expect, passthrough) => res => expectOK(res, { selector: `.oops[data-status-code="${statusCode || 0}"]`, expectError: true, expect: expect, passthrough }).then(_ => passthrough ? _ : res.app),
+  expectError: (statusCode, expect) => res => expectOK(res, { selector: `.oops[data-status-code="${statusCode || 0}"]`, expectError: true, expect: expect }).then(() => res.app),
+  expectErrorWithPassthrough: (statusCode, expect) => res => expectOK(res, { selector: `.oops[data-status-code="${statusCode || 0}"]`, expectError: true, expect: expect, passthrough: true }),
   expectBlankWithOpts: (opts = {}) => res => expectOK(res, Object.assign({ selector: '', expectError: true }, opts)),
   expectBlank: res => exports.cli.expectBlankWithOpts()(res),
   expectOKWithCustom: custom => res => expectOK(res, custom), // as long as its ok, accept anything
@@ -566,6 +567,7 @@ exports.validateNamespace = observedNamespace => {
 exports.ctrlOrMeta = process.platform === 'darwin' ? '\uE03D' : '\uE009'
 
 exports.ctrlC = ['\uE009', 'c', 'NULL'] // Send NULL to release Control key at the end of the call, otherwise the state of Control is kept between calls
+
 /**
  * Wait till activation list shows the given activationId. Optionally,
  * use an action name filter
@@ -575,7 +577,7 @@ const waitForActivationOrSession = entityType => (app, activationId, { name = ''
   return app.client.waitUntil(() => {
     return exports.cli.do(`wsk ${entityType} list ${name}`, app)
       .then(exports.cli.expectOKWithCustom({ passthrough: true }))
-      .then(N => app.client.getText(`${exports.selectors.LIST_RESULTS_N(N)} .activationId[data-activation-id="${activationId}"]`))
+      .then(N => app.client.getText(`${exports.selectors.LIST_RESULTS_N(N)} .activationId[data-activation-id="${activationId}"]`) ? true : false)
   })
 }
 exports.waitForActivation = waitForActivationOrSession('activation')

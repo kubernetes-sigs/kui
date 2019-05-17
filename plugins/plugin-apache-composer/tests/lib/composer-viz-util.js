@@ -132,7 +132,7 @@ const verifyNodeLabelsAreSane = app => app.client.getText(`#wskflowSVG .node tex
  * Ensure that the basic attributes of the rendered graph are correct
  *
  */
-const verifyTheBasicStuff = (file, badge) => _ => Promise.resolve(_)
+const verifyTheBasicStuff = (file) => _ => Promise.resolve(_)
   .then(cli.expectOK)
   .then(sidecar.expectOpen)
   .then(sidecar.expectShowing(file))

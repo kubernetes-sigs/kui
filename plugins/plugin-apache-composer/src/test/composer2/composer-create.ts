@@ -96,8 +96,10 @@ describe('app create and sessions', function (this: common.ISuite) {
   const doGetSessions = (cmd, nLive, nDone) => {
     const once = iter => cli.do(cmd, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N => this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="live"]`)
-        .then(list => {
+      .then(async (N: number) => {
+        const isLiveGood = async (): Promise<boolean> => {
+          const list = await this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="live"]`)
+
           if (list.value.length !== nLive) {
             console.error('live does not match ' + list.value.length + ' != ' + nLive)
             if (list.value.length < nLive) {
@@ -111,32 +113,33 @@ describe('app create and sessions', function (this: common.ISuite) {
             // actual live === expected live, good!
             return true
           }
-        })
-        .then(liveGood => this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="done"]`)
-          .then(list => {
-            if (!liveGood || list.value.length < nDone) {
-              if (iter < 3) {
-                // let's retry
-                setTimeout(() => once(iter + 1), 5000)
-              } else {
-                // fail fast
-                assert.ok(liveGood)
-                assert.strictEqual(list.value.length, nDone)
-              }
-            } else if (list.value.length !== nDone) {
-              console.error('done does not match ' + list.value.length + ' != ' + nDone)
-              if (list.value.length < nDone && iter < 3) {
-                // then let's retry
-                setTimeout(() => once(iter + 1), 5000)
-              } else {
-                // fail fast
-                assert.strictEqual(list.value.length, nDone)
-              }
-            } else {
-              // then both match
-              return true
-            }
-          })))
+        }
+
+        const liveGood = await isLiveGood()
+        const list = await this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="done"]`)
+        if (!liveGood || list.value.length < nDone) {
+          if (iter < 3) {
+            // let's retry
+            setTimeout(() => once(iter + 1), 5000)
+          } else {
+            // fail fast
+            assert.ok(liveGood)
+            assert.strictEqual(list.value.length, nDone)
+          }
+        } else if (list.value.length !== nDone) {
+          console.error('done does not match ' + list.value.length + ' != ' + nDone)
+          if (list.value.length < nDone && iter < 3) {
+            // then let's retry
+            setTimeout(() => once(iter + 1), 5000)
+          } else {
+            // fail fast
+            assert.strictEqual(list.value.length, nDone)
+          }
+        } else {
+          // then both match
+          return true
+        }
+      })
 
     return once(0).catch(common.oops(this))
   }
@@ -190,7 +193,7 @@ describe('app create and sessions', function (this: common.ISuite) {
     .catch(common.oops(this)))
 
   it(`should create wookiechat and dependent actions with implicit entity`, () => cli.do('app update wookie @demos/wookie/app.js', this.app)
-    .then(verifyTheBasicStuff('wookie', 'composerLib')) // the .replace part strips off the ".js" suffix
+    .then(verifyTheBasicStuff('wookie'))
     .then(verifyNodeExists('swapi', false)) // expect not to be deployed
     .then(verifyNodeExists('stapi', false)) // expect not to be deployed
     .then(verifyNodeExists('validate-swapi', false)) // expect not to be deployed
@@ -216,16 +219,16 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
     .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_MODE_BUTTONS}`))
-    .then(buttons => buttons.length > 0 && buttons.filter(x => x).reduce((M, button) => { // filter removes blanks due to image icons
-      if (M[button]) {
-        // duplicate button!!
-        assert.fail('Duplicate mode button ' + button)
-      } else {
-        M[button] = true
-      }
-      return M
-    }, {}))
-    .catch(common.oops(this)))
+     .then((buttons: string | string[]) => Array.isArray(buttons) && buttons.length > 0 && buttons.filter(x => x).reduce((M, button) => { // filter removes blanks due to image icons
+       if (M[button]) {
+         // duplicate button!!
+         assert.fail('Duplicate mode button ' + button)
+       } else {
+         M[button] = true
+       }
+       return M
+     }, {}))
+     .catch(common.oops(this)))
 
   it('should get the composer sequence via "action get"', () => cli.do(`action get ${seqName1}`, this.app)
     .then(cli.expectOK)

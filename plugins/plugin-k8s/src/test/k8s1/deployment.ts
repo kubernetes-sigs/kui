@@ -77,7 +77,12 @@ describe('electron deployment', function (this: common.ISuite) {
           .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
           .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="Deployment pods"]`))
           .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
-          .then((titles: string[]) => assert.ok(titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS'))
+          .then((titles: string | string[]) => {
+            assert.ok(Array.isArray(titles) &&
+                      titles.length === 2 &&
+                      titles[0] === 'DEPLOYMENT' &&
+                      titles[1] === 'PODS')
+          })
 
       } catch (err) {
         common.oops(this)(err)

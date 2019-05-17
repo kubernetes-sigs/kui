@@ -43,10 +43,12 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
   // invoke it asynchronously with no params
   it('should async that action', () => cli.do(`async`, this.app)
     .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(selector => this.app.client.getText(selector)
-      .then(activationId => this.app.client.click(selector)
-        .then(() => sidecar.expectOpen(this.app))
-        .then(sidecar.expectShowing('foo', activationId))))
+    .then(async selector => {
+      const activationId = await this.app.client.getText(selector)
+      await this.app.client.click(selector)
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing('foo', activationId))
+    })
     .catch(common.oops(this)))
 
   it('should get/open the package', () => cli.do(`package get ppp`, this.app)
@@ -65,9 +67,11 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
   // invoke it asynchronously with no params
   it('should async that action', () => cli.do(`async`, this.app)
     .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(selector => this.app.client.getText(selector)
-      .then(activationId => this.app.client.click(selector)
-        .then(() => sidecar.expectOpen(this.app))
-        .then(sidecar.expectShowing('foo', activationId))))
+    .then(async selector => {
+      const activationId = await this.app.client.getText(selector)
+      await this.app.client.click(selector)
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing('foo', activationId))
+    })
     .catch(common.oops(this)))
 })

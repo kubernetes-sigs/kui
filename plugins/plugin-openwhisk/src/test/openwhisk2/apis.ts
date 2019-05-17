@@ -55,13 +55,17 @@ describe('Create api gateway', function (this: common.ISuite) {
       .then(() => res.count)
       .then(N => this.app.client.getAttribute(`${ui.selectors.LIST_RESULTS_N(N)} [data-key="url"]`, 'data-value')))
 
-    // for localhost openwhisk, we have to make sure that the href is of the form http://${apihost}/...
-    .then(href => href.replace(/(http:\/\/)?172\.17\.0\.1/, ui.apiHost.replace(/http(s)?:\/\//, '')))
-    .then(href => {
-      if (!href.startsWith('http')) {
-        return `http://${href}`
+    .then(_href => {
+      if (_href === null) {
+        throw new Error('href attribute not found')
       } else {
-        return href
+        const x = _href as string // typescript weirdness https://github.com/Microsoft/TypeScript/issues/14889
+        const href = x.replace(/(http:\/\/)?172\.17\.0\.1/, ui.apiHost.replace(/http(s)?:\/\//, ''))
+        if (!href.startsWith('http')) {
+          return `http://${href}`
+        } else {
+          return href
+        }
       }
     })
     .then(href => { console.error('api href', href); return href })

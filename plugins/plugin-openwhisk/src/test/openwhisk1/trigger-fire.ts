@@ -60,15 +60,7 @@ describe('wsk trigger fire tests', function (this: common.ISuite) {
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('ttt'))
     .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-    .then(logs => {
-      try {
-        logs = JSON.parse(logs)
-      } catch (err) {
-        // we might be ok, if logs is JSON
-        assert.ok(logs.activationId !== undefined)
-      }
-      return logs
-    })
+    .then(logs => JSON.parse(logs))
     .then(logs => logs.activationId)
     .then(activationId => cli.do(`wsk activation get ${activationId}`, this.app))
     .then(cli.expectOK)
@@ -89,15 +81,7 @@ describe('wsk trigger fire tests', function (this: common.ISuite) {
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('ttt'))
     .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-    .then(logs => {
-      try {
-        logs = JSON.parse(logs)
-      } catch (err) {
-        // we might be ok, if logs is JSON
-        assert.ok(logs.activationId !== undefined)
-      }
-      return logs
-    })
+    .then(logs => JSON.parse(logs))
     .then(logs => logs.activationId)
     .then(activationId => cli.do(`wsk activation get ${activationId}`, this.app))
     .then(cli.expectOK)

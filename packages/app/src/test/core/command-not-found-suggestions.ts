@@ -21,8 +21,6 @@ import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-lin
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
-import { expectedVersion } from '../core/version'
-
 /**
  *
  * - Type the command
@@ -35,7 +33,7 @@ import { expectedVersion } from '../core/version'
  */
 export const expectSuggestionsFor = function (cmd: string, expectedAvailable: string[], { click = undefined, expectedBreadcrumb = undefined, sidecar: expectedIcon = undefined, expectedString = undefined } = {}) {
   return cli.do(cmd, this.app)
-    .then(cli.expectError(404, 'Command not found', true)) // true means we want N back rather than app
+    .then(cli.expectErrorWithPassthrough(404, 'Command not found'))
     .then(N => {
       const base = `${ui.selectors.OUTPUT_N(N)} .user-error-available-commands .log-line`
       const availableItems = `${base} .clickable`

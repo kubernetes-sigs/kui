@@ -62,8 +62,10 @@ localDescribe('Create a sequence, list it, delete it', function (this: common.IS
     .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
 
   // now try clicking on one of the sequence component bubbles
-  it('should show action after clicking on bubble', () => this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
-    .then(() => sidecar.expectOpen(this.app))
-    .then(sidecar.expectShowing('sss'))) // since the action was deleted
+  it('should show action after clicking on bubble', async () => {
+    await this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
+    return sidecar.expectOpen(this.app)
+      .then(sidecar.expectShowing('sss')) // since the action was deleted
+  })
   // TODO check for error message "action not found"
 })

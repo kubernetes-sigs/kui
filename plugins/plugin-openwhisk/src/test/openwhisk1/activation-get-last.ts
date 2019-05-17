@@ -63,8 +63,10 @@ localDescribe('wsk activation get --last', function (this: common.ISuite) {
       .then(sidecar.expectShowing(actionName1, undefined, undefined, undefined, undefined, 500))
       .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ name: 'Step1 lastTestIPromise' }))
-      .catch(common.oops(this))
-  }))
+      .then(() => true)
+      .catch(() => false)
+  })
+     .catch(common.oops(this)))
 
   it(`should invoke it ${actionName2}`, () => cli.do(`invoke ${actionName2} -p name lastTestIPromise`, this.app)
     .then(cli.expectOK)

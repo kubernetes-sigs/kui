@@ -71,7 +71,9 @@ localDescribe('Create a sequence, then list it', function (this: common.ISuite) 
   it(`should find sss3 with "action list"`, () => cli.do(`action list`, this.app).then(cli.expectOKWith('sss3')))
 
   // click on a sequence component bubble
-  it('should show action after clicking on bubble', () => this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
-    .then(() => sidecar.expectOpen(this.app))
-    .then(sidecar.expectShowing('foo')))
+  it('should show action after clicking on bubble', async () => {
+    await this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
+    return sidecar.expectOpen(this.app)
+      .then(sidecar.expectShowing('foo'))
+  })
 })

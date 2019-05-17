@@ -22,7 +22,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, rp, selectors, sidecar } = ui
+const { cli, selectors, sidecar } = ui
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
@@ -53,10 +53,12 @@ describe('Click on action part of activation sidecar', function (this: common.IS
   // invoke it asynchronously with no params
   it('should async that action', () => cli.do(`wsk action async foo`, this.app)
     .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(selector => this.app.client.getText(selector)
-      .then(activationId => this.app.client.click(selector)
-        .then(() => sidecar.expectOpen(this.app))
-        .then(sidecar.expectShowing('foo', activationId))))
+    .then(async selector => {
+      const activationId = await this.app.client.getText(selector)
+      await this.app.client.click(selector)
+      return sidecar.expectOpen(this.app)
+          .then(sidecar.expectShowing('foo', activationId))
+    })
     .catch(common.oops(this)))
 
   it('should click on name part of activation', () => this.app.client.click(ui.selectors.SIDECAR_TITLE)
@@ -67,10 +69,12 @@ describe('Click on action part of activation sidecar', function (this: common.IS
   // invoke it asynchronously with no params
   it('should async the packaged action', () => cli.do(`wsk action async ppp/foo`, this.app)
     .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(selector => this.app.client.getText(selector)
-      .then(activationId => this.app.client.click(selector)
-        .then(() => sidecar.expectOpen(this.app))
-        .then(sidecar.expectShowing('foo', activationId))))
+    .then(async selector => {
+      const activationId = await this.app.client.getText(selector)
+      await this.app.client.click(selector)
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing('foo', activationId))
+    })
     .catch(common.oops(this)))
 
   // a bit of a race here

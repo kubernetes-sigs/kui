@@ -36,47 +36,51 @@ describe('Sidecar bottom stripe interactions for activations', function (this: c
   /** verify the mode buttons work */
   const verify = (name, expectedResult, expectedLogs) => {
     // click on parameters mode button
-    it(`should show logs for ${name} by clicking on bottom stripe`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('logs'))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
-      .then(actualLogs => {
-        if (actualLogs.replace(/\s+/g, '').indexOf(expectedLogs.replace(/\s+/g, '')) < 0) {
-          console.error(actualLogs.replace(/\s+/g, '') + ' != ' + expectedLogs.replace(/\s+/g, ''))
-          assert.ok(false)
-        }
-      })
-      .catch(common.oops(this)))
+    it(`should show logs for ${name} by clicking on bottom stripe`, async () => {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('logs'))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(name))
+        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(actualLogs => {
+          if (actualLogs.replace(/\s+/g, '').indexOf(expectedLogs.replace(/\s+/g, '')) < 0) {
+            console.error(actualLogs.replace(/\s+/g, '') + ' != ' + expectedLogs.replace(/\s+/g, ''))
+            assert.ok(false)
+          }
+        })
+        .catch(common.oops(this))
+    })
 
     // this will form a part of the annotations record
     const subsetOfAnnotations = { path: `${ui.expectedNamespace()}/${name}` }
 
-    it(`should show annotations for ${name} by clicking on bottom stripe`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
-      .then(ui.expectSubset(subsetOfAnnotations))
-      .catch(common.oops(this)))
+    it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(name))
+        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(ui.expectSubset(subsetOfAnnotations))
+        .catch(common.oops(this))
+    })
 
     // click on result mode button
-    it(`should show result for ${name} by clicking on bottom stripe`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('result'))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
-      .then(ui.expectStruct(expectedResult))
-      .catch(common.oops(this)))
+    it(`should show result for ${name} by clicking on bottom stripe`, async () => {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('result'))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(name))
+        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(ui.expectStruct(expectedResult))
+        .catch(common.oops(this))
+    })
 
     // click on raw mode button
-    it(`should show raw for ${name} by clicking on bottom stripe`, () => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('raw'))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
-      .then(ui.expectSubset({ name, namespace: ui.expectedNamespace() })) // parts of the raw annotation record
-      .catch(common.oops(this)))
+    it(`should show raw for ${name} by clicking on bottom stripe`, async () => {
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('raw'))
+      return sidecar.expectOpen(this.app)
+        .then(sidecar.expectShowing(name))
+        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(ui.expectSubset({ name, namespace: ui.expectedNamespace() })) // parts of the raw annotation record
+        .catch(common.oops(this))
+    })
   }
 
   // create an action, using the implicit entity type
