@@ -35,7 +35,7 @@ declare function getValueFromMonaco (app: Application, prefix?: string): Promise
 declare function waitForXtermInput (app: Application, N: number): Promise<void>
 declare function getTextContent (app: Application, selector: string): Promise<string>
 
-declare function expectArray (expected: Array<any>, failFast?: boolean): (actual: Array<any>) => boolean
+declare function expectArray (expected: Array<any>, failFast?: boolean): (actual: string | Array<any>) => boolean
 declare function expectStruct (struct1: object, noParse?: boolean, failFast?: boolean): (str: string) => boolean
 declare function expectYAML (struct1: object, subset?: boolean, failFast?: boolean): (str: string) => boolean
 declare function expectYAMLSubset (struct1: object, failFast?: boolean): (str: string) => boolean

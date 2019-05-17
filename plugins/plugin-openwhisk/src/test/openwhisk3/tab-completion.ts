@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert'
+import { Application } from 'spectron'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, keys, selectors, sidecar } = ui
 
 /** execute the given async task n times */
-const doTimes = (n, task) => {
+const doTimes = (n: number, task: () => Promise<void>) => {
   if (n > 0) {
     return task().then(() => doTimes(n - 1, task))
   } else {
@@ -28,38 +31,47 @@ const doTimes = (n, task) => {
   }
 }
 
-describe('Tab completion', function (this: common.ISuite) {
+const waitForValue = (app: Application, selector: string, expected: string) => {
+  return app.client.waitUntil(async () => {
+    await app.client.waitForValue(selector)
+    const actual = await app.client.getValue(selector)
+    return actual === expected
+  })
+}
+
+describe('Tab completion openwhisk', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  const tabby = (app, partial, full, expectOK = true) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
+  const tabby = (app: Application, partial: string, full: string, expectOK = true) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count => app.client.setValue(ui.selectors.CURRENT_PROMPT, partial)
-      .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), partial))
+      .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), partial))
       .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
-      .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), full)))
+      .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), full)))
     .then(() => new Promise(resolve => setTimeout(resolve, 500)))
     .then(() => cli.do('', app)) // "enter" to complete the repl
-    .then(data => {
+    .then(async data => {
       if (expectOK) {
-        return cli.expectOKWithAny(data)
+        const res = await data
+        return cli.expectOKWithAny(res)
       } else {
-        return app
+        return Promise.resolve(app)
       }
     })
     .catch(common.oops(this))
 
-  const tabbyWithOptions = (app, partial, expected?, full?, { click = undefined, nTabs = undefined, expectOK = true, iter = 0, expectedPromptAfterTab = undefined } = {}) => {
+  const tabbyWithOptions = (app: Application, partial: string, expected?: string[], full?: string, { click = undefined, nTabs = undefined, expectOK = true, iter = 0, expectedPromptAfterTab = undefined } = {}) => {
     return app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
       .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => parseInt(count, 10))
       .then(count => app.client.setValue(ui.selectors.CURRENT_PROMPT, partial)
-        .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), partial))
+        .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), partial))
         .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
         .then(() => {
           if (expectedPromptAfterTab) {
-            return app.client.waitForValue(ui.selectors.PROMPT_N(count), expectedPromptAfterTab)
+            return waitForValue(app, ui.selectors.PROMPT_N(count), expectedPromptAfterTab)
           }
         })
         .then(() => {
@@ -92,29 +104,32 @@ describe('Tab completion', function (this: common.ISuite) {
           } else {
             // otherwise hit tab a number of times, to cycle to the desired entry
             // console.error('tabbing', nTabs)
-            return doTimes(nTabs, () => app.client.keys('Tab'))
+            return doTimes(nTabs, async () => { await app.client.keys('Tab') })
               .then(() => app.client.keys('Enter'))
           }
         })
         .then(() => app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 8000, true)) // wait for non-existence of the temporary
-        .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), full)))
+        .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), full)))
       .then(() => cli.do('', app))
-      .then(data => {
+      .then(async data => {
         if (expectOK) {
-          return cli.expectOKWithAny(data)
+          const res = await data
+          return cli.expectOKWithAny(res)
         } else {
           return app
         }
       })
-      .catch(err => this.app.client.keys(ui.ctrlC) // clear the line
-        .then(() => common.oops(this)(err)))
+      .catch(async err => {
+        await this.app.client.keys(ui.ctrlC) // clear the line
+        return common.oops(this)(err)
+      })
   }
 
-  const tabbyWithOptionsThenCancel = (app, partial, expected) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
+  const tabbyWithOptionsThenCancel = (app: Application, partial: string, expected: string[]) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count => app.client.setValue(ui.selectors.CURRENT_PROMPT, partial)
-      .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), partial))
+      .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), partial))
       .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
       .then(() => app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
       .then(() => app.client.getText(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
@@ -146,31 +161,42 @@ describe('Tab completion', function (this: common.ISuite) {
   it('should tab complete invoke bar', () => tabby(this.app, 'invoke b', 'invoke bar'))
   it('should tab complete async bar', () => tabby(this.app, 'async b', 'async bar'))
 
-  it('should tab complete action foo2 with options', () => tabbyWithOptions(this.app, 'action get f',
-    ['foofoo/yum', 'foo2', 'foo'],
-    'action get foo2',
-    { click: 1,
-      expectedPromptAfterTab: 'action get foo' })
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo2'))
-    .catch(common.oops(this)))
+  it('should tab complete action foo2 with options', async () => {
+    await tabbyWithOptions(this.app, 'action get f',
+                           ['foofoo/yum', 'foo2', 'foo'],
+                           'action get foo2',
+      { click: 1,
+        expectedPromptAfterTab: 'action get foo' })
 
-  it('should tab complete action foo with options (no prefix)', () => tabbyWithOptions(this.app, 'action get ',
-    ['foofoo/yum', 'bar', 'foo2', 'foo'],
-    'action get foo',
-    { click: 3 })
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo'))
-    .catch(common.oops(this)))
+    return Promise.resolve(this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo2'))
+      .catch(common.oops(this))
+  })
 
-  it('should not tab complete action without trailing whitespace', () => tabbyWithOptions(this.app, 'action get')
-    .catch(err => {
+  it('should tab complete action foo with options (no prefix)', async () => {
+    await tabbyWithOptions(this.app, 'action get ',
+                           ['foofoo/yum', 'bar', 'foo2', 'foo'],
+                           'action get foo',
+                           { click: 3 })
+
+    return Promise.resolve(this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo'))
+      .catch(common.oops(this))
+  })
+
+  it('should not tab complete action without trailing whitespace', async () => {
+    try {
+      await tabbyWithOptions(this.app, 'action get')
+    } catch (err) {
       if (!err.failedAsExpected) {
         throw err
       } else {
         return this.app.client.keys(ui.ctrlC) // clear the line
       }
-    }))
+    }
+  })
 
   it('should create a trigger', () => cli.do('wsk trigger create ttt', this.app)
     .then(cli.expectOK)
@@ -178,10 +204,14 @@ describe('Tab completion', function (this: common.ISuite) {
 
   it('should fire trigger with autocomplete', () => tabby(this.app, 'wsk trigger fire t', 'wsk trigger fire ttt'))
 
-  it('should get package foofoo with autocomplete', () => tabby(this.app, 'wsk package get f', 'wsk package get foofoo')
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foofoo'))
-    .catch(common.oops(this)))
+  it('should get package foofoo with autocomplete', async () => {
+    await tabby(this.app, 'wsk package get f', 'wsk package get foofoo')
+
+    return Promise.resolve(this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foofoo'))
+      .catch(common.oops(this))
+  })
 
   it('should auto complete wsk command', () => tabby(this.app, 'ws', 'wsk', false))
   it('should auto complete wsk rules command', () => tabby(this.app, 'wsk rul', 'wsk rules', false))
@@ -189,6 +219,6 @@ describe('Tab completion', function (this: common.ISuite) {
 
   it('should tab complete wsk action', () => tabbyWithOptions(this.app, 'wsk ac',
     ['wsk action', 'wsk activations'],
-    'wsk actions',
+    'wsk actions ',
     { click: 0, expectOK: false }))
 })

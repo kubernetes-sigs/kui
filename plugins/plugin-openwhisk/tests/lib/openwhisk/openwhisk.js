@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 const ui = require('@kui-shell/core/tests/lib/ui')
 const common = require('@kui-shell/core/tests/lib/common')
 
