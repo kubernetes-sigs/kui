@@ -129,10 +129,9 @@ describe('electron watch namespace', function (this: common.ISuite) {
   after(common.after(this))
 
   synonyms.forEach(kubectl => {
-    const createIt = createNS.bind(this, kubectl)
-    const deleteIt = deleteNS.bind(this, kubectl)
-    const watchIt = watchNS.bind(this, kubectl)
-
+    const createIt: () => Promise<void> = createNS.bind(this, kubectl)
+    const deleteIt: ({ noExistOk }?: { noExistOk: boolean }) => void = deleteNS.bind(this, kubectl)
+    const watchIt: () => void = watchNS.bind(this, kubectl)
     //
     // here come the tests
     //
@@ -141,5 +140,6 @@ describe('electron watch namespace', function (this: common.ISuite) {
     createIt()
     deleteIt()
     watchIt()
+    deleteIt()
   })
 })
