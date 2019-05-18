@@ -22,9 +22,9 @@ break {
     font-size: 5px;
     font-weight: bold;
 }
-#wskflowSVG .node.clickable[data-deployed="not-deployed"]:hover,
+#wskflowSVG .node[data-deployed="not-deployed"]:hover,
 #wskflowSVG .node.clickable:hover .edge-label,
-#wskflowSVG .node.clickable[data-deployed="not-deployed"]:hover .atom {
+#wskflowSVG .node[data-deployed="not-deployed"]:hover .atom {
     /* no hover effects for not-deployed actions */
     text-decoration: none;
     cursor: inherit !important;
@@ -124,7 +124,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node .atom {
 body[kui-theme-style="dark"] #wskflowSVG .node.leaf .atom {
     stroke: var(--color-base02) !important;
 }
-body[kui-theme-style="dark"] #wskflowSVG .action[data-deployed="not-deployed"] .atom {
+body[kui-theme-style="dark"] #wskflowSVG .node[data-deployed="not-deployed"] .atom {
     opacity: 0.7;
 }
 #wskflowSVG .node .atom ~ text {
@@ -196,7 +196,7 @@ body[kui-theme-style="dark"] #wskflowSVG .action[data-deployed="not-deployed"] .
 #wskflowSVG .node.leaf.function .atom:hover, #wskflowSVG .node.leaf.function .atom.hover {
     fill-opacity: 0.75;
 }
-#wskflowSVG .action[data-deployed="not-deployed"] .atom {
+#wskflowSVG .node[data-deployed="not-deployed"] .atom {
     mask: url(#mask-stripe);
     fill: var(--color-base04) !important;
 }
@@ -226,23 +226,26 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
 }
 
 #wskflowSVG .node.compound:not(.root) .atom {
-    stroke-dasharray: 0.5,0.75;
-    stroke-width: 0.5;
-    stroke: var(--color-brand-01) !important;
-    fill: var(--color-ui-02) !important;
+    stroke-dasharray: 0.25,0.75;
+    stroke-width: 1;
+    stroke: var(--color-base03) !important;
+    fill: var(--color-base03) !important;
+    fill-opacity: 0.05;
+    rx: 4px;
 }
 #wskflowSVG .node.try .atom, #wskflowSVG .node.handler .atom {
 }
 #wskflowSVG .node.compound text {
     /* e.g. Try and Catch labels */
-    font-weight: bold;
+    font-weight: 500;
+    fill: var(--color-base09);
 }
 #wskflowSVG .node.compound.try_catch.no-parents .atom {
     stroke: none !important;
 }
 #wskflowSVG .node.compound.try_catch .atom {
     stroke: var(--color-ui-05) !important;
-    fill: transparent !important;
+    fill: var(--color-ui-04) !important;
 }
 #wskflowSVG .node.compound.try_catch text {
     display: none;
@@ -286,6 +289,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
 }
 #qtipContent {
     background-color: var(--color-stripe-02);
+    box-shadow: 0 0 0.5ex var(--color-base03);
     color: var(--color-text-against-dark-bg); 
     font-size: 0.75em;
     padding: 1ex;
@@ -293,7 +297,6 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
     flex-wrap: wrap;*/
     margin: 0px;
     margin-right: 1ex; /* don't get all squished up against the right-end edge of the window */
-    max-width: 40ex;
     word-wrap: break-word;
 }
 #qtip.visible {
@@ -316,7 +319,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
     color: var(--color-support-04); /* match hover color of action nodes */
 }
 #qtip .qtip-prefix.function {
-    color: var(--color-support-03);
+    color: var(--color-base0C);
 }
 #qtip .qtip-prefix.let, #qtip .qtip-prefix.literal {
     color: var(--color-brand-02);

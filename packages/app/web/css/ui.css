@@ -2923,6 +2923,31 @@ body {
     --color-tab-08: var(--color-base04);
 }
 
+.color-base08 {
+    color: var(--color-base08);
+}
+.color-base09 {
+    color: var(--color-base09);
+}
+.color-base0A {
+    color: var(--color-base0A);
+}
+.color-base0B {
+    color: var(--color-base0B);
+}
+.color-base0C {
+    color: var(--color-base0C);
+}
+.color-base0D {
+    color: var(--color-base0D);
+}
+.color-base0E {
+    color: var(--color-base0E);
+}
+.color-base0F {
+    color: var(--color-base0F);
+}
+
 @-webkit-keyframes flip {
     0% {
     -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
