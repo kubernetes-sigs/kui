@@ -32,6 +32,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
 import * as messages from '@kui-shell/plugin-apache-composer/lib/utility/messages'  // TODO: import from plugin js file
@@ -154,7 +155,7 @@ export default (commandTree: CommandRegistrar) => {
       const visualize = (await import('./visualize')).default
       const { view, controller } = await wskflowUtil.wskflow(visualize, { ast, input, name, viewOptions, container: execOptions.container, namespace: undefined })
 
-      const modes: Array<any> = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
+      const modes: ISidecarMode[] = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
       modes.splice(modes.length, 0, ...coreModes)
       const extraModes = wskflowUtil.zoomToFitButtons(controller)
 

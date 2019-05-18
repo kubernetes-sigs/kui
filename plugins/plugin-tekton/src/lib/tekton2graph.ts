@@ -23,10 +23,12 @@ import { safeLoadAll } from 'js-yaml'
 import { basename, dirname, join } from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
+import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { findFile } from '@kui-shell/core/core/find-file'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
+import { zoomToFitButtons } from '@kui-shell/plugin-wskflow/lib/util'
 import injectCSS from '@kui-shell/plugin-wskflow/lib/inject'
 
 type TaskName = string
@@ -439,7 +441,7 @@ export default (commandTree: CommandRegistrar) => {
     content.style.display = 'flex'
 
     const graph2doms = (await import('@kui-shell/plugin-wskflow/lib/graph2doms')).default
-    const doms = await graph2doms(graph, content, undefined, {
+    const { controller } = await graph2doms(graph, content, undefined, {
       layoutOptions: {
         'elk.separateConnectedComponents': false,
         'elk.spacing.nodeNode': 10,
@@ -451,30 +453,38 @@ export default (commandTree: CommandRegistrar) => {
 
     injectCSS()
 
+    const flowMode = 'flow'
+    const tektonModes: ISidecarMode[] = [
+      {
+        mode: flowMode,
+        direct: command,
+        defaultMode: true,
+        execOptions: { exec: 'pexec' }
+      },
+      {
+        mode: 'Raw',
+        leaveBottomStripeAlone: true,
+        direct: {
+          type: 'custom',
+          isEntity: true,
+          contentType: 'yaml',
+          content: raw
+        }
+      }
+    ]
+
+    const badges = [ 'Tekton' ]
+
     return {
       type: 'custom',
       isEntity: true,
       name: basename(filepath),
       packageName: dirname(filepath),
       prettyType: 'Pipeline',
-      badges: [
-        'Tekton'
-      ],
+      badges,
       presentation: Presentation.FixedSize,
       content,
-      modes: [
-        { mode: 'flow', direct: command, defaultMode: true, execOptions: { exec: 'pexec' } },
-        {
-          mode: 'Raw',
-          leaveBottomStripeAlone: true,
-          direct: {
-            type: 'custom',
-            isEntity: true,
-            contentType: 'yaml',
-            content: raw
-          }
-        }
-      ]
+      modes: tektonModes.concat(zoomToFitButtons(controller, { visibleWhenShowing: flowMode }))
     }
   }, { usage, noAuthOk: true })
 }
