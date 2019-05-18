@@ -19,7 +19,7 @@ const debug = Debug('plugins/wskflow/tekton2graph')
 
 import { readFile } from 'fs'
 import { promisify } from 'util'
-import { safeLoad } from 'js-yaml'
+import { safeLoadAll } from 'js-yaml'
 import { basename, dirname, join } from 'path'
 import * as expandHomeDir from 'expand-home-dir'
 
@@ -37,9 +37,36 @@ interface Port {
   from?: TaskName[]
 }
 
-interface Task {
+interface Step {
+  name: string
+  image: string
+  command: string
+  args: string[]
+}
+
+interface KubeResource {
+  apiversion: string
+  kind: string
+  metadata: {
+    name: string
+  }
+}
+
+interface Task extends KubeResource {
+  spec: {
+    inputs: {
+      resources: { name: string, type: string, targetPath: string }[],
+      params: { name: string, description: string, default: string }[]
+    }
+    steps: Step[]
+  }
+}
+
+interface TaskRef {
   name: TaskName
-  taskRef?: { name: TaskName }
+  taskRef?: {
+    name: TaskName
+  }
   runAfter?: TaskName[]
   resources?: {
     inputs?: Port[]
@@ -58,8 +85,10 @@ interface INode {
   readonly value?: string
   readonly type?: string
   readonly taskIndex?: number
+
   tooltip?: string
   tooltipHeader?: string
+  tooltipColor?: string
   prettyCode?: string
   fullFunctionCode?: string
   multiLineLabel?: string
@@ -67,7 +96,6 @@ interface INode {
   retryCount?: string
   width?: number
   height?: number
-  layoutOptions?: any
   properties?: any
   ports?: IPort[]
   readonly visited?: string[]
@@ -80,7 +108,7 @@ interface INode {
 
 interface IGraph extends INode {
   readonly edges: IEdge[]
-  readonly children: INode[]
+  children: INode[]
 }
 
 interface IEdge {
@@ -100,61 +128,210 @@ const defaultHeight = 20
 const defaultCharWidth = 5
 const defaultCharHeight = 10
 
+const knownKinds = /PipelineResource|Pipeline|Task/
+
+/**
+ * @return a blank IGraph instance with optional "children" subgraphs
+ *
+ */
+const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type }: { children: INode[], tooltip?: string, tooltipColor?: string, type?: string } = { children: [] }): IGraph => {
+  return {
+    id: label,
+    label,
+    children,
+    edges: [],
+    nParents: 0,
+    nChildren: 0,
+    type,
+    tooltip,
+    tooltipColor,
+    properties: {
+      maxLabelLength: 24,
+      fontSize: '5px'
+    }
+  }
+}
+
+/** graph node id for a given Step located in a given Task */
+const stepId = (taskRef: TaskRef, step: Step): string => `__step__${taskRef.name}__${step.name}`
+
 /**
  * Turn a raw yaml form of a tekton pipeline into a graph model that
  * is compatible with the ELK graph layout toolkit.
  *
  */
 function tekton2graph (raw: string): IGraph {
-  const json = safeLoad(raw)
+  const jsons = safeLoadAll(raw)
+    .filter(_ => knownKinds.test(_.kind))
 
-  const graph: IGraph = {
-    id: 'root',
-    label: 'root',
-    children: [],
-    edges: [],
-    nParents: 0,
+  const pipeline = jsons.find(_ => _.kind === 'Pipeline')
+
+  const graph: IGraph = makeGraph()
+
+  const start: INode = {
+    id: 'Entry',
+    label: 'start',
+    type: 'Entry',
+    width: 18,
+    height: 18,
     nChildren: 0,
+    nParents: 0,
     properties: {
-      maxLabelLength: 24,
-      fontSize: '5px'
+      title: 'The flow starts here'
+    }
+  }
+  const end: INode = {
+    id: 'Exit',
+    label: 'end',
+    type: 'Exit',
+    width: 18,
+    height: 18,
+    nChildren: 0,
+    nParents: 0,
+    properties: {
+      title: 'The flow starts here'
     }
   }
 
-  const symbolTable: SymbolTable<INode> = json.spec.tasks
-    .reduce((symtab: SymbolTable<INode>, task: Task) => {
-      const node = {
-        id: task.name,
-        label: task.name,
-        width: task.name.length * defaultCharWidth + 10,
-        height: defaultHeight,
-        nChildren: 0,
-        nParents: 0
+  // map from Task.metadata.name to Task
+  const taskName2Task: SymbolTable<Task> = jsons
+    .filter(_ => _.kind === 'Task')
+    .reduce((symtab: SymbolTable<Task>, task: Task) => {
+      symtab[task.metadata.name] = task
+      return symtab
+    }, {})
+
+  // map from Pipeline.Task.name to Task
+  const taskRefName2Task: SymbolTable<Task> = pipeline.spec.tasks
+    .reduce((symtab: SymbolTable<Task>, taskRef: TaskRef) => {
+      symtab[taskRef.name] = taskName2Task[taskRef.taskRef.name]
+      return symtab
+    }, {})
+
+  // map from Pipeline.Task.name to Pipeline.Task
+  const taskRefName2TaskRef: SymbolTable<TaskRef> = pipeline.spec.tasks
+    .reduce((symtab: SymbolTable<TaskRef>, taskRef: TaskRef) => {
+      symtab[taskRef.name] = taskRef
+      return symtab
+    }, {})
+
+  const symbolTable: SymbolTable<INode> = pipeline.spec.tasks
+    .reduce((symtab: SymbolTable<INode>, taskRef: TaskRef) => {
+      const task = taskName2Task[taskRef.taskRef.name]
+      debug('TaskRef', taskRef.name, task)
+
+      let node: INode
+      if (task && task.spec.steps && task.spec.steps.length > 0) {
+        // make a subgraph for the steps
+        const resources = task.spec.inputs.resources || []
+        const resourceList = `${resources.map(_ => `<span class='color-base0A'>${_.type}</span>:${_.name}`).join(', ')}`
+
+        const params = task.spec.inputs.params || []
+        const paramList = `(${params.map(_ => _.name).join(', ')})`
+
+        const subgraph = makeGraph(taskRef.name, {
+          type: 'Tekton Task',
+          tooltip: `<table><tr><td><strong>Resources</strong></td><td>${resourceList}</td></tr><tr><td><strong>Params</strong></td><td>${paramList}</td></tr></table>`,
+          tooltipColor: '0C',
+          children: task.spec.steps.map(step => {
+            const stepNode: INode = {
+              id: stepId(taskRef, step),
+              label: step.name,
+              width: step.name.length * defaultCharWidth,
+              height: defaultHeight,
+              nChildren: 0,
+              nParents: 0,
+              deployed: false,
+              type: 'Tekton Step',
+              tooltip: `<strong>Image</strong>: ${step.image}`,
+              tooltipColor: '0E'
+            }
+
+            symtab[stepNode.id] = stepNode
+            return stepNode
+          })
+        })
+
+        subgraph.children.slice(1).reduce((cur: INode, next: INode) => {
+          addEdge(subgraph, cur, next)
+          return next
+        }, subgraph.children[0])
+
+        node = subgraph
+      } else {
+        node = {
+          id: taskRef.name,
+          label: taskRef.name,
+          width: taskRef.name.length * defaultCharWidth,
+          height: defaultHeight,
+          nChildren: 0,
+          nParents: 0,
+          type: 'Tekton Task',
+          tooltip: 'test'
+        }
       }
 
-      symtab[task.name] = node
+      symtab[taskRef.name] = node
       graph.children.push(node)
 
       return symtab
     }, {})
+
+  const lastStepOf = (node: INode): INode => {
+    const taskRef = taskRefName2TaskRef[node.id]
+    const task = taskRefName2Task[node.id]
+
+    return task &&
+      symbolTable[stepId(taskRef, task.spec.steps[task.spec.steps.length - 1])]
+  }
+
+  const firstStepOf = (node: INode): INode => {
+    const taskRef = taskRefName2TaskRef[node.id]
+    const task = taskRefName2Task[node.id]
+
+    return task &&
+      symbolTable[stepId(taskRef, task.spec.steps[0])]
+  }
+
+  const _addEdge = (parent: INode, child: INode, opts: IEdgeOptions = {}) => {
+    const lastStepOfParentTask = lastStepOf(parent)
+    const firstStepOfChildTask = firstStepOf(child)
+
+    if (lastStepOfParentTask && firstStepOfChildTask) {
+      addEdge(graph, lastStepOfParentTask, firstStepOfChildTask, { singletonSource: true, singletonTarget: true })
+      parent.nChildren++
+      child.nParents++
+      return
+    } else if (!lastStepOfParentTask && firstStepOfChildTask) {
+      addEdge(graph, parent, firstStepOfChildTask, { singletonSource: opts.singletonSource || false, singletonTarget: true })
+      child.nParents++
+      return
+    } else if (lastStepOfParentTask && !firstStepOfChildTask) {
+      addEdge(graph, lastStepOfParentTask, child, { singletonSource: true, singletonTarget: opts.singletonTarget || false })
+      parent.nChildren++
+      return
+    } else {
+      addEdge(graph, parent, child, opts)
+    }
+  }
 
   /**
    * Simple wrapper around addEdge that interfaces with the symbol
    * table to turn names into tasks
    *
    */
-  const wire = (parentTaskName: TaskName, task: Task) => {
-    const parent = symbolTable[parentTaskName]
-    const child = symbolTable[task.name]
+  const wire = (parentTaskRefName: TaskName, childTaskRef: TaskRef) => {
+    const parent = symbolTable[parentTaskRefName]
+    const child = symbolTable[childTaskRef.name]
 
     if (parent) {
-      addEdge(graph, parent, child)
+      _addEdge(parent, child)
     } else {
-      console.error('parent not found', task.runAfter)
+      console.error('parent not found', childTaskRef)
     }
   }
 
-  json.spec.tasks.forEach((task: Task) => {
+  pipeline.spec.tasks.forEach((task: TaskRef) => {
     if (task.runAfter) {
       task.runAfter.forEach(parentTaskName => {
         wire(parentTaskName, task)
@@ -179,6 +356,20 @@ function tekton2graph (raw: string): IGraph {
     }
   })
 
+  // link start node
+  graph.children
+    .filter(child => child.nParents === 0)
+    .forEach(child => _addEdge(start, child, { singletonSource: true }))
+
+  // link end node
+  graph.children
+    .filter(parent => parent.nChildren === 0)
+    .forEach(parent => _addEdge(parent, end, { singletonTarget: true }))
+
+  // add the start and end nodes after we've done the linking
+  graph.children.push(start)
+  graph.children.push(end)
+
   return graph
 }
 
@@ -191,11 +382,18 @@ const usage = {
   ]
 }
 
+interface IEdgeOptions {
+  singletonSource?: boolean
+  singletonTarget?: boolean
+}
+
 /**
  * Add an edge between parent and child nodes
  *
  */
-function addEdge (graph: IGraph, parent: INode, child: INode, { singletonSource = false, singletonTarget = true } = {}) {
+function addEdge (graph: IGraph, parent: INode, child: INode, { singletonSource, singletonTarget }: IEdgeOptions = {}) {
+  debug('addEdge', parent.id, child.id)
+
   if (!parent.ports) {
     parent.ports = []
   }
@@ -235,49 +433,20 @@ export default (commandTree: CommandRegistrar) => {
     const graph = tekton2graph(raw)
     debug('graph', graph)
 
-    const start: INode = {
-      id: 'Entry',
-      label: 'start',
-      type: 'Entry',
-      width: 18,
-      height: 18,
-      nChildren: 0,
-      nParents: 0,
-      properties: {
-        title: 'The flow starts here'
-      }
-    }
-
-    const end: INode = {
-      id: 'Exit',
-      label: 'end',
-      type: 'Exit',
-      width: 18,
-      height: 18,
-      nChildren: 0,
-      nParents: 0,
-      properties: {
-        title: 'The flow starts here'
-      }
-    }
-
     const content = document.createElement('div')
     content.classList.add('padding-content')
     content.style.flex = '1'
     content.style.display = 'flex'
 
-    // link start and end nodes
-    graph.children
-      .filter(child => child.nParents === 0)
-      .forEach(child => addEdge(graph, start, child, { singletonSource: true }))
-    graph.children
-      .filter(parent => parent.nChildren === 0)
-      .forEach(parent => addEdge(graph, parent, end))
-    graph.children.push(start)
-    graph.children.push(end)
-
     const graph2doms = (await import('@kui-shell/plugin-wskflow/lib/graph2doms')).default
-    const doms = await graph2doms(graph, content)
+    const doms = await graph2doms(graph, content, undefined, {
+      layoutOptions: {
+        'elk.separateConnectedComponents': false,
+        'elk.spacing.nodeNode': 10,
+        'elk.padding': '[top=7.5,left=7.5,bottom=7.5,right=7.5]',
+        hierarchyHandling: 'INCLUDE_CHILDREN' // since we have hierarhical edges, i.e. that cross-cut subgraphs
+      }
+    })
     debug('content', content)
 
     injectCSS()

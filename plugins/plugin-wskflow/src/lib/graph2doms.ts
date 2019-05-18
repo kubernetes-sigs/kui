@@ -19,7 +19,7 @@ const debug = Debug('plugins/wskflow/graph2doms')
 
 import * as d3 from 'd3'
 import * as $ from 'jquery'
-import * as ELK from 'elkjs'
+import * as ELK from 'elkjs/lib/elk.bundled.js'
 
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
@@ -40,7 +40,7 @@ const wfColorAct = {
 
 const containerId = 'wskflowDiv'
 
-export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activations?) {
+export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activations?, { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>, composites?: { label: { fontSize: string, offset: { x: number, y: number } } } } = {}) {
   const maxLabelLength = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 
@@ -132,18 +132,17 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
   const root = svg.append('g')
   let elkData
   const elk = new ELK()
-  const doneRendering = elk.layout(JSONgraph,
-    {
-      layoutOptions: {
-        'elk.algorithm': 'org.eclipse.elk.layered',
-        'org.eclipse.elk.direction': 'DOWN',
-        'org.eclipse.elk.edgeRouting': 'ORTHOGONAL',
-        'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
-        'elk.layered.spacing.nodeNodeBetweenLayers': 15, // org.eclipse. prefix doesn't work (elk bug???)
-        // 'org.eclipse.elk.layered.cycleBreaking.strategy': "DEPTH_FIRST",
-        'org.eclipse.elk.insideSelfLoops.activate': true
-      }
-    })
+  const doneRendering = elk.layout(JSONgraph, {
+    layoutOptions: Object.assign({
+      'elk.algorithm': 'org.eclipse.elk.layered',
+      'org.eclipse.elk.direction': 'DOWN',
+      'org.eclipse.elk.edgeRouting': 'ORTHOGONAL',
+      'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
+      'elk.layered.spacing.nodeNodeBetweenLayers': 15, // org.eclipse. prefix doesn't work (elk bug???)
+      // 'org.eclipse.elk.layered.cycleBreaking.strategy': "DEPTH_FIRST",
+      'org.eclipse.elk.insideSelfLoops.activate': true
+    }, layoutOptions)
+  })
     .then(data => {
       elkData = data
 
@@ -304,6 +303,8 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
             } else {
               return 'not-deployed'
             }
+          } else if (d.deployed === false) {
+            return 'not-deployed'
           }
         }
       })
@@ -473,8 +474,6 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           } else if (d.type === 'let' || d.type === 'literal') {
             qtipText = `<div class='qtip-prefix let' style="margin-bottom:1ex; padding-right:5px; ">${d.type}</div>${d.label || d.tooltip}`
             qtipPre = true // use white-space: pre
-          } else if (d.tooltip) {
-            qtipText = `<div class='qtip-prefix function' style="margin-bottom:1ex; padding-right:5px; ">${d.tooltipHeader || d.type}</div>${d.tooltip}`
           }
 
           if (d.properties && d.properties.choice) {
@@ -484,6 +483,15 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
             $(".link[source='" + (d.id + '_ptrue') + "']").addClass('hover')
             $(".link[source='" + (d.id + '_pfalse') + "']").addClass('hover')
           }
+        }
+
+        if (!qtipText && d.tooltip) {
+          //
+          // the above rules are pretty specific to Apache Composer
+          // (TODO refactor); this allows for a more modern custom
+          // tooltip to be driven by the graph model producer
+          //
+          qtipText = `<div class='qtip-prefix ${d.tooltipColor ? 'color-base' + d.tooltipColor : 'function'}' style="margin-bottom:1ex; padding-right:5px; ">${d.tooltipHeader || d.type}</div>${d.tooltip}`
         }
 
         if (qtipText && qtipText.length !== 0) {
@@ -668,17 +676,17 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       .attr('width', d => d.width)
       .attr('x', function (d) {
         // if(d.type == "try_catch" || d.type == "try" || d.type == "handler")
-        if (d.children) { return 4 } else if (d.multiLineLabel) { return d.x } else { return d.width / 2 }
+        if (d.children) { return composites.label.offset.x } else if (d.multiLineLabel) { return d.x } else { return d.width / 2 }
       })
       .attr('y', function (d) {
         // if(d.type == "try_catch" || d.type == "try" || d.type == "handler")
         if (d.properties && d.properties.kind === 'trigger') {
           return d.height * 0.675
         }
-        if (d.children) { return 8 } else if (d.multiLineLabel) { return (d.height - d.multiLineLabel.length * 6) / 2 } else { return d.height / 2 + (d.type === 'Entry' || d.type === 'Exit' ? 1.5 : d.type === 'Dummy' ? 1.5 : d.type === 'let' ? 3.5 : 2) }
+        if (d.children) { return composites.label.offset.y } else if (d.multiLineLabel) { return (d.height - d.multiLineLabel.length * 6) / 2 } else { return d.height / 2 + (d.type === 'Entry' || d.type === 'Exit' ? 1.5 : d.type === 'Dummy' ? 1.5 : d.type === 'let' ? 3.5 : 2) }
       })
       .attr('font-size', function (d) {
-        if (d.children) { return '6px' } else if (d.type === 'Entry' || d.type === 'Exit') { return '6px' } else if (d.properties && d.properties.fontSize) { return d.properties.fontSize } else { return defaultFontSize }
+        if (d.children) { return composites.label.fontSize } else if (d.type === 'Entry' || d.type === 'Exit') { return '6px' } else if (d.properties && d.properties.fontSize) { return d.properties.fontSize } else { return defaultFontSize }
       })
       .style('text-anchor', function (d) {
         if (!d.children && !d.multiLineLabel) { return 'middle' }
