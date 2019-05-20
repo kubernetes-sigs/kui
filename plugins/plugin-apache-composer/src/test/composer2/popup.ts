@@ -18,7 +18,6 @@ import * as assert from 'assert'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar, expectSubset, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
-import { wipe, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { localDescribe } = common
 
