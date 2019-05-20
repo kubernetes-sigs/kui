@@ -15,6 +15,9 @@
  */
 
 import { ISuite } from '@kui-shell/core/tests/lib/common'
+import { Application } from 'spectron'
+import { CLI as headless } from '@kui-shell/core/tests/lib/headless'
+import { CLI as ui } from '@kui-shell/core/tests/lib/ui'
 
 /**
  * Which sidecar mode should be visible upon loading a kubernetes entity
@@ -32,10 +35,16 @@ declare function createNS (): string
  * Install a mocha test to allocate the given namespace `ns`
  *
  */
-declare function allocateNS (ctx: ISuite, ns: string, theCli?: any): string
+declare function allocateNS (ctx: ISuite, ns: string, theCli?: headless | ui): string
 
 /**
  * Install a mocha test to delete the given namespace `ns`
  *
  */
-declare function deleteNS (ctx: ISuite, ns: string, theCli?: any): void
+declare function deleteNS (ctx: ISuite, ns: string, theCli?: headless | ui): void
+
+/**
+ * Keep poking the given kind till no more such entities exist
+ *
+ */
+declare function waitTillNone (kind: string, theCli?: headless | ui, name?: string, okToSurvive?: string, inNamespace?: string): (app: Application) => Promise<void>

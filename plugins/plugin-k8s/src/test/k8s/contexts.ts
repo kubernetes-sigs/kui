@@ -23,8 +23,7 @@ import { safeDump, safeLoad as parseYAML } from 'js-yaml'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectYAMLSubset, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
