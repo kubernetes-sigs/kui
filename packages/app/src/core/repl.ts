@@ -1,14 +1,14 @@
 /*
  * Copyright 2017-19 IBM Corporation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -19,12 +19,12 @@
  *
  */
 
-import * as Debug from "debug"
+import * as Debug from 'debug'
 
-const debug = Debug("core/repl")
-debug("loading")
+const debug = Debug('core/repl')
+debug('loading')
 
-import minimist = require("yargs-parser")
+import minimist = require('yargs-parser')
 
 import {
   CommandTreeResolution,
@@ -32,34 +32,34 @@ import {
   IEvaluator,
   IEvaluatorArgs,
   YargsParserFlags
-} from "../models/command"
+} from '../models/command'
 
 import {
   IExecOptions,
   DefaultExecOptions,
   ParsedOptions
-} from "../models/execOptions"
-import { add as addToHistory } from "../models/history"
-import { CodedError } from "../models/errors"
-import * as commandTree from "./command-tree"
-import { UsageError, IUsageModel, IUsageRow } from "./usage-error"
+} from '../models/execOptions'
+import { add as addToHistory } from '../models/history'
+import { CodedError } from '../models/errors'
+import * as commandTree from './command-tree'
+import { UsageError, IUsageModel, IUsageRow } from './usage-error'
 
 import {
   isHeadless,
   inBrowser,
   hasLocalAccess,
   hasAuth as hasAuthCapability
-} from "./capabilities"
-import { streamTo as headlessStreamTo } from "../main/headless-support"
-import cli = require("../webapp/cli") // FIXME
-import pictureInPicture from "../webapp/picture-in-picture" // FIXME
-import { currentSelection, maybeHideEntity } from "../webapp/views/sidecar" // FIXME
-import { element } from "../webapp/util/dom" // FIXME
+} from './capabilities'
+import { streamTo as headlessStreamTo } from '../main/headless-support'
+import cli = require('../webapp/cli') // FIXME
+import pictureInPicture from '../webapp/picture-in-picture' // FIXME
+import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
+import { element } from '../webapp/util/dom' // FIXME
 
-import { isHTML } from "../util/types"
-import sessionStore from "@kui-shell/core/models/sessionStore"
+import { isHTML } from '../util/types'
+import sessionStore from '@kui-shell/core/models/sessionStore'
 
-debug("finished loading modules")
+debug('finished loading modules')
 
 /**
  * repl.exec, and the family repl.qexec, repl.pexec, etc. are all
@@ -92,7 +92,7 @@ export interface IReplEval {
  *
  */
 export class DirectReplEval implements IReplEval {
-  name = "DirectReplEval"
+  name = 'DirectReplEval'
 
   apply(
     commandUntrimmed: string,
@@ -107,7 +107,7 @@ export class DirectReplEval implements IReplEval {
 let currentEvaluatorImpl: IReplEval = new DirectReplEval()
 
 export const setEvaluatorImpl = (impl: IReplEval): void => {
-  debug("setting evaluator impl", impl.name)
+  debug('setting evaluator impl', impl.name)
   currentEvaluatorImpl = impl
 }
 
@@ -126,12 +126,12 @@ export const hasAuth = async () => {
   } else {
     // for historical reasons, the default auth scheme is openwhisk;
     // this will change
-    return hasAuthCapability("openwhisk")
+    return hasAuthCapability('openwhisk')
   }
 }
 
 export const init = (prefs = {}) => {
-  debug("init")
+  debug('init')
   return cli.init(prefs)
 }
 
@@ -145,9 +145,9 @@ export const doEval = ({
 } = {}) => {
   const command = prompt.value.trim()
 
-  if (block["completion"]) {
+  if (block['completion']) {
     // then this is a follow-up to prompt
-    block["completion"](prompt.value)
+    block['completion'](prompt.value)
   } else {
     // otherwise, this is a plain old eval, resulting from the user hitting Enter
     return exec(command)
@@ -207,7 +207,7 @@ export const qexec = (
 }
 
 /**
- * "raw" exec, where we want the data model back directly
+ * 'raw' exec, where we want the data model back directly
  *
  */
 export const rexec = (command: string, execOptions = emptyExecOptions()) => {
@@ -240,7 +240,7 @@ const patterns = {
  * Escape the given value so that it is compatible with command line execution
  *
  */
-const escape = (str: string) => str.replace(patterns.dash, "'-$1'")
+const escape = (str: string) => str.replace(patterns.dash, ''-$1'')
 
 /**
  * Resolve the given string as a possible reference to an environment
@@ -272,7 +272,7 @@ export const _split = (
   const endIndices: Array<number> = []
   const stack: Array<string> = []
 
-  let cur = ""
+  let cur = ''
 
   const endsWithQuoteSpace = (idx: number, lookFor: string): boolean => {
     for (let ii = idx + 1; ii < str.length; ii++) {
@@ -288,12 +288,12 @@ export const _split = (
   let escapeActive = false
   for (let idx = 0; idx < str.length; idx++) {
     const char = str.charAt(idx)
-    if (char === "\\") {
+    if (char === '\\') {
       if (!escapeActive) {
         escapeActive = true
       } else {
         escapeActive = false
-        cur += "\\"
+        cur += '\\'
       }
 
       continue
@@ -305,20 +305,20 @@ export const _split = (
       if (cur.length > 0) {
         A.push(resolveEnvVar(cur))
         endIndices.push(idx)
-        cur = ""
+        cur = ''
       }
       continue
     }
 
     const last = stack.length > 0 && stack[stack.length - 1]
 
-    if (char === "{") {
+    if (char === '{') {
       stack.push(char)
-    } else if (char === "}" && last === "{") {
+    } else if (char === '}' && last === '{') {
       stack.pop()
     }
 
-    if (!escapeActive && (char === "'" || char === '"')) {
+    if (!escapeActive && (char === ''' || char === ''')) {
       if (char === last) {
         // found matching close quote
         stack.pop()
@@ -384,22 +384,22 @@ const emptyPromise = () => {
 }
 
 /** trim the optional suffix e.g. --last [actionName] */
-const stripTrailer = (str: string) => str && str.replace(/\s+.*$/, "")
+const stripTrailer = (str: string) => str && str.replace(/\s+.*$/, '')
 
 /** turn --foo into foo and -f into f */
-const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ""))
-const key = "openwhisk.export"
+const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
+const key = 'openwhisk.export'
 
 /**
  * Execute the given command-line directly in this process
  *
  */
 class InProcessExecutor implements IExecutor {
-  name = "InProcessExecutor"
+  name = 'InProcessExecutor'
 
   async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
     // debug(`repl::exec ${new Date()}`)
-    debug("exec", commandUntrimmed)
+    debug('exec', commandUntrimmed)
     const tab = cli.getCurrentTab()
 
     const storage = JSON.parse(sessionStore().getItem(key)) || {}
@@ -416,7 +416,7 @@ class InProcessExecutor implements IExecutor {
     const prompt = block && cli.getPrompt(block)
 
     // maybe execOptions has been attached to the prompt dom (e.g. see repl.partial)
-    if (!execOptions) execOptions = prompt["execOptions"]
+    if (!execOptions) execOptions = prompt['execOptions']
     if (execOptions && execOptions.pip) {
       const { container, returnTo } = execOptions.pip
       try {
@@ -443,7 +443,7 @@ class InProcessExecutor implements IExecutor {
         (block.cloneNode(true) as HTMLElement)
 
       // since we cloned it, make sure it's all cleaned out
-      nextBlock.querySelector("input").value = ""
+      nextBlock.querySelector('input').value = ''
       // nextBlock.querySelector('input').setAttribute('placeholder', 'enter your command')
     } else {
       // qfexec with nextBlock, see rm plugin
@@ -457,10 +457,10 @@ class InProcessExecutor implements IExecutor {
     }
 
     // blank line, after removing comments?
-    const command = commandUntrimmed.trim().replace(patterns.commentLine, "")
+    const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
     if (!command) {
       if (block) {
-        cli.setStatus(block, "valid-response")
+        cli.setStatus(block, 'valid-response')
         cli.installBlock(blockParent, block, nextBlock)()
       }
       return emptyPromise()
@@ -473,7 +473,7 @@ class InProcessExecutor implements IExecutor {
 
     try {
       if (block && !nested && echo) {
-        cli.setStatus(block, "processing")
+        cli.setStatus(block, 'processing')
         prompt.readOnly = true
       }
 
@@ -482,7 +482,7 @@ class InProcessExecutor implements IExecutor {
 
       if (argv.length === 0) {
         if (block) {
-          cli.setStatus(block, "valid-response")
+          cli.setStatus(block, 'valid-response')
           cli.installBlock(blockParent, block, nextBlock)()
         }
         return emptyPromise()
@@ -500,7 +500,7 @@ class InProcessExecutor implements IExecutor {
       }
 
       // the Read part of REPL
-      const argvNoOptions = argv.filter(_ => _.charAt(0) !== "-")
+      const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
       const evaluator: CommandTreeResolution = await (execOptions &&
       execOptions.intentional
         ? commandTree.readIntention(argvNoOptions)
@@ -517,20 +517,20 @@ class InProcessExecutor implements IExecutor {
 
         if (execOptions && execOptions.failWithUsage && !usage) {
           debug(
-            "caller needs usage model, but none exists for this command",
+            'caller needs usage model, but none exists for this command',
             evaluator
           )
           return false
         }
 
         const builtInOptions: Array<IUsageRow> = [
-          { name: "--quiet", alias: "-q", hidden: true, boolean: true }
+          { name: '--quiet', alias: '-q', hidden: true, boolean: true }
         ]
         if (!usage || !usage.noHelp) {
           // usage might tell us not to add help, or not to add the -h help alias
-          const help = { name: "--help", hidden: true, boolean: true }
+          const help = { name: '--help', hidden: true, boolean: true }
           if (!usage || !usage.noHelpAlias) {
-            help["alias"] = "-h"
+            help['alias'] = '-h'
           }
           builtInOptions.push(help)
         }
@@ -567,7 +567,7 @@ class InProcessExecutor implements IExecutor {
         type ArgCount = { [key: string]: number }
         const allFlags = {
           configuration: Object.assign(
-            { "camel-case-expansion": false },
+            { 'camel-case-expansion': false },
             (usage && usage.configuration) || {}
           ),
           boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
@@ -627,7 +627,7 @@ class InProcessExecutor implements IExecutor {
             optional: _optional = []
           } = usage
           const optLikeOneOfs: IUsageRow[] = oneof.filter(
-            ({ command, name = command }) => name.charAt(0) === "-"
+            ({ command, name = command }) => name.charAt(0) === '-'
           ) // some one-ofs might be of the form --foo
           const positionalConsumers = _optional.filter(
             ({ name, alias, consumesPositional }) =>
@@ -648,7 +648,7 @@ class InProcessExecutor implements IExecutor {
           const nRequiredArgs =
             required.length + (oneof.length > 0 ? 1 : 0) - nPositionalsConsumed
           const optLikeActuals = optLikeOneOfs.filter(
-            ({ name, alias = "" }) =>
+            ({ name, alias = '' }) =>
               parsedOptions.hasOwnProperty(unflag(name)) ||
               parsedOptions.hasOwnProperty(unflag(alias))
           )
@@ -659,7 +659,7 @@ class InProcessExecutor implements IExecutor {
           // did the user pass an unsupported optional parameter?
           for (let optionalArg in parsedOptions) {
             // skip over minimist's _
-            if (optionalArg === "_" || parsedOptions[optionalArg] === false) {
+            if (optionalArg === '_' || parsedOptions[optionalArg] === false) {
               // minimist nonsense
               continue
             }
@@ -667,7 +667,7 @@ class InProcessExecutor implements IExecutor {
             // should we enforce this option?
             const enforceThisOption =
               onlyEnforceOptions === undefined ||
-              typeof onlyEnforceOptions === "boolean"
+              typeof onlyEnforceOptions === 'boolean'
                 ? true
                 : onlyEnforceOptions.find(
                     _ => _ === `-${optionalArg}` || _ === `--${optionalArg}`
@@ -695,7 +695,7 @@ class InProcessExecutor implements IExecutor {
               //
               // then the user passed an option, but the command doesn't accept it
               //
-              debug("unsupported optional paramter", optionalArg)
+              debug('unsupported optional paramter', optionalArg)
 
               const message = `Unsupported optional parameter ${optionalArg}`
               const err = new UsageError({ message, usage })
@@ -708,31 +708,31 @@ class InProcessExecutor implements IExecutor {
               }
             } else if (
               (match.boolean &&
-                typeof parsedOptions[optionalArg] !== "boolean") ||
-              (match.file && typeof parsedOptions[optionalArg] !== "string") ||
+                typeof parsedOptions[optionalArg] !== 'boolean') ||
+              (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
               (match.booleanOK &&
                 !(
-                  typeof parsedOptions[optionalArg] === "boolean" ||
-                  typeof parsedOptions[optionalArg] === "string"
+                  typeof parsedOptions[optionalArg] === 'boolean' ||
+                  typeof parsedOptions[optionalArg] === 'string'
                 )) ||
               (match.numeric &&
-                typeof parsedOptions[optionalArg] !== "number") ||
+                typeof parsedOptions[optionalArg] !== 'number') ||
               (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
               (!match.boolean &&
                 !match.booleanOK &&
                 !match.numeric &&
                 (!match.narg || match.narg === 1) &&
                 !(
-                  typeof parsedOptions[optionalArg] === "string" ||
-                  typeof parsedOptions[optionalArg] === "number" ||
-                  typeof parsedOptions[optionalArg] === "boolean"
+                  typeof parsedOptions[optionalArg] === 'string' ||
+                  typeof parsedOptions[optionalArg] === 'number' ||
+                  typeof parsedOptions[optionalArg] === 'boolean'
                 )) ||
               // is the given option not one of the allowed options
               (match.allowed &&
                 !match.allowed.find(
                   _ =>
                     _ === parsedOptions[optionalArg] ||
-                    _ === "..." ||
+                    _ === '...' ||
                     (match.allowedIsPrefixMatch &&
                       parsedOptions[optionalArg].indexOf(_) === 0)
                 ))
@@ -741,7 +741,7 @@ class InProcessExecutor implements IExecutor {
               // then the user passed an option, but of the wrong type
               //
               debug(
-                "bad value for option",
+                'bad value for option',
                 optionalArg,
                 match,
                 parsedOptions,
@@ -750,21 +750,21 @@ class InProcessExecutor implements IExecutor {
               )
 
               const expectedMessage = match.boolean
-                ? ", expected boolean"
+                ? ', expected boolean'
                 : match.numeric
-                ? ", expected a number"
+                ? ', expected a number'
                 : match.file
-                ? ", expected a file path"
-                : ""
+                ? ', expected a file path'
+                : ''
 
               const message = `Bad value for option ${optionalArg}${expectedMessage}${
-                typeof parsedOptions[optionalArg] === "boolean"
-                  ? ""
-                  : ", got " + parsedOptions[optionalArg]
+                typeof parsedOptions[optionalArg] === 'boolean'
+                  ? ''
+                  : ', got ' + parsedOptions[optionalArg]
               }${
                 match.allowed
-                  ? " expected one of: " + match.allowed.join(", ")
-                  : ""
+                  ? ' expected one of: ' + match.allowed.join(', ')
+                  : ''
               }`
               const error = new UsageError({ message, usage })
               debug(message, match)
@@ -819,14 +819,14 @@ class InProcessExecutor implements IExecutor {
                 // command's typing requirement
                 const message =
                   nRequiredArgs === 0 && nPositionalOptionals === 0
-                    ? "This command accepts no positional arguments"
+                    ? 'This command accepts no positional arguments'
                     : nPositionalOptionals > 0
-                    ? "This command does not accept this number of arguments"
+                    ? 'This command does not accept this number of arguments'
                     : `This command requires ${nRequiredArgs} parameter${
-                        nRequiredArgs === 1 ? "" : "s"
+                        nRequiredArgs === 1 ? '' : 's'
                       }, but you provided ${
                         nActualArgsWithImplicit === 0
-                          ? "none"
+                          ? 'none'
                           : nActualArgsWithImplicit
                       }`
                 const err = new UsageError({ message, usage })
@@ -841,19 +841,19 @@ class InProcessExecutor implements IExecutor {
                 )
 
                 if (execOptions && execOptions.nested) {
-                  debug("returning usage error")
+                  debug('returning usage error')
                   return err
                 } else {
-                  debug("broadcasting usage error")
+                  debug('broadcasting usage error')
                   return oops(command, block, nextBlock)(err)
                 }
               } else {
-                debug("repl selection", selection)
+                debug('repl selection', selection)
                 // for activation, the proper entity path is an annotation
                 const activationPath =
-                  selection.type === "activations" &&
+                  selection.type === 'activations' &&
                   selection.annotations &&
-                  selection.annotations.find(_ => _.key === "path")
+                  selection.annotations.find(_ => _.key === 'path')
                 if (activationPath) {
                   // ooh, then splice in the implicit parameter and entity type. We splice entity type here for later commands to easily distinguish composition/action.
                   args.splice(
@@ -861,8 +861,8 @@ class InProcessExecutor implements IExecutor {
                     cmdArgsStart + 1,
                     `/${activationPath.value}`,
                     selection.sessionId || selection.fsm
-                      ? "composition"
-                      : "action"
+                      ? 'composition'
+                      : 'action'
                   )
                 } else {
                   // ooh, then splice in the implicit parameter
@@ -875,7 +875,7 @@ class InProcessExecutor implements IExecutor {
                   )
                 }
                 debug(
-                  "spliced in implicit argument",
+                  'spliced in implicit argument',
                   cmdArgsStart,
                   implicitIdx,
                   args
@@ -890,9 +890,9 @@ class InProcessExecutor implements IExecutor {
           !(await hasAuth()) &&
           !evaluator.options.noAuthOk
         ) {
-          debug("command requires auth, and we do not have it")
-          const err = new Error("Command requires authentication")
-          err["code"] = 403
+          debug('command requires auth, and we do not have it')
+          const err = new Error('Command requires authentication')
+          err['code'] = 403
           return oops(command, block, nextBlock)(err)
         }
 
@@ -901,9 +901,9 @@ class InProcessExecutor implements IExecutor {
           evaluator.options.requiresLocal &&
           !hasLocalAccess()
         ) {
-          debug("command does not work in a browser")
-          const err = new Error("Command requires local access")
-          err["code"] = 406 // http not acceptable
+          debug('command does not work in a browser')
+          const err = new Error('Command requires local access')
+          err['code'] = 406 // http not acceptable
           return oops(command, block, nextBlock)(err)
         }
 
@@ -918,7 +918,7 @@ class InProcessExecutor implements IExecutor {
           ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) ||
             (evaluator.options && evaluator.options.needsUI))
         ) {
-          import("../main/headless").then(({ createWindow }) =>
+          import('../main/headless').then(({ createWindow }) =>
             createWindow(argv, evaluator.options.fullscreen, evaluator.options)
           )
           return Promise.resolve(true)
@@ -935,7 +935,7 @@ class InProcessExecutor implements IExecutor {
         //
         // the Eval part of REPL
         //
-        debug("eval", currentEvaluatorImpl.name)
+        debug('eval', currentEvaluatorImpl.name)
         return Promise.resolve()
           .then(() => {
             return currentEvaluatorImpl.apply(
@@ -979,16 +979,16 @@ class InProcessExecutor implements IExecutor {
             if (response === undefined) {
               // weird, the response is empty!
               console.error(argv)
-              throw new Error("Internal Error")
+              throw new Error('Internal Error')
             }
 
-            if (block && block["isCancelled"]) {
+            if (block && block['isCancelled']) {
               // user cancelled the command
-              debug("squashing output of cancelled command")
+              debug('squashing output of cancelled command')
               return
             }
 
-            if (response.verb === "delete") {
+            if (response.verb === 'delete') {
               if (maybeHideEntity(response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
               }
@@ -1010,20 +1010,20 @@ class InProcessExecutor implements IExecutor {
             // response=true means we are in charge of 'ok'
             if (
               nested ||
-              response.mode === "prompt" ||
-              (block && block["_isFakeDom"])
+              response.mode === 'prompt' ||
+              (block && block['_isFakeDom'])
             ) {
               // the parent exec will deal with the repl
               debug(
-                "passing control back to prompt processor or headless",
+                'passing control back to prompt processor or headless',
                 response,
                 commandUntrimmed
               )
               return Promise.resolve(response)
             } else {
               // we're the top-most exec, so deal with the repl!
-              debug("displaying response")
-              const resultDom = block.querySelector(".repl-result")
+              debug('displaying response')
+              const resultDom = block.querySelector('.repl-result')
               return new Promise(resolve => {
                 cli
                   .printResults(
@@ -1067,10 +1067,10 @@ class InProcessExecutor implements IExecutor {
             const reportIt = execOptions && execOptions.reportErrors // report it to the user via the repl
 
             if (returnIt) {
-              debug("returning command execution error", err.code, err)
+              debug('returning command execution error', err.code, err)
               return err
             } else if (isHeadless()) {
-              debug("rethrowing error because we are in headless mode")
+              debug('rethrowing error because we are in headless mode')
               throw err
             } else {
               // indicate that the command was NOT successfuly completed
@@ -1078,15 +1078,15 @@ class InProcessExecutor implements IExecutor {
               err = evaluator.error(command, err)
 
               if (!nested && !rethrowIt) {
-                debug("reporting command execution error to user via repl")
+                debug('reporting command execution error to user via repl')
                 console.error(err)
                 oops(command, block, nextBlock)(err)
               } else {
-                debug("rethrowing command execution error")
+                debug('rethrowing command execution error')
                 if (reportIt) {
                   // maybe the caller also wants us to report it via the repl?
                   debug(
-                    "also reporting command execution error to user via repl"
+                    'also reporting command execution error to user via repl'
                   )
                   oops(command, block, nextBlock)(err)
                 }
@@ -1100,16 +1100,16 @@ class InProcessExecutor implements IExecutor {
 
       if (isHeadless()) {
         try {
-          debug("attempting to run the command graphically", e)
+          debug('attempting to run the command graphically', e)
           const command = commandUntrimmed
             .trim()
-            .replace(patterns.commentLine, "")
+            .replace(patterns.commentLine, '')
           const argv = split(command)
-          await import("../main/spawn-electron").then(({ initElectron }) =>
+          await import('../main/spawn-electron').then(({ initElectron }) =>
             initElectron(argv, { forceUI: true }, true, { fullscreen: true })
           )
         } catch (err) {
-          debug("nope, we failed to run the command graphically")
+          debug('nope, we failed to run the command graphically')
           console.error(err)
         }
       }
@@ -1120,7 +1120,7 @@ class InProcessExecutor implements IExecutor {
         throw e
       }
 
-      console.error("catastrophic error in repl")
+      console.error('catastrophic error in repl')
       console.error(e)
 
       if (execOptions.nested) {
@@ -1137,7 +1137,7 @@ class InProcessExecutor implements IExecutor {
           oops(command, block, nextBlock)(e)
         } else {
           const cmd = cli.showHelp(command, blockForError, nextBlock, e)
-          const resultDom = blockForError.querySelector(".repl-result")
+          const resultDom = blockForError.querySelector('.repl-result')
           return Promise.resolve(cmd)
             .then(cli.printResults(blockForError, nextBlock, resultDom))
             .then(
@@ -1173,7 +1173,7 @@ export const exec = (
  *
  */
 export const setExecutorImpl = (impl: IExecutor): void => {
-  debug("updating executor impl", impl.name)
+  debug('updating executor impl', impl.name)
   currentExecutorImpl = impl
 }
 
@@ -1181,11 +1181,11 @@ export const setExecutorImpl = (impl: IExecutor): void => {
  * Add quotes if the argument needs it; compare to encodeURIComponent
  *
  */
-export const encodeComponent = (component: string, quote = '"') => {
+export const encodeComponent = (component: string, quote = ''') => {
   if (component === undefined) {
-    return ""
+    return ''
   } else if (
-    typeof component === "string" &&
+    typeof component === 'string' &&
     patterns.whitespace.test(component) &&
     component.charAt(0) !== quote &&
     component.charAt(component.length - 1) !== quote
@@ -1207,7 +1207,7 @@ type OopsHandler = (
 ) => (err: Error) => void
 let oopsHandler: OopsHandler
 export const installOopsHandler = (fn: OopsHandler) => {
-  debug("installing oops handler")
+  debug('installing oops handler')
   oopsHandler = fn
 }
 const oops = (
@@ -1216,11 +1216,11 @@ const oops = (
   nextBlock?: HTMLElement
 ) => (err: Error) => {
   if (oopsHandler) {
-    debug("invoking registered oops handler")
+    debug('invoking registered oops handler')
     return oopsHandler(block, nextBlock)(err)
   } else {
     return cli.oops(command, block, nextBlock)(err)
   }
 }
 
-debug("loading done")
+debug('loading done')
