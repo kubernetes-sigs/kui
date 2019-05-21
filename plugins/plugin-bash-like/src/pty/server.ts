@@ -17,15 +17,15 @@
 // import * as Debug from 'debug'
 // const debug = Debug('plugins/bash-like/pty/server')
 
-import * as fs from "fs"
-import { promisify } from "util"
-import { dirname, join } from "path"
-import { exec, spawn } from "child_process"
-import { createServer, Server } from "https"
+import * as fs from 'fs'
+import { promisify } from 'util'
+import { dirname, join } from 'path'
+import { exec, spawn } from 'child_process'
+import { createServer, Server } from 'https'
 
-import { Channel } from "./channel"
+import { Channel } from './channel'
 
-import { CommandRegistrar } from "@kui-shell/core/models/command"
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 let portRange = 8083
 const servers = []
@@ -39,7 +39,7 @@ type ExitHandler = (exitCode: number) => Promise<void>
  */
 const getPort = (): Promise<number> =>
   new Promise(async (resolve, reject) => {
-    const { createServer } = await import("net")
+    const { createServer } = await import('net')
 
     const iter = () => {
       const port = portRange
@@ -47,14 +47,14 @@ const getPort = (): Promise<number> =>
 
       const server = createServer()
       server.listen(port, () => {
-        server.once("close", function() {
+        server.once('close', function () {
           resolve(port)
         })
         server.close()
       })
 
-      server.on("error", (err: NodeJS.ErrnoException) => {
-        if (err.code === "EADDRINUSE") {
+      server.on('error', (err: NodeJS.ErrnoException) => {
+        if (err.code === 'EADDRINUSE') {
           iter()
         } else {
           reject(err)
@@ -75,12 +75,12 @@ const getPort = (): Promise<number> =>
 const touch = (filename: string) => {
   const open = promisify(fs.open)
   const close = promisify(fs.close)
-  return open(filename, "w").then(close)
+  return open(filename, 'w').then(close)
 }
 let cacheHasBashSessionsDisable
-const BSD = () => join(process.env.HOME, ".bash_sessions_disable")
+const BSD = () => join(process.env.HOME, '.bash_sessions_disable')
 export const disableBashSessions = async (): Promise<ExitHandler> => {
-  if (process.platform === "darwin") {
+  if (process.platform === 'darwin') {
     if (cacheHasBashSessionsDisable === undefined) {
       cacheHasBashSessionsDisable = await promisify(fs.exists)(BSD())
     }
@@ -133,69 +133,69 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
   // node-pty-prebuilt, see:
   // https://github.com/daviwil/node-pty-prebuilt/issues/10
   // const pty = require('node-pty-prebuilt')
-  const pty = await import("node-pty")
+  const pty = await import('node-pty')
 
   let shell
 
   // For all websocket data send it to the shell
-  ws.on("message", async (data: string) => {
+  ws.on('message', async (data: string) => {
     // console.log('message', data)
     try {
       const msg = JSON.parse(data)
 
       switch (msg.type) {
-        case "exit":
+        case 'exit':
           return exitNow(msg.exitCode)
 
-        case "exec":
+        case 'exec':
           try {
             shell = pty.spawn(
               await getLoginShell(),
-              ["-l", "-i", "-c", "--", msg.cmdline],
+              ['-l', '-i', '-c', '--', msg.cmdline],
               {
-                name: "xterm-color",
+                name: 'xterm-color',
                 rows: msg.rows && parseInt(msg.rows, 10),
                 cols: msg.cols && parseInt(msg.cols, 10),
                 cwd: msg.cwd || process.cwd(),
-                env: Object.assign({}, msg.env || process.env, { KUI: "true" })
+                env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
               }
             )
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
             // send all PTY data out to the websocket client
-            shell.on("data", data => {
-              ws.send(JSON.stringify({ type: "data", data }))
+            shell.on('data', data => {
+              ws.send(JSON.stringify({ type: 'data', data }))
             })
 
-            shell.on("exit", (exitCode: number) => {
+            shell.on('exit', (exitCode: number) => {
               shell = undefined
-              ws.send(JSON.stringify({ type: "exit", exitCode }))
+              ws.send(JSON.stringify({ type: 'exit', exitCode }))
               // exitNow(exitCode)
             })
 
-            ws.send(JSON.stringify({ type: "state", state: "ready" }))
+            ws.send(JSON.stringify({ type: 'state', state: 'ready' }))
           } catch (err) {
-            console.error("could not exec", err)
+            console.error('could not exec', err)
           }
           break
 
-        case "data":
+        case 'data':
           try {
             if (shell) {
               return shell.write(msg.data)
             }
           } catch (err) {
-            console.error("could not write to the shell", err)
+            console.error('could not write to the shell', err)
           }
           break
 
-        case "resize":
+        case 'resize':
           try {
             if (shell) {
               return shell.resize(msg.cols, msg.rows)
             }
           } catch (err) {
-            console.error("could not resize pty", err)
+            console.error('could not resize pty', err)
           }
           break
       }
@@ -211,8 +211,8 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
  */
 const createDefaultServer = (): Server => {
   return createServer({
-    key: fs.readFileSync(".keys/key.pem", "utf8"),
-    cert: fs.readFileSync(".keys/cert.pem", "utf8"),
+    key: fs.readFileSync('.keys/key.pem', 'utf8'),
+    cert: fs.readFileSync('.keys/cert.pem', 'utf8'),
     passphrase: process.env.PASSPHRASE,
     requestCert: false,
     rejectUnauthorized: false
@@ -233,7 +233,7 @@ export const main = async (
   if (cachedWss) {
     return cachedPort
   } else {
-    const WebSocket = await import("ws")
+    const WebSocket = await import('ws')
 
     return new Promise(async resolve => {
       const idx = servers.length
@@ -252,11 +252,11 @@ export const main = async (
         cachedWss = new WebSocket.Server({ noServer: true })
         servers.push({ wss: cachedWss })
 
-        server.on("upgrade", function upgrade(request, socket, head) {
-          console.log("upgrade")
-          cachedWss.handleUpgrade(request, socket, head, function done(ws) {
-            console.log("handleUpgrade")
-            cachedWss.emit("connection", ws, request)
+        server.on('upgrade', function upgrade (request, socket, head) {
+          console.log('upgrade')
+          cachedWss.handleUpgrade(request, socket, head, function done (ws) {
+            console.log('handleUpgrade')
+            cachedWss.emit('connection', ws, request)
           })
         })
 
@@ -272,7 +272,7 @@ export const main = async (
         })
       }
     }).then(({ port, exitNow }) => {
-      cachedWss.on("connection", onConnection(exitNow))
+      cachedWss.on('connection', onConnection(exitNow))
       return port
     })
   }
@@ -288,7 +288,7 @@ let cachedSelf
 let selfHome
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen(
-    "/bash/websocket/open",
+    '/bash/websocket/open',
     ({ execOptions }) =>
       new Promise(async (resolve, reject) => {
         const N = count++
@@ -298,28 +298,28 @@ export default (commandTree: CommandRegistrar) => {
          *
          */
         const resolveWithHost = (port: number) => {
-          const host = execOptions["host"] || `localhost:${port}`
+          const host = execOptions['host'] || `localhost:${port}`
           resolve(`wss://${host}/bash/${N}`)
         }
 
         if (execOptions.isProxied) {
-          console.log(`do we have a port? ${execOptions["port"]}`)
-          return main(N, execOptions["server"], execOptions["port"])
+          console.log(`do we have a port? ${execOptions['port']}`)
+          return main(N, execOptions['server'], execOptions['port'])
             .then(resolveWithHost)
             .catch(reject)
         } else {
-          const { ipcRenderer } = await import("electron")
+          const { ipcRenderer } = await import('electron')
 
           if (!ipcRenderer) {
-            const error = new Error("electron not available")
-            error["code"] = 127
+            const error = new Error('electron not available')
+            error['code'] = 127
             return reject(error)
           }
 
           ipcRenderer.send(
-            "/exec/invoke",
+            '/exec/invoke',
             JSON.stringify({
-              module: "@kui-shell/plugin-bash-like/pty/server",
+              module: '@kui-shell/plugin-bash-like/pty/server',
               hash: N
             })
           )
