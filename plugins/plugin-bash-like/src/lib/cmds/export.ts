@@ -31,7 +31,8 @@ const exportCommand = ({
   if (arr.length <= 1) {
     // bad assignment warning
     debug('badddddd');
-    return false;
+    throw new Error('baaad');
+    // return false;
   }
   curDic[arr[0]] = arr[1];
 
