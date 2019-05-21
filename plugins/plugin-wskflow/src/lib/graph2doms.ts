@@ -21,6 +21,7 @@ import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs/lib/elk.bundled.js'
 
+import { pexec } from '@kui-shell/core/core/repl'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
@@ -329,7 +330,9 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       return document.createElementNS(svgns, d.properties && d.properties.kind === 'trigger' ? 'polygon' : 'rect')
     })
       .attr('class', d => {
-        return 'atom' + (d.type === 'action' ? ' clickable' : '')
+        return 'atom'
+          + (d.type === 'action' || d.onclick ? ' clickable' : '')
+          + (d.onclick ? ' has-onclick' : '')
       })
       .attr('points', d => {
         if (d.properties && d.properties.kind === 'trigger') {
@@ -547,7 +550,12 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         enterClickMode = false
 
         $('#qtip').removeClass('visible')
-        if (activations) {
+        if (d.onclick) {
+          pictureInPicture(d.onclick,
+            d3.event.currentTarget.parentNode, // highlight this node
+            $('#wskflowContainer')[0],
+            d.viewName || 'Flow Visualization')(d3.event)
+        } else if (activations) {
           if (d.visited) {
             if ($('#actList').css('display') !== 'block') {
               $('#listClose').click()

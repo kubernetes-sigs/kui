@@ -24,7 +24,7 @@ break {
 }
 #wskflowSVG .node[data-deployed="not-deployed"]:hover,
 #wskflowSVG .node.clickable:hover .edge-label,
-#wskflowSVG .node[data-deployed="not-deployed"]:hover .atom {
+#wskflowSVG .node[data-deployed="not-deployed"]:hover .atom:not(.has-onclick) {
     /* no hover effects for not-deployed actions */
     text-decoration: none;
     cursor: inherit !important;
@@ -190,7 +190,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node[data-deployed="not-deployed"] .at
 #wskflowSVG .action[data-deployed="deployed"] text:not(.edge-label) {
     fill: var(--color-text-01) !important;
 }
-#wskflowSVG .action[data-deployed="deployed"] rec.atom:hover, #wskflowSVG .action[data-deployed="deployed"] .atom.hover {
+#wskflowSVG .action[data-deployed="deployed"] rec.atom:hover, #wskflowSVG .action[data-deployed="deployed"] .atom.hover, #wskflowSVG .node .atom.has-onclick:hover, #wskflowSVG .node .atom.has-onclick.hover {
     fill: var(--color-support-04) !important;
 }
 #wskflowSVG .node.leaf.function .atom:hover, #wskflowSVG .node.leaf.function .atom.hover {
@@ -225,6 +225,10 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
     fill: var(--color-ui-01) !important;
 }
 
+#wskflowSVG .node.compound:not(.root) .atom.has-onclick:hover, #wskflowSVG .node.compound:not(.root) .atom.has-onclick.hover {
+    stroke-dasharray: 0.5,1;
+    stroke: var(--color-base0C) !important;
+}
 #wskflowSVG .node.compound:not(.root) .atom {
     stroke-dasharray: 0.25,0.75;
     stroke-width: 1;
