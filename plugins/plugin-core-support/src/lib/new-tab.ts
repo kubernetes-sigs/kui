@@ -28,10 +28,22 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, ITab, setStatus } from '@kui-shell/core/webapp/cli'
+import {
+  listen,
+  getCurrentPrompt,
+  getCurrentTab,
+  getTabIndex,
+  ITab,
+  setStatus
+} from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, IEvent, ExecType, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import {
+  CommandRegistrar,
+  IEvent,
+  ExecType,
+  IEvaluatorArgs
+} from '@kui-shell/core/models/command'
 
 import sessionStore from '@kui-shell/core/models/sessionStore'
 const usage = {
@@ -46,9 +58,18 @@ const usage = {
  * Helper methods to crawl the DOM
  *
  */
-const getTabButton = (tab: ITab) => element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(tab)}"]`)
-const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
-const getTabButtonLabel = (tab: ITab) => getTabButton(tab).querySelector('.left-tab-stripe-button-label') as HTMLElement
+const getTabButton = (tab: ITab) =>
+  element(
+    `.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(
+      tab
+    )}"]`
+  )
+const getCurrentTabButton = () =>
+  element('.main .left-tab-stripe .left-tab-stripe-button-selected')
+const getTabButtonLabel = (tab: ITab) =>
+  getTabButton(tab).querySelector(
+    '.left-tab-stripe-button-label'
+  ) as HTMLElement
 
 /**
  * Otherwise global state that we want to keep per tab
@@ -79,8 +100,12 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
   debug('switchTab', tabIndex)
 
   const currentTab = getCurrentTab()
-  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-index="${tabIndex}"]`)
-  const nextTabButton = document.querySelector(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${tabIndex}"]`)
+  const nextTab = document.querySelector(
+    `.main > .tab-container > tab[data-tab-index="${tabIndex}"]`
+  )
+  const nextTabButton = document.querySelector(
+    `.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${tabIndex}"]`
+  )
   debug('nextTab', nextTab)
   debug('nextTabButton', nextTabButton)
 
@@ -131,18 +156,21 @@ const addKeyboardListeners = (): void => {
  */
 const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/resolved', (event: IEvent) => {
-    if (event.execType !== undefined &&
+    if (
+      event.execType !== undefined &&
       event.execType !== ExecType.Nested &&
       !event.isDrilldown &&
-      event.route) {
+      event.route
+    ) {
       // ignore nested, which means one plugin calling another
       // ignore drilldown events; keep the top-level command in the display
       debug('got event', event)
 
       const tab = event.tab || getCurrentTab()
 
-      if (event.route !== undefined
-        && !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
+      if (
+        event.route !== undefined &&
+        !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
       ) {
         if (event.route.match(/^\/clear/)) {
           // nbsp in the case of clear, except if the sidecar is open;
@@ -168,7 +196,9 @@ const addCommandEvaluationListeners = (): void => {
  */
 const oneTimeInit = (): void => {
   // focus the current prompt no matter where the user clicks in the left tab stripe
-  (document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = (evt: MouseEvent) => {
+  (document.querySelector(
+    '.main > .left-tab-stripe'
+  ) as HTMLElement).onclick = (evt: MouseEvent) => {
     getCurrentPrompt().focus()
   }
 
@@ -177,7 +207,8 @@ const oneTimeInit = (): void => {
   initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
 
   if (document.body.classList.contains('subwindow')) {
-    element('#new-tab-button').onclick = () => window.open(window.location.href, '_blank')
+    element('#new-tab-button').onclick = () =>
+      window.open(window.location.href, '_blank')
   } else {
     element('#new-tab-button').onclick = () => newTab()
   }
@@ -225,9 +256,15 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   getTabButtonLabel(currentVisibleTab).innerText = '\u00a0' // nbsp
 
-  const currentlyProcessingBlock: true | HTMLElement = await qexec('clear --keep-current-active')
+  const currentlyProcessingBlock: true | HTMLElement = await qexec(
+    'clear --keep-current-active'
+  )
   if (currentlyProcessingBlock !== true) {
-    debug('new tab cloned from one that is currently processing a command', currentlyProcessingBlock, currentlyProcessingBlock.querySelector('.repl-result').children.length)
+    debug(
+      'new tab cloned from one that is currently processing a command',
+      currentlyProcessingBlock,
+      currentlyProcessingBlock.querySelector('.repl-result').children.length
+    )
     setStatus(currentlyProcessingBlock, 'repl-active')
   }
 
@@ -260,7 +297,9 @@ const perTabInit = (doListen = true) => {
   installReplFocusHandlers()
 
   // maximize button
-  element(sidecarSelector('.toggle-sidecar-maximization-button')).onclick = () => {
+  element(
+    sidecarSelector('.toggle-sidecar-maximization-button')
+  ).onclick = () => {
     debug('toggle sidecar maximization')
     toggleMaximization()
   }
@@ -316,7 +355,9 @@ const reindexTabs = () => {
     tabs[idx].setAttribute('data-tab-index', id.toString())
   }
 
-  const tabButtons = document.querySelectorAll('.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button')
+  const tabButtons = document.querySelectorAll(
+    '.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button'
+  )
   for (let idx = 0; idx < tabButtons.length; idx++) {
     const id = idx + 1 // also indexed from 1
     const button = tabButtons[idx] as HTMLElement
@@ -340,7 +381,10 @@ const closeTab = () => {
 
   const currentVisibleTab = getCurrentTab()
   const currentTabButton = getCurrentTabButton()
-  const currentTabId = parseInt(currentTabButton.getAttribute('data-tab-button-index'), 10)
+  const currentTabId = parseInt(
+    currentTabButton.getAttribute('data-tab-button-index'),
+    10
+  )
 
   // remove environment varible for the tab
   const storage = JSON.parse(sessionStore().getItem(key)) || {}
@@ -361,8 +405,12 @@ const closeTab = () => {
 }
 
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
-    { usage, needsUI: true, noAuthOk: true })
+  commandTree.listen(
+    '/tab/switch',
+    ({ argvNoOptions }) =>
+      switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
+    { usage, needsUI: true, noAuthOk: true }
+  )
   commandTree.listen('/tab/new', newTabAsync, { needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/close', closeTab, { needsUI: true, noAuthOk: true })
 }
