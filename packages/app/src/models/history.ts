@@ -29,7 +29,6 @@ export interface HistoryLine {
   raw?: string
 }
 
-
 export let history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
 
 export let lines: HistoryLine[] = history[getTabIndex(getCurrentTab())] || []
