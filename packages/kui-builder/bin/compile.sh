@@ -47,7 +47,7 @@ touch "$BUILDDIR"/.pre-scanned.json
 set +e
 TSCONFIG_HOME=`readlink $0`
 if [ $? == 1 ]; then
-    TSCONFIG_HOME="$SCRIPTDIR/.."
+    TSCONFIG_HOME="$SCRIPTDIR/../../.."
     TSCONFIG="$TSCONFIG_HOME/tsconfig.json"
     echo "it looks like we are not working off a symlink ${TSCONFIG_HOME}"
 else
