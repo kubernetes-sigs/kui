@@ -14,63 +14,63 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'; // tslint:disable-line:no-duplicate-imports
-import * as ui from '@kui-shell/core/tests/lib/ui';
-const { cli, selectors, sidecar } = ui;
+import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@kui-shell/core/tests/lib/ui'
+const { cli, selectors, sidecar } = ui
 
 // test that new tab does not copy any output over from the cloned tab
-common.localDescribe('new tab from pty active tab via click', function(
+common.localDescribe('new tab from pty active tab via click', function (
   this: common.ISuite
 ) {
-  before(common.before(this));
-  after(common.after(this));
+  before(common.before(this))
+  after(common.after(this))
 
   it('should open sidecar with about', () =>
     cli
       .do('about', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should less README.md', async () => {
     try {
-      cli.do('less ../../README.md', this.app);
+      cli.do('less ../../README.md', this.app)
 
-      const selector = `${selectors.OUTPUT_N(1)} .xterm`;
-      await this.app.client.waitForExist(selector);
+      const selector = `${selectors.OUTPUT_N(1)} .xterm`
+      await this.app.client.waitForExist(selector)
     } catch (err) {
-      return common.oops(this)(err);
+      return common.oops(this)(err)
     }
-  });
+  })
 
   it('click new tab button', () =>
     this.app.client
       .click('.new-tab-button')
       .then(() => this.app.client.waitForVisible(selectors.TAB_N(2)))
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   // no xterm copied over!
   it('should have a clean tab', () =>
     this.app.client
       .waitForVisible(`${selectors.CURRENT_TAB} .xterm`, 5000, true)
-      .catch(common.oops(this)));
-});
+      .catch(common.oops(this)))
+})
 
-common.localDescribe('new tab from quiescent tab via command', function(
+common.localDescribe('new tab from quiescent tab via command', function (
   this: common.ISuite
 ) {
-  before(common.before(this));
-  after(common.after(this));
+  before(common.before(this))
+  after(common.after(this))
 
-  const CWD1 = process.cwd();
-  const CWD2 = '/tmp';
+  const CWD1 = process.cwd()
+  const CWD2 = '/tmp'
 
   it(`cd to ${CWD1} in tab1`, () =>
     cli
       .do(`cd ${CWD1}`, this.app)
       .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('new tab via command', () =>
     cli
@@ -81,7 +81,7 @@ common.localDescribe('new tab from quiescent tab via command', function(
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute echo in new tab', () =>
     cli
@@ -92,25 +92,25 @@ common.localDescribe('new tab from quiescent tab via command', function(
           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
         )
       )
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} in tab2`, () =>
     cli
       .do(`pwd`, this.app)
       .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`cd to ${CWD2} in tab2`, () =>
     cli
       .do(`cd ${CWD2}`, this.app)
       .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`pwd should show CWD2 ${CWD2} in tab2`, () =>
     cli
       .do(`pwd`, this.app)
       .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should close tab via "exit" command', () =>
     cli
@@ -128,13 +128,13 @@ common.localDescribe('new tab from quiescent tab via command', function(
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     cli
       .do(`pwd`, this.app)
       .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('new tab via command', () =>
     cli
@@ -145,47 +145,47 @@ common.localDescribe('new tab from quiescent tab via command', function(
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`cd to ${CWD2} in tab2`, () =>
     cli
       .do(`cd ${CWD2}`, this.app)
       .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`switch back to first tab via command`, () =>
-    cli.do('tab switch 1', this.app).catch(common.oops(this)));
+    cli.do('tab switch 1', this.app).catch(common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     cli
       .do('pwd', this.app)
       .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`switch back to second tab via command`, () =>
-    cli.do('tab switch 2', this.app).catch(common.oops(this)));
+    cli.do('tab switch 2', this.app).catch(common.oops(this)))
 
   it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () =>
     cli
       .do('pwd', this.app)
       .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it(`switch back to first tab via command`, () =>
-    cli.do('tab switch 1', this.app).catch(common.oops(this)));
+    cli.do('tab switch 1', this.app).catch(common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     cli
       .do('pwd', this.app)
       .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)));
-});
+      .catch(common.oops(this)))
+})
 
-common.localDescribe('new tab from quiescent tab via button click', function(
+common.localDescribe('new tab from quiescent tab via button click', function (
   this: common.ISuite
 ) {
-  before(common.before(this));
-  after(common.after(this));
+  before(common.before(this))
+  after(common.after(this))
 
   it('new tab via button click', () =>
     this.app.client
@@ -196,7 +196,7 @@ common.localDescribe('new tab from quiescent tab via button click', function(
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute echo in new tab', () =>
     cli
@@ -207,7 +207,7 @@ common.localDescribe('new tab from quiescent tab via button click', function(
           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
         )
       )
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should close tab via "tab close" command', () =>
     cli
@@ -225,7 +225,7 @@ common.localDescribe('new tab from quiescent tab via button click', function(
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute echo in first tab', () =>
     cli
@@ -237,14 +237,14 @@ common.localDescribe('new tab from quiescent tab via button click', function(
           5000
         )
       )
-      .catch(common.oops(this)));
-});
+      .catch(common.oops(this)))
+})
 
-common.localDescribe('new tab from active tab via button click', function(
+common.localDescribe('new tab from active tab via button click', function (
   this: common.ISuite
 ) {
-  before(common.before(this));
-  after(common.after(this));
+  before(common.before(this))
+  after(common.after(this))
 
   it('start a sleep, then new tab via button click', () =>
     cli
@@ -256,7 +256,7 @@ common.localDescribe('new tab from active tab via button click', function(
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute echo in new tab', () =>
     cli
@@ -267,14 +267,14 @@ common.localDescribe('new tab from active tab via button click', function(
           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
         )
       )
-      .catch(common.oops(this)));
-});
+      .catch(common.oops(this)))
+})
 
-common.localDescribe('new tab from pty active tab via button click', function(
+common.localDescribe('new tab from pty active tab via button click', function (
   this: common.ISuite
 ) {
-  before(common.before(this));
-  after(common.after(this));
+  before(common.before(this))
+  after(common.after(this))
 
   it('start vi, then new tab via button click', () =>
     cli
@@ -289,7 +289,7 @@ common.localDescribe('new tab from pty active tab via button click', function(
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute echo in new tab', () =>
     cli
@@ -300,14 +300,14 @@ common.localDescribe('new tab from pty active tab via button click', function(
           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
         )
       )
-      .catch(common.oops(this)));
-});
+      .catch(common.oops(this)))
+})
 
 common.localDescribe(
   'new tab from active tab that is emitting output via button click',
-  function(this: common.ISuite) {
-    before(common.before(this));
-    after(common.after(this));
+  function (this: common.ISuite) {
+    before(common.before(this))
+    after(common.after(this))
 
     it('start an echo loop, then new tab via button click', () =>
       cli
@@ -327,7 +327,7 @@ common.localDescribe(
             true
           )
         ) // no xterm DOM in the new tab
-        .catch(common.oops(this)));
+        .catch(common.oops(this)))
 
     it('should execute echo in new tab', () =>
       cli
@@ -338,13 +338,13 @@ common.localDescribe(
             '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
           )
         )
-        .catch(common.oops(this)));
+        .catch(common.oops(this)))
   }
-);
+)
 
-common.localDescribe('tab history', function(this: common.ISuite) {
-  before(common.before(this));
-  after(common.after(this));
+common.localDescribe('tab history', function (this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
 
   it('new tab via button click', () =>
     this.app.client
@@ -355,7 +355,7 @@ common.localDescribe('tab history', function(this: common.ISuite) {
         )
       )
       .then(() => cli.waitForRepl(this.app))
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute echo in new tab', () =>
     cli
@@ -366,7 +366,7 @@ common.localDescribe('tab history', function(this: common.ISuite) {
           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
         )
       )
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute history', () =>
     cli
@@ -377,7 +377,7 @@ common.localDescribe('tab history', function(this: common.ISuite) {
           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
         )
       )
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should close tab2', () =>
     cli
@@ -390,7 +390,7 @@ common.localDescribe('tab history', function(this: common.ISuite) {
         )
       )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)));
+      .catch(common.oops(this)))
 
   it('should execute echo first in first tab', () =>
     cli
@@ -402,12 +402,12 @@ common.localDescribe('tab history', function(this: common.ISuite) {
           5000
         )
       )
-      .catch(common.oops(this)));
-  
-      it('should execute history', () =>
+      .catch(common.oops(this)))
+
+  it('should execute history', () =>
       cli
         .do('history', this.app)
         .then(cli.expectOKWithString('echo first'))
-        .catch(common.oops(this)));
+        .catch(common.oops(this)))
 
-});
+})

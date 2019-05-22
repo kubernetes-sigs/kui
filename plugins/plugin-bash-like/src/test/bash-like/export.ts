@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common';
-import * as common from '@kui-shell/core/tests/lib/common'; // tslint:disable-line:no-duplicate-imports
-import * as ui from '@kui-shell/core/tests/lib/ui';
-const { cli, selectors, sidecar } = ui;
-const { localDescribe } = common;
+import { ISuite } from '@kui-shell/core/tests/lib/common'
+import * as common from '@kui-shell/core/tests/lib/common' // tslint:disable-line:no-duplicate-imports
+import * as ui from '@kui-shell/core/tests/lib/ui'
+const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 
-localDescribe('export command', function(this: ISuite) {
-  before(common.before(this));
-  after(common.after(this));
+localDescribe('export command', function (this: ISuite) {
+  before(common.before(this))
+  after(common.after(this))
 
   it('should export foo bar', () =>
     cli
@@ -31,5 +31,5 @@ localDescribe('export command', function(this: ISuite) {
       .then(() =>
         cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar'))
       )
-      .catch(common.oops(this)));
-});
+      .catch(common.oops(this)))
+})

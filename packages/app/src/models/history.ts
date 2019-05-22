@@ -37,11 +37,10 @@ export const getCursor = (): number => cursor
 
 const syncHistory = () => {
   history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
-  
 
   const tabHistory = history[getTabIndex(getCurrentTab())]
-  lines =  typeof tabHistory!=='undefined'? tabHistory: []
-  
+  lines = typeof tabHistory !== 'undefined' ? tabHistory : []
+
   cursor = lines.length
 }
 /** change the cursor, protecting against under- and overflow */
@@ -74,9 +73,9 @@ export const add = (line: HistoryLine) => {
   if (lines.length === 0 || JSON.stringify(lines[lines.length - 1]) !== JSON.stringify(line)) {
     // don't add sequential duplicates
     lines.push(line)
-   
+
     history[getTabIndex(getCurrentTab())] = lines
- 
+
     store().setItem(key, JSON.stringify(history))
     // console.log('history::add', cursor)
   }
