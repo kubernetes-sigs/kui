@@ -31,13 +31,17 @@ export interface HistoryLine {
 
 export let history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
 
-export let lines: HistoryLine[] = history[getTabIndex(getCurrentTab())] || []
+export let lines: HistoryLine[] = []
 let cursor = lines.length // pointer to historic line
 export const getCursor = (): number => cursor
 
 const syncHistory = () => {
   history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
-  lines = history[getTabIndex(getCurrentTab())] || []
+  
+
+  const tabHistory = history[getTabIndex(getCurrentTab())]
+  lines =  typeof tabHistory!=='undefined'? tabHistory: []
+  
   cursor = lines.length
 }
 /** change the cursor, protecting against under- and overflow */
@@ -58,9 +62,9 @@ const guardedChange = (incr: number): number => {
  *
  */
 export const wipe = () => {
-  const curStorage = JSON.parse(store().getItem(key))
-  delete curStorage[getTabIndex(getCurrentTab())]
-  store().setItem(key, JSON.stringify(curStorage))
+  syncHistory()
+  delete history[getTabIndex(getCurrentTab())]
+  store().setItem(key, JSON.stringify(history))
   return true
 }
 
@@ -70,9 +74,10 @@ export const add = (line: HistoryLine) => {
   if (lines.length === 0 || JSON.stringify(lines[lines.length - 1]) !== JSON.stringify(line)) {
     // don't add sequential duplicates
     lines.push(line)
-    const curStorage = JSON.parse(store().getItem(key))
-    curStorage[getTabIndex(getCurrentTab())] = lines
-    store().setItem(key, JSON.stringify(curStorage))
+   
+    history[getTabIndex(getCurrentTab())] = lines
+ 
+    store().setItem(key, JSON.stringify(history))
     // console.log('history::add', cursor)
   }
   cursor = lines.length
@@ -84,9 +89,8 @@ export const update = (cursor: number, updateFn) => {
   syncHistory()
   // console.log('history::update', cursor)
   updateFn(lines[cursor])
-  const curStorage = JSON.parse(store().getItem(key))
-  curStorage[getTabIndex(getCurrentTab())] = lines
-  store().setItem(key, JSON.stringify(curStorage))
+  history[getTabIndex(getCurrentTab())] = lines
+  store().setItem(key, JSON.stringify(history))
 }
 
 /** return the given line of history */

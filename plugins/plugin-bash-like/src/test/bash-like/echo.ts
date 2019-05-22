@@ -27,7 +27,7 @@ localDescribe('echo command', function (this: ISuite) {
   it('should echo nothing variant 1', () => cli.do('echo', this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))
-
+    
   it('should echo nothing variant 2', () => cli.do('echo ', this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))
