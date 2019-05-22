@@ -37,6 +37,8 @@ export const getCursor = (): number => cursor
 
 const syncHistory = () => {
   history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
+  console.log("indexxxx",getTabIndex(getCurrentTab()))
+  console.log("linesssss", history[getTabIndex(getCurrentTab())] )
   lines = history[getTabIndex(getCurrentTab())] || []
   cursor = lines.length
 }
