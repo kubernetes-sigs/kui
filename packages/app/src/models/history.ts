@@ -31,7 +31,7 @@ export interface HistoryLine {
 
 export let history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
 
-export let lines: HistoryLine[] = history[getTabIndex(getCurrentTab())] || []
+export let lines: HistoryLine[] = []
 let cursor = lines.length // pointer to historic line
 export const getCursor = (): number => cursor
 
