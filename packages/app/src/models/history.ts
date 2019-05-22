@@ -29,7 +29,6 @@ export interface HistoryLine {
   raw?: string
 }
 
-
 export let history = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || {}
 
 export let lines: HistoryLine[] = history[getTabIndex(getCurrentTab())] || []
@@ -82,7 +81,7 @@ export const add = (line: HistoryLine) => {
 
 /** update a line of repl history -- for async operations */
 export const update = (cursor: number, updateFn) => {
-  syncHistory
+  syncHistory()
   // console.log('history::update', cursor)
   updateFn(lines[cursor])
   const curStorage = JSON.parse(store().getItem(key))

@@ -52,7 +52,7 @@ debug('finished loading modules')
  */
 export interface IExecutor {
   name: string
-  exec(commandUntrimmed: string, execOptions: IExecOptions)
+  exec (commandUntrimmed: string, execOptions: IExecOptions)
 }
 
 /**
@@ -61,7 +61,7 @@ export interface IExecutor {
  */
 export interface IReplEval {
   name: string
-  apply(commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
 }
 
 /**
@@ -71,7 +71,7 @@ export interface IReplEval {
  */
 export class DirectReplEval implements IReplEval {
   name = 'DirectReplEval'
-  apply(commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
+  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
@@ -140,8 +140,8 @@ export const qexec = (command: string, block?: HTMLElement | boolean, contextCha
     noHistory: true,
     contextChangeOK
   }, execOptions, {
-      type: ExecType.Nested
-    }))
+    type: ExecType.Nested
+  }))
 }
 
 /**
@@ -308,7 +308,7 @@ const key = 'openwhisk.export'
 class InProcessExecutor implements IExecutor {
   name = 'InProcessExecutor'
 
-  async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
+  async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
     const tab = cli.getCurrentTab()

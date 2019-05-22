@@ -61,14 +61,14 @@ class TabState {
   /** current working directory */
   readonly cwd: string
 
-  constructor() {
+  constructor () {
     this.env = Object.assign({}, process.env)
     this.cwd = process.cwd().slice(0) // just in case, copy the string
 
     debug('captured tab state', this.cwd)
   }
 
-  restore() {
+  restore () {
     debug('changing cwd', process.cwd(), this.cwd)
     process.chdir(this.cwd)
     process.env = this.env

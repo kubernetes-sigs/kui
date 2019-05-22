@@ -1,5 +1,5 @@
 
-import { CommandRegistrar, IEvaluatorArgs } from "@kui-shell/core/models/command";
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import sessionStore from '@kui-shell/core/models/sessionStore'
 import { getTabIndex, getCurrentTab } from '@kui-shell/core/webapp/cli'
 
@@ -9,21 +9,21 @@ const key = 'openwhisk.export'
  *
  */
 const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) => {
-    const storage = JSON.parse(sessionStore().getItem(key)) || {}
+  const storage = JSON.parse(sessionStore().getItem(key)) || {}
 
-    const tabId = getTabIndex(getCurrentTab());
-    const curDic = storage[tabId] || {}
-    const toBeParsed = parsedOptions._[1]
+  const tabId = getTabIndex(getCurrentTab())
+  const curDic = storage[tabId] || {}
+  const toBeParsed = parsedOptions._[1]
 
     // TO DO:
     // escape quoted equal sign
-    const arr = toBeParsed.split('=')
+  const arr = toBeParsed.split('=')
 
-    curDic[arr[0]] = arr[1]
+  curDic[arr[0]] = arr[1]
 
-    storage[tabId] = curDic
-    sessionStore().setItem(key, JSON.stringify(storage))
-    return true;
+  storage[tabId] = curDic
+  sessionStore().setItem(key, JSON.stringify(storage))
+  return true
 }
 
 /**
@@ -31,5 +31,5 @@ const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) 
  *
  */
 export default (commandTree: CommandRegistrar) => {
-    commandTree.listen('/export', exportCommand, { usage: null, noAuthOk: true, requiresLocal: true })
+  commandTree.listen('/export', exportCommand, { usage: null, noAuthOk: true, requiresLocal: true })
 }
