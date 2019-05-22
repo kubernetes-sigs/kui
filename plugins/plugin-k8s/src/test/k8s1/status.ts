@@ -38,12 +38,20 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
       .catch(common.oops(ctx))
   })
 
-  const alternatives = [`k status pods -n ${ns}`, `kubectl status pods -n ${ns}`, `k list pods -n ${ns}`, `kubectl list pods -n ${ns}`]
-  alternatives.forEach(cmd => {
-    it(`should list the new pod via the "${cmd}"`, () => {
-      return impl.do(cmd, ctx.app)
-        .then(impl.expectOK('nginx'))
-        .catch(common.oops(ctx))
+  const kubeAlternatives = ['kubectl', 'k']
+  const verbAlternatives = ['status', 'list']
+  const entityAlternatives = [`pods -n ${ns}`, '--all']
+
+  kubeAlternatives.forEach(kubectl => {
+    verbAlternatives.forEach(verb => {
+      entityAlternatives.forEach(entity => {
+        const cmd = `${kubectl} ${verb} ${entity}`
+        it(`should list the new pod via the "${cmd}"`, () => {
+          return impl.do(cmd, ctx.app)
+            .then(impl.expectOK('nginx'))
+            .catch(common.oops(ctx))
+        })
+      })
     })
   })
 
