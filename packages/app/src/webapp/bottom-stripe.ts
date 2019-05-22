@@ -96,13 +96,15 @@ const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show:
     balloon, balloonLength, data, command = () => mode, direct, execOptions,
     defaultMode, actAsButton, radioButton = false, echo = false, noHistory = true, replSilence = true } = opts
 
+  // create the button dom, and attach it
+  const button = document.createElement('div')
+
   if (visibleWhen && visibleWhen !== show) {
     // only visible when a specific mode is active!
     return
+  } else if (visibleWhen) {
+    button.setAttribute('data-visible-when', visibleWhen)
   }
-
-  // create the button dom, and attach it
-  const button = document.createElement('div')
 
   button.classList.add(css.button)
   if (actAsButton) {
@@ -196,6 +198,17 @@ const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show:
             currentActive.classList.remove(css.active)
           }
           button.classList.add(css.active)
+
+          const visibleWhens = bottomStripe.querySelectorAll('.sidecar-bottom-stripe-button[data-visible-when]')
+          for (let idx = 0; idx < visibleWhens.length; idx++) {
+            const otherButton = visibleWhens[idx] as HTMLElement
+            const when = otherButton.getAttribute('data-visible-when')
+            if (when === mode) {
+              otherButton.classList.remove('not-displayed')
+            } else {
+              otherButton.classList.add('not-displayed')
+            }
+          }
         } else if (actAsButton && selected !== undefined) {
           if (radioButton) {
             button.classList.toggle(css.selected)

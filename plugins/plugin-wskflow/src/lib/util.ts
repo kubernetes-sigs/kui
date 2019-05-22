@@ -19,6 +19,7 @@ const debug = Debug('plugins/wskflow/util')
 import * as sidecar from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
 import { optionsToString } from '@kui-shell/core/core/utility'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
@@ -165,8 +166,11 @@ export const wskflow = async (visualize, { ast, input, name, namespace, viewOpti
 /**
  * Zoom to fit buttons
  *
+ * @param controller an output of graph2doms()
+ * @param visibleWhenShowing only show the zoom buttons when the given mode is active
+ *
  */
-export const zoomToFitButtons = controller => {
+export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): ISidecarMode[] => {
   if (controller && controller.register) {
     const events = require('events')
     const zoom1to1Bus = new events.EventEmitter()
@@ -180,24 +184,28 @@ export const zoomToFitButtons = controller => {
     controller.register(listener)
 
     return [
-      { label: '1:1',
+      {
+        mode: 'zoom-one-to-one',
+        label: '1:1',
         actAsButton: true,
         flush: 'right',
         balloon: 'Use a fixed-size canvas',
         selected: controller.is1to1(),
         selectionController: zoom1to1Bus,
-        visibleWhen: 'visualization',
+        visibleWhen: visibleWhenShowing,
         direct: () => {
           controller.zoom1to1()
         }
       },
-      { fontawesome: 'fas fa-expand',
+      {
+        mode: 'zoom-to-fit',
+        fontawesome: 'fas fa-expand',
         actAsButton: true,
         flush: 'right',
         balloon: 'Use a zoom to fit canvas',
         selected: !controller.is1to1(),
         selectionController: zoomToFitBus,
-        visibleWhen: 'visualization',
+        visibleWhen: visibleWhenShowing,
         direct: () => {
           controller.zoomToFit()
         }

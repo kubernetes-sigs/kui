@@ -94,6 +94,7 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   createIt(nginx)
   editItWithoutSaving(nginx, 3, ':wq!')
   editItWithoutSaving(nginx, 4, ':wq')
+  deleteIt(nginx)
 
   deleteNS(this, ns)
 })

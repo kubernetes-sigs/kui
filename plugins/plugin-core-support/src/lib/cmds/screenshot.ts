@@ -247,9 +247,12 @@ export default async (commandTree: CommandRegistrar) => {
           const finish = () => {
             cleanupMouseEvents()
 
-            cli.getCurrentPrompt().readOnly = false
             snapDom.classList.add('go-away')
-            setTimeout(() => document.body.removeChild(snapDom), 1000) // match go-away-able transition-duration; see ui.css
+            setTimeout(() => {
+              document.body.removeChild(snapDom)
+              cli.getCurrentPrompt().readOnly = false
+              cli.getCurrentPrompt().focus()
+            }, 1000) // match go-away-able transition-duration; see ui.css
           }
 
           // the following bits handle mouse clicks on the underlying
@@ -391,6 +394,7 @@ export default async (commandTree: CommandRegistrar) => {
           // to capture the Escape key event
           const hiddenInput = document.createElement('input')
           hiddenInput.classList.add('hidden')
+          hiddenInput.classList.add('grab-focus') // so that the repl doesn't grab it back on `listen`
           snapDom.appendChild(hiddenInput)
           hiddenInput.focus()
 

@@ -790,10 +790,10 @@ export const popupListen = (text = getSidecar().querySelector('.sidecar-header-t
   listen(input)
 }
 export const listen = (prompt: HTMLInputElement) => {
-  debug('listen', prompt)
+  debug('listen', prompt, document.activeElement)
   prompt.readOnly = false
 
-  if (!prompt.classList.contains('sidecar-header-input')) {
+  if (!prompt.classList.contains('sidecar-header-input') && !document.activeElement.classList.contains('grab-focus')) {
     prompt.focus()
   }
 
@@ -880,7 +880,10 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
 
   parentNode.appendChild(nextBlock)
   listen(getPrompt(nextBlock))
-  nextBlock.querySelector('input').focus()
+
+  if (!document.activeElement.classList.contains('grab-focus')) {
+    nextBlock.querySelector('input').focus()
+  }
 
   // the currentBlock might've been detached; if so, re-start from 0
   const currentIndex = currentBlock.parentNode ? parseInt(currentBlock.getAttribute('data-input-count'), 10) : -1
