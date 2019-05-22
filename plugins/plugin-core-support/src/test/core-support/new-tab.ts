@@ -379,9 +379,9 @@ common.localDescribe('tab history', function(this: common.ISuite) {
       )
       .catch(common.oops(this)));
 
-  it('should close tab via "tab close" command', () =>
+  it('should close tab2', () =>
     cli
-      .do('tab close', this.app)
+      .do('exit', this.app)
       .then(() =>
         this.app.client.waitForExist(
           '.left-tab-stripe-button-selected[data-tab-button-index="2"]',
@@ -389,15 +389,10 @@ common.localDescribe('tab history', function(this: common.ISuite) {
           true
         )
       )
-      .then(() =>
-        this.app.client.waitForExist(
-          '.left-tab-stripe-button-selected[data-tab-button-index="1"]'
-        )
-      )
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
       .catch(common.oops(this)));
 
-  it('should execute ls in first tab', () =>
+  it('should execute echo first in first tab', () =>
     cli
       .do('echo first', this.app)
       .then(cli.expectOKWithString('first'))
@@ -408,15 +403,11 @@ common.localDescribe('tab history', function(this: common.ISuite) {
         )
       )
       .catch(common.oops(this)));
+  
+      it('should execute history', () =>
+      cli
+        .do('history', this.app)
+        .then(cli.expectOKWithString('echo first'))
+        .catch(common.oops(this)));
 
-  it('should execute history', () =>
-    cli
-      .do('history', this.app)
-      .then(cli.expectOKWithString('echo first'))
-      .then(() =>
-        this.app.client.waitForVisible(
-          '.left-tab-stripe-button-selected[data-tab-button-index="1"]'
-        )
-      )
-      .catch(common.oops(this)));
 });

@@ -405,7 +405,8 @@ class InProcessExecutor implements IExecutor {
 
     const storage = JSON.parse(sessionStore().getItem(key)) || {}
     const curDic = storage[cli.getTabIndex(cli.getCurrentTab())]
-    process.env = Object.assign({}, process.env, curDic)
+    if (typeof curDic!=='undefined')
+      process.env = Object.assign({}, process.env, curDic)
 
     const echo = !execOptions || execOptions.echo !== false
     const nested =
