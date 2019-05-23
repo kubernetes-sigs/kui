@@ -377,12 +377,14 @@ class InProcessExecutor implements IExecutor {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
     const tab = cli.getCurrentTab()
-
-    const storage = JSON.parse(sessionStore().getItem(key)) || {}
-    const curDic = storage[cli.getTabIndex(cli.getCurrentTab())]
-    if (typeof curDic !== 'undefined') {
-      process.env = Object.assign({}, process.env, curDic)
+    if (!isHeadless()){
+      const storage = JSON.parse(sessionStore().getItem(key)) || {}
+      const curDic = storage[cli.getTabIndex(cli.getCurrentTab())]
+      if (typeof curDic !== 'undefined') {
+        process.env = Object.assign({}, process.env, curDic)
+      }
     }
+
 
     const echo = !execOptions || execOptions.echo !== false
     const nested =
