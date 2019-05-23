@@ -1,7 +1,7 @@
 /*
  * Copyright 2019 IBM Corporation
  *
- * Licensed under the Apache License, Version 2.0 (the "License")
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,35 +37,34 @@ type ExitHandler = (exitCode: number) => Promise<void>
  * Allocate a port
  *
  */
-const getPort = (): Promise<number> =>
-  new Promise(async (resolve, reject) => {
-    const { createServer } = await import('net')
+const getPort = (): Promise<number> => new Promise(async (resolve, reject) => {
+  const { createServer } = await import('net')
 
-    const iter = () => {
-      const port = portRange
-      portRange += 1
+  const iter = () => {
+    const port = portRange
+    portRange += 1
 
-      const server = createServer()
-      server.listen(port, () => {
-        server.once('close', function () {
-          resolve(port)
-        })
-        server.close()
+    const server = createServer()
+    server.listen(port, () => {
+      server.once('close', function () {
+        resolve(port)
       })
+      server.close()
+    })
 
-      server.on('error', (err: NodeJS.ErrnoException) => {
-        if (err.code === 'EADDRINUSE') {
-          iter()
-        } else {
-          reject(err)
-        }
-      })
-    }
+    server.on('error', (err: NodeJS.ErrnoException) => {
+      if (err.code === 'EADDRINUSE') {
+        iter()
+      } else {
+        reject(err)
+      }
+    })
+  }
 
-    iter()
-  })
+  iter()
+})
 
-// these bits are to avoid macOS garbage those lines marked with //* here:
+// these bits are to avoid macOS garbage; those lines marked with //* here:
 // $ bash -i -l -c ls
 // * Restored session: Tue Apr  2 19:24:55 EDT 2019
 //  [[ VALID OUTPUT ]]
@@ -91,9 +90,7 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
     }
   }
 
-  return async (exitCode: number) => {
-    /* no-op */
-  }
+  return async (exitCode: number) => { /* no-op */ }
 }
 const enableBashSessions = async (exitCode: number) => {
   await promisify(fs.unlink)(BSD())
@@ -104,25 +101,24 @@ const enableBashSessions = async (exitCode: number) => {
  *
  */
 let cachedLoginShell: string
-const getLoginShell = async (): Promise<string> =>
-  new Promise((resolve, reject) => {
-    if (cachedLoginShell) {
-      resolve(cachedLoginShell)
-    } else {
-      exec('/bin/bash -c "echo $SHELL"', (err, stdout, stderr) => {
-        if (err) {
-          console.error(err)
-          if (stderr) {
-            console.error(stderr)
-          }
-          reject(err)
-        } else {
-          cachedLoginShell = stdout.trim()
-          resolve(cachedLoginShell)
+const getLoginShell = async (): Promise<string> => new Promise((resolve, reject) => {
+  if (cachedLoginShell) {
+    resolve(cachedLoginShell)
+  } else {
+    exec('/bin/bash -c "echo $SHELL"', (err, stdout, stderr) => {
+      if (err) {
+        console.error(err)
+        if (stderr) {
+          console.error(stderr)
         }
-      })
-    }
-  })
+        reject(err)
+      } else {
+        cachedLoginShell = stdout.trim()
+        resolve(cachedLoginShell)
+      }
+    })
+  }
+})
 
 /**
  *
@@ -149,21 +145,17 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
 
         case 'exec':
           try {
-            shell = pty.spawn(
-              await getLoginShell(),
-              ['-l', '-i', '-c', '--', msg.cmdline],
-              {
-                name: 'xterm-color',
-                rows: msg.rows && parseInt(msg.rows, 10),
-                cols: msg.cols && parseInt(msg.cols, 10),
-                cwd: msg.cwd || process.cwd(),
-                env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
-              }
-            )
+            shell = pty.spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
+              name: 'xterm-color',
+              rows: msg.rows && parseInt(msg.rows, 10),
+              cols: msg.cols && parseInt(msg.cols, 10),
+              cwd: msg.cwd || process.cwd(),
+              env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
+            })
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
             // send all PTY data out to the websocket client
-            shell.on('data', data => {
+            shell.on('data', (data) => {
               ws.send(JSON.stringify({ type: 'data', data }))
             })
 
@@ -174,6 +166,7 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
             })
 
             ws.send(JSON.stringify({ type: 'state', state: 'ready' }))
+
           } catch (err) {
             console.error('could not exec', err)
           }
@@ -225,11 +218,7 @@ const createDefaultServer = (): Server => {
  */
 let cachedWss
 let cachedPort
-export const main = async (
-  N: number,
-  server?: Server,
-  preexistingPort?: number
-) => {
+export const main = async (N: number, server?: Server, preexistingPort?: number) => {
   if (cachedWss) {
     return cachedPort
   } else {
@@ -262,6 +251,7 @@ export const main = async (
 
         cachedPort = preexistingPort
         resolve({ port: cachedPort, exitNow })
+
       } else {
         cachedPort = await getPort()
         const server = createDefaultServer()
@@ -287,97 +277,87 @@ let count = 0
 let cachedSelf
 let selfHome
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen(
-    '/bash/websocket/open',
-    ({ execOptions }) =>
-      new Promise(async (resolve, reject) => {
-        const N = count++
+  commandTree.listen('/bash/websocket/open', ({ execOptions }) => new Promise(async (resolve, reject) => {
+    const N = count++
 
-        /**
-         * Return a websocket URL for the given port
-         *
-         */
-        const resolveWithHost = (port: number) => {
-          const host = execOptions['host'] || `localhost:${port}`
-          resolve(`wss://${host}/bash/${N}`)
-        }
+    /**
+     * Return a websocket URL for the given port
+     *
+     */
+    const resolveWithHost = (port: number) => {
+      const host = execOptions['host'] || `localhost:${port}`
+      resolve(`wss://${host}/bash/${N}`)
+    }
 
-        if (execOptions.isProxied) {
-          console.log(`do we have a port? ${execOptions['port']}`)
-          return main(N, execOptions['server'], execOptions['port'])
-            .then(resolveWithHost)
-            .catch(reject)
+    if (execOptions.isProxied) {
+      console.log(`do we have a port? ${execOptions['port']}`)
+      return main(N, execOptions['server'], execOptions['port']).then(resolveWithHost).catch(reject)
+    } else {
+      const { ipcRenderer } = await import('electron')
+
+      if (!ipcRenderer) {
+        const error = new Error('electron not available')
+        error['code'] = 127
+        return reject(error)
+      }
+
+      ipcRenderer.send('/exec/invoke', JSON.stringify({
+        module: '@kui-shell/plugin-bash-like/pty/server',
+        hash: N
+      }))
+
+      const channel = `/exec/response/${N}`
+      ipcRenderer.once(channel, (event, arg) => {
+        const message = JSON.parse(arg)
+        if (!message.success) {
+          reject(message.error)
         } else {
-          const { ipcRenderer } = await import('electron')
-
-          if (!ipcRenderer) {
-            const error = new Error('electron not available')
-            error['code'] = 127
-            return reject(error)
-          }
-
-          ipcRenderer.send(
-            '/exec/invoke',
-            JSON.stringify({
-              module: '@kui-shell/plugin-bash-like/pty/server',
-              hash: N
-            })
-          )
-
-          const channel = `/exec/response/${N}`
-          ipcRenderer.once(channel, (event, arg) => {
-            const message = JSON.parse(arg)
-            if (!message.success) {
-              reject(message.error)
-            } else {
-              const port = message.returnValue
-              resolveWithHost(port)
-            }
-          })
-
-          // path to the build version of ourself
-          /*if (!cachedSelf) {
-              let self = require.resolve('@kui-shell/plugin-bash-like/pty/server')
-              if (/\.asar\//.test(self)) {
-              const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
-              cachedSelf = await copyOutFile(self)
-              selfHome = dirname(cachedSelf)
-              } else {
-              const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
-              await copyOutFile(self)
-              cachedSelf = self
-              selfHome = dirname(dirname(dirname(require.resolve('@kui-shell/prescan'))))
-              }
-              }
-
-              // reinvoke ourselves in a separate process
-              const child = spawn('node', [cachedSelf, N], {
-              cwd: selfHome,
-              env: process.env
-              })
-              children.push(child)
-
-              child.stdout.on('data', data => {
-              const readyPattern = /^ready (\d+)\s*$/
-              const match = data.toString().match(readyPattern)
-              if (match) {
-              const port = match[1]
-              resolve(`ws://localhost:${port}/bash/${N}`)
-              }
-              })
-
-              child.stderr.on('data', data => {
-              console.error(data.toString())
-              })
-
-              child.on('close', (exitCode: number) => {
-              // debug('exitCode', exitCode)
-              children.splice(N, 1)
-              })*/
+          const port = message.returnValue
+          resolveWithHost(port)
         }
-      }),
-    { noAuthOk: true }
-  )
+      })
+
+      // path to the build version of ourself
+      /*if (!cachedSelf) {
+        let self = require.resolve('@kui-shell/plugin-bash-like/pty/server')
+        if (/\.asar\//.test(self)) {
+        const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
+        cachedSelf = await copyOutFile(self)
+        selfHome = dirname(cachedSelf)
+        } else {
+        const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
+        await copyOutFile(self)
+        cachedSelf = self
+        selfHome = dirname(dirname(dirname(require.resolve('@kui-shell/prescan'))))
+        }
+        }
+
+        // reinvoke ourselves in a separate process
+        const child = spawn('node', [cachedSelf, N], {
+        cwd: selfHome,
+        env: process.env
+        })
+        children.push(child)
+
+        child.stdout.on('data', data => {
+        const readyPattern = /^ready (\d+)\s*$/
+        const match = data.toString().match(readyPattern)
+        if (match) {
+        const port = match[1]
+        resolve(`ws://localhost:${port}/bash/${N}`)
+        }
+        })
+
+        child.stderr.on('data', data => {
+        console.error(data.toString())
+        })
+
+        child.on('close', (exitCode: number) => {
+        // debug('exitCode', exitCode)
+        children.splice(N, 1)
+        })*/
+    }
+  }), { noAuthOk: true })
 }
 
 // this is the entry point when we re-invoke ourselves as a separate
