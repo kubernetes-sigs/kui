@@ -39,10 +39,16 @@ import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
 import { element } from '../webapp/util/dom' // FIXME
-
+import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
 
 debug('finished loading modules')
+
+/**
+ * the key in localStorage to get the symbol table
+ *
+ */
+export const key = 'kui.symbol_table'
 
 /**
  * repl.exec, and the family repl.qexec, repl.pexec, etc. are all
@@ -311,6 +317,14 @@ class InProcessExecutor implements IExecutor {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
     const tab = cli.getCurrentTab()
+
+    if (!isHeadless()) {
+      const storage = JSON.parse(sessionStore().getItem(key)) || {}
+      const curDic = storage[cli.getTabIndex(cli.getCurrentTab())]
+      if (typeof curDic !== 'undefined') {
+        process.env = Object.assign({}, process.env, curDic)
+      }
+    }
 
     const echo = !execOptions || execOptions.echo !== false
     const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
