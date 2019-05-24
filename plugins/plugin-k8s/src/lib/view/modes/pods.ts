@@ -20,6 +20,8 @@ const debug = Debug('k8s/view/modes/pods')
 import { qexec as $$ } from '@kui-shell/core/core/repl'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Table } from '@kui-shell/core/webapp/models/table'
 
 import { selectorToString } from '../../util/selectors'
 
@@ -28,7 +30,6 @@ import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
 import { getActiveView, formatTable } from '../formatMultiTable'
-import { Table } from '@kui-shell/core/webapp/models/table'
 
 /** for drilldown back button */
 const viewName = 'Pods'
@@ -38,7 +39,7 @@ const viewName = 'Pods'
  * the given resource.
  *
  */
-export const addPods = (modes: Array<any>, command: string, resource: IResource) => {
+export const addPods = (modes: Array<ISidecarMode>, command: string, resource: IResource) => {
   try {
     debug('addPods', resource)
     if (resource.yaml.spec && resource.yaml.spec.selector) {

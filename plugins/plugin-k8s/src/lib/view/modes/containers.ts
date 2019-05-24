@@ -21,6 +21,7 @@ import repl = require('@kui-shell/core/core/repl')
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import IResource from '../../model/resource'
 
@@ -37,7 +38,7 @@ const viewName = 'Containers'
  * for by the given resource.
  *
  */
-export const addContainers = (modes: Array<any>, command: string, resource: IResource) => {
+export const addContainers = (modes: Array<ISidecarMode>, command: string, resource: IResource) => {
   try {
     if (resource.yaml.spec && resource.yaml.spec.containers) {
       const button = containersButton(command, resource)

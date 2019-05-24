@@ -27,6 +27,7 @@ import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -548,7 +549,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         return resolve(result)
       }
 
-      const modes: Array<any> = [{
+      const modes: Array<ISidecarMode> = [{
         mode: 'result',
         direct: rawCommand,
         label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
@@ -560,7 +561,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
           mode: 'previous',
           direct: `${rawCommand} --previous`,
           execOptions: {
-            type: 'pexec'
+            exec: 'pexec'
           }
         })
 

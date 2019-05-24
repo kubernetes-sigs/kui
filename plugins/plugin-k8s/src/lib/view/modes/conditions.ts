@@ -18,19 +18,20 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/conditions')
 
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 import IResource from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 /**
  * Add a Conditions mode button to the given modes model, if called
  * for by the given resource.
  *
  */
-export const addConditions = (modes: Array<any>, command: string, resource: IResource) => {
+export const addConditions = (modes: Array<ISidecarMode>, command: string, resource: IResource) => {
   try {
     if (resource.yaml.status && resource.yaml.status.conditions) {
       modes.push(conditionsButton(command, resource))
