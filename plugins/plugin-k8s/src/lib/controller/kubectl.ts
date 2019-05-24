@@ -378,7 +378,9 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
                       argvWithFileReplacements,
                       { env, shell: true })
 
-  const file = (options.f || options.file)
+  const file = options.f || options.filename
+  const hasFileArg = file !== undefined
+
   const isProgrammatic = file && file.charAt(0) === '!'
   const programmaticResource = isProgrammatic && execOptions.parameters[file.slice(1)]
   if (isProgrammatic) {
@@ -399,7 +401,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   })
 
   const status = async (command: string, code?: number, stderr?: string) => {
-    if (options.f || options.file || verb === 'delete' || verb === 'create') {
+    if (hasFileArg || verb === 'delete' || verb === 'create') {
       if (!execOptions.noStatus) {
         const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
         const finalState = `--final-state ${expectedState.toString()}`
@@ -407,8 +409,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
           ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
           : ''
 
-        debug('about to get status', options.f || options.file, entityType, entity, resourceNamespace)
-        return repl.qexec(`${statusCommand} status ${options.f || options.file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
+        debug('about to get status', file, entityType, entity, resourceNamespace)
+        return repl.qexec(`${statusCommand} status ${file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
                           undefined, undefined, { parameters: execOptions.parameters })
         .catch(err => {
           if (err.code === 404 && expectedState === FinalState.OfflineLike) {
@@ -492,7 +494,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         error['code'] = codeForREPL
         debug('rejecting without usage', codeForREPL, error)
         reject(error)
-      } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && (options.f || options.file)) {
+      } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && hasFileArg) {
         debug('fetching status after error')
         status(command, codeForREPL, err).then(resolve).catch(reject)
       } else {
@@ -615,7 +617,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       const namespace = options.namespace || options.n || 'default'
       debug('status after kubectl run', entity, namespace)
       repl.qexec(`k status deploy "${entity}" -n "${namespace}"`).then(resolve).catch(reject)
-    } else if ((options.f || options.file || (command === 'kubectl' && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
+    } else if ((hasFileArg || (command === 'kubectl' && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
       //
       // then this was a create or delete from file; show the status of the operation
       //
