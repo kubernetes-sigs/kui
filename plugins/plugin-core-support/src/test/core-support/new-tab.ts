@@ -199,3 +199,72 @@ common.localDescribe('new tab from active tab that is emitting output via button
      .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
      .catch(common.oops(this)))
 })
+common.localDescribe('tab history', function (this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
+
+  it('new tab via button click', () =>
+     this.app.client
+       .click('.new-tab-button')
+       .then(() =>
+         this.app.client.waitForVisible(
+           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+         )
+       )
+       .then(() => cli.waitForRepl(this.app))
+       .catch(common.oops(this)))
+
+  it('should execute echo in new tab', () =>
+     cli
+       .do('echo hi', this.app)
+       .then(cli.expectOKWithString('hi'))
+       .then(() =>
+         this.app.client.waitForVisible(
+           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+         )
+       )
+       .catch(common.oops(this)))
+
+  it('should execute history', () =>
+     cli
+       .do('history', this.app)
+       .then(cli.expectOKWithString('echo hi'))
+       .then(() =>
+         this.app.client.waitForVisible(
+           '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+         )
+       )
+       .catch(common.oops(this)))
+
+  it('should close tab2', () =>
+     cli
+       .do('exit', this.app)
+       .then(() =>
+         this.app.client.waitForExist(
+           '.left-tab-stripe-button-selected[data-tab-button-index="2"]',
+           5000,
+           true
+         )
+       )
+       .then(() => cli.waitForRepl(this.app)) // should have an active repl
+       .catch(common.oops(this)))
+
+  it('should execute echo first in first tab', () =>
+     cli
+       .do('echo first', this.app)
+       .then(cli.expectOKWithString('first'))
+       .then(() =>
+         this.app.client.waitForExist(
+           '.left-tab-stripe-button-selected[data-tab-button-index="1"]',
+           5000
+         )
+       )
+       .catch(common.oops(this)))
+
+  it('should execute history', () =>
+       cli
+         .do('history', this.app)
+         .then(cli.expectOKWithString('echo first'))
+         .catch(common.oops(this)))
+
+})
