@@ -201,6 +201,8 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
     if (kind === 'Secret' ||
         kind === 'Ingress' ||
         kind === 'ConfigMap' ||
+        kind === 'PodSecurityPolicy' ||
+        kind === 'ClusterRole' ||
         kind === 'CustomResourceDefinition' ||
         kind === 'HorizontalPodAutoscaler' ||
         kind === 'ClusterRoleBinding' ||
