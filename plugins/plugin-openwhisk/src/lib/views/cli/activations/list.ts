@@ -153,7 +153,7 @@ const _render = args => {
   const newTable = !logTable
   if (newTable) {
     logTable = document.createElement('table')
-    logTable.className = 'log-lines fixed-table-layout'
+    logTable.className = 'log-lines fixed-table-layout log-lines-loose'
 
     if (entity) {
       // for the sidecar only, clean things out

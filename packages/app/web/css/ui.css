@@ -1697,7 +1697,7 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 .log-lines .log-line .log-message {
     white-space: pre-wrap;
 }
-sidecar .log-lines .log-line {
+sidecar .log-lines:not(.log-lines-loose) .log-line {
     height: auto;
 }
 sidecar .log-lines .log-line:nth-child(2n) .log-field {
