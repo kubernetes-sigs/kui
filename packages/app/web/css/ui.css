@@ -1082,6 +1082,10 @@ sidecar.entity-is-actions:not(.entity-is-sequence) .action-source, sidecar .acti
     white-space: pre-wrap;
     background: transparent;
 }
+.repl-result code.hljs {
+    /* avoid nested 0.875em from .repl-result and the above code.hljs */
+    font-size: 1em;
+}
 .package-content-count {
     font-weight: bold;
 }
