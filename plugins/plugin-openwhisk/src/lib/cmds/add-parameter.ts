@@ -15,7 +15,11 @@
  */
 
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
+
+import { update } from './openwhisk-core'
+import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 /**
  * This plugin introduces
@@ -92,7 +96,7 @@ const fillIn = (path, value) => {
  * and splices in (or out) as directed.
  *
  */
-const updateMapping = (op, attr, key, value) => entity => {
+const updateMapping = (op: string, attr: string, key: string, value: any) => entity => {
   if (!entity[attr]) {
     entity[attr] = []
   }
@@ -167,7 +171,7 @@ const logThen = f => err => {
  * @param attr will be 'parameters' or 'annotations'
  *
  */
-const add = (wsk, type) => (op, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions }) => {
+const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions }: IEvaluatorArgs) => {
   /** fetch the given entity with the given type */
   const fetchEntityWithType = (name, type) => repl.qexec(`wsk ${type} get ${name}`)
 
@@ -244,7 +248,7 @@ const add = (wsk, type) => (op, opKind = op, attr = 'parameters') => ({ command:
   // here is where we do the work!
   return fetchEntity(dest, tryThisType) // grab a copy of the current attributes
     .then(updateMapping(opKind, attr, key, value)) // update our copy
-    .then(wsk.update(execOptions)) // then push the updates to the backend
+    .then(update(execOptions)) // then push the updates to the backend
     .then(entity => showEntity(entity, { show: attr })) // open the entity, showing the attribute, e.g. parameters or annotations
     .then(() => true)
 }
@@ -261,7 +265,7 @@ const mkDocs = docString => Object.assign({ docs: docString }, {
 })
 
 /** this is the handler body */
-export default async (commandTree, wsk) => {
+export default async (commandTree: CommandRegistrar) => {
   //
   // docs
   //
@@ -275,8 +279,8 @@ export default async (commandTree, wsk) => {
   // register command handlers
   //
   ['actions', 'triggers', 'packages'].forEach(type => {
-    wsk.synonyms(type).forEach(syn => {
-      const doAdd = add(wsk, type)
+    synonyms(type).forEach(syn => {
+      const doAdd = add(type)
 
       commandTree.listen(`/wsk/${syn}/set`, doAdd('set'), docs.set('parameters'))
       commandTree.listen(`/wsk/${syn}/annotate`, doAdd('annotate', 'set', 'annotations'), docs.set('annotations'))

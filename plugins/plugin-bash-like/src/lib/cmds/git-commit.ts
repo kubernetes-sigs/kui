@@ -25,6 +25,7 @@ import expandHomeDir from '@kui-shell/core/util/home'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec } from '@kui-shell/core/core/repl'
 import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -35,7 +36,7 @@ import { status, toplevel } from '../util/git-support'
  * TODO refactor
  *
  */
-const doExec = ({ command, argvNoOptions, execOptions }) => new Promise(async (resolve, reject) => {
+const doExec = ({ command, argvNoOptions, execOptions }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
   const shell = await import('shelljs')
 
@@ -145,6 +146,6 @@ ${commentedStatus}`
  * Register command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/git/commit', doCommit, { needsUI: true, requiresLocal: true, noAuthOk: true })
 }

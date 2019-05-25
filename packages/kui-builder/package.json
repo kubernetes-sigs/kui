@@ -34,6 +34,7 @@
     "@types/debug": "4.1.4",
     "@types/mkdirp-promise": "5.0.0",
     "@types/mocha": "5.2.6",
+    "@types/needle": "^2.0.4",
     "@types/node": "11.13.4",
     "@types/swagger-schema-official": "2.0.15",
     "@types/webdriverio": "4.13.1",

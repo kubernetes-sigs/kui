@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugin/apache-composer/init')
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 import sessionList from './lib/controller/cmd/session-list'
 import sessionGet from './lib/controller/cmd/session-get'
 import invoke from './lib/controller/cmd/app-invoke'
@@ -27,7 +29,7 @@ import appList from './lib/controller/cmd/app-list'
 import appConfig from './lib/controller/cmd/app-config'
 import * as usage from './usage'
 
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   debug('initializing')
 
   commandTree.subtree('/composer', { usage: usage.composer })
@@ -39,14 +41,14 @@ export default async (commandTree, prequire) => {
   commandTree.subtreeSynonym('/composer/session', session)
 
   // CRUD commands
-  await sessionList(commandTree, prequire)
-  await sessionGet(commandTree, prequire)
-  await invoke(commandTree, prequire)
-  await appDelete(commandTree, prequire)
-  await appCreate(commandTree, prequire)
-  await appList(commandTree, prequire)
-  await appGet(commandTree, prequire)
-  await appConfig(commandTree, prequire)
+  await sessionList(commandTree)
+  await sessionGet(commandTree)
+  await invoke(commandTree)
+  await appDelete(commandTree)
+  await appCreate(commandTree)
+  await appList(commandTree)
+  await appGet(commandTree)
+  await appConfig(commandTree)
 
   debug('init done')
 }

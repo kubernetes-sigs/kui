@@ -19,8 +19,6 @@ import { CommandTree, CommandRegistrar } from './command'
 // TODO
 export type KuiPlugin = any
 
-export type PluginRequire = (route: string, options?: Object) => Promise<KuiPlugin>
+export type PluginRegistration = (commandTree: CommandRegistrar, options?) => Promise<any>
 
-export type PluginRegistration = (commandTree: CommandRegistrar, prequire?: PluginRequire, options?) => Promise<any>
-
-export type PreloadRegistration = (commandTree: CommandRegistrar, prequire: PluginRequire, options?) => Promise<void>
+export type PreloadRegistration = (commandTree: CommandRegistrar, options?) => Promise<void>

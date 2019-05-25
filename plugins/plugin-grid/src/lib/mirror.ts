@@ -255,12 +255,12 @@ const lsUpto = () => lsKey('upto') */
  * Poll for new activations
  *
  */
-/* const poll = (wsk, store) => {
+/* const poll = (store) => {
     const { fetchActivationDataFromBackend } = require('./util'),
           parallelism = 1
 
     // (1) fetch and (2) ingest one batch, and then (3) call ourselves recursively
-    const once = since => fetchActivationDataFromBackend(wsk, parallelism, { since })         // (1)
+    const once = since => fetchActivationDataFromBackend(parallelism, { since })         // (1)
           .then(activations => {
               if (activations.length === 0) {
                   console.log('mirror:poll quiescing for a bit')
@@ -313,7 +313,7 @@ const lsUpto = () => lsKey('upto') */
  * Command handler for mirror
  *
  */
-/* const mirror = wsk => ({ argvNoOptions: argv, parsedOptions: options }) => {
+/* const mirror = ({ argvNoOptions: argv, parsedOptions: options }) => {
     const { fetchActivationDataFromBackend } = require('./util'),
           parallelism = 4,
           store = init(),
@@ -331,7 +331,7 @@ const lsUpto = () => lsKey('upto') */
     } else if (subCommand === 'stats') {
         return stats(store)()
     } else if (subCommand === 'poll') {
-        return poll(wsk, store)
+        return poll(store)
     }
 
     // start new mirror
@@ -340,7 +340,7 @@ const lsUpto = () => lsKey('upto') */
     }
 
     // (1) fetch and (2) ingest one batch, and then (3) call ourselves recursively
-    const once = upto => fetchActivationDataFromBackend(wsk, parallelism, { upto })         // (1)
+    const once = upto => fetchActivationDataFromBackend(parallelism, { upto })         // (1)
           .then(activations => {
               if (activations.length === 0) {
                   doneWithMirror(store)
@@ -382,11 +382,8 @@ const lsUpto = () => lsKey('upto') */
  * This is the module
  *
  */
-/* module.exports = async (commandTree, prequire, options) => {
-   const wsk = await prequire('plugin-openwhisk'),
-          doMirror = mirror(wsk)
-
-    wsk.synonyms('activations').forEach(syn => {
-        commandTree.listen(`/wsk/${syn}/mirror`, doMirror, { docs: 'Mirror activations locally' })
+/* module.exports = async (commandTree) => {
+    synonyms('activations').forEach(syn => {
+        commandTree.listen(`/wsk/${syn}/mirror`, mirror, { docs: 'Mirror activations locally' })
     })
 } */

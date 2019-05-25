@@ -27,9 +27,11 @@
 import minimist = require('yargs-parser')
 
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 const { isAnonymousLet } = require('./actions/let-core')
+import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 /** sum of numbers in an array */
 // const arraySum = A => A.reduce((sum, c) => sum + c, 0)
@@ -45,7 +47,7 @@ const errorThen = val => err => {
 }
 
 /** here is the module */
-export default async (commandTree, wsk) => {
+export default async (commandTree: CommandRegistrar) => {
   /**
    * Given a package name and an entity within that package, return the fully qualified name of the entity
    *
@@ -151,7 +153,7 @@ export default async (commandTree, wsk) => {
    * This is the core logic
    *
    */
-  const rm = type => ({ block, nextBlock, argv: fullArgv, execOptions }) => {
+  const rm = (type: string) => ({ block, nextBlock, argv: fullArgv, execOptions }: IEvaluatorArgs) => {
     const options = minimist(fullArgv, { alias: { q: 'quiet', f: 'force', r: 'recursive' }, boolean: ['quiet', 'force', 'recursive'], configuration: { 'parse-numbers': false, 'camel-case-expansion': false } })
     const argv = options._
     const toBeDeletedList = argv.slice(argv.indexOf('rimraf') + 1)
@@ -197,18 +199,18 @@ export default async (commandTree, wsk) => {
                                                               }
                                                             }).catch(errorThen([])))) // get failed, sequence component already deleted, so deleted zero here!
                 .then(flatten)
-                .then(counts => repl.qfexec(`${type} delete "${arg}"`, block, nextBlock) // now we can delete the sequence
+                .then(counts => repl.qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock) // now we can delete the sequence
                       .then(() => counts.concat(arg))) // total deleted count
             } else {
               // not a sequence, plain old delete
-              return repl.qfexec(`${type} delete "${arg}"`, block, nextBlock).then(() => [arg]) // deleted one
+              return repl.qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock).then(() => [arg]) // deleted one
             }
           })
       } else if (options.recursive && type === 'packages') {
         return deletePackageAndContents(arg)
       } else {
         // no special handling for other entity types
-        return repl.qfexec(`${type} delete "${arg}"`, block, nextBlock).then(() => [arg]) // deleted one
+        return repl.qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock).then(() => [arg]) // deleted one
           .catch(err => {
             if (err.statusCode === 404 && !isExact) {
               // if this item was found due to a wildcard match, then don't complain if we didn't find it
@@ -236,7 +238,7 @@ export default async (commandTree, wsk) => {
   const entities = ['actions', 'triggers', 'rules', 'packages']
   entities.forEach(type => {
     const handler = rm(type)
-    wsk.synonyms(type).forEach(async syn => {
+    synonyms(type).forEach(async syn => {
       commandTree.listen(`/wsk/${syn}/rimraf`, handler, { docs: `Delete one or more OpenWhisk ${type}` })
 
       const deleteCmd = await commandTree.find(`/wsk/${syn}/delete`)

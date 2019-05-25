@@ -83,7 +83,7 @@ const help = (usage, docs) => ({ argvNoOptions: args }: IEvaluatorArgs) => {
  * The module. Here, we register as a listener for commands.
  *
  */
-export default async (commandTree: CommandRegistrar, _, { usage, docs }) => {
+export default async (commandTree: CommandRegistrar, { usage, docs }) => {
   const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true, inBrowserOk: true })
   commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true, inBrowserOk: true })
 }

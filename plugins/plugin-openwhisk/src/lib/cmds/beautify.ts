@@ -19,14 +19,16 @@ declare var hljs
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import * as cli from '@kui-shell/core/webapp/cli'
 import { currentSelection, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
+import { update } from './openwhisk-core'
 import { synonyms } from '../models/synonyms'
 
 /**
  * A just for fun plugin: beautify the source code of the selected action
  *
  */
-export default async (commandTree, wsk) => {
+export default async (commandTree: CommandRegistrar) => {
   synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ block, nextBlock, execOptions }) => {
     if (isHeadless()) {
       throw new Error('beautify not supported in headless mode')
@@ -49,10 +51,14 @@ export default async (commandTree, wsk) => {
       setTimeout(() => hljs.highlightBlock(code), 0)
 
       // save
-      return wsk.update(execOptions)(selection)
+      return update(execOptions)(selection)
     }
-  }, { docs: 'Reformat the source code of an action',
-    requireSelection: true,
-    filter: selection => selection.type === 'actions'
+  }, {
+    usage: {
+      command: 'beautify',
+      docs: 'Reformat the source code of an action'
+    }
+    // requireSelection: true,
+    // filter: selection => selection.type === 'actions'
   }))
 }

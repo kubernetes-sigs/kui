@@ -131,14 +131,14 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
-export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: IExecOptions) => {
+export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: IExecOptions): Promise<any> => {
   // context change ok, final exec in a chain of nested execs
   return qexec(command, block, true, execOptions, nextBlock)
 }
-export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement) => {
+export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }
-export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement) => {
+export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return exec(command, Object.assign({
     block: block,
     nextBlock: nextBlock,

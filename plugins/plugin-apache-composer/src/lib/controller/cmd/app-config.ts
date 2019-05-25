@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-config')
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 import { properties } from '../../utility/usage'
 import { version } from 'openwhisk-composer/package.json'
 
@@ -24,7 +26,7 @@ import { version } from 'openwhisk-composer/package.json'
  * Command handler for the properties command
  *
  */
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   // the package.json might be in `app/plugins`, or in
   // `app/plugins/modules/composer`, depending, respectively, on whether
   // we are installing composer from npm, versus from git e.g. when

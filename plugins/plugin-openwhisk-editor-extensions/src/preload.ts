@@ -20,7 +20,6 @@ debug('loading')
 
 import * as repl from '@kui-shell/core/core/repl'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 import { persisters } from './lib/cmds/new'
 
@@ -30,7 +29,7 @@ debug('done loading prereqs')
  * A preloaded plugin that enhances the view modes for actions
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
+export default async () => {
   debug('initializing')
 
   if (!isHeadless()) {
@@ -62,7 +61,5 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
     addActionMode(unlock, 'unshift')
   }
 }
-
-export default registration
 
 debug('finished loading')

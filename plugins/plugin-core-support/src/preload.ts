@@ -19,15 +19,15 @@ import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import help from './lib/cmds/help'
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import { PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree: CommandRegistrar, _: PluginRequire, options?) => {
+const registration: PreloadRegistration = async (commandTree: CommandRegistrar, options?) => {
   await Promise.all([
-    help(commandTree, _, options)
+    help(commandTree, options)
   ])
 
   if (!isHeadless()) {

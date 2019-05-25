@@ -24,7 +24,6 @@ import * as prettyPrintDuration from 'pretty-ms'
 
 import * as cli from '../cli'
 import eventBus from '../../core/events'
-import { prequire } from '../../core/plugins'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
 import { ISidecarMode, css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'

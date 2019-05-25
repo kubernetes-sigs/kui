@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,9 @@ import { qexec, pexec } from '@kui-shell/core/core/repl'
 import { addNameToSidecarHeader, clearSelection, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { injectScript } from '@kui-shell/core/webapp/util/inject'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
+import { addActivationModes } from '@kui-shell/plugin-openwhisk/lib/models/modes'
 
 interface IProtoActivation {
   result?: any
@@ -122,10 +125,9 @@ const rt = opts => {
     })
 }
 
-export default async (commandTree, prequire) => {
-  const wsk = await prequire('plugin-openwhisk')
+export default async (commandTree: CommandRegistrar) => {
+  const handler = local
 
-  const handler = local(wsk)
   commandTree.subtree('/local', { usage, requiresLocal: true })
   commandTree.listen('/local/invoke', handler, Object.assign({ docs: strings.invoke }, commandOptions))
   commandTree.listen('/local/debug', handler, Object.assign({ docs: strings.debug }, commandOptions))
@@ -143,7 +145,7 @@ export default async (commandTree, prequire) => {
   })
 }
 
-const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinnerDiv: Element, wsk) => new Promise(async () => {
+const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinnerDiv: Element) => new Promise(async () => {
   try {
     debug('executing invoke command')
 
@@ -166,7 +168,7 @@ const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinne
                                         action.kind,
                                         Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv)
 
-    displayAsActivation('local activation', action, start, wsk, res)
+    displayAsActivation('local activation', action, start, res)
   } catch (err) {
     appendIncreContent(err, spinnerDiv, 'error')
   }
@@ -176,7 +178,7 @@ const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinne
  * Local debug
  *
  */
-const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, returnDiv: Element, spinnerDiv: Element, wsk) => new Promise(async (resolve) => {
+const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
   debug('executing debug command')
 
   resolve([{
@@ -216,7 +218,7 @@ const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, 
                                           action.kind,
                                           Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv, dashOptions)
 
-      displayAsActivation('debug session', action, start, wsk, res)
+      displayAsActivation('debug session', action, start, res)
 
       closeDebuggerUI()
       debug('debug session done')
@@ -230,7 +232,7 @@ const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, 
  * Main command handler routine
  *
  */
-const local = wsk => async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsedOptions: dashOptions }) => {
+const local = async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsedOptions: dashOptions }: IEvaluatorArgs) => {
   // we always want to have "local" at the front, so e.g. invoke => local invoke
   if (argvWithoutOptions[0] && argvWithoutOptions[0] !== 'local') {
     argvWithoutOptions.unshift('local')
@@ -304,9 +306,9 @@ const local = wsk => async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions,
     let modes = []
 
     if (argvWithoutOptions[1] === 'invoke') {
-      doInvoke(input, argvWithoutOptions, spinnerDiv, wsk)
+      doInvoke(input, argvWithoutOptions, spinnerDiv)
     } else if (argvWithoutOptions[1] === 'debug') {
-      modes = modes.concat(await doDebug(input, argvWithoutOptions, dashOptions, returnDiv, spinnerDiv, wsk))
+      modes = modes.concat(await doDebug(input, argvWithoutOptions, dashOptions, returnDiv, spinnerDiv))
     } else if (argvWithoutOptions[1] === 'init') {
       debug('executing init command')
       getImageDir()
@@ -1059,14 +1061,14 @@ const createTempFolder = () => new Promise((resolve, reject) => {
  *
  *
  */
-const displayAsActivation = async (sessionType, { kind, name: actionName, name }, start, { activationModes }, protoActivation?: IProtoActivation) => {
+const displayAsActivation = async (sessionType: string, { kind, name: actionName, name }: { kind: string, actionName: string, name: string }, start: number, protoActivation?: IProtoActivation) => {
   try {
     // when the session ended
     const end = Date.now()
 
     const ns = await qexec('wsk namespace current')
 
-    const annotations = [
+    const annotations: { key: string, value: string | number | boolean }[] = [
       { key: 'path', value: `${ns}/${name}` },
       { key: 'kind', value: kind }
     ]
@@ -1077,7 +1079,7 @@ const displayAsActivation = async (sessionType, { kind, name: actionName, name }
     }
 
     // fake up an activation record and show it
-    showEntity(activationModes({
+    showEntity(addActivationModes({
       type: 'activations',
       activationId: sessionType, // e.g. "debug session"
       name: actionName,

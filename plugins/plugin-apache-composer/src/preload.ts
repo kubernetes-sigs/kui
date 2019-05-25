@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,50 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { dirname } from 'path'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { addPath } from '@kui-shell/core/core/find-file'
-import * as repl from '@kui-shell/core/core/repl'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 import initRequirePath from './initRequirePath'
-import * as Debug from 'debug'
-const debug = Debug('plugins/composer/preload')
 
-/**
- * Listen for drag and drop, and try to show a preview of the
- * composition on drop.
- *
- */
-const listenForDrops = () => {
-  if (!isHeadless() && typeof document !== 'undefined') {
-    document.addEventListener('drop', event => {
-      const { dataTransfer } = event
-      const { files } = dataTransfer
-
-      if (files.length === 1) {
-        debug('got one dropped file')
-
-        repl.pexec(`app preview ${files[0].path}`)
-          .catch(err => {
-            debug('not an app', err)
-          })
-      }
-    })
-  }
-}
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
-  // listen for drag and drop
-  listenForDrops()
-
+export default async () => {
   // help compositions find our openwhisk-composer module
   await initRequirePath()
 
   // give visibility to our @demos directory on the module path
   addPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/samples/@demos/hello.js')))
 }
-
-export default registration

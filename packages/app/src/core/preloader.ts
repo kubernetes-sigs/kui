@@ -18,14 +18,15 @@ import * as Debug from 'debug'
 const debug = Debug('core/preloader')
 debug('loading')
 
-import { PluginRequire, PreloadRegistration } from '../models/plugin'
+import * as commandTree from './command-tree'
+import { PreloadRegistration } from '../models/plugin'
 
 /**
  * This module allows for plugins to register themselves to be
  * preloaded at startup, rather than in response to a user command
  *
  */
-export default async (prequire: PluginRequire, commandTree, prescan, options) => {
+export default async (prescan, options) => {
   debug('init', prescan.preloads)
 
   const jobs = Promise.all(prescan.preloads.map(async module => {
@@ -38,7 +39,7 @@ export default async (prequire: PluginRequire, commandTree, prescan, options) =>
       // ./plugins.ts
       const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
       const registration: PreloadRegistration = registrationRef.default || registrationRef
-      await registration(commandTree.proxy(module.route), prequire, options)
+      await registration(commandTree.proxy(module.route), options)
       debug('done preloading %s', module.path)
     } catch (err) {
       debug('error invoking preload', module.path, err)

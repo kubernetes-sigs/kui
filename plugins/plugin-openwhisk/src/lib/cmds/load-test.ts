@@ -25,15 +25,19 @@ const debug = Debug('plugins/openwhisk/cmds/load-test')
 
 const prettyPrintDuration = require('pretty-ms')
 
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
+import { parseOptions, getClient, owOpts } from './openwhisk-core'
+
 /**
  * Usage information
  *
  */
-const usage = verb => `Usage: ${verb} <action> [--numIters|-n N] [--numThreads|-t M] [--thinkTime|-s millis] [--validator|-v ...]`
+const usage = (verb: string) => `Usage: ${verb} <action> [--numIters|-n N] [--numThreads|-t M] [--thinkTime|-s millis] [--validator|-v ...]`
 
 const costFns = {
   duration: {
-    cost: (duration, memory) => duration, // nothing fancy, duration alone is our measure
+    cost: (duration: string, memory: string) => duration, // nothing fancy, duration alone is our measure
     pretty: prettyPrintDuration, // use the pretty-ms module to render durations
 
     summary: D => D.N === 0 ? `No such recent activity of ${D.name}` : `The <strong>average</strong> duration of <strong>${D.N}</strong> ${D.N === 1 ? 'activation' : 'activations'} ${D.name ? 'of ' + D.name : ''} was <strong>${prettyPrintDuration(D.totalCost / D.N)}</strong>.`
@@ -91,7 +95,7 @@ const formatOneGroup = (name: string, data: Array<any>, costFn) => {
  *    more or less, we format a table here. coudl be cleaner, go for it!
  *
  */
-const formatResultForRepl = (costFn, name) => (groups, numErrors) => {
+const formatResultForRepl = (costFn, name: string) => (groups, numErrors) => {
   if (numErrors === true) {
     // this means we used a validator that said "true" meaning all's good
     numErrors = 0
@@ -159,9 +163,9 @@ const makeValidator = (template, { numThreads, numIters }) => {
  * The loadtest command handler
  *
  */
-const loadtest = (wsk, verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv, parsedOptions }) => {
-  const pair = wsk.parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
-  const options = Object.assign({}, parsedOptions, pair.kvOptions)
+const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv, parsedOptions, execOptions }: IEvaluatorArgs) => {
+  const pair = parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
+  const options: Record<string, any> = Object.assign({}, parsedOptions, pair.kvOptions)
 
   const action = argv[argv.indexOf(verb) + 1]
   const numThreads = options.numThreads || 4
@@ -219,7 +223,7 @@ const loadtest = (wsk, verb: string) => ({ argv: argvWithOptions, argvNoOptions:
           return M
         }, {})
 
-        wsk.ow.actions.invoke(wsk.owOpts({ name: action,
+        getClient(execOptions).actions.invoke(owOpts({ name: action,
           params: params || {},
           blocking: true
         }))
@@ -257,7 +261,17 @@ const loadtest = (wsk, verb: string) => ({ argv: argvWithOptions, argvNoOptions:
 }
 
 /** this is the auth body */
-export default async (commandTree, wsk) => {
-  const loadtestCmd = commandTree.listen('/wsk/testing/lt', loadtest(wsk, 'lt'), { docs: 'Drive load against a selected action' })
-  commandTree.synonym('/wsk/testing/loadtest', loadtest(wsk, 'loadtest'), loadtestCmd)
+export default async (commandTree: CommandRegistrar) => {
+  const loadtestCmd = commandTree.listen('/wsk/testing/lt', loadtest('lt'), {
+    usage: {
+      command: 'lt',
+      docs: 'Drive load against a selected action'
+    }
+  })
+  commandTree.synonym('/wsk/testing/loadtest', loadtest('loadtest'), loadtestCmd, {
+    usage: {
+      command: 'loadtest',
+      docs: 'Drive load against a selected action'
+    }
+  })
 }

@@ -17,11 +17,9 @@
 import { dirname } from 'path'
 
 import { addPath } from '@kui-shell/core/core/find-file'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
+export default async (commandTree: CommandRegistrar) => {
   // give visibility to our @demos directory on the module path
   addPath(dirname(dirname(require.resolve('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json'))))
 }
-
-export default registration

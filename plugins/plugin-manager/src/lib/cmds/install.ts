@@ -26,14 +26,15 @@ import * as which from 'which'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
-
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import compile from '@kui-shell/core/core/plugin-assembler'
+
 import { success } from '../util'
 import { install as usage } from '../../usage'
 
 debug('finished module imports')
 
-const doInstall = ({ argvNoOptions }) => {
+const doInstall = ({ argvNoOptions }: IEvaluatorArgs) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('install') + 1)
@@ -153,7 +154,7 @@ const locateNpm = (): Promise<string> => new Promise<string>((resolve) => {
   })
 })
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/plugin/install', doInstall, { usage })
 }
 

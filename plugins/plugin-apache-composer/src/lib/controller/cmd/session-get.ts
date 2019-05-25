@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { sessionGet } from '../../utility/usage'
-import * as repl from '@kui-shell/core/core/repl'
-import * as view from '../../view/entity-view'
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/session-get')
 
-export default async (commandTree, prequire) => {
-  const wsk = await prequire('plugin-openwhisk')
+import * as repl from '@kui-shell/core/core/repl'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
+import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
+
+import { sessionGet } from '../../utility/usage'
+import * as view from '../../view/entity-view'
+
+export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(`/wsk/session/result`, ({ command }) => {
     return repl.qfexec(command.replace('session result', 'activation get'))
       .then(result => result.response.result)
@@ -63,7 +67,7 @@ export default async (commandTree, prequire) => {
 
   // override wsk activation get
   const activationGet = (await (commandTree.find('/wsk/activation/get'))).$
-  wsk.synonyms('activations').forEach(syn => {
+  synonyms('activations').forEach(syn => {
     commandTree.listen(`/wsk/${syn}/get`, (opts) => {
       if (!activationGet) {
         return Promise.reject()
@@ -84,7 +88,6 @@ export default async (commandTree, prequire) => {
       return activationGet(opts)
               .then(response => view.formatSessionGet(response))
               .catch(err => { throw err })
-    })
+    }, {})
   })
-
 }

@@ -15,6 +15,7 @@
  */
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { start, end } from './lib/wrk'
 import init from './lib/init'
@@ -23,22 +24,24 @@ import { list } from './lib/history-table'
 import { del, clear } from './lib/history'
 import { script } from './lib/scriptgen'
 
+const opts = { noAuthOk: true }
+
 /**
  * This is the module
  *
  */
-export default async (commandTree, prequire, options) => {
+export default async (commandTree: CommandRegistrar) => {
   if (!inBrowser()) {
     await Promise.all([
-      commandTree.listen('/wrk', start), // start a new load run
+      commandTree.listen('/wrk', start, opts), // start a new load run
       init(commandTree),
-      commandTree.listen('/wrk/end', end), // end any ongoing load run
-      commandTree.listen('/wrk/last', last), // show last run, from history
-      commandTree.listen('/wrk/history', list), // show recent history
-      commandTree.listen('/wrk/delete', del), // delete selected historical run
+      commandTree.listen('/wrk/end', end, opts), // end any ongoing load run
+      commandTree.listen('/wrk/last', last, opts), // show last run, from history
+      commandTree.listen('/wrk/history', list, opts), // show recent history
+      commandTree.listen('/wrk/delete', del, opts), // delete selected historical run
       //    commandTree.listen('/wrk/clear', clear), // clear history
-      commandTree.listen('/wrk/show', show), // show a given historical run
-      commandTree.listen('/wrk/script', script(prequire)) // generate a wrk script file
+      commandTree.listen('/wrk/show', show, opts), // show a given historical run
+      commandTree.listen('/wrk/script', script, opts) // generate a wrk script file
     ])
   }
 }
