@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ const debug = Debug('k8s/controller/kedit')
 debug('loading')
 
 import { basename, dirname, join } from 'path'
-import expandHomeDir = require('expand-home-dir')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
 import { Row, Table } from '@kui-shell/core/webapp/models/table'

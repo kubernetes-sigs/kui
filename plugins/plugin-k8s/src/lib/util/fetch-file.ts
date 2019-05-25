@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/util/fetch-file')
+import * as Debug from 'debug'
+const debug = Debug('k8s/util/fetch-file')
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 
 import needle = require('needle')
-import expandHomeDir = require('expand-home-dir')
 
 /**
  * Either fetch a remote file or read a local one

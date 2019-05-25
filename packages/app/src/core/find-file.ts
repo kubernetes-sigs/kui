@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('core/find-file')
+import * as Debug from 'debug'
+const debug = Debug('core/find-file')
 debug('loading')
 
 import { basename, dirname, join, resolve } from 'path'
-import expandHomeDir = require('expand-home-dir')
+
+import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from './capabilities'
 
 /**

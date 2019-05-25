@@ -16,8 +16,9 @@
 
 import * as fs from 'fs'
 import * as url from 'url'
-import * as expandHomeDir from 'expand-home-dir'
 import * as propertiesParser from 'properties-parser'
+
+import expandHomeDir from '@kui-shell/core/util/home'
 
 /**
  * Get the apiHost and auth key

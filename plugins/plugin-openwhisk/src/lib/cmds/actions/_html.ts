@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 
 import { lstat, readFile } from 'fs'
 import { dirname, resolve as pathResolve } from 'path'
-import expandHomeDir = require('expand-home-dir')
 import htmlparser = require('htmlparser2')
 
 import repl = require('@kui-shell/core/core/repl')
+import expandHomeDir from '@kui-shell/core/util/home'
 
 /**
  * Deploy a linked asset

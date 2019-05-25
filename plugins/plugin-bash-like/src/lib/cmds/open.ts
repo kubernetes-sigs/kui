@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ const debug = Debug('plugins/bash-like/cmds/open')
 
 import { basename, dirname } from 'path'
 import { readFile } from 'fs'
-import * as expandHomeDir from 'expand-home-dir'
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { qexec } from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'

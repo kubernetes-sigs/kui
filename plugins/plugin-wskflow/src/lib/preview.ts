@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 IBM Corporation
+ * Copyright 2017-2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ debug('loading')
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as expandHomeDir from 'expand-home-dir'
 
 import * as usage from '../usage'
 
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { PluginRegistration } from '@kui-shell/core/models/plugin'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import * as repl from '@kui-shell/core/core/repl'
 import Presentation from '@kui-shell/core/webapp/views/presentation'

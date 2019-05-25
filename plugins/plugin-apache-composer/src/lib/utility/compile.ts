@@ -19,7 +19,7 @@ const debug = Debug('plugins/apache-composer/utility/compile')
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as expandHomeDir from 'expand-home-dir'
+import expandHomeDir from '@kui-shell/core/util/home'
 import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
 

@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/cmds/core-commands')
 debug('loading')
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
@@ -120,7 +121,6 @@ const paramFile = (M, idx, argv, type) => {
     M[type].parameters = []
   }
 
-  const expandHomeDir = require('expand-home-dir')
   const file = argv[++idx]
   const params = JSON.parse(require('fs').readFileSync(expandHomeDir(file)).toString())
   M[type].parameters = M[type].parameters.concat(toArray(params))
@@ -205,7 +205,6 @@ const handleKeyValuePairAsArray = key => (M, idx, argv, type) => {
     }
 
     const fs = require('fs')
-    const expandHomeDir = require('expand-home-dir')
     const location = expandHomeDir(paramValue.substring(1))
     if (!fs.existsSync(location)) {
       throw new Error(`Requested parameter @file does not exist: ${location}`)
@@ -738,7 +737,6 @@ specials.actions = {
 
       if (argv[0]) {
         // find the file named by argv[0]
-        const expandHomeDir = require('expand-home-dir')
         const filepath = findFile(expandHomeDir(argv[0]))
         const isZip = argv[0].endsWith('.zip')
         const isJar = argv[0].endsWith('.jar')

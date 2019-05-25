@@ -31,13 +31,13 @@ import repl = require('@kui-shell/core/core/repl')
 import namespace = require('../models/namespace')
 import { apiHost } from '../models/auth'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import expandHomeDir from '@kui-shell/core/util/home'
 
 /**
  * Location of the wskprops file
  *
  */
 const wskpropsFile = (): string => {
-  const expandHomeDir = require('expand-home-dir')
   return expandHomeDir(process.env.WSK_CONFIG_FILE || '~/.wskprops')
 }
 
