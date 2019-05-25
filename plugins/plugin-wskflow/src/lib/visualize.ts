@@ -30,7 +30,7 @@ import fsm2graph from './fsm2graph'
  * Create the wskflow visualization for the given fsm
  *
  */
-export default async (passedFsm, container, w, h, activations, options, rule) => {
+export default async (passedFsm: Record<string, any>, container?, w?: number, h?: number, activations?, options?, rule?): Promise<any> => {
   if (isHeadless()) {
     return
   }

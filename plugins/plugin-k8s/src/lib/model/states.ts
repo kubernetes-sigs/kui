@@ -262,7 +262,7 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
  * Check the deployment status of an openwhisk entity
  *
  */
-const getOpenWhiskStatus = (type: string, fqn: string): IStatus => repl.qexec(`wsk ${type} get "${fqn}"`)
+const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
   .then(() => ({ state: States.Online }))
   .catch(err => {
     if (err.statusCode === 404) {

@@ -62,7 +62,7 @@ export class Namespace extends DefaultOptions {
  * Thin veneer on needle
  *
  */
-const fetch = (method: string) => (url: string) => {
+const fetch = (method: 'get') => (url: string) => {
   return needle(method, url, { json: true, username: 'kiali', password: 'kiali', rejectUnauthorized: false })
     .then(_ => _.body)
 }
@@ -188,13 +188,13 @@ export const modes = (defaultMode: string) => _modes.map(_ => Object.assign({}, 
  * @param namespace application namespace
  *
  */
-export const graphModel = async (options: IKialiOptions = new DefaultOptions()) => {
+/* export const graphModel = async (options: IKialiOptions = new DefaultOptions()) => {
   // e.g. https://10.10.10.10:9080/kiali/api/namespaces/graph?duration=60s&graphType=versionedApp&injectServiceNodes=true&groupBy=app&appenders=deadNode,sidecarsCheck,serviceEntry,istio&namespaces=default
 
   const url = `${apihost(options)}/kiali/api/namespaces/graph?duration=${options.duration}&graphType=${options.graphType}&injectServiceNodes=${options.injectServiceNodes}&groupBy=${options.groupBy}&appenders=${options.appenders}&namespaces=${options.namespaces}`
 
   return needle('get', url, { json: true, username: 'kiali', password: 'kiali' })
-}
+} */
 
 interface IApplication {
   name: string

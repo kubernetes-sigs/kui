@@ -76,12 +76,12 @@ export const list = {
  * Usage model for plugin remove
  *
  */
-export const remove = {
-  strict: 'remove',
-  command: 'remove',
+export const remove = (command: string) => ({
+  strict: command,
+  command,
   breadcrumb: 'Remove plugin',
   docs: 'remove an installed Shell plugin',
   example: 'plugin remove <plugin>',
   required: installedPlugin,
   parents
-}
+})

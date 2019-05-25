@@ -30,12 +30,10 @@ import { addBadge, addNameToSidecarHeader, addVersionBadge, beautify, clearBadge
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { IShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
-// maybe not needed, after some more cleanup
-import { prequire } from '@kui-shell/core/core/plugins'
-
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'
+import { fillInActionDetails } from '../../cmds/openwhisk-core'
 
 // the naming convention of highlight.js sometimes differs from that of openwhisk
 const uiNameForKindMap = {
@@ -347,14 +345,13 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
       //
       renderField(source, entity, options.show)
     } else {
-      const wsk = await prequire('plugin-openwhisk')
       if (entity.actions) {
-        entity.actions.map(wsk.fillInActionDetails(entity))
+        entity.actions.map(fillInActionDetails(entity))
           .map(formatOneListResult({ excludePackageName: true, alwaysShowType: true }))
           .forEach(dom => actions.appendChild(dom))
       }
       if (entity.feeds) {
-        entity.feeds.map(wsk.fillInActionDetails(entity, 'feeds'))
+        entity.feeds.map(fillInActionDetails(entity, 'feeds'))
           .map(formatOneListResult({ excludePackageName: true, alwaysShowType: true }))
           .forEach(dom => actions.appendChild(dom))
       }
@@ -391,7 +388,7 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
 const wskflow = async (ast, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar()
-  const { visualize } = await prequire('plugin-wskflow')
+  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
 
   sidecar.classList.add('custom-content')
   const container = document.querySelector(sidecarSelector('.custom-content'))

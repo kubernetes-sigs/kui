@@ -83,7 +83,9 @@ export interface IEvent {
   isDrilldown?: boolean
 }
 
-export type ParsedOptions = { [key: string]: string }
+export interface ParsedOptions {
+  [key: string]: string
+}
 
 /**
  * Evaluator args
@@ -170,4 +172,5 @@ export interface CommandRegistrar {
   listen: (route: string, handler: CommandHandler, options: ICommandOptions) => ICommand
   synonym: (route: string, handler: CommandHandler, master: ICommand, options: ICommandOptions) => void
   subtree: (route: string, options: ICommandOptions) => ICommand
+  subtreeSynonym: (route: string, masterTree: ICommand) => void
 }

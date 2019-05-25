@@ -23,11 +23,13 @@ import * as path from 'path'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
 import { commands as usage } from '../../usage'
 
 debug('finished loading modules')
 
-const doList = ({ argvNoOptions }) => {
+const doList = ({ argvNoOptions }: IEvaluatorArgs) => {
   const prescanned = path.join(userDataDir(), 'plugins', '.pre-scanned')
 
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]
@@ -71,6 +73,6 @@ const doList = ({ argvNoOptions }) => {
   // success(false, `offered by the ${plugin} plugin`, commands))
 }
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/plugin/commands', doList, { usage })
 }

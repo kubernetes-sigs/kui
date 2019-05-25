@@ -21,6 +21,7 @@
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { show as showSidecar, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 /**
@@ -49,7 +50,7 @@ const idMatch = (entity, entityId) => {
   }
 }
 
-export default async (commandTree, { crudable, synonyms }, prequire) => {
+export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => {
   const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args }) => {
     const entityId = args[args.indexOf(mode) + 1]
     const selection = currentSelection()
@@ -102,12 +103,12 @@ export default async (commandTree, { crudable, synonyms }, prequire) => {
 
   crudable.forEach(type => {
     synonyms(type).forEach(syn => {
-      const paramsCmd = commandTree.listen(`/wsk/${syn}/parameters`, switchSidecarMode(undefined, 'parameters'), docs(`Show the parameters`, true, true))
-      commandTree.synonym(`/wsk/${syn}/params`, switchSidecarMode(undefined, 'parameters'), paramsCmd)
+      const paramsCmd = commandTree.listen(`/wsk/${syn}/parameters`, switchSidecarMode(undefined, 'parameters'), docs('Show the parameters', true, true))
+      commandTree.synonym(`/wsk/${syn}/params`, switchSidecarMode(undefined, 'parameters'), paramsCmd, docs('Show the parameters', true, true))
 
-      commandTree.listen(`/wsk/${syn}/annotations`, switchSidecarMode(undefined, 'annotations'), docs(`Show the annotations`))
-      commandTree.listen(`/wsk/${syn}/content`, switchSidecarMode(undefined, 'default'), docs(`Show the main content`))
-      commandTree.listen(`/wsk/${syn}/raw`, switchSidecarMode(undefined, 'raw'), docs(`Show the raw JSON record`))
+      commandTree.listen(`/wsk/${syn}/annotations`, switchSidecarMode(undefined, 'annotations'), docs('Show the annotations'))
+      commandTree.listen(`/wsk/${syn}/content`, switchSidecarMode(undefined, 'default'), docs('Show the main content'))
+      commandTree.listen(`/wsk/${syn}/raw`, switchSidecarMode(undefined, 'raw'), docs('Show the raw JSON record'))
       // commandTree.listen('/default', switchSidecarMode(undefined, 'default'))
     })
   })

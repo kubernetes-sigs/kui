@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { invoke, async } from '../../utility/usage'
-import * as repl from '@kui-shell/core/core/repl'
-import UsageError from '@kui-shell/core/core/usage-error'
-import * as view from '../../view/entity-view'
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-invoke')
 
-export default async (commandTree, prequire) => {
+import { invoke, async } from '../../utility/usage'
+import * as repl from '@kui-shell/core/core/repl'
+import UsageError from '@kui-shell/core/core/usage-error'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
+import * as view from '../../view/entity-view'
+
+export default async (commandTree: CommandRegistrar) => {
   /* command handler for app invoke */
   commandTree.listen(`/wsk/app/invoke`, ({ command, parsedOptions: options }) => {
     return repl.qfexec(command.replace('app', 'action'))

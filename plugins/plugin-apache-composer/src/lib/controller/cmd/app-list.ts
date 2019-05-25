@@ -19,6 +19,7 @@ const debug = Debug('plugins/apache-composer/cmd/app-list')
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { appList } from '../../utility/usage'
 import * as astUtil from '../../utility/ast'
@@ -30,13 +31,25 @@ const type = 'composition'
 const prettyType = 'compositions'
 const prettyKind = type
 
+interface IListOptions {
+  name?: string
+  count?: number
+  limit?: number
+  skip?: number
+}
+
 /**
  * Command handler for app list
  *
  */
-export default async (commandTree, prequire) => {
-  commandTree.listen(`/wsk/app/list`, ({ argvNoOptions, parsedOptions, execOptions }) => {
-    if (parsedOptions.limit === 0) {
+export default async (commandTree: CommandRegistrar) => {
+  commandTree.listen(`/wsk/app/list`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
+    const parsedOptions = (options as any) as IListOptions
+
+    const limit = parsedOptions.limit || 10 // limit 10 sessions in session list if users didn't specify --limit
+    const skip = parsedOptions.skip || 0 // skip 0 sessions in session list by default if users didn't specify --skip
+
+    if (limit === 0) {
       return []
     }
 

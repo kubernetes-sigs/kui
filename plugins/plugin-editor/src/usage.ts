@@ -16,7 +16,7 @@
 
 /** list of related commands */
 const all = ['compose', 'new', 'edit']
-const allExcept = (cmd: string): Array<String> => all.filter(_ => _ !== cmd)
+const allExcept = (cmd: string): string[] => all.filter(_ => _ !== cmd)
 
 /**
  * Usage model for the editor plugin

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ const debug = Debug('plugins/apache-composer/cmd/app-delete')
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { appDelete } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   /* command handler for app delete */
   commandTree.listen(`/wsk/app/delete`, ({ command }) => {
     return repl.qfexec(command.replace('app', 'action'))

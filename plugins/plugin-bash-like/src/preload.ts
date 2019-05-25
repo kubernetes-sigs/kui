@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
@@ -22,8 +22,6 @@ import { preload as registerCatchAll } from './lib/cmds/catchall'
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
-  await registerCatchAll(commandTree)
+export default (commandTree: CommandRegistrar) => {
+  return registerCatchAll(commandTree)
 }
-
-export default registration

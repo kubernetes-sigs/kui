@@ -18,18 +18,16 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/k8s/preload')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
+export default async (commandTree: CommandRegistrar) => {
   if (inBrowser()) {
     debug('preload for browser')
     const { restoreAuth } = await import('./lib/model/auth')
     restoreAuth()
   }
 }
-
-export default registration

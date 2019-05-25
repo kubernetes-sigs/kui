@@ -26,6 +26,8 @@ import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
 import * as repl from '@kui-shell/core/core/repl'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
 // so that users of the exported `edit` command have access to our
 // IEntity model
@@ -41,11 +43,16 @@ class DefaultExecOptions {
   custom = new DefaultCustomization()
 }
 
+interface IEditorOptions {
+  readOnly?: boolean
+}
+
 /**
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (entity: IEditorEntity, options) => editCmd({
+export const edit = (entity: IEditorEntity, options: IEditorOptions) => editCmd({
+  argvNoOptions: [],
   parsedOptions: options,
   execOptions: {
     parameters: entity,
@@ -58,7 +65,7 @@ export const edit = (entity: IEditorEntity, options) => editCmd({
  * Command handler for `edit <entity>`
  *
  */
-const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }) => {
+const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { argvNoOptions: string[], parsedOptions, execOptions: IExecOptions }) => {
   debug('edit command execution started', execOptions)
 
   // maybe the caller is passing us the name and entity programmatically?
@@ -101,7 +108,7 @@ const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = n
   return respondToRepl(lock ? [ lock ] : [])(model)
 }
 
-export default async (commandTree) => {
+export default async (commandTree: CommandRegistrar) => {
   // command registration: edit an existing entity
   commandTree.listen('/editor/edit', editCmd, { usage: usage.editUsage('edit'), noAuthOk: true, needsUI: true })
 }

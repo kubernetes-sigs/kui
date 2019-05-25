@@ -17,6 +17,8 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/loader')
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 import cp from './lib/cmds/copy'
 import mv from './lib/cmds/mv'
 import rm from './lib/cmds/rm'
@@ -42,25 +44,25 @@ import activationList from './lib/cmds/activations/list'
 
 import registerViews from './views'
 
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   const wsk = await core(commandTree)
 
   // commands
-  await cp(commandTree, wsk)
-  await mv(commandTree, wsk)
-  await rm(commandTree, wsk)
-  await auth(commandTree, wsk, prequire)
-  await wipe(commandTree, wsk, prequire)
-  await context(commandTree, prequire)
+  await cp(commandTree)
+  await mv(commandTree)
+  await rm(commandTree)
+  await auth(commandTree)
+  await wipe(commandTree)
+  await context(commandTree)
   await listAll(commandTree)
-  await loadTest(commandTree, wsk)
-  await addParameter(commandTree, wsk)
-  await beautify(commandTree, wsk)
+  await loadTest(commandTree)
+  await addParameter(commandTree)
+  await beautify(commandTree)
 
   // action extensions
   await letCommand(commandTree, wsk)
   await invoke(commandTree)
-  await webbify(commandTree, wsk)
+  await webbify(commandTree)
 
   // activation extensions
   await activationList(commandTree, wsk)
@@ -73,7 +75,7 @@ export default async (commandTree, prequire) => {
   await every(commandTree, wsk)
 
   // views
-  await modes(commandTree, wsk, prequire)
+  await modes(commandTree, wsk)
   await registerViews()
 
   return wsk

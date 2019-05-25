@@ -50,6 +50,7 @@ export interface IExecOptions {
   createOnly?: boolean
   noHeader?: boolean
   noStatus?: boolean
+  noSidecarHeader?: boolean
   noRetry?: boolean
   showHeader?: boolean
   alreadyWatching?: boolean

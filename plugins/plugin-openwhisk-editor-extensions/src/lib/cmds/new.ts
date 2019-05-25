@@ -19,6 +19,7 @@ const debug = Debug('plugins/openwhisk-editor-extensions/cmds/new')
 
 import * as repl from '@kui-shell/core/core/repl'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
 import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
@@ -213,7 +214,7 @@ export const prepareEditorWithAction = ([action, updateFn]) => {
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined, persister = persisters.actions } = {}) => async ({ argvNoOptions, parsedOptions: options, execOptions }) => {
+export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined, persister = persisters.actions } = {}) => async ({ argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -293,7 +294,7 @@ export const persisters = {
   }
 }
 
-export default async (commandTree, _wsk) => {
+export default async (commandTree: CommandRegistrar) => {
   // command registration: create new action
   commandTree.listen('/editor/new', newAction(), { usage: newUsage, noAuthOk: true, needsUI: true, inBrowserOk: true })
 }

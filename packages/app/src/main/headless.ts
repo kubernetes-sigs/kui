@@ -23,7 +23,7 @@ import * as events from 'events'
 
 import * as repl from '../core/repl'
 import mimicDom from '../util/mimic-dom'
-import { prequire, preload, init as pluginsInit } from '../core/plugins'
+import { preload, init as pluginsInit } from '../core/plugins'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
 import { CodedError } from '../models/errors'
 import UsageError from '../core/usage-error'

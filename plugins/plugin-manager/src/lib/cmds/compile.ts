@@ -20,15 +20,16 @@ debug('loading')
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import compile from '@kui-shell/core/core/plugin-assembler'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { success } from '../util'
 
 debug('finished loading modules')
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/plugin/compile', () => {
     const rootDir = userDataDir()
     return compile(rootDir, true)
       .then(([newCommands]) => success('installed', 'will be available, after reload', newCommands))
-  })
+  }, {})
 }

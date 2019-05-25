@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('openwhisk.context')
+import * as Debug from 'debug'
+const debug = Debug('plugins/openwhisk/cmds/namespace/current')
 
 import { current } from '../models/namespace'
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   // register namespace.current command
-  commandTree.listen(`/wsk/namespace/current`, () => current(),
-                     { docs: 'Print the currently selected namespace' })
+  commandTree.listen(`/wsk/namespace/current`, () => current(), {
+    usage: {
+      command: 'current',
+      docs: 'Print the currently selected namespace'
+    }
+  })
 }

@@ -638,7 +638,7 @@ function ir2graph (ir, gm, id: string, prevId: Array<string>, options = {}) { //
   }
 }
 
-export default async function fsm2graph (ir, containerElement, acts, options, rule): Promise<void> {
+export default async function fsm2graph (ir, containerElement, acts, options, rule): Promise<any> {
   // console.log(ir, containerElement, acts);
   taskIndex = 0
   activations = acts
