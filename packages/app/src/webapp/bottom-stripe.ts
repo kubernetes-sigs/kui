@@ -279,7 +279,7 @@ const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show:
  *
  */
 type DirectViewController = string | DirectViewControllerFunction | IDirectViewControllerSpec
-type DirectViewControllerFunction = (entity: object) => object
+type DirectViewControllerFunction = (entity: object) => PromiseLike<object> | object
 interface IDirectViewControllerSpec {
   plugin: string
   module: string

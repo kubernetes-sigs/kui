@@ -50,6 +50,7 @@ import { addPods } from '../view/modes/pods'
 import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
+import { apply as addRelevantModes } from '../view/modes/registrar'
 
 interface KubeExecOptions extends IExecOptions {
   credentials?: {
@@ -153,9 +154,19 @@ const table = (decodedResult: string, stderr: string, command: string, verb: str
   } else if (preTables && preTables.length >= 1) {
     // try use display this as a table
     if (preTables.length === 1) {
-      return formatTable(command, verb, entityType, options, preTables[0])
+      const T = formatTable(command, verb, entityType, options, preTables[0])
+      if (execOptions.filter) {
+        T.body = execOptions.filter(T.body)
+      }
+      return T
     } else {
-      return preTables.map(preTable => formatTable(command, verb, entityType, options, preTable))
+      return preTables.map(preTable => {
+        const T = formatTable(command, verb, entityType, options, preTable)
+        if (execOptions.filter) {
+          T.body = execOptions.filter(T.body)
+        }
+        return T
+      })
     }
   } else if (verb === 'delete') {
     debug('returning delete entity for repl')
@@ -587,6 +598,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         addConditions(modes, command, resource)
         addPods(modes, command, resource)
         addContainers(modes, command, resource)
+        addRelevantModes(modes, command, resource)
 
         deleteResourceButton(() => renderAndViewStatus({ command, resource, finalState: FinalState.OfflineLike }))
         modes.push(deleteResourceButton())
@@ -606,6 +618,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         noCost: true, // don't display the cost in the UI
         modes,
         badges: badges.filter(x => x),
+        resource: yaml,
         content
       }
 
