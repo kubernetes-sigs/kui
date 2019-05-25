@@ -20,27 +20,28 @@ const debug = Debug('plugins/tekton/get/step')
 import { CodedError } from '@kui-shell/core/models/errors'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
-import { parse, read } from '../../read'
+import { fetchTask } from '../../read'
 
 const usage = {
   command: 'step',
   strict: 'step',
   required: [
+    { name: 'pipelineName', docs: 'Name of the enclosing pipeline' },
     { name: 'taskName', docs: 'Name of the enclosing task' },
     { name: 'stepName', docs: 'Name of the step' }
   ],
   optional: [
-    { name: '--file', alias: '-f', docs: 'Path to resource specification', positional: true }
+    { name: '--file', alias: '-f', docs: 'Path to resource specification' }
   ]
 }
 
 const getStep = async ({ argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
-  const taskName = argvNoOptions[argvNoOptions.indexOf('step') + 1]
-  const stepName = argvNoOptions[argvNoOptions.indexOf('step') + 2]
-  const filepath = parsedOptions.f
+  const pipelineName = argvNoOptions[argvNoOptions.indexOf('step') + 1]
+  const taskName = argvNoOptions[argvNoOptions.indexOf('step') + 2]
+  const stepName = argvNoOptions[argvNoOptions.indexOf('step') + 3]
 
-  const task: Record<string, any> = (await parse(read(filepath)))
-    .find(_ => _.kind === 'Task' && _.metadata.name === taskName)
+  // either we fetch the model from a given file (given a filepath), or from the cluster
+  const task = await fetchTask(pipelineName, taskName, parsedOptions.f)
 
   if (!task) {
     const err: CodedError = new Error('task not found')

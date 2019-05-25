@@ -20,38 +20,43 @@ const debug = Debug('plugins/tekton/get/task')
 import { CodedError } from '@kui-shell/core/models/errors'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
-import { parse, read } from '../../read'
+import { fetchTask } from '../../read'
 
-const usage = {
-  command: 'task',
-  strict: 'task',
+const usage = (command: string) => ({
+  command,
+  strict: command,
   required: [
-    { name: 'taskName', docs: 'Name of the task' }
+    { name: 'pipelineName', docs: 'Name of the pipeline' }
   ],
   optional: [
-    { name: '--file', alias: '-f', docs: 'Path to resource specification', positional: true }
+    { name: 'taskName', docs: 'Name of the task', positional: true },
+    { name: '--file', alias: '-f', docs: 'Path to resource specification' }
   ]
-}
+})
 
-const getTask = async ({ command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
-  const taskName = argvNoOptions[argvNoOptions.indexOf('task') + 1]
-  const filepath = parsedOptions.f
+/**
+ * Command handler
+ *
+ */
+const getTask = (cmd: string) => async ({ command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+  const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
+  const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
 
-  const model: Record<string, any> = await parse(read(filepath))
-  const pipeline: Record<string, any> = model.find(_ => _.kind === 'Pipeline')
-  const task: Record<string, any> = model.find(_ => _.kind === 'Task' && _.metadata.name === taskName)
+  const task = await fetchTask(pipelineName, taskName, parsedOptions.f)
 
   if (!task) {
     const err: CodedError = new Error('task not found')
     err.code = 404
     throw err
+  } else if (!taskName) {
+    return task
   } else {
     return {
       type: 'custom',
       isEntity: true,
       prettyType: 'task',
       name: taskName,
-      packageName: pipeline && pipeline.metadata.name,
+      packageName: pipelineName,
       contentType: 'yaml',
       content: task
     }
@@ -59,5 +64,6 @@ const getTask = async ({ command, argvNoOptions, parsedOptions }: IEvaluatorArgs
 }
 
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tekton/get/task', getTask, { usage, noAuthOk: true })
+  commandTree.listen('/tekton/get/task', getTask('task'), { usage: usage('task'), noAuthOk: true })
+  commandTree.listen('/tekton/get/tasks', getTask('tasks'), { usage: usage('tasks'), noAuthOk: true })
 }

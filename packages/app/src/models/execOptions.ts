@@ -21,6 +21,8 @@ export interface IExecOptions {
   noDelegation?: boolean
   delegationOk?: boolean
 
+  filter?
+
   custom?: any
   rawResponse?: boolean
   isDrilldown?: boolean

@@ -23,6 +23,9 @@ import { safeLoadAll } from 'js-yaml'
 import * as expandHomeDir from 'expand-home-dir'
 
 import { findFile } from '@kui-shell/core/core/find-file'
+import { qexec, rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
+
+import { Task } from '../model/resource'
 
 /** promisey readFile */
 const _read = promisify(readFile)
@@ -33,7 +36,7 @@ const knownKinds = /PipelineResource|Pipeline|Task/
  * Parse a resource spec
  *
  */
-export const parse = async (raw: string | PromiseLike<string>): Promise<Record<string, any>> => {
+export const parse = async (raw: string | PromiseLike<string>): Promise<Record<string, any>[]> => {
   return safeLoadAll(await raw)
     .filter(_ => knownKinds.test(_.kind))
 }
@@ -44,4 +47,32 @@ export const parse = async (raw: string | PromiseLike<string>): Promise<Record<s
  */
 export const read = async (filepath: string): Promise<string> => {
   return (await _read(findFile(expandHomeDir(filepath)))).toString()
+}
+
+/**
+ * Fetch the Pipeline and Task models
+ *
+ */
+export const fetchTask = async (pipelineName: string, taskName: string, filepath: string): Promise<Task> => {
+  if (filepath) {
+    const model: Record<string, any> = await parse(read(filepath))
+    const task = taskName ? model.find(_ => _.kind === 'Task' && _.metadata.name === taskName) : model.filter(_ => _.kind === 'Task')
+    return task
+  } else if (!taskName) {
+    const pipeline = await $(`kubectl get Pipeline.tekton.dev ${encodeComponent(pipelineName)}`).catch(err => {
+      debug('got error fetching pipeline', err)
+      return { spec: { tasks: [] } }
+    })
+    const referencedTasks: Record<string, boolean> = pipeline.spec.tasks.reduce((M, _) => {
+      M[_.taskRef.name] = true
+      return M
+    }, {})
+    debug('referencedTasks', referencedTasks)
+
+    return qexec(`kubectl get Task.tekton.dev`, undefined, undefined, {
+      filter: listOfTasks => listOfTasks.filter(_ => referencedTasks[_.name])
+    })
+  } else {
+    return $(`kubectl get Task.tekton.dev ${encodeComponent(taskName)}`)
+  }
 }

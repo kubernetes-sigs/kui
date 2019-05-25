@@ -23,6 +23,7 @@ import { isPopup } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import createdOn from '../util/created-on'
 
@@ -34,6 +35,7 @@ import { addPods } from '../view/modes/pods'
 import { addContainers } from '../view/modes/containers'
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
+import { apply as addRelevantModes } from '../view/modes/registrar'
 
 const usage = command => ({
   title: command,
@@ -167,7 +169,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     }
   }))
 
-  const modes: Array<any> = [
+  const modes: Array<ISidecarMode> = [
     {
       mode: 'summary',
       defaultMode: true,
@@ -184,6 +186,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     addConditions(modes, command, resource)
     addPods(modes, command, resource)
     addContainers(modes, command, resource)
+    addRelevantModes(modes, command, resource)
   }
   modes.push({
     mode: 'raw',
@@ -216,6 +219,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     contentType: output,
     prettyType: resource.kind,
     subtext: createdOn(resource),
+    resource,
     modes,
     content: output === 'json' ? summary : safeDump(summary).trim()
   }
