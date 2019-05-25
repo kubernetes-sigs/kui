@@ -25,10 +25,11 @@ import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
 import { config } from '@kui-shell/core/core/settings'
 import store from '@kui-shell/core/models/store'
 
+import expandHomeDir from '@kui-shell/core/util/home'
+
 let wskprops
 try {
   const propertiesParser = require('properties-parser')
-  const expandHomeDir = require('expand-home-dir')
   if (!inBrowser()) {
     wskprops = propertiesParser.read(expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))
   } else {

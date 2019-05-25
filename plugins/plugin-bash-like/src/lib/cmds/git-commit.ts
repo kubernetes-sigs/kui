@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ const debug = Debug('plugins/bash-like/cmds/git-commit')
 import { join } from 'path'
 import { writeFile } from 'fs'
 import { spawn } from 'child_process'
-import * as expandHomeDir from 'expand-home-dir'
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec } from '@kui-shell/core/core/repl'
 import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui-shell/core/webapp/views/sidecar'

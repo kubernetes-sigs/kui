@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "debug": "4.1.1",
-    "expand-home-dir": "0.0.3",
     "js-yaml": "3.13.1"
   },
   "kui": {

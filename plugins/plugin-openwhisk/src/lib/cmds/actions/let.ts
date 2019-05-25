@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unl
 import { basename, join } from 'path'
 import needle = require('needle')
 import withRetry = require('promise-retry')
-import expandHomeDir = require('expand-home-dir')
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { current as currentNamespace } from '../../models/namespace'
 import { findFile } from '@kui-shell/core/core/find-file'

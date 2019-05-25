@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-const myDebug = require('debug')('webapp/bootstrap/electron')
+import { join } from 'path'
+import { homedir as home } from 'os'
 
-if (process.cwd() === '/') {
-  // ugh, on macos, dock- and finder-launched apps have a cwd of /
-  try {
-    process.chdir(require('@kui-shell/core/util/home')('~'))
-  } catch (err) {
-    console.error(err)
+const homedir = home()
+
+export default function (path: string): string {
+  if (!path) {
+    return path
+  } else if (path === '~') {
+    return homedir
+  } else if (path.slice(0, 2) !== '~/' && path.slice(0, 2) !== '~\\') {
+    return path
+  } else {
+    return join(homedir, path.slice(2))
   }
-}
-
-try {
-  require('./boot').default()
-} catch (err) {
-  require('@kui-shell/core/webapp/bootstrap/boot').default()
 }

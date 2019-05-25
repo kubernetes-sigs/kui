@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ const debug = Debug('plugins/bash-like/cmds/ls')
 import { lstat, readdir, stat } from 'fs'
 import { isAbsolute, join } from 'path'
 
-import * as expandHomeDir from 'expand-home-dir'
-
+import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'

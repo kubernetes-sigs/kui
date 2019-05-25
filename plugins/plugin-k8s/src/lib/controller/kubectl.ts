@@ -18,9 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
-import * as expandHomeDir from 'expand-home-dir'
-
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')

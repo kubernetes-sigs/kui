@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import expandHomeDir from '@kui-shell/core/util/home'
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as expandHomeDir from 'expand-home-dir'
 
 /**
  * Escape the given string for bash happiness
@@ -438,7 +438,7 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
 
   if (dirname) {
     // then dirname exists! now scan the directory so we can find matches
-    fs.readdir(dirname, (err, files) => {
+    fs.readdir(expandHomeDir(dirname), (err, files) => {
       if (err) {
         debug('fs.readdir error', err)
       } else {

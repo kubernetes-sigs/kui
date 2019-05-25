@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ const debug = Debug('plugins/bash-like/cmds/general')
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as expandHomeDir from 'expand-home-dir'
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import UsageError from '@kui-shell/core/core/usage-error'
 import * as repl from '@kui-shell/core/core/repl'

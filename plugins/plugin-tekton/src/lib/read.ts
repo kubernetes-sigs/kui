@@ -20,8 +20,8 @@ const debug = Debug('plugins/tekton/lib/read')
 import { readFile } from 'fs'
 import { promisify } from 'util'
 import { safeLoadAll } from 'js-yaml'
-import * as expandHomeDir from 'expand-home-dir'
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { qexec, rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
 
