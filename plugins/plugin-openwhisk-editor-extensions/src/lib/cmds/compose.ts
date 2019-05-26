@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk-editor-extensions/cmds/compose')
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
@@ -56,7 +57,7 @@ module.exports = composer.sequence('A', 'B')`,
  * Add the wskflow visualization component to the given content
  *
  */
-const addWskflow = opts => {
+const addWskflow = (tab: ITab) => (opts) => {
   debug('addWskflow', opts)
 
   if (isHeadless()) return opts
@@ -92,7 +93,7 @@ const addWskflow = opts => {
           content.appendChild(wskflowContainer)
         } else {
           debug('handing off to the wskflow plugin')
-          await visualize(ast)
+          await visualize(tab, ast)
             .then(({ view, controller }) => {
               const currentSVG = wskflowContainer.querySelector('svg')
 
@@ -311,7 +312,7 @@ const addCompositionOptions = params => {
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined }) => async ({ argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
+export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined }) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -358,9 +359,9 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
     // then send a response back to the repl
     //
     return betterNotExist(name, options)
-      .then(() => Promise.all([makeAction(), openEditor(name, options, execOptions)]))
+        .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
       .then(prepareEditorWithAction)
-      .then(addWskflow)
+      .then(addWskflow(tab))
       .then(respondToRepl(undefined, ['is-modified']))
   }
 }

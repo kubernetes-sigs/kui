@@ -160,7 +160,7 @@ const usage = {
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/run', doRun, { usage, noAuthOk: true })
   commandTree.listen('/show',
-                     ({ execOptions }) => {
+                     ({ execOptions, tab }) => {
                        debug('show', execOptions)
                        if (!execOptions || !execOptions.parameters) {
                          throw new Error('Nothing to show')
@@ -185,7 +185,8 @@ export default (commandTree: CommandRegistrar) => {
                          container.classList.add('result-as-table')
                          scrollInner.appendChild(container)
 
-                         formatMultiListResult(!Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
+                         formatMultiListResult(tab,
+                                               !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
                                                container)
 
                          return {

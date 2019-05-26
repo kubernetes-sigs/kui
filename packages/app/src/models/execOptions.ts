@@ -15,13 +15,19 @@
  */
 
 import { ExecType } from './command'
+import { ITab } from '../webapp/cli'
 
 export interface IExecOptions {
+  // force execution in a given tab?
+  tab?: ITab
+
   isProxied?: boolean
   noDelegation?: boolean
   delegationOk?: boolean
 
-  filter?
+  filter?: any
+  contextChangeOK?: boolean
+  credentials?: Record<string, any>
 
   custom?: any
   rawResponse?: boolean

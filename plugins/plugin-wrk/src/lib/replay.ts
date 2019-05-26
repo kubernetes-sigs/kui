@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as history from './history'
 import { initUI, response } from './graphics'
@@ -36,8 +38,8 @@ class DefaultOptions implements IOptions {
  * Replay a previous dataset
  *
  */
-export const replay = ({ url, dataset, testName }, graphics = initUI(), options: IOptions = new DefaultOptions()) => {
-  const resp = response(graphics, Object.assign({ url, testName }, options))
+export const replay = (tab: ITab, { url, dataset, testName }, graphics = initUI(), options: IOptions = new DefaultOptions()) => {
+  const resp = response(tab, graphics, Object.assign({ url, testName }, options))
 
   if (!options.noTable) {
     // add header row to the table
@@ -66,30 +68,30 @@ export const replay = ({ url, dataset, testName }, graphics = initUI(), options:
  * Visualize the most recent data set
  *
  */
-export const last = () => {
+export const last = ({ tab }: IEvaluatorArgs) => {
   const last = history.last()
   if (!last) {
     throw new Error('You have no load test runs available for viewing')
   }
 
-  return replay(last)
+  return replay(tab, last)
 }
 
 /**
  * Visualize the idx-th most recent data set
  *
  */
-export const show = ({ argvNoOptions: args, parsedOptions: options }) => {
+export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: IEvaluatorArgs) => {
   const idx = args[args.indexOf('show') + 1]
   if (idx === undefined || options.help) {
     console.error(idx, args)
     throw new Error('Usage: wrk show <index>')
   }
 
-  const dataset = history.get(idx)
+  const dataset = history.get(parseInt(idx, 10))
   if (!dataset) {
     throw new Error('The requested load test run is not available for viewing')
   }
 
-  return replay(dataset, undefined, { label: `Run #${idx}` })
+  return replay(tab, dataset, undefined, { label: `Run #${idx}` })
 }

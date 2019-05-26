@@ -13,6 +13,10 @@ tab {
 tab.visible {
     display: flex;
 }
+tab:not(:first-child).visible {
+    /* split screen separator */
+    border-top: 2px solid var(--color-base03);
+}
 
 body.not-electron .application-name {
     display: flex;

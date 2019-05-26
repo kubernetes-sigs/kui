@@ -23,6 +23,7 @@ import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
@@ -52,13 +53,13 @@ import { status as statusImpl } from './status'
 import { apply as addRelevantModes } from '../view/modes/registrar'
 
 interface KubeExecOptions extends IExecOptions {
-  credentials?: {
+/*  credentials?: {
     k8s: {
       kubeconfig: string
       ca: string
       cafile: string
     }
-  }
+  }*/
 }
 
 /** lazily load js-yaml and invoke its yaml parser */
@@ -599,7 +600,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         addContainers(modes, command, resource)
         addRelevantModes(modes, command, resource)
 
-        deleteResourceButton(() => renderAndViewStatus({ command, resource, finalState: FinalState.OfflineLike }))
+        deleteResourceButton(() => renderAndViewStatus(opts.tab, { command, resource, finalState: FinalState.OfflineLike }))
         modes.push(deleteResourceButton())
       }
 

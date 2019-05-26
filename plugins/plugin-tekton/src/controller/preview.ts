@@ -37,12 +37,12 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tekton/flow', async ({ command, argvNoOptions }) => {
+  commandTree.listen('/tekton/flow', async ({ command, argvNoOptions, tab }) => {
     const filepath = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
     const raw = await read(filepath)
     const jsons = await parse(raw)
 
     // return a kui view
-    return flowView(jsons, raw, filepath)
+    return flowView(tab, jsons, raw, filepath)
   }, { usage, noAuthOk: true })
 }

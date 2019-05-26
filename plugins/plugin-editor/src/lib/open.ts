@@ -20,6 +20,7 @@ const debug = Debug('plugins/editor/open')
 import * as path from 'path'
 import * as events from 'events'
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
@@ -39,14 +40,16 @@ import { extension, language } from './file-types'
  *     - content: a dom that contains the instance; this must be attached somewhere!
  *
  */
-export const openEditor = async (name, options, execOptions) => {
+export const openEditor = async (tab: ITab, name: string, options, execOptions) => {
   debug('openEditor')
 
-  const sidecar = getSidecar()
+  const sidecar = getSidecar(tab)
 
   /** returns the current entity */
   const custom = execOptions.custom
-  const getEntity = (custom && custom.getEntity) || currentSelection
+
+  const getEntityFn = (custom && custom.getEntity) || currentSelection
+  const getEntity = () => getEntityFn(tab)
 
   // for certain content types, always show folding controls, rather
   // than on mouse over (which is the default behavior for monaco)
@@ -192,7 +195,7 @@ export const openEditor = async (name, options, execOptions) => {
           isModifiedPart.setAttribute('data-balloon-pos', 'left')
 
           addNameToSidecarHeader(sidecar, nameDiv, entity.packageName, undefined, entity.prettyKind || entity.kind || entity.prettyType || entity.viewName || entity.type)
-          addVersionBadge(entity, { clear: true })
+          addVersionBadge(tab, entity, { clear: true })
         }
       }
 
@@ -237,7 +240,7 @@ export const openEditor = async (name, options, execOptions) => {
       globalEventBus.on('/sidecar/maximize', relayout)
       window.addEventListener('resize', relayout)
 
-      if (isSidecarVisible()) {
+      if (isSidecarVisible(tab)) {
         relayout()
         setTimeout(relayout, 600) // race with sidecar sweeping in
       } else {

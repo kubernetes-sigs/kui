@@ -169,7 +169,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node[data-deployed="not-deployed"] .at
     /* visited nodes with failure outcome */
     fill: var(--color-support-01) !important;
 }
-#wskflowSVG .node.leaf[data-status="success"] text:not(.edge-label), #wskflowSVG .node.leaf[data-status="failed"] text:not(.edge-label) {
+#wskflowSVG .node.leaf.Exit[data-status] text:not(.edge-label), #wskflowSVG .node.leaf.Entry[data-status] text:not(.edge-label), #wskflowSVG .node.leaf[data-status="failed"] text:not(.edge-label) {
     /* visited node text for session flow */
     fill: var(--color-ui-01) !important;
 }

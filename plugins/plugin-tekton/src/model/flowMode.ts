@@ -19,6 +19,7 @@ const debug = Debug('tekton/flowMode')
 
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { rexec as $ } from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
@@ -33,7 +34,7 @@ interface IResponseObject {
  */
 const flowMode: ISidecarMode = {
   mode: 'flow',
-  direct: async (_: IResponseObject) => {
+  direct: async (tab: ITab, _: IResponseObject) => {
     if (_.isFromFlowCommand) {
       // then _ is already the response we need
       return _
@@ -43,9 +44,9 @@ const flowMode: ISidecarMode = {
       if (resource.kind === 'Pipeline') {
         // fetch any accompanying Tasks
         const tasks: IKubeResource[] = await $('kubectl get Task.tekton.dev')
-        return flowView([resource].concat(tasks))
+        return flowView(tab, [resource].concat(tasks))
       } else {
-        return flowView([resource])
+        return flowView(tab, [resource])
       }
     }
   },

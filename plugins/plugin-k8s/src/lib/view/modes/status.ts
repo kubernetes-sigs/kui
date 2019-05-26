@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/status')
 
 import repl = require('@kui-shell/core/core/repl')
+import { ITab } from '@kui-shell/core/webapp/cli'
 
 import { FinalState } from '../../model/states'
 import IResource from '../../model/resource'
@@ -45,7 +46,7 @@ export const statusButton = (command: string, resource: IResource, finalState: F
  * around the formatMultiListResult() output.
  *
  */
-export const renderStatus = async (command: string, resource: IResource, finalState: FinalState) => {
+export const renderStatus = async (tab: ITab, command: string, resource: IResource, finalState: FinalState) => {
   debug('renderStatus', command, resource.filepathForDrilldown, resource.kind, resource.name, finalState, resource.yaml)
 
     // TODO: helm status doesn't yet support watching; so no final-state for helm status
@@ -60,7 +61,7 @@ export const renderStatus = async (command: string, resource: IResource, finalSt
   const model = await repl.qexec(fetchModels)
   debug('renderStatus.models', model)
 
-  const view = formatTable(model)
+  const view = formatTable(tab, model)
 
   return view
 }
@@ -74,7 +75,7 @@ interface IParameters {
   resource: IResource
   finalState: FinalState
 }
-export const renderAndViewStatus = (parameters: IParameters) => {
+export const renderAndViewStatus = (tab: ITab, parameters: IParameters) => {
   const { command, resource, finalState } = parameters
-  renderStatus(command, resource, finalState).then(insertView)
+  renderStatus(tab, command, resource, finalState).then(insertView(tab))
 }

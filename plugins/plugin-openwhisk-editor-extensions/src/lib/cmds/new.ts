@@ -214,7 +214,7 @@ export const prepareEditorWithAction = ([action, updateFn]) => {
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined, persister = persisters.actions } = {}) => async ({ argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
+export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined, persister = persisters.actions } = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -257,7 +257,7 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
     // then send a response back to the repl
     //
     return betterNotExist(name, options)
-      .then(() => Promise.all([makeAction(), openEditor(name, options, execOptions)]))
+        .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
       .then(prepareEditorWithAction)
       .then(respondToRepl(undefined, ['is-modified']))
   }

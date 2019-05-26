@@ -103,11 +103,13 @@ export class Table {
   }
 }
 
+type MultiTable = Table[]
+
 export function isTable (model: any): model is Table {
   return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
 }
 
-export function isMultiTable (model: any) {
+export function isMultiTable (model: any): model is MultiTable {
   return model !== undefined && Array.isArray(model) && model.length > 0 && model.filter(m => !isTable(m)).length === 0
 }
 

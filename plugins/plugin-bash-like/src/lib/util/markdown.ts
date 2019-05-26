@@ -18,6 +18,7 @@ import * as url from 'url'
 import * as path from 'path'
 
 import { pexec } from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
 interface IMarkdown {
@@ -29,11 +30,11 @@ interface IMarkdown {
  * Render a markdown file as HTML
  *
  */
-export default (suffix: string, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+export default (tab: ITab, suffix: string, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
   if (suffix === 'md') {
-    return markdownify(source, fullpath, hljs)
+    return markdownify(tab, source, fullpath, hljs)
   } else if (suffix === 'adoc') {
-    return asciidocify(source, fullpath, hljs)
+    return asciidocify(tab, source, fullpath, hljs)
   }
 }
 
@@ -74,19 +75,19 @@ const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
  * Render an asciidoc file as HTML
  *
  */
-const asciidocify = async (source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+const asciidocify = async (tab: ITab, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
   const Asciidoctor = await import('asciidoctor.js')
   const asciidoctor = Asciidoctor()
 
   const htmlString = asciidoctor.convert(source)
-  return wrap(htmlString, fullpath, hljs)
+  return wrap(tab, htmlString, fullpath, hljs)
 }
 
 /**
  * Render a markdown file as HTML
  *
  */
-const markdownify = async (source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+const markdownify = async (tab: ITab, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
   // use marked, but render links specially
   const Marked = await import('marked')
   const renderer = new Marked.Renderer()
@@ -139,14 +140,14 @@ const markdownify = async (source: string, fullpath: string, hljs): Promise<IMar
   const marked = _ => Marked(_, { renderer })
   const htmlString = marked(source)
 
-  return wrap(htmlString, fullpath, hljs)
+  return wrap(tab, htmlString, fullpath, hljs)
 }
 
 /**
  * Wrap a formatted innerHTML
  *
  */
-const wrap = (htmlString: string, fullpath: string, hljs): IMarkdown => {
+const wrap = (tab: ITab, htmlString: string, fullpath: string, hljs): IMarkdown => {
   const body = document.createElement('div')
   body.classList.add('padding-content')
   body.classList.add('overflow-auto')
@@ -176,7 +177,8 @@ const wrap = (htmlString: string, fullpath: string, hljs): IMarkdown => {
       // out part
       exec.onclick = () => pexec(url.substring(1)/*.replace(new RegExp('(?<!\\)\/', 'g'), ' ')*/.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
     } else {
-      exec.onclick = drilldown(`open ${url}`,
+      exec.onclick = drilldown(tab,
+                               `open ${url}`,
                                undefined,
                                wrapper,
                                path.basename(fullpath))

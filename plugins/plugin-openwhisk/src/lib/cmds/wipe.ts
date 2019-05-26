@@ -125,16 +125,16 @@ const doWipe = () => doWipe1().then(() => doWipe2()).then(() => {
   }
 })
 
-const doWipeWithConfirmation = async ({ block, nextBlock }: IEvaluatorArgs) => {
+const doWipeWithConfirmation = async ({ tab, block, nextBlock }: IEvaluatorArgs) => {
   //
   // first, hide the sidecar
   //
-  hideSidecar(true) // true means clean out current selection
+  hideSidecar(tab, true) // true means clean out current selection
 
   //
   // then ask the user to confirm the dangerous operation
   //
-  return cli.prompt('DANGER!', block as HTMLElement, nextBlock, {
+  return cli.prompt('DANGER!', block as HTMLElement, nextBlock, tab, {
     placeholder: 'This operation will remove all entities. Enter "yes" to confirm.',
     dangerous: true
   }, options => {

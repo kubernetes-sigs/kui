@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('wrk/wrk')
 
 import eventBus from '@kui-shell/core/core/events'
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { lt as loadTest } from './lt'
 import { addRow } from './table'
@@ -28,7 +29,7 @@ import * as history from './history'
  * Start a load test, hooked up to graphics
  *
  */
-export const start = ({ argvNoOptions: args, parsedOptions: options }) => {
+export const start = ({ tab, argvNoOptions: args, parsedOptions: options }: IEvaluatorArgs) => {
   const url = args[args.indexOf('wrk') + 1] || options.url
   debug('url', url)
 
@@ -60,7 +61,7 @@ export const start = ({ argvNoOptions: args, parsedOptions: options }) => {
   // start the load run
   loadTest({ url, options }).then(finishUp)
 
-  return response(graphics, { url, testName })
+  return response(tab, graphics, { url, testName })
 }
 
 /**

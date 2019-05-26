@@ -19,21 +19,22 @@ const debug = Debug('k8s/view/formatMultiTable')
 
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { formatTable as format } from '@kui-shell/core/webapp/views/table'
 import { Table, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 
 /** this will help us with finding our own view instances */
 const attr = 'k8s-table'
 
-export const getActiveView = () => {
-  return getActiveSidecarView().querySelector(`[${attr}]`)
+export const getActiveView = (tab: ITab) => {
+  return getActiveSidecarView(tab).querySelector(`[${attr}]`)
 }
 
 /**
  * Update table for picture-in-picture style drilldowns
  *
  */
-const updateTableForPip = (viewName: string, execOptions) => (table: Table) => {
+const updateTableForPip = (tab: ITab, viewName: string, execOptions) => (table: Table) => {
   debug('pip update for table', table)
 
   table.body.forEach(row => {
@@ -41,7 +42,7 @@ const updateTableForPip = (viewName: string, execOptions) => (table: Table) => {
       const command = row.onclick
       debug('command', command)
       row.onclick = (evt: Event) => {
-        return drilldown(command, undefined, getActiveView(), viewName, { execOptions })(evt)
+        return drilldown(tab, command, undefined, getActiveView(tab), viewName, { execOptions })(evt)
       }
     }
 
@@ -50,7 +51,7 @@ const updateTableForPip = (viewName: string, execOptions) => (table: Table) => {
         if (attr.onclick) {
           const command = attr.onclick
           attr.onclick = (evt: Event) => {
-            return drilldown(command, undefined, getActiveView(), viewName, { execOptions })(evt)
+            return drilldown(tab, command, undefined, getActiveView(tab), viewName, { execOptions })(evt)
           }
         }
       })
@@ -62,7 +63,7 @@ const updateTableForPip = (viewName: string, execOptions) => (table: Table) => {
  * Return a table view for the given table model
  *
  */
-export const formatTable = (model: Table | Table[], { usePip = false, viewName = 'previous view', execOptions = {} } = {}): HTMLElement => {
+export const formatTable = (tab: ITab, model: Table | Table[], { usePip = false, viewName = 'previous view', execOptions = {} } = {}): HTMLElement => {
   debug('formatTable model', model)
 
   const resultDomOuter = document.createElement('div')
@@ -77,9 +78,9 @@ export const formatTable = (model: Table | Table[], { usePip = false, viewName =
     if (usePip) {
       debug('pip update')
       if (isTable(model)) {
-        updateTableForPip(viewName, execOptions)(model)
+        updateTableForPip(tab, viewName, execOptions)(model)
       } else {
-        model.forEach(updateTableForPip(viewName, execOptions))
+        model.forEach(updateTableForPip(tab, viewName, execOptions))
       }
     }
 
@@ -95,10 +96,10 @@ export const formatTable = (model: Table | Table[], { usePip = false, viewName =
     resultDom.classList.add('monospace')
 
     if (isTable(model)) {
-      format(model, resultDom)
+      format(tab, model, resultDom)
     } else {
       resultDom.classList.add('result-as-multi-table')
-      model.forEach(m => format(m, resultDom))
+      model.forEach(m => format(tab, m, resultDom))
     }
   }
 

@@ -38,11 +38,11 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/prompt', ({ argvNoOptions, parsedOptions: options, block, nextBlock }) => {
+  commandTree.listen('/prompt', ({ argvNoOptions, parsedOptions: options, block, nextBlock, tab }) => {
     const placeholder = argvNoOptions[1] || 'Test prompt'
     debug('placeholder', placeholder, argvNoOptions)
 
-    return cli.prompt('Prompt', block as HTMLElement, nextBlock, {
+    return cli.prompt('Prompt', block as HTMLElement, nextBlock, tab, {
       placeholder
     }, options => {
       debug('response', options.field)

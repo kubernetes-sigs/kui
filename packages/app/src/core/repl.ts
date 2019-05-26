@@ -316,11 +316,12 @@ class InProcessExecutor implements IExecutor {
   async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
-    const tab = cli.getCurrentTab()
+    const tab = execOptions.tab || cli.getCurrentTab()
+    debug('tab', cli.getTabIndex(tab))
 
     if (!isHeadless()) {
       const storage = JSON.parse(sessionStore().getItem(key)) || {}
-      const curDic = storage[cli.getTabIndex(cli.getCurrentTab())]
+      const curDic = storage[cli.getTabIndex(tab)]
       if (typeof curDic !== 'undefined') {
         process.env = Object.assign({}, process.env, curDic)
       }
@@ -330,7 +331,7 @@ class InProcessExecutor implements IExecutor {
     const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
     if (nested) execOptions.nested = nested
 
-    const block = (execOptions && execOptions.block) || cli.getCurrentBlock()
+    const block = (execOptions && execOptions.block) || cli.getCurrentBlock(tab)
     const blockParent = block && block.parentNode // remember this one, in case the command removes block from its parent
     const prompt = block && cli.getPrompt(block)
 
@@ -339,7 +340,7 @@ class InProcessExecutor implements IExecutor {
     if (execOptions && execOptions.pip) {
       const { container, returnTo } = execOptions.pip
       try {
-        return pictureInPicture(commandUntrimmed, undefined, document.querySelector(container), returnTo)()
+        return pictureInPicture(tab, commandUntrimmed, undefined, document.querySelector(container), returnTo)()
       } catch (err) {
         console.error(err as Error)
         // fall through to normal execution, if pip fails
@@ -597,7 +598,7 @@ class InProcessExecutor implements IExecutor {
                    nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
               const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
-              const selection = currentSelection()
+              const selection = currentSelection(tab)
 
               let nActualArgsWithImplicit = nActualArgs
 
@@ -636,7 +637,7 @@ class InProcessExecutor implements IExecutor {
                 const activationPath = selection.type === 'activations' && selection.annotations && selection.annotations.find(_ => _.key === 'path')
                 if (activationPath) {
                   // ooh, then splice in the implicit parameter and entity type. We splice entity type here for later commands to easily distinguish composition/action.
-                  args.splice(implicitIdx, cmdArgsStart + 1, `/${activationPath.value}`, selection.sessionId || selection.fsm ? 'composition' : 'action')
+                  args.splice(implicitIdx, cmdArgsStart + 1, `/${activationPath.value}`, selection['sessionId'] || selection['ast'] ? 'composition' : 'action')
                 } else {
                   // ooh, then splice in the implicit parameter
                   args.splice(implicitIdx, cmdArgsStart + 1, selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name)
@@ -716,7 +717,7 @@ class InProcessExecutor implements IExecutor {
             }
 
             if (response.verb === 'delete') {
-              if (maybeHideEntity(response) && nextBlock) {
+              if (maybeHideEntity(tab, response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
               }
             }
@@ -742,9 +743,9 @@ class InProcessExecutor implements IExecutor {
             } else {
               // we're the top-most exec, so deal with the repl!
               debug('displaying response')
-              const resultDom = block.querySelector('.repl-result')
+              const resultDom = block.querySelector('.repl-result') as HTMLElement
               return new Promise(resolve => {
-                cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions, command, evaluator)(response) // <--- the Print part of REPL
+                cli.printResults(block, nextBlock, tab, resultDom, echo, execOptions, parsedOptions, command, evaluator)(response) // <--- the Print part of REPL
                   .then(() => {
                     if (echo) {
                       // <-- create a new input, for the next iter of the Loop
@@ -833,7 +834,7 @@ class InProcessExecutor implements IExecutor {
         return
       }
 
-      const blockForError = block || cli.getCurrentProcessingBlock()
+      const blockForError = block || cli.getCurrentProcessingBlock(tab)
 
       return Promise.resolve(e.message).then(message => {
         if (isHTML(message)) {
@@ -841,9 +842,9 @@ class InProcessExecutor implements IExecutor {
           oops(command, block, nextBlock)(e)
         } else {
           const cmd = cli.showHelp(command, blockForError, nextBlock, e)
-          const resultDom = blockForError.querySelector('.repl-result')
+          const resultDom = blockForError.querySelector('.repl-result') as HTMLElement
           return Promise.resolve(cmd)
-            .then(cli.printResults(blockForError, nextBlock, resultDom))
+            .then(cli.printResults(blockForError, nextBlock, tab, resultDom))
             .then(cli.installBlock(blockForError.parentNode, blockForError, nextBlock))
         }
       })

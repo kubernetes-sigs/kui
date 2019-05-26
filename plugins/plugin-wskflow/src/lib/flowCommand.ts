@@ -84,7 +84,7 @@ const fetchTrace = activation => new Promise((resolve, reject) => {
 
 export default (commandTree: CommandRegistrar) => {
   // register the "session flow" command
-  commandTree.listen('/wsk/session/flow', ({ argvNoOptions }) => {
+  commandTree.listen('/wsk/session/flow', ({ tab, argvNoOptions }) => {
     const sessionId = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
     debug('session flow', sessionId)
 
@@ -109,8 +109,8 @@ export default (commandTree: CommandRegistrar) => {
           ast = astAnno && astAnno.value
         }
 
-        const visualize = require('./visualize').default
-        const { view, controller } = await visualize(ast, undefined, undefined, undefined, activations)
+        const visualize = (await import('./visualize')).default
+        const { view, controller } = await visualize(tab, ast, undefined, undefined, undefined, activations)
 
         // set the default mode to session flow
         session.modes.find(({ defaultMode }) => defaultMode).defaultMode = false

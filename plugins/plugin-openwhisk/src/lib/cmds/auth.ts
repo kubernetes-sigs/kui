@@ -26,7 +26,7 @@ const debug = Debug('plugins/openwhisk/cmds/auth')
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import eventBus from '@kui-shell/core/core/events'
-import { partial } from '@kui-shell/core/webapp/cli'
+import { partial, ITab } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
@@ -136,14 +136,14 @@ usage.host.toplevel.available = [usage.host.get, usage.host.set]
  * The message we will use to inform the user of a auth switch event
  *
  */
-const informUserOfChange = (subject?: string) => () => {
+const informUserOfChange = (tab: ITab, subject?: string) => () => {
   setTimeout(async () => eventBus.emit('/auth/change', {
     namespace: await namespace.current(),
     subject: subject
   }), 0)
 
   return apiHost.get().then(async host => {
-    clearSelection()
+    clearSelection(tab)
     return `You are now using the OpenWhisk host ${host}, and namespace ${await namespace.current()}`
   })
 }
@@ -287,7 +287,7 @@ interface IUseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({ argvNoOptions, parsedOptions }: IEvaluatorArgs) => namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
+const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: IEvaluatorArgs) => namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
   if (auth) {
     /**
      * e.g. auth switch [auth] (=> options.save is undefined)
@@ -297,11 +297,11 @@ const use = (verb: string) => ({ argvNoOptions, parsedOptions }: IEvaluatorArgs)
     const options = (parsedOptions as any) as IUseOptions
     if (options.save === false) {
       return namespace.use(auth)
-        .then(informUserOfChange())
+        .then(informUserOfChange(tab))
     } else {
       return updateLocalWskProps(auth)
         .then(auth => namespace.useAndSave(auth))
-        .then(informUserOfChange())
+        .then(informUserOfChange(tab))
     }
   } else {
     return namespace.list().then(namespaces => {
@@ -328,14 +328,14 @@ const clicky = (parent: HTMLElement, cmd: string, exec) => {
  * Command impl for auth add
  *
  */
-const addFn = (key: string, subject: string) => {
+const addFn = (tab: ITab, key: string, subject: string) => {
   debug('add', key, subject)
 
   const previousAuth = authModel.get()
   return authModel.set(key)
     .then(() => namespace.init(true)) // true means that we'll do the error handling
     .then(() => updateLocalWskProps(key, subject))
-    .then(informUserOfChange(subject))
+    .then(informUserOfChange(tab, subject))
     .catch(err => {
       if (err.statusCode === 401) {
         // then the key is bogus, restore the previousAuth
@@ -546,7 +546,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.subtree('/wsk/host', { usage: usage.host.toplevel })
   commandTree.subtree('/wsk/auth', { usage: usage.auth.toplevel })
 
-  const add = ({ argvNoOptions }) => addFn(firstArg(argvNoOptions, 'add'), undefined)
+  const add = ({ argvNoOptions, tab }: IEvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
   commandTree.listen('/wsk/auth/switch', use('switch'), { usage: usage.auth.switch, noAuthOk: true, inBrowserOk: true })
   commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true, inBrowserOk: true })

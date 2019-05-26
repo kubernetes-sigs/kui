@@ -20,6 +20,7 @@ const debug = Debug('plugins/core-support/clear')
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { resetCount } from '@kui-shell/core/webapp/cli'
 
 const usage = {
   command: 'clear',
@@ -46,6 +47,9 @@ const clear = ({ parsedOptions, tab }: IEvaluatorArgs) => {
       for (let idx = 0; idx < blocks.length; idx++) {
         blocks[idx].parentNode.removeChild(blocks[idx])
       }
+
+      const remainingBlock = tab.querySelector('.repl-block') as HTMLElement
+      resetCount(remainingBlock)
 
       // return the current processing block, if there is one
       const processing = '.repl-inner .repl-block.processing'

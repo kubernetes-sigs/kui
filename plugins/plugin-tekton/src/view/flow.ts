@@ -20,6 +20,7 @@ const debug = Debug('plugins/tekton/view/flow')
 import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
@@ -33,7 +34,7 @@ import tekton2graph from '../lib/tekton2graph'
  * Format a repl response
  *
  */
-export default async (jsons: Record<string, any>[], raw: string = safeDump(jsons), filepath?: string) => {
+export default async (tab: ITab, jsons: Record<string, any>[], raw: string = safeDump(jsons), filepath?: string) => {
   const [graph, graph2doms] = await Promise.all([
     tekton2graph(jsons, filepath), // generate the graph model
     import('@kui-shell/plugin-wskflow/lib/graph2doms'), // overlap that work with importing the graph renderer
@@ -46,7 +47,7 @@ export default async (jsons: Record<string, any>[], raw: string = safeDump(jsons
   content.style.flex = '1'
   content.style.display = 'flex'
 
-  const { controller } = await graph2doms.default(graph, content, undefined, {
+  const { controller } = await graph2doms.default(tab, graph, content, undefined, {
     layoutOptions: {
       'elk.separateConnectedComponents': false,
       'elk.spacing.nodeNode': 10,
