@@ -66,7 +66,7 @@ body.os-darwin .left-tab-stripe {
 .left-tab-stripe-button:not([data-tab-button-index]) i {
     color: rgba(255,255,255,0.25) !important;
 }
-.left-tab-stripe-button:not([data-tab-button-index]):after {
+.left-tab-stripe-button:not([data-tab-button-index]):not([data-balloon]):after {
     content: ''
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
