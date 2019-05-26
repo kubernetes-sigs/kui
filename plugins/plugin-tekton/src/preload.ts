@@ -17,8 +17,13 @@
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import registerSidecarMode from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
+/** this is the ISidecarMode model for the tekton flow view */
 import flowMode from './model/flowMode'
 
+/** this is the api version matcher; TODO refactor */
+const tektonAPI = /tekton.dev/
+
+/** sidecar mode for tekton Flow view */
 const flowModeSpec = {
   mode: flowMode,
   when: (resource: IKubeResource) => {
@@ -27,8 +32,7 @@ const flowModeSpec = {
   }
 }
 
-const tektonAPI = /tekton.dev/
-
-export default async () => {
+/** on preload, register our sidecar modes */
+export default () => {
   registerSidecarMode(flowModeSpec)
 }

@@ -20,7 +20,7 @@ const debug = Debug('plugins/tekton/get/step')
 import { CodedError } from '@kui-shell/core/models/errors'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
-import { fetchTask } from '../../read'
+import { fetchTask } from '../../lib/read'
 
 const usage = {
   command: 'step',

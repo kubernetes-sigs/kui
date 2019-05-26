@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('tekton/flowMode')
+
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { rexec as $ } from '@kui-shell/core/core/repl'
 
@@ -36,13 +39,13 @@ const flowMode: ISidecarMode = {
       return _
     } else {
       const resource = _.resource
-      const { respondWith } = await import('../lib/tekton2graph')
+      const flowView = (await import('../view/flow')).default
       if (resource.kind === 'Pipeline') {
         // fetch any accompanying Tasks
         const tasks: IKubeResource[] = await $('kubectl get Task.tekton.dev')
-        return respondWith([resource].concat(tasks))
+        return flowView([resource].concat(tasks))
       } else {
-        return respondWith([resource])
+        return flowView([resource])
       }
     }
   },
