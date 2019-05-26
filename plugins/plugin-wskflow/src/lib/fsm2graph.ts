@@ -20,11 +20,12 @@ const debug = Debug('plugins/wskflow/fsm2graph')
 import * as $ from 'jquery'
 
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-
-import graph2doms from './graph2doms'
-import { textualPropertiesOfCode } from './util'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+
+import ActivationLike from './activation'
+import { textualPropertiesOfCode } from './util'
 
 const maxWidth = 100
 // const defaultWidth = 40
@@ -35,9 +36,9 @@ const defaultCharHeight = 10
 let graphData
 let dummyCount
 let visited
-let activations
+let activations: ActivationLike[]
 let actions
-let taskIndex
+let taskIndex: number
 
 function addDummy (sources = [], targets, obj, options?, directionS?: string, directionT?: string) {
   let dummyId = 'dummy_' + dummyCount
@@ -638,7 +639,7 @@ function ir2graph (ir, gm, id: string, prevId: Array<string>, options = {}) { //
   }
 }
 
-export default async function fsm2graph (ir, containerElement, acts, options, rule): Promise<any> {
+export default async function fsm2graph (tab: ITab, ir: Record<string, any>, containerElement?: HTMLElement, acts?: ActivationLike[], options?, rule?): Promise<any> {
   // console.log(ir, containerElement, acts);
   taskIndex = 0
   activations = acts
@@ -749,7 +750,7 @@ export default async function fsm2graph (ir, containerElement, acts, options, ru
 
         // warn user about not-deployed actions (but only if !activations, i.e. not for session flow)
         if (notDeployed.length > 0 && !activations) {
-          const container = document.querySelector(sidecarSelector('.sidecar-header .sidecar-header-secondary-content .custom-header-content'))
+          const container = sidecarSelector(tab, '.sidecar-header .sidecar-header-secondary-content .custom-header-content')
           if (container && (!options || !options.noHeader)) {
             removeAllDomChildren(container)
             const css = {
@@ -808,7 +809,8 @@ export default async function fsm2graph (ir, containerElement, acts, options, ru
 
   debug('inserting DOM, calling graph2doms')
 
-  return graph2doms(graphData, containerElement, activations)
+  const graph2doms = (await import('./graph2doms')).default
+  return graph2doms(tab, graphData, containerElement, activations)
 }
 
 /**

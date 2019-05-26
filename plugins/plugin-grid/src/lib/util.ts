@@ -26,6 +26,7 @@ import eventBus from '@kui-shell/core/core/events'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
@@ -299,8 +300,8 @@ export interface IHeader {
   leftHeader: Element,
   rightHeader: Element
 }
-export const prepareHeader = (isRedraw = false): IHeader => {
-  const sidecar = getSidecar()
+export const prepareHeader = (tab: ITab, isRedraw = false): IHeader => {
+  const sidecar = getSidecar(tab)
   const leftHeader = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
   const rightHeader = sidecar.querySelector('.header-right-bits .custom-header-content')
 
@@ -316,8 +317,8 @@ export const prepareHeader = (isRedraw = false): IHeader => {
  * The command handler for visualizing as a table
  *
  */
-export type Renderer = (options: Object, header: IHeader, uuid: string, isRedraw?: boolean) => void
-export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ argv: fullArgv, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => {
+export type Renderer = (tab: ITab, options: Object, header: IHeader, uuid: string, isRedraw?: boolean) => void
+export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ tab, argv: fullArgv, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
@@ -373,12 +374,12 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
                 }
                 return data
             }) */
-      .then(draw(options, prepareHeader(isRedraw), ourUUID, isRedraw))
+      .then(draw(tab, options, prepareHeader(tab, isRedraw), ourUUID, isRedraw))
   }
 
   return fetchAndDraw().then(response => {
     // alter the sidecar header only once the rendering is done
-    const sidecar = getSidecar()
+    const sidecar = getSidecar(tab)
 
     const icon = sidecar.querySelector('.sidecar-header-icon') as HTMLElement
     icon.innerText = viewName

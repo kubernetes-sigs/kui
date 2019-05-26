@@ -16,7 +16,7 @@
 
 const ui = require('@kui-shell/core/tests/lib/ui')
 const common = require('@kui-shell/core/tests/lib/common')
-const expandHomeDir = require('@kui-shell/core/util/home')
+const expandHomeDir = require('@kui-shell/core/util/home').default
 
 // read and cache local ~/.wskprops
 let wskprops

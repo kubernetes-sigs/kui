@@ -27,6 +27,7 @@ import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 import { FinalState } from '../model/states'
@@ -56,7 +57,7 @@ const usage = {
  * Show a customized view of a given yaml in the editor
  *
  */
-const showResource = async (yaml, filepath: string, parsedOptions: ParsedOptions, execOptions: IExecOptions) => {
+const showResource = async (yaml, filepath: string, tab: ITab, parsedOptions: ParsedOptions, execOptions: IExecOptions) => {
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
@@ -129,7 +130,7 @@ const showResource = async (yaml, filepath: string, parsedOptions: ParsedOptions
 
   /** open the content as a pretty-printed form */
   const openAsForm = () => {
-    return Promise.resolve(generateForm(parsedOptions)(editorEntity.yaml, filepath, nameOverride(editorEntity.yaml), typeOverride, extract))
+    return Promise.resolve(generateForm(tab)(editorEntity.yaml, filepath, nameOverride(editorEntity.yaml), typeOverride, extract))
       .then(addModeButtons('edit'))
   }
 
@@ -163,7 +164,7 @@ const showAsTable = (yamls: Array<any>, filepathAsGiven: string, parsedOptions):
  * kedit command handler
  *
  */
-const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const kedit = async ({ tab, execOptions, argv, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]
@@ -187,7 +188,7 @@ const kedit = async ({ execOptions, argv, argvNoOptions, parsedOptions }: IEvalu
     if (yamlIdx < 0) {
       throw new Error('Cannot find the specified resource')
     } else {
-      return showResource(yamls[yamlIdx], filepath, parsedOptions, execOptions)
+      return showResource(yamls[yamlIdx], filepath, tab, parsedOptions, execOptions)
     }
   }
 

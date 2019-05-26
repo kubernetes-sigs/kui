@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/conditions')
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
@@ -75,7 +76,7 @@ const formatTimestamp = (timestamp: string): string => {
  * Render the tabular conditions view
  *
  */
-export const renderConditions = async (command: string, resource: IResource) => {
+export const renderConditions = async (tab: ITab, command: string, resource: IResource) => {
   debug('renderConditions', command, resource)
 
   const anyProbeTimes = resource.yaml.status.conditions.some(_ => !!_.lastProbeTime)
@@ -140,7 +141,7 @@ export const renderConditions = async (command: string, resource: IResource) => 
 
   debug('table model', tableModel)
 
-  const view = formatTable(tableModel)
+  const view = formatTable(tab, tableModel)
   debug('table view', view)
 
   return view
@@ -154,6 +155,6 @@ interface IParameters {
   command: string
   resource: IResource
 }
-export const renderAndViewConditions = (parameters: IParameters) => {
-  renderConditions(parameters.command, parameters.resource).then(insertView)
+export const renderAndViewConditions = (tab: ITab, parameters: IParameters) => {
+  renderConditions(tab, parameters.command, parameters.resource).then(insertView(tab))
 }

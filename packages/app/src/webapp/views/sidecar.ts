@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ declare var hljs
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import * as cli from '../cli'
+import { ITab, isPopup, isTab, scrollIntoView, oops, getCurrentTab } from '../cli'
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
@@ -32,6 +32,7 @@ import { keys } from '../keys'
 import { IShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
+import { IEntitySpec, Entity } from '../../models/entity'
 
 /**
  * e.g. 2017-06-15T14:41:15.60027911Z  stdout:
@@ -68,24 +69,24 @@ export const beautify = (kind: string, code: string) => {
  *
  */
 interface ISidecar extends HTMLElement {
-  entity,
+  entity: IEntitySpec | ICustomSpec
   uuid?: string
 }
-export const getSidecar = (): ISidecar => {
-  debug('getSidecar', sidecarSelector(), element(sidecarSelector()))
-  return element(sidecarSelector()) as ISidecar
+export const getSidecar = (tab: ITab): ISidecar => {
+  debug('getSidecar', tab)
+  return tab.querySelector('sidecar') as ISidecar
 }
 
-export const currentSelection = () => {
-  const sidecar = getSidecar()
+export const currentSelection = (tab: ITab): IEntitySpec | ICustomSpec => {
+  const sidecar = getSidecar(tab)
   return sidecar && sidecar.entity
 }
-export const clearSelection = async () => {
+export const clearSelection = async (tab: ITab) => {
   // true means also clear selection model
-  return hide(true)
+  return hide(tab, true)
 }
-export const maybeHideEntity = entity => {
-  const sidecar = getSidecar()
+export const maybeHideEntity = (tab: ITab, entity: IEntitySpec): boolean => {
+  const sidecar = getSidecar(tab)
 
   const entityMatchesSelection = sidecar.entity &&
     sidecar.entity.name === entity.name &&
@@ -93,7 +94,7 @@ export const maybeHideEntity = entity => {
 
   debug('maybeHideEntity', entityMatchesSelection, entity, sidecar.entity)
   if (entityMatchesSelection) {
-    clearSelection()
+    clearSelection(tab)
     return true
   }
 }
@@ -102,8 +103,8 @@ export const maybeHideEntity = entity => {
  * Return the container of the current active sidecar view
  *
  */
-export const getActiveView = () => {
-  const sidecar = getSidecar()
+export const getActiveView = (tab: ITab) => {
+  const sidecar = getSidecar(tab)
   const activeView = sidecar.getAttribute('data-active-view')
   const container = sidecar.querySelector(activeView)
 
@@ -122,12 +123,12 @@ const tryParseDate = (str: string): number | string => {
  * Render the given field of the given entity in the given dom container
  *
  */
-export const renderField = async (container: HTMLElement, entity, field: string, noRetry = false) => {
+export const renderField = async (container: HTMLElement, entity: IEntitySpec, field: string, noRetry = false) => {
   if (field === 'raw') {
     // special case for displaying the record, raw, in its entirety
     const value = Object.assign({}, entity)
     delete value.modes
-    delete value.apiHost
+    delete value['apiHost']
     delete value.verb
     delete value.type
     delete value.isEntity
@@ -262,26 +263,19 @@ export const renderField = async (container: HTMLElement, entity, field: string,
  * Show custom content in the sidecar
  *
  */
-type CustomContent = string | HTMLElement | Promise<HTMLElement>
-export interface ICustomSpec {
-  type: string
-  isEntity?: boolean
-  name?: string
-  packageName?: string
+type CustomContent = string | Record<string, any> | HTMLElement | Promise<HTMLElement>
+export interface ICustomSpec extends IEntitySpec {
+  presentation?: Presentation
+  renderAs?: string
   subtext?: Formattable
-  prettyName?: string
-  prettyType?: string
-  prettyKind?: string
   content: CustomContent
-  displayOptions?: string[]
   badges?: IBadgeSpec[]
   contentType?: string
   contentTypeProjection?: string
-  controlHeaders?: boolean | string[]
-  presentation?: Presentation
-  uuid?: string
-  sidecarHeader?: boolean
-  modes: ISidecarMode[]
+}
+export function isCustomSpec (entity: Entity): entity is ICustomSpec {
+  const custom = entity as ICustomSpec
+  return custom.type === 'custom' || custom.renderAs === 'custom'
 }
 function isPromise (content: CustomContent): content is Promise<HTMLElement> {
   const promise = content as Promise<HTMLElement>
@@ -290,12 +284,11 @@ function isPromise (content: CustomContent): content is Promise<HTMLElement> {
 function isHTML (content: CustomContent): content is HTMLElement {
   return typeof content !== 'string'
 }
-export const showCustom = async (custom: ICustomSpec, options, resultDom?: Element) => {
+export const showCustom = async (tab: ITab, custom: ICustomSpec, options, resultDom?: Element) => {
   if (!custom || !custom.content) return
   debug('showCustom', custom, options, resultDom)
 
-  const sidecar = getSidecar()
-  const tab = getEnclosingTab(sidecar)
+  const sidecar = getSidecar(tab)
 
   // tell the current view that they're outta here
   if (sidecar.entity || sidecar.uuid) {
@@ -308,22 +301,22 @@ export const showCustom = async (custom: ICustomSpec, options, resultDom?: Eleme
   // occupy full screen and we *are*... in either case (this is an
   // XOR, does as best one can in NodeJS), toggle maximization
   const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
-    || (cli.isPopup() && (custom.presentation === Presentation.SidecarFullscreenForPopups || custom.presentation === Presentation.FixedSize))
+    || (isPopup() && (custom.presentation === Presentation.SidecarFullscreenForPopups || custom.presentation === Presentation.FixedSize))
 
-  if (!custom.presentation && !cli.isPopup()) {
-    presentAs(Presentation.Default)
-  } else if (custom.presentation || cli.isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen())) {
+  if (!custom.presentation && !isPopup()) {
+    presentAs(tab, Presentation.Default)
+  } else if (custom.presentation || isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab))) {
     const presentation = custom.presentation ||
       (viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
        : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen)
-    presentAs(presentation)
+    presentAs(tab, presentation)
 
     if (viewProviderDesiresFullscreen) {
-      setMaximization()
+      setMaximization(tab)
     }
   } else {
     // otherwise, reset to default presentation mode
-    presentAs(Presentation.Default)
+    presentAs(tab, Presentation.Default)
   }
 
   if (custom.controlHeaders === true) {
@@ -350,7 +343,7 @@ export const showCustom = async (custom: ICustomSpec, options, resultDom?: Eleme
   // add mode buttons, if requested
   const modes = custom.modes
   if (!options || !options.leaveBottomStripeAlone) {
-    addModeButtons(modes, custom, options)
+    addModeButtons(tab, modes, custom, options)
     sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
     setVisibleClass(sidecar)
   } else {
@@ -387,11 +380,11 @@ export const showCustom = async (custom: ICustomSpec, options, resultDom?: Eleme
                            entity.prettyType || entity.type, entity.subtext, entity)
 
     // render badges
-    addVersionBadge(entity, { clear: true, badgesDom })
+    addVersionBadge(tab, entity, { clear: true, badgesDom })
   }
 
   if (custom && custom.badges) {
-    custom.badges.forEach(badge => addBadge(badge, { badgesDom }))
+    custom.badges.forEach(badge => addBadge(tab, badge, { badgesDom }))
   }
 
   const replView = tab.querySelector('.repl')
@@ -427,10 +420,10 @@ export const showCustom = async (custom: ICustomSpec, options, resultDom?: Eleme
             }
           }
 
-          const { content } = await edit(entity, { readOnly: true })
+          const { content } = await edit(tab, entity, { readOnly: true })
           container.appendChild(content)
 
-          presentAs(Presentation.FixedSize)
+          presentAs(tab, Presentation.FixedSize)
           return Presentation.FixedSize
         } catch (err) {
           debug('erroring in loading editor', err)
@@ -472,8 +465,10 @@ export const showCustom = async (custom: ICustomSpec, options, resultDom?: Eleme
     }
   } else if (isHTML(custom.content)) {
     container.appendChild(custom.content)
-  } else {
+  } else if (typeof custom.content === 'string') {
     container.appendChild(document.createTextNode(custom.content))
+  } else {
+    console.error('content type not specified for custom content')
   }
 } /* showCustom */
 
@@ -507,7 +502,7 @@ interface IHeaderUpdate {
   name?: string
   packageName?: string
 }
-export const updateSidecarHeader = (update: IHeaderUpdate, sidecar = getSidecar()) => {
+export const updateSidecarHeader = (tab: ITab, update: IHeaderUpdate, sidecar = getSidecar(tab)) => {
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
 
   if (update.name) {
@@ -524,7 +519,7 @@ export const updateSidecarHeader = (update: IHeaderUpdate, sidecar = getSidecar(
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
-export const addNameToSidecarHeader = async (sidecar = getSidecar(), name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?) => {
+export const addNameToSidecarHeader = async (sidecar: ISidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?) => {
   debug('addNameToSidecarHeader', name)
 
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
@@ -579,7 +574,7 @@ export const addNameToSidecarHeader = async (sidecar = getSidecar(), name: strin
  * Call a formatter
  *
  */
-type Formattable = IFormatter | string | Promise<string>
+export type Formattable = IFormatter | string | Promise<string>
 export interface IFormatter {
   plugin: string
   module: string
@@ -632,10 +627,10 @@ interface IBadgeOptions {
   badgesDom: Element
 }
 class DefaultBadgeOptions implements IBadgeOptions {
-  badgesDom = getSidecar().querySelector('.sidecar-header .badges')
+  readonly badgesDom: HTMLElement
 
-  constructor () {
-    // empty
+  constructor (tab: ITab) {
+    this.badgesDom = getSidecar(tab).querySelector('.sidecar-header .badges')
   }
 }
 
@@ -645,7 +640,7 @@ class DefaultBadgeOptions implements IBadgeOptions {
  * fontawesome icon representation.
  *
  */
-interface IBadgeSpec {
+export interface IBadgeSpec {
   title: string
   fontawesome?: string
   css?: string
@@ -655,7 +650,7 @@ function isBadgeSpec (spec: string | IBadgeSpec | Element): spec is IBadgeSpec {
   return typeof spec !== 'string' && !(spec instanceof Element)
 }
 
-export const addBadge = (badgeText: string | IBadgeSpec | Element, { css, onclick, badgesDom = new DefaultBadgeOptions().badgesDom }: IBadgeOptions = new DefaultBadgeOptions()) => {
+export const addBadge = (tab: ITab, badgeText: string | IBadgeSpec | Element, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: IBadgeOptions = new DefaultBadgeOptions(tab)) => {
   debug('addBadge', badgeText, badgesDom)
 
   const badge = document.createElement('badge') as HTMLElement
@@ -700,17 +695,17 @@ export const addBadge = (badgeText: string | IBadgeSpec | Element, { css, onclic
  * If the entity has a version attribute, then render it
  *
  */
-export const addVersionBadge = (entity, { clear = false, badgesDom = undefined } = {}) => {
+export const addVersionBadge = (tab: ITab, entity: IEntitySpec, { clear = false, badgesDom = undefined } = {}) => {
   if (clear) {
-    clearBadges()
+    clearBadges(tab)
   }
   if (entity.version) {
-    addBadge(/^v/.test(entity.version) ? entity.version : `v${entity.version}`, { badgesDom }).classList.add('version')
+    addBadge(tab, /^v/.test(entity.version) ? entity.version : `v${entity.version}`, { badgesDom }).classList.add('version')
   }
 }
 
-export const clearBadges = () => {
-  const sidecar = getSidecar()
+export const clearBadges = (tab: ITab) => {
+  const sidecar = getSidecar(tab)
   const header = sidecar.querySelector('.sidecar-header')
   removeAllDomChildren(header.querySelector('.badges'))
 }
@@ -719,19 +714,18 @@ export const clearBadges = () => {
  * @return the enclosing tab for the given sidecar
  *
  */
-export const getEnclosingTab = (sidecar: ISidecar): cli.ITab => {
+export const getEnclosingTab = (sidecar: ISidecar): ITab => {
   let parent: HTMLElement = sidecar
-  while (parent && !cli.isTab(parent)) {
+  while (parent && !isTab(parent)) {
     parent = parent.parentElement
   }
   return parent
 }
 
-export const hide = (clearSelectionToo = false) => {
+export const hide = (tab: ITab, clearSelectionToo = false) => {
   debug('hide')
 
-  const sidecar = getSidecar()
-  const tab = getEnclosingTab(sidecar)
+  const sidecar = getSidecar(tab)
   sidecar.classList.remove('visible')
 
   if (!clearSelectionToo) {
@@ -772,37 +766,37 @@ const setVisible = (sidecar: ISidecar) => {
   const replView = tab.querySelector('.repl')
   replView.classList.add('sidecar-visible')
 
-  cli.scrollIntoView()
+  scrollIntoView()
 
   setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 600)
 }
 
-export const show = (block?: HTMLElement, nextBlock?: HTMLElement) => {
+export const show = (tab: ITab, block?: HTMLElement, nextBlock?: HTMLElement) => {
   debug('show')
 
-  const sidecar = getSidecar()
-  if (currentSelection() || sidecar.className.indexOf('custom-content') >= 0) {
+  const sidecar = getSidecar(tab)
+  if (currentSelection(tab) || sidecar.className.indexOf('custom-content') >= 0) {
     setVisible(sidecar)
     return true
   } else if (block && nextBlock) {
-    cli.oops(undefined, block, nextBlock)(new Error('You have no entity to show'))
+    oops(undefined, block, nextBlock)(new Error('You have no entity to show'))
   }
 }
 
-export const isVisible = () => {
-  const sidecar = getSidecar()
+export const isVisible = (tab: ITab) => {
+  const sidecar = getSidecar(tab)
   return sidecar.classList.contains('visible') && sidecar
 }
 
-export const isFullscreen = () => {
-  return element('tab.visible').classList.contains('sidecar-full-screen')
+export const isFullscreen = (tab: ITab) => {
+  return tab.classList.contains('sidecar-full-screen')
 }
 
-export const presentAs = (presentation?: Presentation) => {
+export const presentAs = (tab: ITab, presentation?: Presentation) => {
   if (presentation || presentation === Presentation.Default) {
     document.body.setAttribute('data-presentation', Presentation[presentation].toString())
-    if (!cli.isPopup() && presentation === Presentation.Default) {
-      setMaximization('remove')
+    if (!isPopup() && presentation === Presentation.Default) {
+      setMaximization(tab, 'remove')
     }
   } else {
     document.body.removeAttribute('data-presentation')
@@ -813,13 +807,13 @@ export const presentAs = (presentation?: Presentation) => {
  * Ensure that we are in sidecar maximization mode
  *
  */
-export const setMaximization = (op = 'add') => {
+export const setMaximization = (tab: ITab, op = 'add') => {
   if (document.body.classList.contains('subwindow')) {
     document.body.classList[op]('sidecar-full-screen')
     document.body.classList[op]('sidecar-visible')
   }
 
-  element('tab.visible').classList[op]('sidecar-full-screen')
+  tab.classList[op]('sidecar-full-screen')
   setTimeout(() => eventBus.emit('/sidecar/maximize'), 600)
 }
 
@@ -827,25 +821,24 @@ export const setMaximization = (op = 'add') => {
  * Toggle sidecar maximization
  *
  */
-export const toggleMaximization = () => {
-  setMaximization('toggle')
+export const toggleMaximization = (tab: ITab) => {
+  setMaximization(tab, 'toggle')
 }
 
 /**
  * Toggle sidecar visibility
  *
  */
-export const toggle = () => isVisible() ? hide() : show()
+export const toggle = (tab: ITab) => isVisible(tab) ? hide(tab) : show(tab)
 
 /**
  * Generic entity rendering
  *
  */
-export const showGenericEntity = (entity, options: IShowOptions = new DefaultShowOptions()) => {
+export const showGenericEntity = (tab: ITab, entity: IEntitySpec | ICustomSpec, options: IShowOptions = new DefaultShowOptions()) => {
   debug('showGenericEntity', entity, options)
 
-  const sidecar = getSidecar()
-  const tab = getEnclosingTab(sidecar)
+  const sidecar = getSidecar(tab)
   // const header = sidecar.querySelector('.sidecar-header')
 
   // tell the current view that they're outta here
@@ -863,7 +856,7 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
   // add mode buttons, if requested
   const modes = entity.modes || (options && options.modes)
   if (!options || !options.leaveBottomStripeAlone) {
-    addModeButtons(modes, entity, options)
+    addModeButtons(tab, modes, entity, options)
   }
 
   // remember the selection model
@@ -875,20 +868,20 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
   const viewProviderDesiresFullscreen = document.body.classList.contains('subwindow')
-  if (viewProviderDesiresFullscreen ? !isFullscreen() : isFullscreen()) {
-    toggleMaximization()
-    presentAs(Presentation.SidecarFullscreen)
+  if (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab)) {
+    toggleMaximization(tab)
+    presentAs(tab, Presentation.SidecarFullscreen)
   } else {
     // otherwise, reset to default presentation mode
-    presentAs(Presentation.Default)
+    presentAs(tab, Presentation.Default)
   }
 
   // the name of the entity, for the header
   const viewName = entity.prettyType || entity.type
   const nameDom = addNameToSidecarHeader(sidecar, entity.name, entity.packageName, undefined, viewName)
 
-  clearBadges()
-  addVersionBadge(entity)
+  clearBadges(tab)
+  addVersionBadge(tab, entity)
 
   return sidecar
 }
@@ -897,7 +890,7 @@ export const showGenericEntity = (entity, options: IShowOptions = new DefaultSho
  * Register a renderer for a given <kind>
  *
  */
-export type ISidecarViewHandler = (entity: Object, sidecar: Element, options: IShowOptions) => void
+export type ISidecarViewHandler = (tab: ITab, entity: Object, sidecar: Element, options: IShowOptions) => void
 const registeredEntityViews = {}
 export const registerEntityView = (kind: string, handler: ISidecarViewHandler) => {
   registeredEntityViews[kind] = handler
@@ -907,20 +900,20 @@ export const registerEntityView = (kind: string, handler: ISidecarViewHandler) =
  * Load the given entity into the sidecar UI
  *
  */
-export const showEntity = (entity, options: IShowOptions = new DefaultShowOptions()) => {
-  if (entity.type === 'custom') {
+export const showEntity = (tab: ITab, entity: IEntitySpec | ICustomSpec, options: IShowOptions = new DefaultShowOptions()) => {
+  if (isCustomSpec(entity)) {
     // caller could have called showCustom, but we will be gracious
     // here, and redirect the call
-    return showCustom(entity, options)
+    return showCustom(tab, entity, options)
   }
 
-  const sidecar = showGenericEntity(entity, options)
+  const sidecar = showGenericEntity(tab, entity, options)
   debug('done with showGenericEntity')
 
   const renderer = registeredEntityViews[entity.type || entity.kind]
   if (renderer) {
     debug('dispatching to registered view handler %s', entity.type || entity.kind, renderer)
-    return renderer(entity, sidecar, options)
+    return renderer(tab, entity, sidecar, options)
   } else {
     try {
       const serialized = JSON.stringify(entity, undefined, 4)
@@ -950,7 +943,8 @@ export const init = async () => {
   // command-left go back
   document.addEventListener('keydown', async (event: KeyboardEvent) => {
     if (event.keyCode === keys.LEFT_ARROW && (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))) {
-      const back = document.querySelector(bottomStripeCSS.backButton)
+      const tab = getCurrentTab()
+      const back = bottomStripeCSS.backButton(tab)
       const clickEvent = document.createEvent('Events')
       clickEvent.initEvent('click', true, false)
       back.dispatchEvent(clickEvent)
@@ -968,14 +962,15 @@ export const init = async () => {
     }
 
     if (evt.keyCode === keys.ESCAPE) {
-      if (!cli.isPopup()) {
-        const closeButton = document.querySelector(sidecarSelector('.sidecar-bottom-stripe-close'))
-        if (isVisible()) {
+      if (!isPopup()) {
+        const tab = getCurrentTab()
+        const closeButton = sidecarSelector(tab, '.sidecar-bottom-stripe-close')
+        if (isVisible(tab)) {
           closeButton.classList.add('hover')
           setTimeout(() => closeButton.classList.remove('hover'), 500)
         }
-        toggle()
-        cli.scrollIntoView()
+        toggle(tab)
+        scrollIntoView()
       }
     }
   })

@@ -26,6 +26,7 @@ import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
@@ -51,7 +52,8 @@ interface IEditorOptions {
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (entity: IEditorEntity, options: IEditorOptions) => editCmd({
+export const edit = (tab: ITab, entity: IEditorEntity, options: IEditorOptions) => editCmd({
+  tab,
   argvNoOptions: [],
   parsedOptions: options,
   execOptions: {
@@ -65,7 +67,7 @@ export const edit = (entity: IEditorEntity, options: IEditorOptions) => editCmd(
  * Command handler for `edit <entity>`
  *
  */
-const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { argvNoOptions: string[], parsedOptions, execOptions: IExecOptions }) => {
+const editCmd = async ({ tab, argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { tab: ITab, argvNoOptions: string[], parsedOptions: IEditorOptions, execOptions: IExecOptions }) => {
   debug('edit command execution started', execOptions)
 
   // maybe the caller is passing us the name and entity programmatically?
@@ -93,7 +95,7 @@ const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = n
   debug('name', name)
   const [entity, injectEntityIntoView] = await Promise.all([
     programmaticArgs || fetchEntity(name, parsedOptions, execOptions), // fetch the entity model
-    openEditor(name, parsedOptions, execOptions) // prepare the editor view
+    openEditor(tab, name, parsedOptions, execOptions) // prepare the editor view
   ])
 
   // apply any command line overrides of the default behaviors

@@ -18,17 +18,17 @@ import * as Debug from 'debug'
 const debug = Debug('webapp/views/table')
 
 import eventBus from '../../core/events'
-import { isPopup, getCurrentPrompt } from '../cli'
+import { ITab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
 import { getActiveView } from './sidecar'
 import { Table, Row, Cell, Icon, TableStyle } from '../models/table'
 
-export const formatTable = (table: Table, resultDom: HTMLElement): void => {
+export const formatTable = (tab: ITab, table: Table, resultDom: HTMLElement): void => {
   const tableDom = document.createElement('div')
   tableDom.classList.add('result-table')
 
-  let container
+  let container: HTMLElement
   if (table.title) {
     const tableOuterWrapper = document.createElement('div')
     const tableOuter = document.createElement('div')
@@ -92,7 +92,7 @@ export const formatTable = (table: Table, resultDom: HTMLElement): void => {
 
   container.classList.add('big-top-pad')
 
-  const rows = formatTableResult(table)
+  const rows = formatTableResult(tab, table)
   rows.map(row => tableDom.appendChild(row))
 
   if (table.style !== undefined) {
@@ -109,7 +109,7 @@ export const formatTable = (table: Table, resultDom: HTMLElement): void => {
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (options?) => (entity: Row) => {
+export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
   // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
@@ -172,7 +172,7 @@ export const formatOneRowResult = (options?) => (entity: Row) => {
         icon.className = theIcon.fontawesome
         icon.classList.add('cell-inner')
 
-        if (onclick) {
+        if (typeof onclick === 'function') {
           icon.onclick = onclick
           icon.classList.add('clickable')
         }
@@ -234,7 +234,7 @@ export const formatOneRowResult = (options?) => (entity: Row) => {
       cell.onclick = evt => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup()) {
-          return drilldown(onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+          return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') { // TODO: define types here carefully
           pexec(onclick)
         } else {
@@ -451,7 +451,7 @@ export const formatOneRowResult = (options?) => (entity: Row) => {
   } else {
     if (isPopup()) {
       entityNameClickable.onclick = evt => {
-        return drilldown(entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => pexec(entity.onclick)
@@ -517,7 +517,7 @@ export const formatOneRowResult = (options?) => (entity: Row) => {
  * @deprecated in favor of new formatOneRowResult()
  *
  */
-export const formatOneListResult = (options?) => (entity, idx, A) => {
+export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => {
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
   dom.setAttribute('data-name', entity.name)
@@ -634,7 +634,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
       cell.onclick = evt => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup()) {
-          return drilldown(onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+          return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') {
           pexec(onclick)
         } else {
@@ -851,7 +851,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
   } else {
     if (isPopup()) {
       entityNameClickable.onclick = evt => {
-        return drilldown(entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => pexec(entity.onclick)
@@ -917,7 +917,7 @@ export const formatOneListResult = (options?) => (entity, idx, A) => {
  * Format a tabular view
  *
  */
-export const formatTableResult = (response: Table) => {
+export const formatTableResult = (tab: ITab, response: Table) => {
   debug('formatTableResult', response)
 
   const { header, body, noSort } = response
@@ -931,7 +931,7 @@ export const formatTableResult = (response: Table) => {
       a.name.localeCompare(b.name))
   }
 
-  return [ header ].concat(noSort ? body : sort(body)).filter(x => x).map(formatOneRowResult())
+  return [ header ].concat(noSort ? body : sort(body)).filter(x => x).map(formatOneRowResult(tab))
 }
 
 /**
@@ -939,7 +939,7 @@ export const formatTableResult = (response: Table) => {
  * @deprecated in favor of new formatTableResult()
  *
  */
-export const formatListResult = response => {
+export const formatListResult = (tab: ITab, response) => {
   debug('formatListResult', response)
 
   // sort the list, then format each element, then add the results to the resultDom
@@ -955,14 +955,14 @@ export const formatListResult = response => {
     }
   }
 
-  return sort().map(formatOneListResult())
+  return sort().map(formatOneListResult(tab))
 }
 
 /**
  * Format a table of tables view
  *
  */
-export const formatMultiListResult = async (response, resultDom) => {
+export const formatMultiListResult = async (tab: ITab, response, resultDom: Element) => {
   debug('formatMultiListResult', response)
 
   return Promise.all(response.filter(x => x.length > 0).map(async (table, idx, tables) => {
@@ -1042,7 +1042,7 @@ export const formatMultiListResult = async (response, resultDom) => {
     container.classList.add('big-top-pad')
 
     // render(table, { echo: false, resultDom: tableDom })
-    const rows = await formatListResult(table)
+    const rows = await formatListResult(tab, table)
     rows.map(row => tableDom.appendChild(row))
 
     const rowSelection = tableDom.querySelector('.selected-row')

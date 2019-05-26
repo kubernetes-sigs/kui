@@ -20,10 +20,10 @@ const debug = Debug('plugins/bash-like/cmds/git-status')
 import * as path from 'path'
 import { spawn } from 'child_process'
 
-import { partial } from '@kui-shell/core/webapp/cli'
+import { partial, ITab } from '@kui-shell/core/webapp/cli'
 import { pexec } from '@kui-shell/core/core/repl'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -35,7 +35,7 @@ const modified = `<svg aria-hidden="true" class="d2h-icon d2h-changed" height="1
  * Look for modified: and turn them into git diff links
  *
  */
-export const status2Html = (rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
+export const status2Html = (tab: ITab, rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
   injectCSS()
 
   const mods = rawOut
@@ -102,7 +102,7 @@ export const status2Html = (rawOut: string, stats: Promise<Stats> = numstat()): 
         // no-text-selected.
         setTimeout(() => {
           if (noCurrentTextSelection()) {
-            return pip(`${command} ${relpath}`, undefined, wrapper.parentNode.parentNode as Element, 'git status')(event)
+            return pip(tab, `${command} ${relpath}`, undefined, wrapper.parentNode.parentNode as Element, 'git status')(event)
           }
         }, 0)
       }
@@ -122,7 +122,7 @@ const noCurrentTextSelection = () => window.getSelection().toString().trim().len
  * git status command handler
  *
  */
-const doStatus = async ({ command, execOptions }) => new Promise(async (resolve, reject) => {
+const doStatus = async ({ command, execOptions, tab }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
   const stats = numstat()
   const currentBranch = onbranch()
 
@@ -146,7 +146,7 @@ const doStatus = async ({ command, execOptions }) => new Promise(async (resolve,
   proc.on('close', exitCode => {
     if (exitCode === 0) {
       // note: no sidecar header if this launched from the command line ("subwindow mode")
-      resolve(asSidecarEntity('git status', status2Html(rawOut, stats), {
+      resolve(asSidecarEntity('git status', status2Html(tab, rawOut, stats), {
       }, undefined, 'statuss', currentBranch)) // intentional additional s at the end
     } else {
       try {

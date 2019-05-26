@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { IEntitySpec } from '@kui-shell/core/models/entity'
 
-/**
- * Select a given element in the currently visible sidecar
- *
- */
-export default (tab: ITab, subselect = ''): HTMLElement => tab.querySelector(`sidecar ${subselect}`)
+interface ActivationLike extends IEntitySpec {
+  activationId: string
+  start: number
+  duration: number
+  logs: string[]
+  response: {
+    success: boolean
+    result: Record<string, any>
+  }
+}
+
+export default ActivationLike

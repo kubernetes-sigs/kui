@@ -16,9 +16,10 @@
 
 import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
-import { currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { update } from './openwhisk-core'
+import { currentSelection } from '../models/openwhisk-entity'
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 /**
@@ -171,7 +172,7 @@ const logThen = f => err => {
  * @param attr will be 'parameters' or 'annotations'
  *
  */
-const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions }: IEvaluatorArgs) => {
+const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions, tab }: IEvaluatorArgs) => {
   /** fetch the given entity with the given type */
   const fetchEntityWithType = (name, type) => repl.qexec(`wsk ${type} get ${name}`)
 
@@ -189,7 +190,7 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
   let value
   let dest
   let tryThisType
-  const selection = currentSelection()
+  const selection = currentSelection(tab)
 
   const command = rawCommand.substring(rawCommand.indexOf(op))
 
@@ -234,10 +235,10 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
 
   if (!tryThisType) {
     // see if the dest entity is the selected entity, in which case we'll know the type
-    if (selection && selection.entity &&
-        (selection.entity.name === dest ||
-         `${selection.entity.namespace}/${selection.entity.name}` === dest ||
-         `/${selection.entity.namespace}/${selection.entity.name}` === dest)) {
+    if (selection &&
+        (selection.name === dest ||
+         `${selection.namespace}/${selection.name}` === dest ||
+         `/${selection.namespace}/${selection.name}` === dest)) {
       // yup! we have been asked to add a parameter to the current selection
       tryThisType = selection.type
     }
@@ -249,7 +250,7 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
   return fetchEntity(dest, tryThisType) // grab a copy of the current attributes
     .then(updateMapping(opKind, attr, key, value)) // update our copy
     .then(update(execOptions)) // then push the updates to the backend
-    .then(entity => showEntity(entity, { show: attr })) // open the entity, showing the attribute, e.g. parameters or annotations
+    .then(entity => showEntity(tab, entity, { show: attr })) // open the entity, showing the attribute, e.g. parameters or annotations
     .then(() => true)
 }
 

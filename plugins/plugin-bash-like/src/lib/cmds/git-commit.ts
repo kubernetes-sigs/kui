@@ -36,7 +36,7 @@ import { status, toplevel } from '../util/git-support'
  * TODO refactor
  *
  */
-const doExec = ({ command, argvNoOptions, execOptions }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
+const doExec = ({ command, argvNoOptions, execOptions, tab }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
   const shell = await import('shelljs')
 
@@ -65,7 +65,7 @@ const doExec = ({ command, argvNoOptions, execOptions }: IEvaluatorArgs) => new 
       try {
         debug('done with non-zero exit code', exitCode, rawErr)
         if (rawOut.match(/On branch/)) {
-          resolve(asSidecarEntity(argvNoOptions.join(' '), status2Html(rawOut), {
+          resolve(asSidecarEntity(argvNoOptions.join(' '), status2Html(tab, rawOut), {
             sidecarHeader: !document.body.classList.contains('subwindow')
           }))
         } else {
@@ -82,8 +82,8 @@ const doExec = ({ command, argvNoOptions, execOptions }: IEvaluatorArgs) => new 
  * git commit command handler
  *
  */
-const doCommit = async opts => {
-  const { command, argvNoOptions, parsedOptions, execOptions } = opts
+const doCommit = async (opts: IEvaluatorArgs) => {
+  const { tab, command, argvNoOptions, parsedOptions, execOptions } = opts
 
   if (argvNoOptions.length === 3 &&
       !(parsedOptions.F || parsedOptions.file ||
@@ -114,7 +114,7 @@ ${commentedStatus}`
             eventBus.once('/editor/save', (model, { event }) => {
               if (event === 'save') {
                 debug('got save event', model)
-                clearSidecar()
+                clearSidecar(tab)
 
                 if (model.exec.code === msg) {
                   debug('empty commit message')
@@ -128,7 +128,7 @@ ${commentedStatus}`
 
             const editor = await qexec(`edit ${filepath}`, undefined, undefined, execOptions)
             debug('editor', editor)
-            showInSidecar(editor)
+            showInSidecar(tab, editor)
           }
         })
       } catch (err) {

@@ -15,20 +15,21 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { ViewHandler, registerListView, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
+import { ITab, ViewHandler, registerListView, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
 import { ISidecarViewHandler, registerEntityView as registerSidecarEntityView } from '@kui-shell/core/webapp/views/sidecar'
 import { IShowOptions } from '@kui-shell/core/webapp/views/show-options'
+import { Entity } from '@kui-shell/core/models/entity'
 
 export default () => {
   if (!isHeadless()) {
-    registerCLIEntityView('activations', async (response: Object, resultDom: Element, parsedOptions: Object, execOptions: Object) => {
+    registerCLIEntityView('activations', async (tab: ITab, response: Entity, resultDom: Element, parsedOptions: Object, execOptions: Object) => {
       const showActivation = (await import('./lib/views/cli/activations/entity')).default as ViewHandler
-      return showActivation(response, resultDom, parsedOptions, execOptions)
+      return showActivation(tab, response, resultDom, parsedOptions, execOptions)
     })
 
-    const doShow = async (entity: Object, sidecar: Element, options: IShowOptions) => {
+    const doShow = async (tab: ITab, entity: Object, sidecar: Element, options: IShowOptions) => {
       const { showEntity } = (await import('./lib/views/sidecar/entity'))
-      return showEntity(entity, sidecar, options)
+      return showEntity(tab, entity, sidecar, options)
     }
     registerSidecarEntityView('actions', doShow)
     registerSidecarEntityView('activations', doShow)

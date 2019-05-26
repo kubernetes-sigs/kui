@@ -27,13 +27,14 @@ import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
 import historyModel = require('@kui-shell/core/models/history')
-import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import withHeader from '../models/withHeader'
 import namespace = require('../models/namespace')
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
+import { currentSelection } from '../models/openwhisk-entity'
 
 /**
  * This plugin adds commands for the core OpenWhisk API.
@@ -981,7 +982,7 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions }) => {
+const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions, tab }: IEvaluatorArgs) => {
   let entity = _entity
   let verb = _verb
 
@@ -1030,7 +1031,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
     // OPERATION WITH IMPLICIT ENTITY: try to get the name from the current selection
     //
     debug('seeing if we can use an implicit entity')
-    const selection = currentSelection()
+    const selection = currentSelection(tab)
     if (selection) {
       options.name = `/${selection.namespace || '_'}/${selection.name}`
 

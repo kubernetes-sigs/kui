@@ -18,6 +18,7 @@ const debug = require('debug')('k8s/form-renderer')
 
 import { safeDump } from 'js-yaml'
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 
 import { IKubeResource } from '../model/resource'
@@ -72,7 +73,7 @@ const update = (yaml, path: Array<string>, value: string | number | boolean) => 
  * Save the current form choices
  *
  */
-const doSave = (form: HTMLFormElement, yaml: object, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
+const doSave = (tab: ITab, form: HTMLFormElement, yaml: object, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
   if (button) {
     button.classList.add('yellow-background')
     button.classList.add('repeating-pulse')
@@ -87,7 +88,7 @@ const doSave = (form: HTMLFormElement, yaml: object, filepath: string, onSave: (
 
       const label = input.getAttribute('data-form-label')
       if (label === 'name') {
-        updateSidecarHeader({ name: input.value })
+        updateSidecarHeader(tab, { name: input.value })
       }
     }
 
@@ -162,7 +163,7 @@ const formGroups = (yaml: IKubeResource): Array<IFormGroup> => {
  * Present a form view over a resource
  *
  */
-export const generateForm = (parsedOptions) => (yaml: IKubeResource, filepath: string, name: string, kind: string, onSave: (rawText) => any) => {
+export const generateForm = (tab: ITab) => (yaml: IKubeResource, filepath: string, name: string, kind: string, onSave: (rawText) => any) => {
   const formElements = formGroups(yaml)
   debug('generate form', formElements)
 
@@ -263,7 +264,7 @@ export const generateForm = (parsedOptions) => (yaml: IKubeResource, filepath: s
   })
 
   const modes = [
-    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(form, yaml, filepath, onSave) },
+    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(tab, form, yaml, filepath, onSave) },
     { mode: 'revert', flush: 'right', actAsButton: true, direct: () => form.reset() }
   ]
 

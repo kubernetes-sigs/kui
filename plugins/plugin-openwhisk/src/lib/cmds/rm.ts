@@ -153,7 +153,7 @@ export default async (commandTree: CommandRegistrar) => {
    * This is the core logic
    *
    */
-  const rm = (type: string) => ({ block, nextBlock, argv: fullArgv, execOptions }: IEvaluatorArgs) => {
+  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: IEvaluatorArgs) => {
     const options = minimist(fullArgv, { alias: { q: 'quiet', f: 'force', r: 'recursive' }, boolean: ['quiet', 'force', 'recursive'], configuration: { 'parse-numbers': false, 'camel-case-expansion': false } })
     const argv = options._
     const toBeDeletedList = argv.slice(argv.indexOf('rimraf') + 1)
@@ -163,7 +163,7 @@ export default async (commandTree: CommandRegistrar) => {
       // if no entity specified on the command line, check to
       // see if there is a selection; if so, use that entity
       //
-      const selection = currentSelection()
+      const selection = currentSelection(tab)
       if (selection && selection.type !== 'activations') {
         toBeDeletedList.push(`/${selection.namespace}/${selection.name}`)
         type = selection.type

@@ -17,33 +17,20 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
-import { ok } from '@kui-shell/core/webapp/cli'
+import { ok, ITab } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { pexec } from '@kui-shell/core/core/repl'
+import { Entity, IEntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
-
-interface IActivationResponse {
-  success: boolean
-  result: Object
-}
-
-interface IEntity {
-  name: string
-}
-
-interface IActivation {
-  entity: IEntity
-  activationId: string
-  response: IActivationResponse
-}
+import { IActivation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
 
 /**
  * Render an activation response in the CLI portion of the UI
  *
  */
-export default async (response: IActivation, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<boolean> => {
-  if (!response.response && response.activationId) {
+export default async (tab: ITab, response: IActivation | IEntitySpec, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<boolean> => {
+  if (isAsyncActivationSpec(response)) {
     // probably non-blocking invoke
     // say "ok: invoked foo with id xxx"
     debug('rendering in cli as "ok:"', response)
@@ -81,9 +68,9 @@ export default async (response: IActivation, resultDom: Element, parsedOptions: 
     return false
   } else {
     // blocking invoke, we have a response
-    debug('rendering in sidecar')
+    debug('rendering in sidecar', tab, response)
 
-    await showEntity(response, execOptions)
+    await showEntity(tab, response, execOptions)
     return true
   }
 }

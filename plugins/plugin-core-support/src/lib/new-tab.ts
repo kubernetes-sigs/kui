@@ -147,7 +147,7 @@ const addCommandEvaluationListeners = (): void => {
           // produced the sidecar; TODO this isn't quite right; we
           // need to find a way to capture that sidecar-producing
           // command
-          if (!isSidecarVisible()) {
+          if (!isSidecarVisible(tab)) {
             getTabButtonLabel(tab).innerText = '\u00a0'
           }
         } else {
@@ -183,7 +183,7 @@ const oneTimeInit = (): void => {
   addCommandEvaluationListeners()
 
   // initialize the first tab
-  perTabInit(false)
+  perTabInit(getCurrentTab(), false)
 }
 
 /**
@@ -222,7 +222,9 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   getTabButtonLabel(currentVisibleTab).innerText = '\u00a0' // nbsp
 
-  const currentlyProcessingBlock: true | HTMLElement = await qexec('clear --keep-current-active')
+  newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
+
+  const currentlyProcessingBlock: true | HTMLElement = await qexec('clear --keep-current-active', undefined, undefined, { tab: newTab })
   if (currentlyProcessingBlock !== true) {
     debug('new tab cloned from one that is currently processing a command', currentlyProcessingBlock, currentlyProcessingBlock.querySelector('.repl-result').children.length)
     setStatus(currentlyProcessingBlock, 'repl-active')
@@ -232,10 +234,8 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   // the wrong repl-result
   removeAllDomChildren(newTab.querySelector('.repl-result'))
 
-  newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
-  clearSelection()
-
-  perTabInit()
+  clearSelection(newTab)
+  perTabInit(newTab)
 
   newTabButton.scrollIntoView()
 
@@ -246,9 +246,9 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
  * Initialize events for a new tab
  *
  */
-const perTabInit = (doListen = true) => {
+const perTabInit = (tab: ITab, doListen = true) => {
   if (doListen) {
-    listen(getCurrentPrompt())
+    listen(getCurrentPrompt(tab))
   }
 
   // we want to focus the current repl input when the user clicks, but
@@ -257,19 +257,19 @@ const perTabInit = (doListen = true) => {
   installReplFocusHandlers()
 
   // maximize button
-  element(sidecarSelector('.toggle-sidecar-maximization-button')).onclick = () => {
+  sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
     debug('toggle sidecar maximization')
-    toggleMaximization()
+    toggleMaximization(tab)
   }
 
   // close button
-  element(sidecarSelector('.toggle-sidecar-button')).onclick = () => {
+  sidecarSelector(tab, '.toggle-sidecar-button').onclick = () => {
     debug('toggle sidecar visibility')
-    toggle()
+    toggle(tab)
   }
 
   // quit button
-  element(sidecarSelector('.sidecar-bottom-stripe-quit')).onclick = () => {
+  sidecarSelector(tab, '.sidecar-bottom-stripe-quit').onclick = () => {
     debug('quit button')
     try {
       window.close()
@@ -279,7 +279,7 @@ const perTabInit = (doListen = true) => {
   }
 
   // screenshot button
-  element(sidecarSelector('.sidecar-screenshot-button')).onclick = () => {
+  sidecarSelector(tab, '.sidecar-screenshot-button').onclick = () => {
     debug('sidecar screenshot')
     pexec('screenshot sidecar')
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@ import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
+import { getSidecar, addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
@@ -166,16 +167,16 @@ interface IOptions {
   timeline?: boolean
   zoom?: number
 }
-const drawGrid = (options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Array<Object>) => {
+const drawGrid = (tab: ITab, options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Array<Object>) => {
   debug('drawGrid', redraw)
 
-  const existingContent = document.querySelector(sidecarSelector(`.custom-content .${css.content}`)) as HTMLElement
+  const existingContent = sidecarSelector(tab, `.custom-content .${css.content}`) as HTMLElement
   const content: HTMLElement = (redraw && existingContent) || document.createElement('div')
 
   content.classList.add(css.content)
   content.classList.add(css.useDarkTooltips)
 
-  _drawGrid(options, header, content,
+  _drawGrid(tab, options, header, content,
     groupByAction(activations, options),
     undefined, undefined, redraw)
 
@@ -283,7 +284,7 @@ const smartZoom = numCells => {
  * re-sorting.
  *
  */
-const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sorter = countSorter, sortDir = +1, redraw) => {
+const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, groupData, sorter = countSorter, sortDir = +1, redraw) => {
   const { groups, summary, timeline } = groupData
 
   sort(groups, sorter, sortDir)
@@ -308,20 +309,20 @@ const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sor
     const pathComponents = group.path.split('/')
     const packageName = pathComponents.length === 4 ? pathComponents[2] : ''
 
-    const onclick = drilldownWith(viewName, `action get "${group.path}"`)
-    addNameToSidecarHeader(undefined, group.name, packageName, onclick)
+    const onclick = drilldownWith(tab, viewName, `action get "${group.path}"`)
+    addNameToSidecarHeader(getSidecar(tab), group.name, packageName, onclick)
 
-    drawLegend(viewName, rightHeader, group, gridGrid, options)
+    drawLegend(tab, viewName, rightHeader, group, gridGrid, options)
   } else {
-    const onclick = options.appName ? drilldownWith(viewName, `app get "${options.appName}"`) : undefined
+    const onclick = options.appName ? drilldownWith(tab, viewName, `app get "${options.appName}"`) : undefined
     const pathComponents = (options.appName || '').split('/')
     const packageName = pathComponents.length === 4 ? pathComponents[2] : pathComponents.length === 2 && options.appName.charAt(0) !== '/' ? pathComponents[0] : ''
     const name = pathComponents.length > 1 ? pathComponents[pathComponents.length - 1] : options.appName || titleWhenNothingSelected
 
-    addNameToSidecarHeader(undefined, name, packageName, onclick)
+    addNameToSidecarHeader(getSidecar(tab), name, packageName, onclick)
 
     if (groups.length > 0) {
-      drawLegend(viewName, rightHeader, summary, gridGrid, options)
+      drawLegend(tab, viewName, rightHeader, summary, gridGrid, options)
     }
   }
 
@@ -329,7 +330,7 @@ const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sor
   displayTimeRange(groupData, leftHeader)
 
   if (options.timeline) {
-    drawAsTimeline(timeline, content, gridGrid, zoomLevelForDisplay, options)
+    drawAsTimeline(tab, timeline, content, gridGrid, zoomLevelForDisplay, options)
     return
   }
 
@@ -369,7 +370,7 @@ const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sor
       labelInner.appendChild(labelAction)
       labelAction.innerText = actionName
       labelAction.className = 'clickable grid-label-part'
-      labelAction.onclick = drilldownWith(viewName, `grid "${group.path}" ${optionsToString(options)}`)
+      labelAction.onclick = drilldownWith(tab, viewName, `grid "${group.path}" ${optionsToString(options)}`)
     }
 
     // render the grid
@@ -399,7 +400,7 @@ const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sor
 
       let idx = 0
       group.activations.forEach(activation => {
-        renderCell(viewName, cells[idx], activation, !isSuccess(activation),
+        renderCell(tab, viewName, cells[idx], activation, !isSuccess(activation),
           undefined, undefined, { zoom: zoomLevelForDisplay })
         idx++
       })
@@ -423,7 +424,7 @@ const _drawGrid = (options, { leftHeader, rightHeader }, content, groupData, sor
             const cell = makeCellDom()
             cellContainer.appendChild(cell)
             cell.classList.add('grid-cell-newly-created')
-            renderCell(viewName, cell, activation, !isSuccess(activation),
+            renderCell(tab, viewName, cell, activation, !isSuccess(activation),
               options.full ? activation._duration : activation.executionTime,
               undefined,
               { zoom: zoomLevelForDisplay })
@@ -454,7 +455,7 @@ const minTimestamp = activations => {
  * Render the grid as a timeline
  *
  */
-const drawAsTimeline = (timelineData, content, gridGrid, zoomLevelForDisplay, options) => {
+const drawAsTimeline = (tab: ITab, timelineData: { activations: Record<string, any>, nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
   debug('drawAsTimeline', zoomLevelForDisplay)
 
   const { activations, nBuckets } = timelineData
@@ -530,7 +531,7 @@ const drawAsTimeline = (timelineData, content, gridGrid, zoomLevelForDisplay, op
       const balloonPos = jdx >= 25 ? idx < 5 ? 'down-left' : 'down'
         : idx < 10 ? jdx < 5 ? 'up-left' : 'up' : jdx < 5 ? 'up-right' : 'up'
 
-      renderCell(viewName, cell,
+      renderCell(tab, viewName, cell,
         activation,
         !success,
         options.full ? activation._duration : activation.executionTime,
@@ -550,9 +551,9 @@ export default async (commandTree: CommandRegistrar, options?) => {
   debug('init')
 
   if (options && options.activations) {
-    const renderer = drawGrid(options, prepareHeader(), uuid())
+    const renderer = drawGrid(options.tab, options, prepareHeader(options.tab), uuid())
     const grid = renderer(options.activations)
-    showCustom(grid, {})
+    showCustom(options.tab, grid, {})
     return
   }
 

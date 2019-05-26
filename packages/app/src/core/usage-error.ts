@@ -21,6 +21,7 @@ import { isHeadless } from './capabilities'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
 import repl = require('@kui-shell/core/core/repl')
 import { CodedError } from '../models/errors'
+import { Entity } from '../models/entity'
 import { isHTML } from '../util/types'
 
 interface IUsageOptions {
@@ -535,12 +536,13 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
             cmdPart.classList.add('clickable')
             cmdPart.classList.add('clickable-blatant')
             cmdPart.onclick = async event => {
+              const cli = await import('../webapp/cli')
               if (partial) {
-                const cli = await import('../webapp/cli')
                 return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
               } else {
                 if (drilldownWithPip) {
-                  return pip(commandForExec(command, name !== command ? name : undefined),
+                  return pip(cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
+                             commandForExec(command, name !== command ? name : undefined),
                              undefined,
                              resultWrapper.parentNode.parentNode as Element,
                              'Previous Usage')(event)
@@ -861,7 +863,7 @@ export class UsageError extends Error implements CodedError {
     return this.formattedMessage ? this.formattedMessage : Promise.resolve(span(this.message))
   }
 
-  static isUsageError (error: Error): error is UsageError {
+  static isUsageError (error: Entity): error is UsageError {
     const err = error as UsageError
     return err.formattedMessage && err.code ? true : false
   }
