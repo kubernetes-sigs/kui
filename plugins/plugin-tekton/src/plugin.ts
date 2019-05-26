@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import getStep from './lib/controller/get/step'
-import getTask from './lib/controller/get/task'
-import flow from './lib/tekton2graph'
+import getStep from './controller/get/step'
+import getTask from './controller/get/task'
+import preview from './controller/preview'
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -24,6 +24,6 @@ export default async (commandTree: CommandRegistrar) => {
   return Promise.all([
     getStep(commandTree),
     getTask(commandTree),
-    flow(commandTree)
+    preview(commandTree)
   ])
 }

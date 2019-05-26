@@ -15,22 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tekton/tekton2graph')
-debug('loading')
-
-import { safeDump } from 'js-yaml'
-import { basename, dirname, join } from 'path'
+const debug = Debug('plugins/tekton/lib/tekton2graph')
 
 import { encodeComponent } from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-import { zoomToFitButtons } from '@kui-shell/plugin-wskflow/lib/util'
-import injectCSS from '@kui-shell/plugin-wskflow/lib/inject'
-
-import { parse, read } from './read'
-import flowMode from '../model/flowMode'
 import { Task, Step } from '../model/resource'
 
 type TaskName = string
@@ -171,7 +159,7 @@ const getPipeline = (jsons: Record<string, any>): Record<string, any> => {
  * is compatible with the ELK graph layout toolkit.
  *
  */
-async function tekton2graph (jsons: Record<string, any>[], filepath: string): Promise<IGraph> {
+export default async function (jsons: Record<string, any>[], filepath: string): Promise<IGraph> {
   debug('jsons', jsons)
   const pipeline = getPipeline(jsons)
   debug('pipeline', pipeline)
@@ -396,15 +384,6 @@ async function tekton2graph (jsons: Record<string, any>[], filepath: string): Pr
   return graph
 }
 
-const usage = {
-  command: 'flow',
-  strict: 'flow',
-  docs: 'Preview a Tekton pipeline',
-  required: [
-    { name: 'pipeline.yml', file: true, docs: 'path to a pipeline description file' }
-  ]
-}
-
 interface IEdgeOptions {
   singletonSource?: boolean
   singletonTarget?: boolean
@@ -444,70 +423,4 @@ function addEdge (graph: IGraph, parent: INode, child: INode, { singletonSource,
 
   child.nParents++
   parent.nChildren++
-}
-
-/**
- * Format a repl response
- *
- */
-export const respondWith = async (jsons: Record<string, any>[], raw: string = safeDump(jsons), filepath?: string) => {
-  const graph = await tekton2graph(jsons, filepath)
-  debug('graph', graph)
-
-  const content = document.createElement('div')
-  content.classList.add('padding-content')
-  content.style.flex = '1'
-  content.style.display = 'flex'
-
-  const graph2doms = (await import('@kui-shell/plugin-wskflow/lib/graph2doms')).default
-  const { controller } = await graph2doms(graph, content, undefined, {
-    layoutOptions: {
-      'elk.separateConnectedComponents': false,
-      'elk.spacing.nodeNode': 10,
-      'elk.padding': '[top=7.5,left=7.5,bottom=7.5,right=7.5]',
-      hierarchyHandling: 'INCLUDE_CHILDREN' // since we have hierarhical edges, i.e. that cross-cut subgraphs
-    }
-  })
-  debug('content', content)
-
-  injectCSS()
-
-  const tektonModes: ISidecarMode[] = [
-    flowMode,
-    {
-      mode: 'Raw',
-      leaveBottomStripeAlone: true,
-      direct: {
-        type: 'custom',
-        isEntity: true,
-        contentType: 'yaml',
-        content: raw
-      }
-    }
-  ]
-
-  const badges = [ 'Tekton' ]
-
-  return {
-    type: 'custom',
-    isEntity: true,
-    isFromFlowCommand: true,
-    name: filepath ? basename(filepath) : jsons[0].metadata.name,
-    packageName: filepath && dirname(filepath),
-    prettyType: 'Pipeline',
-    badges,
-    presentation: Presentation.FixedSize,
-    content,
-    model: jsons,
-    modes: tektonModes.concat(zoomToFitButtons(controller, { visibleWhenShowing: flowMode.mode }))
-  }
-}
-
-export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tekton/flow', async ({ command, argvNoOptions }) => {
-    const filepath = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
-    const raw = await read(filepath)
-    const jsons = await parse(raw)
-    return respondWith(jsons, raw, filepath)
-  }, { usage, noAuthOk: true })
 }
