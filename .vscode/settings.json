@@ -1,0 +1,7 @@
+{
+    "tslint.configFile": "./packages/kui-builder/tslint.json",
+    "javascript.validate.enable": false,
+    "editor.formatOnSave": true,
+    "standard.autoFixOnSave": true,
+    "standard.usePackageJson": true
+}
