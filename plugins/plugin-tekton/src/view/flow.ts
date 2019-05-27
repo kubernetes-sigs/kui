@@ -22,6 +22,7 @@ import { basename, dirname } from 'path'
 
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import injectCSS from '@kui-shell/plugin-wskflow/lib/inject'
@@ -71,7 +72,18 @@ export default async (tab: ITab, jsons: Record<string, any>[], raw: string = saf
     }
   ]
 
-  const badges = [ 'Tekton' ]
+  const badges: Badge[] = [ 'Tekton' ]
+  if (jsons.find(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')) {
+    badges.push({
+      title: 'Runnable',
+      css: 'green-background'
+    })
+  } else {
+    badges.push({
+      title: 'Not Runnable',
+      css: 'yellow-background'
+    })
+  }
 
   return {
     type: 'custom',
