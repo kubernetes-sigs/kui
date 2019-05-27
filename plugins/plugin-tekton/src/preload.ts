@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { dirname, join } from 'path'
+
+import { addPath } from '@kui-shell/core/core/find-file'
+
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import registerSidecarMode from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
@@ -35,4 +39,8 @@ const flowModeSpec = {
 /** on preload, register our sidecar modes */
 export default () => {
   registerSidecarMode(flowModeSpec)
+
+  // register a "special path" that resolves
+  const specialPath = join(dirname(require.resolve('@kui-shell/plugin-tekton/package.json')), 'samples/@demos')
+  addPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
 }

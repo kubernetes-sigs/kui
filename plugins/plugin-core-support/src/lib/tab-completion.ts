@@ -694,7 +694,7 @@ export default () => {
                   // great, there is a positional we can help with
                   try {
                     // we found a required positional parameter, now suggest values for this parameter
-                    suggest(param, findFile(args[commandIdx + lastIdx + 1], true),
+                    suggest(param, findFile(args[commandIdx + lastIdx + 1], { safe: true }),
                       block, prompt, temporaryContainer, commandIdx + lastIdx)
                   } catch (err) {
                     console.error(err)

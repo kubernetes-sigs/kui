@@ -30,10 +30,11 @@ import { inBrowser } from './capabilities'
  */
 interface ISpecialPath {
   prefix: string
-  filepath: string
+  filepath: string,
+  command?: string
 }
 const specialPaths: ISpecialPath[] = [] // any special paths added via self.addPath
-const defaultSpecial = { filepath: join(__dirname, '..') } // default special is the app/ top-level
+const defaultSpecial: ISpecialPath = { prefix: '', filepath: join(__dirname, '..') } // default special is the app/ top-level
 
 /**
  * If original has a trailing slash, make sure resolved has one, too
@@ -60,34 +61,69 @@ export const isSpecialDirectory = (filepath: string) => basename(filepath).charA
  * @param safe throw and exception if the file is not found
  * @param keepRelative don't expand ~
  */
-export const findFile = (filepath: string, safe = false, keepRelative = false): string => {
+export const findFile = (filepath: string, { safe = false, keepRelative = false } = {}): string => {
+  return findFileWithViewer(filepath, { safe, keepRelative }).resolved
+}
+
+/**
+ * Does the given special have an associated command prefix that is
+ * used to view files in that special directory?
+ *
+ * @param special a registered prefix of an `ISpecialPath`
+ * @return the registered command prefix used to view files in this special directory, if any
+ */
+export const viewer = (prefix: string): string | never => {
+  const special = specialPaths.find(_ => _.prefix === prefix)
+  if (!special) {
+    throw new Error('bad special prefix')
+  } else {
+    return special.command || undefined
+  }
+}
+
+/**
+ * Behaves like `findFile` with an extra call to `commandPrefix`
+ *
+ */
+export const findFileWithViewer = (filepath: string, { safe = false, keepRelative = false } = {}): { resolved: string, viewer?: string } => {
   if (!filepath) {
     if (!safe) {
       throw new Error('Please specify a file')
     } else {
       // caller asked us to play nice
-      return ''
+      return { resolved: '' }
     }
   } else if (filepath.charAt(0) === '@') {
     // the === '.' part handles the case where the call was e.g. findFile('@demos'), i.e. the special dir itself
-    const desiredPrefix = dirname(filepath) === '.' ? filepath : dirname(filepath)
-    const special = specialPaths.find(({ prefix }) => desiredPrefix.indexOf(prefix) === 0) || defaultSpecial
+    const desiredPrefix = filepath.endsWith('/') ? filepath.slice(0, filepath.length - 1) : dirname(filepath) === '.' ? filepath : dirname(filepath)
+
+    const longestMatchingSpecial = specialPaths
+      .filter(({ prefix }) => filepath === prefix || desiredPrefix.indexOf(prefix) === 0)
+      .sort((a, b) => b.prefix.length - a.prefix.length)[0]
+
+    const special = longestMatchingSpecial || defaultSpecial
 
     debug('resolving @ file', filepath, desiredPrefix, special)
-    return withMatchingTrailingSlash(filepath, join(special.filepath, filepath))
+    return {
+      resolved: withMatchingTrailingSlash(filepath, join(special.filepath, filepath)),
+      viewer: special.command
+    }
   } else if (keepRelative) {
-    return filepath
+    return { resolved: filepath }
   } else {
     debug('resolving normal file', filepath)
-    return withMatchingTrailingSlash(filepath, resolve(expandHomeDir(filepath)))
+    return { resolved: withMatchingTrailingSlash(filepath, resolve(expandHomeDir(filepath))) }
   }
 }
 
 /**
  * Augment the module load path
  *
+ * @param filepath e.g. /path/to/special
+ * @param prefix e.g. @demos/tekton which is a valid extension of `filepath`
+ * @param command a command prefix that is used to view files in this special directory
  */
-export const addPath = (filepath: string): void => {
+export const addPath = (filepath: string, { prefix = basename(filepath), command = '' } = {}): void => {
   if (!inBrowser()) {
     debug('addPath', filepath)
     try {
@@ -100,8 +136,7 @@ export const addPath = (filepath: string): void => {
   }
 
   // remember this for self.findFile
-  const prefix = basename(filepath)
   if (prefix.charAt(0) === '@') {
-    specialPaths.push({ prefix, filepath: dirname(filepath) })
+    specialPaths.push({ prefix, filepath: dirname(filepath), command })
   }
 }
