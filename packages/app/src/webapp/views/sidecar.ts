@@ -644,16 +644,19 @@ export interface IBadgeSpec {
   title: string
   fontawesome?: string
   css?: string
-  onclick?: (evt: Event) => boolean
+  onclick?: (evt: MouseEvent) => boolean
 }
-function isBadgeSpec (spec: string | IBadgeSpec | Element): spec is IBadgeSpec {
-  return typeof spec !== 'string' && !(spec instanceof Element)
+function isBadgeSpec (badge: Badge): badge is IBadgeSpec {
+  const spec = badge as IBadgeSpec
+  return typeof badge !== 'string' && !(spec instanceof Element) && spec.title ? true : false
 }
+export type Badge = string | IBadgeSpec | Element
 
-export const addBadge = (tab: ITab, badgeText: string | IBadgeSpec | Element, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: IBadgeOptions = new DefaultBadgeOptions(tab)) => {
+export const addBadge = (tab: ITab, badgeText: Badge, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: IBadgeOptions = new DefaultBadgeOptions(tab)) => {
   debug('addBadge', badgeText, badgesDom)
 
   const badge = document.createElement('badge') as HTMLElement
+  badgesDom.appendChild(badge)
 
   if (typeof badgeText === 'string') {
     badge.innerText = badgeText as string
@@ -673,6 +676,11 @@ export const addBadge = (tab: ITab, badgeText: string | IBadgeSpec | Element, { 
         badge.classList.add(badgeText.css)
       }
     }
+
+    if (badgeText.onclick) {
+      badge.classList.add('clickable')
+      badge.onclick = badgeText.onclick
+    }
   }
 
   if (css) {
@@ -682,12 +690,8 @@ export const addBadge = (tab: ITab, badgeText: string | IBadgeSpec | Element, { 
   if (onclick) {
     badge.classList.add('clickable')
     badge.onclick = onclick
-  } else if (isBadgeSpec(badgeText)) {
-    badge.classList.add('clickable')
-    badge.onclick = badgeText.onclick
   }
 
-  badgesDom.appendChild(badge)
   return badge
 }
 
