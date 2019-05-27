@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/proxy-support/preload')
 
-import { inBrowser, assertLocalAccess } from '@kui-shell/core/core/capabilities'
+import { inBrowser, assertHasProxy, assertLocalAccess } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
@@ -35,6 +35,10 @@ export default async (commandTree: CommandRegistrar) => {
 
       debug('attempting to establish our proxy executor')
       setEvaluatorImpl(new ProxyEvaluator())
+
+      // notify the Capabilities manager that we have extended the
+      // capabilities of Kui
+      assertHasProxy()
       assertLocalAccess()
     }
   }
