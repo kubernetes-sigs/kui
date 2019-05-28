@@ -64,9 +64,9 @@ const asciiToOptionsTable = (rows: Array<string>): Array<IPair> => {
 }
 
 export const formatUsage = (command: string, str: string, options: IOptions = new DefaultOptions()) => {
-  debug('raw', str)
+  // debug('raw', str)
   const rows = `\n${str}`.split(matcher)
-  debug('rows', rows)
+  // debug('rows', rows)
 
   if (rows.length > 2) {
     const sections = rows

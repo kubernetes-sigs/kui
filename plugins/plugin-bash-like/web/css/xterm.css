@@ -1,8 +1,3 @@
-.xterm-container .xterm-rows {
-    font-family: var(--font-monospace) !important;
-    transition: font-size 10ms ease-in-out;
-}
-
 .xterm-screen, .xterm-container .xterm-rows > div {
     transition: width 10ms ease-in-out, height 10ms ease-in-out;
 }
@@ -65,11 +60,8 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 }
 
 /* override the width and height pixel sizing from DomRenderer */
-.xterm-terminated .xterm-rows {
-    font-size: 1em !important;
-}
 .xterm-terminated .xterm-rows > div {
-    height: auto !important;
+    height: 1.14375em !important;
     line-height: normal !important;
 }
 .xterm-container .xterm-rows > div > span {
@@ -78,36 +70,41 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 }
 
 /* themes */
-.xterm-terminated .xterm-rows {
-    background: transparent !important;
-    transition: background 300ms ease-in-out;
+.xterm-container .xterm-viewport, .xterm-rows {
+    background: var(--color-base00) !important;
 }
-.xterm-terminated .xterm-rows > div > span {
+.xterm-rows {
+    font-size: 1em !important;
+    font-family: var(--font-monospace) !important;
+    color: var(--color-text-01) !important;
+    transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
+}
+.xterm-rows > div > span {
     transition: color 300ms ease-in-out;
     color: var(--color-text-01) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-0, .xterm-terminated .xterm-rows .xterm-fg-8 {
+.xterm-rows .xterm-fg-0, .xterm-rows .xterm-fg-8 {
     color: var(--color-black) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-1, .xterm-terminated .xterm-rows .xterm-fg-9 {
+.xterm-rows .xterm-fg-1, .xterm-rows .xterm-fg-9 {
     color: var(--color-red) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-2, .xterm-terminated .xterm-rows .xterm-fg-10 {
+.xterm-rows .xterm-fg-2, .xterm-rows .xterm-fg-10 {
     color: var(--color-green) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-3, .xterm-terminated .xterm-rows .xterm-fg-11 {
+.xterm-rows .xterm-fg-3, .xterm-rows .xterm-fg-11 {
     color: var(--color-yellow) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-4, .xterm-terminated .xterm-rows .xterm-fg-12 {
+.xterm-rows .xterm-fg-4, .xterm-rows .xterm-fg-12 {
     color: var(--color-blue) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-5, .xterm-terminated .xterm-rows .xterm-fg-13 {
+.xterm-rows .xterm-fg-5, .xterm-rows .xterm-fg-13 {
     color: var(--color-magenta) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-6, .xterm-terminated .xterm-rows .xterm-fg-14 {
+.xterm-rows .xterm-fg-6, .xterm-rows .xterm-fg-14 {
     color: var(--color-cyan) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-7, .xterm-terminated .xterm-rows .xterm-fg-15 {
+.xterm-rows .xterm-fg-7, .xterm-rows .xterm-fg-15 {
     color: var(--color-white) !important;
 }
 

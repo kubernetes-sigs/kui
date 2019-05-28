@@ -63,9 +63,19 @@ const alpha = (hex: string, alpha: number): string => {
   }
 }
 
-class Resizer {
-  private currentAsync: NodeJS.Timeout
+interface ISize {
+  rows: number
+  cols: number
+}
+function getCachedSize (tab: ITab): ISize {
+  const cachedSize: { rows: number, cols: number } = tab['_kui_pty_cachedSize']
+  return cachedSize
+}
+function setCachedSize (tab: ITab, size: ISize) {
+  tab['_kui_pty_cachedSize'] = size
+}
 
+class Resizer {
   /** our tab */
   private tab: ITab
 
@@ -89,20 +99,20 @@ class Resizer {
     this.tab = tab
     this.terminal = terminal
 
-    const resizeNow = this.scheduleResize.bind(this)
-    window.addEventListener('resize', resizeNow) // window resize
+    this.resizeNow = this.resize.bind(this, true)
+    window.addEventListener('resize', this.resizeNow) // window resize
 
     const ourTab = tab
     eventBus.on('/sidecar/toggle', ({ tab }: { tab: ITab }) => {
       // sidecar resize
       if (sameTab(tab, ourTab)) {
-        resizeNow()
+        this.resizeNow()
       } else {
         debug('toggle event, but not for our sidecar')
       }
     })
 
-    resizeNow()
+    this.resize()
   }
 
   get ws (): Channel {
@@ -140,7 +150,7 @@ class Resizer {
         hidden[idx].classList.remove('xterm-hidden-row')
       }
     } else {
-      this._frozen = true
+      this.frozen = true
     }
 
     const rows = this.terminal.element.querySelector('.xterm-rows').children
@@ -171,23 +181,6 @@ class Resizer {
     }
   }
 
-  scheduleResize (when = 0) {
-    if (this.currentAsync) {
-      debug('cancelling current resize')
-      clearTimeout(this.currentAsync)
-    }
-
-    this.currentAsync = undefined
-
-    if (when === 0) {
-      this.resize()
-    } else {
-      this.currentAsync = setTimeout(() => {
-        this.resize()
-      }, when)
-    }
-  }
-
   static paddingHorizontal (elt: Element) {
     const style = window.getComputedStyle(elt)
     return parseInt(style.getPropertyValue('padding-left') || '0', 10)
@@ -200,38 +193,50 @@ class Resizer {
       + parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
   }
 
-  static getSize (terminal: xterm.Terminal, tab: Element) {
+  private getSize (forceRecompute: boolean) {
+    const cachedSize = getCachedSize(this.tab)
+    if (!forceRecompute && cachedSize !== undefined) {
+      debug('getSize using cached size', cachedSize.rows, cachedSize.cols)
+      return cachedSize
+    }
+
     const selectorForWidth = '.repl-inner .repl-block.processing .repl-output'
-    const widthElement = tab.querySelector(selectorForWidth)
-    const width = widthElement.getBoundingClientRect().width - this.paddingHorizontal(widthElement)
+    const widthElement = this.tab.querySelector(selectorForWidth)
+    const width = widthElement.getBoundingClientRect().width - Resizer.paddingHorizontal(widthElement)
 
     const selectorForHeight = '.repl-inner'
-    const heightElement = tab.querySelector(selectorForHeight)
-    const height = heightElement.getBoundingClientRect().height - this.paddingVertical(heightElement)
+    const heightElement = this.tab.querySelector(selectorForHeight)
+    const height = heightElement.getBoundingClientRect().height - Resizer.paddingVertical(heightElement)
 
-    const cols = Math.floor(width / terminal['_core'].renderer.dimensions.actualCellWidth)
-    const rows = Math.floor(height / terminal['_core'].renderer.dimensions.actualCellHeight)
+    const cols = Math.floor(width / this.terminal['_core'].renderer.dimensions.actualCellWidth)
+    const rows = Math.floor(height / this.terminal['_core'].renderer.dimensions.actualCellHeight)
 
     debug('getSize', cols, rows, width, height)
-    return { rows, cols }
+
+    const newSize = { rows, cols }
+    setCachedSize(this.tab, newSize)
+    return newSize
+  }
+
+  set frozen (val: boolean) {
+    this._frozen = val
   }
 
   get frozen (): boolean {
     return this._frozen
   }
 
-  private resize () {
+  /** flush=true means that it is likely that the dimensions might have changed; false means definitely have not changed */
+  resize (flush = false) {
     if (this.frozen) {
       return
     }
 
-    const { rows, cols } = Resizer.getSize(this.terminal, this.tab)
-    debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
-
+    const { rows, cols } = this.getSize(flush)
     if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
+      debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
       try {
         this.terminal.resize(cols, rows)
-        this.currentAsync = undefined
 
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
           this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
@@ -254,7 +259,6 @@ class Resizer {
     debug('switching to application mode')
     this.app = true
     this.tab.classList.add('xterm-application-mode')
-    this.scheduleResize(20)
   }
 
   exitApplicationMode () {
@@ -283,10 +287,27 @@ class Resizer {
  * Inject current font settings
  *
  */
-const injectFont = (terminal: xterm.Terminal) => {
-  try {
+let cachedFontProperties: { fontFamily: string, fontSize: number }
+function getFontProperties (flush: boolean) {
+  if (flush || !cachedFontProperties) {
+    debug('computing font properties')
     const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
+
+    /** helper to extract a kui theme color */
+    const val = (key: string, kind = 'color'): string => fontTheme.getPropertyValue(`--${kind}-${key}`).trim()
+
     const fontSize = parseFloat(fontTheme.fontSize.replace(/px$/, ''))
+    const fontFamily = val('monospace', 'font')
+
+    cachedFontProperties = { fontFamily, fontSize }
+  }
+
+  return cachedFontProperties
+}
+const injectFont = (terminal: xterm.Terminal, flush = false) => {
+  try {
+    const { fontFamily, fontSize } = getFontProperties(flush)
+    terminal.setOption('fontFamily', fontFamily)
     terminal.setOption('fontSize', fontSize)
 
     debug('fontSize', fontSize)
@@ -297,49 +318,6 @@ const injectFont = (terminal: xterm.Terminal) => {
   } catch (err) {
     console.error('Error setting terminal font size', err)
   }
-}
-
-/**
- * Convert the current theme to an xterm.js ITheme
- *
- */
-const injectTheme = (terminal: xterm.Terminal): void => {
-  const theme = getComputedStyle(document.body)
-  // debug('kui theme for xterm', theme)
-
-  /** helper to extract a kui theme color */
-  const val = (key: string, kind = 'color'): string => theme.getPropertyValue(`--${kind}-${key}`).trim()
-
-  const itheme: xterm.ITheme = {
-    foreground: val('text-01'),
-    background: val('ui-01'),
-    cursor:  val('support-01'),
-    selection: alpha(val('selection-background'), 0.3),
-
-    black: val('black'),
-    red: val('red'),
-    green: val('green'),
-    yellow: val('yellow'),
-    blue: val('blue'),
-    magenta: val('magenta'),
-    cyan: val('cyan'),
-    white: val('white'),
-
-    brightBlack: val('black'),
-    brightRed: val('red'),
-    brightGreen: val('green'),
-    brightYellow: val('yellow'),
-    brightBlue: val('blue'),
-    brightMagenta: val('magenta'),
-    brightCyan: val('cyan'),
-    brightWhite: val('white')
-  }
-
-  debug('itheme for xterm', itheme)
-  terminal.setOption('theme', itheme)
-  terminal.setOption('fontFamily', val('monospace', 'font'))
-
-  injectFont(terminal)
 }
 
 type ChannelFactory = () => Promise<Channel>
@@ -416,7 +394,8 @@ let alreadyInjectedCSS: boolean
 export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptions) => new Promise((resolve, reject) => {
   debug('doExec', cmdline)
 
-  if (!alreadyInjectedCSS) {
+  const injectingCSS = !alreadyInjectedCSS
+  if (injectingCSS) {
     if (inBrowser()) {
       injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
       injectCSS({ css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'), key: 'kui-xtermjs' })
@@ -432,8 +411,8 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
   // switches away to another tab
   const scrollRegion = tab.querySelector('.repl-inner .repl-block.processing')
 
-  // do the rest after injectCSS
-  setTimeout(async () => {
+  // this is the main work
+  const exec = async () => {
     // attach the terminal to the DOM
     try {
       const parent = block.querySelector('.repl-result')
@@ -443,8 +422,16 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
       // xtermContainer.classList.add('zoomable')
       parent.appendChild(xtermContainer)
 
-      debug('creating terminal')
-      const terminal = new xterm.Terminal({ rendererType: 'dom' })
+      const cachedSize = getCachedSize(tab)
+      const { fontFamily, fontSize } = getFontProperties(false)
+      debug('creating terminal', cachedSize)
+      const terminal = new xterm.Terminal({
+        rendererType: 'dom',
+        cols: cachedSize && cachedSize.cols,
+        rows: cachedSize && cachedSize.rows,
+        fontFamily,
+        fontSize
+      })
 
       // used to manage the race between pending writes to the
       // terminal canvas and process exit; see
@@ -456,21 +443,22 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
       webLinksInit(terminal)
 
       // theming
-      const inject = () => injectTheme(terminal)
-      inject() // inject once on startup
-      eventBus.on('/theme/change', inject) // and re-inject when the theme changes
+      // injectFont(terminal) // inject once on startup
+      const doInjectTheme = () => injectFont(terminal, true)
+      eventBus.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
 
       const resizer = new Resizer(terminal, tab)
 
       // respond to font zooming
       const doZoom = () => {
-        injectFont(terminal)
-        resizer.scheduleResize()
+        injectFont(terminal, true)
+        resizer.resize()
       }
       eventBus.on('/zoom', doZoom)
 
       const cleanupEventHandlers = () => {
         eventBus.off('/zoom', doZoom)
+        eventBus.off('/theme/change', doInjectTheme)
       }
 
       // heuristic for hiding empty rows
@@ -584,7 +572,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
 
           // now that we've grabbed queued input, focus on the terminal,
           // and it will handle input for now until the process exits
-          terminal.focus()
+          setTimeout(() => terminal.focus(), 0) // expensive reflow, async it
         } else if (msg.type === 'data') {
           // plain old data flowing out of the PTY; send it on to the xterm UI
 
@@ -606,11 +594,15 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
             raw += stripClean(msg.data)
           }
 
-          const maybeUsage = !resizer.inAltBufferMode() && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
+          const maybeUsage = !resizer.inAltBufferMode() &&
+            !definitelyNotUsage
+            && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
+
           if (maybeUsage) {
             debug('pending usage')
             pendingUsage = true
           } else {
+            definitelyNotUsage = true
             pendingWrites++
             terminal.write(msg.data)
           }
@@ -672,12 +664,18 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
           if (pendingWrites > 0) {
             cbAfterPendingWrites = finishUp
           } else {
-            finishUp()
+            // there seems to be a 10% chance that the 'refresh' event
+            // is sent to us while there is still pending information
+            // flowing over the Channel; we need to get more
+            // sophisticated here, but a small delay will help, for
+            // the time being.
+            setTimeout(finishUp, 100)
           }
         }
       }
 
       let pendingUsage = false
+      let definitelyNotUsage = false
       let raw = ''
       ws.on('message', onMessage)
     } catch (err) {
@@ -689,5 +687,13 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
         reject('Internal Error')
       }
     }
-  }, 0)
+  }
+
+  if (injectingCSS) {
+    // do the main work after injectCSS
+    setTimeout(exec, 0)
+  } else {
+    // otherwise, we are good to go
+    exec()
+  }
 })
