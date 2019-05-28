@@ -126,6 +126,7 @@ const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.Pro
  */
 const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options: ParsedOptions) => {
   const hasTableVerb = verb === 'ls' ||
+    verb === 'search' ||
     verb === 'list' ||
     verb === 'get' ||
     (verb === 'config' && entityType.match(/^get/))
