@@ -99,6 +99,7 @@ const startInputQueueing = () => {
  * @return any queued input so far
  *
  */
+let _invisibleHand: HTMLInputElement
 export const disableInputQueueing = (): string => {
   if (isHeadless()) {
     return
@@ -106,14 +107,16 @@ export const disableInputQueueing = (): string => {
 
   debug('disableInputQueueing')
 
-  const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
+  const invisibleHand = _invisibleHand || (_invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement)
 
   // here is what might have queued up
   const queuedInput = invisibleHand.value
 
   // reset the queueing state
   invisibleHand.value = ''
-  invisibleHand.blur()
+
+  // this can be expensive; callers MUST focus on their element if they want this behavior
+  // invisibleHand.blur()
 
   return queuedInput
 }
@@ -664,7 +667,6 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
         // presentation mode
         const presentation = (isCustomSpec(response) && response.presentation) || (prettyType && Array.isArray(response) && Presentation.FixedSize) || Presentation.SidecarFullscreenForPopups
 
-        console.error('!!!!!!!!!!', response, isEntitySpec(response))
         await renderPopupContent(command, alreadyRendered !== true && resultDom, execOptions, Object.assign({}, response, {
           modes: modes || undefined,
           prettyType,

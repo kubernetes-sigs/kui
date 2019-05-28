@@ -490,7 +490,7 @@ const disambiguate = async (argv: string[], noRetry = false) => {
   debug('disambiguate')
 
   let idx
-  const resolutions = ((((idx = 0) || true) && resolver.disambiguate(argv[idx])) || (((idx = argv.length - 1) || true) && resolver.disambiguate(argv[idx])) || [])
+  const resolutions = ((((idx = 0) || true) && resolver.disambiguate(argv[idx])) || (argv.length > 1 && ((idx = argv.length - 1) || true) && resolver.disambiguate(argv[idx])) || [])
   debug('disambiguate', idx, argv, resolutions)
 
   if (resolutions.length === 0 && !noRetry) {

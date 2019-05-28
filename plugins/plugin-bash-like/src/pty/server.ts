@@ -155,7 +155,7 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
             // send all PTY data out to the websocket client
-            shell.on('data', (data) => {
+            shell.on('data', (data: string) => {
               ws.send(JSON.stringify({ type: 'data', data }))
             })
 

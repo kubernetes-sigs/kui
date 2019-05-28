@@ -501,7 +501,7 @@ const makeResolver = (prescan: IPrescanModel) => {
       }
       if (plugin) {
         return resolveOne(plugin)
-      } else {
+      } else if (prescan.catchalls.length > 0) {
         // see if we have catchall
         debug('scanning catchalls', prescan.catchalls)
         return Promise.all(prescan.catchalls.map(_ => resolveOne(_.plugin)))
