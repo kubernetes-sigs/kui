@@ -787,6 +787,34 @@ export const show = (tab: ITab, block?: HTMLElement, nextBlock?: HTMLElement) =>
   }
 }
 
+/**
+ * View State of the sidecar of a tab
+ *
+ */
+export enum SidecarState {
+  NotShown,
+  Minimized,
+  Open,
+  FullScreen
+}
+
+/**
+ * @return the view state of the sidecar in a given tab
+ *
+ */
+export const getSidecarState = (tab: ITab): SidecarState => {
+  const sidecar = getSidecar(tab)
+  if (tab.classList.contains('sidecar-full-screen')) {
+    return SidecarState.FullScreen
+  } else if (sidecar.classList.contains('visible')) {
+    return SidecarState.Open
+  } else if (sidecar.classList.contains('minimized')) {
+    return SidecarState.Minimized
+  } else {
+    return SidecarState.NotShown
+  }
+}
+
 export const isVisible = (tab: ITab): boolean => {
   const sidecar = getSidecar(tab)
   return sidecar.classList.contains('visible') && sidecar ? true : false

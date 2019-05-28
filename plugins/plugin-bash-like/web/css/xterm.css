@@ -17,9 +17,12 @@ tab.xterm-alt-buffer-mode .repl-inner .repl-block.processing {
     padding: 0;
     -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
 }
+tab.xterm-alt-buffer-mode .repl-inner .repl-block {
+    flex: 1;
+}
 tab.xterm-alt-buffer-mode .repl {
     background: var(--color-stripe-01);
-    align-items: flex-end; /* snap emacs, vi, nano to the right */
+    /*align-items: flex-end;*/ /* snap emacs, vi, nano to the right */
 }
 tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .repl-input, tab.xterm-alt-buffer-mode .repl-result-spinner {
     display: none;
