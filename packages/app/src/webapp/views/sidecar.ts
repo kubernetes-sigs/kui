@@ -787,9 +787,9 @@ export const show = (tab: ITab, block?: HTMLElement, nextBlock?: HTMLElement) =>
   }
 }
 
-export const isVisible = (tab: ITab) => {
+export const isVisible = (tab: ITab): boolean => {
   const sidecar = getSidecar(tab)
-  return sidecar.classList.contains('visible') && sidecar
+  return sidecar.classList.contains('visible') && sidecar ? true : false
 }
 
 export const isFullscreen = (tab: ITab) => {
