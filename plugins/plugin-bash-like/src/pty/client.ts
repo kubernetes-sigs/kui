@@ -24,7 +24,7 @@ import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { getSidecar, isVisible as isSidecarCurrentlyVisible } from '@kui-shell/core/webapp/views/sidecar'
 import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, ITab } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
@@ -64,15 +64,27 @@ const alpha = (hex: string, alpha: number): string => {
 }
 
 interface ISize {
+  resizeGeneration: number
+  sidecarVisible: boolean
   rows: number
   cols: number
 }
-function getCachedSize (tab: ITab): ISize {
-  const cachedSize: { rows: number, cols: number } = tab['_kui_pty_cachedSize']
-  return cachedSize
+let resizeGeneration = 0
+if (window) {
+  window.addEventListener('resize', () => {
+    resizeGeneration++
+  })
 }
-function setCachedSize (tab: ITab, size: ISize) {
-  tab['_kui_pty_cachedSize'] = size
+function getCachedSize (tab: ITab): ISize {
+  const cachedSize: ISize = tab['_kui_pty_cachedSize']
+  if (cachedSize &&
+      cachedSize.sidecarVisible === isSidecarCurrentlyVisible(tab) &&
+      cachedSize.resizeGeneration === resizeGeneration) {
+    return cachedSize
+  }
+}
+function setCachedSize (tab: ITab, { rows, cols }: { rows: number, cols: number }) {
+  tab['_kui_pty_cachedSize'] = { rows, cols, sidecarVisible: isSidecarCurrentlyVisible(tab), resizeGeneration }
 }
 
 class Resizer {
