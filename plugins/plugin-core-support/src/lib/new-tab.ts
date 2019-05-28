@@ -86,9 +86,8 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
   } else {
     if (!activateOnly) {
       // then deactivate the current tab
-      const currentVisibleTab = getCurrentTab()
       const currentTabButton = getCurrentTabButton()
-      currentVisibleTab.classList.remove('visible')
+      currentTab.classList.remove('visible')
       currentTabButton.classList.remove('left-tab-stripe-button-selected')
     }
 

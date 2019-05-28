@@ -22,7 +22,7 @@ declare var hljs
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { ITab, isPopup, isTab, scrollIntoView, oops, getCurrentTab } from '../cli'
+import { ITab, isPopup, isTab, scrollIntoView, oops, getCurrentTab, getTabFromTarget } from '../cli'
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
@@ -719,11 +719,7 @@ export const clearBadges = (tab: ITab) => {
  *
  */
 export const getEnclosingTab = (sidecar: ISidecar): ITab => {
-  let parent: HTMLElement = sidecar
-  while (parent && !isTab(parent)) {
-    parent = parent.parentElement
-  }
-  return parent
+  return getTabFromTarget(sidecar)
 }
 
 export const hide = (tab: ITab, clearSelectionToo = false) => {

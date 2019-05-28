@@ -213,7 +213,6 @@ export const setStatus = (block: HTMLElement, status: string) => {
 
       // the indexing is from 0 versus from 1
       const N = parseInt(block.getAttribute('data-input-count'), 10) + 1
-      console.error('BBBBBBBBBBB', block, N)
 
       const repl = await import('../core/repl')
       debug(`capturing screenshot for block ${N}`)
@@ -689,15 +688,15 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
 
 export interface ITab extends HTMLElement { }
 const tabTagPattern = /tab/i
-export const isTab = (node: Element): boolean => tabTagPattern.test(node.tagName)
+export const isTab = (node: EventTarget): node is ITab => tabTagPattern.test((node as Element).tagName)
 export const getTabIndex = (tab: ITab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
 export const sameTab = (tab1: ITab, tab2: ITab): boolean => {
   return getTabIndex(tab1) === getTabIndex(tab2)
 }
-export const getCurrentTab = (): ITab => {
-  const focused = document.activeElement as HTMLElement
-  if (focused) {
-    let iter = focused
+export const getTabFromTarget = (target: EventTarget): ITab => {
+  if (target) {
+    let iter = target as Element
+
     while (iter && !isTab(iter)) {
       iter = iter.parentElement
     }
@@ -706,18 +705,21 @@ export const getCurrentTab = (): ITab => {
       return iter
     }
 
-    debug('current tab fallthrough', focused)
+    debug('current tab fallthrough', target)
   }
 
   // fallthrough
   return document.querySelector('tab.visible')
 }
+export const getCurrentTab = (): ITab => {
+  return getTabFromTarget(document.activeElement)
+}
 
-export const getInitialBlock = (tab = getCurrentTab()): HTMLElement => {
+export const getInitialBlock = (tab: ITab): HTMLElement => {
   return tab.querySelector('.repl .repl-block.repl-initial')
 }
 export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
-  return tab.querySelector('.repl-active')
+  return tab.querySelector('.repl-block:last-child')
 }
 export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
   return tab.querySelector('.repl .repl-block.processing')
@@ -727,6 +729,9 @@ export const getPrompt = (block: HTMLElement): HTMLInputElement => {
 }
 export const getInitialPrompt = (tab = getCurrentTab()): HTMLInputElement => {
   return getPrompt(getInitialBlock(tab))
+}
+export const getPromptFromTarget = (target: EventTarget): HTMLInputElement => {
+  return getCurrentPrompt(getTabFromTarget(target))
 }
 export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
   if (isPopup()) {
@@ -738,7 +743,7 @@ export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
 export const getPromptLeft = (block: Element) => {
   return block.querySelector('.repl-prompt-righty')
 }
-export const getCurrentPromptLeft = (tab = getCurrentTab()) => {
+export const getCurrentPromptLeft = (tab: ITab) => {
   return getPromptLeft(getCurrentBlock(tab))
 }
 

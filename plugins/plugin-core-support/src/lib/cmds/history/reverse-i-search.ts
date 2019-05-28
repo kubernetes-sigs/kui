@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('core-support/history/reverse-i-search')
 
 import * as historyModel from '@kui-shell/core/models/history'
-import { getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
+import { ITab, getTabFromTarget, getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 
@@ -67,15 +67,15 @@ function registerListener () {
    * For various reasons, user has cancelled a reverse-i-search.
    *
    */
-  const cancelISearch = () => {
+  const cancelISearch = (tab: ITab) => {
     if (isSearchActive) {
       isSearchActive = false
       currentSearchIdx = -1
 
-      const prompt = getCurrentPrompt()
+      const prompt = getCurrentPrompt(tab)
       prompt.onkeypress = currentOnKeypress
       prompt.oninput = currentOnInput
-      getCurrentBlock().classList.remove('using-custom-prompt')
+      getCurrentBlock(tab).classList.remove('using-custom-prompt')
       if (placeholder.parentNode) {
         placeholder.parentNode.removeChild(placeholder)
       }
@@ -143,20 +143,20 @@ function registerListener () {
   }
 
   /** fill in the result of a search */
-  function completeSearch () {
+  function completeSearch (tab: ITab) {
     debug('completing search')
     getCurrentPrompt().value = placeholderContentPart.getAttribute('data-full-match')
-    cancelISearch()
+    cancelISearch(tab)
   }
 
   /**
    * User hits enter while in i-search mode
    *
    */
-  function maybeComplete (evt) {
+  const maybeComplete = (tab: ITab) => (evt: KeyboardEvent) => {
     if (isSearchActive) {
       if (evt.keyCode === keys.ENTER) {
-        completeSearch()
+        completeSearch(tab)
       }
     }
   }
@@ -165,7 +165,7 @@ function registerListener () {
    * Listen for ctrl+r
    *
    */
-  document.getElementsByTagName('body')[0].addEventListener('keyup', evt => {
+  document.getElementsByTagName('body')[0].addEventListener('keyup', (evt: KeyboardEvent) => {
     //
     // we want ctrl+R; but if we're in a browser and on linux or
     // windows, then ctrl+R will result in a browser reload :(
@@ -179,10 +179,11 @@ function registerListener () {
       // if we aren't focused on a repl input, don't bother
       return
     } else if (evt.ctrlKey && (process.platform === 'darwin' || ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))) {
+      const tab = getTabFromTarget(evt.srcElement)
       if (evt.keyCode === keys.R) {
         debug('got ctrl+r')
-        promptLeft = getCurrentPromptLeft()
-        const prompt = getCurrentPrompt()
+        promptLeft = getCurrentPromptLeft(tab)
+        const prompt = getCurrentPrompt(tab)
 
         if (isSearchActive) {
           debug('continuation of existing reverse-i-search')
@@ -199,7 +200,7 @@ function registerListener () {
           placeholder.classList.add('normal-text')
           placeholderFixedPart.classList.add('smaller-text')
           promptLeft.appendChild(placeholder)
-          getCurrentBlock().classList.add('using-custom-prompt')
+          getCurrentBlock(tab).classList.add('using-custom-prompt')
 
           prompt.style.opacity = '0'
           prompt.style.width = '0'
@@ -221,14 +222,14 @@ function registerListener () {
           currentOnInput = prompt.oninput
           prompt.oninput = doSearch
           currentOnKeypress = prompt.onkeypress
-          prompt.onkeypress = maybeComplete
+          prompt.onkeypress = maybeComplete(tab)
         }
       } else if (isSearchActive && isCursorMovement(evt)) {
-        completeSearch()
+        completeSearch(tab)
       } else {
         // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
         debug('cancel', evt.keyCode)
-        cancelISearch()
+        cancelISearch(tab)
       }
     }
   })
