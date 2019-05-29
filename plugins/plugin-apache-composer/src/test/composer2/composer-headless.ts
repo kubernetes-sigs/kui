@@ -151,7 +151,7 @@ class Validation {
                   throw new Error(response.stderr)
                 }
               } else {
-                expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'annotations', 'duration','end', 'logs', 'name', 'namespace','response', 'start', 'subject'] })(response)
+                expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'annotations', 'duration', 'end', 'logs', 'name', 'namespace', 'response', 'start', 'subject'] })(response)
                 resolve(sessionId)
               }
             }).catch(reject)
@@ -191,7 +191,7 @@ class Validation {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
-    let expectedKeys = ['annotations','limits','name','namespace','parameters', 'kind']
+    let expectedKeys = ['annotations', 'limits', 'name', 'namespace', 'parameters', 'kind']
     if (packageName !== '') expectedKeys.push('packageName')
 
     it(`validate app get ${name}`, () => cli.do(`app get ${name}`)

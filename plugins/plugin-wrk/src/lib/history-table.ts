@@ -49,7 +49,7 @@ export const list = ({ tab, parsedOptions: options }: IEvaluatorArgs) => {
       const cell = addCell(row, run)
 
       // find the max sample in this run, so we can display it in the table
-      const max = run.dataset.reduce((max,row) => {
+      const max = run.dataset.reduce((max, row) => {
         if (!max || row.requestsPerSec > max.requestsPerSec) {
           return row
         } else {

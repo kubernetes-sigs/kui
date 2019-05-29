@@ -111,7 +111,7 @@ describe('session list --scan-limit --skip', function (this: common.ISuite) {
 
   it(`should show session 11 ${appName} in session list ${appName} --scan-limit 11`, () => cli.do(`session list ${appName} --scan-limit 11`, this.app)
     .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 11, expectedSessions: createSessionArray(appName,11) }))
+    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 11, expectedSessions: createSessionArray(appName, 11) }))
     .catch(common.oops(this)))
 
   it(`should show session 11 in session list ${appName} --scan-limit 11 --count`, () => cli.do(`session list ${appName} --scan-limit 11 --count`, this.app)
