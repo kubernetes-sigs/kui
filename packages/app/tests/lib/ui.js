@@ -149,7 +149,7 @@ const expectOK = (appAndCount, opt) => {
     })
     .then(res => opt && (opt.selector || opt.passthrough) ? res : app) // return res rather than app, if requested
     .catch(err => {
-      if (!opt.errOk) {
+      if (!opt || !opt.errOk) {
         common.oops({ app: app })(err)
       } else {
         throw err

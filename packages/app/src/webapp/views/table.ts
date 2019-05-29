@@ -105,11 +105,15 @@ export const formatTable = (tab: ITab, table: Table, resultDom: HTMLElement): vo
   }
 }
 
+interface IRowFormatOptions {
+  excludePackageName?: boolean
+}
+
 /**
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
+const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
@@ -236,7 +240,7 @@ export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
         if (isPopup()) {
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') { // TODO: define types here carefully
-          pexec(onclick)
+          pexec(onclick, { tab })
         } else {
           onclick(evt)
         }
@@ -299,7 +303,7 @@ export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
                 entityNameClickable.classList.add('clickable')
                 if (typeof onclick === 'string') {
                   entityNameClickable.onclick = () => {
-                    return pexec(onclick)
+                    return pexec(onclick, { tab })
                   }
                 } else {
                   entityNameClickable.onclick = onclick
@@ -454,7 +458,7 @@ export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
         return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = () => pexec(entity.onclick)
+      entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
     } else {
       entityNameClickable.onclick = entity.onclick
     }
@@ -636,7 +640,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
         if (isPopup()) {
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') {
-          pexec(onclick)
+          pexec(onclick, { tab })
         } else {
           onclick(evt)
         }
@@ -699,7 +703,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
                 entityNameClickable.classList.add('clickable')
                 if (typeof onclick === 'string') {
                   entityNameClickable.onclick = () => {
-                    return pexec(onclick)
+                    return pexec(onclick, { tab })
                   }
                 } else {
                   entityNameClickable.onclick = onclick
@@ -854,7 +858,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
         return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = () => pexec(entity.onclick)
+      entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
     } else {
       entityNameClickable.onclick = entity.onclick
     }
@@ -917,13 +921,13 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
  * Format a tabular view
  *
  */
-export const formatTableResult = (tab: ITab, response: Table) => {
+export const formatTableResult = (tab: ITab, response: Table): HTMLElement[] => {
   debug('formatTableResult', response)
 
   const { header, body, noSort } = response
 
-  // sort the list, then format each element, then add the results to the resultDom
-  // (don't sort lists of activations. i wish there were a better way to do this)
+  // this utility method sorts the list, unless the model indicates
+  // that the given sort order is to be used (@see `Table.noSort`)
   const sort = (rows: Row[]): Row[] => {
     return rows.sort((a, b) =>
       (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
@@ -931,6 +935,13 @@ export const formatTableResult = (tab: ITab, response: Table) => {
       a.name.localeCompare(b.name))
   }
 
+  // decorate the header cells as such
+  if (header) {
+    header.outerCSS = `${header.outerCSS || ''} header-cell`
+    header.attributes.forEach(cell => cell.outerCSS = `${cell.outerCSS || ''} header-cell`)
+  }
+
+  // format the rows
   return [ header ].concat(noSort ? body : sort(body)).filter(x => x).map(formatOneRowResult(tab))
 }
 

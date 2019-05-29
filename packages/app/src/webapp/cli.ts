@@ -38,7 +38,7 @@ import { isHTML } from '../util/types'
 
 import Presentation from './views/presentation'
 import { formatListResult, formatMultiListResult, formatTable } from './views/table'
-import { isTable, isMultiTable } from './models/table'
+import { Table, isTable, isMultiTable } from './models/table'
 import { Formattable, getSidecar, IBadgeSpec, currentSelection, presentAs, showEntity, showCustom, isCustomSpec, ICustomSpec } from './views/sidecar'
 import { ISidecarMode } from './bottom-stripe'
 
@@ -213,7 +213,6 @@ export const setStatus = (block: HTMLElement, status: string) => {
 
       // the indexing is from 0 versus from 1
       const N = parseInt(block.getAttribute('data-input-count'), 10) + 1
-      console.error('BBBBBBBBBBB', block, N)
 
       const repl = await import('../core/repl')
       debug(`capturing screenshot for block ${N}`)
@@ -281,8 +280,9 @@ export const registerEntityView = (kind: string, handler: ViewHandler) => {
  * Stream output to the given block
  *
  */
-export const streamTo = (block: Element) => {
-  const resultDom = block.querySelector('.repl-result')
+export type Streamable = SimpleEntity | Table | ICustomSpec
+export const streamTo = (tab: ITab, block: Element) => {
+  const resultDom = block.querySelector('.repl-result') as HTMLElement
   const pre = document.createElement('pre')
   pre.classList.add('streaming-output')
   resultDom.appendChild(pre)
@@ -293,7 +293,7 @@ export const streamTo = (block: Element) => {
   const spinner = element('.repl-result-spinner', block)
 
   let previousLine: HTMLElement
-  return async (response: SimpleEntity, killLine = false) => {
+  return async (response: Streamable, killLine = false) => {
     //
     debug('stream', response)
 
@@ -310,6 +310,10 @@ export const streamTo = (block: Element) => {
     } else if (isHTML(response)) {
       previousLine = response
       pre.appendChild(previousLine)
+    } else if (isTable(response)) {
+      await printTable(tab, response, resultDom)
+    } else if (isCustomSpec(response)) {
+      showCustom(tab, response, {})
     } else {
       previousLine = document.createElement('div')
       previousLine.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
@@ -412,6 +416,29 @@ const renderPopupContent = (command: string, container: Element, execOptions: IE
 export const isPopup = () => document.body.classList.contains('subwindow')
 
 /**
+ * Standard handling of Table responses
+ *
+ */
+const printTable = async (tab: ITab, response: Table, resultDom: HTMLElement, execOptions?: IExecOptions, parsedOptions?: ParsedOptions) => {
+  //
+  // some sort of list response; format as a table
+  //
+  const registeredListView = registeredListViews[response.type]
+  if (registeredListView) {
+    await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
+    return resultDom.children.length === 0
+  }
+
+  (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
+
+  if (response.noEntityColors) { // client wants control over entity-cell coloring
+    resultDom.classList.add('result-table-with-custom-entity-colors')
+  }
+
+  formatTable(tab, response, resultDom)
+}
+
+/**
  * Render the results of a command evaluation in the "console"
  *
  */
@@ -469,22 +496,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean, resultDom: HTMLElement }) => {
     if (response && response !== true) {
       if (isTable(response)) {
-        //
-        // some sort of list response; format as a table
-        //
-        const registeredListView = registeredListViews[response.type]
-        if (registeredListView) {
-          await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
-          return resultDom.children.length === 0
-        }
-
-        (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
-
-        if (response.noEntityColors) { // client wants control over entity-cell coloring
-          resultDom.classList.add('result-table-with-custom-entity-colors')
-        }
-
-        formatTable(tab, response, resultDom)
+        await printTable(tab, response, resultDom, execOptions, parsedOptions)
       } else if (Array.isArray(response)) {
         /**
          * some sort of list response; format as a table

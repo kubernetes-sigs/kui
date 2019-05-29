@@ -42,7 +42,7 @@ export interface IEntitySpec {
   annotations?: { key: string, value: any }[]
 }
 
-interface IMessageBearingEntity {
+export interface IMessageBearingEntity {
   message: string
 }
 

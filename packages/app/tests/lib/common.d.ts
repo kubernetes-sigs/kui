@@ -28,9 +28,18 @@ interface IBeforeOptions {
 
 declare function before (ctx: Suite, options?: IBeforeOptions): HookFunction
 declare function after (ctx: Suite, f?: () => void): HookFunction
-declare function localIt (msg: String, f: Function): TestFunction
-declare function localDescribe (msg: String, f: Function): SuiteFunction
-declare function remoteIt (msg: String, f: Function): TestFunction
+
+/** only execute the test in local */
+declare function localIt (msg: string, f: Function): TestFunction
+
+/** only execute the test suite in local */
+declare function localDescribe (msg: string, f: Function): SuiteFunction
+
+/** only execute the test suite in an environment that has docker */
+declare function dockerDescribe (msg: string, f: Function): SuiteFunction
+
+/** only execute the test in non-proxy browser */
+declare function remoteIt (msg: string, f: Function): TestFunction
 
 // never versus void? https://github.com/Microsoft/TypeScript/issues/13625#issuecomment-274566197
 declare function oops (ctx: Suite): ((err: Error) => never)

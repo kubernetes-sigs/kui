@@ -41,7 +41,7 @@ export const dispatchToShell = async ({ tab, block, command, argv, argvNoOptions
       .catch(cleanUpError)
   } else {
     const { doExec } = await import('../../pty/client')
-    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), Object.assign({}, { stdout: createOutputStream() }, execOptions))
+    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), argvNoOptions, parsedOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
       .catch(cleanUpError)
   }
 }

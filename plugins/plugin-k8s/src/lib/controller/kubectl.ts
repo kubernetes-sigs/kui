@@ -59,6 +59,17 @@ interface KubeExecOptions extends IExecOptions {
   }*/
 }
 
+/**
+ * Several commands seem to be cropping up that give a facade over
+ * kubectl; this is a start at such a list
+ *
+ * 1) kubectl, bien sûr
+ * 2) oc, redhat openshift CLI
+ *
+ */
+const kubelike = /kubectl|oc/
+const isKubeLike = (command: string): boolean => kubelike.test(command)
+
 /** lazily load js-yaml and invoke its yaml parser */
 const parseYAML = async (str: string): Promise<any> => {
   const { safeLoad } = await import('js-yaml')
@@ -258,13 +269,15 @@ const prepareUsage = async (command: string): Promise<IUsageModel> => {
   } */
 const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
   const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
-  debug('exec', command)
+
+  const isKube = isKubeLike(command)
+  debug('exec', command, isKube)
 
   const verb = argv[1]
   const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
   const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
 
-  if (!isHeadless() && command === 'kubectl' && verb === 'edit') {
+  if (!isHeadless() && isKube && verb === 'edit') {
     debug('redirecting kubectl edit to shell')
     repl.qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
       .then(resolveBase).catch(reject)
@@ -277,26 +290,26 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   const output = !options.help &&
     (options.output || options.o
      || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
-     || (command === 'kubectl' && verb === 'describe' && 'yaml')
-     || (command === 'kubectl' && verb === 'logs' && 'Latest')
-     || (command === 'kubectl' && verb === 'get' && execOptions.raw && 'json'))
+     || (isKube && verb === 'describe' && 'yaml')
+     || (isKube && verb === 'logs' && 'Latest')
+     || (isKube && verb === 'get' && execOptions.raw && 'json'))
 
   if ((!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
-      command === 'kubectl' &&
+      isKube &&
       ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) && (execOptions.type !== ExecType.Nested || execOptions.delegationOk))) {
     debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
     const describeImpl = (await import('./describe')).default
     return describeImpl(opts).then(resolveBase).catch(reject)
-  } else if (command === 'kubectl' && (verb === 'status' || verb === 'list')) {
+  } else if (isKube && (verb === 'status' || verb === 'list')) {
     return statusImpl(verb)(opts).then(resolveBase).catch(reject)
   }
 
   // helm status exists; kubectl status does not, but we offer one via `k8s`
-  const statusCommand = command === 'kubectl' ? 'k' : command
+  const statusCommand = isKube ? 'k' : command
 
   // for "raw" execution, force json output
-  if (command === 'kubectl' && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
+  if (isKube && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
     debug('forcing json output for raw mode execution', options)
     rawArgv.push('-o')
     rawArgv.push('json')
@@ -362,7 +375,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       return _
     }
   }))
-  if (verb === 'delete' && !options.hasOwnProperty('wait') && command === 'kubectl') {
+  if (verb === 'delete' && !options.hasOwnProperty('wait') && isKube) {
     // by default, apparently, kubernetes treats finalizers as
     // synchronous, and --wait defaults to true
     argvWithFileReplacements.push('--wait=false')
@@ -534,7 +547,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         console.error('error rendering help', err)
         reject(out)
       }
-    } else if (command === 'kubectl' && verb === 'get' && (options.watch || options.w)) {
+    } else if (isKube && verb === 'get' && (options.watch || options.w)) {
       // kubectl get --watch mode?
       debug('delegating to k status')
       const ns = options.n || options.namespace
@@ -623,12 +636,12 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
       debug('exec output json', record)
       resolve(record)
-    } else if (command === 'kubectl' && verb === 'run' && argv[2]) {
+    } else if (isKube && verb === 'run' && argv[2]) {
       const entity = argv[2]
       const namespace = options.namespace || options.n || 'default'
       debug('status after kubectl run', entity, namespace)
       repl.qexec(`k status deploy "${entity}" -n "${namespace}"`).then(resolve).catch(reject)
-    } else if ((hasFileArg || (command === 'kubectl' && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
+    } else if ((hasFileArg || (isKube && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
       //
       // then this was a create or delete from file; show the status of the operation
       //

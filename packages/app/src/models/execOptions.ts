@@ -15,7 +15,7 @@
  */
 
 import { ExecType } from './command'
-import { ITab } from '../webapp/cli'
+import { ITab, Streamable } from '../webapp/cli'
 
 export interface IExecOptions {
   // force execution in a given tab?
@@ -24,6 +24,8 @@ export interface IExecOptions {
   isProxied?: boolean
   noDelegation?: boolean
   delegationOk?: boolean
+
+  leaveBottomStripeAlone?: boolean
 
   filter?: any
   contextChangeOK?: boolean
@@ -62,7 +64,7 @@ export interface IExecOptions {
   alreadyWatching?: boolean
 
   createOutputStream?: any
-  stdout?: (str: string) => any
+  stdout?: (str: Streamable) => any
   stderr?: (str: string) => any
 
   parameters?: any

@@ -66,7 +66,6 @@ const cssForKey = {
 
   AGE: 'slightly-deemphasize',
 
-  // STATUS: 'even-smaller-text',
   'APP VERSION': 'pre-wrap slightly-deemphasize', // helm ls
   UPDATED: 'slightly-deemphasize somewhat-smaller-text'
 }
