@@ -67,11 +67,12 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 
 /* override the width and height pixel sizing from DomRenderer */
 .xterm-terminated .xterm-rows > div {
+    width: auto !important; /* see https://github.com/IBM/kui/issues/1518 */
     height: 1.14375em !important;
     line-height: normal !important;
 }
 .xterm-container .xterm-rows > div > span {
-    width: auto !important;
+    width: auto !important; /* see https://github.com/IBM/kui/issues/1518 */
     white-space: pre;
 }
 
