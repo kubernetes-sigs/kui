@@ -87,6 +87,12 @@ function setCachedSize (tab: ITab, { rows, cols }: { rows: number, cols: number 
   tab['_kui_pty_cachedSize'] = { rows, cols, sidecarState: getSidecarState(tab), resizeGeneration }
 }
 
+interface HTerminal extends xterm.Terminal {
+  _core: {
+    renderer: { _terminal: { cols: number, options: { letterSpacing: number }, charMeasure: { width: number } }, dimensions: { scaledCharWidth: number, actualCellWidth: number, actualCellHeight: number, canvasWidth: number, scaledCanvasWidth: number, scaledCellWidth: number } }
+  }
+}
+
 class Resizer {
   /** our tab */
   private tab: ITab
@@ -103,13 +109,13 @@ class Resizer {
   /** have we already deleted empty rows? */
   private _frozen = false
 
-  private readonly terminal: xterm.Terminal
+  private readonly terminal: HTerminal
   private _ws: Channel
   private readonly resizeNow: any
 
   constructor (terminal: xterm.Terminal, tab: ITab) {
     this.tab = tab
-    this.terminal = terminal
+    this.terminal = terminal as HTerminal
 
     this.resizeNow = this.resize.bind(this, true)
     window.addEventListener('resize', this.resizeNow) // window resize
@@ -212,16 +218,25 @@ class Resizer {
       return cachedSize
     }
 
-    const selectorForWidth = '.repl-inner .repl-block.processing .repl-output'
-    const widthElement = this.tab.querySelector(selectorForWidth)
-    const width = widthElement.getBoundingClientRect().width - Resizer.paddingHorizontal(widthElement)
+    const _core = this.terminal._core
+    const hack = _core.renderer
+    const dimensions = hack.dimensions
+    const scaledCharWidth = hack._terminal.charMeasure.width * window.devicePixelRatio
+    const ratio = scaledCharWidth / dimensions.scaledCharWidth
 
-    const selectorForHeight = '.repl-inner'
-    const heightElement = this.tab.querySelector(selectorForHeight)
-    const height = heightElement.getBoundingClientRect().height - Resizer.paddingVertical(heightElement)
+    const selectorForSize = '.repl-inner'
+    const sizeElement = this.tab.querySelector(selectorForSize)
+    const enclosingRect = sizeElement.getBoundingClientRect()
 
-    const cols = Math.floor(width / this.terminal['_core'].renderer.dimensions.actualCellWidth)
-    const rows = Math.floor(height / this.terminal['_core'].renderer.dimensions.actualCellHeight)
+    const selectorForWidthPad = '.repl-inner .repl-block.processing .repl-output'
+    const widthPadElement = this.tab.querySelector(selectorForWidthPad)
+    const heightPadElement = sizeElement
+
+    const width = enclosingRect.width - Resizer.paddingHorizontal(widthPadElement)
+    const height = enclosingRect.height - Resizer.paddingVertical(heightPadElement)
+
+    const cols = Math.floor(width / this.terminal._core.renderer.dimensions.actualCellWidth / ratio)
+    const rows = Math.floor(height / this.terminal._core.renderer.dimensions.actualCellHeight)
 
     debug('getSize', cols, rows, width, height)
 

@@ -1347,6 +1347,10 @@ code.fancy-code, code.fancy-code.hljs {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.not-very-wide {
+    display: block; /* spans don't respond */
+    max-width: 18em;
+}
 .not-too-wide {
     display: block; /* spans don't respond */
     max-width: 35em;
