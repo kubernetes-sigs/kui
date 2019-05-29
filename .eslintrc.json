@@ -12,7 +12,6 @@
     "@typescript-eslint/eslint-plugin"
   ],
   "rules": {
-    "block-spacing": "off",
     "eqeqeq": "off",
     "no-cond-assign": "off",
     "no-constant-condition": "off",
