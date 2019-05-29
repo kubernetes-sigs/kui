@@ -323,7 +323,7 @@ const showTutorial = (tab: cli.ITab, tutorialName: string, obj) => {
           block.setAttribute('data-balloon-pos', idx > obj.steps.length / 2 ? 'down-right' : 'down')// square: idx % dim > Math.floor(dim/2) ? 'down-right' : 'down')
           block.setAttribute('data-balloon-length', 'small')
           block.onclick = () => {
-	    $(pane).prop('step', idx)
+      $(pane).prop('step', idx)
             transitionSteps(tab, idx, obj, pane)
           }
 
@@ -718,10 +718,10 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
     const handler = function (event) {
       if (event.keyCode === 13) { // 13 is the keycode for Enter
         if ($(selector).val().trim() === value) {
-	  // unbind, move to the next step;
-	  $(document).unbind('keydown', handler)
-	  $(pane).prop('step', stepNum + 1)
-	  transitionSteps(tab, stepNum + 1, obj, pane)
+    // unbind, move to the next step;
+    $(document).unbind('keydown', handler)
+    $(pane).prop('step', stepNum + 1)
+    transitionSteps(tab, stepNum + 1, obj, pane)
         }
       }
     }
