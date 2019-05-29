@@ -288,7 +288,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 }
 .repl .result-as-table .result-table {
     /* repl table */
-    width: 100%;
+    /* width: 100%; */
 }
 .repl-prompt {
     color: var(--color-text-02);

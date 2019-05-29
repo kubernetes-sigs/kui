@@ -19,6 +19,7 @@ const debug = Debug('plugins/bash-like/pty/client')
 
 import * as path from 'path'
 import * as xterm from 'xterm'
+import stripClean from 'strip-ansi'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
 import eventBus from '@kui-shell/core/core/events'
@@ -28,6 +29,10 @@ import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/side
 import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, ITab } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
+import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
+import { Table } from '@kui-shell/core/webapp/models/table'
+import { ParsedOptions } from '@kui-shell/core/models/command'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 
@@ -35,33 +40,6 @@ const enterApplicationModePattern = /\x1b\[\?1h/
 const exitApplicationModePattern = /\x1b\[\?1l/
 const enterAltBufferPattern = /\x1b\[\??(47|1047|1049)h/
 const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
-
-/**
- * Strip off ANSI control characters and color codes
- *
- */
-const stripClean = (str: string): string => {
-  return str.replace(/\x1b\[[0-9;]*m/g, '') // Remove color sequences only
-    .replace(/\x1b\[[0-9;]*[a-zA-Z]~?/g, '') // Remove all escape sequences
-    .replace(/\x1b\[[0-9;]*[mGKH]/g, '') // Remove color and move sequences
-    .replace(/\x1b\[[0-9;]*[mGKF]/g, '')
-}
-
-/**
- * Take a hex color string and return the corresponding RGBA with the given alpha
- *
- */
-const alpha = (hex: string, alpha: number): string => {
-  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-    const red = parseInt(hex.slice(1,3), 16)
-    const green = parseInt(hex.slice(3,5), 16)
-    const blue = parseInt(hex.slice(5,7), 16)
-
-    return `rgba(${red},${green},${blue},${alpha})`
-  } else {
-    return hex
-  }
-}
 
 interface ISize {
   resizeGeneration: number
@@ -96,6 +74,9 @@ class Resizer {
 
   /** are we in alt buffer mode? */
   private alt = false
+
+  /** were we ever in alt buffer mode? */
+  private wasAlt = false
 
   /** are we in application mode? e.g. less */
   private app = false
@@ -267,6 +248,10 @@ class Resizer {
     return this.alt
   }
 
+  wasEverInAltBufferMode (): boolean {
+    return this.wasAlt
+  }
+
   enterApplicationMode () {
     debug('switching to application mode')
     this.app = true
@@ -282,6 +267,7 @@ class Resizer {
   enterAltBufferMode () {
     debug('switching to alt buffer mode')
     this.alt = true
+    this.wasAlt = true
     if (this.exitAlt) {
       clearTimeout(this.exitAlt)
     }
@@ -403,8 +389,11 @@ const getOrCreateChannel = async (cmdline: string, channelFactory: ChannelFactor
  *
  */
 let alreadyInjectedCSS: boolean
-export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptions) => new Promise((resolve, reject) => {
+export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOptions: string[], parsedOptions: ParsedOptions, execOptions: IExecOptions) => new Promise((resolve, reject) => {
   debug('doExec', cmdline)
+
+  const contentType = parsedOptions.o || parsedOptions.output || parsedOptions.out
+  const expectingSemiStructuredOutput = /yaml|json/.test(contentType)
 
   const injectingCSS = !alreadyInjectedCSS
   if (injectingCSS) {
@@ -606,11 +595,38 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
             raw += stripClean(msg.data)
           }
 
-          const maybeUsage = !resizer.inAltBufferMode() &&
+          const maybeUsage = !resizer.wasEverInAltBufferMode() &&
             !definitelyNotUsage
             && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
 
-          if (maybeUsage) {
+          if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
+            try {
+              const tables = preprocessTable(raw.split(/^(?=NAME|Name|ID|\n\*)/m))
+                .filter(x => x)
+              debug('tables', tables)
+
+              if (tables && tables.length > 0) {
+                const tableData = tables.find(_ => _.rows !== undefined)
+                if (tableData) {
+                  const command = argvNoOptions[0]
+                  const verb = argvNoOptions[1]
+                  const entityType = argvNoOptions[2]
+                  const tableModel = formatTable(command, verb, entityType, parsedOptions, tableData.rows)
+                  debug('tableModel', tableModel)
+                  pendingTable = tableModel
+                }
+              } else {
+                definitelyNotTable = true
+              }
+            } catch (err) {
+              console.error('error parsing as table', err)
+              definitelyNotTable = true
+            }
+          }
+
+          if (pendingTable || expectingSemiStructuredOutput) {
+            // the above is taking care of this
+          } else if (maybeUsage) {
             debug('pending usage')
             pendingUsage = true
           } else {
@@ -637,6 +653,17 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
 
             if (pendingUsage) {
               execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
+            } else if (pendingTable) {
+              execOptions.stdout(pendingTable)
+            } else if (expectingSemiStructuredOutput) {
+              execOptions.stdout({
+                type: 'custom',
+                isEntity: true,
+                name: argvNoOptions.slice(3).join(' '),
+                prettyType: argvNoOptions[2],
+                contentType,
+                content: raw
+              })
             }
 
             // grab a copy of the terminal now that it has terminated;
@@ -688,6 +715,8 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, execOptio
 
       let pendingUsage = false
       let definitelyNotUsage = false
+      let pendingTable: Table
+      let definitelyNotTable = false
       let raw = ''
       ws.on('message', onMessage)
     } catch (err) {

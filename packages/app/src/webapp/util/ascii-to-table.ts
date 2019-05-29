@@ -17,13 +17,17 @@
 import * as Debug from 'debug'
 const debug = Debug('core/webapp/util/ascii-to-table')
 
+import stripClean from 'strip-ansi'
+
 import * as repl from '@kui-shell/core/core/repl'
+import { ParsedOptions } from '@kui-shell/core/models/command'
+import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
 
 /**
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: Array<string>) => {
+export const preprocessTable = (raw: Array<string>): { rows?: IPair[][], trailingString?: string }[] => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
@@ -34,6 +38,7 @@ export const preprocessTable = (raw: Array<string>) => {
     const headerCells = header
       .split(/(\t|\s\s)+\s?/)
       .filter(x => x && !x.match(/(\t|\s\s)/))
+      .map(_ => _.trim())
 
     // now we scan the header row to determine the column start indices
     const columnStarts: Array<number> = []
@@ -55,13 +60,18 @@ export const preprocessTable = (raw: Array<string>) => {
       return yup || (idx > 0 && start - columnStarts[idx - 1] <= 2)
     }, false)
 
-    if (columnStarts.length === 1 || tinyColumns) {
+    if (columnStarts.length <= 1 || tinyColumns) {
       // probably not a table
-      return
+      return {
+        trailingString: table
+      }
     } else {
+      const lowerBoundLastColumnEnd = columnStarts[columnStarts.length - 1]
+
       const possibleRows = table
         .split(/\n/)
-        .filter(x => x)
+        .filter(x => x && x.length >= lowerBoundLastColumnEnd)
+      debug('possibleRows', possibleRows)
 
       const endOfTable = possibleRows.findIndex(row => {
         const nope = columnStarts.findIndex(idx => {
@@ -90,20 +100,57 @@ export const preprocessTable = (raw: Array<string>) => {
   })
 }
 
-export const formatTable = (command: string, verb: string, entityType: string, options, tables: Array<any>): Array<any> => {
-  const drilldownVerb = verb === 'get' ? 'get'
-  // : verb === 'config' ? verb
-    : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
-    : undefined
+/** normalize the status badge by capitalization */
+const capitalize = (str: string): string => {
+  return str[0].toUpperCase() + str.slice(1).toLowerCase()
+}
+
+/**
+ * Several commands seem to be cropping up that give a facade over
+ * kubectl; this is a start at such a list
+ *
+ * 1) kubectl, bien sûr
+ * 2) oc, redhat openshift CLI
+ *
+ */
+const kubelike = /kubectl|oc/
+const isKubeLike = (command: string): boolean => kubelike.test(command)
+
+/**
+ * Turn an IPair[][], i.e. a table of key-value pairs into a Table,
+ * i.e. kui Table model. IPair is defined below, it is internal just
+ * to this file.
+ *
+ * TODO factor out kube-specifics to plugin-k8s
+ *
+ */
+export const formatTable = (command: string, verb: string, entityType: string, options: ParsedOptions, lines: IPair[][]): Table => {
+  // for helm status, table clicks should dispatch to kubectl;
+  // otherwise, stay with the command (kubectl or helm) that we
+  // started with
+  const isHelmStatus = command === 'helm' && verb === 'status'
+  const drilldownCommand = isHelmStatus ? 'kubectl' : command
+  const isKube = isKubeLike(drilldownCommand)
+
+  const drilldownVerb = (
+    verb === 'get' ? 'get'
+      : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
+      : isHelmStatus ? 'get' : undefined
+  ) || undefined
 
   // helm doesn't support --output
-  const drilldownFormat = command === 'kubectl' && drilldownVerb === 'get' ? '--output=yaml' : ''
+  const drilldownFormat = isKube && drilldownVerb === 'get' ? '-o yaml' : ''
 
   const drilldownNamespace = options.n || options.namespace
     ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
     : ''
 
+  const config = options.config
+    ? `--config ${repl.encodeComponent(options.config)}`
+    : ''
+
   const drilldownKind = nameSplit => {
+    debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
       const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
       return kind ? ' ' + kind : ''
@@ -114,64 +161,72 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     }
   }
 
-  return tables.map(lines => {
-    // maximum column count across all rows
-    const nameColumnIdx = Math.max(0, lines[0].findIndex(({ key }) => key === 'NAME'))
-    const namespaceColumnIdx = lines[0].findIndex(({ key }) => key === 'NAMESPACE')
-    const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
+  // maximum column count across all rows
+  const nameColumnIdx = Math.max(0, lines[0].findIndex(({ key }) => key === 'NAME'))
+  const namespaceColumnIdx = lines[0].findIndex(({ key }) => key === 'NAMESPACE')
+  const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
 
-    return lines.map((columns, idx) => {
-      const name = columns[nameColumnIdx].value
-      const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
-      const nameForDisplay = columns[0].value
-      const nameForDrilldown = nameSplit[1] || name
-      const css = ''
-      const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT'
-        ? css : 'selected-entity'
+  const allRows: Row[] = lines.map((columns, idx) => {
+    const name = columns[nameColumnIdx].value
+    const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
+    const nameForDisplay = columns[0].value
+    const nameForDrilldown = nameSplit[1] || name
+    const css = ''
+    const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT'
+      ? css : 'selected-entity'
 
-      const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
-      const rowKey = columns[0].key
-      const rowValue = columns[0].value
-      const rowCSS = [
-        (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
-        rowIsSelected ? 'selected-row' : ''
-      ]
+    const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
+    const rowKey = columns[0].key
+    const rowValue = columns[0].value
+    const rowCSS = [
+      (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
+      rowIsSelected ? 'selected-row' : ''
+    ]
 
-      // if there isn't a global namespace specifier, maybe there is a row namespace specifier
-      // we use the row specifier in preference to a global specifier -- is that right?
-      const ns = (namespaceColumnIdx >= 0 &&
-                  command !== 'helm' &&
-                  `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
+    // if there isn't a global namespace specifier, maybe there is a row namespace specifier
+    // we use the row specifier in preference to a global specifier -- is that right?
+    const ns = (namespaceColumnIdx >= 0 &&
+                command !== 'helm' &&
+                `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
 
-      // idx === 0: don't click on header row
-      const onclick = idx === 0 ? false
-        : drilldownVerb ? () => repl.pexec(`${command} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`)
-        : false
+    // idx === 0: don't click on header row
+    const onclick = idx === 0 ? false
+      : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns} ${config}`
+      : false
 
-      const header = !options['no-header'] && idx === 0 ? 'header-cell' : ''
+    const header = !options['no-header'] && idx === 0 ? 'header-cell' : ''
 
-      return {
-        key: columns[nameColumnIdx].key,
-        name: nameForDisplay,
-        fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
-        onclick,
-        noSort: true,
-        css: firstColumnCSS,
-        rowCSS,
-        // title: tables.length > 1 && idx === 0 && lines.length > 1 && kindFromResourceName(lines[1][0].value),
-        outerCSS: `${header} ${outerCSSForKey[columns[0].key] || ''}`,
-        attributes: columns.slice(1).map(({ key, value: column }, colIdx) => ({
-          key,
-          tag: idx > 0 && tagForKey[key],
-          outerCSS: header + ' ' + outerCSSForKey[key] +
-            (colIdx <= 1 || colIdx === nameColumnIdx - 1 ? '' : ' hide-with-sidecar'), // nCI - 1 beacuse of columns.slice(1)
-          css: css
-            + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
-          value: column
-        })).concat(fillTo(columns.length, maxColumns))
-      }
-    })
+    const attributes: Cell[] = columns.slice(1).map(({ key, value: column }, colIdx) => ({
+      key,
+      tag: idx > 0 && tagForKey[key],
+      onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
+      outerCSS: header + ' ' + outerCSSForKey[key] +
+        (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
+      css: css
+        + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
+      value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
+    })).concat(fillTo(columns.length, maxColumns))
+
+    const row: Row = {
+      key: columns[nameColumnIdx].key,
+      name: nameForDisplay,
+      fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
+      onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
+      css: firstColumnCSS,
+      rowCSS,
+      // title: tables.length > 1 && idx === 0 && lines.length > 1 && kindFromResourceName(lines[1][0].value),
+      outerCSS: `${header} ${outerCSSForKey[columns[0].key] || ''}`,
+      attributes
+    }
+
+    return row
   })
+
+  return {
+    header: allRows[0],
+    noSort: true,
+    body: allRows.slice(1)
+  }
 }
 
 /**
@@ -203,18 +258,50 @@ const fillTo = (length, maxColumns) => {
   }
 }
 
+/** decorate certain columns specially */
 const outerCSSForKey = {
   NAME: 'entity-name-group',
-  CREATED: 'hide-with-sidecar',
+  READY: 'a-few-numbers-wide',
+  STATE: 'badge-width',
+  STATUS: 'badge-width',
+  KIND: 'max-width-id-like entity-kind',
+
+  CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
+  AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
+  REFERENCE: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // istio autoscaler
+
+  'CREATED': 'hide-with-sidecar',
+  'CREATED AT': 'hide-with-sidecar',
+
   ID: 'max-width-id-like',
-  STATE: 'entity-kind',
-  STATUS: 'entity-kind'
+
+  // kubectl get deployment
+  CURRENT: 'entity-name-group entity-name-group-extra-narrow text-center',
+  DESIRED: 'entity-name-group entity-name-group-extra-narrow text-center',
+
+  RESTARTS: 'very-narrow',
+
+  'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
+  'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
+
+  UPDATED: 'min-width-date-like', // helm ls
+  REVISION: 'hide-with-sidecar', // helm ls
+  AGE: 'very-narrow', // e.g. helm status and kubectl get svc
+  'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
+  SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
 }
+
 const cssForKey = {
   // kubectl get events
   NAME: 'entity-name',
-  STATE: 'even-smaller-text capitalize',
-  STATUS: 'even-smaller-text capitalize'
+  SOURCE: 'lighter-text smaller-text',
+  SUBOBJECT: 'lighter-text smaller-text',
+  'CREATED AT': 'lighter-text smaller-text',
+
+  AGE: 'slightly-deemphasize',
+
+  'APP VERSION': 'pre-wrap slightly-deemphasize', // helm ls
+  UPDATED: 'slightly-deemphasize somewhat-smaller-text'
 }
 
 const tagForKey = {
@@ -227,8 +314,10 @@ const cssForKeyValue = {
 
 /** decorate certain values specially */
 const cssForValue = {
-  // ibmcloud ks
-  'normal': 'green-background',
+  // generic
+  NORMAL: 'green-background',
+  Normal: 'green-background',
+  normal: 'green-background',
 
   // helm lifecycle
   UNKNOWN: '',
@@ -250,7 +339,8 @@ const cssForValue = {
   Failed: 'red-background',
   Running: 'green-background',
   Pending: 'yellow-background',
-  Succeeded: '', // successfully terminated; don't use a color
+  Succeeded: 'gray-background', // successfully terminated; don't use a color
+  Completed: 'gray-background', // successfully terminated; don't use a color
   Unknown: '',
 
   // AWS events
@@ -258,6 +348,7 @@ const cssForValue = {
   ProvisionedSuccessfully: 'green-background',
 
   // kube events
+  Active: 'green-background',
   Online: 'green-background',
   NodeReady: 'green-background',
   Pulled: 'green-background',

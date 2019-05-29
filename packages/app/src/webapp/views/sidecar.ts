@@ -33,6 +33,7 @@ import { IShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
 import { IEntitySpec, Entity } from '../../models/entity'
+import { IExecOptions } from '../../models/execOptions'
 
 /**
  * e.g. 2017-06-15T14:41:15.60027911Z  stdout:
@@ -284,7 +285,7 @@ function isPromise (content: CustomContent): content is Promise<HTMLElement> {
 function isHTML (content: CustomContent): content is HTMLElement {
   return typeof content !== 'string'
 }
-export const showCustom = async (tab: ITab, custom: ICustomSpec, options, resultDom?: Element) => {
+export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExecOptions, resultDom?: Element) => {
   if (!custom || !custom.content) return
   debug('showCustom', custom, options, resultDom)
 

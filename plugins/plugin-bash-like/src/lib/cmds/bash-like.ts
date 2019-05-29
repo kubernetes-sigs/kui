@@ -30,9 +30,6 @@ import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import UsageError from '@kui-shell/core/core/usage-error'
 import * as repl from '@kui-shell/core/core/repl'
-import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
-import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
-import formatKeyValue from '../util/ascii-key-value-to-table'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
@@ -157,22 +154,7 @@ export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promis
     const out = data.toString()
 
     if (execOptions.stdout) {
-      const strippedOut = stripControlCharacters(out)
-      const maybeUsage = formatUsage(cmdLine, strippedOut, { drilldownWithPip: true })
-      if (maybeUsage) {
-        pendingUsage = true
-        rawOut += out
-        // no, in case the usage comes in several batches: execOptions.stdout(maybeUsage)
-      } else {
-        const maybeKeyValue = formatKeyValue(strippedOut)
-        if (maybeKeyValue) {
-          debug('formatting as key-value')
-          resolve(maybeKeyValue)
-        } else {
-          debug('formatting as ANSI')
-          execOptions.stdout(data)
-        }
-      }
+      execOptions.stdout(data)
     } else {
       rawOut += out
     }
@@ -215,45 +197,6 @@ export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promis
         const entityType = ''
         const options = {}
 
-        const noControlCharacters = stripControlCharacters(rawOut)
-        debug('noControlCharacters', noControlCharacters)
-
-        try {
-          const tables = preprocessTable(noControlCharacters.split(/^(?=Name|ID|\n\*)/m))
-            .filter(x => x)
-          debug('tables', tables)
-
-          if (tables && tables.length === 1) {
-            const { rows, trailingString } = tables[0]
-            if (!trailingString) {
-              debug('rows', rows)
-
-              options['no-header'] = true
-              const table = formatTable(command, verb, entityType, options, [rows])
-              debug('table', table)
-              if (table.length >= 1 && table[0].length > 1) {
-                return resolve(table)
-              }
-            }
-          }
-        } catch (err) {
-          console.error(err)
-        }
-
-        try {
-          const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true })
-
-          if (maybeUsage) {
-            // const message = await maybeUsage.message
-            // debug('maybeUsage', message)
-            // const commandWithoutOptions = cmdLine.replace(/\s--?\w+/g, '')
-            // return resolve(asSidecarEntity(commandWithoutOptions, message, {}, undefined, 'usage'))
-            return resolve(maybeUsage)
-          }
-        } catch (err) {
-          console.error(err)
-        }
-
         if (json) {
           json['type'] = 'shell'
           json['verb'] = 'get'
@@ -266,17 +209,10 @@ export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promis
       // oops, non-zero exit code. reject!
       debug('non-zero exit code', exitCode)
 
+      // strip off e.g. /bin/sh: line 0:
+      const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
       try {
-        const noControlCharacters = stripControlCharacters(rawOut)
-        const maybeUsage = formatUsage(cmdLine, noControlCharacters, { drilldownWithPip: true, stderr: rawErr })
-        if (maybeUsage) {
-          maybeUsage['code'] = exitCode
-          reject(maybeUsage)
-        } else {
-          // strip off e.g. /bin/sh: line 0:
-          const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
-          resolve(handleNonZeroExitCode(cmdLine, exitCode, rawOut, cleanErr, execOptions))
-        }
+        handleNonZeroExitCode(cmdLine, exitCode, rawOut, cleanErr, execOptions)
       } catch (err) {
         reject(err)
       }

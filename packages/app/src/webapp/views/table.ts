@@ -236,7 +236,7 @@ export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
         if (isPopup()) {
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') { // TODO: define types here carefully
-          pexec(onclick)
+          pexec(onclick, { tab })
         } else {
           onclick(evt)
         }
@@ -299,7 +299,7 @@ export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
                 entityNameClickable.classList.add('clickable')
                 if (typeof onclick === 'string') {
                   entityNameClickable.onclick = () => {
-                    return pexec(onclick)
+                    return pexec(onclick, { tab })
                   }
                 } else {
                   entityNameClickable.onclick = onclick
@@ -454,7 +454,7 @@ export const formatOneRowResult = (tab: ITab, options?) => (entity: Row) => {
         return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = () => pexec(entity.onclick)
+      entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
     } else {
       entityNameClickable.onclick = entity.onclick
     }
@@ -636,7 +636,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
         if (isPopup()) {
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') {
-          pexec(onclick)
+          pexec(onclick, { tab })
         } else {
           onclick(evt)
         }
@@ -699,7 +699,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
                 entityNameClickable.classList.add('clickable')
                 if (typeof onclick === 'string') {
                   entityNameClickable.onclick = () => {
-                    return pexec(onclick)
+                    return pexec(onclick, { tab })
                   }
                 } else {
                   entityNameClickable.onclick = onclick
@@ -854,7 +854,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
         return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = () => pexec(entity.onclick)
+      entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
     } else {
       entityNameClickable.onclick = entity.onclick
     }
