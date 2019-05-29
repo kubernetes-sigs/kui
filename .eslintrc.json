@@ -15,7 +15,6 @@
     "@typescript-eslint/array-type": "off",
     "block-spacing": "off",
     "comma-spacing": "off",
-    "eol-last": "off",
     "eqeqeq": "off",
     "key-spacing": "off",
     "no-cond-assign": "off",
