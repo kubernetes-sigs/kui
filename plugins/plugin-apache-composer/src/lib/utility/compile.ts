@@ -244,7 +244,7 @@ export const compileComposition = (composition, name) => {
     result = result.compile()
     result.name = fqn(name)
   } catch (error) {
-    error.statusCode = 422  // composition error
+    error.statusCode = 422 // composition error
     throw error
   }
   debug('compiled source to composition', result)

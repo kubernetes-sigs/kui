@@ -47,7 +47,7 @@ export default async (commandTree: CommandRegistrar) => {
                     return activation // handle 'session get --last'
                   }
                 }
-              } else {  // handle 'session get --last'
+              } else { // handle 'session get --last'
                 if (typeof parsedOptions.last === 'string') {
                   if (activation.name === parsedOptions.last) return activation // handle 'session get --last [appName]'
                 } else {

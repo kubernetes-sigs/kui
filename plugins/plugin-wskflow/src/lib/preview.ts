@@ -36,7 +36,7 @@ import { optionsToString, handleError } from '@kui-shell/core/core/utility'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
-import * as messages from '@kui-shell/plugin-apache-composer/lib/utility/messages'  // TODO: import from plugin js file
+import * as messages from '@kui-shell/plugin-apache-composer/lib/utility/messages' // TODO: import from plugin js file
 import * as compileUtil from '@kui-shell/plugin-apache-composer/lib/utility/compile'
 
 import * as wskflowUtil from './util'

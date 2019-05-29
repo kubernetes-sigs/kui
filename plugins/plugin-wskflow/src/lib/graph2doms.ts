@@ -982,7 +982,7 @@ export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, i
         .attr('xlink:href', '#retryIconNormal').attr('href', '#retryIconNormal').attr('x', 10).attr('y', -14)
     }, 0)
 
-    setTimeout(addMorePathAttr, 0)  // we aren't properly using d3.select.enter... hacking a bit, for now
+    setTimeout(addMorePathAttr, 0) // we aren't properly using d3.select.enter... hacking a bit, for now
     setTimeout(addEdgeLabels, 0)
   } /* drawGraph */
 

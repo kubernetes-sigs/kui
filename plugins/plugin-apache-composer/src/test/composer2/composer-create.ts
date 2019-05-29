@@ -255,7 +255,7 @@ describe('app create and sessions', function (this: common.ISuite) {
   invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 })
 
   getSessions('sessions list', 0, 3) // 3 "done" sessions
-  getSessions('ses list', 0, 3)        // 3 "done" sessions (testing aliases here)*/
+  getSessions('ses list', 0, 3) // 3 "done" sessions (testing aliases here)*/
 
   // disable pagination tests
   /* getSessions('session list --skip 1', 0, 1) // expect 1, if we skip 1 (since we expect 2 in total)

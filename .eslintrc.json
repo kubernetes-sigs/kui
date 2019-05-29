@@ -20,7 +20,6 @@
     "no-eval": "off",
     "no-lone-blocks": "off",
     "no-mixed-operators": "off",
-    "no-multi-spaces": "off",
     "no-return-assign": "off",
     "no-template-curly-in-string": "off",
     "no-undef": "off",
