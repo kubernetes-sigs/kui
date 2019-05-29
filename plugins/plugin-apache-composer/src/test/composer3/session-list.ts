@@ -127,7 +127,7 @@ describe('session list and name filter', function (this: common.ISuite) {
 
   it(`should show 3 if and 2 ${appName} in session list`, () => cli.do(`session list`, this.app)
     .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedSessions: ['if','if','if',appName, appName] }))
+    .then(async commandIndex => verifySessionList({ commandIndex, expectedSessions: ['if', 'if', 'if', appName, appName] }))
     .catch(common.oops(this)))
 
 })

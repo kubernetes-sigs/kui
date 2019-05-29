@@ -75,7 +75,7 @@ export const init = (graphics, options: IOptions = new DefaultOptions()) => {
       labels: [],
       datasets: [
         { type, fill, label: 'Requests/sec', data: [], yAxisID: 'rps', backgroundColor: 'transparent', pointStyle: 'rectRot', lineTension },
-        { type, fill, label: '99% Latency', data: [], yAxisID, lineTension, borderDash: [4,2], pointBackgroundColor: 'transparent' },
+        { type, fill, label: '99% Latency', data: [], yAxisID, lineTension, borderDash: [4, 2], pointBackgroundColor: 'transparent' },
         { type, fill, label: 'Median Latency', data: [], yAxisID, lineTension },
         { type, fill: '+1', label: 'skip', data: [], yAxisID, lineTension },
         { type, fill: '-1', label: '25-75% Band', data: [], yAxisID, lineTension },

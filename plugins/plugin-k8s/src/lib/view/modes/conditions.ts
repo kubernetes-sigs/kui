@@ -108,7 +108,7 @@ export const renderConditions = async (tab: ITab, command: string, resource: IRe
     ])
   }
 
-  resource.yaml.status.conditions.sort((a,b) => {
+  resource.yaml.status.conditions.sort((a, b) => {
     if (!a.lastTransitionTime && b.lastTransitionTime) {
       return 1
     } else if (!b.lastTransitionTime && a.lastTransitionTime) {
