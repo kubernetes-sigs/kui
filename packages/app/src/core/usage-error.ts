@@ -478,7 +478,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
 
         const cmdCell = row.insertCell(-1)
         const docsCell = row.insertCell(-1)
-        const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap')
+        const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap not-very-wide')
         const dirPart = isDir && label && span('/')
         const examplePart = example && span(example, label || dirPart ? 'left-pad lighter-text smaller-text' : '') // for -p key value, "key value"
         const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'lighter-text smaller-text small-left-pad')
