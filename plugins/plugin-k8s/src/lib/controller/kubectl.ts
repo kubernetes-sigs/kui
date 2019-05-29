@@ -38,7 +38,7 @@ import createdOn from '../util/created-on'
 
 import IResource from '../model/resource'
 import { FinalState } from '../model/states'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { IDelete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { redactJSON, redactYAML } from '../view/redact'
@@ -513,6 +513,11 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       }
 
       if (codeForREPL === 404 || codeForREPL === 409 || codeForREPL === 412) {
+        if (codeForREPL === 404 && verb === 'get' && (options.w || options.watch)) {
+          // NOTE(5.30.2019): for now, we only support watchable table, so we have to return an empty table here
+          debug('return an empty watch table')
+          return resolve(formatWatchableTable(new Table({ body: [] }), { refreshCommand: rawCommand.replace(/--watch|-w/g, ''), watchByDefault: true }))
+        }
         // already exists or file not found?
         const error = new Error(err)
         error['code'] = codeForREPL
@@ -548,13 +553,6 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         console.error('error rendering help', err)
         reject(out)
       }
-    } else if (isKube && verb === 'get' && (options.watch || options.w)) {
-      // kubectl get --watch mode?
-      debug('delegating to k status')
-      const ns = options.n || options.namespace
-        ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
-        : ''
-      return repl.qexec(`k status ${entityType} ${entity || ''} ${ns}`).then(resolveBase, reject)
     } else if (output === 'json' || output === 'yaml' || verb === 'logs') {
       //
       // return a sidecar entity
@@ -656,7 +654,13 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       // tabular output
       //
       debug('attempting to display as a table')
-      resolve(table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions))
+      const tableModel = table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions)
+
+      if ((options.watch || options.w) && (isTable(tableModel) || isMultiTable(tableModel))) {
+        resolve(formatWatchableTable(tableModel as Table | Table[], { refreshCommand: rawCommand.replace(/--watch|-w/g, ''), watchByDefault: true }))
+      } else {
+        resolve(tableModel)
+      }
     } else {
       //
       // otherwise, return raw text for display in the repl
