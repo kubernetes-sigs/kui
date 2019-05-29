@@ -22,7 +22,6 @@ tab.xterm-alt-buffer-mode .repl-inner .repl-block {
 }
 tab.xterm-alt-buffer-mode .repl {
     background: var(--color-stripe-01);
-    /*align-items: flex-end;*/ /* snap emacs, vi, nano to the right */
 }
 tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .repl-input, tab.xterm-alt-buffer-mode .repl-result-spinner {
     display: none;
@@ -77,7 +76,7 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 
 /* themes */
 .xterm-container .xterm-viewport, .xterm-rows {
-    background: var(--color-base00) !important;
+    background: var(--color-ui-01) !important;
 }
 .xterm-rows {
     font-size: 1em !important;
@@ -112,5 +111,10 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 }
 .xterm-rows .xterm-fg-7, .xterm-rows .xterm-fg-15 {
     color: var(--color-white) !important;
+}
+.xterm-rows .xterm-fg-257 {
+    /* inverted default color */
+    background-color: var(--color-text-01) !important;
+    color: var(--color-ui-01) !important;
 }
 
