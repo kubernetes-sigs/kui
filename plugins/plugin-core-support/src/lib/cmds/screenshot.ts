@@ -82,11 +82,6 @@ const selectors = {
 const hideCurrentReplBlock = [
   { selector: '#main-repl .repl-block.processing', property: 'display', value: 'none' }
 ]
-const squishRepl = (element: Element) => [
-  { selector: 'body', css: 'screenshot-squish' },
-  { selector: element.querySelector('.repl-input'), property: 'display', value: 'none' },
-  { selector: 'tab.visible', css: 'screenshot-squish' }
-]
 const squishers = {
   sidecar: [
     { selector: 'body.subwindow', css: 'screenshot-squish' },
@@ -97,11 +92,7 @@ const squishers = {
 
   // screenshot full and repl should remove the last command from the screenshot, so that "screenshot full" doesn't show
   full: hideCurrentReplBlock,
-  repl: hideCurrentReplBlock,
-
-  nth: squishRepl,
-  'last-full': squishRepl,
-  last: squishRepl
+  repl: hideCurrentReplBlock
 }
 const flatten = arrays => [].concat.apply([], arrays)
 const _squish = (tab: ITab, which: string, selector: string, op) => {
