@@ -159,7 +159,7 @@ class Validation {
           fetch(0)
         })
       })
-      .then(sessionId => {// session list
+      .then(sessionId => { // session list
         return new Promise((resolve, reject) => {
           const fetchList = (retry) => cli.do(`session list`)
             .then(response => {
