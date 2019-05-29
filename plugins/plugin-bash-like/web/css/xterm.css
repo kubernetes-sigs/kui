@@ -46,6 +46,9 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 .xterm-terminated .xterm-rows .xterm-cursor {
     display: none;
 }
+.xterm-terminated .xterm-screen {
+    width: auto !important;
+}
 /* try to disable xterm components for terminated processes */
 .xterm-terminated .xterm-helper-textarea {
     display: none;
