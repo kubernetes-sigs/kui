@@ -191,8 +191,6 @@ const kedit = async ({ tab, execOptions, argv, argvNoOptions, parsedOptions }: I
       return showResource(yamls[yamlIdx], filepath, tab, parsedOptions, execOptions)
     }
   }
-
-  return true
 }
 
 /**
