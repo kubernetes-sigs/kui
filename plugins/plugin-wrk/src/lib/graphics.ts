@@ -37,7 +37,7 @@ export const initUI = ({ noTable = false, noChart = false, container = document.
 
   container.style.flex = '1'
   container.style.display = 'flex'
-  container.style.minWidth = '0'   // avoid nested flexbox resizing issues. https://github.com/chartjs/Chart.js/issues/4156
+  container.style.minWidth = '0' // avoid nested flexbox resizing issues. https://github.com/chartjs/Chart.js/issues/4156
   container.style.flexDirection = 'column'
 
   if (!noChart) {
@@ -49,7 +49,7 @@ export const initUI = ({ noTable = false, noChart = false, container = document.
   }
 
   if (!noTable) {
-    graphics.table = initTable(container)   // initialize the table dom
+    graphics.table = initTable(container) // initialize the table dom
   }
 
   return graphics

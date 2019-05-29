@@ -56,7 +56,7 @@ describe('session list and name filter', function (this: common.ISuite) {
         for (let index = 0; index < expectedSessions.length; index++) {
           debug('actual session', actualSessions[index])
           debug('exptect session', expectedSessions[index])
-          assert.strictEqual(actualSessions[index], expectedSessions[index])  // expect session list to have exact order of expectedSessions
+          assert.strictEqual(actualSessions[index], expectedSessions[index]) // expect session list to have exact order of expectedSessions
         }
         return actualSessions
       })

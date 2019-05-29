@@ -24,7 +24,7 @@ import { projectHome as projectHomeDir, readProject } from './util'
 // import { kindStrings } from './kinds';
 
 import { join } from 'path'
-import marked = require('marked')                      // markdown to
+import marked = require('marked') // markdown to
 
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import repl = require('@kui-shell/core/core/repl')
