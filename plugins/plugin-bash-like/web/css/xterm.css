@@ -1,3 +1,24 @@
+/* Explanation for width hacks:
+   see https://github.com/xtermjs/xterm.js/pull/2067
+   see https://github.com/IBM/kui/issues/1518
+*/
+.xterm-screen, .xterm-rows > div {
+    width: 100% !important;
+}
+.xterm-terminated .xterm-rows > div {
+    width: auto !important; 
+    height: 1.14375em !important; /* a bit different; we need to support resize post-termination */
+    line-height: normal !important; /* ibid */
+}
+.xterm-container .xterm-rows > div > span {
+    width: auto !important;
+    white-space: pre;
+}
+
+.repl-result > div.xterm-container {
+    padding-right: 0;
+}
+
 .xterm-screen, .xterm-container .xterm-rows > div {
     transition: width 10ms ease-in-out, height 10ms ease-in-out;
 }
@@ -20,6 +41,9 @@ tab.xterm-alt-buffer-mode .repl-inner .repl-block.processing {
 tab.xterm-alt-buffer-mode .repl-inner .repl-block {
     flex: 1;
 }
+tab.xterm-alt-buffer-mode .repl-inner .repl-block .repl-output {
+    align-items: unset;
+}
 tab.xterm-alt-buffer-mode .repl {
     background: var(--color-stripe-01);
 }
@@ -38,6 +62,14 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 .xterm-container .xterm-fg-7.xterm-dim {
     opacity: 1;
     color: var(--color-text-02);
+}
+
+.xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
+    background-color: var(--color-support-01) !important;
+    color: var(--color-base06) !important;
+}
+.xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
+    outline-color: var(--color-support-01);
 }
 
 /* rules for terminated xterm */
@@ -62,17 +94,6 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 .xterm-terminated .xterm {
     user-select: unset;
     -webkit-user-select: unset;
-}
-
-/* override the width and height pixel sizing from DomRenderer */
-.xterm-terminated .xterm-rows > div {
-    width: auto !important; /* see https://github.com/IBM/kui/issues/1518 */
-    height: 1.14375em !important;
-    line-height: normal !important;
-}
-.xterm-container .xterm-rows > div > span {
-    width: auto !important; /* see https://github.com/IBM/kui/issues/1518 */
-    white-space: pre;
 }
 
 /* themes */
