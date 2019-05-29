@@ -16,7 +16,6 @@
     "block-spacing": "off",
     "comma-spacing": "off",
     "eqeqeq": "off",
-    "key-spacing": "off",
     "no-cond-assign": "off",
     "no-constant-condition": "off",
     "no-control-regex": "off",

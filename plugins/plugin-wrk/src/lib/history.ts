@@ -19,7 +19,7 @@ import UsageError from '@kui-shell/core/core/usage-error'
 
 const lsKeys = {
   history: 'kui.wrk.history',
-  last:  'kui.wrk.last'
+  last: 'kui.wrk.last'
 }
 
 /**
