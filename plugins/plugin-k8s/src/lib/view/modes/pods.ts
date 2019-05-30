@@ -26,11 +26,13 @@ import { Table } from '@kui-shell/core/webapp/models/table'
 
 import { selectorToString } from '../../util/selectors'
 
-import IResource from '../../model/resource'
+import { IResource, IKubeResource } from '../../model/resource'
 import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
+
+import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 /** for drilldown back button */
 const viewName = 'Pods'
@@ -40,15 +42,18 @@ const viewName = 'Pods'
  * the given resource.
  *
  */
-export const addPods = (modes: Array<ISidecarMode>, command: string, resource: IResource) => {
-  try {
+export const podMode: ModeRegistration = {
+  when: (resource: IKubeResource) => {
+    return resource.spec && resource.spec.selector ? true : false
+  },
+  mode: (command: string, resource: IResource) => {
     debug('addPods', resource)
-    if (resource.yaml.spec && resource.yaml.spec.selector) {
-      modes.push(podsButton(command, resource))
+    try {
+      return podsButton(command, resource)
+    } catch (err) {
+      debug('error rendering pods button')
+      console.error(err)
     }
-  } catch (err) {
-    debug('error rendering pods button')
-    console.error(err)
   }
 }
 
