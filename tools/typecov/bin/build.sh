@@ -26,8 +26,11 @@ if [ ! -d typewiz ]; then
     if [ $(uname) = Linux ] && [ -n "$TRAVIS_JOB_ID" ]; then
         # travis is running an older yarn. see https://github.com/travis-ci/travis-ci/issues/9445
         # typewiz needs yarn >= 1.5.1; travis right now has 1.3.2 in /usr/local/bin/yarn
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6B05F25D762E3157
         sudo apt-key adv --fetch-keys http://dl.yarnpkg.com/debian/pubkey.gpg
         echo "deb http://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
         sudo apt-get update -qq
         sudo apt-get install -y -qq yarn
     fi
