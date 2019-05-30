@@ -24,12 +24,14 @@ import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-import IResource from '../../model/resource'
+import { IResource, IKubeResource } from '../../model/resource'
 
 import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
 import { getActiveView, formatTable } from '../formatMultiTable'
+
+import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 /** for drilldown back button */
 const viewName = 'Containers'
@@ -39,15 +41,17 @@ const viewName = 'Containers'
  * for by the given resource.
  *
  */
-export const addContainers = (modes: Array<ISidecarMode>, command: string, resource: IResource) => {
-  try {
-    if (resource.yaml.spec && resource.yaml.spec.containers) {
-      const button = containersButton(command, resource)
-      modes.push(button)
+export const containersMode: ModeRegistration = {
+  when: (resource: IKubeResource) => {
+    return resource.spec && resource.spec.containers
+  },
+  mode: (command: string, resource: IResource) => {
+    try {
+      return containersButton(command, resource)
+    } catch (err) {
+      debug('error rendering containers button')
+      console.error(err)
     }
-  } catch (err) {
-    debug('error rendering containers button')
-    console.error(err)
   }
 }
 

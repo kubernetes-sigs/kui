@@ -45,9 +45,6 @@ import { redactJSON, redactYAML } from '../view/redact'
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
 import { deleteResourceButton } from '../view/modes/crud'
-import { addConditions } from '../view/modes/conditions'
-import { addPods } from '../view/modes/pods'
-import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
 import { apply as addRelevantModes } from '../view/modes/registrar'
@@ -596,9 +593,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         const resource: IResource = { kind: command !== 'helm' && yaml.kind, name: entity, yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
 
-        addConditions(modes, command, resource)
-        addPods(modes, command, resource)
-        addContainers(modes, command, resource)
+        // consult the view registrar for registered view modes
+        // relevant to this resource
         addRelevantModes(modes, command, resource)
 
         deleteResourceButton(() => renderAndViewStatus(opts.tab, { command, resource, finalState: FinalState.OfflineLike }))

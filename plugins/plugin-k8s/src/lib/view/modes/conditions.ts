@@ -22,24 +22,29 @@ import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
-import IResource from '../../model/resource'
+import { IResource, IKubeResource } from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
+
+import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 /**
  * Add a Conditions mode button to the given modes model, if called
  * for by the given resource.
  *
  */
-export const addConditions = (modes: Array<ISidecarMode>, command: string, resource: IResource) => {
-  try {
-    if (resource.yaml.status && resource.yaml.status.conditions) {
-      modes.push(conditionsButton(command, resource))
+export const conditionsMode: ModeRegistration = {
+  when: (resource: IKubeResource) => {
+    return resource.status && resource.status.conditions ? true : false
+  },
+  mode: (command: string, resource: IResource) => {
+    try {
+      return conditionsButton(command, resource)
+    } catch (err) {
+      debug('error rendering conditions button')
+      console.error(err)
     }
-  } catch (err) {
-    debug('error rendering conditions button')
-    console.error(err)
   }
 }
 

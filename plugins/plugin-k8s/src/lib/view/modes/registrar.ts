@@ -28,21 +28,19 @@ type SidecarModeFilter = (resource: IKubeResource) => boolean
  * filter, then add the given sidecar mode
  *
  */
-interface Registration {
+export interface ModeRegistration {
   when: SidecarModeFilter // when this filter returns true...
-  mode: ISidecarMode // ...display this mode option
-  override?: string // and maybe replace an existing mode?
-  grabDefaultMode?: boolean // or maybe replace the current default mode?
+  mode: ISidecarMode | ((command: string, resource: IResource) => ISidecarMode) // ...display this mode option
 }
 
 /** registered mode handlers */
-const registrar: Registration[] = []
+const registrar: ModeRegistration[] = []
 
 /**
  * Register a new mode
  *
  */
-export default function (registration: Registration) {
+export default function (registration: ModeRegistration) {
   registrar.push(registration)
 }
 
@@ -54,9 +52,9 @@ export default function (registration: Registration) {
 export function apply (modes: Array<ISidecarMode>, command: string, resource: IResource) {
   registrar
     .filter(({ when }) => when(resource.yaml)) // if relevant...
-    .forEach(({ override, grabDefaultMode, mode }) => {
+    .forEach(({ mode }) => {
       // then either push it on the mode model, or replace an existing mode
-      if (override) {
+      /* if (override) {
         // replace
         const existingIdx = modes.findIndex(_ => _.mode === override)
         if (existingIdx >= 0) {
@@ -65,16 +63,20 @@ export function apply (modes: Array<ISidecarMode>, command: string, resource: IR
         } else {
           console.error('warning: specified override not found', override, modes)
         }
-      }
+      } */
 
       // otherwise, push
-      modes.push(mode)
+      if (typeof mode === 'function') {
+        modes.push(mode(command, resource))
+      } else {
+        modes.push(mode)
+      }
 
-      if (grabDefaultMode) {
+      /* if (grabDefaultMode) {
         const defaultMode = modes.find(_ => _.defaultMode)
         if (defaultMode) {
           delete defaultMode.defaultMode
         }
-      }
+      } */
     })
 }
