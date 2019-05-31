@@ -27,7 +27,7 @@ import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: string[]): { rows?: IPair[][], trailingString?: string }[] => {
+export const preprocessTable = (raw: string[]): { rows?: IPair[][]; trailingString?: string }[] => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {

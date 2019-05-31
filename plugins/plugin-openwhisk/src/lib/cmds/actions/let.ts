@@ -92,7 +92,7 @@ const isRemote = location => location.includes('https:') || location.includes('h
  *
  */
 interface IRemote {
-  location: string,
+  location: string
   removeWhenDone: boolean
 }
 const fetchRemote = (location, mimeType): Promise<IRemote> => new Promise((resolve, reject) => {
@@ -537,12 +537,12 @@ export default async (commandTree, wsk) => {
      *
      */
     interface IKeyValue {
-      key: string,
+      key: string
       value: string
     }
     interface IEntity {
-      name: string,
-      namespace?: string,
+      name: string
+      namespace?: string
       annotations?: IKeyValue[]
     }
     const furlSequenceComponent = (parentActionName: string) => (component: string, idx: number): Promise<IEntity> => {

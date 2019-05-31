@@ -455,7 +455,7 @@ const minTimestamp = activations => {
  * Render the grid as a timeline
  *
  */
-const drawAsTimeline = (tab: ITab, timelineData: { activations: Record<string, any>, nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
+const drawAsTimeline = (tab: ITab, timelineData: { activations: Record<string, any>; nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
   debug('drawAsTimeline', zoomLevelForDisplay)
 
   const { activations, nBuckets } = timelineData

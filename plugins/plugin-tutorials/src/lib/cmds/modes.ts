@@ -18,15 +18,15 @@ const { apiToDefaultParams } = require('./api')
 const { modCmd } = require('./util')
 
 interface IMode {
-  mode: string,
-  label?: string,
-  command: Function,
-  actAsButton?: boolean,
-  fontawesome?: string,
-  flush?: string,
-  balloon?: string,
-  balloonLength?: string,
-  echo?: boolean,
+  mode: string
+  label?: string
+  command: Function
+  actAsButton?: boolean
+  fontawesome?: string
+  flush?: string
+  balloon?: string
+  balloonLength?: string
+  echo?: boolean
   noHistory?: boolean
 }
 

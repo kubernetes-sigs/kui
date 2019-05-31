@@ -155,7 +155,7 @@ export interface ICommandHandlerWithEvents extends IEvaluator {
   subtree: ICommandBase
   route: string
   options: ICommandOptions
-  success: (args: { tab: ITab, type: ExecType, command: string, isDrilldown: boolean, parsedOptions: { [ key: string ]: any } }) => void
+  success: (args: { tab: ITab; type: ExecType; command: string; isDrilldown: boolean; parsedOptions: { [ key: string ]: any } }) => void
   error: (command: string, err: CodedError) => CodedError
 }
 

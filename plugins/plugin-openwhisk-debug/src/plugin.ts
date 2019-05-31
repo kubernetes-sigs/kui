@@ -544,8 +544,8 @@ const init = async (kind, spinnerDiv) => {
  *
  */
 interface IProtoAction {
-  name: string,
-  kind?: string,
+  name: string
+  kind?: string
   input: Object
 }
 const getActionNameAndInputFromActivations = async (actId, spinnerDiv): Promise<IProtoAction> => {
@@ -1062,14 +1062,14 @@ const createTempFolder = () => new Promise((resolve, reject) => {
  *
  *
  */
-const displayAsActivation = async (tab: ITab, sessionType: string, { kind, name: actionName, name }: { kind: string, actionName: string, name: string }, start: number, protoActivation?: IProtoActivation) => {
+const displayAsActivation = async (tab: ITab, sessionType: string, { kind, name: actionName, name }: { kind: string; actionName: string; name: string }, start: number, protoActivation?: IProtoActivation) => {
   try {
     // when the session ended
     const end = Date.now()
 
     const ns = await qexec('wsk namespace current')
 
-    const annotations: { key: string, value: string | number | boolean }[] = [
+    const annotations: { key: string; value: string | number | boolean }[] = [
       { key: 'path', value: `${ns}/${name}` },
       { key: 'kind', value: kind }
     ]

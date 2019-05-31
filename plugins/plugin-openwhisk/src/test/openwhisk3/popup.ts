@@ -78,7 +78,7 @@ const waitForDelete = function (this: common.ISuite, spec: IDeleteSpec) {
 
 /** wait for the invocationion to finish */
 interface IInvokeSpec {
-  name: string,
+  name: string
   result: object
 }
 const waitForInvoke = function (this: common.ISuite, spec: IInvokeSpec) {

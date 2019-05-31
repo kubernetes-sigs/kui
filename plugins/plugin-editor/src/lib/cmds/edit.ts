@@ -67,7 +67,7 @@ export const edit = (tab: ITab, entity: IEditorEntity, options: IEditorOptions) 
  * Command handler for `edit <entity>`
  *
  */
-const editCmd = async ({ tab, argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { tab: ITab, argvNoOptions: string[], parsedOptions: IEditorOptions, execOptions: IExecOptions }) => {
+const editCmd = async ({ tab, argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { tab: ITab; argvNoOptions: string[]; parsedOptions: IEditorOptions; execOptions: IExecOptions }) => {
   debug('edit command execution started', execOptions)
 
   // maybe the caller is passing us the name and entity programmatically?

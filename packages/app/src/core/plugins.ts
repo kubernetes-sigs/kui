@@ -61,7 +61,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     const plugins = {}
     const preloads = {}
 
-    const doScan = ({ modules, moduleDir }: { modules: string[], moduleDir: string }) => {
+    const doScan = ({ modules, moduleDir }: { modules: string[]; moduleDir: string }) => {
       modules.forEach(module => {
         const modulePath = path.join(moduleDir, module)
 

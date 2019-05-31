@@ -26,8 +26,8 @@ export interface Step {
 export interface Task extends IKubeResource {
   spec: {
     inputs: {
-      resources: { name: string, type: string, targetPath: string }[],
-      params: { name: string, description: string, default: string }[]
+      resources: { name: string; type: string; targetPath: string }[]
+      params: { name: string; description: string; default: string }[]
     }
     steps: Step[]
   }

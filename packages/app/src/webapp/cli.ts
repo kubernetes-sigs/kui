@@ -54,7 +54,7 @@ import { ISidecarMode } from './bottom-stripe'
 interface ScrollOptions {
   when?: number
   which?: string
-  element?: HTMLElement,
+  element?: HTMLElement
   how?: string
   center?: boolean | ScrollIntoViewOptions
 }
@@ -348,7 +348,7 @@ export const createPopupContentContainer = (css: string[] = [], presentation?: P
 interface IPopupEntity {
   prettyType?: string
   modes?: ISidecarMode[]
-  badges?: IBadgeSpec[],
+  badges?: IBadgeSpec[]
   controlHeaders?: boolean | string[]
   presentation?: Presentation
   subtext?: Formattable
@@ -493,7 +493,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
     setStatus(block, 'valid-response')
   }
 
-  const render = async (response: Entity, { echo, resultDom }: { echo: boolean, resultDom: HTMLElement }) => {
+  const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
     if (response && response !== true) {
       if (isTable(response)) {
         await printTable(tab, response, resultDom, execOptions, parsedOptions)

@@ -627,7 +627,7 @@ export const linkify = (dom: Element): void => {
  */
 interface IBadgeOptions {
   css?: string
-  onclick?,
+  onclick?
   badgesDom: Element
 }
 class DefaultBadgeOptions implements IBadgeOptions {
