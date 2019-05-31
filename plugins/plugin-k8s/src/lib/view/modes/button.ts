@@ -15,12 +15,13 @@
  */
 
 import repl = require('@kui-shell/core/core/repl')
+import { ITab } from '@kui-shell/core/webapp/cli'
 
 const makeButton = (overrides, fn?) => Object.assign({}, {
-  direct: async (args) => {
+  direct: async (tab: ITab, args) => {
     const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
     const response = await repl.pexec(`kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
-      { noStatus: !!fn })
+      { noStatus: !!fn, tab })
     return fn ? fn(response) : response
   },
   echo: true,
