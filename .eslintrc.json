@@ -12,7 +12,6 @@
     "@typescript-eslint/eslint-plugin"
   ],
   "rules": {
-    "eqeqeq": "off",
     "no-cond-assign": "off",
     "no-constant-condition": "off",
     "no-control-regex": "off",
