@@ -16,6 +16,8 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
+import { ITab } from '@kui-shell/core/webapp/cli'
+
 import { renderCell } from './cell'
 import { enDash, latencyBuckets } from './util'
 
@@ -30,7 +32,7 @@ import { enDash, latencyBuckets } from './util'
  * @param options user options from the CLI
  *
  */
-export const drawLegend = (viewName, rightHeader, { statData, errorRate, nFailures }, gridContainer, options) => {
+export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement, { statData, errorRate, nFailures }, gridContainer: HTMLElement, options) => {
   const existing = rightHeader.querySelector('.grid-header-key')
   const wrapper = existing || document.createElement('div')
   const existing2 = wrapper.querySelector('.cell-container')
@@ -99,7 +101,7 @@ export const drawLegend = (viewName, rightHeader, { statData, errorRate, nFailur
       valueCell.classList.add('kind')
       gridCellCell.appendChild(valueCell)
 
-      renderCell('Legend', cell, null, isFailure, 0, latBucket, { zoom: options.zoom }) // null means no activation associated with cell
+      renderCell(tab, 'Legend', cell, null, isFailure, 0, latBucket, { zoom: options.zoom }) // null means no activation associated with cell
 
       if (options.onclick) {
         cell.onclick = options.onclick
@@ -117,7 +119,7 @@ export const drawLegend = (viewName, rightHeader, { statData, errorRate, nFailur
       if (options.useThisLabelInstead) {
         const labelCell = labelRow.insertCell(-1)
         labelCell.appendChild(document.createTextNode(options.useThisLabelInstead))
-        labelCell.setAttribute('colspan', 2)
+        labelCell.setAttribute('colspan', '2')
         labelCell.className = 'activation-viz-legend-label'
       } else if (!options.labelAsTooltip) {
         const labelCell = labelRow.insertCell(-1)

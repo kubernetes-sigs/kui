@@ -1,6 +1,22 @@
-.xterm-container .xterm-rows {
-    font-family: var(--font-monospace) !important;
-    transition: font-size 10ms ease-in-out;
+/* Explanation for width hacks:
+   see https://github.com/xtermjs/xterm.js/pull/2067
+   see https://github.com/IBM/kui/issues/1518
+*/
+.xterm-screen, .xterm-rows > div {
+    width: 100% !important;
+}
+.xterm-terminated .xterm-rows > div {
+    width: auto !important; 
+    height: 1.14375em !important; /* a bit different; we need to support resize post-termination */
+    line-height: normal !important; /* ibid */
+}
+.xterm-container .xterm-rows > div > span {
+    width: auto !important;
+    white-space: pre;
+}
+
+.repl-result > div.xterm-container {
+    padding-right: 0;
 }
 
 .xterm-screen, .xterm-container .xterm-rows > div {
@@ -22,9 +38,14 @@ tab.xterm-alt-buffer-mode .repl-inner .repl-block.processing {
     padding: 0;
     -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
 }
+tab.xterm-alt-buffer-mode .repl-inner .repl-block {
+    flex: 1;
+}
+tab.xterm-alt-buffer-mode .repl-inner .repl-block .repl-output {
+    align-items: unset;
+}
 tab.xterm-alt-buffer-mode .repl {
     background: var(--color-stripe-01);
-    align-items: flex-end; /* snap emacs, vi, nano to the right */
 }
 tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .repl-input, tab.xterm-alt-buffer-mode .repl-result-spinner {
     display: none;
@@ -43,10 +64,21 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     color: var(--color-text-02);
 }
 
+.xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
+    background-color: var(--color-support-01) !important;
+    color: var(--color-base06) !important;
+}
+.xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
+    outline-color: var(--color-support-01);
+}
+
 /* rules for terminated xterm */
 /* hide cursor block for terminated processes */
 .xterm-terminated .xterm-rows .xterm-cursor {
     display: none;
+}
+.xterm-terminated .xterm-screen {
+    width: auto !important;
 }
 /* try to disable xterm components for terminated processes */
 .xterm-terminated .xterm-helper-textarea {
@@ -64,50 +96,47 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     -webkit-user-select: unset;
 }
 
-/* override the width and height pixel sizing from DomRenderer */
-.xterm-terminated .xterm-rows {
-    font-size: 1em !important;
-}
-.xterm-terminated .xterm-rows > div {
-    height: auto !important;
-    line-height: normal !important;
-}
-.xterm-container .xterm-rows > div > span {
-    width: auto !important;
-    white-space: pre;
-}
-
 /* themes */
-.xterm-terminated .xterm-rows {
-    background: transparent !important;
-    transition: background 300ms ease-in-out;
+.xterm-container .xterm-viewport, .xterm-rows {
+    background: var(--color-ui-01) !important;
 }
-.xterm-terminated .xterm-rows > div > span {
+.xterm-rows {
+    font-size: 1em !important;
+    font-family: var(--font-monospace) !important;
+    color: var(--color-text-01) !important;
+    transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
+}
+.xterm-rows > div > span {
     transition: color 300ms ease-in-out;
     color: var(--color-text-01) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-0, .xterm-terminated .xterm-rows .xterm-fg-8 {
+.xterm-rows .xterm-fg-0, .xterm-rows .xterm-fg-8 {
     color: var(--color-black) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-1, .xterm-terminated .xterm-rows .xterm-fg-9 {
+.xterm-rows .xterm-fg-1, .xterm-rows .xterm-fg-9 {
     color: var(--color-red) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-2, .xterm-terminated .xterm-rows .xterm-fg-10 {
+.xterm-rows .xterm-fg-2, .xterm-rows .xterm-fg-10 {
     color: var(--color-green) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-3, .xterm-terminated .xterm-rows .xterm-fg-11 {
+.xterm-rows .xterm-fg-3, .xterm-rows .xterm-fg-11 {
     color: var(--color-yellow) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-4, .xterm-terminated .xterm-rows .xterm-fg-12 {
+.xterm-rows .xterm-fg-4, .xterm-rows .xterm-fg-12 {
     color: var(--color-blue) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-5, .xterm-terminated .xterm-rows .xterm-fg-13 {
+.xterm-rows .xterm-fg-5, .xterm-rows .xterm-fg-13 {
     color: var(--color-magenta) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-6, .xterm-terminated .xterm-rows .xterm-fg-14 {
+.xterm-rows .xterm-fg-6, .xterm-rows .xterm-fg-14 {
     color: var(--color-cyan) !important;
 }
-.xterm-terminated .xterm-rows .xterm-fg-7, .xterm-terminated .xterm-rows .xterm-fg-15 {
+.xterm-rows .xterm-fg-7, .xterm-rows .xterm-fg-15 {
     color: var(--color-white) !important;
+}
+.xterm-rows .xterm-fg-257 {
+    /* inverted default color */
+    background-color: var(--color-text-01) !important;
+    color: var(--color-ui-01) !important;
 }
 

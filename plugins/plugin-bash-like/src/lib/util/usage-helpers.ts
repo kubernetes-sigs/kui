@@ -18,6 +18,6 @@
  * A parameter that is a local file
  *
  */
-export const localFilepath: Array<any> = [
+export const localFilepath: any[] = [
   { name: 'path', docs: 'local file path', file: true, positional: true }
 ]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@ const debug = Debug('plugins/bash-like/cmds/open')
 
 import { basename, dirname } from 'path'
 import { readFile } from 'fs'
-import * as expandHomeDir from 'expand-home-dir'
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { qexec } from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -35,7 +36,7 @@ import { localFilepath } from '../util/usage-helpers'
  * Decide how to display a given filepath
  *
  */
-const open = async (filepath, hljs) => {
+const open = async (tab: ITab, filepath: string, hljs) => {
   debug('open', filepath)
 
   const fullpath = findFile(expandHomeDir(filepath))
@@ -80,7 +81,7 @@ const open = async (filepath, hljs) => {
           let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
           if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
-            const { title, body } = await markdownify(suffix, data, fullpath, hljs)
+            const { title, body } = await markdownify(tab, suffix, data, fullpath, hljs)
 
             data = body
 
@@ -123,7 +124,7 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/open', ({ argvNoOptions: argv }) => {
-    return open(argv[argv.indexOf('open') + 1], hljs)
+  commandTree.listen('/open', ({ tab, argvNoOptions: argv }) => {
+    return open(tab, argv[argv.indexOf('open') + 1], hljs)
   }, { usage, needsUI: true, noAuthOk: true })
 }

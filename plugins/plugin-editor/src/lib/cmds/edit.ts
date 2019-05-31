@@ -26,6 +26,9 @@ import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
 // so that users of the exported `edit` command have access to our
 // IEntity model
@@ -41,11 +44,17 @@ class DefaultExecOptions {
   custom = new DefaultCustomization()
 }
 
+interface IEditorOptions {
+  readOnly?: boolean
+}
+
 /**
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (entity: IEditorEntity, options) => editCmd({
+export const edit = (tab: ITab, entity: IEditorEntity, options: IEditorOptions) => editCmd({
+  tab,
+  argvNoOptions: [],
   parsedOptions: options,
   execOptions: {
     parameters: entity,
@@ -58,7 +67,7 @@ export const edit = (entity: IEditorEntity, options) => editCmd({
  * Command handler for `edit <entity>`
  *
  */
-const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }) => {
+const editCmd = async ({ tab, argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { tab: ITab, argvNoOptions: string[], parsedOptions: IEditorOptions, execOptions: IExecOptions }) => {
   debug('edit command execution started', execOptions)
 
   // maybe the caller is passing us the name and entity programmatically?
@@ -86,7 +95,7 @@ const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = n
   debug('name', name)
   const [entity, injectEntityIntoView] = await Promise.all([
     programmaticArgs || fetchEntity(name, parsedOptions, execOptions), // fetch the entity model
-    openEditor(name, parsedOptions, execOptions) // prepare the editor view
+    openEditor(tab, name, parsedOptions, execOptions) // prepare the editor view
   ])
 
   // apply any command line overrides of the default behaviors
@@ -101,7 +110,7 @@ const editCmd = async ({ argvNoOptions = [], parsedOptions = {}, execOptions = n
   return respondToRepl(lock ? [ lock ] : [])(model)
 }
 
-export default async (commandTree) => {
+export default async (commandTree: CommandRegistrar) => {
   // command registration: edit an existing entity
   commandTree.listen('/editor/edit', editCmd, { usage: usage.editUsage('edit'), noAuthOk: true, needsUI: true })
 }

@@ -16,6 +16,8 @@
 
 /* disabled for now; not compatible with webpack */
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 /*
 const usagePerCommand = require('./usage')
 
@@ -38,7 +40,7 @@ const toUsage = (models, { commandPrefix, title, docs, breadcrumb = title }) => 
 }
 */
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   /* disabled for now; not compatible with webpack */
 
   /* commandTree.subtree('/plugin', {
@@ -49,9 +51,9 @@ export default (commandTree, prequire) => {
     })
   })
 
-  require('./lib/commands')(commandTree, prequire)
-  require('./lib/compile-command')(commandTree, prequire)
-  require('./lib/install')(commandTree, prequire)
-  require('./lib/list')(commandTree, prequire)
-  require('./lib/remove')(commandTree, prequire) */
+  require('./lib/commands')(commandTree)
+  require('./lib/compile-command')(commandTree)
+  require('./lib/install')(commandTree)
+  require('./lib/list')(commandTree)
+  require('./lib/remove')(commandTree) */
 }

@@ -19,14 +19,16 @@ const debug = Debug('plugins/apache-composer/utility/compile')
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as expandHomeDir from 'expand-home-dir'
+import expandHomeDir from '@kui-shell/core/util/home'
 import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
 
-import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
+
+import { currentSelection } from '@kui-shell/plugin-openwhisk/lib/models/openwhisk-entity'
 
 import { extractActionsFromAst, isValidAst } from './ast'
 import { create } from './usage'
@@ -207,11 +209,11 @@ const sourceErrHandler = (error, originalCode, filename) => {
   }
 }
 
-export const implicitInputFile = (inputFile, name) => {
+export const implicitInputFile = (tab: ITab, inputFile?: string, name?: string) => {
   if (!inputFile) { // the user didn't provide an input file, maybe we can infer one from the current selection
-    const selection = currentSelection()
+    const selection = currentSelection(tab)
     debug('selection', selection)
-    if (selection && selection.ast && selection.prettyType === 'preview') {
+    if (selection && selection['ast'] && selection.prettyType === 'preview') {
       debug('input from app preview selection') // then the sidecar is currently showing an app preview
       const inputAnnotation = selection.annotations.find(({ key }) => key === 'file')
 
@@ -242,7 +244,7 @@ export const compileComposition = (composition, name) => {
     result = result.compile()
     result.name = fqn(name)
   } catch (error) {
-    error.statusCode = 422  // composition error
+    error.statusCode = 422 // composition error
     throw error
   }
   debug('compiled source to composition', result)

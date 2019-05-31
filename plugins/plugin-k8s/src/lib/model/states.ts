@@ -71,7 +71,7 @@ export enum FinalState {
 
 /** definitions of these groups */
 const stateGroups = {}
-const groupOf = (A: Array<State>) => A.reduce((group, state) => {
+const groupOf = (A: State[]) => A.reduce((group, state) => {
   group[state] = true
   return group
 }, {})
@@ -198,9 +198,12 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
 
     const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
 
-    if (kind === 'Secret' ||
+    if (!response.status || // resource does not define a status; consider it Online
+        kind === 'Secret' ||
         kind === 'Ingress' ||
         kind === 'ConfigMap' ||
+        kind === 'PodSecurityPolicy' ||
+        kind === 'ClusterRole' ||
         kind === 'CustomResourceDefinition' ||
         kind === 'HorizontalPodAutoscaler' ||
         kind === 'ClusterRoleBinding' ||
@@ -259,7 +262,7 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
  * Check the deployment status of an openwhisk entity
  *
  */
-const getOpenWhiskStatus = (type: string, fqn: string): IStatus => repl.qexec(`wsk ${type} get "${fqn}"`)
+const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
   .then(() => ({ state: States.Online }))
   .catch(err => {
     if (err.statusCode === 404) {
@@ -342,7 +345,8 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
   // debug('watchStatus', finalStateStr, FinalState[finalState], kind, name);
 
   try {
-    const [ status /*, detail*/ ] = await Promise.all([
+    // const [ status, detail ] = await Promise.all([
+    const [ status ] = await Promise.all([
       getStatus(finalState, watch.apiVersion, kind, name, namespace, context)
       // type !== 'unknown' ? getOpenWhiskStatus(type, fqn) : undefined
     ])
@@ -357,7 +361,7 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
     // debug('watchStatus newState', newState);
 
     // other cells to update
-    const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' }]
+    const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' } ]
       : status.message ? [ { key: 'message', value: maybeAsDate(status.message) } ]
       : status.startTime ? [ { key: 'message', value: maybeAsDate(status.startTime) } ]
       : newState === States.Offline ? [ { key: 'message', value: finalState === FinalState.OnlineLike ? 'resource not yet available' : 'resource is offline' } ]

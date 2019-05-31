@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,12 @@ import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs/lib/elk.bundled.js'
 
-import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import { pexec } from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
+import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
+import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
 
 const defaultMaxLabelLength = 10
@@ -40,15 +43,15 @@ const wfColorAct = {
 
 const containerId = 'wskflowDiv'
 
-export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activations?, { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>, composites?: { label: { fontSize: string, offset: { x: number, y: number } } } } = {}) {
-  const maxLabelLength = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
-  const defaultFontSize = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
+export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>, composites?: { label: { fontSize: string, offset: { x: number, y: number } } } } = {}) {
+  const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
+  const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 
   let zoom = d3.behavior.zoom()
     .on('zoom', redraw)
 
-  const containerElement = ifReuseContainer || $(`<div id="${containerId}"></div>`)
-  const wskflowContainer = $('<div id="wskflowContainer"></div>')
+  const containerElement: HTMLElement = ifReuseContainer || $(`<div id="${containerId}"></div>`)
+  const wskflowContainer: HTMLElement = $('<div id="wskflowContainer"></div>')
   let enterClickMode = false
 
   $(containerElement).append(wskflowContainer)
@@ -152,7 +155,8 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       // with tiny nodes on initial load; this check
       // introduces a heuristic to avoid tiny nodes on
       // initial display. This solves #582.
-      if ($(sidecarSelector()).height() > 400 && elkData.height * 2 > $(sidecarSelector()).height()) {
+      const sidecar = getSidecar(tab)
+      if ($(sidecar).height() > 400 && elkData.height * 2 > $(sidecar).height()) {
         resizeToCover()
       } else {
         resizeToContain()
@@ -163,7 +167,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         const nodes = []
         let parent
         // note that svg z-index is document order, literally
-        while ((parent = queue.pop()) != null) { // tslint:disable-line
+        while ((parent = queue.pop()) != null) {
           nodes.push(parent);
 
           (parent.children || []).forEach(function (c) {
@@ -329,7 +333,9 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
       return document.createElementNS(svgns, d.properties && d.properties.kind === 'trigger' ? 'polygon' : 'rect')
     })
       .attr('class', d => {
-        return 'atom' + (d.type === 'action' ? ' clickable' : '')
+        return 'atom'
+          + (d.type === 'action' || d.onclick ? ' clickable' : '')
+          + (d.onclick ? ' has-onclick' : '')
       })
       .attr('points', d => {
         if (d.properties && d.properties.kind === 'trigger') {
@@ -386,10 +392,10 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
 
                 timeString += start.toLocaleTimeString(undefined, { hour12: false })
 
-                let duration = a.duration
+                let duration = a.duration.toString()
                 let unit = 'ms'
-                if (duration > 1000) {
-                  duration = (duration / 1000).toFixed(2)
+                if (a.duration > 1000) {
+                  duration = (a.duration / 1000).toFixed(2)
                   unit = 's'
                 }
                 let c
@@ -547,7 +553,13 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         enterClickMode = false
 
         $('#qtip').removeClass('visible')
-        if (activations) {
+        if (d.onclick) {
+          pictureInPicture(tab,
+            d.onclick,
+            d3.event.currentTarget.parentNode, // highlight this node
+            $('#wskflowContainer')[0],
+            d.viewName || 'Flow Visualization')(d3.event)
+        } else if (activations) {
           if (d.visited) {
             if ($('#actList').css('display') !== 'block') {
               $('#listClose').click()
@@ -556,7 +568,8 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
             // if(d.type == "Exit" || d.type == 'Entry'){
             if (d.type === 'Exit') {
               // console.log(fsm.States[d.id].act[0]);
-              pictureInPicture(activations[d.visited[0]],
+              pictureInPicture(tab,
+                activations[d.visited[0]],
                 d3.event.currentTarget.parentNode, // highlight this node
                 $('#wskflowContainer')[0],
                 'App Visualization' // container to pip
@@ -580,7 +593,8 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
                 // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
                 // let id = fsm.States[d.id].act[0].activationId;
 
-                pictureInPicture(activations[d.visited[0]],
+                pictureInPicture(tab,
+                  activations[d.visited[0]],
                   d3.event.currentTarget.parentNode, // highlight this node
                   $('#wskflowContainer')[0],
                   'App Visualization' // container to pip
@@ -604,10 +618,10 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
 
                   timeString += start.toLocaleTimeString(undefined, { hour12: false })
 
-                  let duration = a.duration
+                  let duration = a.duration.toString()
                   let unit = 'ms'
-                  if (duration > 1000) {
-                    duration = (duration / 1000).toFixed(2)
+                  if (a.duration > 1000) {
+                    duration = (a.duration / 1000).toFixed(2)
                     unit = 's'
                   }
                   let c
@@ -638,7 +652,8 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
                   const index = $(this).attr('index')
 
                   // pictureInPicture(`wsk activation get ${id}`, {echo: true}),
-                  pictureInPicture(activations[index],
+                  pictureInPicture(tab,
+                    activations[index],
                     $(this).parent()[0], // highlight this node
                     $('#wskflowContainer')[0],
                     'App Visualization' // container to pip
@@ -659,7 +674,8 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
           if (d.type === 'action' && $('#' + d.id).attr('data-deployed') === 'deployed') {
             if (d.name) {
               // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
-              pictureInPicture(`wsk action get "${d.name}"`,
+              pictureInPicture(tab,
+                `wsk action get "${d.name}"`,
                 d3.event.currentTarget.parentNode, // highlight this node
                 $('#wskflowContainer')[0], // container to pip
                 'App Visualization'
@@ -966,7 +982,7 @@ export default function graph2doms (JSONgraph, ifReuseContainer?: Element, activ
         .attr('xlink:href', '#retryIconNormal').attr('href', '#retryIconNormal').attr('x', 10).attr('y', -14)
     }, 0)
 
-    setTimeout(addMorePathAttr, 0)  // we aren't properly using d3.select.enter... hacking a bit, for now
+    setTimeout(addMorePathAttr, 0) // we aren't properly using d3.select.enter... hacking a bit, for now
     setTimeout(addEdgeLabels, 0)
   } /* drawGraph */
 

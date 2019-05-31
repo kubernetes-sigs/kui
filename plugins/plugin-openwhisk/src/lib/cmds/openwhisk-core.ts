@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 IBM Corporation
+ * Copyright 2017-2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/cmds/core-commands')
 debug('loading')
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
@@ -26,13 +27,14 @@ import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
 import historyModel = require('@kui-shell/core/models/history')
-import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import withHeader from '../models/withHeader'
 import namespace = require('../models/namespace')
 import { synonymsTable, synonyms } from '../models/synonyms'
-import { actionSpecificModes, addActionMode } from '../models/modes'
+import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
+import { currentSelection } from '../models/openwhisk-entity'
 
 /**
  * This plugin adds commands for the core OpenWhisk API.
@@ -45,7 +47,7 @@ const isLinux = require('os').type() === 'Linux'
 
 debug('modules loaded')
 
-const getClient = (execOptions) => {
+export const getClient = (execOptions) => {
   if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
     return initOWFromConfig(execOptions.credentials.openwhisk)
   } else {
@@ -120,7 +122,6 @@ const paramFile = (M, idx, argv, type) => {
     M[type].parameters = []
   }
 
-  const expandHomeDir = require('expand-home-dir')
   const file = argv[++idx]
   const params = JSON.parse(require('fs').readFileSync(expandHomeDir(file)).toString())
   M[type].parameters = M[type].parameters.concat(toArray(params))
@@ -205,7 +206,6 @@ const handleKeyValuePairAsArray = key => (M, idx, argv, type) => {
     }
 
     const fs = require('fs')
-    const expandHomeDir = require('expand-home-dir')
     const location = expandHomeDir(paramValue.substring(1))
     if (!fs.existsSync(location)) {
       throw new Error(`Requested parameter @file does not exist: ${location}`)
@@ -237,7 +237,7 @@ const param = handleKeyValuePairAsArray('parameters')
 const annotation = handleKeyValuePairAsArray('annotations')
 function isNumeric (input) {
   // a rough approximation
-  return (input - 0) == input && ('' + input).trim().length > 0 // tslint:disable-line
+  return (input - 0) == input && ('' + input).trim().length > 0
 }
 const limits = key => (M, idx, argv, type) => {
   if (!M[type]) M[type] = {}
@@ -351,7 +351,7 @@ const correctMissingBindingName = options => entity => {
   return entity
 }
 
-const addPrettyType = (entityType, verb, entityName) => async entity => {
+export const addPrettyType = (entityType: string, verb: string, entityName: string) => async entity => {
   if (typeof entity === 'string') {
     return {
       type: entityType,
@@ -489,7 +489,7 @@ const specials = {
 /** for parametrizable entity types, e.g. actions, packages, the standard view modes */
 const standardViewModes = (defaultMode, fn?) => {
   const makeModes = () => {
-    let modes: Array<any> = [{ mode: 'parameters', label: 'params', command: () => 'parameters' },
+    let modes: any[] = [{ mode: 'parameters', label: 'params', command: () => 'parameters' },
                              { mode: 'annotations', command: () => 'annotations' },
                              { mode: 'raw', command: () => 'raw' }]
 
@@ -738,7 +738,6 @@ specials.actions = {
 
       if (argv[0]) {
         // find the file named by argv[0]
-        const expandHomeDir = require('expand-home-dir')
         const filepath = findFile(expandHomeDir(argv[0]))
         const isZip = argv[0].endsWith('.zip')
         const isJar = argv[0].endsWith('.jar')
@@ -841,16 +840,6 @@ specials.actions = {
     }
   }
 }
-const activationModes = (opts = {}) => Object.assign(opts, {
-  modes: entity => [
-    { mode: 'result', defaultMode: true, command: () => 'wsk activation result' },
-    { mode: 'logs',
-      label: entity.prettyType === 'sequence' ? 'trace' : 'logs',
-      command: () => 'wsk activation logs' },
-    { mode: 'annotations', command: () => 'annotations' },
-    { mode: 'raw', command: () => 'raw' }
-  ]
-})
 
 specials.activations = {
   // activations list always gets full docs, and has a default limit of 10, but can be overridden
@@ -947,7 +936,7 @@ specials.triggers.update = specials.triggers.create
 /** actions => action */
 const toOpenWhiskKind = type => type.substring(0, type.length - 1)
 
-const parseOptions = (argvFull, type) => {
+export const parseOptions = (argvFull, type) => {
   const kvOptions = extractKeyValuePairs(argvFull, type)
   const argvWithoutKeyValuePairs = argvFull.filter(x => x) // remove nulls
   return {
@@ -957,7 +946,7 @@ const parseOptions = (argvFull, type) => {
 }
 
 const agent = new (require('https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 })
-const owOpts = (options = {}, execOptions = {}) => {
+export const owOpts = (options = {}, execOptions = {}) => {
   if (isLinux) {
     // options.forever = true
     options['timeout'] = 5000
@@ -993,7 +982,7 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions }) => {
+const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions, tab }: IEvaluatorArgs) => {
   let entity = _entity
   let verb = _verb
 
@@ -1035,14 +1024,14 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       // mucked things up) argvFull, looking for an arg that is
       // ==, but not === the one that minimist gave us.
       // THUS NOTE THE USE OF == in `arg == options.name` <-- important
-      options.name = argvFull.find(arg => arg == options.name && arg !== options.name) // tslint:disable-line
+      options.name = argvFull.find(arg => arg == options.name && arg !== options.name)
     }
   } else if (!noImplicitName[verb]) {
     //
     // OPERATION WITH IMPLICIT ENTITY: try to get the name from the current selection
     //
     debug('seeing if we can use an implicit entity')
-    const selection = currentSelection()
+    const selection = currentSelection(tab)
     if (selection) {
       options.name = `/${selection.namespace || '_'}/${selection.name}`
 
@@ -1210,7 +1199,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
             //
             const message = oopsMessage(err)
             const code = err.statusCode || err.code
-            const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity] // tslint:disable-line
+            const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity]
             const _usageModel = __usageModel.available && __usageModel.available.find(({ command }) => command === verb)
             const usageModel: IUsageModel = _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
 
@@ -1227,6 +1216,51 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
   })
 }
 
+/**
+ * Update an entity
+ *
+ */
+export const update = execOptions => (entity, retryCount = 0) => {
+  const ow = getClient(execOptions)
+  const options = owOpts({
+    name: entity.name,
+    namespace: entity.namespace
+  })
+  options[toOpenWhiskKind(entity.type)] = entity
+  debug('update', options)
+  try {
+    return ow[entity.type].update(options)
+      .then(addPrettyType(entity.type, 'update', entity.name))
+      .catch(err => {
+        console.error(`error in wsk::update ${err}`)
+        console.error(err)
+        if ((retryCount || 0) < 10) {
+          return self['update'](entity, (retryCount || 0) + 1)
+        } else {
+          throw err
+        }
+      })
+  } catch (err) {
+    console.error(`error in wsk::update ${err}`)
+    console.error(err)
+    throw err
+  }
+}
+
+export const fillInActionDetails = (Package, type = 'actions') => actionSummary => {
+  const kindAnnotation = actionSummary.annotations && actionSummary.annotations.find(_ => _.key === 'exec')
+  const kind = kindAnnotation && kindAnnotation.value
+
+  return Object.assign({}, actionSummary, {
+    // given the actionSummary from the 'actions' field of a package entity
+    type,
+    packageName: Package.name,
+    namespace: `${Package.namespace}/${Package.name}`,
+    kind,
+    onclick: `wsk action get ${repl.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
+  })
+}
+
 /** these are the module's exported functions */
 let self = {}
 
@@ -1240,10 +1274,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
     parseName,
 
     /** export the activation bottom stripe modes */
-    activationModes: entity => {
-      entity.modes = activationModes().modes(entity)
-      return entity
-    },
+    activationModes: addActivationModes,
 
     /** deprecated; modules should import synonyms directly */
     synonyms,
@@ -1269,19 +1300,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
       }
     }),
 
-    fillInActionDetails: (Package, type) => actionSummary => {
-      const kindAnnotation = actionSummary.annotations && actionSummary.annotations.find(_ => _.key === 'exec')
-      const kind = kindAnnotation && kindAnnotation.value
-
-      return Object.assign({}, actionSummary, {
-        // given the actionSummary from the 'actions' field of a package entity
-        type: type || 'actions',
-        packageName: Package.name,
-        namespace: `${Package.namespace}/${Package.name}`,
-        kind,
-        onclick: `wsk action get ${repl.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
-      })
-    },
+    fillInActionDetails,
 
     /** actions => action */
     toOpenWhiskKind: toOpenWhiskKind,
@@ -1291,32 +1310,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
       entity.annotations && entity.annotations.find(kv => kv.key === 'kind' && kv.value === 'sequence'),
 
     /** update the given openwhisk entity */
-    update: execOptions => (entity, retryCount) => {
-      const ow = getClient(execOptions)
-      const options = owOpts({
-        name: entity.name,
-        namespace: entity.namespace
-      })
-      options[toOpenWhiskKind(entity.type)] = entity
-      debug('update', options)
-      try {
-        return ow[entity.type].update(options)
-          .then(addPrettyType(entity.type, 'update', entity.name))
-          .catch(err => {
-            console.error(`error in wsk::update ${err}`)
-            console.error(err)
-            if ((retryCount || 0) < 10) {
-              return self['update'](entity, (retryCount || 0) + 1)
-            } else {
-              throw err
-            }
-          })
-      } catch (err) {
-        console.error(`error in wsk::update ${err}`)
-        console.error(err)
-        throw err
-      }
-    },
+    update,
 
     /** add action modes; where=push|unshift */
     addActionMode,

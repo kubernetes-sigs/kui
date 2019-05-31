@@ -18,18 +18,25 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/k8s/preload')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
+import { podMode } from './lib/view/modes/pods'
+import { conditionsMode } from './lib/view/modes/conditions'
+import { containersMode } from './lib/view/modes/containers'
+import registerSidecarMode from './lib/view/modes/registrar'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
+export default async (commandTree: CommandRegistrar) => {
+  registerSidecarMode(podMode) // show pods of deployments
+  registerSidecarMode(containersMode) // show containers of pods
+  registerSidecarMode(conditionsMode) // show conditions of a variety of resource kinds
+
   if (inBrowser()) {
     debug('preload for browser')
     const { restoreAuth } = await import('./lib/model/auth')
     restoreAuth()
   }
 }
-
-export default registration

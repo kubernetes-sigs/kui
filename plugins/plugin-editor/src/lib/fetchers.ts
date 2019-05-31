@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ const debug = Debug('plugins/editor/fetchers')
 
 import { basename } from 'path'
 import { lstat, readFile } from 'fs'
-import * as expandHomeDir from 'expand-home-dir'
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { persisters } from './persisters'
 import { gotoReadonlyLocalFile } from './readonly'
@@ -53,7 +53,7 @@ export interface IEntity {
   exec: IExecSpec
   persister: any
   gotoReadonlyView?: (Getter) => any
-  annotations: Array<IKeyValuePair>
+  annotations: IKeyValuePair[]
 }
 
 export type IFetcher = (name: string, parsedOptions?, execOptions?) => Promise<IEntity>

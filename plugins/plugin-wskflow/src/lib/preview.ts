@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 IBM Corporation
+ * Copyright 2017-2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,23 @@ debug('loading')
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as expandHomeDir from 'expand-home-dir'
 
 import * as usage from '../usage'
 
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { PluginRegistration } from '@kui-shell/core/models/plugin'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
-import * as messages from '@kui-shell/plugin-apache-composer/lib/utility/messages'  // TODO: import from plugin js file
+import * as messages from '@kui-shell/plugin-apache-composer/lib/utility/messages' // TODO: import from plugin js file
 import * as compileUtil from '@kui-shell/plugin-apache-composer/lib/utility/compile'
 
 import * as wskflowUtil from './util'
@@ -100,7 +101,7 @@ export default (commandTree: CommandRegistrar) => {
     }
   })
 
-  const render = (input, options, execOptions, mode) => new Promise((resolve, reject) => {
+  const render = (tab: ITab, input: string, options, execOptions, mode) => new Promise((resolve, reject) => {
     debug('options', options)
 
     let fsmPromise
@@ -153,7 +154,7 @@ export default (commandTree: CommandRegistrar) => {
       }
 
       const visualize = (await import('./visualize')).default
-      const { view, controller } = await wskflowUtil.wskflow(visualize, { ast, input, name, viewOptions, container: execOptions.container, namespace: undefined })
+      const { view, controller } = await wskflowUtil.wskflow(tab, visualize, { ast, input, name, viewOptions, container: execOptions.container, namespace: undefined })
 
       const modes: ISidecarMode[] = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
       modes.splice(modes.length, 0, ...coreModes)
@@ -201,11 +202,11 @@ export default (commandTree: CommandRegistrar) => {
         // in filewatch mode (alreadyWatching), command echo is set to false
         // calling showCustom as the main repl does not do anything for custom type entity when echo is false
         if (entity.show !== 'visualization') {
-          showEntity(entity, { show: entity.show })
+          showEntity(tab, entity, { show: entity.show })
         } else if (entity.type === 'custom') {
-          showCustom(entity, {})
+          showCustom(tab, entity, {})
         } else {
-          showEntity(entity, { show: 'ast' })
+          showEntity(tab, entity, { show: 'ast' })
         }
       } else {
         resolve(entity)
@@ -236,7 +237,7 @@ export default (commandTree: CommandRegistrar) => {
   })
 
   /** command handler */
-  const doIt = (cmd: string, mode = defaultMode) => ({ execOptions, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => new Promise((resolve, reject) => {
+  const doIt = (cmd: string, mode = defaultMode) => ({ tab, execOptions, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => new Promise((resolve, reject) => {
     const idx = argvNoOptions.indexOf(cmd)
     const inputFile = argvNoOptions[idx + 1]
 
@@ -303,7 +304,7 @@ export default (commandTree: CommandRegistrar) => {
       }
 
       try {
-        render(input, options, execOptions, mode).then(resolve, reject)
+        render(tab, input, options, execOptions, mode).then(resolve, reject)
       } finally {
         // restore any env vars we smashed
         for (let key in backupEnv) {

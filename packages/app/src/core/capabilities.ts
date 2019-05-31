@@ -29,7 +29,9 @@ export enum Media {
 }
 
 /** map from provider to credentials */
-type ICredentialsMap = { [key: string]: any }
+interface ICredentialsMap {
+  [key: string]: any
+}
 
 /**
  * Current state of capabilities
@@ -38,6 +40,7 @@ type ICredentialsMap = { [key: string]: any }
 class State {
   assertedLocalAccess = false
   hasLocalAccess = true // may change as media changes or assertLocalAccess is called
+  hasProxy = false
   media = Media.Unknown
   validCredentials: ICredentialsMap = {} // map to the credentials
 }
@@ -51,6 +54,18 @@ export const getMedia = () => state.media
 export const isHeadless = () => state.media === Media.Headless
 export const inElectron = () => state.media === Media.Electron
 export const inBrowser = () => state.media === Media.Browser
+
+/**
+ * Is Kui supported by a remote proxy?
+ *
+ */
+export const hasProxy = () => state.hasProxy
+
+/**
+ * Assert that Kui is supported by a remote proxy
+ *
+ */
+export const assertHasProxy = () => state.hasProxy = true
 
 /**
  * Update the media, e.g. to indicate that we are running in a browser

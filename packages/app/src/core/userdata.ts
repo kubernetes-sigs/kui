@@ -20,9 +20,12 @@ const debug = Debug('core/userdata')
 import { join } from 'path'
 
 import store from '@kui-shell/core/models/store'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser, inElectron } from '@kui-shell/core/core/capabilities'
 
-type Preferences = { [key: string]: string }
+interface Preferences {
+  [key: string]: string
+}
 
 /**
  * Get the userdata directory
@@ -33,14 +36,13 @@ export const userDataDir = (): string => {
     throw new Error('Unsupported operation')
   } else {
     // headless
-    const { join } = require('path')
     const { name } = require('@kui-shell/settings/package.json')
 
     switch (process.platform) {
       case 'darwin':
         return join(process.env.HOME, 'Library', 'Application Support', name)
       case 'linux':
-        const home = process.env.XDG_CONFIG_HOME || require('expand-home-dir')('~/.config')
+        const home = process.env.XDG_CONFIG_HOME || expandHomeDir('~/.config')
         return join(home, name)
       case 'win32':
         return join(process.env.APPDATA, name)

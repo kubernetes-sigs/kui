@@ -17,14 +17,14 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/proxy-support/preload')
 
-import { inBrowser, assertLocalAccess } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import { inBrowser, assertHasProxy, assertLocalAccess } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
+export default async (commandTree: CommandRegistrar) => {
   if (inBrowser()) {
     const { config } = await import('@kui-shell/core/core/settings')
     debug('config', config)
@@ -35,9 +35,11 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
 
       debug('attempting to establish our proxy executor')
       setEvaluatorImpl(new ProxyEvaluator())
+
+      // notify the Capabilities manager that we have extended the
+      // capabilities of Kui
+      assertHasProxy()
       assertLocalAccess()
     }
   }
 }
-
-export default registration

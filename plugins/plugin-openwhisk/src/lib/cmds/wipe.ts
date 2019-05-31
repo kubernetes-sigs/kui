@@ -21,6 +21,7 @@ import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import cli = require('@kui-shell/core/webapp/cli')
 import repl = require('@kui-shell/core/core/repl')
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 /**
  * This plugin introduces /wsk/wipe, which helps with removing all
@@ -70,7 +71,7 @@ const list = type => repl.qexec(`${type} list --limit 200`)
  * Because we can only list at most 200 entities at a time, we'll need to loop...
  *
  */
-const deleteAllUntilDone = type => entities => {
+const deleteAllUntilDone = (type: string) => entities => {
   debug(`deleteAllUntilDone ${type} ${entities.length}`)
 
   if (entities.length === 0) {
@@ -86,7 +87,7 @@ const deleteAllUntilDone = type => entities => {
  * This method initiates the deleteAllUntilDone loop
  *
  */
-const clean = (type, quiet) => {
+const clean = (type: string, quiet?: boolean) => {
   if (!quiet) {
     if (isHeadless()) {
       process.stdout.write('.'['random'])
@@ -101,7 +102,7 @@ const clean = (type, quiet) => {
  * Handle 404s with a retry of the given operation
  *
  */
-const handle404s = retry => err => {
+const handle404s = (retry: () => void) => err => {
   if (err.statusCode === 404) {
     // ignore 404s, since we're deleting!
     return retry()
@@ -124,16 +125,16 @@ const doWipe = () => doWipe1().then(() => doWipe2()).then(() => {
   }
 })
 
-const doWipeWithConfirmation = (prequire) => async ({ block, nextBlock }) => {
+const doWipeWithConfirmation = async ({ tab, block, nextBlock }: IEvaluatorArgs) => {
   //
   // first, hide the sidecar
   //
-  hideSidecar(true) // true means clean out current selection
+  hideSidecar(tab, true) // true means clean out current selection
 
   //
   // then ask the user to confirm the dangerous operation
   //
-  return cli.prompt('DANGER!', block, nextBlock, {
+  return cli.prompt('DANGER!', block as HTMLElement, nextBlock, tab, {
     placeholder: 'This operation will remove all entities. Enter "yes" to confirm.',
     dangerous: true
   }, options => {
@@ -161,8 +162,8 @@ const doWipeWithConfirmation = (prequire) => async ({ block, nextBlock }) => {
  * This is the exported module
  *
  */
-export default (commandTree, wsk, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/wsk/wipe',
-                       doWipeWithConfirmation(prequire),
+                       doWipeWithConfirmation,
                        { docs: 'Remove all of your OpenWhisk assets from the current namespace' })
 }

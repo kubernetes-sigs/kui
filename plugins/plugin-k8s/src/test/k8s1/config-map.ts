@@ -18,8 +18,7 @@ import assert = require('assert')
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 

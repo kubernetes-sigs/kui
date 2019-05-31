@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('webapp/picture-in-picture')
 
 import repl = require('../core/repl')
+import { ITab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showCustom, ICustomSpec } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
@@ -54,7 +55,7 @@ export interface ISidecarMode {
   data?: any
 
   command?: any
-  direct?: any
+  direct?: DirectViewController
 
   execOptions?: IExecOptions,
 
@@ -76,20 +77,23 @@ interface IBottomStripOptions {
   preserveBackButton?: boolean
 }
 
+export const rawCSS = {
+  buttons: '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits'
+}
 export const css = {
-  buttons: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits'),
-  backContainer: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
-  backButton: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
-  modeContainer: sidecarSelector('.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
+  buttons: (tab: ITab) => sidecarSelector(tab, rawCSS.buttons),
+  backContainer: (tab: ITab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
+  backButton: (tab: ITab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
   button: 'sidecar-bottom-stripe-button',
   buttonActingAsButton: 'sidecar-bottom-stripe-button-as-button',
   buttonActingAsRadioButton: 'sidecar-bottom-stripe-button-as-radio-button',
+  modeContainer: (tab: ITab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
   active: 'sidecar-bottom-stripe-button-active',
   selected: 'selected',
   hidden: 'hidden'
 }
 
-const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show: string) => {
+const _addModeButton = (tab: ITab, bottomStripe: Element, opts: ISidecarMode, entity, show: string) => {
   const { mode, label, flush, selected, selectionController, visibleWhen,
     leaveBottomStripeAlone = false,
     fontawesome, labelBelow, // show label below the fontawesome?
@@ -184,7 +188,7 @@ const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show:
   // back button does not modify sidecar entity, causing the mode buttons to have the wrong behavior (using the previous entity)
   // set sidecar entity to the current entity every time when mode buttons are regenerated
   if (entity.type !== 'custom') {
-    getSidecar().entity = entity
+    getSidecar(tab).entity = entity
   }
 
   // insert the command handler
@@ -225,12 +229,12 @@ const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show:
       // execute the command
       if (direct) {
         try {
-          const view = await callDirect(direct, entity, execOptions)
+          const view = await callDirect(tab, direct, entity, execOptions)
           if (view && !actAsButton) {
-            if (direct.isEntity || leaveBottomStripeAlone) {
+            if (isDirectViewEntity(direct) || leaveBottomStripeAlone) {
               changeActiveButton()
             }
-            Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(custom, { leaveBottomStripeAlone }))
+            Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
               const button = bottomStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
@@ -253,7 +257,7 @@ const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show:
         }
       } else {
         try {
-          await repl.pexec(command(entity), { /* leaveBottomStripeAlonex true,*/ echo, noHistory, replSilence })
+          await repl.pexec(command(entity), { echo, noHistory, replSilence })
           if (leaveBottomStripeAlone) {
             changeActiveButton()
           }
@@ -278,21 +282,35 @@ const _addModeButton = (bottomStripe: Element, opts: ISidecarMode, entity, show:
  * across remote proxies, and thus is preferable to the former.
  *
  */
-type DirectViewController = string | DirectViewControllerFunction | IDirectViewControllerSpec
-type DirectViewControllerFunction = (entity: object) => object
+type DirectViewController = string | DirectViewControllerFunction | IDirectViewControllerSpec | IDirectViewEntity
+type DirectViewControllerFunction = (tab: ITab, entity: object) => PromiseLike<object> | object | void
+
+interface IDirectViewEntity extends ICustomSpec {
+  isEntity: boolean
+}
+
+function isDirectViewEntity (direct: DirectViewController): direct is IDirectViewEntity {
+  const entity = direct as IDirectViewEntity
+  return entity.isEntity !== undefined
+}
+
 interface IDirectViewControllerSpec {
   plugin: string
   module: string
   operation: string
   parameters: object
-  isEntity?: boolean
+}
+
+function isDirectViewControllerSpec (direct: DirectViewController): direct is IDirectViewControllerSpec {
+  const spec = direct as IDirectViewControllerSpec
+  return spec.plugin !== undefined && spec.module !== undefined
 }
 
 /**
  * Call a "direct" impl
  *
  */
-const callDirect = async (makeView: DirectViewController, entity, execOptions: IExecOptions) => {
+const callDirect = async (tab: ITab, makeView: DirectViewController, entity, execOptions: IExecOptions) => {
   if (typeof makeView === 'string') {
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
@@ -302,22 +320,22 @@ const callDirect = async (makeView: DirectViewController, entity, execOptions: I
     }
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
-    return Promise.resolve(makeView(entity))
-  } else if (makeView.isEntity) {
+    return Promise.resolve(makeView(tab, entity) as any)
+  } else if (isDirectViewEntity(makeView)) {
     const combined = Object.assign({}, entity, makeView)
     return combined
   } else {
     const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
-    return provider[makeView.operation](makeView.parameters)
+    return provider[makeView.operation](tab, makeView.parameters)
   }
 }
 
-export const addModeButton = (mode: ISidecarMode, entity) => {
-  const bottomStripe = document.querySelector(css.modeContainer)
-  return _addModeButton(bottomStripe, mode, entity, undefined)
+export const addModeButton = (tab: ITab, mode: ISidecarMode, entity: Record<string, any>) => {
+  const bottomStripe = css.modeContainer(tab)
+  return _addModeButton(tab, bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (modesUnsorted: ISidecarMode[] = [], entity, options?: IBottomStripOptions) => {
+export const addModeButtons = (tab: ITab, modesUnsorted: ISidecarMode[] = [], entity, options?: IBottomStripOptions) => {
   // place flush:right items at the end
   const modes = modesUnsorted.sort((a, b) => {
     if (a.flush === b.flush ||
@@ -341,13 +359,13 @@ export const addModeButtons = (modesUnsorted: ISidecarMode[] = [], entity, optio
   }
 
   // for going back
-  const addModeButtons = (modes: ISidecarMode[], entity, show: string) => {
-    const bottomStripe = document.querySelector(css.modeContainer)
+  const addModeButtons = (tab: ITab, modes: ISidecarMode[], entity, show: string) => {
+    const bottomStripe = css.modeContainer(tab)
     removeAllDomChildren(bottomStripe)
 
     if (modes) {
       modes.forEach(mode => {
-        _addModeButton(bottomStripe, mode, entity, show)
+        _addModeButton(tab, bottomStripe, mode, entity, show)
       })
     }
 
@@ -360,17 +378,17 @@ export const addModeButtons = (modesUnsorted: ISidecarMode[] = [], entity, optio
       // to avoid stale buttons from showing up while the new view renders
       removeAllDomChildren(bottomStripe)
 
-      return () => addModeButtons(modes, entity, show)
+      return () => addModeButtons(tab, modes, entity, show)
     }
   }
 
   const defaultMode = modes && modes.find(({ defaultMode }) => defaultMode)
   const show = (options && options.show) || (defaultMode && (defaultMode.mode || defaultMode.label))
 
-  addModeButtons(modes, entity, show)
+  addModeButtons(tab, modes, entity, show)
 
   if (!options || !options.preserveBackButton) {
-    const backContainer = document.querySelector(css.backContainer)
+    const backContainer = css.backContainer(tab)
     backContainer.classList.remove('has-back-button')
   }
 }

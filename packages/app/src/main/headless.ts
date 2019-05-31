@@ -23,7 +23,7 @@ import * as events from 'events'
 
 import * as repl from '../core/repl'
 import mimicDom from '../util/mimic-dom'
-import { prequire, preload, init as pluginsInit } from '../core/plugins'
+import { preload, init as pluginsInit } from '../core/plugins'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
 import { CodedError } from '../models/errors'
 import UsageError from '../core/usage-error'
@@ -154,14 +154,14 @@ const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) =>
  * Insufficient arguments provided?
  *
  */
-const insufficientArgs = (argv: Array<string>) => argv.length === 0
+const insufficientArgs = (argv: string[]) => argv.length === 0
 
 /**
  * Opens the full UI
  *
  */
 let electronCreateWindowFn
-export const createWindow = (argv: Array<string>, subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
+export const createWindow = (argv: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
   try {
     graphicalShellIsOpen = true
     setGraphicalShellIsOpen()

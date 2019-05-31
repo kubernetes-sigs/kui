@@ -82,7 +82,7 @@ const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
 
   const rateInterval = parsedOptions.interval
 
-  const headerRows: Array<any> = [{
+  const headerRows: any[] = [{
     type: 'application',
     noSort: true,
     name: 'NAME',
@@ -172,7 +172,7 @@ const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
  * @return the ingress URL for the given istio application
  *
  */
-const ingressFor = (appName: string): string => {
+const ingressFor = (appName: string): Promise<string> => {
   return $$(`istio ingress "${appName}"`)
 }
 

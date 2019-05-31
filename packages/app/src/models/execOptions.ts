@@ -15,11 +15,21 @@
  */
 
 import { ExecType } from './command'
+import { ITab, Streamable } from '../webapp/cli'
 
 export interface IExecOptions {
+  // force execution in a given tab?
+  tab?: ITab
+
   isProxied?: boolean
   noDelegation?: boolean
   delegationOk?: boolean
+
+  leaveBottomStripeAlone?: boolean
+
+  filter?: any
+  contextChangeOK?: boolean
+  credentials?: Record<string, any>
 
   custom?: any
   rawResponse?: boolean
@@ -48,12 +58,13 @@ export interface IExecOptions {
   createOnly?: boolean
   noHeader?: boolean
   noStatus?: boolean
+  noSidecarHeader?: boolean
   noRetry?: boolean
   showHeader?: boolean
   alreadyWatching?: boolean
 
   createOutputStream?: any
-  stdout?: (str: string) => any
+  stdout?: (str: Streamable) => any
   stderr?: (str: string) => any
 
   parameters?: any
@@ -69,4 +80,6 @@ export class DefaultExecOptions implements IExecOptions {
 }
 
 /** command line options */
-export type ParsedOptions = { [ key: string ]: any }
+export interface ParsedOptions {
+  [ key: string ]: any
+}

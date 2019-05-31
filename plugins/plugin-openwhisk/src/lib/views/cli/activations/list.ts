@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/views/cli/activations/list')
 
 import repl = require('@kui-shell/core/core/repl')
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
@@ -45,7 +46,7 @@ const mapToOptions = (baseMap, overrides = {}) => {
  * Fetch activation records
  *
  */
-const fetch = async (activationIds: Array<string>) => {
+const fetch = async (activationIds: string[]) => {
   debug('fetching', activationIds)
 
   const activations = await Promise.all(activationIds.map(_ => {
@@ -110,6 +111,7 @@ const _render = args => {
           showResult = false, showStart = false, showTimeline = true,
           skip, limit,
           parsedOptions } = args
+  const tab: ITab = args.tab
 
   const currentRows = container.querySelectorAll('tr.log-line')
 
@@ -153,7 +155,7 @@ const _render = args => {
   const newTable = !logTable
   if (newTable) {
     logTable = document.createElement('table')
-    logTable.className = 'log-lines fixed-table-layout'
+    logTable.className = 'log-lines fixed-table-layout log-lines-loose'
 
     if (entity) {
       // for the sidecar only, clean things out
@@ -166,7 +168,7 @@ const _render = args => {
   // picture in picture
   const pip = cmd => noPip
     ? cmd
-    : pictureInPicture(cmd, undefined, logTable, viewName, { parent: container })
+    : pictureInPicture(tab, cmd, undefined, logTable, viewName, { parent: container })
 
   return Promise.all([
     fetch(activationIds).then(activations => entity ? [entity, ...activations] : activations), // add entity to the front
@@ -534,6 +536,7 @@ const _render = args => {
                 showTimeline,
                 skip,
                 limit,
+                tab,
                 parsedOptions })
             }
           })
@@ -572,7 +575,7 @@ const _render = args => {
  * A handler intended to be passed to cli.registerListView
  *
  */
-export const renderActivationListView = (activations: Array<Object>, container: Element, parsedOptions, execOptions) => {
+export const renderActivationListView = (tab: ITab, activations: Object[], container: Element, parsedOptions, execOptions) => {
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)

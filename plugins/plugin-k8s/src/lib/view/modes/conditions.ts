@@ -17,27 +17,34 @@
 import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/conditions')
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
-import IResource from '../../model/resource'
+import { IResource, IKubeResource } from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
+
+import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 /**
  * Add a Conditions mode button to the given modes model, if called
  * for by the given resource.
  *
  */
-export const addConditions = (modes: Array<any>, command: string, resource: IResource) => {
-  try {
-    if (resource.yaml.status && resource.yaml.status.conditions) {
-      modes.push(conditionsButton(command, resource))
+export const conditionsMode: ModeRegistration = {
+  when: (resource: IKubeResource) => {
+    return resource.status && resource.status.conditions ? true : false
+  },
+  mode: (command: string, resource: IResource) => {
+    try {
+      return conditionsButton(command, resource)
+    } catch (err) {
+      debug('error rendering conditions button')
+      console.error(err)
     }
-  } catch (err) {
-    debug('error rendering conditions button')
-    console.error(err)
   }
 }
 
@@ -74,12 +81,12 @@ const formatTimestamp = (timestamp: string): string => {
  * Render the tabular conditions view
  *
  */
-export const renderConditions = async (command: string, resource: IResource) => {
+export const renderConditions = async (tab: ITab, command: string, resource: IResource) => {
   debug('renderConditions', command, resource)
 
   const anyProbeTimes = resource.yaml.status.conditions.some(_ => !!_.lastProbeTime)
-  const probeHeader: Array<any> = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
-  const probeBody = (condition): Array<any> => {
+  const probeHeader: any[] = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
+  const probeBody = (condition): any[] => {
     if (anyProbeTimes) {
       return [{
         key: 'lastProbeTime',
@@ -101,7 +108,7 @@ export const renderConditions = async (command: string, resource: IResource) => 
     ])
   }
 
-  resource.yaml.status.conditions.sort((a,b) => {
+  resource.yaml.status.conditions.sort((a, b) => {
     if (!a.lastTransitionTime && b.lastTransitionTime) {
       return 1
     } else if (!b.lastTransitionTime && a.lastTransitionTime) {
@@ -139,7 +146,7 @@ export const renderConditions = async (command: string, resource: IResource) => 
 
   debug('table model', tableModel)
 
-  const view = formatTable(tableModel)
+  const view = formatTable(tab, tableModel)
   debug('table view', view)
 
   return view
@@ -153,6 +160,6 @@ interface IParameters {
   command: string
   resource: IResource
 }
-export const renderAndViewConditions = (parameters: IParameters) => {
-  renderConditions(parameters.command, parameters.resource).then(insertView)
+export const renderAndViewConditions = (tab: ITab, parameters: IParameters) => {
+  renderConditions(tab, parameters.command, parameters.resource).then(insertView(tab))
 }

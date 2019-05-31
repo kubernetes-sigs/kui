@@ -25,10 +25,11 @@ import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
 import { config } from '@kui-shell/core/core/settings'
 import store from '@kui-shell/core/models/store'
 
+import expandHomeDir from '@kui-shell/core/util/home'
+
 let wskprops
 try {
   const propertiesParser = require('properties-parser')
-  const expandHomeDir = require('expand-home-dir')
   if (!inBrowser()) {
     wskprops = propertiesParser.read(expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))
   } else {
@@ -73,9 +74,9 @@ function getDefaultApiHost () {
 
 let authKey = process.env.__OW_API_KEY || wskprops.AUTH || store().getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 
-let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething' // tslint:disable-line
+let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
 
-let apigw_space_guid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID // tslint:disable-line
+let apigw_space_guid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
 export let ow
 
 let userRequestedIgnoreCerts = store().getItem(localStorageKey.ignoreCerts) !== undefined

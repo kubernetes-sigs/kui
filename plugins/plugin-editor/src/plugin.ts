@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 import { toplevelUsage as usage } from './usage'
 import edit from './lib/cmds/edit'
 
@@ -21,7 +23,7 @@ import edit from './lib/cmds/edit'
  * This is the module
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   // register usage handler
   commandTree.subtree('/editor', { usage })
 

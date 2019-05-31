@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,17 @@ import { main as usage } from './docs'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { qexec, pexec } from '@kui-shell/core/core/repl'
-import { addNameToSidecarHeader, clearSelection, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import { addNameToSidecarHeader, getSidecar, clearSelection, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { injectScript } from '@kui-shell/core/webapp/util/inject'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
+import { addActivationModes } from '@kui-shell/plugin-openwhisk/lib/models/modes'
 
 interface IProtoActivation {
   result?: any
-  logs?: Array<string>
+  logs?: string[]
   init_time?: number
 }
 
@@ -122,10 +126,9 @@ const rt = opts => {
     })
 }
 
-export default async (commandTree, prequire) => {
-  const wsk = await prequire('plugin-openwhisk')
+export default async (commandTree: CommandRegistrar) => {
+  const handler = local
 
-  const handler = local(wsk)
   commandTree.subtree('/local', { usage, requiresLocal: true })
   commandTree.listen('/local/invoke', handler, Object.assign({ docs: strings.invoke }, commandOptions))
   commandTree.listen('/local/debug', handler, Object.assign({ docs: strings.debug }, commandOptions))
@@ -143,7 +146,7 @@ export default async (commandTree, prequire) => {
   })
 }
 
-const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinnerDiv: Element, wsk) => new Promise(async () => {
+const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: string[], spinnerDiv: Element) => new Promise(async () => {
   try {
     debug('executing invoke command')
 
@@ -152,7 +155,7 @@ const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinne
       getImageDir()
     ])
 
-    updateSidecarHeader('local invoke')(nameAndInputPart)
+    updateSidecarHeader(tab, 'local invoke')(nameAndInputPart)
 
     const action = await getActionCode(nameAndInputPart.name, spinnerDiv) // data: code, kind, binary
     action.name = nameAndInputPart.name
@@ -166,7 +169,7 @@ const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinne
                                         action.kind,
                                         Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv)
 
-    displayAsActivation('local activation', action, start, wsk, res)
+    displayAsActivation(tab, 'local activation', action, start, res)
   } catch (err) {
     appendIncreContent(err, spinnerDiv, 'error')
   }
@@ -176,14 +179,14 @@ const doInvoke = async (input: Object, argvWithoutOptions: Array<string>, spinne
  * Local debug
  *
  */
-const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, returnDiv: Element, spinnerDiv: Element, wsk) => new Promise(async (resolve) => {
+const doDebug = (tab: ITab, input: Object, argvWithoutOptions: string[], dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
   debug('executing debug command')
 
   resolve([{
     mode: 'stop-debugger',
     label: strings.stopDebugger,
     actAsButton: true,
-    direct: stopDebugger()
+    direct: stopDebugger(tab)
   }])
 
   try {
@@ -193,7 +196,7 @@ const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, 
     ])
     debug('nameAndInput for debug', nameAndInputPart)
 
-    updateSidecarHeader('debugger')(nameAndInputPart)
+    updateSidecarHeader(tab, 'debugger')(nameAndInputPart)
 
     const action = await getActionCode(nameAndInputPart.name, spinnerDiv)
     debug('action for debug', action)
@@ -216,7 +219,7 @@ const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, 
                                           action.kind,
                                           Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv, dashOptions)
 
-      displayAsActivation('debug session', action, start, wsk, res)
+      displayAsActivation(tab, 'debug session', action, start, res)
 
       closeDebuggerUI()
       debug('debug session done')
@@ -230,7 +233,7 @@ const doDebug = (input: Object, argvWithoutOptions: Array<string>, dashOptions, 
  * Main command handler routine
  *
  */
-const local = wsk => async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsedOptions: dashOptions }) => {
+const local = async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsedOptions: dashOptions, tab }: IEvaluatorArgs) => {
   // we always want to have "local" at the front, so e.g. invoke => local invoke
   if (argvWithoutOptions[0] && argvWithoutOptions[0] !== 'local') {
     argvWithoutOptions.unshift('local')
@@ -246,7 +249,7 @@ const local = wsk => async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions,
     throw new UsageError({ usage })
   } else if (argvWithoutOptions.length === 2 &&
              !needsNoArgs.find(_ => _ === argvWithoutOptions[1]) &&
-             !fillInWithImplicitEntity(argvWithoutOptions, 2)) { // has the user has already selected an entity in the sidecar?
+             !fillInWithImplicitEntity(tab, argvWithoutOptions, 2)) { // has the user has already selected an entity in the sidecar?
     debug('insufficient args')
     throw new UsageError({ usage })
   } else {
@@ -304,9 +307,9 @@ const local = wsk => async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions,
     let modes = []
 
     if (argvWithoutOptions[1] === 'invoke') {
-      doInvoke(input, argvWithoutOptions, spinnerDiv, wsk)
+      doInvoke(tab, input, argvWithoutOptions, spinnerDiv)
     } else if (argvWithoutOptions[1] === 'debug') {
-      modes = modes.concat(await doDebug(input, argvWithoutOptions, dashOptions, returnDiv, spinnerDiv, wsk))
+      modes = modes.concat(await doDebug(tab, input, argvWithoutOptions, dashOptions, returnDiv, spinnerDiv))
     } else if (argvWithoutOptions[1] === 'init') {
       debug('executing init command')
       getImageDir()
@@ -343,8 +346,8 @@ const local = wsk => async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions,
  * If the user has selected an entity, e.g. via a previous "action get", then fill it in
  *
  */
-const fillInWithImplicitEntity = (args, idx) => {
-  const entity = currentSelection()
+const fillInWithImplicitEntity = (tab: ITab, args: string[], idx: number): string => {
+  const entity = currentSelection(tab)
   if (entity) {
     const pathAnno = entity.annotations.find(({ key }) => key === 'path')
     const path = pathAnno ? `/${pathAnno.value}` : `/${entity.namespace}/${entity.name}`
@@ -999,14 +1002,14 @@ const errorSpinner = spinnerDiv => iconForSpinner(spinnerDiv, 'fas fa-exclamatio
  * name stored in data.
  *
  */
-const updateSidecarHeader = (viewName) => data => {
+const updateSidecarHeader = (tab: ITab, viewName: string) => data => {
   const { name } = data
   const split = name.split('/')
   const packageName = split.length > 3 ? split[2] : undefined
   const actionName = split[split.length - 1]
   const onclick = () => pexec(`action get ${name}`)
 
-  addNameToSidecarHeader(undefined, actionName, packageName, onclick, viewName)
+  addNameToSidecarHeader(getSidecar(tab), actionName, packageName, onclick, viewName)
 
   data.actionName = actionName
   data.packageName = packageName
@@ -1059,14 +1062,14 @@ const createTempFolder = () => new Promise((resolve, reject) => {
  *
  *
  */
-const displayAsActivation = async (sessionType, { kind, name: actionName, name }, start, { activationModes }, protoActivation?: IProtoActivation) => {
+const displayAsActivation = async (tab: ITab, sessionType: string, { kind, name: actionName, name }: { kind: string, actionName: string, name: string }, start: number, protoActivation?: IProtoActivation) => {
   try {
     // when the session ended
     const end = Date.now()
 
     const ns = await qexec('wsk namespace current')
 
-    const annotations = [
+    const annotations: { key: string, value: string | number | boolean }[] = [
       { key: 'path', value: `${ns}/${name}` },
       { key: 'kind', value: kind }
     ]
@@ -1077,7 +1080,7 @@ const displayAsActivation = async (sessionType, { kind, name: actionName, name }
     }
 
     // fake up an activation record and show it
-    showEntity(activationModes({
+    showEntity(tab, addActivationModes({
       type: 'activations',
       activationId: sessionType, // e.g. "debug session"
       name: actionName,
@@ -1110,9 +1113,9 @@ const closeDebuggerUI = () => {
  * Clean up the debugger UI and close the sidecar
  *
  */
-const stopDebugger = () => () => {
+const stopDebugger = (tab: ITab) => () => {
   closeDebuggerUI()
-  clearSelection()
+  clearSelection(tab)
 }
 
 debug('loading done')

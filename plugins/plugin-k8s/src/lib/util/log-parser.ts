@@ -34,8 +34,9 @@ const timestampFormat = 'short'
  * Squash runs of the same log entry
  *
  */
-const squashLogRuns = (isNotCloudLens: boolean, options: IOptions) => (soFar, logLine) => {
-  let current
+const squashLogRuns = (isNotCloudLens: boolean, options: IOptions) => (soFar: IZaprEntry[], logLine: string): IZaprEntry[] => {
+  let current: IZaprEntry
+
   if (!isNotCloudLens) {
     const columns = logLine.split(/\s+/)
     const logType = columns[0]
@@ -52,7 +53,7 @@ const squashLogRuns = (isNotCloudLens: boolean, options: IOptions) => (soFar, lo
     } catch (err) {
       console.error(err)
     }
-    current = { logType, timestamp, origin, rest, runLength }
+    current = { logType, timestamp, origin, rest, runLength, rawTimestamp: timestamp, provider: '' }
 
   } else {
     try {
@@ -64,13 +65,16 @@ const squashLogRuns = (isNotCloudLens: boolean, options: IOptions) => (soFar, lo
           logType: 'pair',
           origin,
           rest: options.asJSON ? JSON.parse(record) : record,
-          runLength: 1
+          runLength: 1,
+          timestamp: '',
+          rawTimestamp: '',
+          provider: ''
         }
       } else {
-        current = { logType: 'raw', rest: logLine, runLength: 1 }
+        current = { logType: 'raw', rest: logLine, runLength: 1, timestamp: '', rawTimestamp: '', provider: '', origin: '' }
       }
     } catch (err) {
-      current = { logType: 'raw', rest: logLine, runLength: 1 }
+      current = { logType: 'raw', rest: logLine, runLength: 1, timestamp: '', rawTimestamp: '', provider: '', origin: '' }
     }
   }
 
@@ -101,7 +105,7 @@ interface IZaprEntry {
   logType: string
   provider: string
   origin: string
-  rest: string
+  rest: string | Record<string, string>
   runLength?: number
 }
 
@@ -112,7 +116,7 @@ interface IZaprEntry {
  * and Array.prototype.indexOf does not accept a pattern
  *
  */
-const findIndex = (A, pattern, startIdx) => {
+function findIndex (A: string[], pattern: RegExp, startIdx: number): number {
   for (let idx = startIdx; idx < A.length; idx++) {
     if (A[idx].match(pattern)) {
       return idx
@@ -127,7 +131,7 @@ const findIndex = (A, pattern, startIdx) => {
  * @return undefined if we don't have any log entries
  *
  */
-const parseZapr = (raw: string): Array<IZaprEntry> => {
+const parseZapr = (raw: string): IZaprEntry[] => {
   const pattern = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(DEBUG|INFO|ERROR)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/m
 
   const records = raw.split(pattern).filter(x => x !== '\n')
@@ -183,7 +187,7 @@ const parseZapr = (raw: string): Array<IZaprEntry> => {
  * @return undefined if we don't have any log entries
  *
  */
-const parseCloudLens = (raw: string, options: IOptions): Array<any> => {
+const parseCloudLens = (raw: string, options: IOptions): any[] => {
   const pattern = /^(?=[IEF][0-9]+)/m
   const linesByCloudLens = raw.split(pattern)
 
@@ -199,26 +203,26 @@ const parseCloudLens = (raw: string, options: IOptions): Array<any> => {
  * Parser for istio logs
  *
  */
-const parseIstio = (raw: string): Array<IZaprEntry> => {
+const parseIstio = (raw: string): IZaprEntry[] => {
   let prevTimestamp: string
-  let idxOfPrevTimestamp
+  let idxOfPrevTimestamp: number
 
   return raw
     .split(/[\n\r]/)
     .map(line => {
       try {
-        const record = JSON.parse(line)
+        const record: Record<string, string> = JSON.parse(line)
         const timestamp = record.time || record.timestamp || record.date
-        const logType: string = record.level || record.logType || ''
-        const origin: string = record.instance || record.provider || ''
+        const logType = record.level || record.logType || ''
+        const origin = record.instance || record.provider || record.caller || ''
 
         const zapr: IZaprEntry = {
-          timestamp: prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
+          timestamp: timestamp ? prettyPrintTime(timestamp, timestampFormat, prevTimestamp) : '',
           rawTimestamp: timestamp,
           logType,
-          provider: 'istio',
+          provider: record.logger,
           origin,
-          rest: record
+          rest: record.msg || record
         }
 
         if (timestamp) {
@@ -235,8 +239,8 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         let timestampIndex = 1
         let logTypeIndex = 2
         let restIndex = 3
-        let originIndex // none
-        let providerIndex // none
+        let originIndex: number // none
+        let providerIndex: number // none
 
         // [2019-02-22 15:22:54.048][16][info][upstream] external/envoy/source/common/upstream/cluster_manager_impl.cc:494] add/update cluster outbound|9093||istio-telemetry.istio-system.svc.cluster.local during init
         if (!match || match.length === 1) {
@@ -281,14 +285,15 @@ const parseIstio = (raw: string): Array<IZaprEntry> => {
         return zapr
       }
     })
-    .reduce((lines, line, idx) => {
+    .reduce((lines: IZaprEntry[], line: IZaprEntry, idx) => {
       // try to reduce down log entries with the same (timestamp, origin, provider)
       if (idx > 0) {
         const prevLine = lines[lines.length - 1]
 
         if (line.origin === prevLine.origin &&
             line.provider === prevLine.provider &&
-            (line.rawTimestamp === prevLine.rawTimestamp || !line.rawTimestamp)) {
+            line.rawTimestamp !== undefined && line.rawTimestamp === prevLine.rawTimestamp) {
+          debug('concat')
           prevLine.rest = `${prevLine.rest}\n${line.rest}`
         } else {
           lines.push(line)
@@ -309,7 +314,7 @@ const notEmpty = (_: IZaprEntry) => _.timestamp || _.rest || _.origin || _.provi
  *
  */
 export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) => {
-  const logEntries = parseZapr(raw) || parseIstio(raw) || parseCloudLens(raw, options)
+  const logEntries: IZaprEntry[] = parseZapr(raw) || parseIstio(raw) || parseCloudLens(raw, options)
   debug('logEntries', logEntries)
 
   if (!options.asHTML) {
@@ -319,7 +324,7 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
     container.classList.add('log-lines')
     // container.classList.add('fixed-table-layout')
 
-    const doWeHaveAnyFirstColumns = logEntries.find(_ => _.timestamp || _.origin || _.provider || _.runLength > 1)
+    const doWeHaveAnyFirstColumns = logEntries.findIndex(_ => _.timestamp || _.origin || _.provider || _.runLength > 1 ? true : false) >= 0
 
     logEntries.filter(notEmpty).forEach(({ logType = '', timestamp = '', origin = '', provider = '', rest, runLength = 1 }) => {
       // dom for the log line

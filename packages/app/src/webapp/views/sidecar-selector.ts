@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { ITab } from '@kui-shell/core/webapp/cli'
+
 /**
  * Select a given element in the currently visible sidecar
  *
  */
-export default (subselect = ''): string => `tab.visible > sidecar ${subselect}`
+export default (tab: ITab, subselect = ''): HTMLElement => tab.querySelector(`sidecar ${subselect}`)

@@ -212,17 +212,26 @@ exports.oops = ctx => err => {
   throw err
 }
 
-// only execute the test in local
+/** only execute the test in local */
 exports.localIt = (msg, func) => {
   if (process.env.MOCHA_RUN_TARGET !== 'webpack') return it(msg, func)
 }
 
-// only execute the test suite in local
+/** only execute the test suite in local */
 exports.localDescribe = (msg, func) => {
   if (process.env.MOCHA_RUN_TARGET !== 'webpack') return describe(msg, func)
 }
 
-// only execute the test in non-proxy browser
+/** only execute the test suite in an environment that has docker */
+exports.dockerDescribe = (msg, func) => {
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack' &&
+      (!process.env.TRAVIS_JOB_ID || process.platform === 'linux')) {
+    // currently only linux supports docker when running in travis
+    return describe(msg, func)
+  }
+}
+
+/** only execute the test in non-proxy browser */
 exports.remoteIt = (msg, func) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') return it(msg, func)
 }

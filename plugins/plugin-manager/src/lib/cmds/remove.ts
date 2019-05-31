@@ -23,13 +23,14 @@ import { remove } from 'fs-extra'
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import compile from '@kui-shell/core/core/plugin-assembler'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { success } from '../util'
 import { remove as usage } from '../../usage'
 
 debug('finished module imports')
 
-const doRemove = ({ argvNoOptions }) => {
+const doRemove = ({ argvNoOptions }: IEvaluatorArgs) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)
@@ -47,9 +48,9 @@ const doRemove = ({ argvNoOptions }) => {
     .then(removedCommands => success('removed', 'will no be longer available, after reload', removedCommands))
 }
 
-module.exports = (commandTree, prequire) => {
-  const cmd = commandTree.listen('/plugin/remove', doRemove, { usage })
-  commandTree.synonym('/plugin/uninstall', doRemove, cmd)
+module.exports = (commandTree: CommandRegistrar) => {
+  const cmd = commandTree.listen('/plugin/remove', doRemove, { usage: usage('remove') })
+  commandTree.synonym('/plugin/uninstall', doRemove, cmd, { usage: usage('uninstall') })
 }
 
 debug('loading done')

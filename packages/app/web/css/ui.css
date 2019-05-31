@@ -288,7 +288,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 }
 .repl .result-as-table .result-table {
     /* repl table */
-    width: 100%;
+    /* width: 100%; */
 }
 .repl-prompt {
     color: var(--color-text-02);
@@ -527,7 +527,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-.repl.sidecar-visible .result-table .entity-name-group {
+.repl.sidecar-visible .result-table .entity-name-group:not(.entity-name-group-narrow) {
     /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
     width: 100%;
     max-width: 0; /* important! 0 not 0% */
@@ -1082,6 +1082,10 @@ sidecar.entity-is-actions:not(.entity-is-sequence) .action-source, sidecar .acti
     white-space: pre-wrap;
     background: transparent;
 }
+.repl-result code.hljs {
+    /* avoid nested 0.875em from .repl-result and the above code.hljs */
+    font-size: 1em;
+}
 .package-content-count {
     font-weight: bold;
 }
@@ -1342,6 +1346,10 @@ code.fancy-code, code.fancy-code.hljs {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+.not-very-wide {
+    display: block; /* spans don't respond */
+    max-width: 18em;
 }
 .not-too-wide {
     display: block; /* spans don't respond */
@@ -1697,7 +1705,7 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 .log-lines .log-line .log-message {
     white-space: pre-wrap;
 }
-sidecar .log-lines .log-line {
+sidecar .log-lines:not(.log-lines-loose) .log-line {
     height: auto;
 }
 sidecar .log-lines .log-line:nth-child(2n) .log-field {

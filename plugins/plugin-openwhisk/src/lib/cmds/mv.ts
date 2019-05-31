@@ -20,6 +20,9 @@
  */
 
 import repl = require('@kui-shell/core/core/repl')
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+
+import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 import { CMD as copy } from './copy'
 
@@ -45,7 +48,7 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const mv = (type: string) => (op: string) => ({ argvNoOptions: argv, parsedOptions: options }) => {
+const mv = (type: string) => (op: string) => ({ argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs) => {
   const idx = argv.indexOf(op) + 1
   const oldName = argv[idx]
   const newName = argv[idx + 1]
@@ -58,11 +61,11 @@ const mv = (type: string) => (op: string) => ({ argvNoOptions: argv, parsedOptio
  * Register commands
  *
  */
-export default async (commandTree, wsk) => {
+export default async (commandTree: CommandRegistrar) => {
   // Install the routes. for now, no renaming of packages or triggers or rules
   ['actions'].forEach(type => {
     const handler = mv(type)
-    wsk.synonyms(type).forEach(syn => {
+    synonyms(type).forEach(syn => {
       commandTree.listen(`/wsk/${syn}/${CMD}`, handler(CMD), { usage: usage(type, CMD) })
     })
   })

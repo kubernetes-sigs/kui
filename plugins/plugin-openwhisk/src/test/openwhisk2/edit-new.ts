@@ -86,11 +86,11 @@ describe('create new actions in editor', function (this: common.ISuite) {
       return actionSrc.trim() === 'let main = x => x'
     }))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
-    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))  // go to the edit mode
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock'))) // go to the edit mode
     .then(() => this.app.client.waitForExist(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`))
     .then(() => setValue(this.app.client, 'let main = y => y', 'up-to-date')) // modify the content
-    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock')))  // go to the view mode
-    .then(() => this.app.client.waitUntil(async () => {  // expect the action content not to be changed
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock'))) // go to the view mode
+    .then(() => this.app.client.waitUntil(async () => { // expect the action content not to be changed
       console.log('lock: Expected action content: "let main = x => x"')
       const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
       return actionSrc.trim() === 'let main = x => x'
@@ -107,15 +107,15 @@ describe('create new actions in editor', function (this: common.ISuite) {
       return actionSrc.trim() === 'let main = x => x'
     }))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
-    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))  // go to the edit mode
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock'))) // go to the edit mode
     .then(() => this.app.client.waitForExist(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`))
     .then(() => setValue(this.app.client, 'let main = y => y', 'up-to-date')) // modify the content
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Deploy')))
     .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))) // deploy
     .then(() => this.app.client.waitForExist(`${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
-    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock')))  // go to the view mode
-    .then(() => this.app.client.waitUntil(async () => {  // expect the action content to be changed
+    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock'))) // go to the view mode
+    .then(() => this.app.client.waitUntil(async () => { // expect the action content to be changed
       console.log('lock: Expected action content "let main = y => y"')
       const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
       return actionSrc.trim() === 'let main = y => y'

@@ -18,17 +18,21 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/pods')
 
 import { qexec as $$ } from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Table } from '@kui-shell/core/webapp/models/table'
 
 import { selectorToString } from '../../util/selectors'
 
-import IResource from '../../model/resource'
+import { IResource, IKubeResource } from '../../model/resource'
 import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
-import { getActiveView, formatTable } from '../formatMultiTable'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { formatTable } from '../formatMultiTable'
+
+import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 /** for drilldown back button */
 const viewName = 'Pods'
@@ -38,15 +42,18 @@ const viewName = 'Pods'
  * the given resource.
  *
  */
-export const addPods = (modes: Array<any>, command: string, resource: IResource) => {
-  try {
+export const podMode: ModeRegistration = {
+  when: (resource: IKubeResource) => {
+    return resource.spec && resource.spec.selector ? true : false
+  },
+  mode: (command: string, resource: IResource) => {
     debug('addPods', resource)
-    if (resource.yaml.spec && resource.yaml.spec.selector) {
-      modes.push(podsButton(command, resource))
+    try {
+      return podsButton(command, resource)
+    } catch (err) {
+      debug('error rendering pods button')
+      console.error(err)
     }
-  } catch (err) {
-    debug('error rendering pods button')
-    console.error(err)
   }
 }
 
@@ -74,7 +81,7 @@ interface IParameters {
   resource: IResource
 }
 
-export const renderAndViewPods = async (parameters: IParameters) => {
+export const renderAndViewPods = async (tab: ITab, parameters: IParameters) => {
   const { command, resource } = parameters
   debug('renderAndViewPods', command, resource)
 
@@ -88,7 +95,7 @@ export const renderAndViewPods = async (parameters: IParameters) => {
 
     const tableModel: Table = await $$(getPods)
 
-    const tableView = formatTable(tableModel, { usePip: true, viewName, execOptions: { delegationOk: true } })
-    return insertView(tableView)
+    const tableView = formatTable(tab, tableModel, { usePip: true, viewName, execOptions: { delegationOk: true } })
+    return insertView(tab)(tableView)
   }
 }

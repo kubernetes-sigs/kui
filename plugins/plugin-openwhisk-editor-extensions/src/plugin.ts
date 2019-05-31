@@ -17,12 +17,14 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk-editor-extensions/loader')
 
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
 import newCmd from './lib/cmds/new'
 import composeCmd from './lib/cmds/compose'
 
-export default async (commandTree, prequire) => {
-  const wsk = await prequire('plugin-openwhisk')
-
-  await newCmd(commandTree, wsk)
-  await composeCmd(commandTree, prequire)
+export default async (commandTree: CommandRegistrar) => {
+  return Promise.all([
+    newCmd(commandTree),
+    composeCmd(commandTree)
+  ])
 }

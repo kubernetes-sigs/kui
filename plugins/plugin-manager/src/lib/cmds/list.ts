@@ -22,6 +22,7 @@ import * as path from 'path'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { list as usage } from '../../usage'
 
@@ -99,7 +100,7 @@ const doList = () => {
     })
 }
 
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/plugin/list', doList, { usage })
 }
 

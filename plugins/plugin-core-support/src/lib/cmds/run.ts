@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ const debug = Debug('plugins/core-support/run')
 
 import { readFile } from 'fs'
 import { dirname } from 'path'
-import * as expandHomeDir from 'expand-home-dir'
 
 import * as repl from '@kui-shell/core/core/repl'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
@@ -160,7 +160,7 @@ const usage = {
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/run', doRun, { usage, noAuthOk: true })
   commandTree.listen('/show',
-                     ({ execOptions }) => {
+                     ({ execOptions, tab }) => {
                        debug('show', execOptions)
                        if (!execOptions || !execOptions.parameters) {
                          throw new Error('Nothing to show')
@@ -185,7 +185,8 @@ export default (commandTree: CommandRegistrar) => {
                          container.classList.add('result-as-table')
                          scrollInner.appendChild(container)
 
-                         formatMultiListResult(!Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
+                         formatMultiListResult(tab,
+                                               !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
                                                container)
 
                          return {

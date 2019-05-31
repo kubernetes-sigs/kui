@@ -30,12 +30,10 @@ import { addBadge, addNameToSidecarHeader, addVersionBadge, beautify, clearBadge
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { IShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
-// maybe not needed, after some more cleanup
-import { prequire } from '@kui-shell/core/core/plugins'
-
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'
+import { fillInActionDetails } from '../../cmds/openwhisk-core'
 
 // the naming convention of highlight.js sometimes differs from that of openwhisk
 const uiNameForKindMap = {
@@ -47,14 +45,14 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
  * Load the given entity into the sidecar UI
  *
  */
-export const showEntity = async (entity, sidecar: Element, options: IShowOptions = new DefaultShowOptions()) => {
+export const showEntity = async (tab: cli.ITab, entity, sidecar: Element, options: IShowOptions = new DefaultShowOptions()) => {
   debug('showEntity', entity, sidecar, options)
 
   // this return value will show up in the repl; true would be only "ok" appears
   let responseToRepl: boolean | Node = true
 
   const maybeAddWebBadge = entity => {
-    const badge = addWebBadge(entity)
+    const badge = addWebBadge(tab, entity)
     if (badge) {
       if (!options || options.show === 'code' || options.show === 'default') {
         const { anchor, urlText } = badge
@@ -113,7 +111,7 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
             }
           } else if (annotation.contentType === 'html') {
             const frame = document.createElement('iframe')
-            const container = sidecar.querySelector(sidecarSelector('.custom-content'))
+            const container = sidecarSelector(tab, '.custom-content')
 
             frame.style.width = '100%'
             frame.style.border = 'none'
@@ -140,7 +138,7 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
 
           if (annotation.badge && annotation.badge !== 'web') {
             // render a badge, if we have one; we render web badges specially, with maybeAddWebBadge
-            addBadge(annotation.badge)
+            addBadge(tab, annotation.badge)
           }
 
           return true // yes, we took care of the rendering!
@@ -233,7 +231,7 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
                                                    }
                                                  })))
           .then(actions => ({ type: 'sequence', components: actions }))
-          .then(ast => wskflow(ast))
+          .then(ast => wskflow(tab, ast))
       }
     } else {
       //
@@ -322,7 +320,7 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
       }]
     }
     const rule = entity
-    wskflow(ast, rule)
+    wskflow(tab, ast, rule)
   } else if (entity.type === 'packages') {
     const actionCountDom = sidecar.querySelector('.package-action-count')
     const actionCount = (entity.actions && entity.actions.length) || 0
@@ -347,20 +345,19 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
       //
       renderField(source, entity, options.show)
     } else {
-      const wsk = await prequire('plugin-openwhisk')
       if (entity.actions) {
-        entity.actions.map(wsk.fillInActionDetails(entity))
-          .map(formatOneListResult({ excludePackageName: true, alwaysShowType: true }))
+        entity.actions.map(fillInActionDetails(entity))
+          .map(formatOneListResult(tab, { excludePackageName: true, alwaysShowType: true }))
           .forEach(dom => actions.appendChild(dom))
       }
       if (entity.feeds) {
-        entity.feeds.map(wsk.fillInActionDetails(entity, 'feeds'))
-          .map(formatOneListResult({ excludePackageName: true, alwaysShowType: true }))
+        entity.feeds.map(fillInActionDetails(entity, 'feeds'))
+          .map(formatOneListResult(tab, { excludePackageName: true, alwaysShowType: true }))
           .forEach(dom => actions.appendChild(dom))
       }
     }
   } else if (entity.type === 'activations') {
-    showActivation(entity, options)
+    showActivation(tab, entity, options)
   } else if (entity.type === 'triggers') {
     const feed = entity.annotations && entity.annotations.find(kv => kv.key === 'feed')
     const feedDom = element('.trigger-content .feed-content', sidecar)
@@ -388,16 +385,16 @@ export const showEntity = async (entity, sidecar: Element, options: IShowOptions
  * A small shim on top of the wskflow renderer
  *
  */
-const wskflow = async (ast, rule?) => {
+const wskflow = async (tab: cli.ITab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
-  const sidecar = getSidecar()
-  const { visualize } = await prequire('plugin-wskflow')
+  const sidecar = getSidecar(tab)
+  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
 
   sidecar.classList.add('custom-content')
-  const container = document.querySelector(sidecarSelector('.custom-content'))
+  const container = sidecarSelector(tab, '.custom-content')
   removeAllDomChildren(container)
 
-  const { view } = await visualize(ast, undefined, undefined, undefined, undefined, undefined, rule)
+  const { view } = await visualize(tab, ast, undefined, undefined, undefined, undefined, undefined, rule)
   container.appendChild(view)
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 }

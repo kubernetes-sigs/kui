@@ -24,8 +24,9 @@ import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import Presentation from './views/presentation'
-import { popupListen } from './cli'
+import { popupListen, ITab } from './cli'
 import { IExecOptions } from '../models/execOptions'
+import { IEntitySpec } from '../models/entity'
 
 const _highlight = (op: string) => (highlightThis?: Element | Element[]) => {
   if (highlightThis) {
@@ -49,10 +50,10 @@ interface PipOptions {
  * Make an DOM event handler that will restore the given pippedContainer
  *
  */
-const restore = (pippedContainer: boolean | Element, previousPresentation: Presentation, sidecarClass: string, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], escapeHandler: (evt: KeyboardEvent) => boolean, options?: PipOptions) => () => {
+const restore = (tab: ITab, pippedContainer: boolean | Element, previousPresentation: Presentation, sidecarClass: string, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], escapeHandler: (evt: KeyboardEvent) => boolean, options?: PipOptions) => () => {
   debug('restore')
 
-  const sidecar = getSidecar()
+  const sidecar = getSidecar(tab)
   const parent = (options && options.parent) || sidecar.querySelector('.custom-content')
 
   if (pippedContainer !== true) {
@@ -103,7 +104,7 @@ const restore = (pippedContainer: boolean | Element, previousPresentation: Prese
  *
  *
  */
-const pip = (container: boolean | Element, previousPresentation: Presentation, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], returnTo = 'previous view', options?: PipOptions) => {
+const pip = (tab: ITab, container: boolean | Element, previousPresentation: Presentation, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], returnTo = 'previous view', options?: PipOptions) => {
   try {
     if (container !== true && container !== false) {
       container.parentNode.removeChild(container)
@@ -112,12 +113,12 @@ const pip = (container: boolean | Element, previousPresentation: Presentation, c
     // ok
   }
 
-  const sidecar = getSidecar()
+  const sidecar = getSidecar(tab)
   const sidecarClass = sidecar.className
   const escapeHandler = undefined // we don't want to override the escape key behavior
-  const backContainer = document.querySelector(bottomStripe.css.backContainer)
-  const backButton = document.querySelector(bottomStripe.css.backButton)
-  const restoreFn = restore(container, previousPresentation, sidecarClass, capturedHeaders, highlightThis, escapeHandler, options)
+  const backContainer = bottomStripe.css.backContainer(tab)
+  const backButton = bottomStripe.css.backButton(tab)
+  const restoreFn = restore(tab, container, previousPresentation, sidecarClass, capturedHeaders, highlightThis, escapeHandler, options)
 
   debug('returnTo', returnTo)
   backButton.setAttribute('data-balloon', `Return to ${returnTo}`)
@@ -151,7 +152,7 @@ const pip = (container: boolean | Element, previousPresentation: Presentation, c
     document.body.appendChild(container)
 
     escapeHandler = document.onkeyup
-    const restoreFn = restore(container, sidecarClass, capturedHeaders, highlightThis, escapeHandler)
+    const restoreFn = restore(tab, container, sidecarClass, capturedHeaders, highlightThis, escapeHandler)
 
     document.onkeyup = evt => {
         if (evt.keyCode === 27) { // escape key maps to keycode `27`
@@ -173,8 +174,8 @@ interface ICapturedHeader {
  * Capture and clone the given selector
  *
  */
-const capture = (selector: string, redraw?: Function): ICapturedHeader => {
-  const node = document.querySelector(selector)
+const capture = (tab: ITab, selector: string, redraw?: Function): ICapturedHeader => {
+  const node = tab.querySelector(selector)
   return {
     selector, // remember how to find the replacement
     node: node.cloneNode(true) as Element, // capture the current dom via deep clone
@@ -189,7 +190,7 @@ const capture = (selector: string, redraw?: Function): ICapturedHeader => {
  *
  */
 type StringProducing = () => Promise<string>
-export default (command: string | StringProducing, highlightThis: Element | Element[], ccontainer: string | Element, returnTo?: string, options?: PipOptions) => (event?: Event) => {
+export default (tab: ITab, command: string | IEntitySpec | StringProducing, highlightThis: Element | Element[], ccontainer: string | Element, returnTo?: string, options?: PipOptions) => (event?: Event) => {
   if (event) event.stopPropagation()
 
   // maybe ccontainer is a query selector
@@ -200,15 +201,15 @@ export default (command: string | StringProducing, highlightThis: Element | Elem
   // capture the current header and other DOM state, before the `command` overwrites it
   const alreadyPipped = document.querySelector('body > .picture-in-picture')
   const presentation: Presentation = document.body.getAttribute('data-presentation') && Presentation[document.body.getAttribute('data-presentation')]
-  const capturedHeader = capture(sidecarSelector('.sidecar-header-text'), popupListen)
-  const capturedHeader2 = capture(sidecarSelector('.header-right-bits .custom-header-content'))
-  const capturedHeader3 = capture(sidecarSelector('.header-right-bits .action-content'))
-  const capturedHeader4 = capture(sidecarSelector('.sidecar-header-icon'))
-  const capturedHeader5 = capture(sidecarSelector('.sidecar-header-secondary-content'))
+  const capturedHeader = capture(tab, '.sidecar-header-text', popupListen)
+  const capturedHeader2 = capture(tab, '.header-right-bits .custom-header-content')
+  const capturedHeader3 = capture(tab, '.header-right-bits .action-content')
+  const capturedHeader4 = capture(tab, '.sidecar-header-icon')
+  const capturedHeader5 = capture(tab, '.sidecar-header-secondary-content')
 
   // for the footer, we need to capture the modeButton renderer, so we can reattach the click events
-  const modeButtons = document.querySelector(bottomStripe.css.modeContainer)['capture']
-  const capturedFooter = capture(bottomStripe.css.buttons, modeButtons && modeButtons())
+  const modeButtons = bottomStripe.css.modeContainer(tab)['capture']
+  const capturedFooter = capture(tab, bottomStripe.rawCSS.buttons, modeButtons && modeButtons())
 
   debug('container', container)
   debug('alreadyPipped', alreadyPipped)
@@ -218,7 +219,7 @@ export default (command: string | StringProducing, highlightThis: Element | Elem
 
   // make the transition
   const restoreFn = container && !alreadyPipped
-    ? pip(container, presentation, capturedHeaders, highlightThis, returnTo, options)
+    ? pip(tab, container, presentation, capturedHeaders, highlightThis, returnTo, options)
     : () => true
 
   highlight(highlightThis)
@@ -244,6 +245,6 @@ export default (command: string | StringProducing, highlightThis: Element | Elem
   } else if (typeof command === 'function') {
     return command().catch(restoreFn)
   } else {
-    return showEntity(command, { preserveBackButton: true })
+    return showEntity(tab, command, { preserveBackButton: true })
   }
 }

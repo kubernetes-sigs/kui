@@ -26,18 +26,22 @@ const debug = Debug('plugins/openwhisk/cmds/auth')
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import eventBus from '@kui-shell/core/core/events'
-import { partial } from '@kui-shell/core/webapp/cli'
+import { partial, ITab } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
-import namespace = require('../models/namespace')
-import { apiHost } from '../models/auth'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import expandHomeDir from '@kui-shell/core/util/home'
+import UsageError from '@kui-shell/core/core/usage-error'
+
+import { getClient, owOpts } from './openwhisk-core'
+import namespace = require('../models/namespace')
+import { apiHost, auth as authModel } from '../models/auth'
 
 /**
  * Location of the wskprops file
  *
  */
 const wskpropsFile = (): string => {
-  const expandHomeDir = require('expand-home-dir')
   return expandHomeDir(process.env.WSK_CONFIG_FILE || '~/.wskprops')
 }
 
@@ -53,6 +57,10 @@ const usage = {
       header: 'Commands to switch, list, and remember OpenWhisk authorization keys',
       available: [],
       related: ['host']
+    },
+    get: {
+      strict: 'get',
+      command: 'get'
     },
     list: {
       strict: 'list',
@@ -128,14 +136,14 @@ usage.host.toplevel.available = [usage.host.get, usage.host.set]
  * The message we will use to inform the user of a auth switch event
  *
  */
-const informUserOfChange = (wsk, commandTree, subject) => () => {
+const informUserOfChange = (tab: ITab, subject?: string) => () => {
   setTimeout(async () => eventBus.emit('/auth/change', {
     namespace: await namespace.current(),
     subject: subject
   }), 0)
 
   return apiHost.get().then(async host => {
-    clearSelection()
+    clearSelection(tab)
     return `You are now using the OpenWhisk host ${host}, and namespace ${await namespace.current()}`
   })
 }
@@ -157,7 +165,7 @@ const notifyOfHostChange = (host) => async () => {
  * @return resolves with the updated structure
  *
  */
-const readFromLocalWskProps = (wsk, auth?: string, subject?: string) => apiHost.get().then(apiHost => new Promise((resolve, reject) => {
+const readFromLocalWskProps = (auth?: string, subject?: string) => apiHost.get().then(apiHost => new Promise((resolve, reject) => {
   // read from ~/.wskprops
   const propertiesParser = require('properties-parser')
   propertiesParser.read(wskpropsFile(), (err, wskprops) => {
@@ -207,9 +215,9 @@ const writeToLocalWskProps = (wskprops): Promise<string> => new Promise((resolve
  * Read-and-update an auth choice to ~/.wskprops
  *
  */
-const updateLocalWskProps = (wsk, auth?: string, subject?: string): Promise<string> => {
+const updateLocalWskProps = (auth?: string, subject?: string): Promise<string> => {
   if (!inBrowser()) {
-    return readFromLocalWskProps(wsk, auth, subject).then(writeToLocalWskProps)
+    return readFromLocalWskProps(auth, subject).then(writeToLocalWskProps)
   } else {
     return Promise.resolve(auth)
   }
@@ -271,24 +279,29 @@ const list = async (): Promise<Table> => {
 const slice = (argv, verb) => argv.slice(argv.indexOf(verb) + 1)
 const firstArg = (argv, verb) => argv[argv.indexOf(verb) + 1]
 
+interface IUseOptions {
+  save?: boolean
+}
+
 /**
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (commandTree, wsk, verb: string) => ({ argvNoOptions, parsedOptions }) => namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
+const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: IEvaluatorArgs) => namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
   if (auth) {
     /**
      * e.g. auth switch [auth] (=> options.save is undefined)
      *      auth switch [auth] --save (=> options.save is true)
      *      auth switch [auth] --no-save (=> options.save is false)
      */
-    if (parsedOptions.save === false) {
-      return namespace.use(auth, wsk)
-        .then(informUserOfChange(wsk, commandTree, undefined))
+    const options = (parsedOptions as any) as IUseOptions
+    if (options.save === false) {
+      return namespace.use(auth)
+        .then(informUserOfChange(tab))
     } else {
-      return updateLocalWskProps(wsk, auth)
-        .then(auth => namespace.useAndSave(auth, wsk))
-        .then(informUserOfChange(wsk, commandTree, undefined))
+      return updateLocalWskProps(auth)
+        .then(auth => namespace.useAndSave(auth))
+        .then(informUserOfChange(tab))
     }
   } else {
     return namespace.list().then(namespaces => {
@@ -315,18 +328,18 @@ const clicky = (parent: HTMLElement, cmd: string, exec) => {
  * Command impl for auth add
  *
  */
-const addFn = (commandTree, wsk, prequire, key: string, subject: string) => {
+const addFn = (tab: ITab, key: string, subject: string) => {
   debug('add', key, subject)
 
-  const previousAuth = wsk.auth.get()
-  return wsk.auth.set(key)
+  const previousAuth = authModel.get()
+  return authModel.set(key)
     .then(() => namespace.init(true)) // true means that we'll do the error handling
-    .then(() => updateLocalWskProps(wsk, key, subject))
-    .then(informUserOfChange(wsk, commandTree, subject))
+    .then(() => updateLocalWskProps(key, subject))
+    .then(informUserOfChange(tab, subject))
     .catch(err => {
       if (err.statusCode === 401) {
         // then the key is bogus, restore the previousAuth
-        return wsk.auth.set(previousAuth)
+        return authModel.set(previousAuth)
           .then(() => {
             err.error.error = 'The supplied authentication key was not recognized'
             throw err
@@ -339,7 +352,7 @@ const addFn = (commandTree, wsk, prequire, key: string, subject: string) => {
         clicky(dom, 'wsk auth list', repl.pexec)
         dom.appendChild(document.createTextNode(' or '))
         clicky(dom, 'wsk auth add', partial)
-        return dom
+        throw new UsageError(dom)
       }
     })
 }
@@ -348,12 +361,12 @@ const addFn = (commandTree, wsk, prequire, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = (wsk) => async ({ argvNoOptions, parsedOptions: options, execOptions }) => {
+const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
     host: argv[0] || options.host, // the new apihost to use
-    ignoreCerts: options.ignoreCerts || options.insecureSSL || options.insecure,
+    ignoreCerts: options.ignoreCerts || options.insecureSSL || options.insecure ? true : false,
     isLocal: false // is this a local openwhisk?
   }
 
@@ -394,14 +407,14 @@ const hostSet = (wsk) => async ({ argvNoOptions, parsedOptions: options, execOpt
     hostConfig.ignoreCerts = true
     hostConfig.isLocal = true
   } else if (hostConfig.host === 'local' || hostConfig.host === 'localhost') {
-    hostConfig = repl.qexec('wsk host pinglocal', undefined, undefined, execOptions)
+    hostConfig = await repl.qexec('wsk host pinglocal', undefined, undefined, execOptions)
   }
 
   const { host, ignoreCerts, isLocal } = await Promise.resolve(hostConfig)
 
   return apiHost.set(host, { ignoreCerts })
     .then(namespace.setApiHost)
-    .then(() => updateLocalWskProps(wsk))
+    .then(() => updateLocalWskProps())
     .then(notifyOfHostChange(host))
     .then(() => namespace.list().then(auths => {
       debug('got auths', auths)
@@ -527,24 +540,25 @@ const pingLocal = async () => {
  * Register command handlers
  *
  */
-export default async (commandTree, wsk, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   debug('init')
 
   commandTree.subtree('/wsk/host', { usage: usage.host.toplevel })
   commandTree.subtree('/wsk/auth', { usage: usage.auth.toplevel })
 
-  const add = ({ argvNoOptions }) => addFn(commandTree, wsk, prequire, firstArg(argvNoOptions, 'add'), undefined)
+  const add = ({ argvNoOptions, tab }: IEvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
-  commandTree.listen('/wsk/auth/switch', use(commandTree, wsk, 'switch'), { usage: usage.auth.switch, noAuthOk: true, inBrowserOK: true })
-  commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true, inBrowserOK: true })
-  commandTree.listen('/wsk/auth/list', list, { usage: usage.auth.list, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/auth/switch', use('switch'), { usage: usage.auth.switch, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/wsk/auth/list', list, { usage: usage.auth.list, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/wsk/auth/get', () => authModel.get(), { usage: usage.auth.get, noAuthOk: true, inBrowserOk: true })
 
   /**
    * OpenWhisk API host: get and set commands
    *
    */
-  commandTree.listen('/wsk/host/get', () => apiHost.get(), { usage: usage.host.get, noAuthOk: true, inBrowserOK: true })
-  commandTree.listen('/wsk/host/set', hostSet(wsk), { usage: usage.host.set, noAuthOk: true, inBrowserOK: true })
+  commandTree.listen('/wsk/host/get', () => apiHost.get(), { usage: usage.host.get, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/wsk/host/set', hostSet, { usage: usage.host.set, noAuthOk: true, inBrowserOk: true })
   commandTree.listen('/wsk/host/pinglocal', pingLocal, { hidden: true, noAuthOk: true })
 
   /**
@@ -553,7 +567,7 @@ export default async (commandTree, wsk, prequire) => {
    */
   commandTree.listen('/wsk/auth/namespace/get', ({ execOptions }) => {
     // the api returns, as a historical artifact, an array of length 1
-    return wsk.client(execOptions).namespaces.list(wsk.owOpts()).then(A => A[0])
+    return getClient(execOptions).namespaces.list(owOpts()).then(A => A[0])
   }, { hidden: true })
 
   return {

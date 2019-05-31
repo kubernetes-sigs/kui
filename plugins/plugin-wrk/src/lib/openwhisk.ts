@@ -16,14 +16,16 @@
 
 import * as fs from 'fs'
 import * as url from 'url'
-import * as expandHomeDir from 'expand-home-dir'
 import * as propertiesParser from 'properties-parser'
+
+import expandHomeDir from '@kui-shell/core/util/home'
+import { qexec as $ } from '@kui-shell/core/core/repl'
 
 /**
  * Get the apiHost and auth key
  *
  */
-export const getCreds = (wsk, options) => {
+export const getCreds = async (options) => {
   if (options.wskprops) {
     // read from a wskprops file
     return new Promise((resolve, reject) => fs.readFile(expandHomeDir(options.wskprops), (err, data) => {
@@ -46,6 +48,10 @@ export const getCreds = (wsk, options) => {
     throw new Error('Please specify both --apiHost and --auth')
   } else {
     // use the global settings
-    return wsk.apiHost.get().then(apiHost => ({ apiHost, auth: wsk.auth.get() }))
+    const [ apiHost, auth ] = await Promise.all([
+      $('wsk host get'),
+      $('wsk auth get')
+    ])
+    return { apiHost, auth }
   }
 }

@@ -23,17 +23,16 @@ import { isPopup } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import createdOn from '../util/created-on'
 
 import { FinalState } from '../model/states'
 import { IKubeStatus, DefaultKubeStatus, IKubeMetadata, DefaultKubeMetadata, IKubeResource, IResource } from '../model/resource'
 
-import { addConditions } from '../view/modes/conditions'
-import { addPods } from '../view/modes/pods'
-import { addContainers } from '../view/modes/containers'
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
+import { apply as addRelevantModes } from '../view/modes/registrar'
 
 const usage = command => ({
   title: command,
@@ -167,7 +166,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     }
   }))
 
-  const modes: Array<any> = [
+  const modes: ISidecarMode[] = [
     {
       mode: 'summary',
       defaultMode: true,
@@ -181,9 +180,10 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     const command = 'kubectl'
     const resource: IResource = { kind: yaml.kind, name: yaml.metadata.name, yaml }
     modes.push(statusButton(command, resource, FinalState.NotPendingLike))
-    addConditions(modes, command, resource)
-    addPods(modes, command, resource)
-    addContainers(modes, command, resource)
+
+    // consult the view registrar for registered view modes
+    // relevant to this resource
+    addRelevantModes(modes, command, resource)
   }
   modes.push({
     mode: 'raw',
@@ -216,6 +216,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     contentType: output,
     prettyType: resource.kind,
     subtext: createdOn(resource),
+    resource,
     modes,
     content: output === 'json' ? summary : safeDump(summary).trim()
   }

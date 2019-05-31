@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import repl = require('@kui-shell/core/core/repl')
-import { show as showSidecar, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
+
+import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
 
 /**
  * These options help guide the help system; this command needs a
@@ -49,30 +52,32 @@ const idMatch = (entity, entityId) => {
   }
 }
 
-export default async (commandTree, { crudable, synonyms }, prequire) => {
-  const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args }) => {
+export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => {
+  const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args, tab }: IEvaluatorArgs) => {
     const entityId = args[args.indexOf(mode) + 1]
-    const selection = currentSelection()
+    const selection = currentSelection(tab)
 
-    if (selection && (!entityType ||
-                      !entityId ||
-                      (selection.type === entityType && idMatch(selection, entityId)) ||
-                      (Array.isArray(entityType) && entityType.find(t => t === selection.type)))) {
+    if (selection &&
+        (!entityType ||
+         !entityId ||
+         (selection.type === entityType && idMatch(selection, entityId)) ||
+         (Array.isArray(entityType) && entityType.find(t => t === selection.type)))) {
       if (mode !== 'raw' &&
-                !(selection[mode] ||
-                  (selection.exec && selection.exec[mode]) ||
-                  (selection.response && selection.response[mode]))) {
+          !(selection[mode] ||
+            (selection.exec && selection.exec[mode]) ||
+            (isActivationSpec(selection) && selection.response[mode]))) {
+        console.error('!!!!!!!!', selection)
         throw new Error(`The current entity does not support viewing ${mode}`)
       } else {
-        showSidecar()
-        return showEntity(selection, { show: mode })
+        showSidecar(tab)
+        return showEntity(tab, selection, { show: mode })
       }
     } else if (args.length === 3 || args.length === 4) { // activation logs xxx or wsk activation logs xxx
       const activation = await repl.qexec(`${entityType} get ${entityId}`)
       if (isHeadless()) {
         return activation[mode]
       } else {
-        showEntity(activation, { show: mode })
+        showEntity(tab, activation, { show: mode })
         return true // make repl happy
       }
     } else {
@@ -102,12 +107,12 @@ export default async (commandTree, { crudable, synonyms }, prequire) => {
 
   crudable.forEach(type => {
     synonyms(type).forEach(syn => {
-      const paramsCmd = commandTree.listen(`/wsk/${syn}/parameters`, switchSidecarMode(undefined, 'parameters'), docs(`Show the parameters`, true, true))
-      commandTree.synonym(`/wsk/${syn}/params`, switchSidecarMode(undefined, 'parameters'), paramsCmd)
+      const paramsCmd = commandTree.listen(`/wsk/${syn}/parameters`, switchSidecarMode(undefined, 'parameters'), docs('Show the parameters', true, true))
+      commandTree.synonym(`/wsk/${syn}/params`, switchSidecarMode(undefined, 'parameters'), paramsCmd, docs('Show the parameters', true, true))
 
-      commandTree.listen(`/wsk/${syn}/annotations`, switchSidecarMode(undefined, 'annotations'), docs(`Show the annotations`))
-      commandTree.listen(`/wsk/${syn}/content`, switchSidecarMode(undefined, 'default'), docs(`Show the main content`))
-      commandTree.listen(`/wsk/${syn}/raw`, switchSidecarMode(undefined, 'raw'), docs(`Show the raw JSON record`))
+      commandTree.listen(`/wsk/${syn}/annotations`, switchSidecarMode(undefined, 'annotations'), docs('Show the annotations'))
+      commandTree.listen(`/wsk/${syn}/content`, switchSidecarMode(undefined, 'default'), docs('Show the main content'))
+      commandTree.listen(`/wsk/${syn}/raw`, switchSidecarMode(undefined, 'raw'), docs('Show the raw JSON record'))
       // commandTree.listen('/default', switchSidecarMode(undefined, 'default'))
     })
   })

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { sessionList } from '../../utility/usage'
-import * as repl from '@kui-shell/core/core/repl'
-import UsageError from '@kui-shell/core/core/usage-error'
+
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/session-list')
 
-export default async (commandTree, prequire) => {
+import * as repl from '@kui-shell/core/core/repl'
+import UsageError from '@kui-shell/core/core/usage-error'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
+import { sessionList } from '../../utility/usage'
+
+interface IListOptions {
+  name?: string
+  count?: number
+  limit?: number
+  skip?: number
+  'scan-limit'?: number
+}
+
+export default async (commandTree: CommandRegistrar) => {
   const sessionSyns = ['sessions', 'sess', 'ses', 'session']
+
   /* command handler for session list*/
   sessionSyns.forEach(noun => {
-    commandTree.listen(`/wsk/${noun}/list`, async ({ argvNoOptions, parsedOptions }) => {
-      if (parsedOptions.limit === 0 || parsedOptions['scan-limit'] === 0) return []
+    commandTree.listen(`/wsk/${noun}/list`, async ({ argvNoOptions, parsedOptions: options }) => {
+      const parsedOptions = (options as any) as IListOptions
 
-      const queryParameters = ['limit', 'skip', 'scan-limit']
-      queryParameters.forEach(parameter => {
-        if (parsedOptions[parameter] !== undefined && (!Number.isInteger(parsedOptions[parameter]) || parsedOptions[parameter] < 0)) {
-          throw new UsageError(`The query parameter ${parameter} was malformed:\nThe value '${parsedOptions[parameter]}' is not an integer for sessions.`)
-        }
-      })
+      const limit = parsedOptions.limit === undefined ? 10 : parsedOptions.limit // limit 10 sessions in session list if users didn't specify --limit
+      const skip = parsedOptions.skip || 0 // skip 0 sessions in session list by default if users didn't specify --skip
+      const scanLimit = parsedOptions['scan-limit']
 
-      let nameOption: string = parsedOptions.name // e.g. session list --name [session name]
-      let nameSpecify: string = argvNoOptions.indexOf('list') === argvNoOptions.length - 2 ? argvNoOptions[argvNoOptions.length - 1] : '' // e.g. session list [session name]
+      // degenerate cases for options
+      if (limit === 0 || scanLimit === 0) return []
+
+      let nameOption = parsedOptions.name // e.g. session list --name [session name]
+      let nameSpecify = argvNoOptions.indexOf('list') === argvNoOptions.length - 2 ? argvNoOptions[argvNoOptions.length - 1] : '' // e.g. session list [session name]
 
       if (nameOption && nameSpecify && (nameOption !== nameSpecify)) {
         debug('inconsistent name:', nameSpecify, nameSpecify)
@@ -42,8 +55,6 @@ export default async (commandTree, prequire) => {
       }
 
       const name = nameOption || nameSpecify || ''
-      const limit: number = parsedOptions.limit || 10  // we limit 10 sessions in session list if users didn't specify --limit
-      const skip: number = parsedOptions.skip || 0  // we skip 0 sessions in session list by default if users didn't specify --skip
 
       // find sessions in activation list
       const findSessions = (skip = 0, name = '', limit = 20) => {
@@ -61,17 +72,17 @@ export default async (commandTree, prequire) => {
           .catch(err => err)
       }
 
-      if (parsedOptions['scan-limit']) {
-        const max = await repl.qexec('wsk activation count')  // get the number of total activations
+      if (scanLimit) {
+        const max: number = await repl.qexec('wsk activation count') // get the number of total activations
         let foundSessions = []
-        for (let scanned = 0; scanned < max && foundSessions.length < parsedOptions['scan-limit']; scanned += 200) {
+        for (let scanned = 0; scanned < max && foundSessions.length < scanLimit; scanned += 200) {
           try {
             foundSessions = foundSessions.concat(await findSessions(scanned, name, 200))
           } catch (err) {
             throw err
           }
         }
-        return parsedOptions.count ? foundSessions.slice(skip, parsedOptions['scan-limit'] + skip).length : foundSessions.slice(skip, parsedOptions['scan-limit'] + skip)
+        return parsedOptions.count ? foundSessions.slice(skip, scanLimit + skip).length : foundSessions.slice(skip, scanLimit + skip)
       } else {
         return findSessions(0, name, 200) // always trying to find sessions in the latest 20 activations
           .then(foundSessions => parsedOptions.count ? foundSessions.slice(skip, limit + skip).length : foundSessions.slice(skip, limit + skip))

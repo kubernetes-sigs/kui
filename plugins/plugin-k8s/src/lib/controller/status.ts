@@ -23,6 +23,7 @@ import { basename, join } from 'path'
 import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { IExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
 
 import { withRetryOn404 } from '../util/retry'
 import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
@@ -114,15 +115,22 @@ interface IContext {
 
 /**
  * Return an [IContext] model for all known contexts
- *
+ * @param {Boolean} fetchAllNS If set to true, fetch all the namespaces of a cluster
  */
-const allContexts = async (execOptions): Promise<Array<IContext>> => {
+const allContexts = async (execOptions: IExecOptions, { fetchAllNS = false } = {}): Promise<IContext[]> => {
   const table: Table = await repl.qexec(`k8s contexts`, undefined, undefined, execOptions)
 
-  return table.body.map(({ attributes }) => ({
-    name: attributes.find(({ key }) => key === 'NAME').value,
-    namespace: attributes.find(({ key }) => key === 'NAMESPACE').value
-  }))
+  if (!fetchAllNS) {
+    return table.body.map(({ attributes }) => ({
+      name: attributes.find(({ key }) => key === 'NAME').value,
+      namespace: attributes.find(({ key }) => key === 'NAMESPACE').value
+    }))
+  }
+
+  return flatten(await Promise.all(table.body.map(cluster => repl.qexec(`k get ns --context ${cluster.name}`, undefined, undefined, execOptions)
+      .then((nsTable: Table) => nsTable.body.map(({ name }) => ({ name: cluster.name, namespace: name })))
+      .catch(handleError)
+    ))).filter(x => x)
 }
 
 /**
@@ -138,7 +146,7 @@ const removeDuplicateResources = L => L.filter((item, idx) => {
  * Fetch the status for a given list of contexts
  *
  */
-const getStatusForKnownContexts = (execOptions, parsedOptions) => async (contexts: Array<IContext> = []) => {
+const getStatusForKnownContexts = (execOptions: IExecOptions, parsedOptions: ParsedOptions) => async (contexts: IContext[] = []) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
   const currentContext = repl.qexec(`kubectl config current-context`, undefined, undefined, raw)
@@ -156,13 +164,15 @@ const getStatusForKnownContexts = (execOptions, parsedOptions) => async (context
   // format the tables
   const tables = Promise.all(contexts.map(async ({ name, namespace }) => {
     try {
+      const inNamespace = namespace ? `-n "${namespace}"` : ''
+
       debug('fetching kubectl get all', name, namespace)
-      const coreResources = repl.qexec(`kubectl get --context "${name}" all ${adminCoreFilter} -o json`,
+      const coreResources = repl.qexec(`kubectl get --context "${name}" ${inNamespace} all ${adminCoreFilter} -o json`,
                                        undefined, undefined, raw)
         .catch(handleError)
 
       debug('fetching crds', name, namespace)
-      const crds = await repl.qexec(`kubectl get --context "${name}" crds ${adminCRDFilter} -o json`,
+      const crds = await repl.qexec(`kubectl get --context "${name}" ${inNamespace} crds ${adminCRDFilter} -o json`,
                                     undefined, undefined, raw)
       debug('crds', name, crds)
 
@@ -171,7 +181,7 @@ const getStatusForKnownContexts = (execOptions, parsedOptions) => async (context
 
       const crdResources = flatten(await Promise.all(filteredCRDs.map(crd => {
         const kind = (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) || crd.spec.names.kind
-        return repl.qexec(`kubectl get --context "${name}" -n "${namespace}" ${adminCoreFilter} "${kind}" -o json`,
+        return repl.qexec(`kubectl get --context "${name}" ${inNamespace} ${adminCoreFilter} "${kind}" -o json`,
                           undefined, undefined, raw)
           .catch(handleError)
       })))
@@ -218,7 +228,7 @@ const getStatusForKnownContexts = (execOptions, parsedOptions) => async (context
       return []
     } else {
       const header = headerRow({
-        title: contexts.length === 0 ? await currentContext : strings.allContexts,
+        title: parsedOptions.all ? strings.allContexts : await currentContext,
         context: true,
         tableCSS: 'selected-row',
         fontawesome,
@@ -308,7 +318,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     // CRDs
     //
     debug('global status check')
-    return getStatusForKnownContexts(execOptions, parsedOptions)(await allContexts(execOptions))
+    return getStatusForKnownContexts(execOptions, parsedOptions)(await allContexts(execOptions, { fetchAllNS: true }))
   } else if (!file && !name) {
     //
     // ibid, but only for the current context
@@ -450,7 +460,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
  * Add any kube-native resources that might be associated with the controllers
  *
  */
-const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: Array<any>): Promise<Array<any>> => {
+const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: any[]): Promise<any[]> => {
   debug('findControlledResources', kubeEntities)
 
   const raw = Object.assign({}, args.execOptions, { raw: true })

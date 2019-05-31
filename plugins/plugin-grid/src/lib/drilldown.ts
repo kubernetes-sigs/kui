@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
-export const drilldownWith = (returnTo, command, highlightThis?, callThese = []) => event => {
+export const drilldownWith = (tab: ITab, returnTo: string, command: string | (() => Promise<string>), highlightThis?: HTMLElement, callThese = []) => event => {
   // invoke any precursor functions
   callThese.forEach(_ => _())
 
-  const container = document.querySelector(sidecarSelector('.custom-content .activation-viz-plugin'))
-  return pictureInPicture(command, highlightThis, container, returnTo)(event)
+  const container = sidecarSelector(tab, '.custom-content .activation-viz-plugin')
+  return pictureInPicture(tab, command, highlightThis, container, returnTo)(event)
 }

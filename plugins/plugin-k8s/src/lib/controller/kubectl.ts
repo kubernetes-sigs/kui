@@ -18,15 +18,16 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
-import * as expandHomeDir from 'expand-home-dir'
-
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import repl = require('@kui-shell/core/core/repl')
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -44,21 +45,31 @@ import { redactJSON, redactYAML } from '../view/redact'
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
 import { deleteResourceButton } from '../view/modes/crud'
-import { addConditions } from '../view/modes/conditions'
-import { addPods } from '../view/modes/pods'
-import { addContainers } from '../view/modes/containers'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
+import { apply as addRelevantModes } from '../view/modes/registrar'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends IExecOptions {
-  credentials?: {
+/*  credentials?: {
     k8s: {
       kubeconfig: string
       ca: string
       cafile: string
     }
-  }
+  }*/
 }
+
+/**
+ * Several commands seem to be cropping up that give a facade over
+ * kubectl; this is a start at such a list
+ *
+ * 1) kubectl, bien sûr
+ * 2) oc, redhat openshift CLI
+ *
+ */
+const kubelike = /kubectl|oc/
+const isKubeLike = (command: string): boolean => kubelike.test(command)
 
 /** lazily load js-yaml and invoke its yaml parser */
 const parseYAML = async (str: string): Promise<any> => {
@@ -124,6 +135,7 @@ const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.Pro
  */
 const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options: ParsedOptions) => {
   const hasTableVerb = verb === 'ls' ||
+    verb === 'search' ||
     verb === 'list' ||
     verb === 'get' ||
     (verb === 'config' && entityType.match(/^get/))
@@ -152,9 +164,19 @@ const table = (decodedResult: string, stderr: string, command: string, verb: str
   } else if (preTables && preTables.length >= 1) {
     // try use display this as a table
     if (preTables.length === 1) {
-      return formatTable(command, verb, entityType, options, preTables[0])
+      const T = formatTable(command, verb, entityType, options, preTables[0])
+      if (execOptions.filter) {
+        T.body = execOptions.filter(T.body)
+      }
+      return T
     } else {
-      return preTables.map(preTable => formatTable(command, verb, entityType, options, preTable))
+      return preTables.map(preTable => {
+        const T = formatTable(command, verb, entityType, options, preTable)
+        if (execOptions.filter) {
+          T.body = execOptions.filter(T.body)
+        }
+        return T
+      })
     }
   } else if (verb === 'delete') {
     debug('returning delete entity for repl')
@@ -248,13 +270,15 @@ const prepareUsage = async (command: string): Promise<IUsageModel> => {
   } */
 const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
   const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
-  debug('exec', command)
+
+  const isKube = isKubeLike(command)
+  debug('exec', command, isKube)
 
   const verb = argv[1]
   const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
   const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
 
-  if (!isHeadless() && command === 'kubectl' && verb === 'edit') {
+  if (!isHeadless() && isKube && verb === 'edit') {
     debug('redirecting kubectl edit to shell')
     repl.qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
       .then(resolveBase).catch(reject)
@@ -267,26 +291,26 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   const output = !options.help &&
     (options.output || options.o
      || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
-     || (command === 'kubectl' && verb === 'describe' && 'yaml')
-     || (command === 'kubectl' && verb === 'logs' && 'Latest')
-     || (command === 'kubectl' && verb === 'get' && execOptions.raw && 'json'))
+     || (isKube && verb === 'describe' && 'yaml')
+     || (isKube && verb === 'logs' && 'Latest')
+     || (isKube && verb === 'get' && execOptions.raw && 'json'))
 
   if ((!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
-      command === 'kubectl' &&
+      isKube &&
       ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) && (execOptions.type !== ExecType.Nested || execOptions.delegationOk))) {
     debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
     const describeImpl = (await import('./describe')).default
     return describeImpl(opts).then(resolveBase).catch(reject)
-  } else if (command === 'kubectl' && (verb === 'status' || verb === 'list')) {
+  } else if (isKube && (verb === 'status' || verb === 'list')) {
     return statusImpl(verb)(opts).then(resolveBase).catch(reject)
   }
 
   // helm status exists; kubectl status does not, but we offer one via `k8s`
-  const statusCommand = command === 'kubectl' ? 'k' : command
+  const statusCommand = isKube ? 'k' : command
 
   // for "raw" execution, force json output
-  if (command === 'kubectl' && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
+  if (isKube && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
     debug('forcing json output for raw mode execution', options)
     rawArgv.push('-o')
     rawArgv.push('json')
@@ -324,7 +348,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   const cmdlineForDisplay = argv.slice(1).join(' ')
 
   // replace @seed/yo.yaml with full path
-  const argvWithFileReplacements: Array<string> = await Promise.all(rawArgv.slice(1).map(async (_: string): Promise<string> => {
+  const argvWithFileReplacements: string[] = await Promise.all(rawArgv.slice(1).map(async (_: string): Promise<string> => {
     if (_.match(/^!.*/)) {
       // !foo params mean they flow programatically via execOptions.parameters.foo
       // we will pass this via stdin, which kubectl represents with a '-'
@@ -352,7 +376,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       return _
     }
   }))
-  if (verb === 'delete' && !options.hasOwnProperty('wait') && command === 'kubectl') {
+  if (verb === 'delete' && !options.hasOwnProperty('wait') && isKube) {
     // by default, apparently, kubernetes treats finalizers as
     // synchronous, and --wait defaults to true
     argvWithFileReplacements.push('--wait=false')
@@ -378,7 +402,9 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
                       argvWithFileReplacements,
                       { env, shell: true })
 
-  const file = (options.f || options.file)
+  const file = options.f || options.filename
+  const hasFileArg = file !== undefined
+
   const isProgrammatic = file && file.charAt(0) === '!'
   const programmaticResource = isProgrammatic && execOptions.parameters[file.slice(1)]
   if (isProgrammatic) {
@@ -399,7 +425,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   })
 
   const status = async (command: string, code?: number, stderr?: string) => {
-    if (options.f || options.file || verb === 'delete' || verb === 'create') {
+    if (hasFileArg || verb === 'delete' || verb === 'create') {
       if (!execOptions.noStatus) {
         const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
         const finalState = `--final-state ${expectedState.toString()}`
@@ -407,8 +433,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
           ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
           : ''
 
-        debug('about to get status', options.f || options.file, entityType, entity, resourceNamespace)
-        return repl.qexec(`${statusCommand} status ${options.f || options.file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
+        debug('about to get status', file, entityType, entity, resourceNamespace)
+        return repl.qexec(`${statusCommand} status ${file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
                           undefined, undefined, { parameters: execOptions.parameters })
         .catch(err => {
           if (err.code === 404 && expectedState === FinalState.OfflineLike) {
@@ -492,7 +518,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         error['code'] = codeForREPL
         debug('rejecting without usage', codeForREPL, error)
         reject(error)
-      } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && (options.f || options.file)) {
+      } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && hasFileArg) {
         debug('fetching status after error')
         status(command, codeForREPL, err).then(resolve).catch(reject)
       } else {
@@ -522,7 +548,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         console.error('error rendering help', err)
         reject(out)
       }
-    } else if (command === 'kubectl' && verb === 'get' && (options.watch || options.w)) {
+    } else if (isKube && verb === 'get' && (options.watch || options.w)) {
       // kubectl get --watch mode?
       debug('delegating to k status')
       const ns = options.n || options.namespace
@@ -548,7 +574,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         return resolve(result)
       }
 
-      const modes: Array<any> = [{
+      const modes: ISidecarMode[] = [{
         mode: 'result',
         direct: rawCommand,
         label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
@@ -560,7 +586,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
           mode: 'previous',
           direct: `${rawCommand} --previous`,
           execOptions: {
-            type: 'pexec'
+            exec: 'pexec'
           }
         })
 
@@ -581,11 +607,11 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         const resource: IResource = { kind: command !== 'helm' && yaml.kind, name: entity, yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
 
-        addConditions(modes, command, resource)
-        addPods(modes, command, resource)
-        addContainers(modes, command, resource)
+        // consult the view registrar for registered view modes
+        // relevant to this resource
+        addRelevantModes(modes, command, resource)
 
-        deleteResourceButton(() => renderAndViewStatus({ command, resource, finalState: FinalState.OfflineLike }))
+        deleteResourceButton(() => renderAndViewStatus(opts.tab, { command, resource, finalState: FinalState.OfflineLike }))
         modes.push(deleteResourceButton())
       }
 
@@ -603,6 +629,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         noCost: true, // don't display the cost in the UI
         modes,
         badges: badges.filter(x => x),
+        resource: yaml,
         content
       }
 
@@ -610,12 +637,12 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
       debug('exec output json', record)
       resolve(record)
-    } else if (command === 'kubectl' && verb === 'run' && argv[2]) {
+    } else if (isKube && verb === 'run' && argv[2]) {
       const entity = argv[2]
       const namespace = options.namespace || options.n || 'default'
       debug('status after kubectl run', entity, namespace)
       repl.qexec(`k status deploy "${entity}" -n "${namespace}"`).then(resolve).catch(reject)
-    } else if ((options.f || options.file || (command === 'kubectl' && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
+    } else if ((hasFileArg || (isKube && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
       //
       // then this was a create or delete from file; show the status of the operation
       //

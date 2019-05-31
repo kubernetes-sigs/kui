@@ -17,8 +17,10 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk-editor-extensions/cmds/compose')
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from './new'
 import { extension, language } from '@kui-shell/plugin-editor/lib/file-types'
@@ -55,7 +57,7 @@ module.exports = composer.sequence('A', 'B')`,
  * Add the wskflow visualization component to the given content
  *
  */
-const addWskflow = prequire => opts => {
+const addWskflow = (tab: ITab) => (opts) => {
   debug('addWskflow', opts)
 
   if (isHeadless()) return opts
@@ -80,7 +82,7 @@ const addWskflow = prequire => opts => {
       debug('wskflow updateView', action, ast)
 
       if (ast) {
-        const { visualize } = await prequire('plugin-wskflow')
+        const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
 
         wskflowContainer.classList.add('visible')
         editorDom.classList.add('half-height')
@@ -91,7 +93,7 @@ const addWskflow = prequire => opts => {
           content.appendChild(wskflowContainer)
         } else {
           debug('handing off to the wskflow plugin')
-          await visualize(ast)
+          await visualize(tab, ast)
             .then(({ view, controller }) => {
               const currentSVG = wskflowContainer.querySelector('svg')
 
@@ -185,7 +187,7 @@ const addWskflow = prequire => opts => {
  *
  */
 const differentASTs = (ast1, ast2) => {
-  if (!!ast1 !== !!ast2) { // tslint:disable-line
+  if (!!ast1 !== !!ast2) {
     // one or the other is null
     return true
   } else if (typeof ast1 !== typeof ast2) {
@@ -310,7 +312,7 @@ const addCompositionOptions = params => {
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ prequire, cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined }) => async ({ argvNoOptions, parsedOptions: options, execOptions }) => {
+export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined }) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -357,15 +359,15 @@ export const newAction = ({ prequire, cmd = 'new', type = 'actions', _kind = def
     // then send a response back to the repl
     //
     return betterNotExist(name, options)
-      .then(() => Promise.all([makeAction(), openEditor(name, options, execOptions)]))
+        .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
       .then(prepareEditorWithAction)
-      .then(addWskflow(prequire))
+      .then(addWskflow(tab))
       .then(respondToRepl(undefined, ['is-modified']))
   }
 }
 
-export default async (commandTree, prequire) => {
+export default async (commandTree: CommandRegistrar) => {
   // command registration: create new app/composition
-  commandTree.listen('/editor/compose', newAction(compositionOptions({ prequire, cmd: 'compose' })),
+  commandTree.listen('/editor/compose', newAction(compositionOptions({ cmd: 'compose' })),
     { usage: composeUsage, noAuthOk: true, needsUI: true, inBrowserOk: true })
 }

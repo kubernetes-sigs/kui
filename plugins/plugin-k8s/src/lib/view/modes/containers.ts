@@ -18,16 +18,20 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/view/modes/containers')
 
 import repl = require('@kui-shell/core/core/repl')
+import { ITab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-import IResource from '../../model/resource'
+import { IResource, IKubeResource } from '../../model/resource'
 
 import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
 import { getActiveView, formatTable } from '../formatMultiTable'
+
+import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 /** for drilldown back button */
 const viewName = 'Containers'
@@ -37,15 +41,17 @@ const viewName = 'Containers'
  * for by the given resource.
  *
  */
-export const addContainers = (modes: Array<any>, command: string, resource: IResource) => {
-  try {
-    if (resource.yaml.spec && resource.yaml.spec.containers) {
-      const button = containersButton(command, resource)
-      modes.push(button)
+export const containersMode: ModeRegistration = {
+  when: (resource: IKubeResource) => {
+    return resource.spec && resource.spec.containers
+  },
+  mode: (command: string, resource: IResource) => {
+    try {
+      return containersButton(command, resource)
+    } catch (err) {
+      debug('error rendering containers button')
+      console.error(err)
     }
-  } catch (err) {
-    debug('error rendering containers button')
-    console.error(err)
   }
 }
 
@@ -82,12 +88,12 @@ const formatTimestamp = (timestamp: string): string => {
  * Render the tabular containers view
  *
  */
-export const renderContainers = async (command: string, resource: IResource) => {
+export const renderContainers = async (tab: ITab, command: string, resource: IResource) => {
   debug('renderContainers', command, resource)
 
-  return formatTable({
+  return formatTable(tab, {
     header: headerModel(resource),
-    body: bodyModel(resource),
+    body: bodyModel(tab, resource),
     noSort: true,
     title: 'Containers'
   })
@@ -123,7 +129,7 @@ const headerModel = (resource: IResource): Row => {
  * Render the table body model
  *
  */
-const bodyModel = (resource: IResource): Row[] => {
+const bodyModel = (tab: ITab, resource: IResource): Row[] => {
   const pod = resource.yaml
   const statuses = pod.status && pod.status.containerStatuses
 
@@ -137,7 +143,7 @@ const bodyModel = (resource: IResource): Row[] => {
     const stateKey = Object.keys(status.state)[0]
     const stateBody = status.state[stateKey]
 
-    const statusAttrs: Array<any> = !status ? [] : [
+    const statusAttrs: any[] = !status ? [] : [
       {
         key: 'restartCount',
         value: status.restartCount,
@@ -207,7 +213,7 @@ const bodyModel = (resource: IResource): Row[] => {
     return {
       type: 'container',
       name: container.name,
-      onclick: showLogs({ pod, container }),
+      onclick: showLogs(tab, { pod, container }),
       attributes: specAttrs.concat(statusAttrs)
     }
   })
@@ -220,16 +226,17 @@ const bodyModel = (resource: IResource): Row[] => {
  * Return a drilldown function that shows container logs
  *
  */
-const showLogs = ({ pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
+const showLogs = (tab: ITab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
   const podName = repl.encodeComponent(pod.metadata.name)
   const containerName = repl.encodeComponent(container.name)
   const ns = repl.encodeComponent(pod.metadata.namespace)
 
   // a bit convoluted, so we can delay the call to getActiveView
   return (evt: Event) => {
-    return drilldown(`kubectl logs ${podName} ${containerName} -n ${ns}`,
+    return drilldown(tab,
+                     `kubectl logs ${podName} ${containerName} -n ${ns}`,
                      undefined,
-                     getActiveView(),
+                     getActiveView(tab),
                      viewName,
                      { exec })(evt)
   }
@@ -243,6 +250,6 @@ interface IParameters {
   command: string
   resource: IResource
 }
-export const renderAndViewContainers = (parameters: IParameters) => {
-  renderContainers(parameters.command, parameters.resource).then(insertView)
+export const renderAndViewContainers = (tab: ITab, parameters: IParameters) => {
+  renderContainers(tab, parameters.command, parameters.resource).then(insertView(tab))
 }

@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/visualize')
 debug('loading')
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import injectCSS from './inject'
@@ -30,7 +31,7 @@ import fsm2graph from './fsm2graph'
  * Create the wskflow visualization for the given fsm
  *
  */
-export default async (passedFsm, container, w, h, activations, options, rule) => {
+export default async (tab: ITab, passedFsm: Record<string, any>, container?: HTMLElement, w?: number, h?: number, activations?, options?, rule?): Promise<any> => {
   if (isHeadless()) {
     return
   }
@@ -44,6 +45,5 @@ export default async (passedFsm, container, w, h, activations, options, rule) =>
   debug('passfsm', JSON.stringify(passedFsm))
   debug('ir', ir)
 
-  const fsm2graph: GraphRenderer = (await import('./fsm2graph')).default
-  return fsm2graph(ir, container, activations, options, rule)
+  return fsm2graph(tab, ir, container, activations, options, rule)
 }

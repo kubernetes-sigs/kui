@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/cmd/app-get')
 
 import * as repl from '@kui-shell/core/core/repl'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+
+import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 import { appGet } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 import * as parseUtil from '../../utility/parse'
 
-export default async (commandTree, prequire) => {
-  const wsk = await prequire('plugin-openwhisk')
-
+export default async (commandTree: CommandRegistrar) => {
   /* command handler for app get */
   commandTree.listen(`/wsk/app/get`, ({ argvNoOptions, execOptions, parsedOptions }) =>
     repl.qexec(`wsk action get "${parseUtil.parseName(argvNoOptions, 'get')}"`, undefined, undefined,
@@ -35,14 +36,13 @@ export default async (commandTree, prequire) => {
     // override wsk action get
   const actionGet = (await (commandTree.find('/wsk/action/get'))).$
 
-  wsk.synonyms('actions').forEach(syn => {
+  synonyms('actions').forEach(syn => {
     commandTree.listen(`/wsk/${syn}/get`, (opts) => {
       if (!actionGet) {
         return Promise.reject(new Error())
       }
       debug('rendering action get')
-      return actionGet(opts).then(response => view.visualizeComposition(response, opts.execOptions))
-    })
+      return actionGet(opts).then(response => view.visualizeComposition(opts.tab, response, opts.execOptions))
+    }, {})
   })
-
 }

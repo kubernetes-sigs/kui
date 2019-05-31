@@ -22,13 +22,15 @@ import tmp = require('tmp')
 import url = require('url')
 import path = require('path')
 
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
+
 import { getCreds } from './openwhisk'
 
 /**
  * User has requested to test an openwhisk action
  *
  */
-export const generateScriptForAction = ({ wsk, options }) => action => new Promise((resolve, reject) => {
+export const generateScriptForAction = ({ options }) => action => new Promise((resolve, reject) => {
   fs.readFile(path.join(__dirname, '../scripts/echo.lua'), (err, data) => {
     if (err) {
       reject(err)
@@ -45,7 +47,7 @@ export const generateScriptForAction = ({ wsk, options }) => action => new Promi
           // openwhisk auth key; either a command line
           // argument, or the global one previously chosen
           // by the user
-          Promise.resolve().then(() => getCreds(wsk, options).then(({ apiHost, auth }) => {
+          Promise.resolve().then(() => getCreds(options).then(({ apiHost, auth }) => {
             fs.write(fd, data.toString().replace('${AUTH}', Buffer.from(auth).toString('base64')), err => {
               if (err) {
                 reject(err)
@@ -101,8 +103,7 @@ export const generateScriptForURL = ({ method = 'GET' }) => () => new Promise((r
  * Command handler to generate a lua script to run load against a given action
  *
  */
-export const script = prequire => async ({ argvNoOptions: argv, parsedOptions: options }) => {
-  const wsk = await prequire('openwhisk')
+export const script = async ({ argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs) => {
   const namespace = await import('@kui-shell/plugin-openwhisk/lib/models/namespace')
 
   const rootDir = path.join(__dirname, '..')
@@ -125,7 +126,7 @@ export const script = prequire => async ({ argvNoOptions: argv, parsedOptions: o
   addOption('timeout')
   addOption('connections')
 
-  return generateScriptForAction({ wsk, options })(action)
+  return generateScriptForAction({ options })(action)
     .then(({ url, script }) => `${rootDir.replace(/ /g, '\\ ')}/wrk/wrk -s '${script}' '${url}'${cliOptions}`)
     .then(require('electron').clipboard.writeText)
     .then(() => 'Command copied to clipboard')

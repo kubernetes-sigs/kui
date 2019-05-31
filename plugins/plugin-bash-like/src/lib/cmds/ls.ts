@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,12 @@ const debug = Debug('plugins/bash-like/cmds/ls')
 import { lstat, readdir, stat } from 'fs'
 import { isAbsolute, join } from 'path'
 
-import * as expandHomeDir from 'expand-home-dir'
-
+import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
-import { findFile, isSpecialDirectory } from '@kui-shell/core/core/find-file'
+import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
@@ -66,7 +65,7 @@ const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx =
  * Return the contents of the given directory
  *
  */
-const myreaddir = (dir: string): Promise<Array<string>> => new Promise((resolve, reject) => {
+const myreaddir = (dir: string): Promise<string[]> => new Promise((resolve, reject) => {
   debug('readdir', dir)
 
   lstat(dir, (err, stats) => {
@@ -92,7 +91,7 @@ const myreaddir = (dir: string): Promise<Array<string>> => new Promise((resolve,
  *
  */
 const lsOrOpen = (filepath: string) => new Promise((resolve, reject) => {
-  const fullpath = findFile(expandHomeDir(filepath))
+  const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
   const filepathForRepl = repl.encodeComponent(filepath)
 
   // note: stat not lstat, because we want to follow the link
@@ -104,7 +103,7 @@ const lsOrOpen = (filepath: string) => new Promise((resolve, reject) => {
     } else if (fullpath.match(/\.sh$/)) {
       resolve(repl.pexec(`run ${filepathForRepl}`))
     } else {
-      resolve(repl.pexec(`open ${filepathForRepl}`))
+      resolve(repl.pexec(`${viewer} ${filepathForRepl}`))
     }
   })
 })
@@ -315,7 +314,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
  */
 const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs): Promise<true | Table> => {
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
-  const filepath = findFile(expandHomeDir(filepathAsGiven), true, true)
+  const filepath = findFile(expandHomeDir(filepathAsGiven), { safe: true, keepRelative: true })
 
   debug('doLs filepath', filepathAsGiven, filepath)
 
@@ -324,7 +323,7 @@ const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, pars
     throw new Error('File not found')
   }
 
-  const rest = command.replace(/^\s*(l)?ls/, '')
+  const rest = command.replace(/^\s*(l)?ls/, '').replace(filepathAsGiven, filepath)
   return doExec(`ls -lh ${rest}`, Object.assign({}, execOptions, {
     nested: true,
     raw: true,

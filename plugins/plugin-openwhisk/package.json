@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-openwhisk",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "description": "Kui plugin for OpenWhisk",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -29,7 +29,6 @@
     "adm-zip": "0.4.13",
     "archiver": "3.0.0",
     "debug": "4.1.1",
-    "expand-home-dir": "0.0.3",
     "htmlparser2": "3.10.1",
     "needle": "2.3.1",
     "openwhisk": "3.18.0",

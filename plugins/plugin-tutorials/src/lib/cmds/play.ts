@@ -108,7 +108,7 @@ const injectHTML = () => {
  * Command handler for tutorial play
  *
  */
-const use = cmd => ({ argvNoOptions }) => {
+const use = cmd => ({ argvNoOptions, tab }) => {
   injectOurCSS()
 
   // inject the HTML if needed
@@ -119,7 +119,7 @@ const use = cmd => ({ argvNoOptions }) => {
   const filepath = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
 
   return Promise.all([readProject(findFile(filepath)), ready])
-    .then(([{ config, tutorial }]) => showTutorial(config.name, tutorial || config.tutorial))
+    .then(([{ config, tutorial }]) => showTutorial(tab, config.name, tutorial || config.tutorial))
 }
 
 /**
@@ -136,14 +136,14 @@ const cancelAsyncs = obj => {
 
 /** Sidecar management. TODO extract this */
 const sidecarManager = {
-  enterFullscreen: () => {
-    showSidecar()
-    toggleMaximization()
+  enterFullscreen: (tab: cli.ITab) => {
+    showSidecar(tab)
+    toggleMaximization(tab)
   },
 
-  exitFullscreen: () => {
-    clearSelection()
-    toggleMaximization()
+  exitFullscreen: (tab: cli.ITab) => {
+    clearSelection(tab)
+    toggleMaximization(tab)
   }
 }
 
@@ -151,7 +151,7 @@ const sidecarManager = {
  * Close the current tutorial
  *
  */
-const close = (pane, obj, delay= 500) => () => new Promise<boolean>(resolve => {
+const close = (tab: cli.ITab, pane: Element, obj, delay = 500) => () => new Promise<boolean>(resolve => {
   debug('close')
 
   // cancel any background tasks
@@ -160,7 +160,7 @@ const close = (pane, obj, delay= 500) => () => new Promise<boolean>(resolve => {
   // if we were resopnsible for having the sidecar fullscreen, remove that
   if (pane.hasAttribute('remember-to-remove-sidecar-fullscreen')) {
     pane.removeAttribute('remember-to-remove-sidecar-fullscreen')
-    sidecarManager.exitFullscreen()
+    sidecarManager.exitFullscreen(tab)
   }
 
   // remove pane
@@ -195,11 +195,11 @@ const isOnePageFullscreenTutorial = obj => obj.steps && obj.steps.length === 1 &
  * Launches the specified tutorial
  *
  */
-const showTutorial = (tutorialName, obj) => {
+const showTutorial = (tab: cli.ITab, tutorialName: string, obj) => {
   debug('showTutorial', obj)
 
   // remove the sidecar, if it's open
-  clearSelection()
+  clearSelection(tab)
 
   // clear the repl
   if (!isOnePageFullscreenTutorial(obj)) {
@@ -231,17 +231,17 @@ const showTutorial = (tutorialName, obj) => {
   // next click handler
   (pane.querySelector('.tNext') as HTMLElement).onclick = () => {
     $(pane).prop('step', $(pane).prop('step') + 1)
-    transitionSteps($(pane).prop('step'), obj, pane)
+    transitionSteps(tab, $(pane).prop('step'), obj, pane)
   }
 
   // back click handler
   (pane.querySelector('.tBack') as HTMLElement).onclick = () => {
     $(pane).prop('step', $(pane).prop('step') - 1)
-    transitionSteps($(pane).prop('step'), obj, pane)
+    transitionSteps(tab, $(pane).prop('step'), obj, pane)
   }
 
   // close click handler
-  (pane.querySelector('.tCloseButton') as HTMLElement).onclick = close(pane, obj);
+  (pane.querySelector('.tCloseButton') as HTMLElement).onclick = close(tab, pane, obj);
 
   // restore click handler
   (pane.querySelector('.tRestoreButton') as HTMLElement).onclick = () => {
@@ -260,7 +260,7 @@ const showTutorial = (tutorialName, obj) => {
       }
     }
 
-    hideSidecar()
+    hideSidecar(tab)
     pane.classList.remove('minimized')
   }
 
@@ -323,8 +323,8 @@ const showTutorial = (tutorialName, obj) => {
           block.setAttribute('data-balloon-pos', idx > obj.steps.length / 2 ? 'down-right' : 'down')// square: idx % dim > Math.floor(dim/2) ? 'down-right' : 'down')
           block.setAttribute('data-balloon-length', 'small')
           block.onclick = () => {
-	    $(pane).prop('step', idx)
-            transitionSteps(idx, obj, pane)
+      $(pane).prop('step', idx)
+            transitionSteps(tab, idx, obj, pane)
           }
 
           block.appendChild(blockInner)
@@ -334,7 +334,7 @@ const showTutorial = (tutorialName, obj) => {
     }
 
     // initiate the first step
-    transitionSteps(0, obj, pane)
+    transitionSteps(tab, 0, obj, pane)
 
     // we'll be bumping up from the bottom; make sure the active repl prompt is visible
     cli.scrollIntoView({ when: 800 })
@@ -505,7 +505,7 @@ const commandFromFullscreen = (pane, command, display= command) => () => {
  * Handle transitions between steps
  *
  */
-const transitionSteps = (stepNum, obj, pane) => {
+const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
   debug('step', stepNum, obj)
 
   // cancel any background tasks
@@ -542,11 +542,11 @@ const transitionSteps = (stepNum, obj, pane) => {
 
   // full-width sidecar?
   if (sidecar === 'fullscreen') {
-    if (!isSidecarFullscreen()) {
+    if (!isSidecarFullscreen(tab)) {
       pane.setAttribute('remember-to-remove-sidecar-fullscreen', true)
     }
 
-    sidecarManager.enterFullscreen()
+    sidecarManager.enterFullscreen(tab)
   }
 
   // render the extras
@@ -666,7 +666,7 @@ const transitionSteps = (stepNum, obj, pane) => {
           newGroup()
         } else {
           try {
-            const fn = eval(groupWith) // tslint:disable-line
+            const fn = eval(groupWith)
             const group = fn(container.children)
             group.appendChild(element)
           } catch (err) {
@@ -718,10 +718,10 @@ const transitionSteps = (stepNum, obj, pane) => {
     const handler = function (event) {
       if (event.keyCode === 13) { // 13 is the keycode for Enter
         if ($(selector).val().trim() === value) {
-	  // unbind, move to the next step;
-	  $(document).unbind('keydown', handler)
-	  $(pane).prop('step', stepNum + 1)
-	  transitionSteps(stepNum + 1, obj, pane)
+    // unbind, move to the next step;
+    $(document).unbind('keydown', handler)
+    $(pane).prop('step', stepNum + 1)
+    transitionSteps(tab, stepNum + 1, obj, pane)
         }
       }
     }
@@ -736,7 +736,7 @@ const transitionSteps = (stepNum, obj, pane) => {
       if (event.keyCode === 13) {
         $(document).unbind('keydown', handler)
         $(pane).prop('step', stepNum + 1)
-        transitionSteps(stepNum + 1, obj, pane)
+        transitionSteps(tab, stepNum + 1, obj, pane)
       }
     }
     $(document).bind('keydown', handler)
@@ -752,7 +752,7 @@ const transitionSteps = (stepNum, obj, pane) => {
     const handler = function (event) {
       $(this).unbind('click', handler)
       $(pane).prop('step', stepNum + 1)
-      transitionSteps(stepNum + 1, obj, pane)
+      transitionSteps(tab, stepNum + 1, obj, pane)
     }
     $(selector).bind('click', handler)
   }

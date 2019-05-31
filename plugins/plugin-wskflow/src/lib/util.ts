@@ -18,6 +18,7 @@ const debug = Debug('plugins/wskflow/util')
 
 import * as sidecar from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { optionsToString } from '@kui-shell/core/core/utility'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
@@ -71,7 +72,7 @@ export const codeViewMode = (source: string, contentType = 'javascript') => ({
  * Entity view modes
  *
  */
-export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode = 'visualization', input: string, ast: object, options) => {
+export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode = 'visualization', input: string, ast: Record<string, any>, options) => {
   const modes = [
     {
       mode: 'visualization',
@@ -100,7 +101,7 @@ export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode
  * like an app
  *
  */
-export const decorateAsApp = async ({ action, input, viewName = 'composition', commandPrefix = 'app get', doVisualize, options }) => {
+export const decorateAsApp = async (tab: ITab, { action, input, viewName = 'composition', commandPrefix = 'app get', doVisualize, options }) => {
   debug('decorateAsApp', options)
   action.prettyType = badges.app
 
@@ -124,7 +125,7 @@ export const decorateAsApp = async ({ action, input, viewName = 'composition', c
     }
 
     const visualize = require('./visualize').default
-    const { view, controller } = await wskflow(visualize, Object.assign({}, action, { viewOptions }))
+    const { view, controller } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
 
     const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
     if (sourceAnnotation) {
@@ -150,7 +151,7 @@ export const decorateAsApp = async ({ action, input, viewName = 'composition', c
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (visualize, { ast, input, name, namespace, viewOptions, container }) => {
+export const wskflow = async (tab: ITab, visualize, { ast, input, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = await repl.qexec('wsk rule list')
@@ -160,7 +161,7 @@ export const wskflow = async (visualize, { ast, input, name, namespace, viewOpti
     }))
     .catch(() => [])
 
-  return visualize(ast, container, undefined, undefined, undefined, viewOptions, isPartOfRule)
+  return visualize(tab, ast, container, undefined, undefined, undefined, viewOptions, isPartOfRule)
 }
 
 /**

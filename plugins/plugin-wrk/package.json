@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-wrk",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "Load testing plugin for Kui",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "columnify": "1.5.4",
-    "expand-home-dir": "0.0.3",
     "parse-duration": "0.1.1",
     "pretty-ms": "5.0.0",
     "properties-parser": "0.3.1",

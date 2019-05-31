@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import expandHomeDir from '@kui-shell/core/util/home'
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as expandHomeDir from 'expand-home-dir'
 
 /**
  * Escape the given string for bash happiness
@@ -267,7 +267,7 @@ interface TemporaryContainer extends HTMLDivElement {
   partial?: string
   dirname?: string
   cleanup?: () => void
-  currentMatches?: Array<IMatch>
+  currentMatches?: IMatch[]
 }
 
 /**
@@ -438,7 +438,7 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
 
   if (dirname) {
     // then dirname exists! now scan the directory so we can find matches
-    fs.readdir(dirname, (err, files) => {
+    fs.readdir(expandHomeDir(dirname), (err, files) => {
       if (err) {
         debug('fs.readdir error', err)
       } else {
@@ -694,7 +694,7 @@ export default () => {
                   // great, there is a positional we can help with
                   try {
                     // we found a required positional parameter, now suggest values for this parameter
-                    suggest(param, findFile(args[commandIdx + lastIdx + 1], true),
+                    suggest(param, findFile(args[commandIdx + lastIdx + 1], { safe: true }),
                       block, prompt, temporaryContainer, commandIdx + lastIdx)
                   } catch (err) {
                     console.error(err)

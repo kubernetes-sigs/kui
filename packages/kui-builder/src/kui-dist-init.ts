@@ -59,7 +59,7 @@ const copyDirectory = async (breadcrumb: string, target: string, force: boolean)
   }
 }
 
-export const main = async (argv: Array<string>) => {
+export const main = async (argv: string[]) => {
   const force = !!argv.find(_ => _ === '-f' || _ === '--force')
 
   if (!(await exists('plugins'))) {

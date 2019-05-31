@@ -32,9 +32,9 @@ interface IPair {
   type: string
   name: string
   onclick: boolean
-  attributes: Array<IAttr>
+  attributes: IAttr[]
 }
-export default (str: string): Array<IPair> | void => {
+export default (str: string): IPair[] | void => {
   const kvPattern = /^([^=]+)=(.+)$/gm
 
   let match = kvPattern.exec(str)
@@ -44,7 +44,7 @@ export default (str: string): Array<IPair> | void => {
     do {
       const value = { name: 'value', onclick: false, value: match[2], css: 'normal-wrap break-all' }
       matches.push({ type: 'key-value', name: match[1], attributes: [ value ] })
-    } while (match = kvPattern.exec(str)) // tslint:disable-line:no-conditional-assignment
+    } while (match = kvPattern.exec(str))
 
     // make sure we've captured all of the rows
     const nLines = str.split(/\n/).filter(x => x).length

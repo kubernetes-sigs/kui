@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,21 @@ const debug = Debug('plugins/apache-composer/cmd/app-create')
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { create } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 import * as compileUtil from '../../utility/compile'
 import * as client from '../client'
 
-export default async (commandTree, prequire) => {
-
+export default async (commandTree: CommandRegistrar) => {
   /* command handler for app create */
-  commandTree.listen(`/wsk/app/create`, async ({ argvNoOptions, execOptions, parsedOptions }) => {
+  commandTree.listen(`/wsk/app/create`, async ({ tab, argvNoOptions, execOptions, parsedOptions }) => {
     // load and parse the source file to JSON-encoded composition and then deploy
     let inputFile = argvNoOptions[argvNoOptions.indexOf('create') + 2]
     let name = argvNoOptions[argvNoOptions.indexOf('create') + 1]
     if (!inputFile) {
-      const implicitEntity = compileUtil.implicitInputFile(inputFile, name)
+      const implicitEntity = compileUtil.implicitInputFile(tab, inputFile, name)
       inputFile = implicitEntity.inputFile
       name = implicitEntity.name
 
@@ -50,12 +50,12 @@ export default async (commandTree, prequire) => {
   }, { usage: create('create') })
 
   /* command handler for app update */
-  commandTree.listen(`/wsk/app/update`, async ({ argvNoOptions, execOptions, parsedOptions }) => {
+  commandTree.listen(`/wsk/app/update`, async ({ tab, argvNoOptions, execOptions, parsedOptions }) => {
     // load and parse the source file to JSON-encoded composition and then deploy
     let inputFile = argvNoOptions[argvNoOptions.indexOf('update') + 2]
     let name = argvNoOptions[argvNoOptions.indexOf('update') + 1]
     if (!inputFile) {
-      const implicitEntity = compileUtil.implicitInputFile(inputFile, name)
+      const implicitEntity = compileUtil.implicitInputFile(tab, inputFile, name)
       inputFile = implicitEntity.inputFile
       name = implicitEntity.name
 

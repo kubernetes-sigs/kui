@@ -1,0 +1,58 @@
+{
+  "extends": [
+    "standard",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint/eslint-plugin"
+  ],
+  "rules": {
+    "eqeqeq": "off",
+    "no-cond-assign": "off",
+    "no-constant-condition": "off",
+    "no-control-regex": "off",
+    "no-eval": "off",
+    "no-lone-blocks": "off",
+    "no-mixed-operators": "off",
+    "no-return-assign": "off",
+    "no-template-curly-in-string": "off",
+    "no-undef": "off",
+    "no-unneeded-ternary": "off",
+    "no-unreachable": "off",
+    "no-useless-constructor": "off",
+    "no-useless-escape": "off",
+    "no-useless-return": "off",
+    "object-property-newline": "off",
+    "operator-linebreak": "off",
+    "padded-blocks": "off",
+    "prefer-promise-reject-errors": "off",
+    "space-infix-ops": "off",
+    "space-unary-ops": "off",
+    "spaced-comment": "off",
+
+    "import/first": "off",
+    "import/no-duplicates": "off",
+
+    "node/no-deprecated-api": "off",
+
+    "promise/param-names": "off",
+
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-member-accessibility": "off",
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-object-literal-type-assertion": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-var-requires": "off"
+  }
+}

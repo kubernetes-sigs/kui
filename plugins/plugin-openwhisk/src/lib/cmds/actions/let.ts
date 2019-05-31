@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unl
 import { basename, join } from 'path'
 import needle = require('needle')
 import withRetry = require('promise-retry')
-import expandHomeDir = require('expand-home-dir')
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { current as currentNamespace } from '../../models/namespace'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -172,8 +172,8 @@ const annotations = options => {
   }
   return options.annotations
 }
-const boolean = key => options => annotations(options).push({ key: key, value: true }) // tslint:disable-line
-const string = (key, value) => options => annotations(options).push({ key: key, value: value }) // tslint:disable-line
+const boolean = key => options => annotations(options).push({ key: key, value: true })
+const string = (key, value) => options => annotations(options).push({ key: key, value: value })
 const web = extension => [ boolean('web-export'), string('content-type-extension', extension) ]
 const annotators = {
   'const': [ boolean('final') ],
@@ -543,7 +543,7 @@ export default async (commandTree, wsk) => {
     interface IEntity {
       name: string,
       namespace?: string,
-      annotations?: Array<IKeyValue>
+      annotations?: IKeyValue[]
     }
     const furlSequenceComponent = (parentActionName: string) => (component: string, idx: number): Promise<IEntity> => {
       const intentionMatch = component.match(patterns.intention.inline)
@@ -574,7 +574,7 @@ export default async (commandTree, wsk) => {
         }
       }
     }
-    const furl = (components: Array<string>, parentActionName: string): Promise<Array<IEntity>> => {
+    const furl = (components: string[], parentActionName: string): Promise<IEntity[]> => {
       return Promise.all(components.map(furlSequenceComponent(parentActionName)))
     }
 

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { ITab } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { addNameToSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
+import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import * as prettyPrintDuration from 'pretty-ms'
@@ -46,7 +47,7 @@ const choices = [
   // { bottom: 25, top: 99 },
   { bottom: 'min', top: 'max', label: 'Min-Max', text: 'mininum to maximum', fontawesome: 'fas fa-thermometer-full' }
 ]
-const choicesArray: Array<any> = choices.map((choice, idx) => {
+const choicesArray: any[] = choices.map((choice, idx) => {
   const { bottom, top, label, text, fontawesome } = choice
   return { label: label || `${bottom}-${top}`,
     flush: 'right',
@@ -88,15 +89,16 @@ const percent = fraction => `${100 * fraction}%`
  * Drill down to the grid for for a given list of activations
  *
  */
-const showGridForActivationList = activations => drilldownWith(viewName, () => {
-  require('./grid')(undefined, undefined, { activations })
+const showGridForActivationList = (tab: ITab, activations) => drilldownWith(tab, viewName, () => {
+  require('./grid')(undefined, undefined, { activations, tab })
+  return Promise.resolve('ok')
 })
 
 /**
  * Visualize the activation data
  *
  */
-const drawTable = (options, header: IHeader, uuid: string) => activations => {
+const drawTable = (tab: ITab, options, header: IHeader, uuid: string) => activations => {
   const eventBus = new events.EventEmitter()
   const content = document.createElement('div')
   content.className = 'activation-viz-plugin'
@@ -113,7 +115,7 @@ const drawTable = (options, header: IHeader, uuid: string) => activations => {
   const groupData = groupByAction(activations, Object.assign({ groupBySuccess: true }, options))
   displayTimeRange(groupData, header.leftHeader)
 
-  return _drawTable(options, header, content,
+  return _drawTable(tab, options, header, content,
     groupData, eventBus, uuid,
     options.split && versionSorter // if we were asked to split by version, then sort by name
   )
@@ -124,7 +126,7 @@ const drawTable = (options, header: IHeader, uuid: string) => activations => {
  * re-sorting.
  *
  */
-const _drawTable = (options, header: IHeader, content: Element, groupData, eventBus, uuid: string, sorter = statDataSorter(defaultTop), sortDir = +1) => {
+const _drawTable = (tab: ITab, options, header: IHeader, content: Element, groupData, eventBus, uuid: string, sorter = statDataSorter(defaultTop), sortDir = +1) => {
   const { groups } = groupData
   const tableHeader = document.createElement('table')
   const tableScrollContainer = document.createElement('div')
@@ -249,8 +251,8 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
   tableScrollContainer.className = 'data-table-scroll-container'
 
   // header title
-  const onclick = options.name ? drilldownWith(viewName, `app get "${options.name}"`) : undefined
-  addNameToSidecarHeader(undefined, options.name || titleWhenNothingSelected, undefined, onclick)
+  const onclick = options.name ? drilldownWith(tab, viewName, `app get "${options.name}"`) : undefined
+  addNameToSidecarHeader(getSidecar(tab), options.name || titleWhenNothingSelected, undefined, onclick)
 
   // cache rows for redraw
   const rowMap = {}
@@ -325,7 +327,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
 
         label.className = 'cell-label'
         labelAction.className = 'clickable'
-        label.onclick = drilldownWith(viewName, `action get ${group.path}`)
+        label.onclick = drilldownWith(tab, viewName, `action get ${group.path}`)
 
         if (nameWithoutNamespace.length > 20) {
           label.setAttribute('data-balloon', nameWithoutNamespace) // line break
@@ -384,7 +386,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
 
         // drill down to grid view; note how we pass through a name filter
         // query, to filter based on the clicked-upon row
-        cell.onclick = drilldownWith(viewName, `grid "${group.path}" ${optionsToString(options)} ${splitOptions}`, undefined, [resetFocus])
+        cell.onclick = drilldownWith(tab, viewName, `grid "${group.path}" ${optionsToString(options)} ${splitOptions}`, undefined, [resetFocus])
 
         // install the fancy focus handlers
         focus(bar)
@@ -488,7 +490,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
           if (!redraw) {
             outlier.dom = dot
             dot.className = 'outlier-dot cell-show-only-when-outliers-shown'
-            dot.onclick = drilldownWith(viewName, `activation get ${activation.activationId}`)
+            dot.onclick = drilldownWith(tab, viewName, `activation get ${activation.activationId}`)
             barWrapper.appendChild(dot)
 
             const tooltip = `${prettyPrintDuration(duration)} (versus median ${prettyPrintDuration(thisMedian)})`
@@ -535,7 +537,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
         } else {
           // drill down to grid, showing just successes
           cell.classList.add('clickable')
-          cell.onclick = drilldownWith(viewName, `grid "${group.path}" ${optionsToString(options)} --success ${splitOptions}`)
+          cell.onclick = drilldownWith(tab, viewName, `grid "${group.path}" ${optionsToString(options)} --success ${splitOptions}`)
         }
         cell.appendChild(countPart)
         countPart.innerText = group.nSuccesses
@@ -565,7 +567,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
 
         // drill down to grid, showing just failures
         cell.classList.add('clickable')
-        cell.onclick = drilldownWith(viewName, `grid "${group.path}" ${optionsToString(options)} --failure ${splitOptions}`)
+        cell.onclick = drilldownWith(tab, viewName, `grid "${group.path}" ${optionsToString(options)} --failure ${splitOptions}`)
         if (group.nFailures === 0) {
           cell.classList.add('count-is-zero')
           cell.classList.remove('clickable')
@@ -587,7 +589,7 @@ const _drawTable = (options, header: IHeader, content: Element, groupData, event
         countPart.innerText = nOutliers
         countPart.setAttribute('data-balloon', `Number of Outliers: ${nOutliers}`)
         countPart.setAttribute('data-balloon-pos', 'left')
-        cell.onclick = showGridForActivationList(outliers.map(_ => _.activation))
+        cell.onclick = showGridForActivationList(tab, outliers.map(_ => _.activation))
       }
 
       /* addNumericCell('count')

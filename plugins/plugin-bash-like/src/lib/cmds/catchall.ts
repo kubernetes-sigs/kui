@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { inBrowser, isHeadless, hasProxy } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 /**
@@ -41,7 +41,7 @@ export const dispatchToShell = async ({ tab, block, command, argv, argvNoOptions
       .catch(cleanUpError)
   } else {
     const { doExec } = await import('../../pty/client')
-    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), Object.assign({}, { stdout: createOutputStream() }, execOptions))
+    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), argvNoOptions, parsedOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
       .catch(cleanUpError)
   }
 }
@@ -51,6 +51,11 @@ export const dispatchToShell = async ({ tab, block, command, argv, argvNoOptions
  *
  */
 export const preload = (commandTree) => {
+  if (inBrowser() && !hasProxy()) {
+    debug('skipping catchall registration: in browser and no remote proxy to support it')
+    return
+  }
+
   //
   // if we aren't running in a browser, then pass any command not
   // found exceptions to the outer shell

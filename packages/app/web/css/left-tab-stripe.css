@@ -13,6 +13,10 @@ tab {
 tab.visible {
     display: flex;
 }
+tab:not(:first-child).visible {
+    /* split screen separator */
+    border-top: 2px solid var(--color-base03);
+}
 
 body.not-electron .application-name {
     display: flex;
@@ -66,7 +70,7 @@ body.os-darwin .left-tab-stripe {
 .left-tab-stripe-button:not([data-tab-button-index]) i {
     color: rgba(255,255,255,0.25) !important;
 }
-.left-tab-stripe-button:not([data-tab-button-index]):after {
+.left-tab-stripe-button:not([data-tab-button-index]):not([data-balloon]):after {
     content: ''
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
@@ -191,6 +195,9 @@ body.subwindow .repl .horizontal-landing-zone {
 .repl-input, .repl-output {
     padding: 0 0 0 1em;
     transition: padding 150ms ease-in-out;
+}
+.repl-result > div {
+    padding-right: 1em;
 }
 .repl-prompt-right-elements {
     padding-right: 1em;

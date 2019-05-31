@@ -204,7 +204,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
 
   if (typeof pluginLoader === 'function') {
     // invoke the plugin loader
-    registrar[route] = await pluginLoader(ctree, preq, {})
+    registrar[route] = await pluginLoader(ctree, {})
 
     // turn the deps map, which is a canonicalization map from
     // module=>true (i.e. we use it to remove duplicates), into an
@@ -501,7 +501,7 @@ const makeResolver = (prescan: IPrescanModel) => {
       }
       if (plugin) {
         return resolveOne(plugin)
-      } else {
+      } else if (prescan.catchalls.length > 0) {
         // see if we have catchall
         debug('scanning catchalls', prescan.catchalls)
         return Promise.all(prescan.catchalls.map(_ => resolveOne(_.plugin)))
@@ -518,7 +518,9 @@ interface IPrescanCommandDefinition {
   path: string
 }
 export type PrescanCommandDefinitions = IPrescanCommandDefinition[]
-export type PrescanDocs = { [key: string]: string }
+export interface PrescanDocs {
+  [key: string]: string
+}
 export type PrescanUsage = any // FIXME something like: { [key: string]: ICommandOptions }
 export interface IPrescanModel {
   docs: PrescanDocs
@@ -598,7 +600,7 @@ export const assemble = (opts: IPrescanOptions): Promise<IPrescanModel> => {
 }
 
 /** export the prequire function */
-export const prequire = async (route: string, options?: object) => {
+const prequire = async (route: string, options?: object) => {
   debug('prequire %s', route)
 
   try {
@@ -617,7 +619,7 @@ export const prequire = async (route: string, options?: object) => {
             const registration: PluginRegistration = registrationRef.default || registrationRef
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 
-            resolve(registration(commandTree.proxy(route), prequire, combinedOptions))
+            resolve(registration(commandTree.proxy(route), combinedOptions))
             debug('prequire success %s', route)
           } catch (err) {
             console.error(`prequire error ${route}`, err)
@@ -641,7 +643,7 @@ export const prequire = async (route: string, options?: object) => {
  *
  */
 import preloader from './preloader'
-export const preload = () => preloader(prequire, commandTree, prescan, { usage: prescan.usage, docs: prescan.docs })
+export const preload = () => preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
 
 /** print to the javascript console the registered plugins */
 // export const debug = () => console.log('Installed plugins', registrar)

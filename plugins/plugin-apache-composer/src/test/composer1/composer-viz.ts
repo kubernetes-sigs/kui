@@ -42,7 +42,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/pa
  */
 const fsm = input('fsm.json')
 const fsmStruct = JSON.parse(fs.readFileSync(fsm.path).toString())
-const baseComposerInputs = [ composerInput('composer1.js')]
+const baseComposerInputs = [ composerInput('composer1.js') ]
 const seq = composerInput('seq.js')
 const demoSeq = { path: '@demos/seq.js', file: 'seq.js' }
 const If = composerInput('if.js')

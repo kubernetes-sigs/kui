@@ -39,10 +39,16 @@ import cli = require('../webapp/cli') // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
 import { element } from '../webapp/util/dom' // FIXME
-
+import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
 
 debug('finished loading modules')
+
+/**
+ * the key in localStorage to get the symbol table
+ *
+ */
+export const key = 'kui.symbol_table'
 
 /**
  * repl.exec, and the family repl.qexec, repl.pexec, etc. are all
@@ -125,14 +131,14 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
-export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: IExecOptions) => {
+export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: IExecOptions): Promise<any> => {
   // context change ok, final exec in a chain of nested execs
   return qexec(command, block, true, execOptions, nextBlock)
 }
-export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement) => {
+export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }
-export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement) => {
+export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return exec(command, Object.assign({
     block: block,
     nextBlock: nextBlock,
@@ -187,13 +193,13 @@ const resolveEnvVar = (variable: string): string => {
  *
  */
 export interface ISplit {
-  A: Array<string>
-  endIndices: Array<number>
+  A: string[]
+  endIndices: number[]
 }
-export const _split = (str: string, removeOuterQuotes = true, returnIndices = false, removeInlineOuterQuotes = false): ISplit | Array<string> => {
-  const A: Array<string> = []
-  const endIndices: Array<number> = []
-  const stack: Array<string> = []
+export const _split = (str: string, removeOuterQuotes = true, returnIndices = false, removeInlineOuterQuotes = false): ISplit | string[] => {
+  const A: string[] = []
+  const endIndices: number[] = []
+  const stack: string[] = []
 
   let cur = ''
 
@@ -207,7 +213,7 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
     return false
   }
 
-  let removedLastOpenQuote: Array<boolean> = []
+  let removedLastOpenQuote: boolean[] = []
   let escapeActive = false
   for (let idx = 0; idx < str.length; idx++) {
     const char = str.charAt(idx)
@@ -284,8 +290,8 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
     return A
   }
 }
-export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): Array<string> => {
-  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as Array<string>
+export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): string[] => {
+  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as string[]
 }
 
 /** an empty promise, for blank lines */
@@ -310,13 +316,22 @@ class InProcessExecutor implements IExecutor {
   async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
-    const tab = cli.getCurrentTab()
+    const tab = execOptions.tab || cli.getCurrentTab()
+    debug('tab', cli.getTabIndex(tab))
+
+    if (!isHeadless()) {
+      const storage = JSON.parse(sessionStore().getItem(key)) || {}
+      const curDic = storage[cli.getTabIndex(tab)]
+      if (typeof curDic !== 'undefined') {
+        process.env = Object.assign({}, process.env, curDic)
+      }
+    }
 
     const echo = !execOptions || execOptions.echo !== false
     const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
     if (nested) execOptions.nested = nested
 
-    const block = (execOptions && execOptions.block) || cli.getCurrentBlock()
+    const block = (execOptions && execOptions.block) || cli.getCurrentBlock(tab)
     const blockParent = block && block.parentNode // remember this one, in case the command removes block from its parent
     const prompt = block && cli.getPrompt(block)
 
@@ -325,7 +340,7 @@ class InProcessExecutor implements IExecutor {
     if (execOptions && execOptions.pip) {
       const { container, returnTo } = execOptions.pip
       try {
-        return pictureInPicture(commandUntrimmed, undefined, document.querySelector(container), returnTo)()
+        return pictureInPicture(tab, commandUntrimmed, undefined, document.querySelector(container), returnTo)()
       } catch (err) {
         console.error(err as Error)
         // fall through to normal execution, if pip fails
@@ -417,7 +432,7 @@ class InProcessExecutor implements IExecutor {
           return false
         }
 
-        const builtInOptions: Array<IUsageRow> = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
+        const builtInOptions: IUsageRow[] = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
         if (!usage || !usage.noHelp) {
           // usage might tell us not to add help, or not to add the -h help alias
           const help = { name: '--help', hidden: true, boolean: true }
@@ -434,15 +449,19 @@ class InProcessExecutor implements IExecutor {
            evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
           ({} as YargsParserFlags)
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
-        const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name)) // tslint:disable-line
+        const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name))
 
-        type CanonicalArgs = { [key: string]: string }
+        interface CanonicalArgs {
+          [key: string]: string
+        }
         const optionalAliases = optional && optional.filter(({ alias }) => alias).reduce((M: CanonicalArgs, { name, alias }) => {
           M[unflag(alias)] = unflag(name)
           return M
         }, {})
 
-        type ArgCount = { [key: string]: number }
+        interface ArgCount {
+          [key: string]: number
+        }
         const allFlags = {
           configuration: Object.assign({ 'camel-case-expansion': false }, (usage && usage.configuration) || {}),
           boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
@@ -459,7 +478,7 @@ class InProcessExecutor implements IExecutor {
         // now use minimist to parse the command line options
         // minimist stores the residual, non-opt, args in _
         const parsedOptions: ParsedOptions = minimist(argv, allFlags)
-        const argvNoOptions: Array<string> = parsedOptions._
+        const argvNoOptions: string[] = parsedOptions._
 
         //
         // if the user asked for help, and the plugin registered a
@@ -583,7 +602,7 @@ class InProcessExecutor implements IExecutor {
                    nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
               const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
-              const selection = currentSelection()
+              const selection = currentSelection(tab)
 
               let nActualArgsWithImplicit = nActualArgs
 
@@ -622,7 +641,7 @@ class InProcessExecutor implements IExecutor {
                 const activationPath = selection.type === 'activations' && selection.annotations && selection.annotations.find(_ => _.key === 'path')
                 if (activationPath) {
                   // ooh, then splice in the implicit parameter and entity type. We splice entity type here for later commands to easily distinguish composition/action.
-                  args.splice(implicitIdx, cmdArgsStart + 1, `/${activationPath.value}`, selection.sessionId || selection.fsm ? 'composition' : 'action')
+                  args.splice(implicitIdx, cmdArgsStart + 1, `/${activationPath.value}`, selection['sessionId'] || selection['ast'] ? 'composition' : 'action')
                 } else {
                   // ooh, then splice in the implicit parameter
                   args.splice(implicitIdx, cmdArgsStart + 1, selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name)
@@ -673,7 +692,7 @@ class InProcessExecutor implements IExecutor {
         return Promise.resolve().then(() => {
           return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
             tab, block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
-            createOutputStream: execOptions.createOutputStream || (() => isHeadless() ? headlessStreamTo() : cli.streamTo(block))
+            createOutputStream: execOptions.createOutputStream || (() => isHeadless() ? headlessStreamTo() : cli.streamTo(tab, block))
           })
         })
           .then(response => {
@@ -702,7 +721,7 @@ class InProcessExecutor implements IExecutor {
             }
 
             if (response.verb === 'delete') {
-              if (maybeHideEntity(response) && nextBlock) {
+              if (maybeHideEntity(tab, response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
               }
             }
@@ -728,9 +747,9 @@ class InProcessExecutor implements IExecutor {
             } else {
               // we're the top-most exec, so deal with the repl!
               debug('displaying response')
-              const resultDom = block.querySelector('.repl-result')
+              const resultDom = block.querySelector('.repl-result') as HTMLElement
               return new Promise(resolve => {
-                cli.printResults(block, nextBlock, resultDom, echo, execOptions, parsedOptions, command, evaluator)(response) // <--- the Print part of REPL
+                cli.printResults(block, nextBlock, tab, resultDom, echo, execOptions, parsedOptions, command, evaluator)(response) // <--- the Print part of REPL
                   .then(() => {
                     if (echo) {
                       // <-- create a new input, for the next iter of the Loop
@@ -819,7 +838,7 @@ class InProcessExecutor implements IExecutor {
         return
       }
 
-      const blockForError = block || cli.getCurrentProcessingBlock()
+      const blockForError = block || cli.getCurrentProcessingBlock(tab)
 
       return Promise.resolve(e.message).then(message => {
         if (isHTML(message)) {
@@ -827,9 +846,9 @@ class InProcessExecutor implements IExecutor {
           oops(command, block, nextBlock)(e)
         } else {
           const cmd = cli.showHelp(command, blockForError, nextBlock, e)
-          const resultDom = blockForError.querySelector('.repl-result')
+          const resultDom = blockForError.querySelector('.repl-result') as HTMLElement
           return Promise.resolve(cmd)
-            .then(cli.printResults(blockForError, nextBlock, resultDom))
+            .then(cli.printResults(blockForError, nextBlock, tab, resultDom))
             .then(cli.installBlock(blockForError.parentNode, blockForError, nextBlock))
         }
       })

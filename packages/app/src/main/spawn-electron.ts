@@ -262,7 +262,7 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
  * Bootstrap headless mode
  *
  */
-export async function initHeadless (argv: Array<string>, force = false, isRunningHeadless = false, execOptions?: IExecOptions) {
+export async function initHeadless (argv: string[], force = false, isRunningHeadless = false, execOptions?: IExecOptions) {
   if (/* noHeadless !== true && */ force || isRunningHeadless) {
     debug('initHeadless')
 
@@ -275,7 +275,7 @@ export async function initHeadless (argv: Array<string>, force = false, isRunnin
     //
     try {
       return (await import('./headless')).main(app, {
-        createWindow: (executeThisArgvPlease: Array<string>, subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
+        createWindow: (executeThisArgvPlease: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
           // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
           // because this will be called for cases where we want a headless -> GUI transition
           return createWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
@@ -592,11 +592,11 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
  *
  */
 interface ICommand {
-  argv: Array<string>
+  argv: string[]
   subwindowPlease: boolean
   subwindowPrefs: ISubwindowPrefs
 }
-export const getCommand = (argv: Array<string>): ICommand => {
+export const getCommand = (argv: string[]): ICommand => {
   debug('getCommand', argv)
   const dashDash = argv.lastIndexOf('--')
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)

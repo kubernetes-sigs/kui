@@ -21,6 +21,7 @@ import { isHeadless } from './capabilities'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
 import repl = require('@kui-shell/core/core/repl')
 import { CodedError } from '../models/errors'
+import { Entity } from '../models/entity'
 import { isHTML } from '../util/types'
 
 interface IUsageOptions {
@@ -47,7 +48,7 @@ async function promiseEach<T, R> (arr: T[], fn: (t: T) => Promise<R>): Promise<R
 }
 
 /** Create an HTML DIV to wrap around the given string */
-const div = (str?: string | Promise<string> | Element, css: string | Array<string> = undefined, tag = 'div'): HTMLElement => {
+const div = (str?: string | Promise<string> | Element, css: string | string[] = undefined, tag = 'div'): HTMLElement => {
   const result = document.createElement(tag)
 
   if (str) {
@@ -477,7 +478,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
 
         const cmdCell = row.insertCell(-1)
         const docsCell = row.insertCell(-1)
-        const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap')
+        const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap not-very-wide')
         const dirPart = isDir && label && span('/')
         const examplePart = example && span(example, label || dirPart ? 'left-pad lighter-text smaller-text' : '') // for -p key value, "key value"
         const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'lighter-text smaller-text small-left-pad')
@@ -535,12 +536,13 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
             cmdPart.classList.add('clickable')
             cmdPart.classList.add('clickable-blatant')
             cmdPart.onclick = async event => {
+              const cli = await import('../webapp/cli')
               if (partial) {
-                const cli = await import('../webapp/cli')
                 return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
               } else {
                 if (drilldownWithPip) {
-                  return pip(commandForExec(command, name !== command ? name : undefined),
+                  return pip(cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
+                             commandForExec(command, name !== command ? name : undefined),
                              undefined,
                              resultWrapper.parentNode.parentNode as Element,
                              'Previous Usage')(event)
@@ -681,7 +683,7 @@ export interface IUsageRow {
   narg?: number
 
   // implicit entity ok for this attribute?
-  implicitOK?: Array<string>
+  implicitOK?: string[]
 
   // this attribute is not required if we match an implicit entity
   notNeededIfImplicit?: boolean
@@ -720,7 +722,7 @@ export interface IUsageRow {
   allowedIsPrefixMatch?: boolean
 
   // enumeration of allowed values
-  allowed?: Array<number | string | boolean>
+  allowed?: (number | string | boolean)[]
 }
 
 interface IGenerator {
@@ -861,7 +863,7 @@ export class UsageError extends Error implements CodedError {
     return this.formattedMessage ? this.formattedMessage : Promise.resolve(span(this.message))
   }
 
-  static isUsageError (error: Error): error is UsageError {
+  static isUsageError (error: Entity): error is UsageError {
     const err = error as UsageError
     return err.formattedMessage && err.code ? true : false
   }

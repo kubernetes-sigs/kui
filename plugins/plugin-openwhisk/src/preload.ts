@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/preload')
-
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
-import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
-
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire, options?) => {
+export default () => {
   /*if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
     const { auth } = await import('./lib/models/auth')
 
@@ -34,5 +28,3 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
     }
   }*/
 }
-
-export default registration

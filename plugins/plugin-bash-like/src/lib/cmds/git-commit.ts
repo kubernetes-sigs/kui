@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@ const debug = Debug('plugins/bash-like/cmds/git-commit')
 import { join } from 'path'
 import { writeFile } from 'fs'
 import { spawn } from 'child_process'
-import * as expandHomeDir from 'expand-home-dir'
 
+import expandHomeDir from '@kui-shell/core/util/home'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec } from '@kui-shell/core/core/repl'
 import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -35,7 +36,7 @@ import { status, toplevel } from '../util/git-support'
  * TODO refactor
  *
  */
-const doExec = ({ command, argvNoOptions, execOptions }) => new Promise(async (resolve, reject) => {
+const doExec = ({ command, argvNoOptions, execOptions, tab }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
   const shell = await import('shelljs')
 
@@ -64,7 +65,7 @@ const doExec = ({ command, argvNoOptions, execOptions }) => new Promise(async (r
       try {
         debug('done with non-zero exit code', exitCode, rawErr)
         if (rawOut.match(/On branch/)) {
-          resolve(asSidecarEntity(argvNoOptions.join(' '), status2Html(rawOut), {
+          resolve(asSidecarEntity(argvNoOptions.join(' '), status2Html(tab, rawOut), {
             sidecarHeader: !document.body.classList.contains('subwindow')
           }))
         } else {
@@ -81,8 +82,8 @@ const doExec = ({ command, argvNoOptions, execOptions }) => new Promise(async (r
  * git commit command handler
  *
  */
-const doCommit = async opts => {
-  const { command, argvNoOptions, parsedOptions, execOptions } = opts
+const doCommit = async (opts: IEvaluatorArgs) => {
+  const { tab, command, argvNoOptions, parsedOptions, execOptions } = opts
 
   if (argvNoOptions.length === 3 &&
       !(parsedOptions.F || parsedOptions.file ||
@@ -113,7 +114,7 @@ ${commentedStatus}`
             eventBus.once('/editor/save', (model, { event }) => {
               if (event === 'save') {
                 debug('got save event', model)
-                clearSidecar()
+                clearSidecar(tab)
 
                 if (model.exec.code === msg) {
                   debug('empty commit message')
@@ -127,7 +128,7 @@ ${commentedStatus}`
 
             const editor = await qexec(`edit ${filepath}`, undefined, undefined, execOptions)
             debug('editor', editor)
-            showInSidecar(editor)
+            showInSidecar(tab, editor)
           }
         })
       } catch (err) {
@@ -145,6 +146,6 @@ ${commentedStatus}`
  * Register command handlers
  *
  */
-export default (commandTree, prequire) => {
+export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/git/commit', doCommit, { needsUI: true, requiresLocal: true, noAuthOk: true })
 }

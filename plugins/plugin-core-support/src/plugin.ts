@@ -56,5 +56,5 @@ export default async (commandTree: CommandRegistrar) => {
     ])
   }
 
-  // updater(commandTree, prequire) <-- disabled for now
+  // updater(commandTree) <-- disabled for now
 }

@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/core",
-  "version": "2.32.0",
+  "version": "2.33.0",
   "description": "An Electron-based shell for cloud-native development",
   "homepage": "https://github.com/IBM/kui#readme",
   "license": "Apache-2.0",
@@ -39,7 +39,6 @@
     "debug": "4.1.1",
     "electron-context-menu": "0.12.1",
     "electron-squirrel-startup": "1.0.0",
-    "expand-home-dir": "0.0.3",
     "extract-zip": "1.6.7",
     "fs-extra": "7.0.1",
     "js-beautify": "1.10.0",

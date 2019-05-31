@@ -19,7 +19,7 @@ const debug = Debug('plugins/editor/preload')
 debug('loading')
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 debug('done loading prereqs')
 
@@ -28,7 +28,7 @@ debug('done loading prereqs')
  * we're running in browser mode. It is slow to load.
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
+export default async (commandTree: CommandRegistrar) => {
   debug('initializing')
 
   if (!isHeadless()) {
@@ -36,11 +36,8 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
     // prefetch it
     setTimeout(() => {
       import('./lib/open').then(_ => _.preload())
-      prequire('plugin-editor')
     }, 500)
   }
 }
-
-export default registration
 
 debug('finished loading')

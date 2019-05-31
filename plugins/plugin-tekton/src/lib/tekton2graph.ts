@@ -15,21 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/tekton2graph')
+const debug = Debug('plugins/tekton/lib/tekton2graph')
 
-import { readFile } from 'fs'
-import { promisify } from 'util'
-import { safeLoadAll } from 'js-yaml'
-import { basename, dirname, join } from 'path'
-import * as expandHomeDir from 'expand-home-dir'
+import { encodeComponent } from '@kui-shell/core/core/repl'
 
-import { findFile } from '@kui-shell/core/core/find-file'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-
-import { zoomToFitButtons } from '@kui-shell/plugin-wskflow/lib/util'
-import injectCSS from '@kui-shell/plugin-wskflow/lib/inject'
+import { Task, Step } from '../model/resource'
 
 type TaskName = string
 
@@ -37,31 +27,6 @@ interface Port {
   name: string
   resource: string
   from?: TaskName[]
-}
-
-interface Step {
-  name: string
-  image: string
-  command: string
-  args: string[]
-}
-
-interface KubeResource {
-  apiversion: string
-  kind: string
-  metadata: {
-    name: string
-  }
-}
-
-interface Task extends KubeResource {
-  spec: {
-    inputs: {
-      resources: { name: string, type: string, targetPath: string }[],
-      params: { name: string, description: string, default: string }[]
-    }
-    steps: Step[]
-  }
 }
 
 interface TaskRef {
@@ -87,6 +52,7 @@ interface INode {
   readonly value?: string
   readonly type?: string
   readonly taskIndex?: number
+  readonly onclick?: string
 
   tooltip?: string
   tooltipHeader?: string
@@ -123,23 +89,22 @@ interface IEdge {
   readonly visited?: boolean
 }
 
-type SymbolTable<N> = { [key: string]: N }
+interface SymbolTable<N> { [key: string]: N }
 
 const maxWidth = 100
 const defaultHeight = 20
 const defaultCharWidth = 5
 const defaultCharHeight = 10
 
-const knownKinds = /PipelineResource|Pipeline|Task/
-
 /**
  * @return a blank IGraph instance with optional "children" subgraphs
  *
  */
-const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type }: { children: INode[], tooltip?: string, tooltipColor?: string, type?: string } = { children: [] }): IGraph => {
+const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type, onclick }: { children: INode[], tooltip?: string, tooltipColor?: string, type?: string, onclick?: string } = { children: [] }): IGraph => {
   return {
     id: label,
     label,
+    onclick,
     children,
     edges: [],
     nParents: 0,
@@ -157,16 +122,47 @@ const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type }: { 
 /** graph node id for a given Step located in a given Task */
 const stepId = (taskRef: TaskRef, step: Step): string => `__step__${taskRef.name}__${step.name}`
 
+/** find the pipeline in a given set of resource definitions */
+const getPipeline = (jsons: Record<string, any>): Record<string, any> => {
+  const declaredPipeline = jsons.find(_ => _.kind === 'Pipeline')
+
+  if (declaredPipeline) {
+    return declaredPipeline
+  } else {
+    const tasks = jsons.filter(_ => _.kind === 'Task')
+    if (tasks.length === 0) {
+      throw new Error('No pipeline defined, and no Tasks defined')
+    } else {
+      const pipeline = {
+        apiVersion: 'tekton.dev/v1alpha1',
+        kind: 'Pipeline',
+        metadata: {
+          name: 'pipeline'
+        },
+        spec: {
+          tasks: tasks.map(task => ({
+            name: task.metadata.name,
+            taskRef: {
+              name: task.metadata.name
+            }
+          }))
+        }
+      }
+
+      return pipeline
+    }
+  }
+}
+
 /**
  * Turn a raw yaml form of a tekton pipeline into a graph model that
  * is compatible with the ELK graph layout toolkit.
  *
  */
-function tekton2graph (raw: string): IGraph {
-  const jsons = safeLoadAll(raw)
-    .filter(_ => knownKinds.test(_.kind))
-
-  const pipeline = jsons.find(_ => _.kind === 'Pipeline')
+export default async function (jsons: Record<string, any>[], filepath: string): Promise<IGraph> {
+  debug('jsons', jsons)
+  const pipeline = getPipeline(jsons)
+  debug('pipeline', pipeline)
 
   const graph: IGraph = makeGraph()
 
@@ -222,19 +218,26 @@ function tekton2graph (raw: string): IGraph {
       const task = taskName2Task[taskRef.taskRef.name]
       debug('TaskRef', taskRef.name, task)
 
+      // -f file argument for drilldowns, if we have one
+      const filearg = filepath ? `-f ${encodeComponent(filepath)}` : ''
+
       let node: INode
       if (task && task.spec.steps && task.spec.steps.length > 0) {
-        // make a subgraph for the steps
-        const resources = task.spec.inputs.resources || []
+        //
+        // in this case, we do have a full Task definition, which
+        // includes Steps; we will make a subgraph for the steps
+        //
+        const resources = (task.spec.inputs && task.spec.inputs.resources) || []
         const resourceList = `${resources.map(_ => `<span class='color-base0A'>${_.type}</span>:${_.name}`).join(', ')}`
 
-        const params = task.spec.inputs.params || []
+        const params = (task.spec.inputs && task.spec.inputs.params) || []
         const paramList = `(${params.map(_ => _.name).join(', ')})`
 
         const subgraph = makeGraph(taskRef.name, {
           type: 'Tekton Task',
           tooltip: `<table><tr><td><strong>Resources</strong></td><td>${resourceList}</td></tr><tr><td><strong>Params</strong></td><td>${paramList}</td></tr></table>`,
           tooltipColor: '0C',
+          onclick: `tekton get task ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(task.metadata.name)} ${filearg}`,
           children: task.spec.steps.map(step => {
             const stepNode: INode = {
               id: stepId(taskRef, step),
@@ -246,7 +249,8 @@ function tekton2graph (raw: string): IGraph {
               deployed: false,
               type: 'Tekton Step',
               tooltip: `<strong>Image</strong>: ${step.image}`,
-              tooltipColor: '0E'
+              tooltipColor: '0E',
+              onclick: `tekton get step ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(task.metadata.name)} ${encodeComponent(step.name)} ${filearg}`
             }
 
             symtab[stepNode.id] = stepNode
@@ -261,6 +265,11 @@ function tekton2graph (raw: string): IGraph {
 
         node = subgraph
       } else {
+        //
+        // we don't have a full Task definition for this pipeline
+        // task, or the Task definition for some reason does not
+        // specify Steps
+        //
         node = {
           id: taskRef.name,
           label: taskRef.name,
@@ -375,15 +384,6 @@ function tekton2graph (raw: string): IGraph {
   return graph
 }
 
-const usage = {
-  command: 'view',
-  strict: 'view',
-  docs: 'Preview a Tekton pipeline',
-  required: [
-    { name: 'pipeline.yml', file: true, docs: 'path to a pipeline description file' }
-  ]
-}
-
 interface IEdgeOptions {
   singletonSource?: boolean
   singletonTarget?: boolean
@@ -423,68 +423,4 @@ function addEdge (graph: IGraph, parent: INode, child: INode, { singletonSource,
 
   child.nParents++
   parent.nChildren++
-}
-
-/** promisey readFile */
-const read = promisify(readFile)
-
-export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tekton/view', async ({ command, argvNoOptions }) => {
-    const filepath = argvNoOptions[argvNoOptions.indexOf('view') + 1]
-    const raw = (await read(findFile(expandHomeDir(filepath)))).toString()
-    const graph = tekton2graph(raw)
-    debug('graph', graph)
-
-    const content = document.createElement('div')
-    content.classList.add('padding-content')
-    content.style.flex = '1'
-    content.style.display = 'flex'
-
-    const graph2doms = (await import('@kui-shell/plugin-wskflow/lib/graph2doms')).default
-    const { controller } = await graph2doms(graph, content, undefined, {
-      layoutOptions: {
-        'elk.separateConnectedComponents': false,
-        'elk.spacing.nodeNode': 10,
-        'elk.padding': '[top=7.5,left=7.5,bottom=7.5,right=7.5]',
-        hierarchyHandling: 'INCLUDE_CHILDREN' // since we have hierarhical edges, i.e. that cross-cut subgraphs
-      }
-    })
-    debug('content', content)
-
-    injectCSS()
-
-    const flowMode = 'flow'
-    const tektonModes: ISidecarMode[] = [
-      {
-        mode: flowMode,
-        direct: command,
-        defaultMode: true,
-        execOptions: { exec: 'pexec' }
-      },
-      {
-        mode: 'Raw',
-        leaveBottomStripeAlone: true,
-        direct: {
-          type: 'custom',
-          isEntity: true,
-          contentType: 'yaml',
-          content: raw
-        }
-      }
-    ]
-
-    const badges = [ 'Tekton' ]
-
-    return {
-      type: 'custom',
-      isEntity: true,
-      name: basename(filepath),
-      packageName: dirname(filepath),
-      prettyType: 'Pipeline',
-      badges,
-      presentation: Presentation.FixedSize,
-      content,
-      modes: tektonModes.concat(zoomToFitButtons(controller, { visibleWhenShowing: flowMode }))
-    }
-  }, { usage, noAuthOk: true })
 }

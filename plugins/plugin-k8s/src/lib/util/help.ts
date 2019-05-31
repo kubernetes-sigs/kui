@@ -60,7 +60,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
     title: string
     content: string
   }
-  const allSections: Array<Section> = [_allSections[0]].concat(_allSections.slice(1).sort((a, b) => -a.title.localeCompare(b.title)))
+  const allSections: Section[] = [_allSections[0]].concat(_allSections.slice(1).sort((a, b) => -a.title.localeCompare(b.title)))
 
   // sometimes, the first section is extra intro docs; sometimes it
   // is a legitimate command/usage section

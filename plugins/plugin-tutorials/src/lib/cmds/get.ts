@@ -24,7 +24,7 @@ import { projectHome as projectHomeDir, readProject } from './util'
 // import { kindStrings } from './kinds';
 
 import { join } from 'path'
-import marked = require('marked')                      // markdown to
+import marked = require('marked') // markdown to
 
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import repl = require('@kui-shell/core/core/repl')
@@ -64,7 +64,7 @@ const enclosingContainer = () => {
   return container
 }
 
-const setup = (args: Array<string>) => {
+const setup = (args: string[]) => {
   const projectName = args[args.indexOf('get') + 1]
   const projectHome = projectHomeDir(projectName)
 
@@ -160,7 +160,7 @@ const fetchProjectData = () => info => {
 const doGet = async ({ argvNoOptions }) => {
   debug(`tutorial get impl`)
 
-  const args: Array < string > = argvNoOptions
+  const args: string[] = argvNoOptions
   return setup(args)
     .then(fetchProjectData())
     .then(({ info: { config: { projectName, name= projectName, kind= 'composition', description, api, choices, tutorial }, projectHome }, deps, imports }) => {

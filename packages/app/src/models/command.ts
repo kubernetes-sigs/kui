@@ -42,7 +42,7 @@ export interface ICommandOptions extends ICapabilityRequirements {
   hidden?: boolean
 
   // should we register in the UI that this command was executed?
-  incognito?: Array<'popup'>
+  incognito?: 'popup'[]
 
   // optional name for the view being presented
   viewName?: string
@@ -83,7 +83,9 @@ export interface IEvent {
   isDrilldown?: boolean
 }
 
-export type ParsedOptions = { [key: string]: string }
+export interface ParsedOptions {
+  [key: string]: string
+}
 
 /**
  * Evaluator args
@@ -95,8 +97,8 @@ export interface IEvaluatorArgs {
   nextBlock: HTMLElement
   parsedOptions: ParsedOptions
   command: string
-  argv: Array<string>
-  argvNoOptions: Array<string>
+  argv: string[]
+  argvNoOptions: string[]
   execOptions: IExecOptions
   createOutputStream: () => WritableStream
 }
@@ -121,8 +123,14 @@ export interface ICommandBase {
 }
 
 type CommandKey = string
-type CommandKeyMap = { [key: string]: ICommand } // we can't use CommandKey here; yay tsc; TS1336
-export type Disambiguator = { [key: string]: ICommandBase[] } // we can't use CommandKey here; yay tsc; TS1336
+// we can't use CommandKey here; yay tsc; TS1336
+interface CommandKeyMap {
+  [key: string]: ICommand
+}
+// we can't use CommandKey here; yay tsc; TS1336
+export interface Disambiguator {
+  [key: string]: ICommandBase[]
+}
 
 export interface ICommand extends ICommandBase {
   $: CommandHandler
@@ -156,7 +164,7 @@ export type CommandTreeResolution = boolean | ICommandHandlerWithEvents | CodedE
 export type YargsParserFlags = { [key in 'boolean' | 'alias']: string[] }
 
 /** a catch all handler is presented with an offer to handle a given argv */
-export type CatchAllOffer = (argv: Array<string>) => boolean
+export type CatchAllOffer = (argv: string[]) => boolean
 
 export interface ICatchAllHandler extends ICommandBase {
   prio: number
@@ -170,4 +178,5 @@ export interface CommandRegistrar {
   listen: (route: string, handler: CommandHandler, options: ICommandOptions) => ICommand
   synonym: (route: string, handler: CommandHandler, master: ICommand, options: ICommandOptions) => void
   subtree: (route: string, options: ICommandOptions) => ICommand
+  subtreeSynonym: (route: string, masterTree: ICommand) => void
 }

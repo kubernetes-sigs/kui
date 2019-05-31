@@ -92,7 +92,7 @@ export const addRow = (graphics: IGraphics) => (rowData?) => {
   /* add('disparity', {
     formatter: disp => !disp ? '-'
       : `<span style='padding:0.4285em 0'>` + disp.explanation.map(_ => {
-	// format the disparity explanation: `key (covers%)`
+  // format the disparity explanation: `key (covers%)`
         return `<div><span>${_.key}</span><span class='deemphasize'> ${prettyPrintDuration(_.slow)} (${(100 * _.covers).toFixed(1)}%)</span></div>`
       }).join('') + '</span>'
   }) */

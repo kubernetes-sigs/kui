@@ -44,3 +44,26 @@ exports.deleteNS = (ctx, ns, theCli = cli) => {
     })
   }
 }
+
+/**
+ * Keep poking the given kind till no more such entities exist
+ *
+ */
+exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace = '') => app => new Promise(resolve => {
+  // fetch the entities
+  const fetch = () => theCli.do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, { errOk: theCli.exitCode(404) })
+
+  // verify the entities
+  const verify = okToSurvive
+    ? theCli === cli ? theCli.expectOKWith(okToSurvive) : theCli.expectOK(okToSurvive)
+    : theCli.expectError(theCli.exitCode(404))
+
+  const iter = () => {
+    return fetch()
+      .then(verify)
+      .then(resolve)
+      .catch(() => setTimeout(iter, 3000))
+  }
+
+  iter()
+})

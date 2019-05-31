@@ -16,8 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectYAMLSubset, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/wipe'
-import { defaultModeForGet, createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { defaultModeForGet, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
 const ns2: string = createNS()

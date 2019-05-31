@@ -30,9 +30,9 @@ const usage = {
   }
 }
 
-const add = async ({ block, nextBlock }: IEvaluatorArgs) => {
+const add = async ({ block, nextBlock, tab }: IEvaluatorArgs) => {
   const { prompt } = await import('@kui-shell/core/webapp/cli')
-  return prompt('kubectl auth add', block as HTMLElement, nextBlock, {
+  return prompt('kubectl auth add', block as HTMLElement, nextBlock, tab, {
     placeholder: 'Paste the contents of your kubeconfig: cat $KUBECONFIG',
     onpaste: 'capture'
   }, ({ field: kubeconfigString }) => {

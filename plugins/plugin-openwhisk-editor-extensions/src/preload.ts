@@ -19,8 +19,8 @@ const debug = Debug('plugins/openwhisk-editor-extensions/preload')
 debug('loading')
 
 import * as repl from '@kui-shell/core/core/repl'
+import { ITab } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import { PluginRequire, PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 import { persisters } from './lib/cmds/new'
 
@@ -30,16 +30,16 @@ debug('done loading prereqs')
  * A preloaded plugin that enhances the view modes for actions
  *
  */
-const registration: PreloadRegistration = async (commandTree, prequire: PluginRequire) => {
+export default async () => {
   debug('initializing')
 
   if (!isHeadless()) {
     const { lockIcon, edit } = await import('@kui-shell/plugin-editor/lib/readonly')
     const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
 
-    const getEntity = () => {
-      const entity = currentSelection()
-      entity.persister = persisters.actions
+    const getEntity = (tab: ITab) => {
+      const entity = currentSelection(tab)
+      entity['persister'] = persisters.actions
       debug('getEntity', entity)
       return entity
     }
@@ -62,7 +62,5 @@ const registration: PreloadRegistration = async (commandTree, prequire: PluginRe
     addActionMode(unlock, 'unshift')
   }
 }
-
-export default registration
 
 debug('finished loading')

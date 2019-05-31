@@ -27,14 +27,15 @@ import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { IShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
+import { ITab } from '@kui-shell/core/webapp/cli'
 
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
 
-export default (entity, options: IShowOptions) => {
+export default (tab: ITab, entity, options: IShowOptions) => {
   debug('showing activation')
 
-  const sidecar = getSidecar()
+  const sidecar = getSidecar(tab)
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
   sidecar.querySelector('.sidecar-content .activation-content').className = 'activation-content'
 

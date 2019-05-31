@@ -23,7 +23,7 @@ import { preprocessTable, formatTable } from './formatTable'
  * Approximate character width of the given table
  *
  */
-const width = (table: Array<any>): number => {
+const width = (table: any[]): number => {
   return table.reduce((max, { name, attributes }) => {
     return Math.max(max,
                         name.length + attributes.reduce((sum, { value }) => sum + value.length, 0))

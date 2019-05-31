@@ -27,3 +27,23 @@ export const addActionMode = (mode, where = 'push') => {
   actionSpecificModes[where](mode)
   debug('adding action mode', where, mode, actionSpecificModes)
 }
+
+/**
+ * Format activation-specific modes
+ *
+ */
+export const activationModes = (opts = {}) => Object.assign(opts, {
+  modes: entity => [
+    { mode: 'result', defaultMode: true, command: () => 'wsk activation result' },
+    { mode: 'logs',
+      label: entity.prettyType === 'sequence' ? 'trace' : 'logs',
+      command: () => 'wsk activation logs' },
+    { mode: 'annotations', command: () => 'annotations' },
+    { mode: 'raw', command: () => 'raw' }
+  ]
+})
+
+export const addActivationModes = entity => {
+  entity.modes = activationModes().modes(entity)
+  return entity
+}

@@ -20,17 +20,15 @@ const debug = Debug('plugins/openwhisk/models/namespace')
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import cli = require('@kui-shell/core/webapp/cli')
 import repl = require('@kui-shell/core/core/repl')
-import { prequire } from '@kui-shell/core/core/plugins'
 import store from '@kui-shell/core/models/store'
 
-import { apiHost } from './auth'
+import { apiHost, auth as authModel } from './auth'
 
 /** localStorage key */
 const key = 'wsk.namespaces'
 
 /** semi-globals */
 let cached
-let _wsk
 let currentNS
 
 const read = () => apiHost.get().then(host => {
@@ -95,7 +93,7 @@ export const setApiHost = (apiHost = '') => {
    }))
    self.__lookup = () => apiHost.get().then(host => read().then(model => console.error(`Namespace list for ${host} is ${model.namespaces ? JSON.stringify(model.namespaces) : 'empty'}`))) */
 
-const setNamespace = (namespace, wsk = _wsk) => {
+const setNamespace = (namespace: string) => {
   if (!namespace) {
     return setNeedsNamespace()
   }
@@ -116,7 +114,7 @@ const setNamespace = (namespace, wsk = _wsk) => {
   currentNS = namespace
 
   // persistence bits
-  return persist(namespace, wsk.auth.get())
+  return persist(namespace, authModel.get())
 }
 
 /**
@@ -229,8 +227,6 @@ const persist = (namespace, auth) => {
 export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
   debug('init')
 
-  _wsk = await prequire('plugin-openwhisk')
-
   return apiHost.get() // get the current apihost
     .then(setApiHost) // udpate the UI for the apihost
     .then(() => repl.qexec('wsk auth namespace get')) // get the namespace associated with the current auth key
@@ -296,7 +292,7 @@ export const current = async (opts: ICurrentOptions = new DefaultCurrentOptions(
  * Switch to use the given openwhisk auth and save
  *
  */
-export const useAndSave = (auth, wsk = _wsk) => wsk.auth.set(auth)
+export const useAndSave = (auth: string) => authModel.set(auth)
   .then(() => repl.qexec('wsk namespace current'))
   .then(namespace => writeSelectedNS(namespace)) // store the selected namesapce to local storage (use case e.g. reload the browser after auth switch)
   .then(() => init())
@@ -305,8 +301,8 @@ export const useAndSave = (auth, wsk = _wsk) => wsk.auth.set(auth)
  * Switch to use the given openwhisk auth but don't save
  *
  */
-export const use = (auth, wsk = _wsk) => {
-  return wsk.auth.set(auth).then(() => init())
+export const use = (auth: string) => {
+  return authModel.set(auth).then(() => init())
 }
 
 /**

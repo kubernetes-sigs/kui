@@ -44,8 +44,8 @@ export interface IKubeStatus {
   unavailableReplicas?: number
   updatedReplicas?: number
   loadBalancer?: IKubeLoadBalancer
-  containerStatuses?: Array<IKubeContainerStatus>
-  conditions?: Array<IKubeStatusCondition>
+  containerStatuses?: IKubeContainerStatus[]
+  conditions?: IKubeStatusCondition[]
 }
 export class DefaultKubeStatus implements IKubeStatus {
   message = undefined
@@ -67,7 +67,7 @@ export interface IKubeMetadata {
   annotations?: object
   creationTimestamp?: string
   generation?: string
-  ownerReferences?: Array<IOwnerReferences>
+  ownerReferences?: IOwnerReferences[]
 }
 export class DefaultKubeMetadata implements IKubeMetadata {
   kind = undefined
