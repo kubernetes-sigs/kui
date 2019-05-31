@@ -665,7 +665,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
 }
 
 interface IDetailedExample {
-  command: string,
+  command: string
   docs: string
 }
 
@@ -778,13 +778,13 @@ export interface IUsageModel {
 
   breadcrumb?: string
   title?: string
-  command?: string,
-  strict?: string,
-  docs?: string,
-  header?: string,
-  example?: string,
-  detailedExample?: IDetailedExample | IDetailedExample[],
-  sampleInputs?: IUsageRow[],
+  command?: string
+  strict?: string
+  docs?: string
+  header?: string
+  example?: string
+  detailedExample?: IDetailedExample | IDetailedExample[]
+  sampleInputs?: IUsageRow[]
   intro?: ITitledContent
   sections?: IUsageSection[]
   commandPrefix?: string

@@ -69,7 +69,7 @@ export const setGraphicalShellIsOpen = () => {
  *
  */
 interface IPrettyOptions {
-  columnWidths?: { [key: number]: number },
+  columnWidths?: { [key: number]: number }
   extraColor?: string
 }
 class DefaultPrettyOptions implements IPrettyOptions {

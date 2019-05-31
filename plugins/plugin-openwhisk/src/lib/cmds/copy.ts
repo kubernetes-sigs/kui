@@ -49,7 +49,7 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const copy = (type: string) => (op: string) => ({ block: retryOK, argvNoOptions: argv, parsedOptions: options }: { block: boolean | Element, argvNoOptions: string[], parsedOptions: ParsedOptions }) => {
+const copy = (type: string) => (op: string) => ({ block: retryOK, argvNoOptions: argv, parsedOptions: options }: { block: boolean | Element; argvNoOptions: string[]; parsedOptions: ParsedOptions }) => {
   debug(`${type} ${op}`)
 
   const idx = argv.indexOf(op) + 1

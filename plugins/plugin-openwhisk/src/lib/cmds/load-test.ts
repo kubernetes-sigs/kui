@@ -189,9 +189,9 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
 
   interface ITally {
     durations: {
-      success: number[],
+      success: number[]
       failure: number[]
-    },
+    }
     numErrors?: number
   }
 

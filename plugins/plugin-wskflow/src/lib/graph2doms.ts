@@ -43,7 +43,7 @@ const wfColorAct = {
 
 const containerId = 'wskflowDiv'
 
-export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>, composites?: { label: { fontSize: string, offset: { x: number, y: number } } } } = {}) {
+export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>; composites?: { label: { fontSize: string; offset: { x: number; y: number } } } } = {}) {
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 

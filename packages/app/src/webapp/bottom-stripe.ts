@@ -39,7 +39,7 @@ export interface ISidecarMode {
 
   selected?: boolean
   selectionController?: any
-  visibleWhen?: any,
+  visibleWhen?: any
   leaveBottomStripeAlone?: boolean
 
   // icon label?
@@ -57,7 +57,7 @@ export interface ISidecarMode {
   command?: any
   direct?: DirectViewController
 
-  execOptions?: IExecOptions,
+  execOptions?: IExecOptions
 
   defaultMode?: boolean
 

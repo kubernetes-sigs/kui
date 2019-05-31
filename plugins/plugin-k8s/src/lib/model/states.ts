@@ -89,9 +89,9 @@ const isOfflineLike = (state: State): boolean => stateGroups[FinalState.OfflineL
 const isPendingLike = (state: State): boolean => !isOnlineLike(state) && !isOfflineLike(state)
 
 export interface IStatus {
-  state?: State,
-  phase?: State,
-  message?: string,
+  state?: State
+  phase?: State
+  message?: string
   startTime?: string
 }
 

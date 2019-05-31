@@ -297,7 +297,7 @@ export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) =>
  *
  */
 export interface IHeader {
-  leftHeader: Element,
+  leftHeader: Element
   rightHeader: Element
 }
 export const prepareHeader = (tab: ITab, isRedraw = false): IHeader => {

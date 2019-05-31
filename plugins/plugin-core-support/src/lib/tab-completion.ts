@@ -82,7 +82,7 @@ const isDirectory = (filepath: string): Promise<boolean> => new Promise((resolve
  * prompt, which is an <input>.
  *
  */
-const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, doEscape = false, addSpace = false }: { temporaryContainer?: TemporaryContainer, partial?: string, dirname?: false | string, doEscape?: boolean, addSpace?: boolean }) => {
+const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, doEscape = false, addSpace = false }: { temporaryContainer?: TemporaryContainer; partial?: string; dirname?: false | string; doEscape?: boolean; addSpace?: boolean }) => {
   debug('completion', match, partial, dirname)
 
   // in case match includes partial as a prefix

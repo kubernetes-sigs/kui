@@ -39,7 +39,7 @@ export interface IEntitySpec {
 
   version?: string
   namespace?: string
-  annotations?: { key: string, value: any }[]
+  annotations?: { key: string; value: any }[]
 }
 
 export interface IMessageBearingEntity {

@@ -62,7 +62,7 @@ interface IOwnerReferences {
 export interface IKubeMetadata {
   name: string
   namespace?: string
-  labels?: { [key: string]: string },
+  labels?: { [key: string]: string }
   annotations?: object
   creationTimestamp?: string
   generation?: string

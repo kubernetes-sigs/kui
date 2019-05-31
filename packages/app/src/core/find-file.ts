@@ -30,7 +30,7 @@ import { inBrowser } from './capabilities'
  */
 interface ISpecialPath {
   prefix: string
-  filepath: string,
+  filepath: string
   command?: string
 }
 const specialPaths: ISpecialPath[] = [] // any special paths added via self.addPath
@@ -85,7 +85,7 @@ export const viewer = (prefix: string): string | never => {
  * Behaves like `findFile` with an extra call to `commandPrefix`
  *
  */
-export const findFileWithViewer = (filepath: string, { safe = false, keepRelative = false } = {}): { resolved: string, viewer?: string } => {
+export const findFileWithViewer = (filepath: string, { safe = false, keepRelative = false } = {}): { resolved: string; viewer?: string } => {
   if (!filepath) {
     if (!safe) {
       throw new Error('Please specify a file')

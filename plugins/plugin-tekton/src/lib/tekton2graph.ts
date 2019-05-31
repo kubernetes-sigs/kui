@@ -69,8 +69,8 @@ interface INode {
   readonly visited?: string[]
   children?: readonly INode[]
   edges?: readonly IEdge[]
-  deployed?: boolean,
-  nChildren: number,
+  deployed?: boolean
+  nChildren: number
   nParents: number
 }
 
@@ -100,7 +100,7 @@ const defaultCharHeight = 10
  * @return a blank IGraph instance with optional "children" subgraphs
  *
  */
-const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type, onclick }: { children: INode[], tooltip?: string, tooltipColor?: string, type?: string, onclick?: string } = { children: [] }): IGraph => {
+const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type, onclick }: { children: INode[]; tooltip?: string; tooltipColor?: string; type?: string; onclick?: string } = { children: [] }): IGraph => {
   return {
     id: label,
     label,
