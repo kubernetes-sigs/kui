@@ -113,6 +113,22 @@ describe('electron describe', function (this: common.ISuite) {
       }
     })
 
+    it('should delete the pod via sidecar deletion button', () => {
+      return cli.do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
+        .then(async (res) => {
+          await cli.expectJustOK(res)
+          await this.app.client.click(selectors.BY_NAME('nginx')) // click nginx in the table and expect a new repl output with sidecar open
+          await sidecar.expectOpen(this.app)
+          await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete')) // click delete button
+
+          // a deletion command should be issued
+          const newResourceSelector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })({ app: res.app, count: res.count + 1 })
+          const expectOffline = `${newResourceSelector} span:not(.repeating-pulse) badge.red-background`
+          await this.app.client.waitForExist(expectOffline)
+        })
+        .catch(common.oops(this))
+    })
+
     deleteNS(this, ns)
   })
 })

@@ -127,6 +127,29 @@ describe('electron namespace', function (this: common.ISuite) {
       })
     }
 
+    const deleteViaButton = (ns: string) => {
+      it('should delete the namespace via clicking deletion button in the sidecar', () => {
+        return cli.do(`${kubectl} get ns ${ns} -o yaml`, this.app)
+          .then(async (res) => {
+            await cli.expectJustOK(res)
+            await sidecar.expectOpen(this.app)
+
+            const deletionButton = selectors.SIDECAR_MODE_BUTTON('delete')
+
+            await this.app.client.waitForExist(deletionButton)
+            await this.app.client.click(deletionButton)
+
+            // exepct a deletion table
+            const deletionEntitySelector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) })({ app: this.app, count: res.count + 1 })
+
+            const expectOffline = `${deletionEntitySelector} span:not(.repeating-pulse) badge.red-background`
+
+            return this.app.client.waitForExist(expectOffline)
+          })
+          .catch(common.oops(this))
+      })
+    }
+
     //
     // now start the tests
     //
@@ -137,6 +160,6 @@ describe('electron namespace', function (this: common.ISuite) {
     createPod(ns1)
     createPod(ns2)
     deleteIt(ns1)
-    deleteIt(ns2)
+    deleteViaButton(ns2)
   })
 })
