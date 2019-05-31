@@ -19,8 +19,6 @@
   "dependencies": {},
   "devDependencies": {
     "lerna": "3.13.2",
-    "tslint": "5.16.0",
-    "tslint-config-standard": "8.0.1",
     "typescript": "3.4.5"
   },
   "husky": {
