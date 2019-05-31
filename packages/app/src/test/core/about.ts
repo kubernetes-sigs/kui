@@ -28,10 +28,10 @@ describe('About command', function (this: ISuite) {
   after(common.after(this))
 
   it('should open the about window via command execution', () => cli.do('about', this.app)
-     .then(cli.expectJustOK)
-     .then(sidecar.expectOpen)
-     .then(sidecar.expectShowing(settings.productName))
-     .catch(common.oops(this)))
+    .then(cli.expectJustOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(settings.productName))
+    .catch(common.oops(this)))
 
   it('should open the about window via button click', async () => {
     try {

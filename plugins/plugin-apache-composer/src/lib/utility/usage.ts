@@ -44,7 +44,7 @@ export const create = command => ({
   header: strings[command],
   example: `app ${command} <name> <sourceFile>`,
   required: [{ name: 'name', docs: 'the name of your new app', implicitOK: ['actions', 'preview'] },
-               { name: 'sourceFile', docs: 'source file or pre-compiled composition', file: true, notNeededIfImplicit: true }],
+    { name: 'sourceFile', docs: 'source file or pre-compiled composition', file: true, notNeededIfImplicit: true }],
   optional: actionsUsage[command].optional,
   sampleInputs: sampleInputs(sampleName => `app ${command} ${sampleName}`),
   parents: ['composer', { command: 'composer app' }],
@@ -98,7 +98,7 @@ export const appGet = command => ({
   example: `app ${command} <appName>`,
   required: [{ name: 'appName', docs: 'the name of your composition', entity: 'action' }],
   optional: [{ name: '--cli', boolean: true, docs: 'display the results textually (headless mode only)' },
-               { name: '--functions', alias: '-f', boolean: true, docs: 'show all functions directly in the view' }
+    { name: '--functions', alias: '-f', boolean: true, docs: 'show all functions directly in the view' }
   ],
   parents: ['composer', { command: 'composer app' }],
   related: ['app create', 'app invoke', 'app list']
@@ -141,8 +141,8 @@ export const sessionGet = command => ({
   header: strings[`session_${command}`],
   example: `session ${command} <sessionId>`,
   oneof: [{ name: 'sessionId', docs: 'show a specific session id' },
-            { name: '--last', example: '[appName]', booleanOK: true, docs: 'show the last session [of the given app]' },
-            { name: '--last-failed', example: '[appName]', booleanOK: true, docs: 'ibid, except show the last failed session' }],
+    { name: '--last', example: '[appName]', booleanOK: true, docs: 'show the last session [of the given app]' },
+    { name: '--last-failed', example: '[appName]', booleanOK: true, docs: 'ibid, except show the last failed session' }],
   optional: activationsUsage.get.optional,
   parents: ['composer', { command: 'composer session' }],
   related: related[command]

@@ -124,8 +124,8 @@ export enum TrafficLight {
 export const state2Traffic = (state: State): TrafficLight => {
   return state === States.Conflict ? TrafficLight.Gray
     : isOnlineLike(state) ? TrafficLight.Green
-    : isOfflineLike(state) ? TrafficLight.Red
-    : TrafficLight.Yellow
+      : isOfflineLike(state) ? TrafficLight.Red
+        : TrafficLight.Yellow
 }
 
 export const trafficMerge = (t1: TrafficLight, t2: TrafficLight): TrafficLight => {
@@ -228,13 +228,13 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
       // at the top level, hence the state.state check
       const status = getStatusFromConditions(response) ||
         (response.status && (response.status.state || response.status.phase)
-         ? response.status
-         : response.state ? response
-         : response.apiVersion.match(/istio\.io/) ? {
-           state: States.Online,
-           message: new Date()
-         }
-         : undefined
+          ? response.status
+          : response.state ? response
+            : response.apiVersion.match(/istio\.io/) ? {
+              state: States.Online,
+              message: new Date()
+            }
+              : undefined
         )
 
       if (!status) {
@@ -363,10 +363,10 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
     // other cells to update
     const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' } ]
       : status.message ? [ { key: 'message', value: maybeAsDate(status.message) } ]
-      : status.startTime ? [ { key: 'message', value: maybeAsDate(status.startTime) } ]
-      : newState === States.Offline ? [ { key: 'message', value: finalState === FinalState.OnlineLike ? 'resource not yet available' : 'resource is offline' } ]
-      : newState === States.Pending || newState === States.Deploying || newState === States.Deleting ? [ { key: 'message', value: 'in progress' } ]
-      : undefined
+        : status.startTime ? [ { key: 'message', value: maybeAsDate(status.startTime) } ]
+          : newState === States.Offline ? [ { key: 'message', value: finalState === FinalState.OnlineLike ? 'resource not yet available' : 'resource is offline' } ]
+            : newState === States.Pending || newState === States.Deploying || newState === States.Deleting ? [ { key: 'message', value: 'in progress' } ]
+              : undefined
 
     // are we done updating
     const done = newState === States.Failed ||

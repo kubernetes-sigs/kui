@@ -50,9 +50,9 @@ describe('confirm that app update preserves annotations and parameters', functio
     .catch(common.oops(this)))
 
   it('should update an app', () => cli.do(`app update ${appName1} ${ROOT}/data/composer/composer-source/if.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(appName1))
-      // .then(() => this.app.client.getText(`${ui.selectors.SIDECAR} .entity-web-export-url.has-url`)) // TODO
-      .catch(common.oops(this)))
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(appName1))
+  // .then(() => this.app.client.getText(`${ui.selectors.SIDECAR} .entity-web-export-url.has-url`)) // TODO
+    .catch(common.oops(this)))
 })

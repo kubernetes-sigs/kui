@@ -122,9 +122,9 @@ const showResource = async (yaml, filepath: string, tab: ITab, parsedOptions: Pa
     debug('openInEditor', yaml.metadata.name)
 
     return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.yaml)}" --language yaml`,
-                      undefined, undefined, {
-                        parameters: editorEntity
-                      })
+      undefined, undefined, {
+        parameters: editorEntity
+      })
       .then(addModeButtons('raw'))
   }
 

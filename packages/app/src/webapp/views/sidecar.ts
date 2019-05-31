@@ -311,7 +311,7 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
   } else if (custom.presentation || isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab))) {
     const presentation = custom.presentation ||
       (viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
-       : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen)
+        : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen)
     presentAs(tab, presentation)
 
     if (viewProviderDesiresFullscreen) {
@@ -380,7 +380,7 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
     sidecar.entity.type = sidecar.entity.viewName
 
     addNameToSidecarHeader(sidecar, entity.prettyName || entity.name, entity.packageName, undefined,
-                           entity.prettyType || entity.type, entity.subtext, entity)
+      entity.prettyType || entity.type, entity.subtext, entity)
 
     // render badges
     addVersionBadge(tab, entity, { clear: true, badgesDom })

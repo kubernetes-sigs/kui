@@ -128,9 +128,9 @@ const allContexts = async (execOptions: IExecOptions, { fetchAllNS = false } = {
   }
 
   return flatten(await Promise.all(table.body.map(cluster => repl.qexec(`k get ns --context ${cluster.name}`, undefined, undefined, execOptions)
-      .then((nsTable: Table) => nsTable.body.map(({ name }) => ({ name: cluster.name, namespace: name })))
-      .catch(handleError)
-    ))).filter(x => x)
+    .then((nsTable: Table) => nsTable.body.map(({ name }) => ({ name: cluster.name, namespace: name })))
+    .catch(handleError)
+  ))).filter(x => x)
 }
 
 /**
@@ -168,12 +168,12 @@ const getStatusForKnownContexts = (execOptions: IExecOptions, parsedOptions: Par
 
       debug('fetching kubectl get all', name, namespace)
       const coreResources = repl.qexec(`kubectl get --context "${name}" ${inNamespace} all ${adminCoreFilter} -o json`,
-                                       undefined, undefined, raw)
+        undefined, undefined, raw)
         .catch(handleError)
 
       debug('fetching crds', name, namespace)
       const crds = await repl.qexec(`kubectl get --context "${name}" ${inNamespace} crds ${adminCRDFilter} -o json`,
-                                    undefined, undefined, raw)
+        undefined, undefined, raw)
       debug('crds', name, crds)
 
       // TODO: hack for now; we need app=seed, or something like that
@@ -182,7 +182,7 @@ const getStatusForKnownContexts = (execOptions: IExecOptions, parsedOptions: Par
       const crdResources = flatten(await Promise.all(filteredCRDs.map(crd => {
         const kind = (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) || crd.spec.names.kind
         return repl.qexec(`kubectl get --context "${name}" ${inNamespace} ${adminCoreFilter} "${kind}" -o json`,
-                          undefined, undefined, raw)
+          undefined, undefined, raw)
           .catch(handleError)
       })))
 
@@ -304,7 +304,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     return metadata['namespace']
       ? `-n "${metadata['namespace']}"`
       : parsedOptions.namespace || parsedOptions.n ? `-n ${namespace}`
-      : ''
+        : ''
   }
 
   if (parsedOptions.all) {
@@ -331,7 +331,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
     debug('status by programmatic parameter', resources)
     const entities = await Promise.all(resources.map(_ => {
       return repl.qexec(`kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`,
-                        undefined, undefined, raw)
+        undefined, undefined, raw)
     }))
     if (execOptions.raw) {
       return entities
@@ -397,13 +397,13 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
       // make a list of tables, recursively calling ourselves for
       // each yaml file in the given directory
       return Promise.all(yamlsWithMainFirst.map(filepath => repl.qexec(`k status "${filepath}" --final-state ${finalState}`,
-                                                                       undefined, undefined, execOptions)))
+        undefined, undefined, execOptions)))
     } else if (isDir === undefined) {
       // then the file does not exist; maybe the user specified a resource kind, e.g. k status pods
       debug('status by resource kind', file, name)
 
       const kubeEntities = repl.qexec(`kubectl get "${file}" "${name || ''}" ${ns()} -o json`,
-                                      undefined, undefined, raw)
+        undefined, undefined, raw)
         .catch(err => {
           if (err.code === 404) {
             // then no such resource type exists
@@ -431,14 +431,14 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
       const { safeLoadAll: parseYAML } = await import('js-yaml')
       const { fetchFile } = await import('../util/fetch-file')
       const specs = (passedAsParameter
-                     ? parseYAML(execOptions.parameters[passedAsParameter[1].slice(1)]) // yaml given programatically
-                     : flatten((await fetchFile(file)).map(parseYAML)))
+        ? parseYAML(execOptions.parameters[passedAsParameter[1].slice(1)]) // yaml given programatically
+        : flatten((await fetchFile(file)).map(parseYAML)))
         .filter(_ => _) // in case there are empty paragraphs;
       debug('specs', specs)
 
       const kubeEntities = Promise.all(specs.map(spec => {
         return repl.qexec(`kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(spec)} -o json`,
-                          undefined, undefined, raw)
+          undefined, undefined, raw)
           .catch(errorEntity(execOptions, spec, namespace))
       }))
 
@@ -467,7 +467,7 @@ const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: any[]
   const pods = removeDuplicateResources(flatten(await Promise.all(kubeEntities.map(({ kind, metadata: { labels, namespace, name } }) => {
     if (labels && labels.app && kind !== 'Pod') {
       return repl.qexec(`kubectl get pods -n "${namespace}" -l "app=${labels.app}" -o json`,
-                        undefined, undefined, raw)
+        undefined, undefined, raw)
     }
   }).filter(x => x))))
 

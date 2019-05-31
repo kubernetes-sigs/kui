@@ -94,8 +94,8 @@ const prettyDom = (dom: ElementMimic, logger = log, stream = process.stdout, _co
 
   const extraColor = isHeader || dom.hasStyle('fontWeight', 'bold') ? 'bold'
     : dom.hasStyle('fontWeight', 500) ? 'green'
-    : dom.hasStyle('fontSize', '0.875em') ? 'gray'
-    : _extraColor || 'reset'
+      : dom.hasStyle('fontSize', '0.875em') ? 'gray'
+        : _extraColor || 'reset'
   const colorCode = (dom.hasStyle('color') as string) || _color
   const color = colorMap[colorCode] || colorCode
   // debug('colors', isHeader, colorCode, color, extraColor)

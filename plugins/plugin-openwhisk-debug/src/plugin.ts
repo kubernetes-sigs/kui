@@ -166,8 +166,8 @@ const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: string[], 
     const start = Date.now() // remember the activation start time; note that this is AFTER dockerization
 
     const res = await runActionInDocker(action.code,
-                                        action.kind,
-                                        Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv)
+      action.kind,
+      Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv)
 
     displayAsActivation(tab, 'local activation', action, start, res)
   } catch (err) {
@@ -215,9 +215,9 @@ const doDebug = (tab: ITab, input: Object, argvWithoutOptions: string[], dashOpt
       const start = Date.now()
 
       const res = await runActionDebugger(action.name,
-                                          action.code,
-                                          action.kind,
-                                          Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv, dashOptions)
+        action.code,
+        action.kind,
+        Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv, dashOptions)
 
       displayAsActivation(tab, 'debug session', action, start, res)
 
@@ -415,7 +415,7 @@ const kill = async (spinnerDiv: Element): Promise<void> => {
     debug('kill from api')
     await docker.container.get('shell-local').status().catch(squash)
       .then(container => container && container.stop().catch(squash)
-            .then(() => container.delete({ force: true })))
+        .then(() => container.delete({ force: true })))
   }
   debug('so far so good with kill')
 
@@ -828,9 +828,9 @@ const runActionDebugger = (actionName: string, functionCode: string, functionKin
                   }
                 })
                 .then(entry => fs.readFile(`${dirPath}/${entry}`) // read in the entry code, so we can wrap it with debug
-                      .then(data => debugCodeWrapper(data.toString(), functionInput, resultFilePath)) // wrap it!
-                      .then(newCode => fs.outputFile(`${dirPath}/${entry}`, newCode)) // write the new file to temp directory
-                      .then(() => resolve(entry))) // return value: the location of the entry
+                  .then(data => debugCodeWrapper(data.toString(), functionInput, resultFilePath)) // wrap it!
+                  .then(newCode => fs.outputFile(`${dirPath}/${entry}`, newCode)) // write the new file to temp directory
+                  .then(() => resolve(entry))) // return value: the location of the entry
                 .catch(reject)
             }
           })
@@ -841,8 +841,8 @@ const runActionDebugger = (actionName: string, functionCode: string, functionKin
         }
       }))
       .then(entry => qexec(`! docker cp ${dirPath} shell-local:/nodejsAction`) // copy temp dir into container
-            .then(() => appendIncreContent('Launching debugger', spinnerDiv)) // status update
-            .then(() => entry))
+        .then(() => appendIncreContent('Launching debugger', spinnerDiv)) // status update
+        .then(() => entry))
       .then(entry => {
         // this is where we launch the local debugger, and wait for it to terminate
         // as to why we need to hack for the Waiting for debugger on stderr:

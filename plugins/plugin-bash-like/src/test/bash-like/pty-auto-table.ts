@@ -29,13 +29,13 @@ dockerDescribe('xterm auto-table', function (this: common.ISuite) {
   const alpine = `alpine:${alpineVersion}`
 
   it('should remove the previous alpine, from previous tests', () => cli.do(`docker rmi ${alpine}`, this.app)
-     .catch(common.oops(this)))
+    .catch(common.oops(this)))
 
   it(`should pull alpine docker image ${alpine}`, () => cli.do(`docker pull ${alpine}`, this.app)
-     .then(cli.expectOKWithAny)
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithAny)
+    .catch(common.oops(this)))
 
   it('should list alpine image as a kui table', () => cli.do(`docker images ${alpine}`, this.app)
-     .then(cli.expectOKWith('alpine'))
-     .catch(common.oops(this)))
+    .then(cli.expectOKWith('alpine'))
+    .catch(common.oops(this)))
 })

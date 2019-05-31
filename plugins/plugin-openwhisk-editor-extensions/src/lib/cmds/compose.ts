@@ -328,7 +328,7 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   // generate AST, if we were given a template
   const compile = () => type === 'compositions' && options.template
     ? inBrowser() ? import('@kui-shell/plugin-apache-composer/samples' + findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
-    : generateAST(code, options.template, options.kind || defaults.kind)
+      : generateAST(code, options.template, options.kind || defaults.kind)
     : Promise.resolve()
 
   // our placeholder action
@@ -359,7 +359,7 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
     // then send a response back to the repl
     //
     return betterNotExist(name, options)
-        .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
+      .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
       .then(prepareEditorWithAction)
       .then(addWskflow(tab))
       .then(respondToRepl(undefined, ['is-modified']))

@@ -26,7 +26,7 @@ import { preprocessTable, formatTable } from './formatTable'
 const width = (table: any[]): number => {
   return table.reduce((max, { name, attributes }) => {
     return Math.max(max,
-                        name.length + attributes.reduce((sum, { value }) => sum + value.length, 0))
+      name.length + attributes.reduce((sum, { value }) => sum + value.length, 0))
   }, 0)
 }
 
@@ -80,27 +80,27 @@ export const format = (command: string, verb: string, entityType: string, option
       return {
         kind,
         table: formatTable(command,
-                           verb,
-                           entityType,
-                           Object.assign({}, options, { namespace: namespaceFor(entityType) }),
-                           preprocessTable([A.slice(1).join('\n')])[0])
+          verb,
+          entityType,
+          Object.assign({}, options, { namespace: namespaceFor(entityType) }),
+          preprocessTable([A.slice(1).join('\n')])[0])
       }
     })
   debug('resources', resources)
 
   return resources
-        .map(({ kind, table }) => {
-          table.title = kind
-          table.flexWrap = true
-          return table
-        }).sort((a, b) => {
-            // number of columns
-          const diff1 = a.header.attributes.length - b.header.attributes.length
+    .map(({ kind, table }) => {
+      table.title = kind
+      table.flexWrap = true
+      return table
+    }).sort((a, b) => {
+      // number of columns
+      const diff1 = a.header.attributes.length - b.header.attributes.length
 
-          if (diff1 === 0) {
-            return - (width(a.body) - width(b.body))
-          } else {
-            return -diff1
-          }
-        })
+      if (diff1 === 0) {
+        return - (width(a.body) - width(b.body))
+      } else {
+        return -diff1
+      }
+    })
 }

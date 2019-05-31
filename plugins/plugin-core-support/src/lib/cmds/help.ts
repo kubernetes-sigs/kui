@@ -56,7 +56,7 @@ const help = (usage, docs) => ({ argvNoOptions: args }: IEvaluatorArgs) => {
           !model.synonymFor &&
           (isHeadless() || !model.headlessOnly) &&
           (!inBrowser() || !model.requiresLocal)
-         ) {
+      ) {
         topLevelUsage.available.push({
           label: route.substring(1),
           available: model.available,

@@ -160,57 +160,57 @@ const usage = {
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/run', doRun, { usage, noAuthOk: true })
   commandTree.listen('/show',
-                     ({ execOptions, tab }) => {
-                       debug('show', execOptions)
-                       if (!execOptions || !execOptions.parameters) {
-                         throw new Error('Nothing to show')
-                       }
+    ({ execOptions, tab }) => {
+      debug('show', execOptions)
+      if (!execOptions || !execOptions.parameters) {
+        throw new Error('Nothing to show')
+      }
 
-                       const { command, content: commandOutput } = execOptions.parameters
+      const { command, content: commandOutput } = execOptions.parameters
 
-                       const commandName = command.substring(0, command.indexOf(' ')).trim()
-                       const commandRest = command.substring(command.indexOf(' ')).trim()
+      const commandName = command.substring(0, command.indexOf(' ')).trim()
+      const commandRest = command.substring(command.indexOf(' ')).trim()
 
-                       const content = document.createElement('div')
-                       content.classList.add('code-highlighting')
-                       content.classList.add('scrollable')
-                       content.classList.add('scrollable-auto')
+      const content = document.createElement('div')
+      content.classList.add('code-highlighting')
+      content.classList.add('scrollable')
+      content.classList.add('scrollable-auto')
 
-                       const scrollInner = document.createElement('pre')
-                       scrollInner.classList.add('padding-content')
-                       content.appendChild(scrollInner)
+      const scrollInner = document.createElement('pre')
+      scrollInner.classList.add('padding-content')
+      content.appendChild(scrollInner)
 
-                       if (Array.isArray(commandOutput)) {
-                         const container = document.createElement('div')
-                         container.classList.add('result-as-table')
-                         scrollInner.appendChild(container)
+      if (Array.isArray(commandOutput)) {
+        const container = document.createElement('div')
+        container.classList.add('result-as-table')
+        scrollInner.appendChild(container)
 
-                         formatMultiListResult(tab,
-                                               !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
-                                               container)
+        formatMultiListResult(tab,
+          !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
+          container)
 
-                         return {
-                           type: 'custom',
-                           prettyType: commandName,
-                           isEntity: true,
-                           name: commandRest,
-                           content
-                         }
-                       } else {
-                         if (typeof commandOutput === 'string') {
-                           scrollInner.innerText = commandOutput
-                         } else {
-                           scrollInner.appendChild(commandOutput)
-                         }
+        return {
+          type: 'custom',
+          prettyType: commandName,
+          isEntity: true,
+          name: commandRest,
+          content
+        }
+      } else {
+        if (typeof commandOutput === 'string') {
+          scrollInner.innerText = commandOutput
+        } else {
+          scrollInner.appendChild(commandOutput)
+        }
 
-                         return {
-                           type: 'custom',
-                           prettyType: commandName,
-                           isEntity: true,
-                           name: commandRest,
-                           content
-                         }
-                       }
-                     },
-                     { hidden: true, noAuthOk: true })
+        return {
+          type: 'custom',
+          prettyType: commandName,
+          isEntity: true,
+          name: commandRest,
+          content
+        }
+      }
+    },
+    { hidden: true, noAuthOk: true })
 }

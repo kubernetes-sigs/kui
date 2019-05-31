@@ -163,8 +163,8 @@ describe('Tab completion openwhisk', function (this: common.ISuite) {
 
   it('should tab complete action foo2 with options', async () => {
     await tabbyWithOptions(this.app, 'action get f',
-                           ['foofoo/yum', 'foo2', 'foo'],
-                           'action get foo2',
+      ['foofoo/yum', 'foo2', 'foo'],
+      'action get foo2',
       { click: 1,
         expectedPromptAfterTab: 'action get foo' })
 
@@ -176,9 +176,9 @@ describe('Tab completion openwhisk', function (this: common.ISuite) {
 
   it('should tab complete action foo with options (no prefix)', async () => {
     await tabbyWithOptions(this.app, 'action get ',
-                           ['foofoo/yum', 'bar', 'foo2', 'foo'],
-                           'action get foo',
-                           { click: 3 })
+      ['foofoo/yum', 'bar', 'foo2', 'foo'],
+      'action get foo',
+      { click: 3 })
 
     return Promise.resolve(this.app)
       .then(sidecar.expectOpen)

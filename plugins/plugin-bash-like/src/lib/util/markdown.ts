@@ -178,10 +178,10 @@ const wrap = (tab: ITab, htmlString: string, fullpath: string, hljs): IMarkdown 
       exec.onclick = () => pexec(url.substring(1)/*.replace(new RegExp('(?<!\\)\/', 'g'), ' ')*/.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
     } else {
       exec.onclick = drilldown(tab,
-                               `open ${url}`,
-                               undefined,
-                               wrapper,
-                               path.basename(fullpath))
+        `open ${url}`,
+        undefined,
+        wrapper,
+        path.basename(fullpath))
     }
   }
 

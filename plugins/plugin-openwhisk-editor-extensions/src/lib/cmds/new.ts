@@ -257,7 +257,7 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
     // then send a response back to the repl
     //
     return betterNotExist(name, options)
-        .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
+      .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
       .then(prepareEditorWithAction)
       .then(respondToRepl(undefined, ['is-modified']))
   }
@@ -289,7 +289,7 @@ export const persisters = {
       delete action.version
 
       return repl.qexec(`wsk action update "${namespacePart}${action.name}"`,
-                        undefined, undefined, { entity: { action } })
+        undefined, undefined, { entity: { action } })
     }
   }
 }

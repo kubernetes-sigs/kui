@@ -69,7 +69,7 @@ const handleComposer = options => activation => {
  */
 const fetch = activationId => new Promise((resolve, reject) => {
   const fetchPoll = () => (isConductorActivation(activationId) ? repl.qexec(`session get ${activationId}`)
-                           : repl.qexec(`wsk activation get ${activationId}`))
+    : repl.qexec(`wsk activation get ${activationId}`))
     .then(resolve)
     .catch(err => {
       if (err && err.error && err.error.error === 'The requested resource does not exist.') {
@@ -165,7 +165,7 @@ export default (commandTree, wsk) => {
   // install the routes
   wsk.synonyms('activations').map(syn => {
     commandTree.listen(`/wsk/${syn}/await`,
-                       doAwait,
-                       { docs: 'Wait until a previous activation completes (default: the last activation)' })
+      doAwait,
+      { docs: 'Wait until a previous activation completes (default: the last activation)' })
   })
 }

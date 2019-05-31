@@ -23,6 +23,6 @@ describe('bash-like host catchall', function (this: common.ISuite) {
   before(common.before(this, { noApp: true }))
 
   it('should show some output for host google.com', () => cli.do('host google.com')
-     .then(cli.expectOK('has address'))
-     .catch(common.oops(this)))
+    .then(cli.expectOK('has address'))
+    .catch(common.oops(this)))
 })

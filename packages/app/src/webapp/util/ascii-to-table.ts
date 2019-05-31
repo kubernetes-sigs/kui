@@ -137,7 +137,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const drilldownVerb = (
     verb === 'get' ? 'get'
       : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
-      : isHelmStatus ? 'get' : undefined
+        : isHelmStatus ? 'get' : undefined
   ) || undefined
 
   // helm doesn't support --output
@@ -193,7 +193,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     // idx === 0: don't click on header row
     const onclick = idx === 0 ? false
       : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns} ${config}`
-      : false
+        : false
 
     const attributes: Cell[] = columns.slice(1).map(({ key, value: column }, colIdx) => ({
       key,

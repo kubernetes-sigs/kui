@@ -78,9 +78,9 @@ export interface Footer {
 }
 
 export enum TableStyle {
- Light,
- Medium,
- Heavy
+  Light,
+  Medium,
+  Heavy
 }
 
 export class Table {

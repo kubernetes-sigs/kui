@@ -526,7 +526,7 @@ class InProcessExecutor implements IExecutor {
             // should we enforce this option?
             const enforceThisOption =
               onlyEnforceOptions === undefined || typeof onlyEnforceOptions === 'boolean' ? true
-              : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
+                : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
 
             if (!enforceThisOption) {
               // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)
@@ -578,8 +578,8 @@ class InProcessExecutor implements IExecutor {
 
               const expectedMessage = match.boolean ? ', expected boolean'
                 : match.numeric ? ', expected a number'
-                : match.file ? ', expected a file path'
-                : ''
+                  : match.file ? ', expected a file path'
+                    : ''
 
               const message = `Bad value for option ${optionalArg}${expectedMessage}${typeof parsedOptions[optionalArg] === 'boolean' ? '' : ', got ' + parsedOptions[optionalArg]}${match.allowed ? ' expected one of: ' + match.allowed.join(', ') : ''}`
               const error = new UsageError({ message, usage })
@@ -623,7 +623,7 @@ class InProcessExecutor implements IExecutor {
                 const message = nRequiredArgs === 0 && nPositionalOptionals === 0
                   ? 'This command accepts no positional arguments'
                   : nPositionalOptionals > 0 ? 'This command does not accept this number of arguments'
-                  : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
+                    : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
                 const err = new UsageError({ message, usage })
                 err.code = 497
                 debug(message, cmd, nActualArgs, nRequiredArgs, args, optLikeActuals)

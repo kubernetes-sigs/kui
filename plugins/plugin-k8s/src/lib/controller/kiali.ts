@@ -133,9 +133,9 @@ const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
 
           const { value, badgeCss } =
             errorRatio === -1 ? { value: 'Inactive', badgeCss: TrafficLight.Gray }
-            : inboundErrorRatio === 0 && outboundErrorRatio === 0 ? { value: 'Healthy', badgeCss: TrafficLight.Green }
-            : inboundErrorRatio > 2 || outboundErrorRatio > 2 ? { value: 'Unhealthy', badgeCss: TrafficLight.Red }
-            : { value: 'Degraded', badgeCss: TrafficLight.Yellow }
+              : inboundErrorRatio === 0 && outboundErrorRatio === 0 ? { value: 'Healthy', badgeCss: TrafficLight.Green }
+                : inboundErrorRatio > 2 || outboundErrorRatio > 2 ? { value: 'Unhealthy', badgeCss: TrafficLight.Red }
+                  : { value: 'Degraded', badgeCss: TrafficLight.Yellow }
           const inboundTextCss = errorRatioToTextCss(inboundErrorRatio)
           const outboundTextCss = errorRatioToTextCss(outboundErrorRatio)
           debug('health', app.name, errorRatio, value, badgeCss, health)

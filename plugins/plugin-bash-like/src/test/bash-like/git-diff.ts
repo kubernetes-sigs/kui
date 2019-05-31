@@ -70,9 +70,9 @@ localDescribe('git diff', function (this: common.ISuite) {
   after(common.after(this))
 
   it('should show no diffs', () => cli.do('git diff package.json', this.app)
-     .then(cli.expectJustOK)
-     .then(sidecar.expectClosed)
-     .catch(common.oops(this)))
+    .then(cli.expectJustOK)
+    .then(sidecar.expectClosed)
+    .catch(common.oops(this)))
 
   it('should show a diff', async () => {
     try {
