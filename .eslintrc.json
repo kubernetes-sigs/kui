@@ -36,8 +36,6 @@
     "import/first": "off",
     "import/no-duplicates": "off",
 
-    "node/no-deprecated-api": "off",
-
     "promise/param-names": "off",
 
     "@typescript-eslint/ban-types": "off",

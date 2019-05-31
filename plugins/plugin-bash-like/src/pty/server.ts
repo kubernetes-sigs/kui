@@ -81,6 +81,7 @@ const BSD = () => join(process.env.HOME, '.bash_sessions_disable')
 export const disableBashSessions = async (): Promise<ExitHandler> => {
   if (process.platform === 'darwin') {
     if (cacheHasBashSessionsDisable === undefined) {
+      // eslint-disable-next-line node/no-deprecated-api
       cacheHasBashSessionsDisable = await promisify(fs.exists)(BSD())
     }
 

@@ -37,6 +37,7 @@ const ns = ui.expectedNamespace()
  *
  */
 const clean = host => {
+  // eslint-disable-next-line node/no-deprecated-api
   const parsed = require('url').parse(host)
   if (!parsed.protocol) {
     return `https://${host}`
