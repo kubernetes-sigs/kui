@@ -22,7 +22,7 @@ interface SessionStorage {
   clear: () => void
 }
 
-  /**
+/**
    * This shim allows clients to define a sessionStorage scheme, if they
    * cannot provide window.sessionStorage.
    *

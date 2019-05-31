@@ -86,8 +86,8 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
           .split(/[\n\r]/)
           .filter(x => x)
           .map(line => line
-               .split(/(\t|(\s\s)+\s?)|(?=:\s)/)
-               .filter(x => x && !/(\t|\s\s)/.test(x)))
+            .split(/(\t|(\s\s)+\s?)|(?=:\s)/)
+            .filter(x => x && !/(\t|\s\s)/.test(x)))
           .map(([ thisCommand, docs ]) => {
             if (thisCommand) {
               return {
@@ -107,69 +107,69 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
 
   const detailedExample = (detailedExampleFromUsePart || [])
     .concat((examplesSection ? examplesSection.content : '')
-            .split(/^\s*(?:#\s+)/mg)
-            .map(x => x.trim())
-            .filter(x => x)
-            .map((group, idx, A) => {
-              //
-              // Explanation: compare `kubectl completion -h` to `kubectl get -h`
-              // The former Examples section has a structure of (Summary, MultiLineDetail)
-              // while the latter is shaped like (DescriptionLine, CommandLine).
-              //
-              // The lack of symmetry is a bit odd (detail/description
-              // is second versus first), but understandable, given
-              // that the former's Detail takes up multiple lines
-              // whereas the latter has a pair of lines. Let's
-              // introduce some symmetry here.
-              //
-              const match = group.match(/(.*)[\n\r]([\s\S]+)/)
-              if (match && match.length === 3) {
-                const [_, firstPartFull, secondPartFull] = match
+      .split(/^\s*(?:#\s+)/mg)
+      .map(x => x.trim())
+      .filter(x => x)
+      .map((group, idx, A) => {
+        //
+        // Explanation: compare `kubectl completion -h` to `kubectl get -h`
+        // The former Examples section has a structure of (Summary, MultiLineDetail)
+        // while the latter is shaped like (DescriptionLine, CommandLine).
+        //
+        // The lack of symmetry is a bit odd (detail/description
+        // is second versus first), but understandable, given
+        // that the former's Detail takes up multiple lines
+        // whereas the latter has a pair of lines. Let's
+        // introduce some symmetry here.
+        //
+        const match = group.match(/(.*)[\n\r]([\s\S]+)/)
+        if (match && match.length === 3) {
+          const [_, firstPartFull, secondPartFull] = match
 
-                const firstPart = removeSolitaryAndTrailingPeriod(firstPartFull)
-                const secondPart = removeSolitaryAndTrailingPeriod(secondPartFull)
+          const firstPart = removeSolitaryAndTrailingPeriod(firstPartFull)
+          const secondPart = removeSolitaryAndTrailingPeriod(secondPartFull)
 
-                const secondPartIsMultiLine = secondPart.split(/[\n\r]/).length > 1
+          const secondPartIsMultiLine = secondPart.split(/[\n\r]/).length > 1
 
-                const clickable = (str: string): Element => {
-                  const clicky = document.createElement('span')
-                  clicky.innerText = str
-                  clicky.classList.add('clickable')
-                  const repl = require('@kui-shell/core/core/repl')
-                  clicky.onclick = () => repl.pexec(str)
-                  return clicky
-                }
+          const clickable = (str: string): Element => {
+            const clicky = document.createElement('span')
+            clicky.innerText = str
+            clicky.classList.add('clickable')
+            const repl = require('@kui-shell/core/core/repl')
+            clicky.onclick = () => repl.pexec(str)
+            return clicky
+          }
 
-                const command = secondPartIsMultiLine ? firstPart : clickable(secondPart)
-                const docs = secondPartIsMultiLine ? secondPart : firstPart
+          const command = secondPartIsMultiLine ? firstPart : clickable(secondPart)
+          const docs = secondPartIsMultiLine ? secondPart : firstPart
 
-                return {
-                  command,
-                  docs
-                }
-              } else {
-                // see kubectl label -h for an example of a multi-line "firstPart"
-                return {
-                  copyToNextLine: group
-                }
-              }
-            })
-            .reduce((lines, lineRecord, idx, A) => {
-              for (let jdx = idx - 1; jdx >= 0; jdx--) {
-                if (A[jdx].copyToNextLine) {
-                  lineRecord.docs = `${A[jdx].copyToNextLine}\n${lineRecord.docs}`
-                } else {
-                  break
-                }
-              }
+          return {
+            command,
+            docs
+          }
+        } else {
+          // see kubectl label -h for an example of a multi-line "firstPart"
+          return {
+            copyToNextLine: group
+          }
+        }
+      })
+      .reduce((lines, lineRecord, idx, A) => {
+        for (let jdx = idx - 1; jdx >= 0; jdx--) {
+          if (A[jdx].copyToNextLine) {
+            lineRecord.docs = `${A[jdx].copyToNextLine}\n${lineRecord.docs}`
+          } else {
+            break
+          }
+        }
 
-              if (!lineRecord.copyToNextLine) {
-                lines.push(lineRecord)
-              }
-              return lines
-            }, [])
-            .filter(x => x)
-           )
+        if (!lineRecord.copyToNextLine) {
+          lines.push(lineRecord)
+        }
+        return lines
+      }, [])
+      .filter(x => x)
+    )
 
   return new UsageError({
     exitCode,

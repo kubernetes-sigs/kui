@@ -85,14 +85,14 @@ describe('show the composer visualization without creating openwhisk assets', fu
   if (!process.env.LOCAL_OPENWHISK) {
     // no openwhisk catalog in local openwhisk travis
     it(`show visualization from javascript source ${demoSeq.path}`, () => cli.do(`app viz ${demoSeq.path}`, this.app)
-       .then(verifyTheBasicStuff(demoSeq.file))
-       .then(verifyNodeExists('date', true))
-       .then(verifyNodeExists('echo', true))
-       .then(verifyEdgeExists('Entry', 'date'))
-       .then(verifyOutgoingEdgeExists('date'))
-       .then(verifyEdgeExists('echo', 'Exit'))
-       .then(verifyPreviewNoticeExist())
-       .catch(common.oops(this)))
+      .then(verifyTheBasicStuff(demoSeq.file))
+      .then(verifyNodeExists('date', true))
+      .then(verifyNodeExists('echo', true))
+      .then(verifyEdgeExists('Entry', 'date'))
+      .then(verifyOutgoingEdgeExists('date'))
+      .then(verifyEdgeExists('echo', 'Exit'))
+      .then(verifyPreviewNoticeExist())
+      .catch(common.oops(this)))
   }
 
   /** test: load an FSM */

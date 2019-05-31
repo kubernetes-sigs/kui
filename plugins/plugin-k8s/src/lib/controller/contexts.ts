@@ -49,7 +49,7 @@ const addClickHandlers = (table: Table, execOptions): Table => {
 
     const onclick = async () => {
       await repl.qexec(`kubectl config use-context ${repl.encodeComponent(contextName)}`,
-                       undefined, undefined, Object.assign({}, execOptions, { raw: true }))
+        undefined, undefined, Object.assign({}, execOptions, { raw: true }))
       row.setSelected()
     }
 
@@ -81,16 +81,16 @@ const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined
  */
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/k8s/context',
-                     async ({ execOptions }) => {
-                       return (await repl.qexec(`kubectl config current-context`,
-                                                undefined, undefined, Object.assign({}, execOptions, { raw: true }))).trim()
-                     },
+    async ({ execOptions }) => {
+      return (await repl.qexec(`kubectl config current-context`,
+        undefined, undefined, Object.assign({}, execOptions, { raw: true }))).trim()
+    },
     { usage: usage.context('context'),
       inBrowserOk: true,
       noAuthOk: [ 'openwhisk' ] })
 
   commandTree.listen('/k8s/contexts',
-                       listContexts,
+    listContexts,
     { usage: usage.contexts('contexts'),
       width: 1024,
       height: 600,

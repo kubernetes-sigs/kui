@@ -20,7 +20,7 @@ const makeButton = (overrides, fn?) => Object.assign({}, {
   direct: async (args) => {
     const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
     const response = await repl.pexec(`kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
-                                          { noStatus: !!fn })
+      { noStatus: !!fn })
     return fn ? fn(response) : response
   },
   echo: true,

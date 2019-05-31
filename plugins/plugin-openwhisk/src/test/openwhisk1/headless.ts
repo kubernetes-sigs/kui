@@ -160,17 +160,17 @@ localDescribe('Headless mode', function (this: common.ISuite) {
 
   if (!process.env.LOCAL_OPENWHISK) {
     it('should set host to us-south', () => cli.do('host set us-south')
-       .then(cli.expectOK())
-       .then(() => cli.do('host get'))
-       .then(cli.expectOK('https://us-south.functions.cloud.ibm.com'))
-       .catch(common.oops(this)))
+      .then(cli.expectOK())
+      .then(() => cli.do('host get'))
+      .then(cli.expectOK('https://us-south.functions.cloud.ibm.com'))
+      .catch(common.oops(this)))
 
     const { apihostIsLocal } = openwhisk
     const apihost = apihostIsLocal ? 'local' : openwhisk.apihost
     it(`should restore host to original setting: ${apihost}`, () => cli.do(`host set ${apihost}`)
-       .then(cli.expectOK())
-       .then(() => cli.do('host get'))
-       .then(cli.expectOK(openwhisk.apihost))
-       .catch(common.oops(this)))
+      .then(cli.expectOK())
+      .then(() => cli.do('host get'))
+      .then(cli.expectOK(openwhisk.apihost))
+      .catch(common.oops(this)))
   }
 })

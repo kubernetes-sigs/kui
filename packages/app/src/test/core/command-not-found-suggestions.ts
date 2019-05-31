@@ -85,22 +85,22 @@ describe('Suggestions for command not found', function (this: ISuite) {
 
   it('should present suggestions for "ne" -> new', () => {
     return expectSuggestionsFor.call(this,
-                                     'ne', // type this
-                                     ['new'] // expect these completions
-                                    )
+      'ne', // type this
+      ['new'] // expect these completions
+    )
   })
 
   it('should present suggestions for "edi" -> edit', () => {
     return expectSuggestionsFor.call(this,
-                                     'edi', // type this
-                                     ['edit'] // expect these completions
-                                    )
+      'edi', // type this
+      ['edit'] // expect these completions
+    )
   })
 
   it('should present suggestions for "versio" -> version', () => {
     return expectSuggestionsFor.call(this,
-                                     'versio', // type this
-                                     ['version'] // expect these completions
-                                    )
+      'versio', // type this
+      ['version'] // expect these completions
+    )
   })
 })

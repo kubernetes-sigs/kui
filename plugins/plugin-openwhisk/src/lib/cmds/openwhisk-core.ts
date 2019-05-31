@@ -490,8 +490,8 @@ const specials = {
 const standardViewModes = (defaultMode, fn?) => {
   const makeModes = () => {
     let modes: any[] = [{ mode: 'parameters', label: 'params', command: () => 'parameters' },
-                             { mode: 'annotations', command: () => 'annotations' },
-                             { mode: 'raw', command: () => 'raw' }]
+      { mode: 'annotations', command: () => 'annotations' },
+      { mode: 'raw', command: () => 'raw' }]
 
     if (defaultMode) {
       if (!Array.isArray(defaultMode)) {
@@ -1442,8 +1442,8 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   }
   synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/delete`,
-                       removeTrigger,
-                       { usage: usage.triggers.available.find(({ command }) => command === 'delete') })
+      removeTrigger,
+      { usage: usage.triggers.available.find(({ command }) => command === 'delete') })
   })
 
   /**
@@ -1532,8 +1532,8 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   }
   synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/create`,
-                       createTrigger,
-                       { usage: usage.triggers.available.find(({ command }) => command === 'create') })
+      createTrigger,
+      { usage: usage.triggers.available.find(({ command }) => command === 'create') })
   })
 
   // count APIs

@@ -22,13 +22,13 @@ const { localIt, remoteIt } = common
 
 const resetTheme = (ctx: ISuite) => {
   it('should reset theme preference', () => cli.do('theme reset', ctx.app)
-     .then(cli.expectJustOK)
-     .catch(common.oops(ctx)))
+    .then(cli.expectJustOK)
+    .catch(common.oops(ctx)))
 
   it('should show that we are using the default theme', () => cli.do('theme current', ctx.app)
-     .then(cli.expectOKWithString('default theme'))
-     .then(() => ctx.app.client.waitForExist('body[kui-theme="Light"]')) // Light being the default
-     .catch(common.oops(ctx)))
+    .then(cli.expectOKWithString('default theme'))
+    .then(() => ctx.app.client.waitForExist('body[kui-theme="Light"]')) // Light being the default
+    .catch(common.oops(ctx)))
 }
 
 interface Theme {
@@ -42,13 +42,13 @@ interface Theme {
  */
 const go = (theme: Theme) => (ctx: ISuite) => {
   it(`should switch to ${theme.name} theme via command`, () => cli.do(`theme set "${theme.name}"`, ctx.app)
-     .then(cli.expectJustOK)
-     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-     .catch(common.oops(ctx)))
+    .then(cli.expectJustOK)
+    .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
+    .catch(common.oops(ctx)))
 
   it(`should show that we are using the ${theme.name} theme`, () => cli.do('theme current', ctx.app)
-     .then(cli.expectOKWithString(theme.name))
-     .catch(common.oops(ctx)))
+    .then(cli.expectOKWithString(theme.name))
+    .catch(common.oops(ctx)))
 }
 
 /**
@@ -58,13 +58,13 @@ const go = (theme: Theme) => (ctx: ISuite) => {
  */
 const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
   localIt(`should still be using ${theme.name} theme after an electron restart`, () => ctx.app.restart()
-     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-     .catch(common.oops(ctx)))
+    .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
+    .catch(common.oops(ctx)))
 
   // refresh electron's current page rather than restart the app to prevent clearing browser's local storage
   remoteIt(`should still be using ${theme.name} theme after a browser restart`, () => ctx.app.client.refresh()
-     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-     .catch(common.oops(ctx)))
+    .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
+    .catch(common.oops(ctx)))
 }
 
 /**
@@ -74,8 +74,8 @@ const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
  */
 const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
   it(`should still be using ${theme.name} theme after a reload`, () => ctx.app.client.refresh()
-     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-     .catch(common.oops(ctx)))
+    .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
+    .catch(common.oops(ctx)))
 }
 
 /**
@@ -137,12 +137,12 @@ describe('theme switching', function (this: ISuite) {
   clickOnThemeButtonThenClickOnDark(this, 4) // click on Dark 4 times in a row
 
   it('should list built-in Light theme', () => cli.do('theme list', this.app)
-     .then(cli.expectOKWithCustom({ selector: `.entity-name[data-value="${Light.name}"]` }))
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithCustom({ selector: `.entity-name[data-value="${Light.name}"]` }))
+    .catch(common.oops(this)))
 
   it('should list built-in Dark theme', () => cli.do('theme list', this.app)
-     .then(cli.expectOKWithCustom({ selector: `.entity-name[data-value="${Dark.name}"]` }))
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithCustom({ selector: `.entity-name[data-value="${Dark.name}"]` }))
+    .catch(common.oops(this)))
 
   resetTheme(this)
   reloadAndThenLight(this)

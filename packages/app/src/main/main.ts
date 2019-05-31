@@ -37,12 +37,12 @@ export const main = (argv: string[], env = process.env, execOptions?: IExecOptio
     debug('shortcut to graphics')
     const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv)
     initElectron(strippedArgv,
-                 { isRunningHeadless, forceUI },
-                 env.subwindowPlease || subwindowPlease ? true : false,
-                 env.subwindowPrefs
-                 ? typeof env.subwindowPrefs === 'string'
-                 ? JSON.parse(env.subwindowPrefs) : env.subwindowPrefs
-                 : subwindowPrefs)
+      { isRunningHeadless, forceUI },
+      env.subwindowPlease || subwindowPlease ? true : false,
+      env.subwindowPrefs
+        ? typeof env.subwindowPrefs === 'string'
+          ? JSON.parse(env.subwindowPrefs) : env.subwindowPrefs
+        : subwindowPrefs)
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
     const result = initHeadless(argv, false, isRunningHeadless, execOptions)

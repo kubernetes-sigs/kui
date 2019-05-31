@@ -148,50 +148,50 @@ describe('Tab completion', function (this: ISuite) {
 
   localIt('should tab complete file with spaces unique', () => {
     return tabby(this.app,
-                 `ls ${join(tmp1.name, 'foo')}`,
-                 `ls ${join(tmp1.name, 'foo bar')}`)
+      `ls ${join(tmp1.name, 'foo')}`,
+      `ls ${join(tmp1.name, 'foo bar')}`)
   })
 
   localIt('should tab complete file with spaces unique with dash option', () => {
     return tabby(this.app,
-                 `ls -l ${join(tmp1.name, 'foo')}`,
-                 `ls -l ${join(tmp1.name, 'foo bar')}`)
+      `ls -l ${join(tmp1.name, 'foo')}`,
+      `ls -l ${join(tmp1.name, 'foo bar')}`)
   })
 
   localIt('should tab complete file with spaces unique with backslash escape', () => {
     return tabby(this.app,
-                 `ls ${join(tmp1.name, 'foo\\ ')}`,
-                 `ls ${join(tmp1.name, 'foo bar')}`)
+      `ls ${join(tmp1.name, 'foo\\ ')}`,
+      `ls ${join(tmp1.name, 'foo bar')}`)
   })
 
   localIt('should tab complete file with spaces non-unique', () => {
     return tabbyWithOptions(this.app,
-                            `ls ${join(tmp2.name, 'foo')}`,
-                            ['foo bar1', 'foo bar2'],
-                            `ls ${join(tmp2.name, 'foo bar1')}`,
-                            { click: 0 })
+      `ls ${join(tmp2.name, 'foo')}`,
+      ['foo bar1', 'foo bar2'],
+      `ls ${join(tmp2.name, 'foo bar1')}`,
+      { click: 0 })
   })
 
   localIt('should tab complete file with spaces non-unique with dash option', () => {
     return tabbyWithOptions(this.app,
-                            `ls -l ${join(tmp2.name, 'foo')}`,
-                            ['foo bar1', 'foo bar2'],
-                            `ls -l ${join(tmp2.name, 'foo bar1')}`,
-                            { click: 0 })
+      `ls -l ${join(tmp2.name, 'foo')}`,
+      ['foo bar1', 'foo bar2'],
+      `ls -l ${join(tmp2.name, 'foo bar1')}`,
+      { click: 0 })
   })
 
   localIt('should tab complete file with spaces non-unique with backslash escape', () => {
     return tabbyWithOptions(this.app,
-                            `ls ${join(tmp2.name, 'foo\\ ')}`,
-                            ['foo bar1', 'foo bar2'],
-                            `ls ${join(tmp2.name, 'foo bar2')}`,
-                            { click: 1 })
+      `ls ${join(tmp2.name, 'foo\\ ')}`,
+      ['foo bar1', 'foo bar2'],
+      `ls ${join(tmp2.name, 'foo bar2')}`,
+      { click: 1 })
   })
 
   localIt('should tab complete file with spaces unique with backslash escape variant 2', () => {
     return tabby(this.app,
-                 `ls ${join(tmp2.name, 'foo\\ bar1')}`,
-                 `ls ${join(tmp2.name, 'foo bar1')}`)
+      `ls ${join(tmp2.name, 'foo\\ bar1')}`,
+      `ls ${join(tmp2.name, 'foo bar1')}`)
   })
 
   // tab completion using default file completion handler (i.e. if the

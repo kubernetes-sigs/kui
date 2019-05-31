@@ -152,7 +152,7 @@ export const install = (createWindow: Function) => {
         label: 'View',
         submenu: [
           { accelerator: process.platform === 'darwin' ? 'Meta+R' : 'Shift+CmdOrCtrl+R', role: 'reload' },
-//          { role: 'forcereload' },
+          //          { role: 'forcereload' },
           { role: 'toggledevtools' },
           { type: 'separator' },
           { role: 'resetzoom' },

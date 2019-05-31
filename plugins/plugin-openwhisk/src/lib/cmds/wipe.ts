@@ -164,6 +164,6 @@ const doWipeWithConfirmation = async ({ tab, block, nextBlock }: IEvaluatorArgs)
  */
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/wsk/wipe',
-                       doWipeWithConfirmation,
-                       { docs: 'Remove all of your OpenWhisk assets from the current namespace' })
+    doWipeWithConfirmation,
+    { docs: 'Remove all of your OpenWhisk assets from the current namespace' })
 }

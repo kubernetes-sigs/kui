@@ -881,13 +881,13 @@ export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, i
         return isName
       }
     })
-    .attr('data-to-name', function (d) {
-      const toId = d.target
-      const isName = $('#' + toId).attr('data-name')
-      if (isName) {
-        return isName
-      }
-    })
+      .attr('data-to-name', function (d) {
+        const toId = d.target
+        const isName = $('#' + toId).attr('data-name')
+        if (isName) {
+          return isName
+        }
+      })
 
     // edge labels
     const addEdgeLabels = () => links.forEach(edge => {

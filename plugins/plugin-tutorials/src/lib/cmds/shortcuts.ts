@@ -31,23 +31,23 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
  *
  */
 export default async (commandTree: CommandRegistrar) => {
-    // getting started shortcut
+  // getting started shortcut
   commandTree.listen('/getting/started',
-                       () => repl.qexec('tutorial play @tutorials/getting-started'),
-                       { usage: { command: 'started', docs: gettingStartedDocs }, needsUI: true, noAuthOk: true })
+    () => repl.qexec('tutorial play @tutorials/getting-started'),
+    { usage: { command: 'started', docs: gettingStartedDocs }, needsUI: true, noAuthOk: true })
 
   // kubernetes coding basics shortcut
   commandTree.listen('/tutorial/kubernetes/starter',
-                       () => repl.qexec('tutorial play @tutorials/kubernetes-basics'),
-                       { usage: { command: 'basics', docs: kubernetesBasicsDocs }, needsUI: true, noAuthOk: true })
+    () => repl.qexec('tutorial play @tutorials/kubernetes-basics'),
+    { usage: { command: 'basics', docs: kubernetesBasicsDocs }, needsUI: true, noAuthOk: true })
 
   // coding basics shortcut
   commandTree.listen('/tutorial/composer/basics',
-                       () => repl.qexec('tutorial play @tutorials/coding-basics'),
-                       { usage: { command: 'basics', docs: codingBasicsDocs }, needsUI: true, noAuthOk: true })
+    () => repl.qexec('tutorial play @tutorials/coding-basics'),
+    { usage: { command: 'basics', docs: codingBasicsDocs }, needsUI: true, noAuthOk: true })
 
-    // combinators shortcut
+  // combinators shortcut
   commandTree.listen('/tutorial/combinators',
-                       () => repl.qexec('tutorial play @tutorials/combinators'),
-                       { usage: { command: 'started', docs: combinatorsDocs }, needsUI: true, noAuthOk: true })
+    () => repl.qexec('tutorial play @tutorials/combinators'),
+    { usage: { command: 'started', docs: combinatorsDocs }, needsUI: true, noAuthOk: true })
 }

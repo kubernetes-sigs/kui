@@ -217,7 +217,7 @@ const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: 
         inner.appendChild(container)
       } else {
         Promise.resolve(valueDom)
-            .then(valueDom => inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString())))
+          .then(valueDom => inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString())))
       }
     } else if (value) {
       Promise.resolve(value)
@@ -621,7 +621,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
       inner.appendChild(container)
     } else if (value !== undefined) {
       Promise.resolve(value)
-            .then(value => inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString())))
+        .then(value => inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString())))
     } else {
       console.error('Invalid cell model, no value field')
     }
@@ -882,10 +882,10 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
     const addStatus = () => {
       if (entity.status) {
         const cell = addCell(`entity-rule-status`,
-                             'Pending', // delay status display
-                             'repeating-pulse', // css
-                             // ugh: i know, this needs to be cleaned up:
-                             undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'badge', 'gray-background')
+          'Pending', // delay status display
+          'repeating-pulse', // css
+          // ugh: i know, this needs to be cleaned up:
+          undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'badge', 'gray-background')
 
         /** normalize the status badge by capitalization */
         const capitalize = (str: string): string => {
@@ -904,8 +904,8 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
     const addVersion = () => {
       if (entity.version || entity.prettyVersion) {
         addCell('entity-version hide-with-sidecar',
-                entity.prettyVersion || entity.version,
-                'slightly-deemphasize')
+          entity.prettyVersion || entity.version,
+          'slightly-deemphasize')
       }
     }
 

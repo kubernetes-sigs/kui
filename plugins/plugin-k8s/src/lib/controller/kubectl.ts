@@ -399,8 +399,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
   const commandForSpawn = command === 'helm' ? await pickHelmClient(env) : command
   const child = spawn(commandForSpawn,
-                      argvWithFileReplacements,
-                      { env, shell: true })
+    argvWithFileReplacements,
+    { env, shell: true })
 
   const file = options.f || options.filename
   const hasFileArg = file !== undefined
@@ -435,16 +435,16 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
         debug('about to get status', file, entityType, entity, resourceNamespace)
         return repl.qexec(`${statusCommand} status ${file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
-                          undefined, undefined, { parameters: execOptions.parameters })
-        .catch(err => {
-          if (err.code === 404 && expectedState === FinalState.OfflineLike) {
+          undefined, undefined, { parameters: execOptions.parameters })
+          .catch(err => {
+            if (err.code === 404 && expectedState === FinalState.OfflineLike) {
             // that's ok!
-            debug('resource not found after status check, but that is ok because that is what we wanted')
-            return out
-          } else {
-            throw err
-          }
-        })
+              debug('resource not found after status check, but that is ok because that is what we wanted')
+              return out
+            } else {
+              throw err
+            }
+          })
       } else {
         return Promise.resolve(true)
       }
@@ -492,8 +492,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       const fileNotFound = message.match(/error: the path/)
       const codeForREPL = noResources || message.match(/not found/i) || message.match(/doesn't have/i) ? 404
         : message.match(/already exists/i) ? 409
-        : fileNotFound ? 412
-        : 500
+          : fileNotFound ? 412
+            : 500
 
       debug('handling non-zero exit code %s', code, codeForREPL, err)
 
@@ -564,8 +564,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       const result = output === 'json'
         ? JSON.parse(out)
         : verb === 'logs' ? formatLogs(out)
-        : output === 'yaml' ? redactYAML(out, options)
-        : redactJSON(out, options)
+          : output === 'yaml' ? redactYAML(out, options)
+            : redactJSON(out, options)
 
       // debug('structured output', result)
 
@@ -711,13 +711,13 @@ export default async (commandTree: CommandRegistrar) => {
     'create',
     'get',
     'delete',
-//    'describe',
+    //    'describe',
     'explain',
     'logs'
   ]
   await Promise.all(shorthands.map(verb => {
     return commandTree.listen(`/k8s/${verb}`,
-                              dispatchViaDelegationTo(kubectl),
-                              { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
+      dispatchViaDelegationTo(kubectl),
+      { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
   }))
 }

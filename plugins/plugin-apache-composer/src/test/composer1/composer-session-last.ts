@@ -148,7 +148,7 @@ describe('session get --last and --last-failed', function (this: common.ISuite) 
       .catch(common.oops(this))
   }))
 
-    // make sure session get works as the first command after a restart
+  // make sure session get works as the first command after a restart
   it('should restart', () => this.app.restart())
   it(`should show ${seqName2} with session get --last-failed`, () => this.app.client.waitUntil(() => {
     return cli.do(`session get --last-failed`, this.app)

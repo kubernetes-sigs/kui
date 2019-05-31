@@ -68,14 +68,14 @@ class ProxyEvaluator implements IReplEval {
         const invokeRemote = () => {
           const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
           return needle('post',
-                        proxyURL.href,
-                        body,
-                        Object.assign({ json: true }, proxyServerConfig.needleOptions))
+            proxyURL.href,
+            body,
+            Object.assign({ json: true }, proxyServerConfig.needleOptions))
         }
 
         const response = await (window['webview-proxy']
-                                ? window['webview-proxy'](body)
-                                : invokeRemote())
+          ? window['webview-proxy'](body)
+          : invokeRemote())
 
         debug('response', response)
 

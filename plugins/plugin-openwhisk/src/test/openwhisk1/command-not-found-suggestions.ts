@@ -33,10 +33,10 @@ describe('Suggestions for command not found', function (this: common.ISuite) {
       expectedBreadcrumb: 'OpenWhisk' // expect this breadcrumb
     }
     return expectSuggestionsFor.call(this,
-                                     'ws', // type this
-                                     ['wsk'], // expect these completions
-                                     opts
-                                    )
+      'ws', // type this
+      ['wsk'], // expect these completions
+      opts
+    )
   })
 
   it('should present suggestions for "gri" -> grid', () => {
@@ -45,9 +45,9 @@ describe('Suggestions for command not found', function (this: common.ISuite) {
       sidecar: 'grid' // expected sidecar icon
     }
     return expectSuggestionsFor.call(this,
-                                     'gri', // type this
-                                     ['grid'], // expect these completions
-                                     opts
-                                    )
+      'gri', // type this
+      ['grid'], // expect these completions
+      opts
+    )
   })
 })
