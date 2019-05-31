@@ -45,6 +45,7 @@ export default (tab: ITab, suffix: string, source: string, fullpath: string, hlj
 const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
   const { href } = link
 
+  // eslint-disable-next-line node/no-deprecated-api
   const parsedUrl = url.parse(href)
   const isRemote = parsedUrl.protocol !== undefined && parsedUrl.protocol !== 'file:'
 
@@ -93,6 +94,7 @@ const markdownify = async (tab: ITab, source: string, fullpath: string, hljs): P
   const renderer = new Marked.Renderer()
 
   const transformHref = (href: string): string => {
+    // eslint-disable-next-line node/no-deprecated-api
     const parsedUrl = url.parse(href)
     const isRemote = !!parsedUrl.protocol
 
