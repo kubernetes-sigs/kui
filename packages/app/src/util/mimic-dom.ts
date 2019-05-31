@@ -116,6 +116,7 @@ export class ElementMimic {
   hasStyle (style: string, desiredValue?: number | string): boolean | string {
     const actualValue = this.style && this.style[style]
     // intentional double equals, so that 500=='500'
+    // eslint-disable-next-line eqeqeq
     if (desiredValue) return desiredValue == actualValue
     else return actualValue
   }
