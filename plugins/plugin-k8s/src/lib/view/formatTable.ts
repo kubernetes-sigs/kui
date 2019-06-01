@@ -170,12 +170,18 @@ export const preprocessTable = (raw: string[]) => {
     const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
     const columnStarts: number[] = []
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
-      jdx = header.indexOf(headerCells[idx] + ' ', jdx)
-      if (jdx < 0) {
+      const { offset, prefix } = idx === 0
+        ? { offset: 0, prefix: '' }
+        : { offset: 1, prefix: ' ' }
+
+      const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
+      if (newJdx < 0) {
         // last column
-        jdx = header.indexOf(headerCells[idx], jdx)
+        jdx = header.indexOf(' ' + headerCells[idx], jdx)
+      } else {
+        jdx = newJdx
       }
-      columnStarts.push(jdx)
+      columnStarts.push(jdx + offset)
     }
 
     debug('columnStarts', columnStarts, headerCells)

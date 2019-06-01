@@ -19,6 +19,10 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, keys, selectors, sidecar, sleep } = ui
 const { dockerDescribe } = common
 
+import { existsSync, unlinkSync } from 'fs'
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
+
 dockerDescribe('xterm auto-table', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
@@ -27,6 +31,10 @@ dockerDescribe('xterm auto-table', function (this: common.ISuite) {
   // can recognize it as new in our docker images call
   const alpineVersion = '3.6.5'
   const alpine = `alpine:${alpineVersion}`
+
+  it('should cat a table from a table and have it displayed as a table', () => cli.do(`cat ${join(ROOT, 'tests/data/table-with-duplicate-columns.txt')}`, this.app)
+    .then(cli.expectOKWith('reviews-v1v2-e2etestcase1-1'))
+    .catch(common.oops(this)))
 
   it('should remove the previous alpine, from previous tests', () => cli.do(`docker rmi ${alpine}`, this.app)
     .catch(common.oops(this)))
