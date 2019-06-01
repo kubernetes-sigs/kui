@@ -47,10 +47,12 @@ export const preprocessTable = (raw: string[]): { rows?: IPair[][], trailingStri
         ? { offset: 0, prefix: '' }
         : { offset: 1, prefix: ' ' }
 
-      jdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
-      if (jdx < 0) {
+      const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
+      if (newJdx < 0) {
         // last column
         jdx = header.indexOf(' ' + headerCells[idx], jdx)
+      } else {
+        jdx = newJdx
       }
       columnStarts.push(jdx + offset)
     }
