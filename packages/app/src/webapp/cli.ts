@@ -740,6 +740,9 @@ export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
 export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
   return tab.querySelector('.repl .repl-block.processing')
 }
+export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
+  return prompt.parentElement.parentElement
+}
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return (block && block.querySelector && block.querySelector('input'))
 }

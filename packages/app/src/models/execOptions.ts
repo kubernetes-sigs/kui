@@ -72,10 +72,19 @@ export interface IExecOptions {
 }
 
 export class DefaultExecOptions implements IExecOptions {
-  type: ExecType = ExecType.TopLevel
+  readonly type: ExecType
 
-  constructor () {
-    // nothing to do
+  constructor (type: ExecType = ExecType.TopLevel) {
+    this.type = type
+  }
+}
+
+export class DefaultExecOptionsForTab extends DefaultExecOptions {
+  readonly tab: ITab
+
+  constructor (tab: ITab) {
+    super()
+    this.tab = tab
   }
 }
 
