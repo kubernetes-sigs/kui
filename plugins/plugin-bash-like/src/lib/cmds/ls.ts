@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/cmds/ls')
 
 import { lstat, readdir, stat } from 'fs'
-import { isAbsolute, join } from 'path'
+import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
@@ -65,21 +65,40 @@ const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx =
  * Return the contents of the given directory
  *
  */
-const myreaddir = (dir: string): Promise<string[]> => new Promise((resolve, reject) => {
+const myreaddir = (dir: string): Promise<Record<string, boolean>> => new Promise((resolve, reject) => {
   debug('readdir', dir)
+
+  const toMap = (files: string[]) => {
+    return files.reduce((M, file) => {
+      M[file] = true
+      M[join(dir, file)] = true
+      return M
+    }, {})
+  }
 
   lstat(dir, (err, stats) => {
     if (err) {
+      if (err.code === 'ENOENT') {
+        const parent = dirname(dir)
+        if (parent) {
+          return myreaddir(dirname(dir))
+            .then(resolve)
+            .catch(reject)
+        }
+      }
+
+      // fallthrough to reject
       reject(err)
+
     } else if (!stats.isDirectory()) {
       // link or file or other
-      resolve([dir])
+      resolve(toMap([dir]))
     } else {
       readdir(dir, (err, files) => {
         if (err) {
           reject(err)
         } else {
-          resolve(['.', '..'].concat(files))
+          resolve(toMap(['.', '..'].concat(files)))
         }
       })
     }
@@ -119,12 +138,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     return true
   }
 
-  const files = await myreaddir((parent || process.cwd()).replace(/['"]/g, ''))
-  const fileMap = files.reduce((M, file) => {
-    M[file] = true
-    M[join(parent, file)] = true
-    return M
-  }, {})
+  const fileMap = await myreaddir((parent || process.cwd()).replace(/['"]/g, ''))
 
   // ls -l on directories has a line at the top "total nnnn"
   // we will strip this off
@@ -335,7 +349,6 @@ const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, pars
 }
 
 const usage = (command: string) => ({
-  strict: command,
   command,
   title: 'local file list',
   header: 'Directory listing of your local filesystem',
