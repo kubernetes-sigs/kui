@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli, selectors } = ui
 const { localDescribe } = common
 
 import * as assert from 'assert'
@@ -37,7 +36,7 @@ const hasExe = (exe: string): Promise<boolean> => new Promise(resolve => {
   exec(exe, err => resolve(!err))
 })
 
-localDescribe('shell commands', function (this: ISuite) {
+localDescribe('shell commands', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
