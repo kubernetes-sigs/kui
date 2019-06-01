@@ -60,7 +60,6 @@ interface IOwnerReferences {
 }
 
 export interface IKubeMetadata {
-  kind: string
   name: string
   namespace?: string
   labels?: { [key: string]: string },
@@ -81,6 +80,15 @@ export interface IKubeResource {
   status?: IKubeStatus
   spec?: any
   data?: object
+}
+
+export interface ICRDResource extends IKubeResource {
+  spec: {
+    names: {
+      kind: string
+      shortnames: string[]
+    }
+  }
 }
 
 export interface IResource {

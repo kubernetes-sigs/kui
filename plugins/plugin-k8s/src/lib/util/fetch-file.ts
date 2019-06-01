@@ -45,3 +45,8 @@ export const fetchFile = (url: string): Promise<Buffer[]> => {
     }
   }))
 }
+
+/** same as fetchFile, but returning a string rather than a Buffer */
+export const fetchFileString = (url: string): Promise<string[]> => {
+  return fetchFile(url).then(_ => _.map(_ => _.toString()))
+}
