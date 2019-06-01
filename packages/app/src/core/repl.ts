@@ -27,7 +27,7 @@ import minimist = require('yargs-parser')
 
 import { CommandTreeResolution, ExecType, IEvaluator, IEvaluatorArgs, YargsParserFlags } from '../models/command'
 
-import { IExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
+import { IExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
@@ -123,7 +123,7 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
     block['completion'](prompt.value)
   } else {
     // otherwise, this is a plain old eval, resulting from the user hitting Enter
-    return exec(command)
+    return exec(command, new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt)))
   }
 }
 
