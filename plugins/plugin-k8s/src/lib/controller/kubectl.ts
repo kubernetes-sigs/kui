@@ -28,6 +28,7 @@ import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -519,8 +520,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
           return resolve(formatWatchableTable(new Table({ body: [] }), { refreshCommand: rawCommand.replace(/--watch|-w/g, ''), watchByDefault: true }))
         }
         // already exists or file not found?
-        const error = new Error(err)
-        error['code'] = codeForREPL
+        const error: CodedError = new Error(err)
+        error.code = codeForREPL
         debug('rejecting without usage', codeForREPL, error)
         reject(error)
       } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && hasFileArg) {
