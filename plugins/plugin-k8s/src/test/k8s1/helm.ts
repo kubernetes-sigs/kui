@@ -16,7 +16,9 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli } from '@kui-shell/core/tests/lib/ui'
+import { dirname } from 'path'
 
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 describe('helm commands', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
@@ -28,4 +30,17 @@ describe('helm commands', function (this: common.ISuite) {
       .then(cli.expectBlank)
       .catch(common.oops(this)))
   })
+
+  cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
+  it(`should create sample helm chart`, () => {
+
+    cli.do(`helm install --name example ${ROOT}/data/k8s/helm --set service.type=NodePort`, this.app)
+      .then(cli.expectJustOK)
+      .catch(common.oops(this))
+      .then(() =>
+        cli.do('helm ls', this.app)//.then(cli.expectOKWithString('bar'))
+      )
+      .catch(common.oops(this))
+  })
+
 })

@@ -26,7 +26,7 @@ import { preprocessTable, formatTable } from './formatTable'
 const width = (table: Array<any>): number => {
   return table.reduce((max, { name, attributes }) => {
     return Math.max(max,
-                        name.length + attributes.reduce((sum, { value }) => sum + value.length, 0))
+      name.length + attributes.reduce((sum, { value }) => sum + value.length, 0))
   }, 0)
 }
 
@@ -34,12 +34,12 @@ const width = (table: Array<any>): number => {
  * Format the output of a helm status command
  *
  */
-export const format = (command: string, verb: string, entityType: string, options, response: string) => {
+export const format = async (command: string, verb: string, entityType: string, options, response: string, stdout) => {
   debug('command', command)
   debug('verb', verb)
   debug('entityType', entityType)
 
-  const [ headerString, resourcesString, notesString ] = response.split(/RESOURCES:|NOTES:/)
+  const [headerString, resourcesString, notesString] = response.split(/RESOURCES:|(?=\NOTES:)/)
 
   const namespaceMatch = response.match(/^NAMESPACE:\s+(.*)$/m) || []
   const namespaceFromHelmStatusOutput = namespaceMatch[1]
@@ -80,27 +80,30 @@ export const format = (command: string, verb: string, entityType: string, option
       return {
         kind,
         table: formatTable(command,
-                           verb,
-                           entityType,
-                           Object.assign({}, options, { namespace: namespaceFor(entityType) }),
-                           preprocessTable([A.slice(1).join('\n')])[0])
+          verb,
+          entityType,
+          Object.assign({}, options, { namespace: namespaceFor(entityType) }),
+          preprocessTable([A.slice(1).join('\n')])[0])
       }
     })
   debug('resources', resources)
+  const resourcesOut = resources
+    .map(({ kind, table }) => {
+      table.title = kind
+      table.flexWrap = true
+      return table
+    }).sort((a, b) => {
+      // number of columns
+      const diff1 = a.header.attributes.length - b.header.attributes.length
 
-  return resources
-        .map(({ kind, table }) => {
-          table.title = kind
-          table.flexWrap = true
-          return table
-        }).sort((a, b) => {
-            // number of columns
-          const diff1 = a.header.attributes.length - b.header.attributes.length
-
-          if (diff1 === 0) {
-            return - (width(a.body) - width(b.body))
-          } else {
-            return -diff1
-          }
-        })
+      if (diff1 === 0) {
+        return - (width(a.body) - width(b.body))
+      } else {
+        return -diff1
+      }
+    })
+  if (headerString) await stdout(headerString)
+  await stdout(resourcesOut)
+  if (notesString) await stdout(notesString)
+  return true
 }

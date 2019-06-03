@@ -280,14 +280,9 @@ export const registerEntityView = (kind: string, handler: ViewHandler) => {
  * Stream output to the given block
  *
  */
-export type Streamable = SimpleEntity | Table | ICustomSpec
+export type Streamable = SimpleEntity | Table | Table[] | ICustomSpec
 export const streamTo = (tab: ITab, block: Element) => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
-  const pre = document.createElement('pre')
-  pre.classList.add('streaming-output')
-  resultDom.appendChild(pre)
-  resultDom.setAttribute('data-stream', 'data-stream');
-  (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
 
   // so we can scroll this into view as streaming output arrives
   const spinner = element('.repl-result-spinner', block)
@@ -296,7 +291,11 @@ export const streamTo = (tab: ITab, block: Element) => {
   return async (response: Streamable, killLine = false) => {
     //
     debug('stream', response)
-
+    const pre = document.createElement('pre')
+    pre.classList.add('streaming-output')
+    resultDom.appendChild(pre)
+    resultDom.setAttribute('data-stream', 'data-stream');
+    (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
     if (killLine && previousLine) {
       previousLine.parentNode.removeChild(previousLine)
       previousLine = undefined
@@ -310,6 +309,10 @@ export const streamTo = (tab: ITab, block: Element) => {
     } else if (isHTML(response)) {
       previousLine = response
       pre.appendChild(previousLine)
+    } else if (Array.isArray(response)) {
+      response.forEach(async _ => printTable(tab, _, resultDom))
+      const br = document.createElement('br')
+      resultDom.appendChild(br)
     } else if (isTable(response)) {
       await printTable(tab, response, resultDom)
     } else if (isCustomSpec(response)) {
@@ -527,7 +530,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
         (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
         ok(resultDom.parentElement).classList.add('ok-for-list')
       } else if (typeof response === 'number' || typeof response === 'string' ||
-                 (isMessageBearingEntity(response))) {
+        (isMessageBearingEntity(response))) {
         // if either the response is a string, or it's a non-entity (no response.type) and has a message field
         //     then treat the response as a simple string response
         if (echo) {
@@ -670,8 +673,8 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
         // view modes
         const modes = isEntitySpec(response) &&
           (response.modes ||
-           (response[0] && response[0].modes) ||
-           (response[0] && response[0][0] && response[0][0].modes))
+            (response[0] && response[0].modes) ||
+            (response[0] && response[0][0] && response[0][0].modes))
 
         // entity type
         const prettyType = isEntitySpec(response) && (response.type || response.kind || response.prettyType || response.prettyKind || (response[0] && response[0].title) || (response[0] && response[0][0] && response[0][0].title))
@@ -897,7 +900,7 @@ export const listen = (prompt: HTMLInputElement) => {
       // clear line
       prompt.value = ''
     } else if ((char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey)))
-               || (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
+      || (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
       // behavior
@@ -987,9 +990,9 @@ const doPaste = (text: string) => {
     if (idx === lines.length) {
       // all done...
       return Promise.resolve()
-    /* } else if (lines[idx] === '') {
-      // then this is a blank line, so skip it
-      return pasteLooper(idx + 1) */
+      /* } else if (lines[idx] === '') {
+        // then this is a blank line, so skip it
+        return pasteLooper(idx + 1) */
     } else if (idx <= lines.length - 2) {
       // then this is a command line with a trailing newline
       const prompt = getCurrentPrompt()
@@ -1108,19 +1111,19 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
     // we were instructed not to show any message
   } else if (UsageError.isUsageError(err)) {
     oopsDom.appendChild(await err.getFormattedMessage())
-  /* } else if (isHTML(err.message)) {
-    // err.message is a DOM
-    oopsDom.appendChild(err.message) */
-  /* } else if (err.html) {
-    // pre-rendered HTML
-    oopsDom.classList.add('oops-as-html')
-    oopsDom.appendChild(err.html) */
-  /* } else if (err.message && err.message.then) {
-    err.message.then(message => {
-      err.message = message
-      oops(command, block, nextBlock)(err)
-    })
-    return */
+    /* } else if (isHTML(err.message)) {
+      // err.message is a DOM
+      oopsDom.appendChild(err.message) */
+    /* } else if (err.html) {
+      // pre-rendered HTML
+      oopsDom.classList.add('oops-as-html')
+      oopsDom.appendChild(err.html) */
+    /* } else if (err.message && err.message.then) {
+      err.message.then(message => {
+        err.message = message
+        oops(command, block, nextBlock)(err)
+      })
+      return */
   } else if (isHTML(err)) {
     // err is a DOM
     oopsDom.appendChild(err)
