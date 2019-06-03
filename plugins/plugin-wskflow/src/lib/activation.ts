@@ -16,14 +16,13 @@
 
 import { IEntitySpec } from '@kui-shell/core/models/entity'
 
-interface ActivationLike extends IEntitySpec {
-  activationId: string
+interface ActivationLike {
   start: number
   duration: number
-  logs: string[]
+  logs?: string[]
   response: {
     success: boolean
-    result: Record<string, any>
+    result?: Record<string, any>
   }
 }
 

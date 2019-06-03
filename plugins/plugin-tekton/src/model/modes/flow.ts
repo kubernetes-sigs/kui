@@ -15,17 +15,45 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('tekton/flowMode')
+const debug = Debug('tekton/model/modes/flow')
 
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { rexec as $ } from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
-interface IResponseObject {
+import flowView from '../../view/flow'
+import { isPipelineRun, IPipelineRun, IPipeline, isPipeline, Task } from '../resource'
+
+export interface IResponseObject {
   isFromFlowCommand?: boolean
+  model: IKubeResource[]
   resource: IKubeResource
+}
+
+/**
+ * Get the Pipeline referenced by a PipelineRun
+ *
+ */
+function getPipelineFromRef (run: IPipelineRun): Promise<IPipeline> {
+  return $(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
+    .catch((err: CodedError) => {
+      if (err.code === 404) {
+        return undefined
+      } else {
+        throw err
+      }
+    })
+}
+
+/**
+ * Retrieve all Tasks
+ *
+ */
+function getTasks (): Promise<Task[]> {
+  return $('kubectl get Task') // want Task.tekton.dev, but that is much slower
 }
 
 /**
@@ -40,11 +68,13 @@ const flowMode: ISidecarMode = {
       return _
     } else {
       const resource = _.resource
-      const flowView = (await import('../view/flow')).default
-      if (resource.kind === 'Pipeline') {
+      if (isPipelineRun(resource)) {
+        const [ pipeline, tasks ] = await Promise.all([ getPipelineFromRef(resource), getTasks() ])
+        return flowView(tab, [pipeline as IKubeResource].concat(tasks), resource)
+      } else if (isPipeline(resource)) {
         // fetch any accompanying Tasks
-        const tasks: IKubeResource[] = await $('kubectl get Task.tekton.dev')
-        return flowView(tab, [resource].concat(tasks))
+        const tasks = await getTasks()
+        return flowView(tab, [resource as IKubeResource].concat(tasks))
       } else {
         return flowView(tab, [resource])
       }

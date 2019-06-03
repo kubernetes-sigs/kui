@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ export default (tab: ITab, entity, options: IShowOptions) => {
   if (entity.end) {
     // the guard helps with: rule activations don't have an end time
     const duration = entity.end - entity.start
-    element('.activation-duration', sidecar).innerText = prettyPrintDuration(duration)
+    element('.activation-content .activation-duration', sidecar).innerText = prettyPrintDuration(duration)
   }
 
   // estimated cost
