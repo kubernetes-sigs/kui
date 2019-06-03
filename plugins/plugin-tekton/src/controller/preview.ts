@@ -43,7 +43,6 @@ export default (commandTree: CommandRegistrar) => {
     const jsons = await parse(raw)
 
     // return a kui view
-    const runs = undefined
-    return flowView(tab, jsons, runs, raw, filepath)
+    return flowView(tab, jsons, raw, filepath)
   }, { usage, noAuthOk: true })
 }

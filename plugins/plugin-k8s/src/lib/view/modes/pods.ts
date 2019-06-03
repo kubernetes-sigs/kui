@@ -85,12 +85,12 @@ export const renderAndViewPods = async (tab: ITab, parameters: IParameters) => {
   const { command, resource } = parameters
   debug('renderAndViewPods', command, resource)
 
-  const { selector } = resource.resource.spec
+  const { selector } = resource.yaml.spec
 
   if (!selector) {
     debug('no selector attribute for the given resource', resource)
   } else {
-    const getPods = `kubectl get pods ${selectorToString(selector)} -n "${resource.resource.metadata.namespace}"`
+    const getPods = `kubectl get pods ${selectorToString(selector)} -n "${resource.yaml.metadata.namespace}"`
     debug('getPods', getPods)
 
     const tableModel: Table = await $$(getPods)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export interface IKubeStatusCondition {
+interface IKubeStatusCondition {
   lastProbeTime?: string
   lastTransitionTime: string
-  status: string | boolean
+  status: string
   type: string
 }
 
@@ -35,7 +35,6 @@ export interface IKubeLoadBalancer {
 export interface IKubeStatus {
   message: string
   startTime?: string
-  completionTime?: string
   phase?: string
   podIP?: string
   qosClass?: string
@@ -74,18 +73,6 @@ export class DefaultKubeMetadata implements IKubeMetadata {
   name = undefined
 }
 
-interface RoleRule {
-  apiGroups: string[]
-  resources: string[]
-  verbs: string[]
-}
-
-interface RoleRef {
-  apiGroup: string
-  kind: string
-  name: string
-}
-
 export interface IKubeResource {
   apiVersion: string
   kind: string
@@ -93,34 +80,6 @@ export interface IKubeResource {
   status?: IKubeStatus
   spec?: any
   data?: object
-}
-
-/** Role */
-interface IRole extends IKubeResource {
-  rules: RoleRule[]
-}
-export function isRole (resource: IKubeResource): resource is IRole {
-  const role = resource as IRole
-  return role.rules !== undefined
-}
-
-/** RoleBinding */
-interface IRoleBinding extends IKubeResource {
-  roleRef: RoleRef
-  subjects: { kind: string; name: string }[]
-}
-export function isRoleBinding (resource: IKubeResource): resource is IRoleBinding {
-  const rb = resource as IRoleBinding
-  return rb.roleRef !== undefined && rb.subjects !== undefined
-}
-
-/** ServiceAccount */
-interface IServiceAccount extends IKubeResource {
-  secrets: { name: string }[]
-}
-export function isServiceAccount (resource: IKubeResource): resource is IServiceAccount {
-  const sa = resource as IServiceAccount
-  return sa.secrets !== undefined
 }
 
 export interface ICRDResource extends IKubeResource {
@@ -136,7 +95,7 @@ export interface IResource {
   filepathForDrilldown?: string
   kind?: string
   name?: string
-  resource: IKubeResource
+  yaml: IKubeResource
 }
 
 export default IResource

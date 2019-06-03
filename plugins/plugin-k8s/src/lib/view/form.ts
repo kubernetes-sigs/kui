@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugin-k8s/view/form')
+const debug = require('debug')('k8s/form-renderer')
 
 import { safeDump } from 'js-yaml'
 
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-import * as Resources from '../model/resource'
+import { IKubeResource } from '../model/resource'
 
-interface IFormElement {
-  parent: Record<string, any>
+export interface IFormGroup {
+  title: string
+  choices: IFormElement[]
+}
+
+export interface IFormElement {
   path: string[]
   key: string
   value: string | boolean | number
@@ -34,17 +36,11 @@ interface IFormElement {
   optional?: boolean
 }
 
-interface IFormGroup {
-  title: string
-  choices: IFormElement[]
-}
-
 /**
  * Traverse the given yaml
  *
  */
-const findParent = (yaml: Record<string, any>, path: string[]): Record<string, any> => {
-  debug('findParent', yaml, path)
+const findParent = (yaml, path: string[]) => {
   if (!yaml || path.length === 1) {
     throw new Error('Cannot find path')
   } else {
@@ -65,40 +61,30 @@ const findParent = (yaml: Record<string, any>, path: string[]): Record<string, a
  * Update the given path in the given yaml to have the given value
  *
  */
-const update = (parent: Record<string, any>, path: string[], value: string | number | boolean) => {
+const update = (yaml, path: string[], value: string | number | boolean) => {
   const key = path[path.length - 1]
-  debug('update', key, parent)
+  const parent = findParent(yaml, path)
   if (parent) {
     parent[key] = value
   }
 }
 
-interface FormAmendments extends HTMLElement {
-  value: string
-  __kui_path: string[]
-  __kui_parent: Record<string, any>
-}
-
-type ChoiceInput = HTMLInputElement & FormAmendments
-type ChoiceTextArea = HTMLTextAreaElement & FormAmendments
-
 /**
  * Save the current form choices
  *
  */
-const doSave = (tab: ITab, form: HTMLFormElement, yaml: Resources.IKubeResource, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
+const doSave = (tab: ITab, form: HTMLFormElement, yaml: object, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
   if (button) {
     button.classList.add('yellow-background')
     button.classList.add('repeating-pulse')
   }
 
   setTimeout(async () => {
-    const inputs = form.querySelectorAll('.bx--text-input')
+    const inputs = form.querySelectorAll('input')
     for (let idx = 0; idx < inputs.length; idx++) {
-      const input = inputs[idx] as FormAmendments
-      const path = input.__kui_path
-      const parent = input.__kui_parent
-      update(parent, path, input.value)
+      const input = inputs[idx] as HTMLInputElement
+      const path = input['__path']
+      update(yaml, path, input.value)
 
       const label = input.getAttribute('data-form-label')
       if (label === 'name') {
@@ -107,9 +93,10 @@ const doSave = (tab: ITab, form: HTMLFormElement, yaml: Resources.IKubeResource,
     }
 
     debug('doSave done extracting values', yaml)
-    const { writeFile } = await import('fs-extra')
+    const { safeDump } = require('js-yaml')
+    const { writeFile } = require('fs-extra')
     await writeFile(filepath, safeDump(yaml))
-    debug('doSave done writing file', filepath)
+    debug('doSave done writing file')
 
     if (button) {
       button.classList.remove('yellow-background')
@@ -124,12 +111,12 @@ const doSave = (tab: ITab, form: HTMLFormElement, yaml: Resources.IKubeResource,
  * Generate form groups from a given kube resource
  *
  */
-const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
+const formGroups = (yaml: IKubeResource): IFormGroup[] => {
   const groups: IFormGroup[] = []
 
-  const push = (group: string, key: string | number, { parent = yaml, path = [key.toString()], skip = {} }: { parent?: Record<string, any>; path?: string[]; skip?: Record<string, boolean> } = {}) => {
+  const push = (group: string, key: string, { parent = yaml, path = [key], skip = {} } = {}) => {
     const formGroup = groups.find(({ title }) => title === group)
-      || { title: group, choices: [] as IFormElement[] }
+      || { title: group, choices: [] }
 
     const { choices } = formGroup
 
@@ -143,7 +130,6 @@ const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
     // choice or recurse into a subtree
     //
     const struct = parent[key]
-
     for (let key in struct) {
       if (!skip[key]) {
         const value = struct[key]
@@ -151,18 +137,8 @@ const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
 
         if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
           // leaf node
-          choices.push({ key, value, path: next, parent: struct })
-        } else if (Array.isArray(value)) {
-          // not sure what to do with arrays, yet
-          if (value.length > 0) {
-            if (typeof value[0] === 'string' || typeof value[0] === 'number' || typeof value[0] === 'boolean') {
-              // array of strings
-              choices.push({ key, value: value.join(','), path: next, parent: struct })
-            } else {
-              // array of structs
-            }
-          }
-        } else {
+          choices.push({ key, value, path: next })
+        } else if (!Array.isArray(value)) { // not sure what to do with arrays, yet
           // subtree: descend recursively
           // note how we intentionally flatten, for now
           push(key, key, { parent: struct, path: next })
@@ -180,36 +156,6 @@ const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
   push('Resource Definition', 'spec', { skip: { service: true } })
   push('Data Values', 'data')
 
-  // params
-  if (yaml.spec && yaml.spec.params) {
-    yaml.spec.params.forEach((param, idx) => {
-      push(`Parameter #${idx + 1}`, idx, { parent: yaml.spec.params })
-    })
-  }
-
-  // Role
-  if (Resources.isRole(yaml)) {
-    yaml.rules.forEach((rule, idx) => {
-      push('Rules', idx, { parent: yaml.rules })
-    })
-  }
-
-  // RoleBinding
-  if (Resources.isRoleBinding(yaml)) {
-    push('Role Reference', 'roleRef')
-
-    yaml.subjects.forEach((subject, idx) => {
-      push('Subjects', idx, { parent: yaml.subjects })
-    })
-  }
-
-  // ServiceAccount
-  if (Resources.isServiceAccount(yaml)) {
-    yaml.secrets.forEach((secrets, idx) => {
-      push('Secret', idx, { parent: yaml.secrets })
-    })
-  }
-
   return groups
 }
 
@@ -217,7 +163,7 @@ const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
  * Present a form view over a resource
  *
  */
-export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filepath: string, name: string, kind: string, onSave: (rawText: string) => any) => {
+export const generateForm = (tab: ITab) => (yaml: IKubeResource, filepath: string, name: string, kind: string, onSave: (rawText) => any) => {
   const formElements = formGroups(yaml)
   debug('generate form', formElements)
 
@@ -243,13 +189,10 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
     itemRight.className = 'project-config-items-right'
     item.appendChild(itemRight)
 
-    const itemTitleOuter = document.createElement('div')
     const itemTitle = document.createElement('div')
-    itemTitleOuter.className = 'result-table-title-outer'
-    itemTitle.className = 'result-table-title'
+    itemTitle.className = 'config-item-title'
     itemTitle.innerText = element.title
-    itemTitleOuter.appendChild(itemTitle)
-    itemRight.appendChild(itemTitleOuter)
+    itemRight.appendChild(itemTitle)
 
     /* if (instructions) {
       const dom = document.createElement('div');
@@ -276,7 +219,7 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
     form.className = 'form'
     itemRight.appendChild(form)
 
-    const formatChoice = (extraCSS?: string) => (element: IFormElement) => {
+    const formatChoice = (extraCSS?: string) => element => {
       const row = document.createElement('div')
       row.className = 'bx--form-item'
       if (extraCSS) row.classList.add(extraCSS)
@@ -295,37 +238,22 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
       }
 
       const inputType = typeof element.value
-      const inputPart = element.key === 'description'
-        ? document.createElement('textarea') as ChoiceTextArea
-        : document.createElement('input') as ChoiceInput
+      const inputPart = document.createElement('input')
       inputPart.className = 'bx--text-input'
       inputPart.setAttribute('type', inputType === 'string' ? 'text' : inputType)
-      inputPart.value = element.value.toString()
-      inputPart.setAttribute('defaultValue', inputPart.value)
+      inputPart.setAttribute('value', element.value) // note: not .value=, as that doesn't work with form.reset()
       inputPart.setAttribute('placeholder', element.placeholder || element.key)
       inputPart.setAttribute('data-typeof', inputType) // facilitate number- or boolean-specific rendering
       inputPart.setAttribute('data-form-label', element.key)
-      inputPart.__kui_path = element.path
-      inputPart.__kui_parent = element.parent
+      inputPart['__path'] = element.path
       row.appendChild(inputPart)
     }
 
     // here, we shunt long/wide fields to the end, so that the
     // shorter ones can pack more densely onto lines
     const isLongPattern = /(description|ur[il])/i
-    const isKeyLike = /key|name/i
-    const { shortChoices, longChoices } = element.choices.length === 2 && isKeyLike.test(element.choices[0].key) && element.choices[1].key === 'value' && isLongPattern.test(element.choices[0].value.toString())
-      ? { shortChoices: [element.choices[0]], longChoices: [element.choices[1]] }
-      : element.choices.reduce((groups, choice) => {
-        if (isLongPattern.test(choice.key)) {
-          groups.longChoices.push(choice)
-        } else {
-          groups.shortChoices.push(choice)
-        }
-        return groups
-      }, { shortChoices: [] as IFormElement[], longChoices: [] as IFormElement[] })
-
-    console.error('!!!!!!', element.choices.length === 2 && isKeyLike.test(element.choices[0].key) && element.choices[1].key === 'value' && isLongPattern.test(element.choices[0].value.toString()), shortChoices, longChoices)
+    const longChoices = element.choices.filter(_ => _.key.match(isLongPattern))
+    const shortChoices = element.choices.filter(_ => !_.key.match(isLongPattern))
 
     shortChoices.forEach(formatChoice())
     longChoices.forEach(formatChoice('bx--form-item-wide'))
@@ -335,9 +263,9 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
     }
   })
 
-  const modes: ISidecarMode[] = [
-    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(tab, form, yaml, filepath, onSave), visibleWhen: 'edit' },
-    { mode: 'revert', flush: 'right', actAsButton: true, direct: () => form.reset(), visibleWhen: 'edit' }
+  const modes = [
+    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(tab, form, yaml, filepath, onSave) },
+    { mode: 'revert', flush: 'right', actAsButton: true, direct: () => form.reset() }
   ]
 
   const subtext = document.createElement('span')
@@ -354,7 +282,6 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
     name,
     subtext,
     content: form,
-    modes,
-    resource: yaml
+    modes
   }
 }

@@ -19,7 +19,7 @@ import { ICustomSpec } from '../webapp/views/sidecar'
 import { ISidecarMode } from '../webapp/bottom-stripe'
 
 export interface IEntitySpec {
-  type?: string
+  type: string
   kind?: string
 
   verb?: string
@@ -38,7 +38,6 @@ export interface IEntitySpec {
   modes?: ISidecarMode[]
 
   version?: string
-  duration?: number
   namespace?: string
   annotations?: { key: string; value: any }[]
 }
@@ -54,26 +53,6 @@ export function isMessageBearingEntity (entity: Entity): entity is IMessageBeari
 export function isEntitySpec (entity: Entity): entity is IEntitySpec {
   const spec = entity as IEntitySpec
   return spec.verb !== undefined || spec.type !== undefined || spec.name !== undefined
-}
-
-/**
- * A minimal subset of a kubernetes-like resource specification that
- * identifies a resource
- *
- */
-export interface MetadataBearing {
-  kind?: string
-  metadata?: {
-    name: string
-    namespace: string
-  }
-}
-export function isMetadataBearing (spec: IEntitySpec): spec is MetadataBearing {
-  const meta = spec as MetadataBearing
-  return meta !== undefined &&
-    meta.kind !== undefined &&
-    meta.metadata !== undefined &&
-    meta.metadata.name !== undefined
 }
 
 /**

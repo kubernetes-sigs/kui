@@ -22,8 +22,6 @@ import { lstat, readFile } from 'fs'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { MetadataBearing } from '@kui-shell/core/models/entity'
-
 import { persisters } from './persisters'
 import { gotoReadonlyLocalFile } from './readonly'
 
@@ -46,10 +44,9 @@ interface Getter {
   getEntity: () => object
 }
 
-export interface IEntity extends MetadataBearing {
+export interface IEntity {
   type: string
   name: string
-  viewName?: string
   extractName?: (raw: string) => string // re-extract name from raw source, e.g. after a save or revert
   lock?: any // set to false if you don't want a lock icon
   filepath?: string
