@@ -355,9 +355,9 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
       return document.createElementNS(svgns, d.properties && d.properties.kind === 'trigger' ? 'polygon' : 'rect')
     })
       .attr('class', d => {
-        return 'atom'
-          + (d.type === 'action' || d.onclick ? ' clickable' : '')
-          + (d.onclick ? ' has-onclick' : '')
+        return 'atom' +
+          (d.type === 'action' || d.onclick ? ' clickable' : '') +
+          (d.onclick ? ' has-onclick' : '')
       })
       .attr('points', d => {
         if (d.properties && d.properties.kind === 'trigger') {

@@ -203,8 +203,8 @@ export const formatTable = (command: string, verb: string, entityType: string, o
       onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
       outerCSS: outerCSSForKey[key] +
         (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
-      css: css
-        + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
+      css: css +
+        ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
       value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
     })).concat(fillTo(columns.length, maxColumns))
 

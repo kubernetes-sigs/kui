@@ -259,8 +259,8 @@ const topologicalSortForScan = async (pluginPaths: string[], iter: number, lastE
       flat.push(module)
       delete pluginPaths[route]
     } catch (err) {
-      const notFound = err.message.indexOf('Module not found') >= 0
-        || err.message.indexOf('Cannot find module') >= 0
+      const notFound = err.message.indexOf('Module not found') >= 0 ||
+        err.message.indexOf('Cannot find module') >= 0
       if ((!notFound || iter > 10) && (lastError && lastError.message !== err.message)) {
         //
         // note how we do not print the error if any of three

@@ -30,10 +30,10 @@ const maxIter = 5
  *
  */
 const inBounds = (rect, bounds) => {
-  return rect.left >= bounds.left
-    && rect.right <= bounds.right
-    && rect.top >= bounds.top
-    && rect.bottom <= bounds.bottom
+  return rect.left >= bounds.left &&
+    rect.right <= bounds.right &&
+    rect.top >= bounds.top &&
+    rect.bottom <= bounds.bottom
 }
 
 /**

@@ -128,8 +128,8 @@ const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
   const groups: IFormGroup[] = []
 
   const push = (group: string, key: string | number, { parent = yaml, path = [key.toString()], skip = {} }: { parent?: Record<string, any>; path?: string[]; skip?: Record<string, boolean> } = {}) => {
-    const formGroup = groups.find(({ title }) => title === group)
-      || { title: group, choices: [] as IFormElement[] }
+    const formGroup = groups.find(({ title }) => title === group) ||
+      { title: group, choices: [] as IFormElement[] }
 
     const { choices } = formGroup
 

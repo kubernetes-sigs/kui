@@ -94,9 +94,9 @@ const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer 
 
   const addToPrompt = (extra: string): void => {
     const pos = prompt.selectionStart + extra.length
-    prompt.value = prompt.value.substring(0, prompt.selectionStart)
-      + extra
-      + prompt.value.substring(prompt.selectionStart)
+    prompt.value = prompt.value.substring(0, prompt.selectionStart) +
+      extra +
+      prompt.value.substring(prompt.selectionStart)
     prompt.setSelectionRange(pos, pos)
 
     // make sure the new text is visible

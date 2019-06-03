@@ -59,11 +59,11 @@ const maybeKUBECONFIG = (file: string): string | void => {
 const fillInKUBECONFIG = (env) => {
   if (!env.KUBECONFIG) {
     debug('attempting to find KUBECONFIG env var')
-    const kubeconfig = maybeKUBECONFIG('.bash_profile')
-      || maybeKUBECONFIG('.profile')
-      || maybeKUBECONFIG('.zshrc')
-      || maybeKUBECONFIG('.zsh_profile')
-      || maybeKUBECONFIG('.bashrc') // might not work, as these are usually no-ops for non-interactive shells; but let's try it
+    const kubeconfig = maybeKUBECONFIG('.bash_profile') ||
+      maybeKUBECONFIG('.profile') ||
+      maybeKUBECONFIG('.zshrc') ||
+      maybeKUBECONFIG('.zsh_profile') ||
+      maybeKUBECONFIG('.bashrc') // might not work, as these are usually no-ops for non-interactive shells; but let's try it
 
     if (kubeconfig) {
       process.env.KUBECONFIG = env.KUBECONFIG = kubeconfig

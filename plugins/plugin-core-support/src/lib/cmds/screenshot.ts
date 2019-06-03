@@ -166,9 +166,9 @@ export default async (commandTree: CommandRegistrar) => {
       const { app } = remote
 
       // which dom to snap?
-      const which = (argvNoOptions[1] && argvNoOptions[1].toLowerCase())
-        || (options['nth'] && 'nth')
-        || 'default'
+      const which = (argvNoOptions[1] && argvNoOptions[1].toLowerCase()) ||
+        (options['nth'] && 'nth') ||
+        'default'
 
       // the selector which will snap the dom
       let selector = selectors[which]

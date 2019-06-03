@@ -24,7 +24,6 @@
     "no-useless-constructor": "off",
     "no-useless-escape": "off",
     "no-useless-return": "off",
-    "operator-linebreak": "off",
     "padded-blocks": "off",
     "prefer-promise-reject-errors": "off",
     "space-unary-ops": "off",

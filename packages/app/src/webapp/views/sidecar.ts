@@ -304,8 +304,8 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
   // are not currenlty in fullscreen, OR if the view does not want to
   // occupy full screen and we *are*... in either case (this is an
   // XOR, does as best one can in NodeJS), toggle maximization
-  const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen
-    || (isPopup() && (custom.presentation === Presentation.SidecarFullscreenForPopups || custom.presentation === Presentation.FixedSize))
+  const viewProviderDesiresFullscreen = custom.presentation === Presentation.SidecarFullscreen ||
+    (isPopup() && (custom.presentation === Presentation.SidecarFullscreenForPopups || custom.presentation === Presentation.FixedSize))
 
   if (!custom.presentation && !isPopup()) {
     presentAs(tab, Presentation.Default)

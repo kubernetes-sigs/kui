@@ -900,8 +900,8 @@ export const listen = (prompt: HTMLInputElement) => {
     } else if (char === keys.U && event.ctrlKey) {
       // clear line
       prompt.value = ''
-    } else if ((char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey)))
-               || (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
+    } else if ((char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
+               (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
       // behavior
@@ -1020,9 +1020,9 @@ const doPaste = (text: string) => {
       // note how this will either place the new text at the caret
       // position, or replace the selected text (if selectionEnd !==
       // selectionStart)
-      prompt.value = prompt.value.substring(0, prompt.selectionStart)
-        + lines[idx]
-        + prompt.value.substring(prompt.selectionEnd)
+      prompt.value = prompt.value.substring(0, prompt.selectionStart) +
+        lines[idx] +
+        prompt.value.substring(prompt.selectionEnd)
 
       // restore the caret position
       prompt.setSelectionRange(newCaretPosition, newCaretPosition)
