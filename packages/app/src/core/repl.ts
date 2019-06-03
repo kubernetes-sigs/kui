@@ -691,7 +691,14 @@ class InProcessExecutor implements IExecutor {
         debug('eval', currentEvaluatorImpl.name)
         return Promise.resolve().then(() => {
           return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
-            tab, block: block || true, nextBlock, argv, command, execOptions, argvNoOptions, parsedOptions,
+            tab,
+            block: block || true,
+            nextBlock,
+            argv,
+            command,
+            execOptions,
+            argvNoOptions,
+            parsedOptions,
             createOutputStream: execOptions.createOutputStream || (() => isHeadless() ? headlessStreamTo() : cli.streamTo(tab, block))
           })
         })

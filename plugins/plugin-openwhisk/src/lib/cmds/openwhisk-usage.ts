@@ -514,7 +514,11 @@ export const activations = alias => ({
         parents: [{ command: 'wsk' }, { command: 'wsk activation' }]
       })
     },
-    { command: 'list', docs: 'list recent activations', aliases: aliases.list, strict: 'list', configuration,
+    { command: 'list',
+      docs: 'list recent activations',
+      aliases: aliases.list,
+      strict: 'list',
+      configuration,
       optional: [
         { name: 'name', positional: true, docs: 'filter by a given action name' },
         { name: '--name', docs: 'filter by a given action name' },

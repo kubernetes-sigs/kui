@@ -35,7 +35,8 @@ const capitalize = word => word.charAt(0).toUpperCase() + word.substring(1)
 /** generic project-related command */
 const projectCommand = (command: string, docs: string, opts?) => ({
   strict: command,
-  command, commandPrefix,
+  command,
+  commandPrefix,
   breadcrumb: opts.breadcrumb || command,
   title: capitalize(command),
   header: docs,

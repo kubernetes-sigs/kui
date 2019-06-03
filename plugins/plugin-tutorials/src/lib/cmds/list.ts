@@ -104,7 +104,8 @@ const doList = () => new Promise((resolve, reject) => {
           type: 'tutorials',
           name: name.replace(/-/g, ' '),
           nameCss: ['capitalize', 'semi-bold'], // 'sans-serif',
-          sort, level,
+          sort,
+          level,
           noSort: true, // we have already sorted the list
           onclick: () => repl.pexec(`tutorial play @tutorials/${name}`),
           attributes

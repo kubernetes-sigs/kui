@@ -49,9 +49,16 @@ const buttons: IMode[] = [
       balloon: 'Undeploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} undeploy "${name}"` },*/
 
-  { mode: 'status', label: 'Status', fontawesome: 'fas fa-info-circle',
-    balloon: 'Detailed status', balloonLength: 'medium',
-    actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({ name }) => `${modCmd}
+  { mode: 'status',
+    label: 'Status',
+    fontawesome: 'fas fa-info-circle',
+    balloon: 'Detailed status',
+    balloonLength: 'medium',
+    actAsButton: true,
+    flush: 'right',
+    echo: true,
+    noHistory: false,
+    command: ({ name }) => `${modCmd}
  status "${name}"` }
 
   /*{ mode: 'invoke', label: 'Invoke', //fontawesome: 'fas fa-trash-alt',
