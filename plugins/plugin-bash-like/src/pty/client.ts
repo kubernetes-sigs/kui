@@ -56,8 +56,8 @@ if (window) {
 function getCachedSize (tab: ITab): ISize {
   const cachedSize: ISize = tab['_kui_pty_cachedSize']
   if (cachedSize &&
-      cachedSize.sidecarState === getSidecarState(tab) &&
-      cachedSize.resizeGeneration === resizeGeneration) {
+    cachedSize.sidecarState === getSidecarState(tab) &&
+    cachedSize.resizeGeneration === resizeGeneration) {
     return cachedSize
   }
 }
