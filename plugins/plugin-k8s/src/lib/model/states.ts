@@ -47,10 +47,8 @@ export const States = {
   Disparity: 'Disparity',
   NotProvisioned: 'NotProvisioned',
   Unschedulable: 'Unschedulable',
-  ErrImagePull: 'ErrImagePull',
 
   // pending-like
-  ImagePullBackOff: 'ImagePullBackOff',
   PodInitializing: 'PodInitializing',
   Retrying: 'Retrying',
   Deleting: 'Deploying',
@@ -84,7 +82,7 @@ stateGroups[FinalState.OnlineLike] = groupOf([ States.Active, States.Online, Sta
 const isOnlineLike = (state: State): boolean => stateGroups[FinalState.OnlineLike][state]
 
 /** states that are synonymous with being Offline */
-stateGroups[FinalState.OfflineLike] = groupOf([ States.Offline, States.Undeployed, States.Failed, States.Disparity, States.NotProvisioned, States.Unschedulable, States.ErrImagePull ])
+stateGroups[FinalState.OfflineLike] = groupOf([ States.Offline, States.Undeployed, States.Failed, States.Disparity, States.NotProvisioned, States.Unschedulable ])
 const isOfflineLike = (state: State): boolean => stateGroups[FinalState.OfflineLike][state]
 
 /** isPendingLike is the remainder of isOnlineLike and isOfflineLike */

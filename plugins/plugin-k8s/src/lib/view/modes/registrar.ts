@@ -45,24 +45,13 @@ export default function (registration: ModeRegistration) {
 }
 
 /**
- * @return the relevant modes for the given command on the given resource
- *
- */
-export function get (command: string, resource: IResource): ISidecarMode[] {
-  debug('get relevant modes', resource)
-  const modes: ISidecarMode[] = []
-  apply(modes, command, resource)
-  return modes
-}
-
-/**
  * Apply all registered modes that are relevant to the given resource
  * to the given modes model
  *
  */
 export function apply (modes: ISidecarMode[], command: string, resource: IResource) {
   registrar
-    .filter(({ when }) => when(resource.resource)) // if relevant...
+    .filter(({ when }) => when(resource.yaml)) // if relevant...
     .forEach(({ mode }) => {
       // then either push it on the mode model, or replace an existing mode
       /* if (override) {

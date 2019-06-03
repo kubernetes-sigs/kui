@@ -29,16 +29,14 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
-import { IEntitySpec } from '@kui-shell/core/models/entity'
 
 import { FinalState } from '../model/states'
 import { IKubeResource, IResource } from '../model/resource'
 
 import { redactYAML } from '../view/redact'
 import { statusButton } from '../view/modes/status'
-import { get as relevantModes } from '../view/modes/registrar'
 import { formatEntity } from '../view/formatEntity'
-import { generateForm } from '../view/form'
+import { IFormGroup, IFormElement, generateForm } from '../view/form'
 
 const usage = {
   kedit: {
@@ -59,7 +57,7 @@ const usage = {
  * Show a customized view of a given yaml in the editor
  *
  */
-const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab, parsedOptions: ParsedOptions, execOptions: IExecOptions) => {
+const showResource = async (yaml, filepath: string, tab: ITab, parsedOptions: ParsedOptions, execOptions: IExecOptions) => {
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
@@ -75,23 +73,15 @@ const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab, pa
   const nameOverride = (resource: IKubeResource) => (resource.metadata && resource.metadata.name) || basename(filepath)
 
   // add our mode buttons
-  const resource = { kind: yaml.kind, filepathForDrilldown: filepath, resource: yaml }
-  const addModeButtons = (defaultMode: string) => (response: IEntitySpec) => {
+  const resource = { kind: yaml.kind, filepathForDrilldown: filepath, yaml }
+  const addModeButtons = (defaultMode: string) => response => {
     response['modes'] = (response['modes'] || []).concat([
       { mode: 'edit', direct: openAsForm },
-      ...relevantModes('kubectl', { resource: yaml }),
-      statusButton('kubectl', resource, FinalState.NotPendingLike),
-      { mode: 'raw', direct: openInEditor }
+      { mode: 'raw', direct: openInEditor },
+      statusButton('kubectl', resource, FinalState.NotPendingLike)
     ])
 
-    // adjust selected mode
-    response['modes'].forEach(spec => {
-      if (spec.mode === defaultMode) {
-        spec.defaultMode = true
-      } else {
-        spec.defaultMode = false
-      }
-    })
+    response['modes'].find(({ mode }) => mode === defaultMode).defaultMode = true
 
     return response
   }
@@ -100,11 +90,9 @@ const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab, pa
     source: string
   }
 
-  const { safeLoad, safeDump } = await import('js-yaml')
-
   /** re-extract the structure from raw yaml string */
   const extract = (rawText: string, entity?: Resource): Resource => {
-    const resource = editorEntity.resource = safeLoad(rawText)
+    const resource = editorEntity.yaml = require('js-yaml').safeLoad(rawText)
     editorEntity.source = rawText
     editorEntity.name = resource.metadata.name
     editorEntity.kind = resource.kind
@@ -118,6 +106,7 @@ const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab, pa
     return entity
   }
 
+  const { safeDump } = await import('js-yaml')
   const editorEntity = {
     name: yaml.metadata.name,
     kind: yaml.kind,
@@ -125,14 +114,14 @@ const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab, pa
     extract,
     filepath,
     source: redactYAML(safeDump(yaml)),
-    resource: yaml
+    yaml
   }
 
   /** open the content in the monaco editor */
   const openInEditor = () => {
     debug('openInEditor', yaml.metadata.name)
 
-    return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.resource)}" --language yaml`,
+    return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.yaml)}" --language yaml`,
       undefined, undefined, {
         parameters: editorEntity
       })
@@ -141,7 +130,7 @@ const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab, pa
 
   /** open the content as a pretty-printed form */
   const openAsForm = () => {
-    return Promise.resolve(generateForm(tab)(editorEntity.resource, filepath, nameOverride(editorEntity.resource), typeOverride, extract))
+    return Promise.resolve(generateForm(tab)(editorEntity.yaml, filepath, nameOverride(editorEntity.yaml), typeOverride, extract))
       .then(addModeButtons('edit'))
   }
 

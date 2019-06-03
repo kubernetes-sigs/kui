@@ -53,7 +53,6 @@ break {
     /*vector-effect: non-scaling-stroke; not supported by IE or Edge */
     stroke-width: 0.5; /* 1.5 with non-scaling stroke */
     stroke: var(--color-text-02) !important;
-    stroke-opacity: 0.8;
 }
 #wskflowSVG path.link {
     fill: transparent;
@@ -105,7 +104,7 @@ break {
 }
 body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry .atom, body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Exit .atom {
     fill: var(--color-ui-01);
-    stroke: var(--color-ui-03) !important;
+    stroke: var(--color-ui-02) !important;
 }
 #wskflowSVG .node.leaf.Entry text, #wskflowSVG .node.leaf.Exit text {
     fill: var(--color-ui-02) !important;
@@ -133,8 +132,8 @@ body[kui-theme-style="dark"] #wskflowSVG .node[data-deployed="not-deployed"] .at
 }
 #wskflowSVG path[data-visited="true"] {
     /* visited edges */
-    stroke: var(--color-base0D) !important;
-    stroke-width: 1.1;
+    stroke: #2166ac !important;
+    stroke-width: 1.25;
     marker-end: url(#edgeTraversedEnd);
 }
 #wskflowSVG path[data-visited="false"] {
@@ -158,28 +157,19 @@ body[kui-theme-style="dark"] #wskflowSVG .node[data-deployed="not-deployed"] .at
     fill: var(--color-text-02);
 }
 
-/* #wskflowSVG .node.compound:not(.root)[data-status="success"] .atom {
-    stroke: var(--color-ok) !important;
-}
-#wskflowSVG .node.compound:not(.root)[data-status="failed"] .atom {
-    stroke: var(--color-support-01) !important;
-} */
 #wskflowSVG .node.leaf[data-status="success"] .atom {
     /* visited nodes with success outcome */
-    /* fill: var(--color-base0D) !important; */
+    fill: var(--color-brand-01) !important;
     stroke: var(--color-text-01) !important;
 }
-body[kui-theme-style="dark"] #wskflowSVG .node.leaf[data-status="success"] .atom {
-    mask: url(#mask-stripe-heavy);
-}
 #wskflowSVG marker#edgeTraversedEnd {
-    fill: var(--color-base0D);
+    fill: var(--color-brand-01);
 }
 #wskflowSVG .node.leaf[data-status="failed"] .atom {
     /* visited nodes with failure outcome */
     fill: var(--color-support-01) !important;
 }
-#wskflowSVG .node.leaf.Exit[data-status="failed"] text:not(.edge-label), #wskflowSVG .node.leaf[data-status="failed"] text:not(.edge-label) {
+#wskflowSVG .node.leaf.Exit[data-status] text:not(.edge-label), #wskflowSVG .node.leaf.Entry[data-status] text:not(.edge-label), #wskflowSVG .node.leaf[data-status="failed"] text:not(.edge-label) {
     /* visited node text for session flow */
     fill: var(--color-ui-01) !important;
 }
@@ -201,7 +191,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf[data-status="success"] .atom
     fill: var(--color-text-01) !important;
 }
 #wskflowSVG .action[data-deployed="deployed"] rec.atom:hover, #wskflowSVG .action[data-deployed="deployed"] .atom.hover, #wskflowSVG .node .atom.has-onclick:hover, #wskflowSVG .node .atom.has-onclick.hover {
-    fill: var(--color-base0D) !important;
+    fill: var(--color-support-04) !important;
 }
 #wskflowSVG .node.leaf.function .atom:hover, #wskflowSVG .node.leaf.function .atom.hover {
     fill-opacity: 0.75;
@@ -236,13 +226,13 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
 }
 
 #wskflowSVG .node.compound:not(.root) .atom.has-onclick:hover, #wskflowSVG .node.compound:not(.root) .atom.has-onclick.hover {
-    /* stroke-dasharray: 0.5,1; */
-    stroke: var(--color-base0D) !important;
+    stroke-dasharray: 0.5,1;
+    stroke: var(--color-base0C) !important;
 }
 #wskflowSVG .node.compound:not(.root) .atom {
-    /* stroke-dasharray: 0.25,0.25; */
-    stroke-width: 0.5;
-    stroke: var(--color-ui-04) !important;
+    stroke-dasharray: 0.25,0.75;
+    stroke-width: 1;
+    stroke: var(--color-base03) !important;
     fill: var(--color-base03) !important;
     fill-opacity: 0.05;
     rx: 4px;

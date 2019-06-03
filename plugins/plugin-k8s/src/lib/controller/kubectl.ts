@@ -93,7 +93,7 @@ const dashify = (str: string): string => {
  */
 type CleanupFunction = () => void
 const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.ProcessEnv): Promise<CleanupFunction> => new Promise(async (resolve, reject) => {
-  // debug('possiblyExportCredentials', process.env.KUBECONFIG, execOptions && execOptions.credentials)
+  debug('possiblyExportCredentials', process.env.KUBECONFIG, execOptions && execOptions.credentials)
 
   if (!process.env.KUBECONFIG && execOptions && execOptions.credentials && execOptions.credentials.k8s) {
     debug('exporting kubernetes credentials')
@@ -601,10 +601,10 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
       // sidecar badges
       const badges = []
-      // badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
+      badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
 
       if (verb === 'get') {
-        const resource: IResource = { kind: command !== 'helm' && yaml.kind, name: entity, resource: yaml }
+        const resource: IResource = { kind: command !== 'helm' && yaml.kind, name: entity, yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
 
         // consult the view registrar for registered view modes
@@ -617,22 +617,13 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
       const content = result
 
-      // some resources have a notion of duration
-      const startTime = yaml && yaml.status && yaml.status.startTime && new Date(yaml.status.startTime)
-      const endTime = yaml && yaml.status && yaml.status.completionTime && new Date(yaml.status.completionTime)
-      const duration = startTime && endTime && (endTime.getTime() - startTime.getTime())
-
-      // some resources have a notion of version
-      const version = yaml && yaml.metadata && yaml.metadata.labels && yaml.metadata.labels.version
-
       const record = {
         type: 'custom',
         isEntity: true,
         name: entity || verb,
         packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || cmdlineForDisplay,
         namespace: options.namespace || options.n,
-        duration,
-        version,
+        version: yaml && yaml.metadata && yaml.metadata.labels && yaml.metadata.labels.version,
         prettyType: (yaml && yaml.kind) || entityTypeForDisplay || command,
         subtext,
         noCost: true, // don't display the cost in the UI

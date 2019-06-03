@@ -65,7 +65,7 @@ export default (tab: ITab, entity, options: IShowOptions) => {
   if (entity.end) {
     // the guard helps with: rule activations don't have an end time
     const duration = entity.end - entity.start
-    element('.activation-content .activation-duration', sidecar).innerText = prettyPrintDuration(duration)
+    element('.activation-duration', sidecar).innerText = prettyPrintDuration(duration)
   }
 
   // estimated cost

@@ -178,7 +178,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   const yaml = resource
   {
     const command = 'kubectl'
-    const resource: IResource = { kind: yaml.kind, name: yaml.metadata.name, resource: yaml }
+    const resource: IResource = { kind: yaml.kind, name: yaml.metadata.name, yaml }
     modes.push(statusButton(command, resource, FinalState.NotPendingLike))
 
     // consult the view registrar for registered view modes
@@ -193,7 +193,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   modes.push(deleteResourceButton())
 
   const badges = []
-  // badges.push(metadata && metadata.generation && `Generation ${metadata.generation}`)
+  badges.push(metadata && metadata.generation && `Generation ${metadata.generation}`)
   badges.push(metadata && metadata.labels && metadata.labels.app)
 
   if (Object.keys(summary).length === 0) {
@@ -206,21 +206,12 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     modes.splice(modes.findIndex(_ => _.mode === 'raw'), 1)
   }
 
-  // some resources have a notion of duration
-  const startTime = resource && status && status.startTime && new Date(status.startTime)
-  const endTime = resource && status && status.completionTime && new Date(status.completionTime)
-  const duration = startTime && endTime && (endTime.getTime() - startTime.getTime())
-
-  // some resources have a notion of version
-  const version = resource && metadata && metadata.labels && metadata.labels.version
-
   const description = {
     type: 'custom',
     isEntity: true,
     name,
     packageName: ns,
-    version,
-    duration,
+    version: resource && metadata && metadata.labels && metadata.labels.version,
     badges: badges.filter(x => x),
     contentType: output,
     prettyType: resource.kind,

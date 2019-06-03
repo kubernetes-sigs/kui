@@ -23,12 +23,10 @@ import * as events from 'events'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { IEntitySpec } from '@kui-shell/core/models/entity'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
 import { currentSelection, getSidecar, isVisible as isSidecarVisible, addSidecarHeaderIconText, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
 
-import { IEntity as IEditorEntity } from './fetchers'
 import strings from '../i18n/strings'
 import { extension, language } from './file-types'
 
@@ -46,7 +44,6 @@ export const openEditor = async (tab: ITab, name: string, options, execOptions) 
   debug('openEditor')
 
   const sidecar = getSidecar(tab)
-  const outerContent = sidecar.querySelector('.custom-content')
 
   /** returns the current entity */
   const custom = execOptions.custom
@@ -120,22 +117,22 @@ export const openEditor = async (tab: ITab, name: string, options, execOptions) 
 
     editorWrapper['editor'] = editor
 
-    return (entity: IEditorEntity) => {
-      debug('updater', entity)
+    return entity => {
+      debug('updater', typeof entity === 'string' ? entity.substring(0, 20) : entity)
       const eventBus = new events.EventEmitter()
 
       const kind = sidecar.querySelector('.action-content .kind') as HTMLElement
       kind.innerText = ''
 
       // update the editor text
-      setText(editor, options, execOptions)(entity['exec'])
+      setText(editor, options, execOptions)(entity.exec)
 
       content.classList.add('code-highlighting')
 
+      addSidecarHeaderIconText(entity.prettyType || entity.type, sidecar)
+
       // stash this so that the implicit entity model works
       sidecar.entity = entity
-
-      addSidecarHeaderIconText(entity.type || entity.kind, sidecar)
 
       // isModified display
       const subtext = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
@@ -163,7 +160,7 @@ export const openEditor = async (tab: ITab, name: string, options, execOptions) 
         debug('status:is-read-only')
         status.classList.add('is-read-only')
       }
-      if (entity['isNew']) {
+      if (entity.isNew) {
         debug('status:is-new')
         status.classList.add('is-new')
       } else {
@@ -197,7 +194,7 @@ export const openEditor = async (tab: ITab, name: string, options, execOptions) 
           isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
           isModifiedPart.setAttribute('data-balloon-pos', 'left')
 
-          addNameToSidecarHeader(sidecar, nameDiv, entity.metadata && entity.metadata.namespace, undefined, entity.kind || entity.viewName || entity.type, undefined, entity)
+          addNameToSidecarHeader(sidecar, nameDiv, entity.packageName, undefined, entity.prettyKind || entity.kind || entity.prettyType || entity.viewName || entity.type)
           addVersionBadge(tab, entity, { clear: true })
         }
       }
@@ -231,7 +228,7 @@ export const openEditor = async (tab: ITab, name: string, options, execOptions) 
       /** call editor.layout */
       const relayout = editor.relayout = () => {
         const go = () => {
-          const { width, height } = outerContent.getBoundingClientRect()
+          const { width, height } = editorWrapper.getBoundingClientRect()
           debug('relayout', width, height)
           editor.layout({ width, height })
         }
@@ -245,6 +242,7 @@ export const openEditor = async (tab: ITab, name: string, options, execOptions) 
 
       if (isSidecarVisible(tab)) {
         relayout()
+        setTimeout(relayout, 600) // race with sidecar sweeping in
       } else {
         setTimeout(relayout, 600)
       }

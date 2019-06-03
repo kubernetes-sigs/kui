@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -486,7 +486,7 @@ const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: IKube
   const raw = Object.assign({}, args.execOptions, { raw: true })
   const pods = removeDuplicateResources(flatten(await Promise.all(kubeEntities.map(({ kind, metadata: { labels, namespace, name } }) => {
     if (labels && labels.app && kind !== 'Pod') {
-      const pods: Promise<IKubeResource[]> = repl.qexec(`kubectl get pods -n "${namespace || 'default'}" -l "app=${labels.app}" -o json`,
+      const pods: Promise<IKubeResource[]> = repl.qexec(`kubectl get pods -n "${namespace}" -l "app=${labels.app}" -o json`,
         undefined, undefined, raw)
       return pods
     }

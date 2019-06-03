@@ -28,7 +28,6 @@ import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
-import { INode } from './graph'
 
 const defaultMaxLabelLength = 10
 
@@ -44,7 +43,7 @@ const wfColorAct = {
 
 const containerId = 'wskflowDiv'
 
-export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>; composites?: { label: { fontSize: string; offset: { x: number; y: number } } } } = {}) {
+export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>; composites?: { label: { fontSize: string; offset: { x: number; y: number } } } } = {}) {
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 
@@ -94,27 +93,6 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
     .attr('width', '100%')
     .attr('height', '100%')
     .attr('fill', 'url(#pattern-stripe)')
-
-  // a heavier pattern mask
-  defs.append('svg:pattern')
-    .attr('id', 'pattern-stripe-heavy')
-    .attr('width', 1.2)
-    .attr('height', 1.2)
-    .attr('patternUnits', 'userSpaceOnUse')
-    .attr('patternTransform', 'rotate(45)')
-    .append('svg:rect')
-    .attr('width', 1)
-    .attr('height', 2)
-    .attr('transform', 'translate(0,0)')
-    .attr('fill', '#aaa') // this will be the opacity of the mask, from #fff (full masking) to #000 (no masking)
-  defs.append('svg:mask')
-    .attr('id', 'mask-stripe-heavy')
-    .append('svg:rect')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', '100%')
-    .attr('height', '100%')
-    .attr('fill', 'url(#pattern-stripe-heavy)')
 
   // define an arrow head
   const arrowHead = (id: string) => {
@@ -390,6 +368,12 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
 
         if (activations) {
           if (d.children === undefined && d.visited && $('#actList').css('display') !== 'block') {
+            if ($(this).attr('failed')) {
+              $(this).css('fill', wfColorAct.failedHovered)
+            } else {
+              $(this).css('fill', wfColorAct.activeHovered)
+            }
+
             if (d.type === 'action') {
               // first, describe # activations if # > 1
               if (d.visited.length > 1) { qtipText += ("<div style='padding-bottom:2px;'>" + activations.length + ' activations</div>') }
@@ -429,7 +413,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
               const start = new Date(act.start)
               let timeString = (start.getMonth() + 1) + '/' + start.getDate() + ' '
               timeString += start.toLocaleTimeString(undefined, { hour12: false })
-              let result = act.response.result ? JSON.stringify(act.response.result, undefined, 4) : ''
+              let result = JSON.stringify(act.response.result, undefined, 4)
               if (result.length > 200) { result = result.substring(0, 200) + '\u2026' } // horizontal ellipsis
 
               qtipText += `<div style='padding-bottom:2px'><span class='qtip-prefix'>${d.type}</span> <span style='color:${wfColorAct.active}'>${timeString}</span></div>${result}`
@@ -550,6 +534,16 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
           })
         }
       }).on('mouseout', function (d, i) {
+        if (activations) {
+          if (d.children === undefined && d.visited && $('#actList').css('display') !== 'block') {
+            if ($(this).attr('failed')) {
+              $(this).css('fill', wfColorAct.failed)
+            } else {
+              $(this).css('fill', wfColorAct.active)
+            }
+          }
+        }
+
         $('.link').removeClass('hover')
         $('#qtip').removeClass('visible')
       }).on('mousedown', () => {
@@ -587,9 +581,18 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
                                             )(d3.event)               // pass along the raw dom event
                                 */
             } else if (d.type === 'action') {
+              if ($(this).attr('failed')) {
+                $(this).css('fill', wfColorAct.failed)
+              } else {
+                $(this).css('fill', wfColorAct.active)
+              }
+
               $('#qtip').removeClass('visible')
 
               if (d.visited.length === 1) {
+                // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
+                // let id = fsm.States[d.id].act[0].activationId;
+
                 pictureInPicture(tab,
                   activations[d.visited[0]],
                   d3.event.currentTarget.parentNode, // highlight this node
@@ -624,9 +627,9 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
                   let c
                   if (a.response.success) { c = wfColorAct.active } else { c = wfColorAct.failed }
 
-                  lis += `<span class='actItem' style='color:${c}; text-decoration:underline; cursor: pointer;' index=${n}>${timeString}</span> (${duration + unit})<break></break>`
+                  lis += `<span class='actItem' style='color:${c}; text-decoration:underline; cursor: pointer;' aid='${a.activationId}' index=${n}>${timeString}</span> (${duration + unit})<break></break>`
 
-                  let result = a.response ? JSON.stringify(a.response.result) : ''
+                  let result = JSON.stringify(a.response.result)
                   if (result.length > 40) { result = result.substring(0, 40) + '... ' }
                   lis += result
 
@@ -645,6 +648,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
                   $(this).css('text-decoration', 'underline')
                 }).click(function (e) {
                   // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
+                  // const id = $(this).attr('aid')
                   const index = $(this).attr('index')
 
                   // pictureInPicture(`wsk activation get ${id}`, {echo: true}),
@@ -698,7 +702,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
         if (d.children) { return composites.label.offset.y } else if (d.multiLineLabel) { return (d.height - d.multiLineLabel.length * 6) / 2 } else { return d.height / 2 + (d.type === 'Entry' || d.type === 'Exit' ? 1.5 : d.type === 'Dummy' ? 1.5 : d.type === 'let' ? 3.5 : 2) }
       })
       .attr('font-size', function (d) {
-        if (d.children) { return composites.label.fontSize } else if (d.properties && d.properties.fontSize) { return d.properties.fontSize } else if (d.type === 'Entry' || d.type === 'Exit') { return '6px' } else { return defaultFontSize }
+        if (d.children) { return composites.label.fontSize } else if (d.type === 'Entry' || d.type === 'Exit') { return '6px' } else if (d.properties && d.properties.fontSize) { return d.properties.fontSize } else { return defaultFontSize }
       })
       .style('text-anchor', function (d) {
         if (!d.children && !d.multiLineLabel) { return 'middle' }
@@ -824,6 +828,11 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
       })
       .attr('data-visited', d => d.visited) // edge was visited?
       .attr('source', function (d) { return d.sourcePort })
+      .style('stroke', function (d) {
+        if (activations) {
+          if (d.visited) { return wfColorAct.active } else { return wfColorAct.edgeInactive }
+        }
+      })
       .on('mouseout', function (edge, i) {
         $('#qtip').removeClass('visible')
       })
