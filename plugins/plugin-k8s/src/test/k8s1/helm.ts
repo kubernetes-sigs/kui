@@ -15,8 +15,10 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli } from '@kui-shell/core/tests/lib/ui'
-
+import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import * as assert from 'assert'
+import * as Debug from 'debug'
+const debug = Debug('plugins/apache-composer/cmd/app-invoke')
 describe('helm commands', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
@@ -28,4 +30,26 @@ describe('helm commands', function (this: common.ISuite) {
       .then(cli.expectBlank)
       .catch(common.oops(this)))
   })
+
+  it(`should create sample helm chart`, () =>
+    cli.do(`helm install --name test-release stable/mysql`, this.app)
+      .then(async (res) => {
+        await cli.expectOKWithAny(res)
+        const text = await this.app.client.getText(` .streaming-output`)
+        const table = await this.app.client.getText(`.result-table-title`)
+        return assert.ok(table.length === 6 && Array.isArray(text) && text.filter(x => x && !x.includes('NOTES:') && !x.includes('LAST DEPLOYED:')).length === 0)
+      })
+      .catch(common.oops(this))
+  )
+
+  it(`should delete sample helm chart`, () =>
+    cli.do(`helm delete --purge test-release`, this.app)
+      .then(cli.expectOKWithString('release "test-release" deleted'))
+      .catch(common.oops(this))
+  )
+
+  it(`should list empty releases via helm list again`, () =>
+    cli.do(`helm list`, this.app)
+      .then(cli.expectBlank)
+      .catch(common.oops(this)))
 })

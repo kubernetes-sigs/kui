@@ -658,7 +658,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       status(command).then(resolve).catch(reject)
     } else if (formatters[command] && formatters[command][verb]) {
       debug('using custom formatter')
-      resolve(formatters[command][verb].format(command, verb, entityType, options, out))
+      resolve(formatters[command][verb].format(command, verb, entityType, options, out, opts.createOutputStream()))
     } else if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
       //
       // tabular output

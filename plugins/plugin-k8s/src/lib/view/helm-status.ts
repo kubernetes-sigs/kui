@@ -34,12 +34,12 @@ const width = (table: any[]): number => {
  * Format the output of a helm status command
  *
  */
-export const format = (command: string, verb: string, entityType: string, options, response: string) => {
+export const format = async (command: string, verb: string, entityType: string, options, response: string, stdout) => {
   debug('command', command)
   debug('verb', verb)
   debug('entityType', entityType)
 
-  const [ headerString, resourcesString, notesString ] = response.split(/RESOURCES:|NOTES:/)
+  const [ headerString, resourcesString, notesString ] = response.split(/RESOURCES:|(?=\NOTES:)/)
 
   const namespaceMatch = response.match(/^NAMESPACE:\s+(.*)$/m) || []
   const namespaceFromHelmStatusOutput = namespaceMatch[1]
@@ -87,8 +87,7 @@ export const format = (command: string, verb: string, entityType: string, option
       }
     })
   debug('resources', resources)
-
-  return resources
+  const resourcesOut = resources
     .map(({ kind, table }) => {
       table.title = kind
       table.flexWrap = true
@@ -103,4 +102,8 @@ export const format = (command: string, verb: string, entityType: string, option
         return -diff1
       }
     })
+  if (headerString) await stdout(headerString)
+  await stdout(resourcesOut)
+  if (notesString) await stdout(notesString)
+  return true
 }

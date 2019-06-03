@@ -278,15 +278,9 @@ export const registerEntityView = (kind: string, handler: ViewHandler) => {
  * Stream output to the given block
  *
  */
-export type Streamable = SimpleEntity | Table | ICustomSpec
+export type Streamable = SimpleEntity | Table | Table[] | ICustomSpec
 export const streamTo = (tab: ITab, block: Element) => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
-  const pre = document.createElement('pre')
-  pre.classList.add('streaming-output')
-  resultDom.appendChild(pre)
-  resultDom.setAttribute('data-stream', 'data-stream');
-  (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-
   // so we can scroll this into view as streaming output arrives
   const spinner = element('.repl-result-spinner', block)
 
@@ -294,6 +288,12 @@ export const streamTo = (tab: ITab, block: Element) => {
   return async (response: Streamable, killLine = false) => {
     //
     debug('stream', response)
+
+    const pre = document.createElement('pre')
+    pre.classList.add('streaming-output')
+    resultDom.appendChild(pre)
+    resultDom.setAttribute('data-stream', 'data-stream');
+    (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
 
     if (killLine && previousLine) {
       previousLine.parentNode.removeChild(previousLine)
@@ -308,6 +308,10 @@ export const streamTo = (tab: ITab, block: Element) => {
     } else if (isHTML(response)) {
       previousLine = response
       pre.appendChild(previousLine)
+    } else if (Array.isArray(response)) {
+      response.forEach(async _ => printTable(tab, _, resultDom))
+      const br = document.createElement('br')
+      resultDom.appendChild(br)
     } else if (isTable(response)) {
       await printTable(tab, response, resultDom)
     } else if (isCustomSpec(response)) {
