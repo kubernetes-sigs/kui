@@ -194,14 +194,14 @@ export const generateForm = (tab: ITab) => (yaml: IKubeResource, filepath: strin
     itemTitle.innerText = element.title
     itemRight.appendChild(itemTitle)
 
-    /*if (instructions) {
+    /* if (instructions) {
       const dom = document.createElement('div');
       dom.className = 'configSourceIns';
       dom.innerHTML = marked(instructions);
       itemRight.appendChild(dom);
-      }*/
+      } */
 
-    /*const links = document.createElement('div');
+    /* const links = document.createElement('div');
       links.className = 'project-config-links';
       itemRight.appendChild(links);
 
@@ -213,7 +213,7 @@ export const generateForm = (tab: ITab) => (yaml: IKubeResource, filepath: strin
       // Registration page
       if (registration) {
       links.appendChild(createLink('Registration Page', registration));
-      }*/
+      } */
 
     const form = document.createElement('div')
     form.className = 'form'

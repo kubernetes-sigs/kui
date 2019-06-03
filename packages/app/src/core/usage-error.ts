@@ -181,9 +181,9 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
   } else if (isHTML(message)) {
     // same...
     return Promise.resolve(message)
-    /*} else if (isGenerator<UsageLike>(message)) {
+    /* } else if (isGenerator<UsageLike>(message)) {
     // then message.fn is a generator, e.g. for command aliases
-    return format(message.fn(message.command), undefined, options)*/
+    return format(message.fn(message.command), undefined, options) */
   } else {
     // these are the fields of the usage message
     const usage: IUsageModel = message.usage

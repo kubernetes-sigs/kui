@@ -92,10 +92,10 @@ export const init = (graphics, options: IOptions = new DefaultOptions()) => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        /*title: {
+        /* title: {
           display: true,
           text: 'Load Test Results'
-          },*/
+          }, */
         tooltips: {
           mode: 'index',
           intersect: true,

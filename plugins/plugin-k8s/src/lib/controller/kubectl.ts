@@ -58,7 +58,7 @@ interface KubeExecOptions extends IExecOptions {
       ca: string
       cafile: string
     }
-  }*/
+  } */
 }
 
 /**

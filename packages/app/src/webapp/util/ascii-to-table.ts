@@ -157,8 +157,8 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     if (drilldownVerb === 'get') {
       const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
       return kind ? ' ' + kind : ''
-      /*} else if (drilldownVerb === 'config') {
-        return ' use-context';*/
+      /* } else if (drilldownVerb === 'config') {
+        return ' use-context'; */
     } else {
       return ''
     }
