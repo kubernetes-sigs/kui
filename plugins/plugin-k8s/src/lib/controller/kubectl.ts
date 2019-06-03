@@ -269,6 +269,7 @@ const prepareUsage = async (command: string): Promise<IUsageModel> => {
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
+// eslint-disable-next-line promise/param-names
 const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
   const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
 
