@@ -41,22 +41,22 @@ const _modes: IMode[] = [
 
 /** flush-right buttons for the bottom stripe */
 const buttons: IMode[] = [
-  /*{ mode: 'deploy', label: 'Deploy', //fontawesome: 'fas fa-cloud-upload-alt',
+  /* { mode: 'deploy', label: 'Deploy', //fontawesome: 'fas fa-cloud-upload-alt',
       balloon: 'Deploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} deploy "${name}"` },
 
     { mode: 'undeploy', label: 'Undeploy', //fontawesome: 'fas fa-trash-alt',
       balloon: 'Undeploy this project',
-      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} undeploy "${name}"` },*/
+      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} undeploy "${name}"` }, */
 
   { mode: 'status', label: 'Status', fontawesome: 'fas fa-info-circle',
     balloon: 'Detailed status', balloonLength: 'medium',
     actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({ name }) => `${modCmd}
  status "${name}"` }
 
-  /*{ mode: 'invoke', label: 'Invoke', //fontawesome: 'fas fa-trash-alt',
+  /* { mode: 'invoke', label: 'Invoke', //fontawesome: 'fas fa-trash-alt',
       balloon: 'Perform a trial inovcation of this project',
-      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name, api}) => `invoke main ${apiToDefaultParams(api)}` }*/
+      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name, api}) => `invoke main ${apiToDefaultParams(api)}` } */
 ]
 
 /** Combined mode model (for the bottom stripe) */

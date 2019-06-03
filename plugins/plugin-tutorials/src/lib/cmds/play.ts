@@ -369,7 +369,7 @@ const focusOnBiggestScrollable = () => {
 }
 
 /** this is useful if we want to display the step "blocks" as a square */
-/*const closestSquare = n => {
+/* const closestSquare = n => {
   const root = Math.sqrt(n),
   integralPart = ~~root,
   decimalPart = root - integralPart
@@ -379,7 +379,7 @@ const focusOnBiggestScrollable = () => {
   } else {
   return integralPart + 1
   }
-  }*/
+  } */
 
 /**
  * Render a table as a structured list
@@ -552,7 +552,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
   // render the extras
   const extrasPart = pane.querySelector('.tutorial-content-extras')
 
-  /*const previousExtras = extrasPart.querySelectorAll('.tutorial-content-extras-body');
+  /* const previousExtras = extrasPart.querySelectorAll('.tutorial-content-extras-body');
     for (let idx = 0; idx < previousExtras.length; idx++) {
     removeAllDomChildren(previousExtras[idx]);
     } */

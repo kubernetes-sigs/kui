@@ -177,7 +177,7 @@ const wrap = (tab: ITab, htmlString: string, fullpath: string, hljs): IMarkdown 
       // below; some browsers don't (yet?) support <!  hopefully they
       // will all, at some point, and we can restore that commented
       // out part
-      exec.onclick = () => pexec(url.substring(1)/*.replace(new RegExp('(?<!\\)\/', 'g'), ' ')*/.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
+      exec.onclick = () => pexec(url.substring(1)/* .replace(new RegExp('(?<!\\)\/', 'g'), ' ') */.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
     } else {
       exec.onclick = drilldown(tab,
         `open ${url}`,

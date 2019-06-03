@@ -161,7 +161,7 @@ const match = (path: string[], readonly: boolean): ICommand => {
 export const subtree = (route: string, options: ICommandOptions) => {
   const myListen = options.listen || listen
   const path = route.split('/').splice(1)
-  const leaf = match(path, false /*, options*/)
+  const leaf = match(path, false /*, options */)
 
   if (leaf) {
     leaf.route = route
@@ -246,7 +246,7 @@ const _listen = (model: CommandTree, route: string, handler: CommandHandler, opt
     leaf.route = route
 
     // update the disambiguator map
-    if (/*!(options && options.synonymFor) &&*/ // leaf is NOT a synonym
+    if (/*! (options && options.synonymFor) && */ // leaf is NOT a synonym
       !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
       let resolutions = disambiguator[leaf.key]
       if (!resolutions) {

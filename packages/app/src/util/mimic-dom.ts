@@ -20,7 +20,7 @@ debug('loading')
 
 import Store from '../main/store'
 
-/*export interface ElementMimic {
+/* export interface ElementMimic {
   _isFakeDom: boolean
   cells?: ElementMimic[]
   children: ElementMimic[]
@@ -31,7 +31,7 @@ import Store from '../main/store'
   rows?: ElementMimic[]
   style: { [key: string]: string }
   recursiveInnerTextLength: () => number
-  }*/
+  } */
 
 class ClassList {
   private classList: string[] = []

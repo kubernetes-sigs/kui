@@ -223,7 +223,7 @@ const getStatusForKnownContexts = (execOptions: IExecOptions, parsedOptions: Par
           return Promise.all([ headerRow({ title: name, fontawesome, fontawesomeCSS, balloon, tableCSS }) ].concat(
             resources.map(formatEntity(parsedOptions, name))))
         }
-        /*const formattedEntities = resources.map(formatEntity(parsedOptions, name));
+        /* const formattedEntities = resources.map(formatEntity(parsedOptions, name));
           debug('formattedEntities', name, formattedEntities);
 
           if (!parsedOptions.multi) {
@@ -231,7 +231,7 @@ const getStatusForKnownContexts = (execOptions: IExecOptions, parsedOptions: Par
           } else {
           return [ headerRow(name, undefined, fontawesome, fontawesomeCSS, balloon, tableCSS) ]
           .concat(...formattedEntities);
-          }*/
+          } */
       }
     } catch (err) {
       handleError(err)

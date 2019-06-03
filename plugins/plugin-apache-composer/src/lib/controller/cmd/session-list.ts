@@ -34,7 +34,7 @@ interface IListOptions {
 export default async (commandTree: CommandRegistrar) => {
   const sessionSyns = ['sessions', 'sess', 'ses', 'session']
 
-  /* command handler for session list*/
+  /* command handler for session list */
   sessionSyns.forEach(noun => {
     commandTree.listen(`/wsk/${noun}/list`, async ({ argvNoOptions, parsedOptions: options }) => {
       const parsedOptions = (options as any) as IListOptions

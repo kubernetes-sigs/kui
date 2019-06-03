@@ -393,9 +393,9 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
         }
       })
 
-    const isOpenWhiskLike = /*kind === 'Function' &&*/ type !== 'unknown'
+    const isOpenWhiskLike = /* kind === 'Function' && */ type !== 'unknown'
 
-    const onclick = /*status && state === States.Online &&*/ isOpenWhiskLike
+    const onclick = /* status && state === States.Online && */ isOpenWhiskLike
       ? tryGetOpenWhiskResource
       : getKubernetesResource
 

@@ -186,15 +186,15 @@ const doGet = async ({ argvNoOptions }) => {
       intro.appendChild(introLeft)
       intro.appendChild(introRight)
 
-      /*intro.appendChild(paragraphWithIcon({ iconClass: 'fas fa-info',
+      /* intro.appendChild(paragraphWithIcon({ iconClass: 'fas fa-info',
         text: kindStrings[kind]
-        }));*/
+        })); */
 
       // Old Description Box
-      /*introLeft.appendChild(paragraphWithIcon({
+      /* introLeft.appendChild(paragraphWithIcon({
         title: 'Description',
         text: description
-        }));*/
+        })); */
 
       // Description Box
       const descriptionDom = document.createElement('div')

@@ -406,7 +406,7 @@ const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, gro
       })
     } else {
       const cellContainer = gridDom.querySelector('.grid-row')
-      /*const existingCells = existingContent.querySelectorAll('.grid-cell')
+      /* const existingCells = existingContent.querySelectorAll('.grid-cell')
       const exists = {} // map by activationId
       for (let idx = 0; idx < existingCells.length; idx++) {
         const id = existingCells[idx].getAttribute('data-activation-id')
@@ -414,7 +414,7 @@ const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, gro
           exists[id] = true
         }
       }
-      debug('exists', exists)*/
+      debug('exists', exists) */
 
       group.activations.forEach(activation => {
         // if (!exists[activation.activationId]) {

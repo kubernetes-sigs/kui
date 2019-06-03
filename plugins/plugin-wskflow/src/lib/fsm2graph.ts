@@ -542,8 +542,8 @@ function ir2graph (ir, gm, id: string, prevId: string[], options = {}) { // ir a
 
       return [id]
     } else if (ir.type === 'finally') {
-      let lastBodyNode = ir2graph(ir.body, gm, `${id}-body`, prevId, /*undefined,*/ options)
-      return ir2graph(ir.finalizer, gm, `${id}-finalizer`, lastBodyNode, /*undefined,*/ options)
+      let lastBodyNode = ir2graph(ir.body, gm, `${id}-body`, prevId, /* undefined, */ options)
+      return ir2graph(ir.finalizer, gm, `${id}-finalizer`, lastBodyNode, /* undefined, */ options)
     } else if (ir.type === 'parallel' || ir.type === 'par' || ir.type === 'map' || ir.type === 'forall') {
       // par and map
       const label = ir.type === 'map' || ir.type === 'forall' ? 'Parallel Map over Array'
