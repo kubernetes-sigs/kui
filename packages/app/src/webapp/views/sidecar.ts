@@ -267,7 +267,10 @@ export const renderField = async (container: HTMLElement, entity: IEntitySpec, f
  *
  */
 type CustomContent = string | Record<string, any> | HTMLElement | Promise<HTMLElement>
+
 export interface ICustomSpec extends IEntitySpec {
+  /** noZoom: set to true for custom content to control the zoom event handler */
+  noZoom?: boolean
   presentation?: Presentation
   renderAs?: string
   subtext?: Formattable
@@ -338,6 +341,14 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
         removeAllDomChildren(customHeaders[idx])
       }
     })
+  }
+
+  const customContent = sidecar.querySelector('.custom-content')
+
+  if (custom.noZoom) { // custom content will control the zoom handler, e.g. monaco-editor
+    customContent.classList.remove('zoomable')
+  } else { // revert the change if previous custom content controls the zoom handler
+    customContent.classList.add('zoomable')
   }
 
   // which viewer is currently active?
