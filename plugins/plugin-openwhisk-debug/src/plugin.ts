@@ -570,8 +570,8 @@ const getActionNameAndInputFromActivations = async (actId, spinnerDiv): Promise<
   const cause = d.cause && await qexec(`wsk activation get ${d.cause}`)
 
   // get the previous activation if there's any
-  const previous = cause && cause.logs.indexOf(actId) > 0
-    && await qexec(`wsk activation get ${cause.logs[cause.logs.indexOf(actId) - 1]}`)
+  const previous = cause && cause.logs.indexOf(actId) > 0 &&
+    await qexec(`wsk activation get ${cause.logs[cause.logs.indexOf(actId) - 1]}`)
 
   return {
     name,

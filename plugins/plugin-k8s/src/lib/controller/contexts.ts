@@ -72,8 +72,8 @@ const addClickHandlers = (table: Table, execOptions): Table => {
  *
  */
 const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions)
-  .then((contexts: Table | Table[]) => Array.isArray(contexts) ?
-    contexts.map(context => addClickHandlers(context, opts.execOptions)) : addClickHandlers(contexts, opts.execOptions))
+  .then((contexts: Table | Table[]) => Array.isArray(contexts)
+    ? contexts.map(context => addClickHandlers(context, opts.execOptions)) : addClickHandlers(contexts, opts.execOptions))
 
 /**
  * Register the commands

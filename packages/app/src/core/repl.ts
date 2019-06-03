@@ -671,8 +671,8 @@ class InProcessExecutor implements IExecutor {
         // that we ignore this needsUI constraint if the user is
         // asking for help
         if (isHeadless() && !parsedOptions.cli && !parsedOptions.help &&
-            ((process.env.DEFAULT_TO_UI && !parsedOptions.cli)
-             || (evaluator.options && evaluator.options.needsUI))) {
+            ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) ||
+             (evaluator.options && evaluator.options.needsUI))) {
           import('../main/headless').then(({ createWindow }) => createWindow(argv, evaluator.options.fullscreen, evaluator.options))
           return Promise.resolve(true)
         }

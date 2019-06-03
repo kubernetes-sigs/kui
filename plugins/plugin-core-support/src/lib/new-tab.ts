@@ -138,8 +138,8 @@ const addCommandEvaluationListeners = (): void => {
 
       const tab = event.tab || getCurrentTab()
 
-      if (event.route !== undefined
-          && !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
+      if (event.route !== undefined &&
+          !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
       ) {
         if (event.route.match(/^\/clear/)) {
           // nbsp in the case of clear, except if the sidecar is open;

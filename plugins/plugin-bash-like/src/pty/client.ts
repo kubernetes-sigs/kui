@@ -182,14 +182,14 @@ class Resizer {
 
   static paddingHorizontal (elt: Element) {
     const style = window.getComputedStyle(elt)
-    return parseInt(style.getPropertyValue('padding-left') || '0', 10)
-      + parseInt(style.getPropertyValue('padding-right') || '0', 10)
+    return parseInt(style.getPropertyValue('padding-left') || '0', 10) +
+      parseInt(style.getPropertyValue('padding-right') || '0', 10)
   }
 
   static paddingVertical (elt: Element) {
     const style = window.getComputedStyle(elt)
-    return parseInt(style.getPropertyValue('padding-top') || '0', 10)
-      + parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
+    return parseInt(style.getPropertyValue('padding-top') || '0', 10) +
+      parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
   }
 
   private getSize (forceRecompute: boolean) {
@@ -611,8 +611,8 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
           }
 
           const maybeUsage = !resizer.wasEverInAltBufferMode() &&
-            !definitelyNotUsage
-            && (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
+            !definitelyNotUsage &&
+            (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
 
           if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
             try {

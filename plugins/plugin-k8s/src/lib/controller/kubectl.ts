@@ -291,11 +291,11 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   // output format option
   //
   const output = !options.help &&
-    (options.output || options.o
-     || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
-     || (isKube && verb === 'describe' && 'yaml')
-     || (isKube && verb === 'logs' && 'Latest')
-     || (isKube && verb === 'get' && execOptions.raw && 'json'))
+    (options.output || options.o ||
+     (command === 'helm' && verb === 'get' && 'yaml') || // helm get seems to spit out yaml without our asking
+     (isKube && verb === 'describe' && 'yaml') ||
+     (isKube && verb === 'logs' && 'Latest') ||
+     (isKube && verb === 'get' && execOptions.raw && 'json'))
 
   if ((!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&

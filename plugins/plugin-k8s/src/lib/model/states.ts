@@ -219,8 +219,8 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
       const hasReplicas = response.status.readyReplicas > 0
       return {
         state: desiredFinalState === FinalState.NotPendingLike ||
-          (desiredFinalState === FinalState.OfflineLike && !hasReplicas)
-          || hasReplicas
+          (desiredFinalState === FinalState.OfflineLike && !hasReplicas) ||
+          hasReplicas
           ? States.Online : States.Pending
       }
     } else if (kind === 'Deployment') {
