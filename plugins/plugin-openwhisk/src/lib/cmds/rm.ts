@@ -189,18 +189,18 @@ export default async (commandTree: CommandRegistrar) => {
           .then(action => {
             if (action.annotations && action.annotations.find(kv => kv.key === 'exec' && kv.value === 'sequence')) {
               return Promise.all(action.exec.components.map(component => repl.qexec(`action get "${component}"`, block)
-                                                            .then(component => {
-                                                              if (isAnonymousLet(component, arg)) { // arg is the parent sequence
-                                                                return repl.qexec(`action delete "${component.name}"`, block)
-                                                                  .then(() => [component.name]) // deleted one
-                                                                  .catch(errorThen([])) // deleted zero
-                                                              } else {
-                                                                return [] // deleted zero
-                                                              }
-                                                            }).catch(errorThen([])))) // get failed, sequence component already deleted, so deleted zero here!
+                .then(component => {
+                  if (isAnonymousLet(component, arg)) { // arg is the parent sequence
+                    return repl.qexec(`action delete "${component.name}"`, block)
+                      .then(() => [component.name]) // deleted one
+                      .catch(errorThen([])) // deleted zero
+                  } else {
+                    return [] // deleted zero
+                  }
+                }).catch(errorThen([])))) // get failed, sequence component already deleted, so deleted zero here!
                 .then(flatten)
                 .then(counts => repl.qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock) // now we can delete the sequence
-                      .then(() => counts.concat(arg))) // total deleted count
+                  .then(() => counts.concat(arg))) // total deleted count
             } else {
               // not a sequence, plain old delete
               return repl.qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock).then(() => [arg]) // deleted one

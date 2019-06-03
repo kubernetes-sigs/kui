@@ -57,7 +57,7 @@ localDescribe('History', function (this: ISuite) {
   })
 
   it(`should list history with no arguments and show the list command`, () => cli.do(`history`, this.app)
-     .then(cli.expectOKWith(listCommand)))
+    .then(cli.expectOKWith(listCommand)))
 
   it(`should list history with filter, expect nothing`, () => cli.do(`history gumbogumbo`, this.app)
     .then(cli.expectJustOK) // some random string that won't be in the command history

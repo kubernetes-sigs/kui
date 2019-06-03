@@ -237,6 +237,7 @@ const param = handleKeyValuePairAsArray('parameters')
 const annotation = handleKeyValuePairAsArray('annotations')
 function isNumeric (input) {
   // a rough approximation
+  // eslint-disable-next-line eqeqeq
   return (input - 0) == input && ('' + input).trim().length > 0
 }
 const limits = key => (M, idx, argv, type) => {
@@ -490,8 +491,8 @@ const specials = {
 const standardViewModes = (defaultMode, fn?) => {
   const makeModes = () => {
     let modes: any[] = [{ mode: 'parameters', label: 'params', command: () => 'parameters' },
-                             { mode: 'annotations', command: () => 'annotations' },
-                             { mode: 'raw', command: () => 'raw' }]
+      { mode: 'annotations', command: () => 'annotations' },
+      { mode: 'raw', command: () => 'raw' }]
 
     if (defaultMode) {
       if (!Array.isArray(defaultMode)) {
@@ -1024,6 +1025,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       // mucked things up) argvFull, looking for an arg that is
       // ==, but not === the one that minimist gave us.
       // THUS NOTE THE USE OF == in `arg == options.name` <-- important
+      // eslint-disable-next-line eqeqeq
       options.name = argvFull.find(arg => arg == options.name && arg !== options.name)
     }
   } else if (!noImplicitName[verb]) {
@@ -1442,8 +1444,8 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   }
   synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/delete`,
-                       removeTrigger,
-                       { usage: usage.triggers.available.find(({ command }) => command === 'delete') })
+      removeTrigger,
+      { usage: usage.triggers.available.find(({ command }) => command === 'delete') })
   })
 
   /**
@@ -1532,8 +1534,8 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   }
   synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/create`,
-                       createTrigger,
-                       { usage: usage.triggers.available.find(({ command }) => command === 'create') })
+      createTrigger,
+      { usage: usage.triggers.available.find(({ command }) => command === 'create') })
   })
 
   // count APIs

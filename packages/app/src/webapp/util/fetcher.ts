@@ -110,7 +110,7 @@ const doneLock = process.argv[4]
 const url = process.argv[5]
 const file = process.argv[6]
 fetchAndExtract(stagingArea,
-                fetchLock,
-                doneLock,
-                url,
-                file)
+  fetchLock,
+  doneLock,
+  url,
+  file)

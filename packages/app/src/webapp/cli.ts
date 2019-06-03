@@ -740,6 +740,9 @@ export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
 export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
   return tab.querySelector('.repl .repl-block.processing')
 }
+export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
+  return prompt.parentElement.parentElement
+}
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return (block && block.querySelector && block.querySelector('input'))
 }
@@ -1109,10 +1112,10 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
     // we were instructed not to show any message
   } else if (UsageError.isUsageError(err)) {
     oopsDom.appendChild(await err.getFormattedMessage())
-  /* } else if (isHTML(err.message)) {
+    /* } else if (isHTML(err.message)) {
     // err.message is a DOM
     oopsDom.appendChild(err.message) */
-  /* } else if (err.html) {
+    /* } else if (err.html) {
     // pre-rendered HTML
     oopsDom.classList.add('oops-as-html')
     oopsDom.appendChild(err.html) */

@@ -33,7 +33,7 @@ export default async (commandTree: CommandRegistrar) => {
       Object.assign({}, execOptions, { override: true, originalOptions: parsedOptions }))
   , { usage: appGet('get') })
 
-    // override wsk action get
+  // override wsk action get
   const actionGet = (await (commandTree.find('/wsk/action/get'))).$
 
   synonyms('actions').forEach(syn => {

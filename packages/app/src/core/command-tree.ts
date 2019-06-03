@@ -247,7 +247,7 @@ const _listen = (model: CommandTree, route: string, handler: CommandHandler, opt
 
     // update the disambiguator map
     if (/*!(options && options.synonymFor) &&*/ // leaf is NOT a synonym
-            !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
+      !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
       let resolutions = disambiguator[leaf.key]
       if (!resolutions) {
         resolutions = disambiguator[leaf.key] = []
@@ -382,9 +382,9 @@ const _read = async (model: CommandTree, argv: string[], contextRetry: string[],
     } else if (contextRetry.length > 0 && contextRetry[contextRetry.length - 1] !== originalArgv[originalArgv.length - 1]) {
       // command not found so far, look further afield.
       const maybeInContextRetry = _read(model,
-                                        contextRetry.concat(originalArgv),
-                                        contextRetry.slice(0, contextRetry.length - 1),
-                                        originalArgv)
+        contextRetry.concat(originalArgv),
+        contextRetry.slice(0, contextRetry.length - 1),
+        originalArgv)
 
       if (maybeInContextRetry) {
         debug('context retry helped', maybeInContextRetry)

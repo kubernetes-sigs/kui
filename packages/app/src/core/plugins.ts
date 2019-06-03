@@ -319,8 +319,8 @@ const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}, quiet = fals
   try {
     const secondary = path.dirname(path.dirname(require.resolve('@kui-shell/core/package.json')))
     clientRequired = await scanForModules(secondary,
-                                          false,
-                                          (filename: string) => !!filename.match(/^plugin-/))
+      false,
+      (filename: string) => !!filename.match(/^plugin-/))
   } catch (err) {
     if (err.code !== 'ENOENT') {
       console.error('error scanning for client-required plugins', err)

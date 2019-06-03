@@ -314,6 +314,10 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 repl .repl-block.using-custom-prompt .repl-prompt-righty > i {
     display: none;
 }
+repl .repl-block.using-custom-prompt .repl-input input {
+    opacity: 0;
+    width: 0;
+}
 .repl-prompt-righty > i {
     color: var(--color-brand-01);
     font-size: 1.125em;

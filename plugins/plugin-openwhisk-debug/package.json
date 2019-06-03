@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "extract-zip": "1.6.7",
-    "fs-extra": "7.0.1",
-    "needle": "2.3.1",
+    "fs-extra": "8.0.1",
+    "needle": "2.4.0",
     "node-docker-api": "1.1.22",
     "promise-retry": "1.1.1",
     "tmp": "0.1.0"

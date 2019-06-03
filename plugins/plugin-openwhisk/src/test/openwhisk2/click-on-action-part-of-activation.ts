@@ -57,7 +57,7 @@ describe('Click on action part of activation sidecar', function (this: common.IS
       const activationId = await this.app.client.getText(selector)
       await this.app.client.click(selector)
       return sidecar.expectOpen(this.app)
-          .then(sidecar.expectShowing('foo', activationId))
+        .then(sidecar.expectShowing('foo', activationId))
     })
     .catch(common.oops(this)))
 

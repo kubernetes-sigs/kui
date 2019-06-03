@@ -37,6 +37,7 @@ const ns = ui.expectedNamespace()
  *
  */
 const clean = host => {
+  // eslint-disable-next-line node/no-deprecated-api
   const parsed = require('url').parse(host)
   if (!parsed.protocol) {
     return `https://${host}`
@@ -61,7 +62,7 @@ localDescribe('Execute a command file', function (this: common.ISuite) {
         throw err
       } else {
         assert.strictEqual(normalizeHTML(content),
-                           normalizeHTML(data).replace('nickm_wskng_test', `${ns}`))
+          normalizeHTML(data).replace('nickm_wskng_test', `${ns}`))
       }
     }))
     .catch(common.oops(this)))

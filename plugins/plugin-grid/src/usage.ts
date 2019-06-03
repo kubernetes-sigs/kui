@@ -74,8 +74,8 @@ export const toplevel = {
   commandPrefix: 'visualize',
   commandPrefixNotNeeded: true,
   available: [{ command: 'summary', docs: header.summary },
-              // { command: 'timeline', docs: header.timeline },
-              { command: 'grid', docs: header.grid }],
+    // { command: 'timeline', docs: header.timeline },
+    { command: 'grid', docs: header.grid }],
   related: ['wsk activation', 'composer session']
 }
 

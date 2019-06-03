@@ -214,22 +214,22 @@ export const showEntity = async (tab: cli.ITab, entity, sidecar: Element, option
         // wskflw now use the IR, so we have to fake a IR instead of a AST
         // const key = idx => `action_${idx}`
         Promise.all(entity.exec.components.map((actionName, idx, A) => repl.qexec(`wsk action get "${actionName}"`)
-                                               .then(action => {
-                                                 const anonymousCode = isAnonymousLet(action)
-                                                 if (anonymousCode) {
-                                                   return anonymousCode.replace(/\s/g, '')
-                                                 } else {
-                                                   return action.name
-                                                 }
-                                                 // on 404:
-                                               }).catch(() => actionName)
-                                                 .then(name => {
-                                                   return {
-                                                     type: 'action',
-                                                     name: actionName.indexOf('/') === -1 ? `/_/${actionName}` : actionName,
-                                                     displayLabel: name
-                                                   }
-                                                 })))
+          .then(action => {
+            const anonymousCode = isAnonymousLet(action)
+            if (anonymousCode) {
+              return anonymousCode.replace(/\s/g, '')
+            } else {
+              return action.name
+            }
+            // on 404:
+          }).catch(() => actionName)
+          .then(name => {
+            return {
+              type: 'action',
+              name: actionName.indexOf('/') === -1 ? `/_/${actionName}` : actionName,
+              displayLabel: name
+            }
+          })))
           .then(actions => ({ type: 'sequence', components: actions }))
           .then(ast => wskflow(tab, ast))
       }

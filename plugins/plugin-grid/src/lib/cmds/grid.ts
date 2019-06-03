@@ -579,8 +579,8 @@ export default async (commandTree: CommandRegistrar, options?) => {
     height: windowDefaults.height
   })
 
-    // coloring
-    /* const cmd = commandTree.listen(`/wsk/${syn}/color/grid/by`, ({ argvNoOptions }) => {
+  // coloring
+  /* const cmd = commandTree.listen(`/wsk/${syn}/color/grid/by`, ({ argvNoOptions }) => {
             const strategy = argvNoOptions[argvNoOptions.indexOf('by') + 1]
             if (strategy === 'pass/fail') {
                 return colorBy('pass/fail')

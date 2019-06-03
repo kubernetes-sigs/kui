@@ -119,8 +119,8 @@ export default (tab: ITab, entity, options: IShowOptions) => {
           .split(/\n/)
           .slice(1, -1) // slice off the first and last line; the first line is a repeat of result.error.message; the last is internal openwhisk
           .map(line => line.substring(line.indexOf('at ') + 3)
-               .replace(/eval at <anonymous> \(\/nodejsAction\/runner.js:\d+:\d+\), /, '')
-               .replace(/<anonymous>/, entity.name))
+            .replace(/eval at <anonymous> \(\/nodejsAction\/runner.js:\d+:\d+\), /, '')
+            .replace(/<anonymous>/, entity.name))
       }
 
       if (entity.contentTypeProjection) {

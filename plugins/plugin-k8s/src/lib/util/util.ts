@@ -114,4 +114,6 @@ export class NotFoundError extends StatusError {
 }
 
 /** flatten an array of arrays */
-export const flatten = arrays => [].concat.apply([], arrays)
+export function flatten<T> (arrays: T[][]): T[] {
+  return [].concat.apply([], arrays)
+}

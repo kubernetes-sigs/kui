@@ -35,20 +35,20 @@ localDescribe('export command', function (this: ISuite) {
   after(common.after(this))
 
   it('should export foo bar', () =>
-        cli
-            .do('export foo=bar', this.app)
-            .then(cli.expectJustOK)
-            .then(() =>
-                cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar'))
-            )
-            .catch(common.oops(this)))
+    cli
+      .do('export foo=bar', this.app)
+      .then(cli.expectJustOK)
+      .then(() =>
+        cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar'))
+      )
+      .catch(common.oops(this)))
 
   it('should export foo bar baz with space in string', () =>
-        cli
-            .do('export foo="bar baz"', this.app)
-            .then(cli.expectJustOK)
-            .then(() =>
-            cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar baz'))
-            )
-            .catch(common.oops(this)))
+    cli
+      .do('export foo="bar baz"', this.app)
+      .then(cli.expectJustOK)
+      .then(() =>
+        cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar baz'))
+      )
+      .catch(common.oops(this)))
 })

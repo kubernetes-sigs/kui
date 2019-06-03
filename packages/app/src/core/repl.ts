@@ -27,7 +27,7 @@ import minimist = require('yargs-parser')
 
 import { CommandTreeResolution, ExecType, IEvaluator, IEvaluatorArgs, YargsParserFlags } from '../models/command'
 
-import { IExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
+import { IExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
@@ -123,7 +123,7 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
     block['completion'](prompt.value)
   } else {
     // otherwise, this is a plain old eval, resulting from the user hitting Enter
-    return exec(command)
+    return exec(command, new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt)))
   }
 }
 
@@ -526,7 +526,7 @@ class InProcessExecutor implements IExecutor {
             // should we enforce this option?
             const enforceThisOption =
               onlyEnforceOptions === undefined || typeof onlyEnforceOptions === 'boolean' ? true
-              : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
+                : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
 
             if (!enforceThisOption) {
               // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)
@@ -578,8 +578,8 @@ class InProcessExecutor implements IExecutor {
 
               const expectedMessage = match.boolean ? ', expected boolean'
                 : match.numeric ? ', expected a number'
-                : match.file ? ', expected a file path'
-                : ''
+                  : match.file ? ', expected a file path'
+                    : ''
 
               const message = `Bad value for option ${optionalArg}${expectedMessage}${typeof parsedOptions[optionalArg] === 'boolean' ? '' : ', got ' + parsedOptions[optionalArg]}${match.allowed ? ' expected one of: ' + match.allowed.join(', ') : ''}`
               const error = new UsageError({ message, usage })
@@ -623,7 +623,7 @@ class InProcessExecutor implements IExecutor {
                 const message = nRequiredArgs === 0 && nPositionalOptionals === 0
                   ? 'This command accepts no positional arguments'
                   : nPositionalOptionals > 0 ? 'This command does not accept this number of arguments'
-                  : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
+                    : `This command requires ${nRequiredArgs} parameter${nRequiredArgs === 1 ? '' : 's'}, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
                 const err = new UsageError({ message, usage })
                 err.code = 497
                 debug(message, cmd, nActualArgs, nRequiredArgs, args, optLikeActuals)

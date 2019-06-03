@@ -12,7 +12,6 @@
     "@typescript-eslint/eslint-plugin"
   ],
   "rules": {
-    "eqeqeq": "off",
     "no-cond-assign": "off",
     "no-constant-condition": "off",
     "no-control-regex": "off",
@@ -23,7 +22,6 @@
     "no-template-curly-in-string": "off",
     "no-undef": "off",
     "no-unneeded-ternary": "off",
-    "no-unreachable": "off",
     "no-useless-constructor": "off",
     "no-useless-escape": "off",
     "no-useless-return": "off",
@@ -38,15 +36,13 @@
     "import/first": "off",
     "import/no-duplicates": "off",
 
-    "node/no-deprecated-api": "off",
-
     "promise/param-names": "off",
 
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-member-accessibility": "off",
-    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/indent": ["error", 2],
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/no-explicit-any": "off",

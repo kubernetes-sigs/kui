@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/cmds/ls')
 
 import { lstat, readdir, stat } from 'fs'
-import { isAbsolute, join } from 'path'
+import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
@@ -65,21 +65,40 @@ const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx =
  * Return the contents of the given directory
  *
  */
-const myreaddir = (dir: string): Promise<string[]> => new Promise((resolve, reject) => {
+const myreaddir = (dir: string): Promise<Record<string, boolean>> => new Promise((resolve, reject) => {
   debug('readdir', dir)
+
+  const toMap = (files: string[]) => {
+    return files.reduce((M, file) => {
+      M[file] = true
+      M[join(dir, file)] = true
+      return M
+    }, {})
+  }
 
   lstat(dir, (err, stats) => {
     if (err) {
+      if (err.code === 'ENOENT') {
+        const parent = dirname(dir)
+        if (parent) {
+          return myreaddir(dirname(dir))
+            .then(resolve)
+            .catch(reject)
+        }
+      }
+
+      // fallthrough to reject
       reject(err)
+
     } else if (!stats.isDirectory()) {
       // link or file or other
-      resolve([dir])
+      resolve(toMap([dir]))
     } else {
       readdir(dir, (err, files) => {
         if (err) {
           reject(err)
         } else {
-          resolve(['.', '..'].concat(files))
+          resolve(toMap(['.', '..'].concat(files)))
         }
       })
     }
@@ -119,12 +138,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     return true
   }
 
-  const files = await myreaddir((parent || process.cwd()).replace(/['"]/g, ''))
-  const fileMap = files.reduce((M, file) => {
-    M[file] = true
-    M[join(parent, file)] = true
-    return M
-  }, {})
+  const fileMap = await myreaddir((parent || process.cwd()).replace(/['"]/g, ''))
 
   // ls -l on directories has a line at the top "total nnnn"
   // we will strip this off
@@ -136,80 +150,80 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     .split(/[\n\r]/)
     .slice(startIdx) // maybe strip off "total nnn"
     .map(line => line
-         .split(new RegExp(`[\\s]{${columnGap}}`))
-         .map(col => col.trim())
-         .filter(x => x)
-         .map((col, idx, A) => {
-           if (idx === 1) {
-             // the "num links" and "user" columns are adjoined
-             // e.g. "1 nickm"
-             const spaceIdx = col.indexOf(' ')
-             return [
-               col.substring(0, spaceIdx),
-               col.substring(spaceIdx + 1)
-             ].filter(x => x) // the first entry might be blank, e.g. on linux
-           } else if (process.platform !== 'darwin' && idx >= 5 && idx <= 7) {
-             // the date column is split across three cols in our split
-             if (idx === 5) {
-               return `${A[idx]} ${A[idx + 1]} ${A[idx + 2]}`
-             }
-           } else if (process.platform === 'darwin' && idx === 3) {
-             // the size, date, and filename columns are adjoined
-             // e.g. "12K Jul 26 12:58 CHANGELOG.md"
+      .split(new RegExp(`[\\s]{${columnGap}}`))
+      .map(col => col.trim())
+      .filter(x => x)
+      .map((col, idx, A) => {
+        if (idx === 1) {
+          // the "num links" and "user" columns are adjoined
+          // e.g. "1 nickm"
+          const spaceIdx = col.indexOf(' ')
+          return [
+            col.substring(0, spaceIdx),
+            col.substring(spaceIdx + 1)
+          ].filter(x => x) // the first entry might be blank, e.g. on linux
+        } else if (process.platform !== 'darwin' && idx >= 5 && idx <= 7) {
+          // the date column is split across three cols in our split
+          if (idx === 5) {
+            return `${A[idx]} ${A[idx + 1]} ${A[idx + 2]}`
+          }
+        } else if (process.platform === 'darwin' && idx === 3) {
+          // the size, date, and filename columns are adjoined
+          // e.g. "12K Jul 26 12:58 CHANGELOG.md"
 
-             const spaceIdx1 = col.indexOf(' ') // space after 12k
+          const spaceIdx1 = col.indexOf(' ') // space after 12k
 
-             const stats = A[0]
-             const isLink = stats.charAt(0) === 'l'
+          const stats = A[0]
+          const isLink = stats.charAt(0) === 'l'
 
-             if (isLink) {
-               // links are a bit funky, e.g.
-               // "115B Sep  4 21:04 yo.js -> /path/to/yo.js"
-               const arrow = '->'
-               const arrowIdx = col.lastIndexOf(arrow)
-               const endOfLinkIdx = arrowIdx - arrow.length + 1
-               const startOfFilename = scanForFilename(col, fileMap, endOfLinkIdx - 1)
+          if (isLink) {
+            // links are a bit funky, e.g.
+            // "115B Sep  4 21:04 yo.js -> /path/to/yo.js"
+            const arrow = '->'
+            const arrowIdx = col.lastIndexOf(arrow)
+            const endOfLinkIdx = arrowIdx - arrow.length + 1
+            const startOfFilename = scanForFilename(col, fileMap, endOfLinkIdx - 1)
 
-               return [
-                 col.substring(0, spaceIdx1), // size
-                 col.substring(spaceIdx1 + 1, startOfFilename), // date
-                 col.substring(startOfFilename + 1, endOfLinkIdx) // link name
-               ]
-             } else {
-               const startOfFilename = scanForFilename(col, fileMap) // e.g. space after :58 in the comment under idx === 3
+            return [
+              col.substring(0, spaceIdx1), // size
+              col.substring(spaceIdx1 + 1, startOfFilename), // date
+              col.substring(startOfFilename + 1, endOfLinkIdx) // link name
+            ]
+          } else {
+            const startOfFilename = scanForFilename(col, fileMap) // e.g. space after :58 in the comment under idx === 3
 
-               return [
-                 col.substring(0, spaceIdx1), // size
-                 col.substring(spaceIdx1 + 1, startOfFilename), // date
-                 col.substring(startOfFilename + 1) // filename
-               ]
-             }
-           } else if (process.platform !== 'darwin' && idx >= 8) {
-             // here is where we handle the name column(s) on
-             // non-darwin platforms; these usually span 3-N columns,
-             // depending on how many spaces the base filename and
-             // linked filename contain
-             if (idx === 8) {
-               // idx 8 marks the start of the name -> link columns
-               const stats = A[0]
-               const isLink = stats.charAt(0) === 'l'
-               const rest = A.slice(idx).join(' ')
+            return [
+              col.substring(0, spaceIdx1), // size
+              col.substring(spaceIdx1 + 1, startOfFilename), // date
+              col.substring(startOfFilename + 1) // filename
+            ]
+          }
+        } else if (process.platform !== 'darwin' && idx >= 8) {
+          // here is where we handle the name column(s) on
+          // non-darwin platforms; these usually span 3-N columns,
+          // depending on how many spaces the base filename and
+          // linked filename contain
+          if (idx === 8) {
+            // idx 8 marks the start of the name -> link columns
+            const stats = A[0]
+            const isLink = stats.charAt(0) === 'l'
+            const rest = A.slice(idx).join(' ')
 
-               if (isLink) {
-                 // if this row represents a link, the format will be name -> linkedFile
-                 // we want the "name" part
-                 const arrow = '->'
-                 const arrowIdx = rest.lastIndexOf(arrow)
-                 return rest.slice(0, arrowIdx).trim()
-               } else {
-                 // otherwise, this isn't a link, so peel off the remaining columns
-                 return rest
-               }
-             }
-           } else {
-             return col
-           }
-         }))
+            if (isLink) {
+              // if this row represents a link, the format will be name -> linkedFile
+              // we want the "name" part
+              const arrow = '->'
+              const arrowIdx = rest.lastIndexOf(arrow)
+              return rest.slice(0, arrowIdx).trim()
+            } else {
+              // otherwise, this isn't a link, so peel off the remaining columns
+              return rest
+            }
+          }
+        } else {
+          return col
+        }
+      }))
     .map(flatten)
     .map(row => row.filter(x => x))
     .filter(x => x.length > 0)
@@ -257,9 +271,9 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
 
     const css = isDirectory ? 'dir-listing-is-directory'
       : isLink ? 'dir-listing-is-link' // note that links are also x; we choose l first
-      : isExecutable ? 'dir-listing-is-executable'
-      : isSpecial ? 'dir-listing-is-other-special'
-      : ''
+        : isExecutable ? 'dir-listing-is-executable'
+          : isSpecial ? 'dir-listing-is-other-special'
+            : ''
 
     const startTrim = 2
     const endTrim = 0
@@ -335,7 +349,6 @@ const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, pars
 }
 
 const usage = (command: string) => ({
-  strict: command,
   command,
   title: 'local file list',
   header: 'Directory listing of your local filesystem',

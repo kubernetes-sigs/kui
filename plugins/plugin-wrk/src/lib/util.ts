@@ -17,8 +17,6 @@
 // sigh. this global comes from the injectScript of ChartJs in ./chart.ts
 declare var Color
 
-import { parse } from 'url'
-
 /**
  * Turn a given color transparent.
  *
@@ -33,7 +31,7 @@ export const transparent = (color: string, alpha = 0.6) => Color(color.trim()).a
 
 /** clean up a url for display */
 export const prettyUrl = (x: string): string => {
-  const host = parse(x).hostname
+  const host = new URL(x).hostname
   const firstBit = host.split('.')[0]
 
   if (!isNaN(parseInt(firstBit, 10))) {

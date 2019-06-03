@@ -47,10 +47,12 @@ export const preprocessTable = (raw: string[]): { rows?: IPair[][], trailingStri
         ? { offset: 0, prefix: '' }
         : { offset: 1, prefix: ' ' }
 
-      jdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
-      if (jdx < 0) {
+      const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
+      if (newJdx < 0) {
         // last column
         jdx = header.indexOf(' ' + headerCells[idx], jdx)
+      } else {
+        jdx = newJdx
       }
       columnStarts.push(jdx + offset)
     }
@@ -137,7 +139,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const drilldownVerb = (
     verb === 'get' ? 'get'
       : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
-      : isHelmStatus ? 'get' : undefined
+        : isHelmStatus ? 'get' : undefined
   ) || undefined
 
   // helm doesn't support --output
@@ -193,7 +195,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     // idx === 0: don't click on header row
     const onclick = idx === 0 ? false
       : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns} ${config}`
-      : false
+        : false
 
     const attributes: Cell[] = columns.slice(1).map(({ key, value: column }, colIdx) => ({
       key,

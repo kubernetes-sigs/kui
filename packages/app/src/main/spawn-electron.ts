@@ -442,8 +442,8 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
           const { join, dirname } = await import('path')
           const themeModel = theme.themes.find(_ => _.name === theme.defaultTheme)
           const filepath = join(dirname(require.resolve('@kui-shell/settings/package.json')),
-                                env.cssHome,
-                                themeModel.css)
+            env.cssHome,
+            themeModel.css)
           debug('default theme filepath', filepath)
           readFile(filepath, (err, data) => {
             if (err) {

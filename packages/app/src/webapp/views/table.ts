@@ -22,9 +22,11 @@ import { ITab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
 import { getActiveView } from './sidecar'
-import { Table, Row, Cell, Icon, TableStyle } from '../models/table'
+import { Table, Row, Cell, Icon, TableStyle, WatchableTable, diffTableRows, isWatchableTable, isTable } from '../models/table'
+import { IWatchable } from '../models/basicModels'
+import { applyDiffTable } from '../views/diffTable'
 
-export const formatTable = (tab: ITab, table: Table, resultDom: HTMLElement): void => {
+export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom: HTMLElement): void => {
   const tableDom = document.createElement('div')
   tableDom.classList.add('result-table')
 
@@ -92,7 +94,8 @@ export const formatTable = (tab: ITab, table: Table, resultDom: HTMLElement): vo
 
   container.classList.add('big-top-pad')
 
-  const rows = formatTableResult(tab, table)
+  let prepareRows = prepareTable(tab, table)
+  let rows = prepareRows.map(formatOneRowResult(tab))
   rows.map(row => tableDom.appendChild(row))
 
   if (table.style !== undefined) {
@@ -102,6 +105,66 @@ export const formatTable = (tab: ITab, table: Table, resultDom: HTMLElement): vo
   const rowSelection = tableDom.querySelector('.selected-row')
   if (rowSelection) {
     tableDom.classList.add('has-row-selection')
+  }
+
+  if (isWatchableTable(table)) {
+    if (table.watchByDefault) { // TODO: register a button?
+      // we'll ping the watcher at most watchLimit times
+      let count = table.watchLimit ? table.watchLimit : 100000
+
+      // the current watch interval; used for clear/reset/stop
+      let interval: NodeJS.Timeout
+
+      const stopWatching = () => {
+        debug('stopWatching')
+        clearInterval(interval)
+      }
+
+      const refreshTable = async () => {
+        debug(`refresh with ${table.refreshCommand}`)
+
+        let newPrepareRows: Row[]
+
+        try {
+          const response = await qexec(table.refreshCommand)
+          if (isTable(response)) {
+            newPrepareRows = prepareTable(tab, response)
+          } else {
+            console.error('refresh result is not a table', response)
+            rows.map(row => tableDom.removeChild(row))
+          }
+        } catch (err) {
+          if (err.code === 404 && err.message.includes('No resources')) {
+            newPrepareRows = []
+          } else {
+            rows.map(row => tableDom.removeChild(row))
+            throw err
+          }
+        }
+
+        const diffs = diffTableRows(prepareRows, newPrepareRows)
+        // debug('diff table rows', diffs)
+        applyDiffTable(diffs, tab, tableDom, rows, prepareRows)
+      }
+
+      const watchIt = () => {
+        if (--count < 0) {
+          debug('watchLimit exceeded')
+          stopWatching()
+          return
+        }
+
+        try {
+          Promise.resolve(refreshTable())
+        } catch (err) {
+          console.error('Error refreshing table', err)
+          clearInterval(interval)
+        }
+      }
+
+      // establish the initial watch interval
+      interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+    }
   }
 }
 
@@ -113,7 +176,7 @@ interface IRowFormatOptions {
  * Format one row in the table
  *
  */
-const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: Row): HTMLElement => {
+export const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
@@ -150,7 +213,7 @@ const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: 
 
   /** add a cell to the current row of the table view we are generating. "entityName" is the current row */
   const addCellToRow = (theCell: Cell) => {
-    const { className, value, valueDom, innerClassName = '', parent = entityName, onclick, watch, key, fontawesome, css, watchLimit = 100000, tag = 'span', tagClass } = theCell
+    const { className, value, valueDom, innerClassName = '', parent = entityName, onclick, watch, key, fontawesome, css = '', watchLimit = 100000, tag = 'span', tagClass } = theCell
     const cell = document.createElement('span')
     const inner = document.createElement(tag)
 
@@ -217,7 +280,7 @@ const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: 
         inner.appendChild(container)
       } else {
         Promise.resolve(valueDom)
-            .then(valueDom => inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString())))
+          .then(valueDom => inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString())))
       }
     } else if (value) {
       Promise.resolve(value)
@@ -247,10 +310,13 @@ const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: 
       }
     }
 
-    if (watch) {
-      const pulse = 'repeating-pulse'
+    const pulse = 'repeating-pulse'
+    if (key === 'STATUS' && (css.includes('yellow-background') || innerClassName.includes('yellow-background'))) {
       cell.classList.add(pulse)
+    }
 
+    if (watch) {
+      cell.classList.add(pulse)
       // we'll ping the watcher at most watchLimit times
       let count = watchLimit
 
@@ -621,7 +687,7 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
       inner.appendChild(container)
     } else if (value !== undefined) {
       Promise.resolve(value)
-            .then(value => inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString())))
+        .then(value => inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString())))
     } else {
       console.error('Invalid cell model, no value field')
     }
@@ -882,10 +948,10 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
     const addStatus = () => {
       if (entity.status) {
         const cell = addCell(`entity-rule-status`,
-                             'Pending', // delay status display
-                             'repeating-pulse', // css
-                             // ugh: i know, this needs to be cleaned up:
-                             undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'badge', 'gray-background')
+          'Pending', // delay status display
+          'repeating-pulse', // css
+          // ugh: i know, this needs to be cleaned up:
+          undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'badge', 'gray-background')
 
         /** normalize the status badge by capitalization */
         const capitalize = (str: string): string => {
@@ -904,8 +970,8 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
     const addVersion = () => {
       if (entity.version || entity.prettyVersion) {
         addCell('entity-version hide-with-sidecar',
-                entity.prettyVersion || entity.version,
-                'slightly-deemphasize')
+          entity.prettyVersion || entity.version,
+          'slightly-deemphasize')
       }
     }
 
@@ -917,32 +983,38 @@ export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => 
   return dom
 }
 
+// sort the body of table
+export const sortBody = (rows: Row[]): Row[] => {
+  return rows.sort((a, b) =>
+    (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
+    (a.packageName || '').localeCompare(b.packageName || '') ||
+    a.name.localeCompare(b.name))
+}
+
+/**
+ * get an array of row models
+ *
+ */
+
+const prepareTable = (tab: ITab, response: Table | WatchableTable): Row[] => {
+  const { header, body, noSort } = response
+
+  if (header) {
+    header.outerCSS = `${header.outerCSS || ''} header-cell`
+    header.attributes.forEach(cell => cell.outerCSS = `${cell.outerCSS || ''} header-cell`)
+  }
+  // sort the list, then format each element, then add the results to the resultDom
+  // (don't sort lists of activations. i wish there were a better way to do this)
+  return [ header ].concat(noSort ? body : sortBody(body)).filter(x => x)
+}
+
 /**
  * Format a tabular view
  *
  */
 export const formatTableResult = (tab: ITab, response: Table): HTMLElement[] => {
   debug('formatTableResult', response)
-
-  const { header, body, noSort } = response
-
-  // this utility method sorts the list, unless the model indicates
-  // that the given sort order is to be used (@see `Table.noSort`)
-  const sort = (rows: Row[]): Row[] => {
-    return rows.sort((a, b) =>
-      (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
-      (a.packageName || '').localeCompare(b.packageName || '') ||
-      a.name.localeCompare(b.name))
-  }
-
-  // decorate the header cells as such
-  if (header) {
-    header.outerCSS = `${header.outerCSS || ''} header-cell`
-    header.attributes.forEach(cell => cell.outerCSS = `${cell.outerCSS || ''} header-cell`)
-  }
-
-  // format the rows
-  return [ header ].concat(noSort ? body : sort(body)).filter(x => x).map(formatOneRowResult(tab))
+  return prepareTable(tab, response).map(formatOneRowResult(tab))
 }
 
 /**

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli, selectors } = ui
 const { localDescribe } = common
 
 import * as assert from 'assert'
@@ -37,7 +36,7 @@ const hasExe = (exe: string): Promise<boolean> => new Promise(resolve => {
   exec(exe, err => resolve(!err))
 })
 
-localDescribe('shell commands', function (this: ISuite) {
+localDescribe('shell commands', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -56,23 +55,23 @@ localDescribe('shell commands', function (this: ISuite) {
 
   if (!process.env.LOCAL_OPENWHISK) {
     it('should give ok for known outer command: ibmcloud target', () => cli.do(`ibmcloud target`, this.app)
-       .then(cli.expectOK)
-       .catch(common.oops(this)))
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
   }
 
   if (hasExe('ibmcloud')) {
     it('should give usage for ibmcloud config', () => cli.do(`ibmcloud config`, this.app)
-       .then(cli.expectError(2, undefined))
-       .catch(common.oops(this)))
+      .then(cli.expectError(2, undefined))
+      .catch(common.oops(this)))
 
     it('should give usage for ibmcloud app', () => cli.do(`ibmcloud app`, this.app)
-       .then(cli.expectErrorWithPassthrough(500))
-       .then(N => Promise.all([
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`),
-         this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`)
-       ]))
-       .catch(common.oops(this)))
+      .then(cli.expectErrorWithPassthrough(500))
+      .then(N => Promise.all([
+        this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
+        this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`),
+        this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`)
+      ]))
+      .catch(common.oops(this)))
   }
 
   it('should answer which ls with /bin/ls', () => cli.do(`which -a ls`, this.app) // For some customized bash, `which ls` could show: ls: aliased to ls -G

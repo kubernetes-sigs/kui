@@ -1,0 +1,2 @@
+NAME                          COMPLETED  STATUS                        BASELINE    PERCENTAGE  CANARY      PERCENTAGE
+reviews-v1v2-e2etestcase1-1   Unknown    Canary deployment is missing  reviews-v1  0           reviews-v2  0

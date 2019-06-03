@@ -32,8 +32,8 @@ localDescribe('Change local shell directory', function (this: ISuite) {
 
   const previous = () => {
     it(`should execute 'cd -' to change to previous dir`, () => cli.do(`cd -`, this.app)
-       .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
-       .catch(common.oops(this)))
+      .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
+      .catch(common.oops(this)))
   }
 
   let offset = 0
@@ -43,32 +43,32 @@ localDescribe('Change local shell directory', function (this: ISuite) {
 
   const bar = `bar${offset}`
   it('should mkdir with spaces', () => cli.do(`mkdir /tmp/"foo ${bar}"`, this.app)
-     .then(cli.expectOK)
-     .catch(common.oops(this)))
+    .then(cli.expectOK)
+    .catch(common.oops(this)))
 
   it(`should execute 'cd /tmp/"foo ${bar}"'`, () => cli.do(`cd /tmp/"foo ${bar}"`, this.app)
-     .then(cli.expectOKWithString('foo bar'))
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithString('foo bar'))
+    .catch(common.oops(this)))
 
   previous()
 
   it(`should execute 'cd "/tmp/foo ${bar}"'`, () => cli.do(`cd "/tmp/foo ${bar}"`, this.app)
-     .then(cli.expectOKWithString('foo bar'))
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithString('foo bar'))
+    .catch(common.oops(this)))
 
   previous()
 
   it(`should execute 'cd /tmp/foo\ ${bar}'`, () => cli.do(`cd /tmp/foo\\ ${bar}`, this.app)
-     .then(cli.expectOKWithString('foo bar'))
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithString('foo bar'))
+    .catch(common.oops(this)))
 
   // ls with space and trailing slash; see https://github.com/IBM/kui/issues/1389
   it(`should execute 'ls /tmp/foo\ ${bar}/'`, () => cli.do(`ls /tmp/foo\\ ${bar}/`, this.app)
-     .then(cli.expectOKWithAny)
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithAny)
+    .catch(common.oops(this)))
   it(`should execute 'ls /tmp/"foo ${bar}"/'`, () => cli.do(`ls /tmp/"foo ${bar}"/`, this.app)
-     .then(cli.expectOKWithAny)
-     .catch(common.oops(this)))
+    .then(cli.expectOKWithAny)
+    .catch(common.oops(this)))
 
   previous()
 

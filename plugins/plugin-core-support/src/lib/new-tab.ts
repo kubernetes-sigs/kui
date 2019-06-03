@@ -21,9 +21,9 @@ import installReplFocusHandlers from './repl-focus'
 
 import { keys } from '@kui-shell/core/webapp/keys'
 import { isVisible as isSidecarVisible,
-         toggle,
-         toggleMaximization,
-         clearSelection } from '@kui-shell/core/webapp/views/sidecar'
+  toggle,
+  toggleMaximization,
+  clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, ITab, setStatus } from '@kui-shell/core/webapp/cli'
@@ -140,7 +140,7 @@ const addCommandEvaluationListeners = (): void => {
 
       if (event.route !== undefined
           && !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
-         ) {
+      ) {
         if (event.route.match(/^\/clear/)) {
           // nbsp in the case of clear, except if the sidecar is open;
           // then attempt to continue displaying the command that
@@ -354,7 +354,7 @@ const closeTab = () => {
 
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
   commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
-                     { usage, needsUI: true, noAuthOk: true })
+    { usage, needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/new', newTabAsync, { needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/close', closeTab, { needsUI: true, noAuthOk: true })
 }

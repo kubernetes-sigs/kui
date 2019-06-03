@@ -38,8 +38,8 @@ ${folder2}`
 /** helper method, used in the tests below: ask for help */
 export const doHelp = function (cmd, { code = 500, expect = undefined } = {}) {
   return it(`should show help via ${cmd}`, () => cli.do(cmd, this.app)
-            .then(cli.expectError(code, expect))
-            .catch(common.oops(this)))
+    .then(cli.expectError(code, expect))
+    .catch(common.oops(this)))
 }
 
 describe('Help command', function (this: ISuite) {

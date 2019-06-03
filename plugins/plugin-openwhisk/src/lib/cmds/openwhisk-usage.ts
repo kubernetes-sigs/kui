@@ -68,11 +68,11 @@ const activationID: any[] = [{ name: 'activationId', docs: 'an activation ID', e
 
 /** optional parameters having to do with parameter bindings */
 export const params: any[] = [{ name: '--param', alias: '-p', example: 'key value', docs: 'bind a variable to a value', narg: 2, key: 'parameters' },
-                                   { name: '--param-file', alias: '-P', advanced: true, docs: 'a local path to a bindings file', file: true }]
+  { name: '--param-file', alias: '-P', advanced: true, docs: 'a local path to a bindings file', file: true }]
 
 /** optional parameters having to do with annotations */
 const annotations = [{ name: '--annotation', alias: '-a', example: 'key value', docs: 'annotate a variable with a value', narg: 2, key: 'annotations' },
-                     { name: '--annotation-file', alias: '-A', advanced: true, docs: 'a local path to a bindings file' }]
+  { name: '--annotation-file', alias: '-A', advanced: true, docs: 'a local path to a bindings file' }]
 
 /** optional parameters and annotations */
 const paramsAndAnnotations = params.concat(annotations)
@@ -105,8 +105,8 @@ const actionMix = params.concat(annotations).concat(limits).concat([
 
 /** optional skip and limit parameters */
 export const skipAndLimit: any[] = [{ name: '--limit', alias: '-l', numeric: true, docs: 'show at most N' },
-                                         { name: '--skip', alias: '-s', numeric: true, docs: 'start from N' },
-                                         { name: '--count', boolean: true, docs: 'return a count, rather than the records' }]
+  { name: '--skip', alias: '-s', numeric: true, docs: 'start from N' },
+  { name: '--count', boolean: true, docs: 'return a count, rather than the records' }]
 
 export const wsk = {
   breadcrumb: 'OpenWhisk',

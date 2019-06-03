@@ -234,11 +234,11 @@ const showLogs = (tab: ITab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexe
   // a bit convoluted, so we can delay the call to getActiveView
   return (evt: Event) => {
     return drilldown(tab,
-                     `kubectl logs ${podName} ${containerName} -n ${ns}`,
-                     undefined,
-                     getActiveView(tab),
-                     viewName,
-                     { exec })(evt)
+      `kubectl logs ${podName} ${containerName} -n ${ns}`,
+      undefined,
+      getActiveView(tab),
+      viewName,
+      { exec })(evt)
   }
 }
 

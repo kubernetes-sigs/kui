@@ -459,7 +459,7 @@ export default async (commandTree, wsk) => {
         : Promise.resolve({ location })
       return extra.then(({ location, text }) => {
         return makeWebAsset(wsk, name, mimeType || extension, location, text,
-                            options, execOptions)
+          options, execOptions)
       })
     }
   }
@@ -473,8 +473,8 @@ export default async (commandTree, wsk) => {
         code: code
       },
       annotations: [{ key: ANON_KEY_FQN, value: `/${currentNamespace()}/${parentActionName}` },
-                    { key: ANON_KEY, value: parentActionName },
-                    { key: ANON_CODE, value: code.replace(/^let main = /, '') }] // .*\s*=>\s*
+        { key: ANON_KEY, value: parentActionName },
+        { key: ANON_CODE, value: code.replace(/^let main = /, '') }] // .*\s*=>\s*
     }
   })).then(action => {
     currentIter++ // optimization
@@ -516,19 +516,19 @@ export default async (commandTree, wsk) => {
         .then(location => {
           return createFromFile(name, mimeType, location.location, letType, options, execOptions)
             .catch(packageAutoCreate(name))
-              .then(resource => {
-                if (location.removeWhenDone) {
-                  // we were asked to clean up when we finished with the location
-                  debug('cleaning up', location.location)
-                  unlink(location.location, err => {
-                    if (err) {
-                      console.error(err)
-                    }
-                  })
-                }
+            .then(resource => {
+              if (location.removeWhenDone) {
+                // we were asked to clean up when we finished with the location
+                debug('cleaning up', location.location)
+                unlink(location.location, err => {
+                  if (err) {
+                    console.error(err)
+                  }
+                })
+              }
 
-                return resource
-              })
+              return resource
+            })
         })
     }
 

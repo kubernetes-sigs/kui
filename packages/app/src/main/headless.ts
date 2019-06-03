@@ -142,6 +142,7 @@ const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) =>
 
       if (!process.env.KUI_REPL_MODE) {
         process.exit(exitCode > 128 ? exitCode - 256 : exitCode)
+        // eslint-disable-next-line no-unreachable
         if (quit) quit()
       }
     }

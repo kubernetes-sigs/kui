@@ -50,7 +50,7 @@ export default () => {
   const finishClick = (evt: MouseEvent) => () => {
     if (evt.screenX === startX && evt.screenY === startY // not a drag
         && noCurrentTextSelection() // not a double-click text selection
-       ) {
+    ) {
       // finally! if those conditions hold, then we can focus the current <input>
       getPromptFromTarget(evt.srcElement).focus()
     }

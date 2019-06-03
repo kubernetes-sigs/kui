@@ -28,6 +28,7 @@ import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -38,7 +39,7 @@ import createdOn from '../util/created-on'
 
 import IResource from '../model/resource'
 import { FinalState } from '../model/states'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { IDelete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { redactJSON, redactYAML } from '../view/redact'
@@ -399,8 +400,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
   const commandForSpawn = command === 'helm' ? await pickHelmClient(env) : command
   const child = spawn(commandForSpawn,
-                      argvWithFileReplacements,
-                      { env, shell: true })
+    argvWithFileReplacements,
+    { env, shell: true })
 
   const file = options.f || options.filename
   const hasFileArg = file !== undefined
@@ -435,16 +436,16 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
 
         debug('about to get status', file, entityType, entity, resourceNamespace)
         return repl.qexec(`${statusCommand} status ${file || entityType} ${entity || ''} ${finalState} ${resourceNamespace}`,
-                          undefined, undefined, { parameters: execOptions.parameters })
-        .catch(err => {
-          if (err.code === 404 && expectedState === FinalState.OfflineLike) {
+          undefined, undefined, { parameters: execOptions.parameters })
+          .catch(err => {
+            if (err.code === 404 && expectedState === FinalState.OfflineLike) {
             // that's ok!
-            debug('resource not found after status check, but that is ok because that is what we wanted')
-            return out
-          } else {
-            throw err
-          }
-        })
+              debug('resource not found after status check, but that is ok because that is what we wanted')
+              return out
+            } else {
+              throw err
+            }
+          })
       } else {
         return Promise.resolve(true)
       }
@@ -492,8 +493,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       const fileNotFound = message.match(/error: the path/)
       const codeForREPL = noResources || message.match(/not found/i) || message.match(/doesn't have/i) ? 404
         : message.match(/already exists/i) ? 409
-        : fileNotFound ? 412
-        : 500
+          : fileNotFound ? 412
+            : 500
 
       debug('handling non-zero exit code %s', code, codeForREPL, err)
 
@@ -513,9 +514,14 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       }
 
       if (codeForREPL === 404 || codeForREPL === 409 || codeForREPL === 412) {
+        if (codeForREPL === 404 && verb === 'get' && (options.w || options.watch)) {
+          // NOTE(5.30.2019): for now, we only support watchable table, so we have to return an empty table here
+          debug('return an empty watch table')
+          return resolve(formatWatchableTable(new Table({ body: [] }), { refreshCommand: rawCommand.replace(/--watch|-w/g, ''), watchByDefault: true }))
+        }
         // already exists or file not found?
-        const error = new Error(err)
-        error['code'] = codeForREPL
+        const error: CodedError = new Error(err)
+        error.code = codeForREPL
         debug('rejecting without usage', codeForREPL, error)
         reject(error)
       } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && hasFileArg) {
@@ -548,13 +554,6 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         console.error('error rendering help', err)
         reject(out)
       }
-    } else if (isKube && verb === 'get' && (options.watch || options.w)) {
-      // kubectl get --watch mode?
-      debug('delegating to k status')
-      const ns = options.n || options.namespace
-        ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
-        : ''
-      return repl.qexec(`k status ${entityType} ${entity || ''} ${ns}`).then(resolveBase, reject)
     } else if (output === 'json' || output === 'yaml' || verb === 'logs') {
       //
       // return a sidecar entity
@@ -564,8 +563,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       const result = output === 'json'
         ? JSON.parse(out)
         : verb === 'logs' ? formatLogs(out)
-        : output === 'yaml' ? redactYAML(out, options)
-        : redactJSON(out, options)
+          : output === 'yaml' ? redactYAML(out, options)
+            : redactJSON(out, options)
 
       // debug('structured output', result)
 
@@ -656,7 +655,13 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       // tabular output
       //
       debug('attempting to display as a table')
-      resolve(table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions))
+      const tableModel = table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions)
+
+      if ((options.watch || options.w) && (isTable(tableModel) || isMultiTable(tableModel))) {
+        resolve(formatWatchableTable(tableModel as Table | Table[], { refreshCommand: rawCommand.replace(/--watch|-w/g, ''), watchByDefault: true }))
+      } else {
+        resolve(tableModel)
+      }
     } else {
       //
       // otherwise, return raw text for display in the repl
@@ -711,13 +716,13 @@ export default async (commandTree: CommandRegistrar) => {
     'create',
     'get',
     'delete',
-//    'describe',
+    //    'describe',
     'explain',
     'logs'
   ]
   await Promise.all(shorthands.map(verb => {
     return commandTree.listen(`/k8s/${verb}`,
-                              dispatchViaDelegationTo(kubectl),
-                              { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
+      dispatchViaDelegationTo(kubectl),
+      { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
   }))
 }

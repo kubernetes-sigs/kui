@@ -66,7 +66,7 @@ localDescribe('wsk activation get --last', function (this: common.ISuite) {
       .then(() => true)
       .catch(() => false)
   })
-     .catch(common.oops(this)))
+    .catch(common.oops(this)))
 
   it(`should invoke it ${actionName2}`, () => cli.do(`invoke ${actionName2} -p name lastTestIPromise`, this.app)
     .then(cli.expectOK)
