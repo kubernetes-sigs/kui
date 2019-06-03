@@ -31,7 +31,6 @@ describe('helm commands', function (this: common.ISuite) {
       .catch(common.oops(this)))
   })
 
-  cli.do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml`, this.app)
   it(`should create sample helm chart`, () => {
 
     cli.do(`helm install --name example ${ROOT}/data/k8s/helm --set service.type=NodePort`, this.app)
