@@ -84,7 +84,7 @@ const formatTimestamp = (timestamp: string): string => {
 export const renderConditions = async (tab: ITab, command: string, resource: IResource) => {
   debug('renderConditions', command, resource)
 
-  const anyProbeTimes = resource.yaml.status.conditions.some(_ => !!_.lastProbeTime)
+  const anyProbeTimes = resource.resource.status.conditions.some(_ => !!_.lastProbeTime)
   const probeHeader: any[] = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
   const probeBody = (condition): any[] => {
     if (anyProbeTimes) {
@@ -108,7 +108,7 @@ export const renderConditions = async (tab: ITab, command: string, resource: IRe
     ])
   }
 
-  resource.yaml.status.conditions.sort((a, b) => {
+  resource.resource.status.conditions.sort((a, b) => {
     if (!a.lastTransitionTime && b.lastTransitionTime) {
       return 1
     } else if (!b.lastTransitionTime && a.lastTransitionTime) {
@@ -120,7 +120,7 @@ export const renderConditions = async (tab: ITab, command: string, resource: IRe
     }
   })
 
-  const bodyModel: Row[] = resource.yaml.status.conditions.map(condition => ({
+  const bodyModel: Row[] = resource.resource.status.conditions.map(condition => ({
     type: 'condition',
     name: condition.type,
     onclick: false,

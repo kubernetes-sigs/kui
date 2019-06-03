@@ -39,6 +39,7 @@
 }
 
 .project-config-container .project-config-list {
+    font-size: 0.875em;
     margin: 0;
     padding: 0;
     overflow: auto;
@@ -46,15 +47,14 @@
     flex-wrap: wrap;
 }
 
+.project-config-container .project-config-items:first-child {
+    margin-top: 0;
+}
 .project-config-container .project-config-items {
     list-style-type: none;
-    border: 1px solid var(--color-ui-04);
-    padding: 1.5em 1.5em 0;
     display: flex;
     margin: 1.5em 0 0;
     margin-right: 1.5em;
-    background: var(--color-ui-01);
-    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.10);
     transition: border 300ms ease-in-out, background 300ms ease-in-out;
 }
 .project-config-container .project-apis {
@@ -83,7 +83,6 @@
 }
 .project-config-container .project-api-items {
     border-top: 1px solid var(--color-ui-04);
-    font-size: 0.875em;
 }
 .project-config-container .project-api-items .project-api-items-inner,
 .project-config-container .project-api-items {
@@ -117,21 +116,13 @@
 .project-config-container .form {
     display: flex;
     flex-wrap: wrap;
-}
-
-.project-config-container .config-item-title {
-    text-transform: capitalize;
-    color: var(---color-stripe-02);
-    font-size: 1.25rem;
-    font-weight: 400;
-    white-space: nowrap;
-    margin-bottom: 1em;
-    transition: color 300ms ease-in-out;
+    padding: 1.5em 0 0 1em;
+    background: var(--color-ui-01);
+    border: 1px solid var(--color-ui-04);
 }
 
 .project-config-container .configSourceIns {
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1em;
 }
 
 /* config links, e.g. API Documentation link */
@@ -140,7 +131,6 @@
     flex-wrap: wrap;
 }
 .project-config-container .project-config-links a {
-    font-size: 0.875em;
     margin: 0 1em 1em 0;
 }
 
@@ -153,7 +143,6 @@
 .project-config-container .project-config-webview-source {	
 	background: var(--color-stripe-02);
 	color: hsla(240, 2%, 90%, 1);
-	font-size: 0.8em;
 	padding:5px 20px 5px 20px;
 }
 
@@ -207,48 +196,46 @@
     flex-basis: 100%;
 }
 .bx--text-input[data-typeof="boolean"] {
-    min-width: 4rem;
+    min-width: 4em;
 }
 .bx--text-input[data-typeof="number"] {
-    min-width: 6rem;
+    min-width: 6em;
 }
 .bx--text-input[data-form-label="version"] {
-    min-width: 6rem;
+    min-width: 6em;
 }
 .bx--text-input[data-form-label="name"] {
-    min-width: 20rem;
+    min-width: 20em;
 }
 
-.bx--form-item input:focus {
+.bx--form-item .bx--text-input:focus {
     outline-color: var(--color-base0C);
 }
 
 /* copied from the carbon components styling */
 .bx--form-item {
     flex: 1;
-    margin-right: 1rem;
-    margin-bottom: 1.5rem;
-}
-.bx--form-item:last-child {
-    margin-right: 0;
+    margin-right: 1em;
+    margin-bottom: 1.5em;
 }
 .project-config-items .bx--label {
     text-transform: capitalize;
 }
 .bx--label {
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.02rem;
     display: inline-block;
     vertical-align: baseline;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5em;
 }
 .bx--text-input {
-    font-size: 0.875rem;
+    font-size: inherit;
     display: block;
     width: 100%;
-    height: 2.5rem;
-    min-width: 10rem;
-    padding: 0 1rem;
+    height: 2.5em;
+    min-width: 10em;
+    padding: calc((2.5em - 1.25em) / 2) 1em;
     color: var(--color-text-01);
     background-color: var(--color-field-01);
     border: 1px solid transparent;
@@ -310,10 +297,9 @@ button.bx--btn {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 0.875rem;
     font-weight: 600;
-    height: 2.5rem;
-    padding: 0 1rem;
+    height: 2.5em;
+    padding: 0 1em;
     border-radius: 0;
     text-align: center;
     text-decoration: none;

@@ -30,7 +30,8 @@ import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
  * @param resource a kubernetes resource
  */
 export default (resource: IKubeResource): IFormatter => {
-  if (resource && resource.metadata && resource.metadata.creationTimestamp) {
+  const startTime = resource && ((resource.metadata && resource.metadata.creationTimestamp) || (resource.status && resource.status.startTime))
+  if (startTime) {
     return {
       plugin: 'k8s',
       module: 'lib/util/created-on',
@@ -50,13 +51,16 @@ interface Parameters {
 export const format = (parameters: Parameters): Element => {
   const { resource } = parameters
 
+  const startTime = resource.status && resource.status.startTime || resource.metadata.creationTimestamp
+  const prefixText = resource.status && resource.status.startTime ? 'Started on ' : 'Created on '
+
   const message = document.createElement('div')
   const datePart = document.createElement('strong')
 
-  message.appendChild(document.createTextNode('Created on '))
+  message.appendChild(document.createTextNode(prefixText))
   message.appendChild(datePart)
   try {
-    datePart.appendChild(prettyPrintTime(Date.parse(resource.metadata.creationTimestamp)))
+    datePart.appendChild(prettyPrintTime(Date.parse(startTime)))
   } catch (err) {
     debug('error trying to parse this creationTimestamp', resource.metadata.creationTimestamp)
     console.error('error parsing creationTimestamp', err)

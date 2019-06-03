@@ -104,7 +104,7 @@ export const renderContainers = async (tab: ITab, command: string, resource: IRe
  *
  */
 const headerModel = (resource: IResource): Row => {
-  const statuses = resource.yaml.status && resource.yaml.status.containerStatuses
+  const statuses = resource.resource.status && resource.resource.status.containerStatuses
 
   const specAttrs = [
     { value: 'PORTS', outerCSS: 'header-cell pretty-narrow' }
@@ -130,7 +130,7 @@ const headerModel = (resource: IResource): Row => {
  *
  */
 const bodyModel = (tab: ITab, resource: IResource): Row[] => {
-  const pod = resource.yaml
+  const pod = resource.resource
   const statuses = pod.status && pod.status.containerStatuses
 
   const podName = repl.encodeComponent(pod.metadata.name)
