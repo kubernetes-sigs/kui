@@ -462,7 +462,7 @@ const renderOneTable = (parent, pane) => table => {
  * Execute a command, handling the fullscreen toggle
  *
  */
-const commandFromFullscreen = (pane, command, display= command) => () => {
+const commandFromFullscreen = (pane, command, display = command) => () => {
   const go = () => {
     repl.pexec(command)
 
@@ -597,7 +597,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
       table = {
         title: extras.alternate ? 'Alternate Adventures' : 'Next Steps',
         columns: ['Command', 'Description'],
-        rows: nextSteps.filter(_ => !_.hidden).map(({ command, display= command, doc, when }) => [
+        rows: nextSteps.filter(_ => !_.hidden).map(({ command, display = command, doc, when }) => [
           { value: display,
             when,
             onclick: commandFromFullscreen(pane, command, display) },
@@ -630,7 +630,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
 
       pane.setAttribute('tutorial-has-showcase', 'tutorial-has-showcase')
 
-      extras.showcase.forEach(({ title, command, display= command, description, image, groupWith }) => {
+      extras.showcase.forEach(({ title, command, display = command, description, image, groupWith }) => {
         const element = document.createElement('div')
         element.className = 'tutorial-showcase-element'
 

@@ -18,7 +18,7 @@
  * The sample compositions we want to offer users
  *
  */
-export const sampleInputs = (cmd, partial= false) => {
+export const sampleInputs = (cmd, partial = false) => {
   // generator of the command string; if the caller passed in a function, use it
   const gen = typeof cmd === 'function' ? cmd : () => cmd
 
