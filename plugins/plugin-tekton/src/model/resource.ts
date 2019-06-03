@@ -14,21 +14,122 @@
  * limitations under the License.
  */
 
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { IKubeResource, IKubeStatusCondition, IKubeStatus } from '@kui-shell/plugin-k8s/lib/model/resource'
+
+export type TaskName = string
+
+/**
+ * Meet point for all top-level tekton-oriented kubernetes resources
+ *
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ITektonKubeResource extends IKubeResource {
+  // intentionally empty
+}
+
+export interface ITaskRun {
+  pipelineTaskName: string
+  status: {
+    podName: string
+    startTime: string
+    completionTime?: string
+    conditions: IKubeStatusCondition[]
+    steps: {
+      name: string
+      terminated?: {
+        containerID: string
+        exitCode: number
+        startedAt: string
+        finishedAt: string
+        reason: string
+      }
+    }[]
+  }
+}
+
+export interface ITaskRuns {
+  [key: string]: ITaskRun
+}
+
+export interface Port {
+  name: string
+  resource: string
+  from?: TaskName[]
+}
+
+export interface TaskRef {
+  name: TaskName
+  taskRef?: {
+    name: TaskName
+  }
+  runAfter?: TaskName[]
+  resources?: {
+    inputs?: Port[]
+    outputs?: Port[]
+  }
+}
 
 export interface Step {
   name: string
   image: string
   command: string
   args: string[]
+  visitedIdx?: number
 }
 
-export interface Task extends IKubeResource {
+interface IResource {
+  name: string
+  type: string
+  targetPath?: string
+}
+
+export interface Task extends ITektonKubeResource {
+  kind: 'Task'
+  visitedIdx?: number
   spec: {
     inputs: {
-      resources: { name: string; type: string; targetPath: string }[]
+      resources: IResource[]
       params: { name: string; description: string; default: string }[]
     }
     steps: Step[]
   }
+}
+
+export function isTask (resource: IKubeResource): resource is Task {
+  return resource && resource.kind === 'Task'
+}
+
+export interface IPipeline extends ITektonKubeResource {
+  kind: 'Pipeline'
+  spec: {
+    resources?: IResource[]
+    tasks: TaskRef[]
+  }
+}
+export function isPipeline (resource: IKubeResource): resource is IPipeline {
+  const run = resource as IPipeline
+  return run.spec !== undefined &&
+    run.kind === 'Pipeline' &&
+    run.spec.tasks !== undefined
+}
+
+export interface IPipelineRun extends ITektonKubeResource {
+  kind: 'PipelineRun'
+  spec: {
+    serviceAccount: string
+    params: { name: string; value: string }[]
+    resources: { name: string; resourceRef: { name: string } }[]
+    pipelineRef: { name: string }
+    trigger: { type: 'manual' }
+  }
+  status: IKubeStatus & {
+    taskRuns: ITaskRuns
+  }
+}
+export function isPipelineRun (resource: IKubeResource): resource is IPipelineRun {
+  const run = resource as IPipelineRun
+  return run.spec !== undefined &&
+    run.kind === 'PipelineRun' &&
+    run.spec.serviceAccount !== undefined &&
+    run.spec.pipelineRef !== undefined
 }

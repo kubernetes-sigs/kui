@@ -226,7 +226,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .result-as-table .result-table-outer .result-table {
     margin-top: 0;
 }
-.result-as-table .result-table-title-outer {
+.result-table-title-outer {
     display: flex;
     align-items: flex-end;
     color: var(--color-base0F);
@@ -239,7 +239,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .result-as-multi-table .result-table-outer-wrapper:first-child .result-table-title-outer {
     padding-top: 0;
 }
-.result-as-table .result-table-title {
+.result-table-title {
     flex: 1;
     text-transform: uppercase;
 }
@@ -887,7 +887,7 @@ sidecar .header-right-bits {
     flex-direction: column;
     flex: 1;
     align-items: flex-end;
-    justify-content: center;
+    justify-content: space-evenly;
 }
 .sidecar-header .activation-duration, .sidecar-header .kind {
     font-weight: bold;
@@ -1030,6 +1030,11 @@ sidecar .sidecar-content > div, sidecar .sidecar-content .activation-content > p
 }
 sidecar .sidecar-content .hook-for-third-party-content.no-content {
     display: none;
+}
+sidecar .sidecar-header .activation-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 sidecar .sidecar-content .activation-content  {
     padding: 0;
