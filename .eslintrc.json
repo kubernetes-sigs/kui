@@ -36,8 +36,6 @@
     "import/first": "off",
     "import/no-duplicates": "off",
 
-    "promise/param-names": "off",
-
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
