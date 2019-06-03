@@ -25,7 +25,6 @@
     "no-useless-constructor": "off",
     "no-useless-escape": "off",
     "no-useless-return": "off",
-    "object-property-newline": "off",
     "operator-linebreak": "off",
     "padded-blocks": "off",
     "prefer-promise-reject-errors": "off",

@@ -79,7 +79,8 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   eventBus.emit('/kubectl/state/expect', { watch, finalState })
 
   const namespaceAttrs = !watch.kind || watch.kind.match(/(ns|Namespace)/i) ? [] : [{
-    key: 'namespace', value: targetNamespace || namespace,
+    key: 'namespace',
+    value: targetNamespace || namespace,
     outerCSS: 'pretty-narrow hide-with-sidecar'
   }]
 
@@ -104,8 +105,10 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
     },
 
     {
-      key: 'message', value: '',
-      css: 'somewhat-smaller-text slightly-deemphasize', outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
+      key: 'message',
+      value: '',
+      css: 'somewhat-smaller-text slightly-deemphasize',
+      outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
     }
   ]
 

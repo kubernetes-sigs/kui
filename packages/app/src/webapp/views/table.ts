@@ -550,7 +550,8 @@ export const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (e
         const cell = addCellToRow({ className: `entity-rule-status`,
           value: 'Pending', // delay status display
           innerClassName: 'repeating-pulse', // css
-          tag: 'badge', tagClass: 'gray-background' })
+          tag: 'badge',
+          tagClass: 'gray-background' })
 
         /** normalize the status badge by capitalization */
         const capitalize = (str: string): string => {

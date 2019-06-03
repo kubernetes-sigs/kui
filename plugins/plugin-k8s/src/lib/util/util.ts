@@ -80,7 +80,9 @@ export const toOpenWhiskFQN = ({ kind, spec, metadata }): ITypedEntityName => {
     const packageName = spec.package
     return {
       type: kind === 'Function' ? 'action' : 'app',
-      packageName, actionName, fqn:
+      packageName,
+      actionName,
+      fqn:
       packageName ? `${packageName}/${actionName}` : actionName
     }
   } else if (kind === 'Composition') {
