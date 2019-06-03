@@ -32,7 +32,7 @@ import { keys } from '../keys'
 import { IShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
-import { IEntitySpec, Entity } from '../../models/entity'
+import { MetadataBearing, isMetadataBearing, IEntitySpec, Entity } from '../../models/entity'
 import { IExecOptions } from '../../models/execOptions'
 
 /**
@@ -267,10 +267,8 @@ export const renderField = async (container: HTMLElement, entity: IEntitySpec, f
  *
  */
 type CustomContent = string | Record<string, any> | HTMLElement | Promise<HTMLElement>
-
-export interface ICustomSpec extends IEntitySpec {
-  /** noZoom: set to true for custom content to control the zoom event handler */
-  noZoom?: boolean
+export interface ICustomSpec extends IEntitySpec, MetadataBearing {
+  isREPL?: boolean
   presentation?: Presentation
   renderAs?: string
   subtext?: Formattable
@@ -281,7 +279,7 @@ export interface ICustomSpec extends IEntitySpec {
 }
 export function isCustomSpec (entity: Entity): entity is ICustomSpec {
   const custom = entity as ICustomSpec
-  return custom.type === 'custom' || custom.renderAs === 'custom'
+  return custom !== undefined && (custom.type === 'custom' || custom.renderAs === 'custom')
 }
 function isPromise (content: CustomContent): content is Promise<HTMLElement> {
   const promise = content as Promise<HTMLElement>
@@ -343,14 +341,6 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
     })
   }
 
-  const customContent = sidecar.querySelector('.custom-content')
-
-  if (custom.noZoom) { // custom content will control the zoom handler, e.g. monaco-editor
-    customContent.classList.remove('zoomable')
-  } else { // revert the change if previous custom content controls the zoom handler
-    customContent.classList.add('zoomable')
-  }
-
   // which viewer is currently active?
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 
@@ -390,11 +380,23 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
     sidecar.entity = entity
     sidecar.entity.type = sidecar.entity.viewName
 
-    addNameToSidecarHeader(sidecar, entity.prettyName || entity.name, entity.packageName, undefined,
-      entity.prettyType || entity.type, entity.subtext, entity)
+    addNameToSidecarHeader(sidecar,
+      entity.prettyName || entity.name,
+      entity.packageName || entity.namespace,
+      undefined,
+      entity.prettyType || entity.type || entity.kind,
+      entity.subtext,
+      entity)
 
     // render badges
     addVersionBadge(tab, entity, { clear: true, badgesDom })
+
+    if (custom.duration) {
+      const duration = document.createElement('div')
+      duration.classList.add('activation-duration')
+      duration.innerText = prettyPrintDuration(custom.duration)
+      badgesDomContainer.appendChild(duration)
+    }
   }
 
   if (custom && custom.badges) {
@@ -427,6 +429,8 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
           const entity /*: IEditorEntity */ = {
             type: custom.prettyType,
             name: custom.name,
+            kind: custom.kind,
+            metadata: custom.metadata,
             persister: () => true,
             annotations: [],
             exec: {
@@ -498,7 +502,7 @@ export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement)
     let iconText = viewName.replace(/s$/, '')
 
     const A = iconText.split(/(?=[A-Z])/).filter(x => x)
-    if (iconText.length > 10 && A.length > 1) {
+    if (iconText.length > 12 && A.length > 1) {
       iconText = A.map(_ => _.charAt(0)).join('')
     }
 
@@ -534,21 +538,36 @@ export const updateSidecarHeader = (tab: ITab, update: IHeaderUpdate, sidecar = 
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
-export const addNameToSidecarHeader = async (sidecar: ISidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?) => {
+export const addNameToSidecarHeader = async (sidecar: ISidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?: IEntitySpec | ICustomSpec) => {
   debug('addNameToSidecarHeader', name)
+
+  // maybe entity.content is a metadat-bearing entity that we can
+  // mine for identifying characteristics
+  const meta = isMetadataBearing(entity) && entity
+  if (meta) {
+    if (!name) {
+      name = meta.metadata.name
+    }
+    if (!packageName) {
+      packageName = meta.metadata.namespace || ''
+    }
+    if (!viewName) {
+      viewName = meta.kind
+    }
+  }
 
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
   nameDom.className = nameDom.getAttribute('data-base-class')
   element('.package-prefix', nameDom).innerText = packageName
 
-  if (entity && entity.isREPL) {
+  if (isCustomSpec(entity) && entity.isREPL) {
     sidecar.querySelector('.sidecar-header-text').classList.add('is-repl-like')
   } else {
     sidecar.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
   }
 
   if (typeof name === 'string') {
-    if (entity && entity.isREPL) {
+    if (isCustomSpec(entity) && entity.isREPL) {
       /* const nameContainer = nameDom.querySelector('.sidecar-header-input') as HTMLInputElement
       nameContainer.value = name
       cli.listen(nameContainer) */

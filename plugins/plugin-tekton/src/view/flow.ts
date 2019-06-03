@@ -25,19 +25,23 @@ import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
+import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+
 import injectCSS from '@kui-shell/plugin-wskflow/lib/inject'
 import { zoomToFitButtons } from '@kui-shell/plugin-wskflow/lib/util'
 
-import flowMode from '../model/flowMode'
+import runMode from '../model/modes/run'
+import flowMode from '../model/modes/flow'
+import { IPipelineRun, Task, isTask } from '../model/resource'
 import tekton2graph from '../lib/tekton2graph'
 
 /**
  * Format a repl response
  *
  */
-export default async (tab: ITab, jsons: Record<string, any>[], raw: string = safeDump(jsons), filepath?: string) => {
+export default async (tab: ITab, jsons: IKubeResource[], run?: IPipelineRun, raw: string = safeDump(jsons), filepath?: string) => {
   const [graph, graph2doms] = await Promise.all([
-    tekton2graph(jsons, filepath), // generate the graph model
+    tekton2graph(jsons, filepath, run), // generate the graph model
     import('@kui-shell/plugin-wskflow/lib/graph2doms'), // overlap that work with importing the graph renderer
     injectCSS() // and also with injecting the graph css
   ])
@@ -48,11 +52,11 @@ export default async (tab: ITab, jsons: Record<string, any>[], raw: string = saf
   content.style.flex = '1'
   content.style.display = 'flex'
 
-  const { controller } = await graph2doms.default(tab, graph, content, undefined, {
+  const { controller } = await graph2doms.default(tab, graph, content, graph.runs, {
     layoutOptions: {
       'elk.separateConnectedComponents': false,
       'elk.spacing.nodeNode': 10,
-      'elk.padding': '[top=7.5,left=7.5,bottom=7.5,right=7.5]',
+      'elk.padding': '[top=7.5,left=5,bottom=7.5,right=5]',
       hierarchyHandling: 'INCLUDE_CHILDREN' // since we have hierarhical edges, i.e. that cross-cut subgraphs
     }
   })
@@ -60,6 +64,7 @@ export default async (tab: ITab, jsons: Record<string, any>[], raw: string = saf
 
   const tektonModes: ISidecarMode[] = [
     flowMode,
+    runMode,
     {
       mode: 'Raw',
       leaveBottomStripeAlone: true,
@@ -73,17 +78,23 @@ export default async (tab: ITab, jsons: Record<string, any>[], raw: string = saf
   ]
 
   const badges: Badge[] = [ 'Tekton' ]
-  if (jsons.find(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')) {
-    badges.push({
-      title: 'Runnable',
-      css: 'green-background'
-    })
-  } else {
-    badges.push({
-      title: 'Not Runnable',
-      css: 'yellow-background'
-    })
+  if (!run) {
+    if (jsons.find(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')) {
+      badges.push({
+        title: 'Runnable',
+        css: 'green-background'
+      })
+    } else {
+      badges.push({
+        title: 'Not Runnable',
+        css: 'yellow-background'
+      })
+    }
   }
+
+  const startTime = run && run.status && run.status.startTime && new Date(run.status.startTime)
+  const endTime = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
+  const duration = startTime && endTime && (endTime.getTime() - startTime.getTime())
 
   return {
     type: 'custom',
@@ -91,7 +102,8 @@ export default async (tab: ITab, jsons: Record<string, any>[], raw: string = saf
     isFromFlowCommand: true,
     name: filepath ? basename(filepath) : jsons[0].metadata.name,
     packageName: filepath && dirname(filepath),
-    prettyType: 'Pipeline',
+    prettyType: run ? 'PipelineRun' : 'Pipeline',
+    duration,
     badges,
     presentation: Presentation.FixedSize,
     content,
