@@ -666,6 +666,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
           newGroup()
         } else {
           try {
+            // eslint-disable-next-line no-eval
             const fn = eval(groupWith)
             const group = fn(container.children)
             group.appendChild(element)

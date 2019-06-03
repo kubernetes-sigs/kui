@@ -15,7 +15,6 @@
     "no-cond-assign": "off",
     "no-constant-condition": "off",
     "no-control-regex": "off",
-    "no-eval": "off",
     "no-lone-blocks": "off",
     "no-mixed-operators": "off",
     "no-return-assign": "off",
