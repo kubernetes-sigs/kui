@@ -80,7 +80,9 @@ export const toOpenWhiskFQN = ({ kind, spec, metadata }): ITypedEntityName => {
     const packageName = spec.package
     return {
       type: kind === 'Function' ? 'action' : 'app',
-      packageName, actionName, fqn:
+      packageName,
+      actionName,
+      fqn:
       packageName ? `${packageName}/${actionName}` : actionName
     }
   } else if (kind === 'Composition') {
@@ -107,11 +109,13 @@ export class TryLaterError extends StatusError {
 export class NotFoundError extends StatusError {
   code: any
 
-  constructor (message: string, code: any= 404) {
+  constructor (message: string, code: any = 404) {
     super(message)
     this.code = code
   }
 }
 
 /** flatten an array of arrays */
-export const flatten = arrays => [].concat.apply([], arrays)
+export function flatten<T> (arrays: T[][]): T[] {
+  return [].concat.apply([], arrays)
+}

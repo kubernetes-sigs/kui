@@ -45,7 +45,7 @@ interface IPair {
   alias?: string
   docs: string
 }
-const asciiToOptionsTable = (rows: Array<string>): Array<IPair> => {
+const asciiToOptionsTable = (rows: string[]): IPair[] => {
   const table = rows.map(line => {
     const [command, docs] = line.split(/\s\s+/)
 

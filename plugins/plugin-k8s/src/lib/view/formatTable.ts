@@ -170,12 +170,18 @@ export const preprocessTable = (raw: string[]) => {
     const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
     const columnStarts: number[] = []
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
-      jdx = header.indexOf(headerCells[idx] + ' ', jdx)
-      if (jdx < 0) {
+      const { offset, prefix } = idx === 0
+        ? { offset: 0, prefix: '' }
+        : { offset: 1, prefix: ' ' }
+
+      const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
+      if (newJdx < 0) {
         // last column
-        jdx = header.indexOf(headerCells[idx], jdx)
+        jdx = header.indexOf(' ' + headerCells[idx], jdx)
+      } else {
+        jdx = newJdx
       }
-      columnStarts.push(jdx)
+      columnStarts.push(jdx + offset)
     }
 
     debug('columnStarts', columnStarts, headerCells)
@@ -187,7 +193,7 @@ export const preprocessTable = (raw: string[]) => {
   })
 }
 
-export const formatTable = (command: string, verb: string, entityType: string, options, preTable: IPair[][]): Table => {
+export const formatTable = (command: string, verb: string, entityTypeFromCommandLine: string, options, preTable: IPair[][]): Table => {
   debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
@@ -198,7 +204,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const drilldownVerb = (
     verb === 'get' ? 'get'
       : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
-      : isHelmStatus ? 'get' : undefined
+        : isHelmStatus ? 'get' : undefined
   ) || undefined
 
   // helm doesn't support --output
@@ -211,10 +217,10 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const drilldownKind = nameSplit => {
     debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
-      const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
+      const kind = nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
       return kind ? ' ' + kind : ''
-      /*} else if (drilldownVerb === 'config') {
-        return ' use-context';*/
+      /* } else if (drilldownVerb === 'config') {
+        return ' use-context'; */
     } else {
       return ''
     }
@@ -225,14 +231,27 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const namespaceColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAMESPACE')
   const maxColumns = preTable.reduce((max, columns) => Math.max(max, columns.length), 0)
 
-  const rowsResult = preTable.map((rows, idx): Row => {
+  // for kubectl get all... the actual entity type of each table is
+  // manifested in the name cell, e.g. "_pod_/mypod"
+  let entityTypeFromRows: string
+
+  const rows = preTable.map((rows, idx): Row => {
     const name = rows[nameColumnIdx].value
     const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
-    const nameForDisplay = rows[0].value
+    const nameForDisplay = nameSplit[1] || rows[0].value
     const nameForDrilldown = nameSplit[1] || name
     const css = ''
     const firstColumnCSS = idx === 0 || rows[0].key !== 'CURRENT'
       ? css : 'selected-entity'
+
+    // if we have a "name split", e.g. "pod/myPod", then keep track of the "pod" part
+    if (nameSplit[1]) {
+      if (!entityTypeFromRows) {
+        entityTypeFromRows = nameSplit[0]
+      } else if (entityTypeFromRows !== nameSplit[0]) {
+        entityTypeFromRows = undefined
+      }
+    }
 
     const rowIsSelected = rows[0].key === 'CURRENT' && nameForDisplay === '*'
     const rowKey = rows[0].key
@@ -251,7 +270,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     // idx === 0: don't click on header row
     const onclick = idx === 0 ? false
       : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns}`
-      : false
+        : false
 
     const header = idx === 0 ? 'header-cell' : ''
 
@@ -277,10 +296,10 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   })
 
   return {
-    header: rowsResult[0],
-    body: rowsResult.slice(1),
+    header: rows[0],
+    body: rows.slice(1),
     noSort: true,
-    title: entityType
+    title: entityTypeFromRows || entityTypeFromCommandLine
   }
 }
 

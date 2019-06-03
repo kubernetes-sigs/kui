@@ -18,9 +18,13 @@ import * as Debug from 'debug'
 const debug = Debug('core-support/history/reverse-i-search')
 
 import * as historyModel from '@kui-shell/core/models/history'
-import { ITab, getTabFromTarget, getCurrentBlock, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
+import { ITab, getTabFromTarget, getBlockOfPrompt, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+
+interface KeyboardEventPlusPlus extends KeyboardEvent {
+  inputType: string
+}
 
 // TODO externalize
 const strings = {
@@ -40,6 +44,161 @@ export default () => {
   }
 }
 
+/** state of the reverse-i-search */
+class ActiveISearch {
+  private isSearchActive = true
+  private readonly tab: ITab
+  private readonly currentOnKeypress
+  private readonly currentOnInput
+  private currentSearchIdx = -1
+  private readonly placeholder: HTMLElement
+  private readonly placeholderFixedPart: HTMLElement
+  private readonly placeholderContentPart: HTMLElement
+  private readonly placeholderTypedPart: HTMLElement
+  private readonly placeholderMatchedPrefixPart: HTMLElement
+  private readonly placeholderMatchedSuffixPart: HTMLElement
+  private readonly prompt: HTMLInputElement
+  private readonly promptLeft: Element
+
+  constructor (tab: ITab) {
+    this.tab = tab
+    this.prompt = getCurrentPrompt(tab)
+    this.promptLeft = getCurrentPromptLeft(tab)
+
+    this.placeholder = document.createElement('span')
+    this.placeholderFixedPart = document.createElement('span')
+    this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, '').replace(/\$2/, this.prompt.value)
+    this.placeholder.appendChild(this.placeholderFixedPart)
+    this.placeholder.classList.add('repl-temporary')
+    this.placeholder.classList.add('normal-text')
+    this.placeholderFixedPart.classList.add('smaller-text')
+    this.promptLeft.appendChild(this.placeholder)
+
+    getBlockOfPrompt(this.prompt).classList.add('using-custom-prompt')
+
+    //    this.prompt.style.opacity = '0'
+    //    this.prompt.style.width = '0'
+
+    this.placeholderContentPart = document.createElement('span') // container for Typed and Matched
+    this.placeholderTypedPart = document.createElement('span') // what the user has typed; e.g. "is" in "history"
+    this.placeholderMatchedPrefixPart = document.createElement('span') // what was matched, but not typed; e.g. "h" in "history"
+    this.placeholderMatchedSuffixPart = document.createElement('span') // what was matched, but not typed; e.g. "tory" in "history"
+    this.placeholderContentPart.appendChild(this.placeholderMatchedPrefixPart)
+    this.placeholderContentPart.appendChild(this.placeholderTypedPart)
+    this.placeholderContentPart.appendChild(this.placeholderMatchedSuffixPart)
+    this.placeholderContentPart.classList.add('repl-input-like')
+    this.placeholder.appendChild(this.placeholderContentPart)
+
+    this.placeholderTypedPart.classList.add('red-text')
+    this.placeholderMatchedPrefixPart.classList.add('slightly-deemphasize')
+    this.placeholderMatchedSuffixPart.classList.add('slightly-deemphasize')
+
+    this.currentOnInput = this.prompt.oninput
+    this.prompt.oninput = this.doSearch.bind(this)
+    this.currentOnKeypress = this.prompt.onkeypress
+    this.prompt.onkeypress = this.maybeComplete.bind(this)
+  }
+
+  /**
+   * For various reasons, user has cancelled a reverse-i-search.
+   *
+   */
+  cancelISearch (evt?: KeyboardEvent) {
+    const isCtrlC = evt && evt.keyCode === keys.C && evt.ctrlKey
+    this.tab['_kui_active_i_search'] = undefined
+
+    if (this.isSearchActive) {
+      this.isSearchActive = false
+
+      if (!isCtrlC) {
+        getBlockOfPrompt(this.prompt).classList.remove('using-custom-prompt')
+        if (this.placeholder.parentNode) {
+          this.placeholder.parentNode.removeChild(this.placeholder)
+        }
+        this.prompt.onkeypress = this.currentOnKeypress
+        this.prompt.oninput = this.currentOnInput
+        this.prompt.focus()
+      }
+    }
+  }
+
+  /**
+   * Attempt to initiate or extend a search
+   *
+   */
+  doSearch (evt: KeyboardEventPlusPlus) {
+    debug('doSearch', evt)
+
+    if (evt.inputType === 'deleteContentBackward') {
+      // if the user hits Backspace, reset currentSearchIdx
+      // TODO confirm that this is the behavior of bash
+      this.currentSearchIdx = -1
+      this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.prompt.value)
+    }
+
+    // where do we want to start the search? if the user is just
+    // typing, then start from the end of history; if the user hit
+    // ctrl+r, then they want to search for the next match
+    const userHitCtrlR = evt.ctrlKey && evt.code === 'KeyR'
+    const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : -1
+
+    const newSearchIdx = this.prompt.value && historyModel.findIndex(this.prompt.value, startIdx)
+    debug('search index', this.prompt.value, newSearchIdx)
+
+    if (newSearchIdx > 0) {
+      this.currentSearchIdx = newSearchIdx
+
+      this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ` ${newSearchIdx}`).replace(/\$2/, this.prompt.value)
+
+      const newValue = historyModel.lines[this.currentSearchIdx].raw
+      debug('newValue', newValue)
+      const caretPosition = newValue.indexOf(this.prompt.value) + 1
+      debug('caretPosition', caretPosition)
+
+      const matchedPrefix = newValue.substring(0, caretPosition - 1)
+      const matchedSuffix = newValue.substring(caretPosition + this.prompt.value.length - 1)
+      debug('matchedPrefix', matchedPrefix, newValue, caretPosition)
+      debug('matchedSuffix', matchedSuffix)
+      this.placeholderTypedPart.innerText = this.prompt.value.replace(/ /g, '_') // show matched whitespaces with an underscore
+      this.placeholderMatchedPrefixPart.innerText = matchedPrefix
+      this.placeholderMatchedSuffixPart.innerText = matchedSuffix
+      this.placeholderContentPart.setAttribute('data-full-match', newValue)
+    } else if (!userHitCtrlR) {
+      // if we found no match, reset the match text, unless the user
+      // is using repeated ctrl+R to search backwards; in this case,
+      // let's continue to display the previous match if no new match
+      // is found
+      this.placeholderTypedPart.innerText = ''
+      this.placeholderMatchedPrefixPart.innerText = ''
+      this.placeholderMatchedSuffixPart.innerText = ''
+      this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.prompt.value)
+    } else {
+      this.placeholderFixedPart.classList.add('alert-pulse')
+      setTimeout(() => this.placeholderFixedPart.classList.remove('alert-pulse'), 1000)
+    }
+  }
+
+  /** fill in the result of a search */
+  completeSearch () {
+    debug('completing search')
+    this.prompt.value = this.placeholderContentPart.getAttribute('data-full-match')
+    this.cancelISearch()
+  }
+
+  /**
+   * User hits enter while in i-search mode
+   *
+   */
+  maybeComplete (evt: KeyboardEvent) {
+    if (this.isSearchActive) {
+      if (evt.keyCode === keys.ENTER) {
+        this.completeSearch()
+        this.prompt.dispatchEvent(new KeyboardEvent(evt.type, evt))
+      }
+    }
+  }
+}
+
 /**
  * Listen for ctrl+R
  *
@@ -48,117 +207,6 @@ function registerListener () {
   if (typeof document === 'undefined') {
     // fail-safe, in case we have no DOM
     return
-  }
-
-  /** state of the reverse-i-search */
-  let isSearchActive = false
-  let currentOnKeypress
-  let currentOnInput
-  let currentSearchIdx = -1
-  let placeholder
-  let placeholderFixedPart
-  let placeholderContentPart
-  let placeholderTypedPart
-  let placeholderMatchedPrefixPart
-  let placeholderMatchedSuffixPart
-  let promptLeft
-
-  /**
-   * For various reasons, user has cancelled a reverse-i-search.
-   *
-   */
-  const cancelISearch = (tab: ITab) => {
-    if (isSearchActive) {
-      isSearchActive = false
-      currentSearchIdx = -1
-
-      const prompt = getCurrentPrompt(tab)
-      prompt.onkeypress = currentOnKeypress
-      prompt.oninput = currentOnInput
-      getCurrentBlock(tab).classList.remove('using-custom-prompt')
-      if (placeholder.parentNode) {
-        placeholder.parentNode.removeChild(placeholder)
-      }
-      prompt.focus()
-
-      prompt.style.opacity = '1'
-      prompt.style.width = 'auto'
-    }
-  }
-
-  /**
-   * Attempt to initiate or extend a search
-   *
-   */
-  function doSearch (evt) {
-    debug('doSearch', evt)
-
-    if (evt.inputType === 'deleteContentBackward') {
-      // if the user hits Backspace, reset currentSearchIdx
-      // TODO confirm that this is the behavior of bash
-      currentSearchIdx = -1
-      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.value)
-    }
-
-    // where do we want to start the search? if the user is just
-    // typing, then start from the end of history; if the user hit
-    // ctrl+r, then they want to search for the next match
-    const userHitCtrlR = evt.ctrlKey && evt.code === 'KeyR'
-    const startIdx = userHitCtrlR ? currentSearchIdx - 1 : -1
-
-    const newSearchIdx = this.value && historyModel.findIndex(this.value, startIdx)
-    debug('search index', this.value, newSearchIdx)
-
-    if (newSearchIdx > 0) {
-      currentSearchIdx = newSearchIdx
-
-      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ` ${newSearchIdx}`).replace(/\$2/, this.value)
-
-      const newValue = historyModel.lines[currentSearchIdx].raw
-      debug('newValue', newValue)
-      const caretPosition = newValue.indexOf(this.value) + 1
-      debug('caretPosition', caretPosition)
-
-      const matchedPrefix = newValue.substring(0, caretPosition - 1)
-      const matchedSuffix = newValue.substring(caretPosition + this.value.length - 1)
-      debug('matchedPrefix', matchedPrefix, newValue, caretPosition)
-      debug('matchedSuffix', matchedSuffix)
-      placeholderTypedPart.innerText = this.value.replace(/ /g, '_') // show matched whitespaces with an underscore
-      placeholderMatchedPrefixPart.innerText = matchedPrefix
-      placeholderMatchedSuffixPart.innerText = matchedSuffix
-      placeholderContentPart.setAttribute('data-full-match', newValue)
-    } else if (!userHitCtrlR) {
-      // if we found no match, reset the match text, unless the user
-      // is using repeated ctrl+R to search backwards; in this case,
-      // let's continue to display the previous match if no new match
-      // is found
-      placeholderTypedPart.innerText = ''
-      placeholderMatchedPrefixPart.innerText = ''
-      placeholderMatchedSuffixPart.innerText = ''
-      placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.value)
-    } else {
-      placeholderFixedPart.classList.add('alert-pulse')
-      setTimeout(() => placeholderFixedPart.classList.remove('alert-pulse'), 1000)
-    }
-  }
-
-  /** fill in the result of a search */
-  function completeSearch (tab: ITab) {
-    debug('completing search')
-    getCurrentPrompt(tab).value = placeholderContentPart.getAttribute('data-full-match')
-    cancelISearch(tab)
-  }
-
-  /**
-   * User hits enter while in i-search mode
-   *
-   */
-  function maybeComplete (evt: KeyboardEvent) {
-    if (isSearchActive) {
-      if (evt.keyCode === keys.ENTER) {
-        completeSearch(getTabFromTarget(evt.srcElement))
-      }
-    }
   }
 
   /**
@@ -180,56 +228,23 @@ function registerListener () {
       return
     } else if (evt.ctrlKey && (process.platform === 'darwin' || ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))) {
       const tab = getTabFromTarget(evt.srcElement)
+      const activeSearch = tab['_kui_active_i_search']
+
       if (evt.keyCode === keys.R) {
         debug('got ctrl+r')
-        promptLeft = getCurrentPromptLeft(tab)
-        const prompt = getCurrentPrompt(tab)
-
-        if (isSearchActive) {
+        if (activeSearch) {
           debug('continuation of existing reverse-i-search')
-          doSearch.call(prompt, evt) // we use .call to establish our own 'this'
+          activeSearch.doSearch(evt)
         } else {
           debug('new reverse-i-search')
-          isSearchActive = true
-
-          placeholder = document.createElement('span')
-          placeholderFixedPart = document.createElement('span')
-          placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, '').replace(/\$2/, prompt.value)
-          placeholder.appendChild(placeholderFixedPart)
-          placeholder.classList.add('repl-temporary')
-          placeholder.classList.add('normal-text')
-          placeholderFixedPart.classList.add('smaller-text')
-          promptLeft.appendChild(placeholder)
-          getCurrentBlock(tab).classList.add('using-custom-prompt')
-
-          prompt.style.opacity = '0'
-          prompt.style.width = '0'
-
-          placeholderContentPart = document.createElement('span') // container for Typed and Matched
-          placeholderTypedPart = document.createElement('span') // what the user has typed; e.g. "is" in "history"
-          placeholderMatchedPrefixPart = document.createElement('span') // what was matched, but not typed; e.g. "h" in "history"
-          placeholderMatchedSuffixPart = document.createElement('span') // what was matched, but not typed; e.g. "tory" in "history"
-          placeholderContentPart.appendChild(placeholderMatchedPrefixPart)
-          placeholderContentPart.appendChild(placeholderTypedPart)
-          placeholderContentPart.appendChild(placeholderMatchedSuffixPart)
-          placeholderContentPart.classList.add('repl-input-like')
-          placeholder.appendChild(placeholderContentPart)
-
-          placeholderTypedPart.classList.add('red-text')
-          placeholderMatchedPrefixPart.classList.add('slightly-deemphasize')
-          placeholderMatchedSuffixPart.classList.add('slightly-deemphasize')
-
-          currentOnInput = prompt.oninput
-          prompt.oninput = doSearch
-          currentOnKeypress = prompt.onkeypress
-          prompt.onkeypress = maybeComplete
+          tab['_kui_active_i_search'] = new ActiveISearch(tab)
         }
-      } else if (isSearchActive && isCursorMovement(evt)) {
-        completeSearch(tab)
-      } else {
+      } else if (activeSearch && isCursorMovement(evt)) {
+        activeSearch.completeSearch()
+      } else if (activeSearch) {
         // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
         debug('cancel', evt.keyCode)
-        cancelISearch(tab)
+        activeSearch.cancelISearch(evt)
       }
     }
   })

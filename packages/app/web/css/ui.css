@@ -314,6 +314,10 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 repl .repl-block.using-custom-prompt .repl-prompt-righty > i {
     display: none;
 }
+repl .repl-block.using-custom-prompt .repl-input input {
+    opacity: 0;
+    width: 0;
+}
 .repl-prompt-righty > i {
     color: var(--color-brand-01);
     font-size: 1.125em;
@@ -527,7 +531,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-.repl.sidecar-visible .result-table .entity-name-group {
+.repl.sidecar-visible .result-table .entity-name-group:not(.entity-name-group-narrow) {
     /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
     width: 100%;
     max-width: 0; /* important! 0 not 0% */

@@ -59,7 +59,7 @@ const closeTab = () => tellRendererToExecute('tab close')
 
 export const install = (createWindow: Function) => {
   if (!isDev) {
-    const fileMenuItems: Array<MenuItemConstructorOptions> = [
+    const fileMenuItems: MenuItemConstructorOptions[] = [
       { label: 'New Window',
         click: () => createWindow(),
         accelerator: 'CommandOrControl+N'
@@ -80,7 +80,7 @@ export const install = (createWindow: Function) => {
       fileMenuItems.push({ role: 'quit' })
     }
 
-    const helpMenuItems: Array<MenuItemConstructorOptions> = [
+    const helpMenuItems: MenuItemConstructorOptions[] = [
       {
         label: 'Getting Started with Composer',
         click: () => {
@@ -128,7 +128,7 @@ export const install = (createWindow: Function) => {
       }
     ]
 
-    const menuTemplate: Array<MenuItemConstructorOptions> = [
+    const menuTemplate: MenuItemConstructorOptions[] = [
       {
         label: 'File',
         submenu: fileMenuItems
@@ -152,7 +152,7 @@ export const install = (createWindow: Function) => {
         label: 'View',
         submenu: [
           { accelerator: process.platform === 'darwin' ? 'Meta+R' : 'Shift+CmdOrCtrl+R', role: 'reload' },
-//          { role: 'forcereload' },
+          //          { role: 'forcereload' },
           { role: 'toggledevtools' },
           { type: 'separator' },
           { role: 'resetzoom' },

@@ -53,17 +53,17 @@ export const readProject = async (projectHome: string) => {
   debug('readProject', projectHome)
 
   if (basename(projectHome) === 'package.json') {
-        // maybe the user specified the filepath of the package.json?
+    // maybe the user specified the filepath of the package.json?
     return readProject(dirname(projectHome))
   }
 
   return Promise.all([ readJSON(projectHome, 'package.json'),
     readJSON(projectHome, 'tutorial.json') ])
-        .then(([config, tutorial]) => {
-          return {
-            config: Object.assign({}, { projectName: config.name }, config), // for configs that don't define projectName, use the name field
-            tutorial,
-            projectHome
-          }
-        })
+    .then(([config, tutorial]) => {
+      return {
+        config: Object.assign({}, { projectName: config.name }, config), // for configs that don't define projectName, use the name field
+        tutorial,
+        projectHome
+      }
+    })
 }

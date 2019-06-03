@@ -126,7 +126,7 @@ export const summarizePerformance = (activations, options) => {
 const semver = version => version.split('.').map(Number)
 
 class SemVer {
-  version: Array<number>
+  version: number[]
 
   constructor (version) {
     this.version = semver(version)

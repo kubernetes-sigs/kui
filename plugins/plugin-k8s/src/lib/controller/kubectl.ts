@@ -28,6 +28,7 @@ import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -38,7 +39,7 @@ import createdOn from '../util/created-on'
 
 import IResource from '../model/resource'
 import { FinalState } from '../model/states'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { IDelete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { redactJSON, redactYAML } from '../view/redact'
@@ -49,6 +50,7 @@ import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
 import { apply as addRelevantModes } from '../view/modes/registrar'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends IExecOptions {
   /*  credentials?: {
       k8s: {
@@ -56,7 +58,7 @@ interface KubeExecOptions extends IExecOptions {
         ca: string
         cafile: string
       }
-    }*/
+    } */
 }
 
 /**
@@ -267,6 +269,7 @@ const prepareUsage = async (command: string): Promise<IUsageModel> => {
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
+// eslint-disable-next-line promise/param-names
 const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
   const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
 
@@ -347,7 +350,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   const cmdlineForDisplay = argv.slice(1).join(' ')
 
   // replace @seed/yo.yaml with full path
-  const argvWithFileReplacements: Array<string> = await Promise.all(rawArgv.slice(1).map(async (_: string): Promise<string> => {
+  const argvWithFileReplacements: string[] = await Promise.all(rawArgv.slice(1).map(async (_: string): Promise<string> => {
     if (_.match(/^!.*/)) {
       // !foo params mean they flow programatically via execOptions.parameters.foo
       // we will pass this via stdin, which kubectl represents with a '-'
@@ -512,9 +515,14 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       }
 
       if (codeForREPL === 404 || codeForREPL === 409 || codeForREPL === 412) {
+        if (codeForREPL === 404 && verb === 'get' && (options.w || options.watch)) {
+          // NOTE(5.30.2019): for now, we only support watchable table, so we have to return an empty table here
+          debug('return an empty watch table')
+          return resolve(formatWatchableTable(new Table({ body: [] }), { refreshCommand: rawCommand.replace(/--watch|-w/g, ''), watchByDefault: true }))
+        }
         // already exists or file not found?
-        const error = new Error(err)
-        error['code'] = codeForREPL
+        const error: CodedError = new Error(err)
+        error.code = codeForREPL
         debug('rejecting without usage', codeForREPL, error)
         reject(error)
       } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && hasFileArg) {
@@ -547,13 +555,6 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         console.error('error rendering help', err)
         reject(out)
       }
-    } else if (isKube && verb === 'get' && (options.watch || options.w)) {
-      // kubectl get --watch mode?
-      debug('delegating to k status')
-      const ns = options.n || options.namespace
-        ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
-        : ''
-      return repl.qexec(`k status ${entityType} ${entity || ''} ${ns}`).then(resolveBase, reject)
     } else if (output === 'json' || output === 'yaml' || verb === 'logs') {
       //
       // return a sidecar entity
@@ -573,7 +574,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         return resolve(result)
       }
 
-      const modes: Array<ISidecarMode> = [{
+      const modes: ISidecarMode[] = [{
         mode: 'result',
         direct: rawCommand,
         label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
@@ -655,7 +656,13 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       // tabular output
       //
       debug('attempting to display as a table')
-      resolve(table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions))
+      const tableModel = table(out, err, command, verb, command === 'helm' ? '' : entityType, entity, options, execOptions)
+
+      if ((options.watch || options.w) && (isTable(tableModel) || isMultiTable(tableModel))) {
+        resolve(formatWatchableTable(tableModel as Table | Table[], { refreshCommand: rawCommand.replace(/--watch|-w/g, ''), watchByDefault: true }))
+      } else {
+        resolve(tableModel)
+      }
     } else {
       //
       // otherwise, return raw text for display in the repl

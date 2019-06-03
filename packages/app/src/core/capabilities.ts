@@ -29,7 +29,9 @@ export enum Media {
 }
 
 /** map from provider to credentials */
-type ICredentialsMap = { [key: string]: any }
+interface ICredentialsMap {
+  [key: string]: any
+}
 
 /**
  * Current state of capabilities

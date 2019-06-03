@@ -92,7 +92,7 @@ const isRemote = location => location.includes('https:') || location.includes('h
  *
  */
 interface IRemote {
-  location: string,
+  location: string
   removeWhenDone: boolean
 }
 const fetchRemote = (location, mimeType): Promise<IRemote> => new Promise((resolve, reject) => {
@@ -459,7 +459,7 @@ export default async (commandTree, wsk) => {
         : Promise.resolve({ location })
       return extra.then(({ location, text }) => {
         return makeWebAsset(wsk, name, mimeType || extension, location, text,
-                            options, execOptions)
+          options, execOptions)
       })
     }
   }
@@ -473,8 +473,8 @@ export default async (commandTree, wsk) => {
         code: code
       },
       annotations: [{ key: ANON_KEY_FQN, value: `/${currentNamespace()}/${parentActionName}` },
-                    { key: ANON_KEY, value: parentActionName },
-                    { key: ANON_CODE, value: code.replace(/^let main = /, '') }] // .*\s*=>\s*
+        { key: ANON_KEY, value: parentActionName },
+        { key: ANON_CODE, value: code.replace(/^let main = /, '') }] // .*\s*=>\s*
     }
   })).then(action => {
     currentIter++ // optimization
@@ -516,19 +516,19 @@ export default async (commandTree, wsk) => {
         .then(location => {
           return createFromFile(name, mimeType, location.location, letType, options, execOptions)
             .catch(packageAutoCreate(name))
-              .then(resource => {
-                if (location.removeWhenDone) {
-                  // we were asked to clean up when we finished with the location
-                  debug('cleaning up', location.location)
-                  unlink(location.location, err => {
-                    if (err) {
-                      console.error(err)
-                    }
-                  })
-                }
+            .then(resource => {
+              if (location.removeWhenDone) {
+                // we were asked to clean up when we finished with the location
+                debug('cleaning up', location.location)
+                unlink(location.location, err => {
+                  if (err) {
+                    console.error(err)
+                  }
+                })
+              }
 
-                return resource
-              })
+              return resource
+            })
         })
     }
 
@@ -537,13 +537,13 @@ export default async (commandTree, wsk) => {
      *
      */
     interface IKeyValue {
-      key: string,
+      key: string
       value: string
     }
     interface IEntity {
-      name: string,
-      namespace?: string,
-      annotations?: Array<IKeyValue>
+      name: string
+      namespace?: string
+      annotations?: IKeyValue[]
     }
     const furlSequenceComponent = (parentActionName: string) => (component: string, idx: number): Promise<IEntity> => {
       const intentionMatch = component.match(patterns.intention.inline)
@@ -574,7 +574,7 @@ export default async (commandTree, wsk) => {
         }
       }
     }
-    const furl = (components: Array<string>, parentActionName: string): Promise<Array<IEntity>> => {
+    const furl = (components: string[], parentActionName: string): Promise<IEntity[]> => {
       return Promise.all(components.map(furlSequenceComponent(parentActionName)))
     }
 

@@ -61,13 +61,13 @@ function getCachedSize (tab: ITab): ISize {
     return cachedSize
   }
 }
-function setCachedSize (tab: ITab, { rows, cols }: { rows: number, cols: number }) {
+function setCachedSize (tab: ITab, { rows, cols }: { rows: number; cols: number }) {
   tab['_kui_pty_cachedSize'] = { rows, cols, sidecarState: getSidecarState(tab), resizeGeneration }
 }
 
 interface HTerminal extends xterm.Terminal {
   _core: {
-    renderer: { _terminal: { cols: number, options: { letterSpacing: number }, charMeasure: { width: number } }, dimensions: { scaledCharWidth: number, actualCellWidth: number, actualCellHeight: number, canvasWidth: number, scaledCanvasWidth: number, scaledCellWidth: number } }
+    renderer: { _terminal: { cols: number; options: { letterSpacing: number }; charMeasure: { width: number } }; dimensions: { scaledCharWidth: number; actualCellWidth: number; actualCellHeight: number; canvasWidth: number; scaledCanvasWidth: number; scaledCellWidth: number } }
   }
 }
 
@@ -300,7 +300,7 @@ class Resizer {
  * Inject current font settings
  *
  */
-let cachedFontProperties: { fontFamily: string, fontSize: number }
+let cachedFontProperties: { fontFamily: string; fontSize: number }
 function getFontProperties (flush: boolean) {
   if (flush || !cachedFontProperties) {
     debug('computing font properties')
@@ -552,7 +552,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
         }
       }
 
-      const notifyOfWriteCompletion = (evt: { start: number, end: number }) => {
+      const notifyOfWriteCompletion = (evt: { start: number; end: number }) => {
         if (pendingWrites > 0) {
           pendingWrites = 0
           if (cbAfterPendingWrites) {
@@ -567,7 +567,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
       // receive updates after we receive a process exit event; but we
       // will always receive a `refresh` event when the animation
       // frame is done. see https://github.com/IBM/kui/issues/1272
-      terminal.on('refresh', (evt: { start: number, end: number }) => {
+      terminal.on('refresh', (evt: { start: number; end: number }) => {
         // debug('refresh', evt.start, evt.end)
         resizer.hideTrailingEmptyBlanks()
         doScroll()
@@ -625,7 +625,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
                 if (tableData) {
                   const command = argvNoOptions[0]
                   const verb = argvNoOptions[1]
-                  const entityType = argvNoOptions[2]
+                  const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
                   const tableModel = formatTable(command, verb, entityType, parsedOptions, tableData.rows)
                   debug('tableModel', tableModel)
                   pendingTable = tableModel
@@ -652,6 +652,11 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
         } else if (msg.type === 'exit') {
           // server told us that it is done
           debug('exit', msg.exitCode)
+
+          if (pendingTable && pendingTable.body.length === 0) {
+            terminal.write(raw)
+            pendingTable = undefined
+          }
 
           const finishUp = async () => {
             ws.removeEventListener('message', onMessage)

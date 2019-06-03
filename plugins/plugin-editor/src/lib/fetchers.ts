@@ -53,7 +53,7 @@ export interface IEntity {
   exec: IExecSpec
   persister: any
   gotoReadonlyView?: (Getter) => any
-  annotations: Array<IKeyValuePair>
+  annotations: IKeyValuePair[]
 }
 
 export type IFetcher = (name: string, parsedOptions?, execOptions?) => Promise<IEntity>
@@ -123,8 +123,8 @@ export const fetchFile: IFetcher = (name: string) => {
             const extension = name.substring(name.lastIndexOf('.') + 1)
             const kind = extension === 'js' ? 'javascript'
               : extension === 'ts' ? 'typescript'
-              : extension === 'py' ? 'python'
-                : extension
+                : extension === 'py' ? 'python'
+                  : extension
 
             resolve({
               type: 'file',

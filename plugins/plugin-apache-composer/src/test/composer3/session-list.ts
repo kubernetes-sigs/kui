@@ -56,7 +56,7 @@ describe('session list and name filter', function (this: common.ISuite) {
         for (let index = 0; index < expectedSessions.length; index++) {
           debug('actual session', actualSessions[index])
           debug('exptect session', expectedSessions[index])
-          assert.strictEqual(actualSessions[index], expectedSessions[index])  // expect session list to have exact order of expectedSessions
+          assert.strictEqual(actualSessions[index], expectedSessions[index]) // expect session list to have exact order of expectedSessions
         }
         return actualSessions
       })
@@ -127,7 +127,7 @@ describe('session list and name filter', function (this: common.ISuite) {
 
   it(`should show 3 if and 2 ${appName} in session list`, () => cli.do(`session list`, this.app)
     .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedSessions: ['if','if','if',appName, appName] }))
+    .then(async commandIndex => verifySessionList({ commandIndex, expectedSessions: ['if', 'if', 'if', appName, appName] }))
     .catch(common.oops(this)))
 
 })

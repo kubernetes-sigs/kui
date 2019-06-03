@@ -219,16 +219,16 @@ describe('app create and sessions', function (this: common.ISuite) {
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName1))
     .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_MODE_BUTTONS}`))
-     .then((buttons: string | string[]) => Array.isArray(buttons) && buttons.length > 0 && buttons.filter(x => x).reduce((M, button) => { // filter removes blanks due to image icons
-       if (M[button]) {
-         // duplicate button!!
-         assert.fail('Duplicate mode button ' + button)
-       } else {
-         M[button] = true
-       }
-       return M
-     }, {}))
-     .catch(common.oops(this)))
+    .then((buttons: string | string[]) => Array.isArray(buttons) && buttons.length > 0 && buttons.filter(x => x).reduce((M, button) => { // filter removes blanks due to image icons
+      if (M[button]) {
+        // duplicate button!!
+        assert.fail('Duplicate mode button ' + button)
+      } else {
+        M[button] = true
+      }
+      return M
+    }, {}))
+    .catch(common.oops(this)))
 
   it('should get the composer sequence via "action get"', () => cli.do(`action get ${seqName1}`, this.app)
     .then(cli.expectOK)
@@ -255,7 +255,7 @@ describe('app create and sessions', function (this: common.ISuite) {
   invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 })
 
   getSessions('sessions list', 0, 3) // 3 "done" sessions
-  getSessions('ses list', 0, 3)        // 3 "done" sessions (testing aliases here)*/
+  getSessions('ses list', 0, 3) // 3 "done" sessions (testing aliases here)*/
 
   // disable pagination tests
   /* getSessions('session list --skip 1', 0, 1) // expect 1, if we skip 1 (since we expect 2 in total)

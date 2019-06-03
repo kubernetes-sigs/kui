@@ -32,9 +32,9 @@ interface IPair {
   type: string
   name: string
   onclick: boolean
-  attributes: Array<IAttr>
+  attributes: IAttr[]
 }
-export default (str: string): Array<IPair> | void => {
+export default (str: string): IPair[] | void => {
   const kvPattern = /^([^=]+)=(.+)$/gm
 
   let match = kvPattern.exec(str)

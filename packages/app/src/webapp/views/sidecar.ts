@@ -246,7 +246,9 @@ export const renderField = async (container: HTMLElement, entity: IEntitySpec, f
     // for now, we just render it as raw JSON, TODO: some sort of fancier key-value pair visualization?
     if (field === 'parameters' || field === 'annotations') {
       // special case here: the parameters field is really a map, but stored as an array of key-value pairs
-      type KeyValueMap = { [key: string]: string }
+      interface KeyValueMap {
+        [key: string]: string
+      }
       value = value.reduce((M: KeyValueMap, kv) => {
         M[kv.key] = kv.value
         return M
@@ -309,7 +311,7 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
   } else if (custom.presentation || isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab))) {
     const presentation = custom.presentation ||
       (viewProviderDesiresFullscreen ? Presentation.SidecarFullscreenForPopups
-       : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen)
+        : custom.presentation !== undefined ? custom.presentation : Presentation.SidecarFullscreen)
     presentAs(tab, presentation)
 
     if (viewProviderDesiresFullscreen) {
@@ -378,7 +380,7 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
     sidecar.entity.type = sidecar.entity.viewName
 
     addNameToSidecarHeader(sidecar, entity.prettyName || entity.name, entity.packageName, undefined,
-                           entity.prettyType || entity.type, entity.subtext, entity)
+      entity.prettyType || entity.type, entity.subtext, entity)
 
     // render badges
     addVersionBadge(tab, entity, { clear: true, badgesDom })
@@ -407,7 +409,8 @@ export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExec
       const tryToUseEditor = true
       if (tryToUseEditor) {
         try {
-          const { edit /*, IEditorEntity */ } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
+          // const { edit, IEditorEntity } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
+          const { edit } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
           debug('successfully loaded editor', custom)
 
           const entity /*: IEditorEntity */ = {
@@ -624,7 +627,7 @@ export const linkify = (dom: Element): void => {
  */
 interface IBadgeOptions {
   css?: string
-  onclick?,
+  onclick?
   badgesDom: Element
 }
 class DefaultBadgeOptions implements IBadgeOptions {

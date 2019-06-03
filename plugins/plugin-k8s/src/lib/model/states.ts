@@ -71,7 +71,7 @@ export enum FinalState {
 
 /** definitions of these groups */
 const stateGroups = {}
-const groupOf = (A: Array<State>) => A.reduce((group, state) => {
+const groupOf = (A: State[]) => A.reduce((group, state) => {
   group[state] = true
   return group
 }, {})
@@ -89,9 +89,9 @@ const isOfflineLike = (state: State): boolean => stateGroups[FinalState.OfflineL
 const isPendingLike = (state: State): boolean => !isOnlineLike(state) && !isOfflineLike(state)
 
 export interface IStatus {
-  state?: State,
-  phase?: State,
-  message?: string,
+  state?: State
+  phase?: State
+  message?: string
   startTime?: string
 }
 
@@ -124,8 +124,8 @@ export enum TrafficLight {
 export const state2Traffic = (state: State): TrafficLight => {
   return state === States.Conflict ? TrafficLight.Gray
     : isOnlineLike(state) ? TrafficLight.Green
-    : isOfflineLike(state) ? TrafficLight.Red
-    : TrafficLight.Yellow
+      : isOfflineLike(state) ? TrafficLight.Red
+        : TrafficLight.Yellow
 }
 
 export const trafficMerge = (t1: TrafficLight, t2: TrafficLight): TrafficLight => {
@@ -228,13 +228,13 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
       // at the top level, hence the state.state check
       const status = getStatusFromConditions(response) ||
         (response.status && (response.status.state || response.status.phase)
-         ? response.status
-         : response.state ? response
-         : response.apiVersion.match(/istio\.io/) ? {
-           state: States.Online,
-           message: new Date()
-         }
-         : undefined
+          ? response.status
+          : response.state ? response
+            : response.apiVersion.match(/istio\.io/) ? {
+              state: States.Online,
+              message: new Date()
+            }
+              : undefined
         )
 
       if (!status) {
@@ -345,7 +345,8 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
   // debug('watchStatus', finalStateStr, FinalState[finalState], kind, name);
 
   try {
-    const [ status /*, detail*/ ] = await Promise.all([
+    // const [ status, detail ] = await Promise.all([
+    const [ status ] = await Promise.all([
       getStatus(finalState, watch.apiVersion, kind, name, namespace, context)
       // type !== 'unknown' ? getOpenWhiskStatus(type, fqn) : undefined
     ])
@@ -360,12 +361,12 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
     // debug('watchStatus newState', newState);
 
     // other cells to update
-    const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' }]
+    const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' } ]
       : status.message ? [ { key: 'message', value: maybeAsDate(status.message) } ]
-      : status.startTime ? [ { key: 'message', value: maybeAsDate(status.startTime) } ]
-      : newState === States.Offline ? [ { key: 'message', value: finalState === FinalState.OnlineLike ? 'resource not yet available' : 'resource is offline' } ]
-      : newState === States.Pending || newState === States.Deploying || newState === States.Deleting ? [ { key: 'message', value: 'in progress' } ]
-      : undefined
+        : status.startTime ? [ { key: 'message', value: maybeAsDate(status.startTime) } ]
+          : newState === States.Offline ? [ { key: 'message', value: finalState === FinalState.OnlineLike ? 'resource not yet available' : 'resource is offline' } ]
+            : newState === States.Pending || newState === States.Deploying || newState === States.Deleting ? [ { key: 'message', value: 'in progress' } ]
+              : undefined
 
     // are we done updating
     const done = newState === States.Failed ||
@@ -392,9 +393,9 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
         }
       })
 
-    const isOpenWhiskLike = /*kind === 'Function' &&*/ type !== 'unknown'
+    const isOpenWhiskLike = /* kind === 'Function' && */ type !== 'unknown'
 
-    const onclick = /*status && state === States.Online &&*/ isOpenWhiskLike
+    const onclick = /* status && state === States.Online && */ isOpenWhiskLike
       ? tryGetOpenWhiskResource
       : getKubernetesResource
 

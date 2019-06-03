@@ -179,12 +179,12 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
   /** try to find the given entity name, across the types */
   const fetchEntityWithFallbacks = name => fetchEntityWithType(name, type)
     .catch(logThen(() => fetchEntityWithType(name, type === 'packages' ? 'actions' : 'packages')))
-      .catch(logThen(() => fetchEntityWithType(name, type === 'triggers' ? 'actions' : 'triggers')))
+    .catch(logThen(() => fetchEntityWithType(name, type === 'triggers' ? 'actions' : 'triggers')))
 
   /** fetch the entity with the given name, using the given entity type, then fall back to trying all types */
   const fetchEntity = (name, tryThisType) =>
     (tryThisType ? fetchEntityWithType(name, tryThisType) : fetchEntityWithFallbacks(name))
-    .catch(() => fetchEntityWithFallbacks(name))
+      .catch(() => fetchEntityWithFallbacks(name))
 
   let key
   let value

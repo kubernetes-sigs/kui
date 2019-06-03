@@ -35,7 +35,8 @@ const capitalize = word => word.charAt(0).toUpperCase() + word.substring(1)
 /** generic project-related command */
 const projectCommand = (command: string, docs: string, opts?) => ({
   strict: command,
-  command, commandPrefix,
+  command,
+  commandPrefix,
   breadcrumb: opts.breadcrumb || command,
   title: capitalize(command),
   header: docs,
@@ -55,8 +56,8 @@ export const usage = {
     example: `${entity} import <url>`,
     required: [{ name: 'url', docs: 'github.com URL for the module to import', entity, file: true }],
     optional: [{ name: '--name', docs: 'Name for the imported module; defaults to the git repo name' },
-               { name: '--branch', alias: '-b', docs: 'Check out a branch of the given module repository' },
-               { name: '--force', alias: '-f', boolean: true, docs: 'Refresh the module if it has already been imported' }],
+      { name: '--branch', alias: '-b', docs: 'Check out a branch of the given module repository' },
+      { name: '--force', alias: '-f', boolean: true, docs: 'Refresh the module if it has already been imported' }],
     // related: ['plugin install', 'plugin list'],
     parents
   },
@@ -97,7 +98,7 @@ export const usage = {
     parents
   },
 
-    // module list command
+  // module list command
   list: syn => projectCommand(syn, 'list the imported projects',
     { breadcrumb: 'list',
       noProjectRequired: true,
@@ -107,11 +108,11 @@ export const usage = {
       ],
       related: [`${entity} set`] }),
 
-    // module init
+  // module init
   init: projectCommand('init', 'create a new empty project', { required: [{ name: 'moduleName', docs: 'name for the new module' }],
     related: [`${entity} set`, `${entity} list`] }),
 
-    // module set, and unset
+  // module set, and unset
   set: projectCommand('set', 'focus the Shell on a given module', { related: [`${entity} list`] }),
   unset: projectCommand('unset', 'remove the current module focus', { noProjectRequired: true, related: [`${entity} list`, `${entity} set`] }),
 

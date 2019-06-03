@@ -49,7 +49,7 @@ export const statusButton = (command: string, resource: IResource, finalState: F
 export const renderStatus = async (tab: ITab, command: string, resource: IResource, finalState: FinalState) => {
   debug('renderStatus', command, resource.filepathForDrilldown, resource.kind, resource.name, finalState, resource.yaml)
 
-    // TODO: helm status doesn't yet support watching; so no final-state for helm status
+  // TODO: helm status doesn't yet support watching; so no final-state for helm status
   const final = command === 'kubectl' ? `--final-state ${finalState.toString()}` : ''
 
   // kubectl status => k8s status

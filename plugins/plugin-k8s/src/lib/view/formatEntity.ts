@@ -43,7 +43,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   const doWatch = true
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
 
-  const { apiVersion, kind, metadata: { name, namespace, labels, annotations= {} } } = kubeEntity
+  const { apiVersion, kind, metadata: { name, namespace, labels, annotations = {} } } = kubeEntity
   const { type, actionName, packageName, fqn } = toOpenWhiskFQN(kubeEntity)
   const { outerCSS, cssForState } = stateRendering
 
@@ -54,7 +54,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
 
   const kindForDisplay = masqueradeKind || kind
 
-  const kindAttr: Array<any> = [{ key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }]
+  const kindAttr: any[] = [{ key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }]
   const contextAttr = parsedOptions.multi || !context ? []
     : formatContextAttr(context)
 
@@ -79,7 +79,8 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   eventBus.emit('/kubectl/state/expect', { watch, finalState })
 
   const namespaceAttrs = !watch.kind || watch.kind.match(/(ns|Namespace)/i) ? [] : [{
-    key: 'namespace', value: targetNamespace || namespace,
+    key: 'namespace',
+    value: targetNamespace || namespace,
     outerCSS: 'pretty-narrow hide-with-sidecar'
   }]
 
@@ -104,12 +105,14 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
     },
 
     {
-      key: 'message', value: '',
-      css: 'somewhat-smaller-text slightly-deemphasize', outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
+      key: 'message',
+      value: '',
+      css: 'somewhat-smaller-text slightly-deemphasize',
+      outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
     }
   ]
 
-  const attributes: Array<any> = kindAttr.concat(contextAttr)
+  const attributes: any[] = kindAttr.concat(contextAttr)
     .concat(namespaceAttrs)
     .concat(statusAttrs)
 

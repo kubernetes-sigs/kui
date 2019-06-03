@@ -39,7 +39,7 @@ export interface ISidecarMode {
 
   selected?: boolean
   selectionController?: any
-  visibleWhen?: any,
+  visibleWhen?: any
   leaveBottomStripeAlone?: boolean
 
   // icon label?
@@ -57,7 +57,7 @@ export interface ISidecarMode {
   command?: any
   direct?: DirectViewController
 
-  execOptions?: IExecOptions,
+  execOptions?: IExecOptions
 
   defaultMode?: boolean
 
@@ -257,7 +257,7 @@ const _addModeButton = (tab: ITab, bottomStripe: Element, opts: ISidecarMode, en
         }
       } else {
         try {
-          await repl.pexec(command(entity), { /* leaveBottomStripeAlonex true,*/ echo, noHistory, replSilence })
+          await repl.pexec(command(entity), { echo, noHistory, replSilence })
           if (leaveBottomStripeAlone) {
             changeActiveButton()
           }

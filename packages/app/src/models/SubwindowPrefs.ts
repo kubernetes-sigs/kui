@@ -20,7 +20,7 @@ interface ISubwindowPrefs {
   synonymFor?: object
   width?: number
   height?: number
-  position?: { x: number, y: number },
+  position?: { x: number; y: number }
   bringYourOwnWindow?: () => void
 }
 

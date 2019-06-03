@@ -333,7 +333,7 @@ describe('Create an action via let core tests', function (this: common.ISuite) {
 
   // invoke it
   it('should do an async of the action, using implicit context', () => cli.do(`async -p y 3`, this.app)
-     .then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
+    .then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
 
   // call await
   it('should await successful completion of the activation', () => cli.do(`$ await`, this.app)

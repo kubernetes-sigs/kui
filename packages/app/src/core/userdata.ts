@@ -23,7 +23,9 @@ import store from '@kui-shell/core/models/store'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser, inElectron } from '@kui-shell/core/core/capabilities'
 
-type Preferences = { [key: string]: string }
+interface Preferences {
+  [key: string]: string
+}
 
 /**
  * Get the userdata directory

@@ -323,7 +323,7 @@ const showTutorial = (tab: cli.ITab, tutorialName: string, obj) => {
           block.setAttribute('data-balloon-pos', idx > obj.steps.length / 2 ? 'down-right' : 'down')// square: idx % dim > Math.floor(dim/2) ? 'down-right' : 'down')
           block.setAttribute('data-balloon-length', 'small')
           block.onclick = () => {
-	    $(pane).prop('step', idx)
+            $(pane).prop('step', idx)
             transitionSteps(tab, idx, obj, pane)
           }
 
@@ -369,7 +369,7 @@ const focusOnBiggestScrollable = () => {
 }
 
 /** this is useful if we want to display the step "blocks" as a square */
-/*const closestSquare = n => {
+/* const closestSquare = n => {
   const root = Math.sqrt(n),
   integralPart = ~~root,
   decimalPart = root - integralPart
@@ -379,7 +379,7 @@ const focusOnBiggestScrollable = () => {
   } else {
   return integralPart + 1
   }
-  }*/
+  } */
 
 /**
  * Render a table as a structured list
@@ -462,7 +462,7 @@ const renderOneTable = (parent, pane) => table => {
  * Execute a command, handling the fullscreen toggle
  *
  */
-const commandFromFullscreen = (pane, command, display= command) => () => {
+const commandFromFullscreen = (pane, command, display = command) => () => {
   const go = () => {
     repl.pexec(command)
 
@@ -513,7 +513,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
 
   // extract the fields of the step model
   const { heading, content, transition, input, extras, fontawesome,
-          highlight, autocomplete, execute, preview, sidecar } = obj.steps[stepNum]
+    highlight, autocomplete, execute, preview, sidecar } = obj.steps[stepNum]
 
   // heading text
   pane.querySelector('.tutorial-heading').innerText = heading
@@ -552,7 +552,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
   // render the extras
   const extrasPart = pane.querySelector('.tutorial-content-extras')
 
-  /*const previousExtras = extrasPart.querySelectorAll('.tutorial-content-extras-body');
+  /* const previousExtras = extrasPart.querySelectorAll('.tutorial-content-extras-body');
     for (let idx = 0; idx < previousExtras.length; idx++) {
     removeAllDomChildren(previousExtras[idx]);
     } */
@@ -597,7 +597,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
       table = {
         title: extras.alternate ? 'Alternate Adventures' : 'Next Steps',
         columns: ['Command', 'Description'],
-        rows: nextSteps.filter(_ => !_.hidden).map(({ command, display= command, doc, when }) => [
+        rows: nextSteps.filter(_ => !_.hidden).map(({ command, display = command, doc, when }) => [
           { value: display,
             when,
             onclick: commandFromFullscreen(pane, command, display) },
@@ -630,7 +630,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
 
       pane.setAttribute('tutorial-has-showcase', 'tutorial-has-showcase')
 
-      extras.showcase.forEach(({ title, command, display= command, description, image, groupWith }) => {
+      extras.showcase.forEach(({ title, command, display = command, description, image, groupWith }) => {
         const element = document.createElement('div')
         element.className = 'tutorial-showcase-element'
 
@@ -666,6 +666,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
           newGroup()
         } else {
           try {
+            // eslint-disable-next-line no-eval
             const fn = eval(groupWith)
             const group = fn(container.children)
             group.appendChild(element)
@@ -718,10 +719,10 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
     const handler = function (event) {
       if (event.keyCode === 13) { // 13 is the keycode for Enter
         if ($(selector).val().trim() === value) {
-	  // unbind, move to the next step;
-	  $(document).unbind('keydown', handler)
-	  $(pane).prop('step', stepNum + 1)
-	  transitionSteps(tab, stepNum + 1, obj, pane)
+          // unbind, move to the next step;
+          $(document).unbind('keydown', handler)
+          $(pane).prop('step', stepNum + 1)
+          transitionSteps(tab, stepNum + 1, obj, pane)
         }
       }
     }

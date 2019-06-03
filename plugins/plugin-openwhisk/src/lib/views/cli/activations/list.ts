@@ -46,7 +46,7 @@ const mapToOptions = (baseMap, overrides = {}) => {
  * Fetch activation records
  *
  */
-const fetch = async (activationIds: Array<string>) => {
+const fetch = async (activationIds: string[]) => {
   debug('fetching', activationIds)
 
   const activations = await Promise.all(activationIds.map(_ => {
@@ -108,9 +108,9 @@ export const render = opts => {
 }
 const _render = args => {
   const { entity, activationIds, container, noCrop = false, noPip = false,
-          showResult = false, showStart = false, showTimeline = true,
-          skip, limit,
-          parsedOptions } = args
+    showResult = false, showStart = false, showTimeline = true,
+    skip, limit,
+    parsedOptions } = args
   const tab: ITab = args.tab
 
   const currentRows = container.querySelectorAll('tr.log-line')
@@ -306,10 +306,10 @@ const _render = args => {
         const gridCommand = activation.sessionId
           ? `grid ${repl.encodeComponent(activation.name)}` // for apps, the activation.name field is the app name
           : !path ? `grid ${repl.encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
-          : `grid ${repl.encodeComponent(`/${path.value}`)}`
+            : `grid ${repl.encodeComponent(`/${path.value}`)}`
 
         nameClick.onclick = pip(() => repl.pexec(gridCommand)
-                                /* undefined, logTable, viewName, { parent: container } */)
+          /* undefined, logTable, viewName, { parent: container } */)
 
         // column 3: duration cell
         const duration = nextCell()
@@ -476,8 +476,8 @@ const _render = args => {
           paginator.appendChild(rightButtons)
           rightButtons.classList.add('list-paginator-right-buttons')
           const buttons = [ { command: 'summary', icon: 'fas fa-list', balloon: 'Open a statistical summary view' },
-                            // 'timeline', // disabled for now shell issue #794
-                            { command: 'grid', icon: 'fas fa-th', balloon: 'Open a grid view', balloonPos: 'up-left' } ]
+            // 'timeline', // disabled for now shell issue #794
+            { command: 'grid', icon: 'fas fa-th', balloon: 'Open a grid view', balloonPos: 'up-left' } ]
           buttons.forEach(({ command, icon, balloon, balloonPos = 'up-left' }) => {
             const buttonContainer = document.createElement('span')
             const button = document.createElement('i')
@@ -520,26 +520,26 @@ const _render = args => {
         const goto = skip => () => {
           let listCommand = activations.every(activation => activation.sessionId !== undefined) ? 'session list' : 'wsk activation list'
           return repl.qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
-          .then(activationIds => {
-            if (activationIds.length === 0) {
+            .then(activationIds => {
+              if (activationIds.length === 0) {
               // we're at the end! disable the next button
-              next.classList.add('list-paginator-button-disabled')
-              delete next.onclick
-            } else {
-              _render({
-                activationIds,
-                container,
-                noCrop,
-                noPip,
-                showResult,
-                showStart,
-                showTimeline,
-                skip,
-                limit,
-                tab,
-                parsedOptions })
-            }
-          })
+                next.classList.add('list-paginator-button-disabled')
+                delete next.onclick
+              } else {
+                _render({
+                  activationIds,
+                  container,
+                  noCrop,
+                  noPip,
+                  showResult,
+                  showStart,
+                  showTimeline,
+                  skip,
+                  limit,
+                  tab,
+                  parsedOptions })
+              }
+            })
         }
         if (skip === 0) {
           // disable the back button when we're on the first page
@@ -575,7 +575,7 @@ const _render = args => {
  * A handler intended to be passed to cli.registerListView
  *
  */
-export const renderActivationListView = (tab: ITab, activations: Array<Object>, container: Element, parsedOptions, execOptions) => {
+export const renderActivationListView = (tab: ITab, activations: Object[], container: Element, parsedOptions, execOptions) => {
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)

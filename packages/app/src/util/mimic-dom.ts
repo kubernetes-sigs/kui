@@ -20,7 +20,7 @@ debug('loading')
 
 import Store from '../main/store'
 
-/*export interface ElementMimic {
+/* export interface ElementMimic {
   _isFakeDom: boolean
   cells?: ElementMimic[]
   children: ElementMimic[]
@@ -31,7 +31,7 @@ import Store from '../main/store'
   rows?: ElementMimic[]
   style: { [key: string]: string }
   recursiveInnerTextLength: () => number
-  }*/
+  } */
 
 class ClassList {
   private classList: string[] = []
@@ -116,6 +116,7 @@ export class ElementMimic {
   hasStyle (style: string, desiredValue?: number | string): boolean | string {
     const actualValue = this.style && this.style[style]
     // intentional double equals, so that 500=='500'
+    // eslint-disable-next-line eqeqeq
     if (desiredValue) return desiredValue == actualValue
     else return actualValue
   }

@@ -67,7 +67,7 @@ const makeCellDom = () => {
 class Occupancy {
   width: number
   height: number
-  rows: Array<HTMLElement>
+  rows: HTMLElement[]
   gridGrid: Element
 
   constructor (width, height, nCells, grid, gridGrid) {
@@ -167,7 +167,7 @@ interface IOptions {
   timeline?: boolean
   zoom?: number
 }
-const drawGrid = (tab: ITab, options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Array<Object>) => {
+const drawGrid = (tab: ITab, options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Object[]) => {
   debug('drawGrid', redraw)
 
   const existingContent = sidecarSelector(tab, `.custom-content .${css.content}`) as HTMLElement
@@ -406,7 +406,7 @@ const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, gro
       })
     } else {
       const cellContainer = gridDom.querySelector('.grid-row')
-      /*const existingCells = existingContent.querySelectorAll('.grid-cell')
+      /* const existingCells = existingContent.querySelectorAll('.grid-cell')
       const exists = {} // map by activationId
       for (let idx = 0; idx < existingCells.length; idx++) {
         const id = existingCells[idx].getAttribute('data-activation-id')
@@ -414,7 +414,7 @@ const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, gro
           exists[id] = true
         }
       }
-      debug('exists', exists)*/
+      debug('exists', exists) */
 
       group.activations.forEach(activation => {
         // if (!exists[activation.activationId]) {
@@ -455,7 +455,7 @@ const minTimestamp = activations => {
  * Render the grid as a timeline
  *
  */
-const drawAsTimeline = (tab: ITab, timelineData: { activations: Record<string, any>, nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
+const drawAsTimeline = (tab: ITab, timelineData: { activations: Record<string, any>; nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
   debug('drawAsTimeline', zoomLevelForDisplay)
 
   const { activations, nBuckets } = timelineData
@@ -579,8 +579,8 @@ export default async (commandTree: CommandRegistrar, options?) => {
     height: windowDefaults.height
   })
 
-    // coloring
-    /* const cmd = commandTree.listen(`/wsk/${syn}/color/grid/by`, ({ argvNoOptions }) => {
+  // coloring
+  /* const cmd = commandTree.listen(`/wsk/${syn}/color/grid/by`, ({ argvNoOptions }) => {
             const strategy = argvNoOptions[argvNoOptions.indexOf('by') + 1]
             if (strategy === 'pass/fail') {
                 return colorBy('pass/fail')

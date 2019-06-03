@@ -65,7 +65,7 @@ export const codeViewMode = (source: string, contentType = 'javascript') => ({
 /*  direct: entity => {
     entity.type = 'actions'
     return sidecar.showEntity(entity, { show: 'source' })
-  }*/
+  } */
 })
 
 /**

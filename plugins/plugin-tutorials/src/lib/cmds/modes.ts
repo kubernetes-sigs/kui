@@ -18,54 +18,61 @@ const { apiToDefaultParams } = require('./api')
 const { modCmd } = require('./util')
 
 interface IMode {
-  mode: string,
-  label?: string,
-  command: Function,
-  actAsButton?: boolean,
-  fontawesome?: string,
-  flush?: string,
-  balloon?: string,
-  balloonLength?: string,
-  echo?: boolean,
+  mode: string
+  label?: string
+  command: Function
+  actAsButton?: boolean
+  fontawesome?: string
+  flush?: string
+  balloon?: string
+  balloonLength?: string
+  echo?: boolean
   noHistory?: boolean
 }
 
 /** view modes */
-const _modes: Array<IMode> = [
-    { mode: 'get', label: 'About' },
-    { mode: 'api', label: 'API' },
-    { mode: 'config', label: 'Configure' }
+const _modes: IMode[] = [
+  { mode: 'get', label: 'About' },
+  { mode: 'api', label: 'API' },
+  { mode: 'config', label: 'Configure' }
 ].map(_ => Object.assign(_, { onclick: false,
   command: ({ name }) => `${modCmd} ${_.mode} "${name}"` // add the command handler, e.g. "module get foo"
 }))
 
 /** flush-right buttons for the bottom stripe */
-const buttons: Array<IMode> = [
-    /*{ mode: 'deploy', label: 'Deploy', //fontawesome: 'fas fa-cloud-upload-alt',
+const buttons: IMode[] = [
+  /* { mode: 'deploy', label: 'Deploy', //fontawesome: 'fas fa-cloud-upload-alt',
       balloon: 'Deploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} deploy "${name}"` },
 
     { mode: 'undeploy', label: 'Undeploy', //fontawesome: 'fas fa-trash-alt',
       balloon: 'Undeploy this project',
-      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} undeploy "${name}"` },*/
+      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} undeploy "${name}"` }, */
 
-  { mode: 'status', label: 'Status', fontawesome: 'fas fa-info-circle',
-    balloon: 'Detailed status', balloonLength: 'medium',
-    actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({ name }) => `${modCmd}
+  { mode: 'status',
+    label: 'Status',
+    fontawesome: 'fas fa-info-circle',
+    balloon: 'Detailed status',
+    balloonLength: 'medium',
+    actAsButton: true,
+    flush: 'right',
+    echo: true,
+    noHistory: false,
+    command: ({ name }) => `${modCmd}
  status "${name}"` }
 
-    /*{ mode: 'invoke', label: 'Invoke', //fontawesome: 'fas fa-trash-alt',
+  /* { mode: 'invoke', label: 'Invoke', //fontawesome: 'fas fa-trash-alt',
       balloon: 'Perform a trial inovcation of this project',
-      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name, api}) => `invoke main ${apiToDefaultParams(api)}` }*/
+      actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name, api}) => `invoke main ${apiToDefaultParams(api)}` } */
 ]
 
 /** Combined mode model (for the bottom stripe) */
-export const modes = (defaultMode: string, api, choices): Array<IMode> => {
-    // add the defaultMode attribute to the matching IMode
-  const modes: Array<IMode> = _modes
-        .filter(({ mode }) => mode === 'get' || mode === 'api' && api || mode === 'config' && choices)
-        .map(_ => _.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _)
+export const modes = (defaultMode: string, api, choices): IMode[] => {
+  // add the defaultMode attribute to the matching IMode
+  const modes: IMode[] = _modes
+    .filter(({ mode }) => mode === 'get' || mode === 'api' && api || mode === 'config' && choices)
+    .map(_ => _.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _)
 
-    // return the modes plus any buttons we want to be flush right
+  // return the modes plus any buttons we want to be flush right
   return modes.concat(buttons)
 }

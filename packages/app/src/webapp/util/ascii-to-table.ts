@@ -27,13 +27,12 @@ import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: Array<string>): { rows?: IPair[][], trailingString?: string }[] => {
+export const preprocessTable = (raw: string[]): { rows?: IPair[][]; trailingString?: string }[] => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
     const header = table
       .substring(0, table.indexOf('\n'))
-      .toUpperCase()
 
     const headerCells = header
       .split(/(\t|\s\s)+\s?/)
@@ -41,15 +40,21 @@ export const preprocessTable = (raw: Array<string>): { rows?: IPair[][], trailin
       .map(_ => _.trim())
 
     // now we scan the header row to determine the column start indices
-    const columnStarts: Array<number> = []
+    const columnStarts: number[] = []
 
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
-      jdx = header.indexOf(headerCells[idx] + ' ', jdx)
-      if (jdx < 0) {
+      const { offset, prefix } = idx === 0
+        ? { offset: 0, prefix: '' }
+        : { offset: 1, prefix: ' ' }
+
+      const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
+      if (newJdx < 0) {
         // last column
-        jdx = header.indexOf(headerCells[idx], jdx)
+        jdx = header.indexOf(' ' + headerCells[idx], jdx)
+      } else {
+        jdx = newJdx
       }
-      columnStarts.push(jdx)
+      columnStarts.push(jdx + offset)
     }
 
     debug('columnStarts', columnStarts, headerCells)
@@ -69,12 +74,14 @@ export const preprocessTable = (raw: Array<string>): { rows?: IPair[][], trailin
 
       const possibleRows = table
         .split(/\n/)
-        .filter(x => x && x.length >= lowerBoundLastColumnEnd)
       debug('possibleRows', possibleRows)
 
-      const endOfTable = possibleRows.findIndex(row => {
+      // look to see if any of the possibleRows violate the
+      // columnStarts alignment; this is a good indication that the
+      // possibleRows are not really rows of a table
+      const endOfTable = possibleRows.findIndex((row, rowIdx) => {
         const nope = columnStarts.findIndex(idx => {
-          return idx > 0 && !row[idx - 1].match(/\s/)
+          return idx > 0 && !/\s/.test(row[idx - 1])
         })
 
         return nope !== -1
@@ -84,7 +91,7 @@ export const preprocessTable = (raw: Array<string>): { rows?: IPair[][], trailin
       const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
       const preprocessed = rows.map((line, idx) => {
-        return split(idx === 0 ? line.toUpperCase() : line, columnStarts, headerCells)
+        return split(line, columnStarts, headerCells)
       }).filter(x => x)
       debug('preprocessed', preprocessed)
 
@@ -134,7 +141,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const drilldownVerb = (
     verb === 'get' ? 'get'
       : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
-      : isHelmStatus ? 'get' : undefined
+        : isHelmStatus ? 'get' : undefined
   ) || undefined
 
   // helm doesn't support --output
@@ -153,8 +160,8 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     if (drilldownVerb === 'get') {
       const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
       return kind ? ' ' + kind : ''
-      /*} else if (drilldownVerb === 'config') {
-        return ' use-context';*/
+      /* } else if (drilldownVerb === 'config') {
+        return ' use-context'; */
     } else {
       return ''
     }
@@ -185,21 +192,19 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     // if there isn't a global namespace specifier, maybe there is a row namespace specifier
     // we use the row specifier in preference to a global specifier -- is that right?
     const ns = (namespaceColumnIdx >= 0 &&
-                command !== 'helm' &&
-                `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
+      command !== 'helm' &&
+      `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
 
     // idx === 0: don't click on header row
     const onclick = idx === 0 ? false
       : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns} ${config}`
-      : false
-
-    const header = !options['no-header'] && idx === 0 ? 'header-cell' : ''
+        : false
 
     const attributes: Cell[] = columns.slice(1).map(({ key, value: column }, colIdx) => ({
       key,
       tag: idx > 0 && tagForKey[key],
       onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
-      outerCSS: header + ' ' + outerCSSForKey[key] +
+      outerCSS: outerCSSForKey[key] +
         (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
       css: css
         + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
@@ -214,17 +219,22 @@ export const formatTable = (command: string, verb: string, entityType: string, o
       css: firstColumnCSS,
       rowCSS,
       // title: tables.length > 1 && idx === 0 && lines.length > 1 && kindFromResourceName(lines[1][0].value),
-      outerCSS: `${header} ${outerCSSForKey[columns[0].key] || ''}`,
+      outerCSS: outerCSSForKey[columns[0].key] || '',
       attributes
     }
 
     return row
   })
 
+  const hasHeader = !/[:/]/.test(allRows[0].name)
+  const header = hasHeader ? allRows[0] : undefined
+  const body = hasHeader ? allRows.slice(1) : allRows
+
   return {
-    header: allRows[0],
-    noSort: true,
-    body: allRows.slice(1)
+    title: entityType,
+    header,
+    body,
+    noSort: true
   }
 }
 
@@ -236,7 +246,7 @@ interface IPair {
   key: string
   value: string
 }
-const split = (str: string, splits: Array<number>, headerCells?: Array<string>): Array<IPair> => {
+const split = (str: string, splits: number[], headerCells?: string[]): IPair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
@@ -264,6 +274,12 @@ const outerCSSForKey = {
   STATE: 'badge-width',
   STATUS: 'badge-width',
   KIND: 'max-width-id-like entity-kind',
+
+  NAMESPACE: 'entity-name-group entity-name-group-narrow',
+
+  DISPLAY: 'hide-with-sidecar',
+  TYPE: 'hide-with-sidecar',
+  ENDPOINT: 'hide-with-sidecar',
 
   CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
   AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
@@ -304,6 +320,7 @@ const cssForKey = {
 }
 
 const tagForKey = {
+  PHASE: 'badge',
   STATE: 'badge',
   STATUS: 'badge'
 }
@@ -335,10 +352,10 @@ const cssForValue = {
 
   // kube lifecycle
   CrashLoopBackOff: 'red-background',
+  Error: 'red-background',
   Failed: 'red-background',
   Running: 'green-background',
   Pending: 'yellow-background',
-  Succeeded: 'gray-background', // successfully terminated; don't use a color
   Completed: 'gray-background', // successfully terminated; don't use a color
   Unknown: '',
 
@@ -354,6 +371,7 @@ const cssForValue = {
   Rebooted: 'green-background',
   Started: 'green-background',
   Created: 'green-background',
+  Succeeded: 'green-background',
   SuccessfulCreate: 'green-background',
   SuccessfulMountVol: 'green-background',
   ContainerCreating: 'yellow-background',

@@ -120,7 +120,7 @@ export const loadComposition = (inputFile, originalCode?, localCodePath?) => {
       // restart the shell
       delete require.cache[require.resolve(localSourcePath)]
     } finally {
-        // restore our temporary overrides
+      // restore our temporary overrides
       console.log = log
       console.error = err
       process.exit = exit
@@ -191,9 +191,9 @@ const sourceErrHandler = (error, originalCode, filename) => {
                 error.stack.match(/\s+at Object\.runInNewContext/) ||
                 error.stack.match(/\s+at fs\.readFile/)
   const _message = error.message.indexOf('Invalid argument to compile') >= 0
-              ? 'Your source code did not produce a valid app.'
-              : (!junkMatch ? error.stack
-                  : error.stack.substring(0, junkMatch.index).replace(/\s+.*compile([^\n])*/g, '\n').replace(/(evalmachine.<anonymous>)/g, filename).replace(/\s+at createScript([^\n])*/g, '\n').trim())
+    ? 'Your source code did not produce a valid app.'
+    : (!junkMatch ? error.stack
+      : error.stack.substring(0, junkMatch.index).replace(/\s+.*compile([^\n])*/g, '\n').replace(/(evalmachine.<anonymous>)/g, filename).replace(/\s+at createScript([^\n])*/g, '\n').trim())
   const message = _message
     .replace(/\s+\(.*plugins\/modules\/apache-composer\/node_modules\/openwhisk-composer\/composer\.js:[^\s]*/, '')
     .replace(/\s+at ContextifyScript[^\n]*/g, '')
@@ -244,7 +244,7 @@ export const compileComposition = (composition, name) => {
     result = result.compile()
     result.name = fqn(name)
   } catch (error) {
-    error.statusCode = 422  // composition error
+    error.statusCode = 422 // composition error
     throw error
   }
   debug('compiled source to composition', result)

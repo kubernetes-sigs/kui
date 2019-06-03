@@ -106,7 +106,7 @@ const diff = (beforeModel: IPrescan, afterModel: IPrescan, reverseDiff = false):
  *     Note that, when scanning for plugins, we ignore subdirectories named "helpers"
  *
  */
-const readDirRecursively = (dir: string): Array<string> => {
+const readDirRecursively = (dir: string): string[] => {
   if (path.basename(dir) !== 'helpers' &&
       path.basename(dir) !== 'bin' &&
       path.basename(dir) !== 'modules' &&
@@ -133,7 +133,7 @@ interface IFile {
  * Find js files in root/modules
  *
  */
-const scanModules = async (root: string): Promise<Array<IFile>> => {
+const scanModules = async (root: string): Promise<IFile[]> => {
   const { plugins: modules = {} } = await plugins.scanForModules(root, true) // eslint-disable-line
 
   const files = []
@@ -161,7 +161,7 @@ interface IPrescan {
   commandToPlugin?: Object
 }
 
-type PrescanDiff = Array<string>
+type PrescanDiff = string[]
 
 /**
  * Make a tree out of a flat map.
@@ -268,7 +268,8 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
   const before = await readFile()
   debug('before', before)
 
-  const modules = await plugins.assemble({ /* pluginRoot, */ externalOnly })
+  // const modules = await plugins.assemble({ pluginRoot, externalOnly })
+  const modules = await plugins.assemble({ externalOnly })
 
   /** make the paths relative to the root directory */
   const fixupOnePath = (filepath: string): string => {

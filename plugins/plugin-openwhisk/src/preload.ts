@@ -19,12 +19,12 @@
  *
  */
 export default () => {
-  /*if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
+  /* if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
     const { auth } = await import('./lib/models/auth')
 
     if (auth.get()) {
       debug('we have openwhisk credentials available from startup')
       // capabilities.setHasAuth will be called from the auth model impl
     }
-  }*/
+  } */
 }

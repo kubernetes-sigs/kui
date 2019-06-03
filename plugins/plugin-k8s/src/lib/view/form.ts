@@ -25,11 +25,11 @@ import { IKubeResource } from '../model/resource'
 
 export interface IFormGroup {
   title: string
-  choices: Array<IFormElement>
+  choices: IFormElement[]
 }
 
 export interface IFormElement {
-  path: Array<string>
+  path: string[]
   key: string
   value: string | boolean | number
   placeholder?: string
@@ -40,7 +40,7 @@ export interface IFormElement {
  * Traverse the given yaml
  *
  */
-const findParent = (yaml, path: Array<string>) => {
+const findParent = (yaml, path: string[]) => {
   if (!yaml || path.length === 1) {
     throw new Error('Cannot find path')
   } else {
@@ -61,7 +61,7 @@ const findParent = (yaml, path: Array<string>) => {
  * Update the given path in the given yaml to have the given value
  *
  */
-const update = (yaml, path: Array<string>, value: string | number | boolean) => {
+const update = (yaml, path: string[], value: string | number | boolean) => {
   const key = path[path.length - 1]
   const parent = findParent(yaml, path)
   if (parent) {
@@ -111,8 +111,8 @@ const doSave = (tab: ITab, form: HTMLFormElement, yaml: object, filepath: string
  * Generate form groups from a given kube resource
  *
  */
-const formGroups = (yaml: IKubeResource): Array<IFormGroup> => {
-  const groups: Array<IFormGroup> = []
+const formGroups = (yaml: IKubeResource): IFormGroup[] => {
+  const groups: IFormGroup[] = []
 
   const push = (group: string, key: string, { parent = yaml, path = [key], skip = {} } = {}) => {
     const formGroup = groups.find(({ title }) => title === group)
@@ -194,14 +194,14 @@ export const generateForm = (tab: ITab) => (yaml: IKubeResource, filepath: strin
     itemTitle.innerText = element.title
     itemRight.appendChild(itemTitle)
 
-    /*if (instructions) {
+    /* if (instructions) {
       const dom = document.createElement('div');
       dom.className = 'configSourceIns';
       dom.innerHTML = marked(instructions);
       itemRight.appendChild(dom);
-      }*/
+      } */
 
-    /*const links = document.createElement('div');
+    /* const links = document.createElement('div');
       links.className = 'project-config-links';
       itemRight.appendChild(links);
 
@@ -213,7 +213,7 @@ export const generateForm = (tab: ITab) => (yaml: IKubeResource, filepath: strin
       // Registration page
       if (registration) {
       links.appendChild(createLink('Registration Page', registration));
-      }*/
+      } */
 
     const form = document.createElement('div')
     form.className = 'form'

@@ -54,7 +54,7 @@ import { ISidecarMode } from './bottom-stripe'
 interface ScrollOptions {
   when?: number
   which?: string
-  element?: HTMLElement,
+  element?: HTMLElement
   how?: string
   center?: boolean | ScrollIntoViewOptions
 }
@@ -256,10 +256,10 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
 
 /** plugins can register view handlers for a given type: string */
 export type ViewHandler = (tab: ITab, response: Entity, resultDom: Element, parsedOptions: ParsedOptions, execOptions: IExecOptions) => Promise<any> | void
-type ViewRegistrar = { [key: string]: ViewHandler }
+interface ViewRegistrar { [key: string]: ViewHandler }
 
 /**
- * Register a renderer for a given Array<kind>
+ * Register a renderer for a given kind[]
  *
  */
 const registeredListViews: ViewRegistrar = {}
@@ -283,6 +283,11 @@ export const registerEntityView = (kind: string, handler: ViewHandler) => {
 export type Streamable = SimpleEntity | Table | Table[] | ICustomSpec
 export const streamTo = (tab: ITab, block: Element) => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
+  const pre = document.createElement('pre')
+  pre.classList.add('streaming-output')
+  resultDom.appendChild(pre)
+  resultDom.setAttribute('data-stream', 'data-stream');
+  (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
 
   // so we can scroll this into view as streaming output arrives
   const spinner = element('.repl-result-spinner', block)
@@ -351,7 +356,7 @@ export const createPopupContentContainer = (css: string[] = [], presentation?: P
 interface IPopupEntity {
   prettyType?: string
   modes?: ISidecarMode[]
-  badges?: IBadgeSpec[],
+  badges?: IBadgeSpec[]
   controlHeaders?: boolean | string[]
   presentation?: Presentation
   subtext?: Formattable
@@ -496,7 +501,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
     setStatus(block, 'valid-response')
   }
 
-  const render = async (response: Entity, { echo, resultDom }: { echo: boolean, resultDom: HTMLElement }) => {
+  const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
     if (response && response !== true) {
       if (isTable(response)) {
         await printTable(tab, response, resultDom, execOptions, parsedOptions)
@@ -702,6 +707,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
   return Promise.resolve()
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ITab extends HTMLElement { }
 const tabTagPattern = /tab/i
 export function isTab (node: Element): node is ITab {
@@ -741,6 +747,9 @@ export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
 }
 export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
   return tab.querySelector('.repl .repl-block.processing')
+}
+export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
+  return prompt.parentElement.parentElement
 }
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return (block && block.querySelector && block.querySelector('input'))
@@ -1112,12 +1121,12 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   } else if (UsageError.isUsageError(err)) {
     oopsDom.appendChild(await err.getFormattedMessage())
     /* } else if (isHTML(err.message)) {
-      // err.message is a DOM
-      oopsDom.appendChild(err.message) */
+    // err.message is a DOM
+    oopsDom.appendChild(err.message) */
     /* } else if (err.html) {
-      // pre-rendered HTML
-      oopsDom.classList.add('oops-as-html')
-      oopsDom.appendChild(err.html) */
+    // pre-rendered HTML
+    oopsDom.classList.add('oops-as-html')
+    oopsDom.appendChild(err.html) */
     /* } else if (err.message && err.message.then) {
       err.message.then(message => {
         err.message = message

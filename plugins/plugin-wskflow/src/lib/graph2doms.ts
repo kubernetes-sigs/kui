@@ -43,7 +43,7 @@ const wfColorAct = {
 
 const containerId = 'wskflowDiv'
 
-export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>, composites?: { label: { fontSize: string, offset: { x: number, y: number } } } } = {}) {
+export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>; composites?: { label: { fontSize: string; offset: { x: number; y: number } } } } = {}) {
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 
@@ -881,13 +881,13 @@ export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, i
         return isName
       }
     })
-    .attr('data-to-name', function (d) {
-      const toId = d.target
-      const isName = $('#' + toId).attr('data-name')
-      if (isName) {
-        return isName
-      }
-    })
+      .attr('data-to-name', function (d) {
+        const toId = d.target
+        const isName = $('#' + toId).attr('data-name')
+        if (isName) {
+          return isName
+        }
+      })
 
     // edge labels
     const addEdgeLabels = () => links.forEach(edge => {
@@ -982,7 +982,7 @@ export default function graph2doms (tab: ITab, JSONgraph: Record<string, any>, i
         .attr('xlink:href', '#retryIconNormal').attr('href', '#retryIconNormal').attr('x', 10).attr('y', -14)
     }, 0)
 
-    setTimeout(addMorePathAttr, 0)  // we aren't properly using d3.select.enter... hacking a bit, for now
+    setTimeout(addMorePathAttr, 0) // we aren't properly using d3.select.enter... hacking a bit, for now
     setTimeout(addEdgeLabels, 0)
   } /* drawGraph */
 

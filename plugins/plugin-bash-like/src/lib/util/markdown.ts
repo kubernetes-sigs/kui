@@ -45,6 +45,7 @@ export default (tab: ITab, suffix: string, source: string, fullpath: string, hlj
 const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
   const { href } = link
 
+  // eslint-disable-next-line node/no-deprecated-api
   const parsedUrl = url.parse(href)
   const isRemote = parsedUrl.protocol !== undefined && parsedUrl.protocol !== 'file:'
 
@@ -93,6 +94,7 @@ const markdownify = async (tab: ITab, source: string, fullpath: string, hljs): P
   const renderer = new Marked.Renderer()
 
   const transformHref = (href: string): string => {
+    // eslint-disable-next-line node/no-deprecated-api
     const parsedUrl = url.parse(href)
     const isRemote = !!parsedUrl.protocol
 
@@ -175,13 +177,13 @@ const wrap = (tab: ITab, htmlString: string, fullpath: string, hljs): IMarkdown 
       // below; some browsers don't (yet?) support <!  hopefully they
       // will all, at some point, and we can restore that commented
       // out part
-      exec.onclick = () => pexec(url.substring(1)/*.replace(new RegExp('(?<!\\)\/', 'g'), ' ')*/.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
+      exec.onclick = () => pexec(url.substring(1)/* .replace(new RegExp('(?<!\\)\/', 'g'), ' ') */.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
     } else {
       exec.onclick = drilldown(tab,
-                               `open ${url}`,
-                               undefined,
-                               wrapper,
-                               path.basename(fullpath))
+        `open ${url}`,
+        undefined,
+        wrapper,
+        path.basename(fullpath))
     }
   }
 

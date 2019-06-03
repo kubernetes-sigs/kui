@@ -61,7 +61,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     const plugins = {}
     const preloads = {}
 
-    const doScan = ({ modules, moduleDir }: { modules: string[], moduleDir: string }) => {
+    const doScan = ({ modules, moduleDir }: { modules: string[]; moduleDir: string }) => {
       modules.forEach(module => {
         const modulePath = path.join(moduleDir, module)
 
@@ -319,8 +319,8 @@ const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}, quiet = fals
   try {
     const secondary = path.dirname(path.dirname(require.resolve('@kui-shell/core/package.json')))
     clientRequired = await scanForModules(secondary,
-                                          false,
-                                          (filename: string) => !!filename.match(/^plugin-/))
+      false,
+      (filename: string) => !!filename.match(/^plugin-/))
   } catch (err) {
     if (err.code !== 'ENOENT') {
       console.error('error scanning for client-required plugins', err)
@@ -518,7 +518,9 @@ interface IPrescanCommandDefinition {
   path: string
 }
 export type PrescanCommandDefinitions = IPrescanCommandDefinition[]
-export type PrescanDocs = { [key: string]: string }
+export interface PrescanDocs {
+  [key: string]: string
+}
 export type PrescanUsage = any // FIXME something like: { [key: string]: ICommandOptions }
 export interface IPrescanModel {
   docs: PrescanDocs

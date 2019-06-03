@@ -25,6 +25,7 @@ const debug = Debug('plugins/bash-like/cmds/general')
 
 import * as fs from 'fs'
 import * as path from 'path'
+import { exec } from 'child_process'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
@@ -55,7 +56,7 @@ const stripControlCharacters = (str: string): string => {
     .replace(/^\W*OK\W*\n/, '') // OK at the beginning
 }
 
-export const doShell = (argv: Array<string>, options, execOptions?: IExecOptions) => new Promise(async (resolve, reject) => {
+export const doShell = (argv: string[], options, execOptions?: IExecOptions) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
     reject(new Error('Local file access not supported when running in a browser'))
   }
@@ -134,15 +135,9 @@ export const doShell = (argv: Array<string>, options, execOptions?: IExecOptions
 
 export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
-  const shell = await import('shelljs')
 
-  const proc = shell.exec(cmdLine, {
-    async: true,
-    silent: true,
-    env: Object.assign({}, process.env, execOptions['env'] || {}, {
-      IBMCLOUD_COLOR: true,
-      IBMCLOUD_VERSION_CHECK: false
-    })
+  const proc = exec(cmdLine, {
+    env: Object.assign({}, process.env, execOptions['env'] || {})
   })
 
   // accumulate doms from the output of the subcommand

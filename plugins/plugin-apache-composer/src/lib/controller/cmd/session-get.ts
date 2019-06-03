@@ -47,7 +47,7 @@ export default async (commandTree: CommandRegistrar) => {
                     return activation // handle 'session get --last'
                   }
                 }
-              } else {  // handle 'session get --last'
+              } else { // handle 'session get --last'
                 if (typeof parsedOptions.last === 'string') {
                   if (activation.name === parsedOptions.last) return activation // handle 'session get --last [appName]'
                 } else {
@@ -76,18 +76,18 @@ export default async (commandTree: CommandRegistrar) => {
 
       if (last) {
         return repl.qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
-              .then(activations => {
-                if (activations.length === 0) {
-                  throw new Error('No such activation found')
-                } else {
-                  return repl.qexec(`wsk activation get ${activations[0].activationId}`)
-                }
-              })
+          .then(activations => {
+            if (activations.length === 0) {
+              throw new Error('No such activation found')
+            } else {
+              return repl.qexec(`wsk activation get ${activations[0].activationId}`)
+            }
+          })
       }
 
       return activationGet(opts)
-              .then(response => view.formatSessionGet(response))
-              .catch(err => { throw err })
+        .then(response => view.formatSessionGet(response))
+        .catch(err => { throw err })
     }, {})
   })
 }

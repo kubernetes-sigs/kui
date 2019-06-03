@@ -69,8 +69,8 @@ interface INode {
   readonly visited?: string[]
   children?: readonly INode[]
   edges?: readonly IEdge[]
-  deployed?: boolean,
-  nChildren: number,
+  deployed?: boolean
+  nChildren: number
   nParents: number
 }
 
@@ -89,7 +89,7 @@ interface IEdge {
   readonly visited?: boolean
 }
 
-type SymbolTable<N> = { [key: string]: N }
+interface SymbolTable<N> { [key: string]: N }
 
 const maxWidth = 100
 const defaultHeight = 20
@@ -100,7 +100,7 @@ const defaultCharHeight = 10
  * @return a blank IGraph instance with optional "children" subgraphs
  *
  */
-const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type, onclick }: { children: INode[], tooltip?: string, tooltipColor?: string, type?: string, onclick?: string } = { children: [] }): IGraph => {
+const makeGraph = (label = 'root', { children, tooltip, tooltipColor, type, onclick }: { children: INode[]; tooltip?: string; tooltipColor?: string; type?: string; onclick?: string } = { children: [] }): IGraph => {
   return {
     id: label,
     label,

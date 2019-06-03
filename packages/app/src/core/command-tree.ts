@@ -100,7 +100,7 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
  * Navigate the given tree model, following the given path as [n1,n2,n3]
  *
  */
-const treeMatch = (model: CommandTree, path: Array<string>, readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
+const treeMatch = (model: CommandTree, path: string[], readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
   let parent = model
   let cur
 
@@ -161,7 +161,7 @@ const match = (path: string[], readonly: boolean): ICommand => {
 export const subtree = (route: string, options: ICommandOptions) => {
   const myListen = options.listen || listen
   const path = route.split('/').splice(1)
-  const leaf = match(path, false /*, options*/)
+  const leaf = match(path, false /*, options */)
 
   if (leaf) {
     leaf.route = route
@@ -246,8 +246,8 @@ const _listen = (model: CommandTree, route: string, handler: CommandHandler, opt
     leaf.route = route
 
     // update the disambiguator map
-    if (/*!(options && options.synonymFor) &&*/ // leaf is NOT a synonym
-            !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
+    if (/*! (options && options.synonymFor) && */ // leaf is NOT a synonym
+      !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
       let resolutions = disambiguator[leaf.key]
       if (!resolutions) {
         resolutions = disambiguator[leaf.key] = []
@@ -382,9 +382,9 @@ const _read = async (model: CommandTree, argv: string[], contextRetry: string[],
     } else if (contextRetry.length > 0 && contextRetry[contextRetry.length - 1] !== originalArgv[originalArgv.length - 1]) {
       // command not found so far, look further afield.
       const maybeInContextRetry = _read(model,
-                                        contextRetry.concat(originalArgv),
-                                        contextRetry.slice(0, contextRetry.length - 1),
-                                        originalArgv)
+        contextRetry.concat(originalArgv),
+        contextRetry.slice(0, contextRetry.length - 1),
+        originalArgv)
 
       if (maybeInContextRetry) {
         debug('context retry helped', maybeInContextRetry)
@@ -432,7 +432,7 @@ const _read = async (model: CommandTree, argv: string[], contextRetry: string[],
  * by calling `setDefaultCommandContext`.
  *
  */
-let _defaultContext: Array<string> = ['wsk', 'action'] // TODO take this from the site config
+let _defaultContext: string[] = ['wsk', 'action'] // TODO take this from the site config
 export const getDefaultCommandContext = () => _defaultContext
 
 /**
@@ -450,7 +450,7 @@ const Context = {
  * environment, what the default fallback prefix should be.
  *
  */
-export const setDefaultCommandContext = (commandContext: Array<string>) => {
+export const setDefaultCommandContext = (commandContext: string[]) => {
   debug('using context', commandContext)
   Context.current = _defaultContext = commandContext
 }
@@ -469,7 +469,7 @@ const internalRead = (model: CommandTree, argv: string[]): Promise<boolean | ICo
  *   A: [ ls ], B: [ which, ls ] => false, because the user asked for 'which ls', and all we could find was 'ls'
  *
  */
-const areCompatible = (A: Array<string>, B: Array<string>): boolean => {
+const areCompatible = (A: string[], B: string[]): boolean => {
   const start = A.indexOf(B[0])
 
   let Bidx = 0
@@ -652,7 +652,7 @@ interface IRoute {
 }
 
 /** remove duplicates of leaf nodes from a given array */
-const removeDuplicates = async (arr: Array<IRoute>): Promise<Array<IRoute>> => {
+const removeDuplicates = async (arr: IRoute[]): Promise<IRoute[]> => {
   return (await Promise.all(arr))
     .filter(x => x)
     .reduce((state, item) => {

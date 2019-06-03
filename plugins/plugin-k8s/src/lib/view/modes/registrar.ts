@@ -49,7 +49,7 @@ export default function (registration: ModeRegistration) {
  * to the given modes model
  *
  */
-export function apply (modes: Array<ISidecarMode>, command: string, resource: IResource) {
+export function apply (modes: ISidecarMode[], command: string, resource: IResource) {
   registrar
     .filter(({ when }) => when(resource.yaml)) // if relevant...
     .forEach(({ mode }) => {

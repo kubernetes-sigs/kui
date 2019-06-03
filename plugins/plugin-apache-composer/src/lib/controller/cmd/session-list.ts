@@ -34,7 +34,7 @@ interface IListOptions {
 export default async (commandTree: CommandRegistrar) => {
   const sessionSyns = ['sessions', 'sess', 'ses', 'session']
 
-  /* command handler for session list*/
+  /* command handler for session list */
   sessionSyns.forEach(noun => {
     commandTree.listen(`/wsk/${noun}/list`, async ({ argvNoOptions, parsedOptions: options }) => {
       const parsedOptions = (options as any) as IListOptions
@@ -73,7 +73,7 @@ export default async (commandTree: CommandRegistrar) => {
       }
 
       if (scanLimit) {
-        const max: number = await repl.qexec('wsk activation count')  // get the number of total activations
+        const max: number = await repl.qexec('wsk activation count') // get the number of total activations
         let foundSessions = []
         for (let scanned = 0; scanned < max && foundSessions.length < scanLimit; scanned += 200) {
           try {

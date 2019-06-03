@@ -30,7 +30,7 @@ import { contentDir } from './util'
  */
 const levelToNumber = { Beginner: 0, Intermediate: 1, Advanced: 2 }
 const sort = list => {
-  return list.sort((a,b) => {
+  return list.sort((a, b) => {
     return ((a.sort !== undefined ? a.sort : levelToNumber[a.level])
             - (b.sort !== undefined ? b.sort : levelToNumber[b.level]))
       || (a.sort || a.name).localeCompare(b.sort || b.name)
@@ -104,7 +104,8 @@ const doList = () => new Promise((resolve, reject) => {
           type: 'tutorials',
           name: name.replace(/-/g, ' '),
           nameCss: ['capitalize', 'semi-bold'], // 'sans-serif',
-          sort, level,
+          sort,
+          level,
           noSort: true, // we have already sorted the list
           onclick: () => repl.pexec(`tutorial play @tutorials/${name}`),
           attributes

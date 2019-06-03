@@ -81,6 +81,7 @@ const BSD = () => join(process.env.HOME, '.bash_sessions_disable')
 export const disableBashSessions = async (): Promise<ExitHandler> => {
   if (process.platform === 'darwin') {
     if (cacheHasBashSessionsDisable === undefined) {
+      // eslint-disable-next-line node/no-deprecated-api
       cacheHasBashSessionsDisable = await promisify(fs.exists)(BSD())
     }
 
@@ -318,7 +319,7 @@ export default (commandTree: CommandRegistrar) => {
       })
 
       // path to the build version of ourself
-      /*if (!cachedSelf) {
+      /* if (!cachedSelf) {
         let self = require.resolve('@kui-shell/plugin-bash-like/pty/server')
         if (/\.asar\//.test(self)) {
         const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
@@ -355,7 +356,7 @@ export default (commandTree: CommandRegistrar) => {
         child.on('close', (exitCode: number) => {
         // debug('exitCode', exitCode)
         children.splice(N, 1)
-        })*/
+        }) */
     }
   }), { noAuthOk: true })
 }

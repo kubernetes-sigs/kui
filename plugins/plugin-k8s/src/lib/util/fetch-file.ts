@@ -26,7 +26,7 @@ import needle = require('needle')
  * Either fetch a remote file or read a local one
  *
  */
-export const fetchFile = (url: string): Promise<Array<Buffer>> => {
+export const fetchFile = (url: string): Promise<Buffer[]> => {
   debug('fetchFile', url)
 
   const urls = url.split(/,/)
@@ -44,4 +44,9 @@ export const fetchFile = (url: string): Promise<Array<Buffer>> => {
       return readFile(findFile(expandHomeDir(url)))
     }
   }))
+}
+
+/** same as fetchFile, but returning a string rather than a Buffer */
+export const fetchFileString = (url: string): Promise<string[]> => {
+  return fetchFile(url).then(_ => _.map(_ => _.toString()))
 }

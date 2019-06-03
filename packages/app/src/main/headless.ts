@@ -142,6 +142,7 @@ const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) =>
 
       if (!process.env.KUI_REPL_MODE) {
         process.exit(exitCode > 128 ? exitCode - 256 : exitCode)
+        // eslint-disable-next-line no-unreachable
         if (quit) quit()
       }
     }
@@ -154,14 +155,14 @@ const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) =>
  * Insufficient arguments provided?
  *
  */
-const insufficientArgs = (argv: Array<string>) => argv.length === 0
+const insufficientArgs = (argv: string[]) => argv.length === 0
 
 /**
  * Opens the full UI
  *
  */
 let electronCreateWindowFn
-export const createWindow = (argv: Array<string>, subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
+export const createWindow = (argv: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
   try {
     graphicalShellIsOpen = true
     setGraphicalShellIsOpen()

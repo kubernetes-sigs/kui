@@ -44,7 +44,7 @@ const costFns = {
   }
 }
 
-const formatOneGroup = (name: string, data: Array<any>, costFn) => {
+const formatOneGroup = (name: string, data: any[], costFn) => {
   if (data.length === 0) {
     return document.createTextNode('No activity')
   }
@@ -189,9 +189,9 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
 
   interface ITally {
     durations: {
-      success: Array<number>,
-      failure: Array<number>
-    },
+      success: number[]
+      failure: number[]
+    }
     numErrors?: number
   }
 

@@ -44,7 +44,7 @@ import { addActivationModes } from '@kui-shell/plugin-openwhisk/lib/models/modes
 
 interface IProtoActivation {
   result?: any
-  logs?: Array<string>
+  logs?: string[]
   init_time?: number
 }
 
@@ -146,7 +146,7 @@ export default async (commandTree: CommandRegistrar) => {
   })
 }
 
-const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: Array<string>, spinnerDiv: Element) => new Promise(async () => {
+const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: string[], spinnerDiv: Element) => new Promise(async () => {
   try {
     debug('executing invoke command')
 
@@ -166,8 +166,8 @@ const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: Array<stri
     const start = Date.now() // remember the activation start time; note that this is AFTER dockerization
 
     const res = await runActionInDocker(action.code,
-                                        action.kind,
-                                        Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv)
+      action.kind,
+      Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv)
 
     displayAsActivation(tab, 'local activation', action, start, res)
   } catch (err) {
@@ -179,7 +179,7 @@ const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: Array<stri
  * Local debug
  *
  */
-const doDebug = (tab: ITab, input: Object, argvWithoutOptions: Array<string>, dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
+const doDebug = (tab: ITab, input: Object, argvWithoutOptions: string[], dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
   debug('executing debug command')
 
   resolve([{
@@ -215,9 +215,9 @@ const doDebug = (tab: ITab, input: Object, argvWithoutOptions: Array<string>, da
       const start = Date.now()
 
       const res = await runActionDebugger(action.name,
-                                          action.code,
-                                          action.kind,
-                                          Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv, dashOptions)
+        action.code,
+        action.kind,
+        Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv, dashOptions)
 
       displayAsActivation(tab, 'debug session', action, start, res)
 
@@ -415,7 +415,7 @@ const kill = async (spinnerDiv: Element): Promise<void> => {
     debug('kill from api')
     await docker.container.get('shell-local').status().catch(squash)
       .then(container => container && container.stop().catch(squash)
-            .then(() => container.delete({ force: true })))
+        .then(() => container.delete({ force: true })))
   }
   debug('so far so good with kill')
 
@@ -544,8 +544,8 @@ const init = async (kind, spinnerDiv) => {
  *
  */
 interface IProtoAction {
-  name: string,
-  kind?: string,
+  name: string
+  kind?: string
   input: Object
 }
 const getActionNameAndInputFromActivations = async (actId, spinnerDiv): Promise<IProtoAction> => {
@@ -828,9 +828,9 @@ const runActionDebugger = (actionName: string, functionCode: string, functionKin
                   }
                 })
                 .then(entry => fs.readFile(`${dirPath}/${entry}`) // read in the entry code, so we can wrap it with debug
-                      .then(data => debugCodeWrapper(data.toString(), functionInput, resultFilePath)) // wrap it!
-                      .then(newCode => fs.outputFile(`${dirPath}/${entry}`, newCode)) // write the new file to temp directory
-                      .then(() => resolve(entry))) // return value: the location of the entry
+                  .then(data => debugCodeWrapper(data.toString(), functionInput, resultFilePath)) // wrap it!
+                  .then(newCode => fs.outputFile(`${dirPath}/${entry}`, newCode)) // write the new file to temp directory
+                  .then(() => resolve(entry))) // return value: the location of the entry
                 .catch(reject)
             }
           })
@@ -841,8 +841,8 @@ const runActionDebugger = (actionName: string, functionCode: string, functionKin
         }
       }))
       .then(entry => qexec(`! docker cp ${dirPath} shell-local:/nodejsAction`) // copy temp dir into container
-            .then(() => appendIncreContent('Launching debugger', spinnerDiv)) // status update
-            .then(() => entry))
+        .then(() => appendIncreContent('Launching debugger', spinnerDiv)) // status update
+        .then(() => entry))
       .then(entry => {
         // this is where we launch the local debugger, and wait for it to terminate
         // as to why we need to hack for the Waiting for debugger on stderr:
@@ -1062,14 +1062,14 @@ const createTempFolder = () => new Promise((resolve, reject) => {
  *
  *
  */
-const displayAsActivation = async (tab: ITab, sessionType: string, { kind, name: actionName, name }: { kind: string, actionName: string, name: string }, start: number, protoActivation?: IProtoActivation) => {
+const displayAsActivation = async (tab: ITab, sessionType: string, { kind, name: actionName, name }: { kind: string; actionName: string; name: string }, start: number, protoActivation?: IProtoActivation) => {
   try {
     // when the session ended
     const end = Date.now()
 
     const ns = await qexec('wsk namespace current')
 
-    const annotations: { key: string, value: string | number | boolean }[] = [
+    const annotations: { key: string; value: string | number | boolean }[] = [
       { key: 'path', value: `${ns}/${name}` },
       { key: 'kind', value: kind }
     ]

@@ -48,7 +48,7 @@ async function promiseEach<T, R> (arr: T[], fn: (t: T) => Promise<R>): Promise<R
 }
 
 /** Create an HTML DIV to wrap around the given string */
-const div = (str?: string | Promise<string> | Element, css: string | Array<string> = undefined, tag = 'div'): HTMLElement => {
+const div = (str?: string | Promise<string> | Element, css: string | string[] = undefined, tag = 'div'): HTMLElement => {
   const result = document.createElement(tag)
 
   if (str) {
@@ -181,20 +181,20 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
   } else if (isHTML(message)) {
     // same...
     return Promise.resolve(message)
-    /*} else if (isGenerator<UsageLike>(message)) {
+    /* } else if (isGenerator<UsageLike>(message)) {
     // then message.fn is a generator, e.g. for command aliases
-    return format(message.fn(message.command), undefined, options)*/
+    return format(message.fn(message.command), undefined, options) */
   } else {
     // these are the fields of the usage message
     const usage: IUsageModel = message.usage
 
     const { command, docs, title, breadcrumb = title || command, header = docs && `${docs}.`, example, detailedExample, sampleInputs,
-            intro, sections, // the more general case: the usage model has custom sections
-            commandPrefix, commandPrefixNotNeeded,
-            commandSuffix = '',
-            drilldownWithPip = false,
-            preserveCase = false, // in breadcrumbs
-            available, related, required, optional, oneof } = usage
+      intro, sections, // the more general case: the usage model has custom sections
+      commandPrefix, commandPrefixNotNeeded,
+      commandSuffix = '',
+      drilldownWithPip = false,
+      preserveCase = false, // in breadcrumbs
+      available, related, required, optional, oneof } = usage
     const outerCommandPrefix = commandPrefix
     const outerCommandSuffix = commandSuffix
     const outerCommand = command
@@ -461,13 +461,13 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
         // fields of the row model
         // debug('row', rowData)
         const { commandPrefix = outerCommandPrefix, commandSuffix = outerCommandSuffix,
-                command = outerCommand,
-                name = command, label = name,
-                noclick = false,
-                synonyms, alias, numeric, aliases = (synonyms || [alias]).filter(x => x), hidden = false, advanced = false,
-                available,
-                example = numeric && 'N', dir: isDir = available || false,
-                title, header, docs = header || title, partial = false, allowed, defaultValue } = rowData
+          command = outerCommand,
+          name = command, label = name,
+          noclick = false,
+          synonyms, alias, numeric, aliases = (synonyms || [alias]).filter(x => x), hidden = false, advanced = false,
+          available,
+          example = numeric && 'N', dir: isDir = available || false,
+          title, header, docs = header || title, partial = false, allowed, defaultValue } = rowData
 
         // row is either hidden or only shown for advanced users
         if (hidden) return
@@ -542,10 +542,10 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
               } else {
                 if (drilldownWithPip) {
                   return pip(cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
-                             commandForExec(command, name !== command ? name : undefined),
-                             undefined,
-                             resultWrapper.parentNode.parentNode as Element,
-                             'Previous Usage')(event)
+                    commandForExec(command, name !== command ? name : undefined),
+                    undefined,
+                    resultWrapper.parentNode.parentNode as Element,
+                    'Previous Usage')(event)
                 } else {
                   return repl.pexec(commandForExec(command, name !== command ? name : undefined))
                 }
@@ -579,7 +579,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
       const nRowsOf = (section: IUsageSection, idx: number) => {
         debug('nRowsOf', section, section.rows.length, section.nRowsInViewport, defaultNRowsInViewport(idx, section.rows.length))
         return Math.min(section.rows.length,
-                        section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length)
+          section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length)
       }
 
       const totalRows = tableSections.reduce((total, section, idx) => {
@@ -589,8 +589,8 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
       stringSections.forEach((section, idx) => {
         const { title, rows, nRowsInViewport } = section
         makeTable(title,
-                  rows,
-                  left)
+          rows,
+          left)
       })
 
       let runningSum = 0
@@ -600,9 +600,9 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
         runningSum += nRowsOf(section, idx)
         debug('running', runningSum, totalRows)
         makeTable(title,
-                  rows,
-                  runningSum < totalRows / 2 ? left : right,
-                  nRowsInViewport || defaultNRowsInViewport(idx, rows.length))
+          rows,
+          runningSum < totalRows / 2 ? left : right,
+          nRowsInViewport || defaultNRowsInViewport(idx, rows.length))
       })
     }
 
@@ -665,7 +665,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
 }
 
 interface IDetailedExample {
-  command: string,
+  command: string
   docs: string
 }
 
@@ -683,7 +683,7 @@ export interface IUsageRow {
   narg?: number
 
   // implicit entity ok for this attribute?
-  implicitOK?: Array<string>
+  implicitOK?: string[]
 
   // this attribute is not required if we match an implicit entity
   notNeededIfImplicit?: boolean
@@ -722,7 +722,7 @@ export interface IUsageRow {
   allowedIsPrefixMatch?: boolean
 
   // enumeration of allowed values
-  allowed?: Array<number | string | boolean>
+  allowed?: (number | string | boolean)[]
 }
 
 interface IGenerator {
@@ -778,13 +778,13 @@ export interface IUsageModel {
 
   breadcrumb?: string
   title?: string
-  command?: string,
-  strict?: string,
-  docs?: string,
-  header?: string,
-  example?: string,
-  detailedExample?: IDetailedExample | IDetailedExample[],
-  sampleInputs?: IUsageRow[],
+  command?: string
+  strict?: string
+  docs?: string
+  header?: string
+  example?: string
+  detailedExample?: IDetailedExample | IDetailedExample[]
+  sampleInputs?: IUsageRow[]
   intro?: ITitledContent
   sections?: IUsageSection[]
   commandPrefix?: string

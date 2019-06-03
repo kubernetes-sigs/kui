@@ -15,7 +15,6 @@
  */
 
 import * as fs from 'fs'
-import * as url from 'url'
 import * as propertiesParser from 'properties-parser'
 
 import expandHomeDir from '@kui-shell/core/util/home'
@@ -34,7 +33,7 @@ export const getCreds = async (options) => {
       } else {
         try {
           const { APIHOST, AUTH } = propertiesParser.parse(data.toString())
-          resolve({ apiHost: !url.parse(APIHOST).protocol ? `https://${APIHOST}` : APIHOST, auth: AUTH })
+          resolve({ apiHost: !new URL(APIHOST).protocol ? `https://${APIHOST}` : APIHOST, auth: AUTH })
         } catch (err) {
           reject(err)
         }

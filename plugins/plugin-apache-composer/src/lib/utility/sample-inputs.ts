@@ -18,15 +18,15 @@
  * The sample compositions we want to offer users
  *
  */
-export const sampleInputs = (cmd, partial= false) => {
-    // generator of the command string; if the caller passed in a function, use it
+export const sampleInputs = (cmd, partial = false) => {
+  // generator of the command string; if the caller passed in a function, use it
   const gen = typeof cmd === 'function' ? cmd : () => cmd
 
   return [
-      { name: 'hello.js', docs: 'hello world', command: `${gen('hello-demo')} @demos/hello.js`, partial },
-      { name: 'if.js', docs: 'conditional execution', command: `${gen('if-demo')} @demos/if.js`, partial },
-      { name: 'let.js', docs: 'introduce a value', command: `${gen('let-demo')} @demos/let.js`, partial },
-      { name: 'retain.js', docs: 'forward values around untrusted code', command: `${gen('retain-demo')} @demos/retain.js`, partial },
-      { name: 'try.js', docs: 'try/catch', command: `${gen('try-demo')} @demos/try.js`, partial }
+    { name: 'hello.js', docs: 'hello world', command: `${gen('hello-demo')} @demos/hello.js`, partial },
+    { name: 'if.js', docs: 'conditional execution', command: `${gen('if-demo')} @demos/if.js`, partial },
+    { name: 'let.js', docs: 'introduce a value', command: `${gen('let-demo')} @demos/let.js`, partial },
+    { name: 'retain.js', docs: 'forward values around untrusted code', command: `${gen('retain-demo')} @demos/retain.js`, partial },
+    { name: 'try.js', docs: 'try/catch', command: `${gen('try-demo')} @demos/try.js`, partial }
   ]
 }

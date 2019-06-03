@@ -44,7 +44,7 @@ const hoverOn = elements => {
   let currentTask
   let cleanupHover
 
-    /** remember how to cancel ourselves; this will be the return value of `hoverOn` */
+  /** remember how to cancel ourselves; this will be the return value of `hoverOn` */
   let stop = false
   const cancel = () => {
     stop = true
@@ -134,17 +134,17 @@ export const wskflowCycle = obj => {
 
   const all = []
   for (let idx = 0; idx < actions.length; idx++) {
-        // actions seem to come from bottom to top
+    // actions seem to come from bottom to top
     all.push(actions[idx])
   }
   for (let idx = edges.length - 1; idx >= 0; idx--) {
-        // edges seem to come from top to bottom
+    // edges seem to come from top to bottom
     all.push(edges[idx])
   }
 
   const cancel = hoverOn(all.reverse())
   setTimeout(cancel, terminateAfter)
 
-    // register our cancellable with the given object
+  // register our cancellable with the given object
   obj.cancellables.push(cancel)
 }

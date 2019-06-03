@@ -124,6 +124,7 @@ if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] ===
 export const apiHost = {
   get: () => Promise.resolve(apihost),
   set: (newHost, { ignoreCerts = false } = {}) => {
+    // eslint-disable-next-line node/no-deprecated-api
     const url = require('url').parse(newHost)
     if (!url.protocol) {
       if (newHost.indexOf('localhost') >= 0 || newHost.indexOf('192.168') >= 0) {

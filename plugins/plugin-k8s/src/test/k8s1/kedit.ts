@@ -88,8 +88,8 @@ describe('electron kedit', function (this: common.ISuite) {
 
   const makeACopy = (filepath = initialFilepath, tmp = tmpFilepath) => {
     it('should copy the edit input', () => cli.do(`cp "${filepath}" "${tmp}"`, this.app)
-     .then(cli.expectJustOK)
-     .catch(common.oops(this)))
+      .then(cli.expectJustOK)
+      .catch(common.oops(this)))
   }
 
   /** switch to a given tab */
@@ -111,43 +111,43 @@ describe('electron kedit', function (this: common.ISuite) {
 
   const editWithoutSaving = (filepath = tmpFilepath, expectedResource = initialContent) => {
     it('should kedit but not save the content of an existing file', () => cli.do(`kedit "${filepath}"`, this.app)
-       .then(cli.expectJustOK)
-       .then(sidecar.expectOpen)
-       .then(sidecar.expectShowing(initialResourceName))
-       .then(switchToRaw('kedit'))
-       .then(verifyYAML(expectedResource))
-       .then(() => setValue(this.app, 'should not be saved'))
-       .then(() => this.app)
-       .then(sidecar.expectShowing(initialResourceName))
-       .then(() => this.app.client.waitUntil(async () => {
-         const actualText = await getValueFromMonaco(this.app)
-         return actualText === 'should not be saved'
-       }))
-       .catch(common.oops(this)))
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(initialResourceName))
+      .then(switchToRaw('kedit'))
+      .then(verifyYAML(expectedResource))
+      .then(() => setValue(this.app, 'should not be saved'))
+      .then(() => this.app)
+      .then(sidecar.expectShowing(initialResourceName))
+      .then(() => this.app.client.waitUntil(async () => {
+        const actualText = await getValueFromMonaco(this.app)
+        return actualText === 'should not be saved'
+      }))
+      .catch(common.oops(this)))
   }
 
   const reopenWith = (cmd: string, tmp = tmpFilepath) => ({
     andExpect: (expected: Resource, displayedName = expected.metadata.name) => {
       it(`should re-open the file and see resource named ${expected.metadata.name} using "${cmd}"`, () => cli.do(`${cmd} "${tmp}"`, this.app)
-         .then(cli.expectJustOK)
-         .then(sidecar.expectOpen)
-         .then(sidecar.expectShowing(displayedName))
-         .then(switchToRaw(cmd))
-         .then(verifyYAML(expected))
-         .catch(common.oops(this)))
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(displayedName))
+        .then(switchToRaw(cmd))
+        .then(verifyYAML(expected))
+        .catch(common.oops(this)))
     }
   })
 
   const updateWith = (cmd: string, tmp = tmpFilepath) => {
     it(`should edit and save the content using "${cmd}"`, () => cli.do(`${cmd} "${tmp}"`, this.app)
-       .then(cli.expectJustOK)
-       .then(sidecar.expectOpen)
-       .then(() => cmd === 'kedit' && sidecar.expectShowing(initialResourceName)(this.app))
-       .then(switchToRaw(cmd))
-       .then(() => setValue(this.app, safeDump(updatedContent)))
-       .then(save(this.app))
-       .then(() => cmd === 'kedit' && sidecar.expectShowing(updatedResourceName)(this.app))
-       .catch(common.oops(this)))
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(() => cmd === 'kedit' && sidecar.expectShowing(initialResourceName)(this.app))
+      .then(switchToRaw(cmd))
+      .then(() => setValue(this.app, safeDump(updatedContent)))
+      .then(save(this.app))
+      .then(() => cmd === 'kedit' && sidecar.expectShowing(updatedResourceName)(this.app))
+      .catch(common.oops(this)))
   }
 
   const updateViaForm = (tmp = tmpFilepath) => {
@@ -155,23 +155,23 @@ describe('electron kedit', function (this: common.ISuite) {
     const intermediateResourceName = 'funny-money'
 
     it(`should edit and save the content via form`, () => cli.do(`${cmd} "${tmp}"`, this.app)
-       .then(cli.expectJustOK)
-       .then(sidecar.expectOpen)
-       .then(sidecar.expectShowing(initialResourceName))
-       .then(() => `${selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`)
-       .then(async selector => {
-         await this.app.client.waitForVisible(selector)
-         return this.app.client.setValue(selector, intermediateResourceName)
-       })
-       .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('save')))
-       .then(() => this.app)
-       .then(sidecar.expectShowing(intermediateResourceName))
-       .then(switchToRaw(cmd))
-       .then(sidecar.expectShowing(intermediateResourceName))
-       .then(() => setValue(this.app, safeDump(updatedContent)))
-       .then(save(this.app))
-       .then(() => sidecar.expectShowing(updatedResourceName)(this.app))
-       .catch(common.oops(this)))
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(initialResourceName))
+      .then(() => `${selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`)
+      .then(async selector => {
+        await this.app.client.waitForVisible(selector)
+        return this.app.client.setValue(selector, intermediateResourceName)
+      })
+      .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('save')))
+      .then(() => this.app)
+      .then(sidecar.expectShowing(intermediateResourceName))
+      .then(switchToRaw(cmd))
+      .then(sidecar.expectShowing(intermediateResourceName))
+      .then(() => setValue(this.app, safeDump(updatedContent)))
+      .then(save(this.app))
+      .then(() => sidecar.expectShowing(updatedResourceName)(this.app))
+      .catch(common.oops(this)))
   }
 
   //
@@ -180,15 +180,15 @@ describe('electron kedit', function (this: common.ISuite) {
 
   // single-paragraph yaml
   it('should kedit a single-paragraph yaml', () => cli.do(`kedit "${singleParagraphFilepath}"`, this.app)
-     .then(cli.expectJustOK)
-     .then(sidecar.expectOpen)
-     .then(sidecar.expectShowing('reviews'))
-     .catch(common.oops(this)))
+    .then(cli.expectJustOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing('reviews'))
+    .catch(common.oops(this)))
 
   // trailing empty paragraph
   it('should kedit a multi-paragraph yaml with trailing empty paragraph', () => cli.do(`kedit "${trailingEmptyFilepath}"`, this.app)
-     .then(cli.expectOKWith('details-v1'))
-     .catch(common.oops(this)))
+    .then(cli.expectOKWith('details-v1'))
+    .catch(common.oops(this)))
 
   // make sure editing without saving works
   makeACopy()
