@@ -319,7 +319,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
   debug('getDirectReferences', file, name)
 
   /** format a --namespace cli option for the given kubeEntity */
-  const ns = ({ metadata= {} } = {}) => {
+  const ns = ({ metadata = {} } = {}) => {
     debug('ns', metadata['namespace'], namespace)
     return metadata['namespace']
       ? `-n "${metadata['namespace']}"`

@@ -107,7 +107,7 @@ export class TryLaterError extends StatusError {
 export class NotFoundError extends StatusError {
   code: any
 
-  constructor (message: string, code: any= 404) {
+  constructor (message: string, code: any = 404) {
     super(message)
     this.code = code
   }

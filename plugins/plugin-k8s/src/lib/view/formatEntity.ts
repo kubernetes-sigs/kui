@@ -43,7 +43,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   const doWatch = true
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
 
-  const { apiVersion, kind, metadata: { name, namespace, labels, annotations= {} } } = kubeEntity
+  const { apiVersion, kind, metadata: { name, namespace, labels, annotations = {} } } = kubeEntity
   const { type, actionName, packageName, fqn } = toOpenWhiskFQN(kubeEntity)
   const { outerCSS, cssForState } = stateRendering
 
