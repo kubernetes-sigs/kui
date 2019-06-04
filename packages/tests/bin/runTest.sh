@@ -87,9 +87,17 @@ if [ -n "$LAYER" ]; then
         fi
     fi
 
-    TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test/$LAYER" -maxdepth 5)
+    if [ -z $EXCLUDE_OW_TEST ]; then
+      TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test/$LAYER" -maxdepth 5)
+    else
+      TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test/$LAYER" ! -path "*/test/openwhisk*" ! -path "*/test/composer*" ! -path "*/test/grid" -maxdepth 5)
+    fi
 else
-    TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test" -maxdepth 4)
+    if [ -z $EXCLUDE_OW_TEST ]; then
+      TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test" -maxdepth 4)
+    else
+      TEST_SUITES=$(find "$TEST_SUITE_ROOT" -path "*/test/$LAYER" ! -path "*/test/openwhisk*" ! -path "*/test/composer*" ! -path "*/test/grid"  -maxdepth 4)
+    fi
 fi
 
 echo "Running these test suites: $TEST_SUITES"
