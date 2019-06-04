@@ -62,7 +62,7 @@ const usage = {
  * Compile the `wrk` executable
  *
  */
-export const compileWrk = ({ parsedOptions, createOutputStream }) => new Promise<boolean>(async (resolve, reject) => {
+export const compileWrk = ({ createOutputStream }) => new Promise<boolean>(async (resolve, reject) => {
   const stdout = createOutputStream()
 
   try {
