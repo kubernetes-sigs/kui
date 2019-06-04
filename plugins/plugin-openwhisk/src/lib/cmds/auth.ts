@@ -439,7 +439,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: I
           // default key, hence the extra if guard
           debug('using fixed localhost key')
           const key = '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
-          return repl.qfexec('wsk auth add ${key}')
+          return repl.qfexec(`wsk auth add ${key}`)
         }
 
         // no keys, yet. enter a special mode requesting further assistance

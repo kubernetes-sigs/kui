@@ -48,6 +48,7 @@ export const generateScriptForAction = ({ options }) => action => new Promise((r
           // argument, or the global one previously chosen
           // by the user
           Promise.resolve().then(() => getCreds(options).then(({ apiHost, auth }) => {
+            // eslint-disable-next-line no-template-curly-in-string
             fs.write(fd, data.toString().replace('${AUTH}', Buffer.from(auth).toString('base64')), err => {
               if (err) {
                 reject(err)
