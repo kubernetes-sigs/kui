@@ -22,7 +22,6 @@
     "no-useless-constructor": "off",
     "no-useless-escape": "off",
     "no-useless-return": "off",
-    "prefer-promise-reject-errors": "off",
 
     "import/no-duplicates": "off",
 

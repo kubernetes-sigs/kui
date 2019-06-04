@@ -501,7 +501,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       // fail function
       const nope = async () => {
         if (execOptions.failWithUsage) {
-          reject(undefined)
+          reject(new Error(undefined))
         } else {
           const usage = await prepareUsage(command)
           if (!usage) {

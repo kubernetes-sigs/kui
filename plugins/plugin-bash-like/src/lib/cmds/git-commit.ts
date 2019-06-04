@@ -118,7 +118,7 @@ ${commentedStatus}`
 
                 if (model.exec.code === msg) {
                   debug('empty commit message')
-                  reject('Aborting commit due to empty commit message.')
+                  reject(new Error('Aborting commit due to empty commit message.'))
                 } else {
                   // continue with the actual commit
                   resolve(qexec(`${command} --file "${filepath}"`))

@@ -70,7 +70,7 @@ export default async (commandTree: CommandRegistrar) => {
   synonyms('activations').forEach(syn => {
     commandTree.listen(`/wsk/${syn}/get`, (opts) => {
       if (!activationGet) {
-        return Promise.reject()
+        return Promise.reject(new Error())
       }
       const last = opts.parsedOptions.last
 
