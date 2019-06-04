@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { properties } from '../../utility/usage'
 import { version } from 'openwhisk-composer/package.json'
-const debug = Debug('plugins/apache-composer/cmd/app-config')
 
 /**
  * Command handler for the properties command

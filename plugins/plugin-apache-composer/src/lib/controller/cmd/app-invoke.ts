@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { invoke, async } from '../../utility/usage'
 import * as repl from '@kui-shell/core/core/repl'
-import UsageError from '@kui-shell/core/core/usage-error'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import * as view from '../../view/entity-view'
-const debug = Debug('plugins/apache-composer/cmd/app-invoke')
 
 export default async (commandTree: CommandRegistrar) => {
   /* command handler for app invoke */

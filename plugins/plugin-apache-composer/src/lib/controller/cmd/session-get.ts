@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -23,7 +21,6 @@ import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 import { sessionGet } from '../../utility/usage'
 import * as view from '../../view/entity-view'
-const debug = Debug('plugins/apache-composer/cmd/session-get')
 
 export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(`/wsk/session/result`, ({ command }) => {

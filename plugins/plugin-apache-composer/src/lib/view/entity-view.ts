@@ -44,7 +44,7 @@ export const formatSessionResponse = activation => {
   activation.modes.push({
     mode: defaultMode,
     label: 'Session Flow',
-    direct: entity => repl.pexec(`session flow ${activation.activationId}`)
+    direct: () => repl.pexec(`session flow ${activation.activationId}`)
   })
 
   debug('session response', activation)
