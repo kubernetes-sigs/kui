@@ -16,7 +16,6 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -28,7 +27,7 @@ const debug = Debug('plugins/apache-composer/cmd/app-create')
 
 export default async (commandTree: CommandRegistrar) => {
   /* command handler for app create */
-  commandTree.listen(`/wsk/app/create`, async ({ tab, argvNoOptions, execOptions, parsedOptions }) => {
+  commandTree.listen(`/wsk/app/create`, async ({ tab, argvNoOptions, execOptions }) => {
     // load and parse the source file to JSON-encoded composition and then deploy
     let inputFile = argvNoOptions[argvNoOptions.indexOf('create') + 2]
     let name = argvNoOptions[argvNoOptions.indexOf('create') + 1]
@@ -50,7 +49,7 @@ export default async (commandTree: CommandRegistrar) => {
   }, { usage: create('create') })
 
   /* command handler for app update */
-  commandTree.listen(`/wsk/app/update`, async ({ tab, argvNoOptions, execOptions, parsedOptions }) => {
+  commandTree.listen(`/wsk/app/update`, async ({ tab, argvNoOptions, execOptions }) => {
     // load and parse the source file to JSON-encoded composition and then deploy
     let inputFile = argvNoOptions[argvNoOptions.indexOf('update') + 2]
     let name = argvNoOptions[argvNoOptions.indexOf('update') + 1]

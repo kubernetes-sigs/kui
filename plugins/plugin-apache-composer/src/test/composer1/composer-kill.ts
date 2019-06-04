@@ -28,7 +28,6 @@
 // const killFailure404 = 'Cannot find live session'
 
 import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 describe('killing and purging composer invocations', function (this: ISuite) {
   // no more kill and purge with composer v2
   // return

@@ -29,12 +29,12 @@ import { findFile } from '@kui-shell/core/core/find-file'
 
 import { currentSelection } from '@kui-shell/plugin-openwhisk/lib/models/openwhisk-entity'
 
-import { extractActionsFromAst, isValidAst } from './ast'
+import { isValidAst } from './ast'
 import { create } from './usage'
 import * as messages from './messages'
 const debug = Debug('plugins/apache-composer/utility/compile')
 
-export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
+export const sourceToComposition = ({ inputFile, name = '' }) => new Promise(async (resolve, reject) => {
   debug('validating source file', inputFile)
   const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
   if (extension === 'json' || extension === 'ast') { // we were given the AST directly
