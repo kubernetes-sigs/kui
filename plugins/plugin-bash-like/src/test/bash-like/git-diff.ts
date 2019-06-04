@@ -16,10 +16,9 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 const { localDescribe } = common
 import { copyFile, unlink, writeFile } from 'fs'
-import { dirname, join, normalize } from 'path'
 
 /** modify the top-level README.md, so that we can exhibit a git diff */
 const modifyTopLevelReadme = () => new Promise(async (resolve, reject) => {

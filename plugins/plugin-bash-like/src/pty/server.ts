@@ -19,8 +19,8 @@
 
 import * as fs from 'fs'
 import { promisify } from 'util'
-import { dirname, join } from 'path'
-import { exec, spawn } from 'child_process'
+import { join } from 'path'
+import { exec } from 'child_process'
 import { createServer, Server } from 'https'
 
 import { Channel } from './channel'
@@ -91,9 +91,9 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
     }
   }
 
-  return async (exitCode: number) => { /* no-op */ }
+  return async () => { /* no-op */ }
 }
-const enableBashSessions = async (exitCode: number) => {
+const enableBashSessions = async () => {
   await promisify(fs.unlink)(BSD())
 }
 
@@ -275,8 +275,6 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
  */
 let count = 0
 // const children = []
-let cachedSelf
-let selfHome
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/bash/websocket/open', ({ execOptions }) => new Promise(async (resolve, reject) => {
     const N = count++

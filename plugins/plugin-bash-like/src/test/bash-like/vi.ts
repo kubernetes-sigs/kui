@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, keys, selectors, sidecar, sleep } = ui
+const { cli, keys, selectors } = ui
 const { localDescribe } = common
 
 import * as assert from 'assert'

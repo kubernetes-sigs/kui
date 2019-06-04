@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/util/git-support')
-
 import { dirname, join } from 'path'
-import { exec, spawn } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { injectCSS as inject, injectScript } from '@kui-shell/core/webapp/util/inject'
+import { injectCSS as inject } from '@kui-shell/core/webapp/util/inject'
 
 /**
  * Load the CSS for diff2html
@@ -47,52 +43,19 @@ export const injectCSS = async () => {
  * Return git status, usually for consumption by a git commit
  *
  */
-export const status = (commentPrefix = '# ') => new Promise((resolve, reject) => {
-  const status = exec('git status', (err, status, stderr) => {
-    if (err) {
-      console.error(stderr)
-      reject(err)
-    } else {
-      debug('status', status)
-      const commentedStatus = status
-        .split(/\n/)
-        .map(line => `${commentPrefix}${line}`)
-        .join('\n')
-
-      resolve(commentedStatus)
-    }
-  })
-})
+export const status = () => new Promise(() => {})
 
 /**
  * Find the .git "toplevel" directory
  *
  */
-export const toplevel = (): Promise<string> => new Promise((resolve, reject) => {
-  const status = exec('git rev-parse --show-toplevel', (err, toplevel, stderr) => {
-    if (err) {
-      console.error(stderr)
-      reject(err)
-    } else {
-      resolve(toplevel.trim())
-    }
-  })
-})
+export const toplevel = (): Promise<string> => new Promise(() => {})
 
 /**
  * @return the current branch
  *
  */
-export const branch = (): Promise<string> => new Promise((resolve, reject) => {
-  const status = exec('git rev-parse --abbrev-ref HEAD', (err, branch, stderr) => {
-    if (err) {
-      console.error(stderr)
-      reject(err)
-    } else {
-      resolve(branch.trim())
-    }
-  })
-})
+export const branch = (): Promise<string> => new Promise(() => {})
 
 /**
  * @return "On branch <branch>"

@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, keys, selectors, sidecar, sleep } = ui
+const { cli, keys, selectors } = ui
 const { localDescribe } = common
 
 import * as assert from 'assert'
@@ -41,8 +41,6 @@ localDescribe('xterm copy paste', function (this: common.ISuite) {
 
   it(`should echo ${emittedText}`, async () => {
     try {
-      const res = cli.do(`echo ${emittedText}`, this.app)
-
       // wait for the output to appear
       await this.app.client.waitForExist(rows(0))
 

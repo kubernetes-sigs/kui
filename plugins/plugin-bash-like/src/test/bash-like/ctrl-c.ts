@@ -19,7 +19,7 @@ import * as assert from 'assert'
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli, selectors } = ui
 const { localIt } = common
 
 describe('Cancel via Ctrl+C', function (this: ISuite) {

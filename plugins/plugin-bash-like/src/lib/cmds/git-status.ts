@@ -21,15 +21,12 @@ import * as path from 'path'
 import { spawn } from 'child_process'
 
 import { partial, ITab } from '@kui-shell/core/webapp/cli'
-import { pexec } from '@kui-shell/core/core/repl'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { onbranch, injectCSS } from '../util/git-support'
-
-const modified = `<svg aria-hidden="true" class="d2h-icon d2h-changed" height="16" title="modified" version="1.1" viewBox="0 0 14 16" width="14"><path d="M13 1H1C0.45 1 0 1.45 0 2v12c0 0.55 0.45 1 1 1h12c0.55 0 1-0.45 1-1V2c0-0.55-0.45-1-1-1z m0 13H1V2h12v12zM4 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"></path></svg>`
 
 /**
  * Look for modified: and turn them into git diff links

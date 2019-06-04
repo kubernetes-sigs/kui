@@ -23,38 +23,17 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/cmds/general')
 
-import * as fs from 'fs'
-import * as path from 'path'
 import { exec } from 'child_process'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import UsageError from '@kui-shell/core/core/usage-error'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
-import { reallyLong, handleNonZeroExitCode } from '../util/exec'
+import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
-import { asSidecarEntity } from '../util/sidecar-support'
 import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
-
-/**
- * Strip off ANSI and other control characters from the given string
- *
- */
-const stripControlCharacters = (str: string): string => {
-  return str.replace(/\x1b\[(\d+;)?\d+m/g, '') // ansi color codes
-    .replace(/^\x08+/, '') // control characters
-    .replace(/^\x1b\[[012]?K/, '')
-    .replace(/^\x1b\[\(B/, '')
-    .replace(/^\x1b\[38;5;(\d+)m/, '')
-    .replace(/^\x1b\[\d?J/, '')
-    .replace(/^\x1b\[\d{0,3};\d{0,3}f/, '')
-    .replace(/^\x1b\[?[\d;]{0,3}/, '')
-    .replace(/^\W*OK\W*\n/, '') // OK at the beginning
-}
 
 export const doShell = (argv: string[], options, execOptions?: IExecOptions) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
@@ -144,7 +123,6 @@ export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promis
   let rawOut = ''
   let rawErr = ''
 
-  let pendingUsage = false
   proc.stdout.on('data', async data => {
     const out = data.toString()
 
@@ -186,11 +164,6 @@ export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promis
       } else {
         // else, we pass back a formatted form of the output
         const json = extractJSON(rawOut)
-
-        const command = cmdLine.replace(/^\s*(\S+)\s+/, '$1')
-        const verb = ''
-        const entityType = ''
-        const options = {}
 
         if (json) {
           json['type'] = 'shell'
@@ -244,7 +217,6 @@ const cd = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) => {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  const shellFn = ({ command, execOptions, parsedOptions }) => doShell(repl.split(command, false), parsedOptions, execOptions)
   commandTree.listen('/!', dispatchToShell, { docs: 'Execute a UNIX shell command', noAuthOk: true, requiresLocal: true })
 
   commandTree.listen('/cd', cd, { usage: usage.cd, noAuthOk: true, requiresLocal: true })

@@ -19,9 +19,7 @@ const debug = Debug('plugins/bash-like/cmds/git-commit')
 
 import { join } from 'path'
 import { writeFile } from 'fs'
-import { spawn } from 'child_process'
 
-import expandHomeDir from '@kui-shell/core/util/home'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec } from '@kui-shell/core/core/repl'
 import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui-shell/core/webapp/views/sidecar'
@@ -83,13 +81,12 @@ const doExec = ({ command, argvNoOptions, execOptions, tab }: IEvaluatorArgs) =>
  *
  */
 const doCommit = async (opts: IEvaluatorArgs) => {
-  const { tab, command, argvNoOptions, parsedOptions, execOptions } = opts
+  const { tab, command, argvNoOptions, parsedOptions } = opts
 
   if (argvNoOptions.length === 3 &&
       !(parsedOptions.F || parsedOptions.file ||
         parsedOptions.message || parsedOptions.m ||
         parsedOptions.help)) {
-    const file = argvNoOptions[argvNoOptions.length - 1]
     return new Promise(async (resolve, reject) => {
       try {
         const [ commentedStatus, toplevelDir ] = await Promise.all([ status(), toplevel() ])

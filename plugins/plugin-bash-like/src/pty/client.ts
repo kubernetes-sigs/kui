@@ -27,7 +27,7 @@ import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
 import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, ITab } from '@kui-shell/core/webapp/cli'
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { Table } from '@kui-shell/core/webapp/models/table'
@@ -422,11 +422,6 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
     alreadyInjectedCSS = true
   }
 
-  // make sure to grab currently visible tab right away (i.e. before
-  // any asyncs), so that we can store a reference before the user
-  // switches away to another tab
-  const scrollRegion = tab.querySelector('.repl-inner .repl-block.processing')
-
   // this is the main work
   const exec = async () => {
     // attach the terminal to the DOM
@@ -502,7 +497,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
 
       // relay keyboard input to the server
       let queuedInput: string
-      terminal.on('key', (key, ev) => {
+      terminal.on('key', (key) => {
         if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
           debug('queued input out back', key)
           queuedInput += key
@@ -518,7 +513,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
       }
       terminal.on('focus', maybeClearSelection)
       terminal.on('blur', maybeClearSelection)
-      document.addEventListener('select', (evt: Event) => {
+      document.addEventListener('select', () => {
         terminal.clearSelection()
       })
 
@@ -552,7 +547,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
         }
       }
 
-      const notifyOfWriteCompletion = (evt: { start: number; end: number }) => {
+      const notifyOfWriteCompletion = () => {
         if (pendingWrites > 0) {
           pendingWrites = 0
           if (cbAfterPendingWrites) {
@@ -567,11 +562,11 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
       // receive updates after we receive a process exit event; but we
       // will always receive a `refresh` event when the animation
       // frame is done. see https://github.com/IBM/kui/issues/1272
-      terminal.on('refresh', (evt: { start: number; end: number }) => {
+      terminal.on('refresh', () => {
         // debug('refresh', evt.start, evt.end)
         resizer.hideTrailingEmptyBlanks()
         doScroll()
-        notifyOfWriteCompletion(evt)
+        notifyOfWriteCompletion()
       })
 
       terminal.element.classList.add('fullscreen')
