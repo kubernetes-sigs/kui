@@ -29,9 +29,9 @@ However, currently, you will not be able to use Kui from your favorite
 terminal (such support should come soon); Kui's graphical shell offers
 a command line experience.
 
-[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org) **|** [Kui-Windows.zip](https://win32-zip.kui-shell.org)
+[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org)
 
-*Coming soon: MacOS .dmg, Linux .deb, Linux .rpm*
+*Coming soon: MacOS .dmg, Linux .deb, Linux .rpm, Windows .zip*
 
 ##### Example Download for MacOS double-clickable
 
