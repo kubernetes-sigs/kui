@@ -30,9 +30,9 @@ interface ITektonKubeResource extends IKubeResource {
   // intentionally empty
 }
 
-export interface ITaskRun {
+export interface ITaskRun extends IKubeResource {
   pipelineTaskName: string
-  status: {
+  status: IKubeStatus & {
     podName: string
     startTime: string
     completionTime?: string
@@ -99,7 +99,9 @@ export interface Task extends ITektonKubeResource {
 }
 
 export function isTask (resource: IKubeResource): resource is Task {
-  return resource && resource.kind === 'Task'
+  return resource &&
+    tektonAPI.test(resource.apiVersion) &&
+    resource.kind === 'Task'
 }
 
 export interface IPipeline extends ITektonKubeResource {
@@ -111,7 +113,9 @@ export interface IPipeline extends ITektonKubeResource {
 }
 export function isPipeline (resource: IKubeResource): resource is IPipeline {
   const run = resource as IPipeline
-  return run.spec !== undefined &&
+  return run &&
+    tektonAPI.test(run.apiVersion) &&
+    run.spec !== undefined &&
     run.kind === 'Pipeline' &&
     run.spec.tasks !== undefined
 }

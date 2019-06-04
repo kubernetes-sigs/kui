@@ -21,7 +21,7 @@ import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { IKubeResource, IResource } from '../../model/resource'
 const debug = Debug('k8s/views/modes/registrar')
 
-type SidecarModeFilter = (resource: IKubeResource) => boolean
+export type SidecarModeFilter = (resource: IKubeResource) => boolean
 
 /**
  * Interpretation: if the kubernetes resources passes the given "when"
@@ -40,9 +40,10 @@ const registrar: ModeRegistration[] = []
  * Register a new mode
  *
  */
-export default function (registration: ModeRegistration) {
+export function registerSidecarMode (registration: ModeRegistration) {
   registrar.push(registration)
 }
+export default registerSidecarMode
 
 /**
  * @return the relevant modes for the given command on the given resource

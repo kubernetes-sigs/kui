@@ -326,7 +326,7 @@ const cssForKeyValue = {
 }
 
 /** decorate certain values specially */
-const cssForValue = {
+export const cssForValue = {
   // generic
   NORMAL: 'green-background',
   Normal: 'green-background',

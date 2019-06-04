@@ -44,7 +44,9 @@ const viewName = 'Pods'
  */
 export const podMode: ModeRegistration = {
   when: (resource: IKubeResource) => {
-    return !!(resource.spec && resource.spec.selector)
+    // let's see if the resource refers to a pod in some fashion
+    return (resource.spec !== undefined && resource.spec.selector !== undefined) || // e.g. Deployment
+      (resource.status !== undefined && resource.status.podName !== undefined) // e.g. tekton TaskRun or PipelineRun
   },
   mode: (command: string, resource: IResource) => {
     debug('addPods', resource)
@@ -62,7 +64,7 @@ export const podMode: ModeRegistration = {
  * given resource
  *
  */
-export const podsButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
+const podsButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
   mode: 'pods',
   direct: {
     plugin: 'k8s',
@@ -87,15 +89,13 @@ export const renderAndViewPods = async (tab: ITab, parameters: IParameters) => {
 
   const { selector } = resource.resource.spec
 
-  if (!selector) {
-    debug('no selector attribute for the given resource', resource)
-  } else {
-    const getPods = `kubectl get pods ${selectorToString(selector)} -n "${resource.resource.metadata.namespace}"`
-    debug('getPods', getPods)
+  const getPods = selector
+    ? `kubectl get pods ${selectorToString(selector)} -n "${resource.resource.metadata.namespace}"`
+    : `kubectl get pods ${resource.resource.status.podName} -n "${resource.resource.metadata.namespace}"`
+  debug('getPods', getPods)
 
-    const tableModel: Table = await $$(getPods)
+  const tableModel: Table = await $$(getPods)
 
-    const tableView = formatTable(tab, tableModel, { usePip: true, viewName, execOptions: { delegationOk: true } })
-    return insertView(tab)(tableView)
-  }
+  const tableView = formatTable(tab, tableModel, { usePip: false, viewName, execOptions: { delegationOk: true } })
+  return insertView(tab)(tableView)
 }

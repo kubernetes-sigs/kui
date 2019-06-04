@@ -26,7 +26,11 @@ import { IWatchable } from '../models/basicModels'
 import { applyDiffTable } from '../views/diffTable'
 const debug = Debug('webapp/views/table')
 
-export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom: HTMLElement): void => {
+interface ITableFormatOptions {
+  usePip?: boolean
+}
+
+export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom: HTMLElement, options: ITableFormatOptions = {}): void => {
   const tableDom = document.createElement('div')
   tableDom.classList.add('result-table')
 
@@ -95,7 +99,7 @@ export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom:
   container.classList.add('big-top-pad')
 
   let prepareRows = prepareTable(tab, table)
-  let rows = prepareRows.map(formatOneRowResult(tab))
+  let rows = prepareRows.map(formatOneRowResult(tab, options))
   rows.map(row => tableDom.appendChild(row))
 
   if (table.style !== undefined) {
@@ -168,7 +172,7 @@ export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom:
   }
 }
 
-interface IRowFormatOptions {
+interface IRowFormatOptions extends ITableFormatOptions {
   excludePackageName?: boolean
 }
 
@@ -176,7 +180,7 @@ interface IRowFormatOptions {
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (entity: Row): HTMLElement => {
+export const formatOneRowResult = (tab: ITab, options: IRowFormatOptions = {}) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
@@ -300,7 +304,7 @@ export const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (e
       cell.classList.add('clickable')
       cell.onclick = evt => {
         evt.stopPropagation() // don't trickle up to the row click handler
-        if (isPopup()) {
+        if (isPopup() || options.usePip) {
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') { // TODO: define types here carefully
           pexec(onclick, { tab })
@@ -519,7 +523,7 @@ export const formatOneRowResult = (tab: ITab, options?: IRowFormatOptions) => (e
     // the provider has told us the entity name is not clickable
     entityNameClickable.classList.remove('clickable')
   } else {
-    if (isPopup()) {
+    if (isPopup() || options.usePip) {
       entityNameClickable.onclick = evt => {
         return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
@@ -1002,7 +1006,10 @@ const prepareTable = (tab: ITab, response: Table | WatchableTable): Row[] => {
 
   if (header) {
     header.outerCSS = `${header.outerCSS || ''} header-cell`
-    header.attributes.forEach(cell => cell.outerCSS = `${cell.outerCSS || ''} header-cell`)
+
+    if (header.attributes) {
+      header.attributes.forEach(cell => cell.outerCSS = `${cell.outerCSS || ''} header-cell`)
+    }
   }
   // sort the list, then format each element, then add the results to the resultDom
   // (don't sort lists of activations. i wish there were a better way to do this)

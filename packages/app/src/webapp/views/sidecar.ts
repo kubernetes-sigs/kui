@@ -1037,3 +1037,20 @@ export const init = async () => {
     }
   })
 }
+
+/**
+ * Update the current view into the sidecar; this is helpful for tab
+ * mode switching.
+ *
+ */
+export const insertView = (tab: ITab) => (view: HTMLElement) => {
+  debug('insertView', view)
+
+  const container = getActiveView(tab)
+  debug('insertView.container', container)
+
+  removeAllDomChildren(container)
+  container.appendChild(view)
+
+  presentAs(tab, Presentation.Default)
+}

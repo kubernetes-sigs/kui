@@ -19,12 +19,12 @@ import { dirname, join } from 'path'
 import { addPath } from '@kui-shell/core/core/find-file'
 
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
-import registerSidecarMode from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
+import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
-import { isPipelineRun } from './model/resource'
+import { isPipeline, isPipelineRun, isTask } from './model/resource'
 
 /** this is the ISidecarMode model for the tekton run view */
-import runMode from './model/modes/run'
+// import runMode from './model/modes/run'
 
 /** this is the ISidecarMode model for the tekton flow view */
 import flowMode from './model/modes/flow'
@@ -32,30 +32,41 @@ import flowMode from './model/modes/flow'
 /** this is the ISidecarMode model for the tekton trace view */
 import traceMode from './model/modes/trace'
 
+/** this is the ISidecarMode model for the tekton pipelinerun logs view */
+import logsMode from './model/modes/logs'
+
 /** this is the api version matcher; TODO refactor */
 const tektonAPI = /tekton.dev/
+
+/**
+ * A sidecar mode relevancy filter
+ *
+ */
+function either (...filters: SidecarModeFilter[]): SidecarModeFilter {
+  return (resource: IKubeResource) => filters.some(filter => filter(resource))
+}
 
 /** sidecar mode for tekton Flow view */
 const flowSpec = {
   mode: flowMode,
-  when: (resource: IKubeResource) => {
-    return tektonAPI.test(resource.apiVersion) &&
-      (resource.kind === 'Pipeline' || resource.kind === 'Task' || resource.spec && resource.spec.pipelineRef)
-  }
+  when: either(isPipeline, isPipelineRun, isTask)
 }
 
 /** sidecar mode for tekton Flow view */
-const runSpec = {
+/* const runSpec = {
   mode: runMode,
-  when: (resource: IKubeResource) => {
-    return tektonAPI.test(resource.apiVersion) &&
-      (resource.kind === 'PipelineRun' || resource.kind === 'TaskRun')
-  }
-}
+  when: either(isPipelineRun, isTaskRun)
+} */
 
 /** sidecar mode for tekton Flow view */
 const traceSpec = {
   mode: traceMode,
+  when: isPipelineRun
+}
+
+/** sidecar mode for tekton Flow view */
+const logsSpec = {
+  mode: logsMode,
   when: isPipelineRun
 }
 
@@ -64,6 +75,7 @@ export default () => {
   // registerSidecarMode(runSpec)
   registerSidecarMode(flowSpec)
   registerSidecarMode(traceSpec)
+  registerSidecarMode(logsSpec)
 
   // register a "special path" that resolves
   const specialPath = join(dirname(require.resolve('@kui-shell/plugin-tekton/package.json')), 'samples/@demos')
