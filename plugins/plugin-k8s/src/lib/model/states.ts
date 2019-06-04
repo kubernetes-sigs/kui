@@ -175,7 +175,7 @@ const getStatusFromConditions = response => {
   if (response.status && !response.status.state && response.status.conditions) {
     // use the status.conditions, rather than status.state
     const conditions = response.status.conditions
-    conditions.sort((a, b) => - (new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()))
+    conditions.sort((a, b) => -(new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()))
     debug('using condition for status', conditions[0], conditions)
 
     const conditionForMessage = conditions.find(_ => _.message) || conditions[0]

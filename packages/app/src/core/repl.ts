@@ -598,7 +598,7 @@ class InProcessExecutor implements IExecutor {
           //
           if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
             // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
-            if (! (nActualArgs >= nRequiredArgs &&
+            if (!(nActualArgs >= nRequiredArgs &&
                    nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
               const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)

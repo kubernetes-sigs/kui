@@ -24,7 +24,6 @@
     "no-useless-return": "off",
     "padded-blocks": "off",
     "prefer-promise-reject-errors": "off",
-    "space-unary-ops": "off",
 
     "import/no-duplicates": "off",
 

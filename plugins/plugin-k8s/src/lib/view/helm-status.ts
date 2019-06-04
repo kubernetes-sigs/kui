@@ -98,7 +98,7 @@ export const format = (command: string, verb: string, entityType: string, option
       const diff1 = a.header.attributes.length - b.header.attributes.length
 
       if (diff1 === 0) {
-        return - (width(a.body) - width(b.body))
+        return -(width(a.body) - width(b.body))
       } else {
         return -diff1
       }

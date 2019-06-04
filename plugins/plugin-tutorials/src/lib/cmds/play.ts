@@ -485,7 +485,7 @@ const commandFromFullscreen = (pane, command, display = command) => () => {
   // command; in that case, there's no sense in switching to
   // minimize mode, as we'll just immediately switch back to the
   // primary view mode, and it'll look weird
-  if (! (command.startsWith('play') || command.startsWith('tutorial play'))) {
+  if (!(command.startsWith('play') || command.startsWith('tutorial play'))) {
     pane.classList.add('minimized')
     pane.querySelector('.tutorial-minimized-message').innerHTML = `Tutorial paused while we execute the command <span class='monospace bx--link clickable clickable-blatant' onclick='repl.pexec("${command}"})'>${display}</span>.`
 

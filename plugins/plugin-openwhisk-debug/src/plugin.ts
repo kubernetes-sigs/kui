@@ -463,7 +463,7 @@ const init = async (kind, spinnerDiv) => {
 
   appendIncreContent('Starting local container', spinnerDiv)
 
-  const containerCreateNeeded = ! (_container && (_containerType && _containerType === kind))
+  const containerCreateNeeded = !(_container && (_containerType && _containerType === kind))
 
   if (!containerCreateNeeded) {
     // only in one condition that we will reuse a container, is in the same shell session the same kind of action being invoked
