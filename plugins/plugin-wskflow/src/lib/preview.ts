@@ -22,7 +22,6 @@ import * as path from 'path'
 import * as usage from '../usage'
 
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
-import { PluginRegistration } from '@kui-shell/core/models/plugin'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -151,7 +150,7 @@ export default (commandTree: CommandRegistrar) => {
       }
 
       const visualize = (await import('./visualize')).default
-      const { view, controller } = await wskflowUtil.wskflow(tab, visualize, { ast, input, name, viewOptions, container: execOptions.container, namespace: undefined })
+      const { view, controller } = await wskflowUtil.wskflow(tab, visualize, { ast, name, viewOptions, container: execOptions.container, namespace: undefined })
 
       const modes: ISidecarMode[] = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
       modes.splice(modes.length, 0, ...coreModes)

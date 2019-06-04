@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { IEntitySpec } from '@kui-shell/core/models/entity'
-
 interface ActivationLike {
   start: number
   duration: number

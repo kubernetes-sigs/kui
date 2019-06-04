@@ -15,7 +15,6 @@
  */
 import * as Debug from 'debug'
 
-import * as sidecar from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { optionsToString } from '@kui-shell/core/core/utility'
@@ -101,7 +100,7 @@ export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode
  * like an app
  *
  */
-export const decorateAsApp = async (tab: ITab, { action, input, viewName = 'composition', commandPrefix = 'app get', doVisualize, options }) => {
+export const decorateAsApp = async (tab: ITab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
   debug('decorateAsApp', options)
   action.prettyType = badges.app
 
@@ -151,7 +150,7 @@ export const decorateAsApp = async (tab: ITab, { action, input, viewName = 'comp
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (tab: ITab, visualize, { ast, input, name, namespace, viewOptions, container }) => {
+export const wskflow = async (tab: ITab, visualize, { ast, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = await repl.qexec('wsk rule list')
