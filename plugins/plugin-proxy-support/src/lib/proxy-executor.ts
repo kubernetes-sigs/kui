@@ -19,12 +19,11 @@ import * as Debug from 'debug'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { IReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
-import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
 
 import * as needle from 'needle'
 const debug = Debug('plugins/proxy-support/executor')
-import url = require('url')
 
 /**
  * The proxy server configuration.
