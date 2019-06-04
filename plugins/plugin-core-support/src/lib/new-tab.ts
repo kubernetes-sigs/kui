@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/new-tab')
 
 import installReplFocusHandlers from './repl-focus'
 
@@ -30,6 +29,7 @@ import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, ITab, setStatus }
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, IEvent, ExecType, IEvaluatorArgs } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/core-support/new-tab')
 
 const usage = {
   strict: 'switch',

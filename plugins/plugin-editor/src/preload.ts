@@ -15,11 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/preload')
-debug('loading')
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/editor/preload')
+debug('loading')
 
 debug('done loading prereqs')
 

@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('test.openwhisk1.headless')
-
 import * as assert from 'assert'
 import { exec } from 'child_process'
 
 // for now, use require, to support headless from bx tests
 import { HookFunction, Context, Suite } from 'mocha'
 import { Application } from 'spectron'
-interface ISuite extends Suite {
-  app: Application
-}
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { cli } from '@kui-shell/core/tests/lib/headless'
-const { localDescribe } = common
 
 import { dirname, join } from 'path'
+
+const debug = require('debug')('test.openwhisk1.headless')
+interface ISuite extends Suite {
+  app: Application
+}
+const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const kui = process.env.KUI || join(process.env.TEST_ROOT, '../../bin/kui')

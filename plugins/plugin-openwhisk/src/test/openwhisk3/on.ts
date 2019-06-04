@@ -17,6 +17,8 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+
+import { expectRule } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 const { cli, selectors, sidecar } = ui
 
 const actionName = 'foo'
@@ -26,8 +28,6 @@ const triggerName2 = 'ttt2'
 const ruleName = `on_${triggerName}_do_${actionName}`
 const ruleName2 = `on_${triggerName}_do_${actionName2}`
 const ruleName3 = `on_${triggerName2}_do_${actionName2}`
-
-import { expectRule } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 
 describe('Create a rule via on', function (this: common.ISuite) {
   before(openwhisk.before(this))

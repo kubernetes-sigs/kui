@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/plugin-manager/cmd/compile')
-debug('loading')
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import compile from '@kui-shell/core/core/plugin-assembler'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { success } from '../util'
+const debug = Debug('plugins/plugin-manager/cmd/compile')
+debug('loading')
 
 debug('finished loading modules')
 

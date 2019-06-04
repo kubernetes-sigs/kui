@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/fetchers')
 
 import { basename } from 'path'
 import { lstat, readFile } from 'fs'
@@ -26,6 +25,7 @@ import { MetadataBearing } from '@kui-shell/core/models/entity'
 
 import { persisters } from './persisters'
 import { gotoReadonlyLocalFile } from './readonly'
+const debug = Debug('plugins/editor/fetchers')
 
 /** allows us to reassign a string code to a numeric one */
 interface IErrorWithAnyCode extends Error {

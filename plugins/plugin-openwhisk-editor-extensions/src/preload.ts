@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk-editor-extensions/preload')
-debug('loading')
 
 import * as repl from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 
 import { persisters } from './lib/cmds/new'
+const debug = Debug('plugins/openwhisk-editor-extensions/preload')
+debug('loading')
 
 debug('done loading prereqs')
 

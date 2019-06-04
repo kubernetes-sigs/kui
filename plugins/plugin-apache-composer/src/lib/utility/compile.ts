@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/utility/compile')
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -33,6 +32,7 @@ import { currentSelection } from '@kui-shell/plugin-openwhisk/lib/models/openwhi
 import { extractActionsFromAst, isValidAst } from './ast'
 import { create } from './usage'
 import * as messages from './messages'
+const debug = Debug('plugins/apache-composer/utility/compile')
 
 export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
   debug('validating source file', inputFile)

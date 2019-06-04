@@ -15,9 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/view/modes/status')
-
-import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
 
 import { FinalState } from '../../model/states'
@@ -25,6 +22,9 @@ import IResource from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
+const debug = Debug('k8s/view/modes/status')
+
+import repl = require('@kui-shell/core/core/repl')
 
 /**
  * Return a sidecar mode button model that shows a status table for

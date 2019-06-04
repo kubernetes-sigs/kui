@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/preview')
-debug('loading')
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -40,6 +38,8 @@ import * as messages from '@kui-shell/plugin-apache-composer/lib/utility/message
 import * as compileUtil from '@kui-shell/plugin-apache-composer/lib/utility/compile'
 
 import * as wskflowUtil from './util'
+const debug = Debug('plugins/wskflow/preview')
+debug('loading')
 
 const viewName = 'preview' // for back button and sidecar header labels
 const viewNameLong = 'App Visualization' //    ... long form

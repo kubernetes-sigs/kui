@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/init')
-debug('loading')
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import flowCommand from './lib/flowCommand'
 import preview from './lib/preview'
 import visualize from './lib/visualize'
+const debug = Debug('plugins/wskflow/init')
+debug('loading')
 
 export default async (commandTree: CommandRegistrar) => {
   debug('initializing')

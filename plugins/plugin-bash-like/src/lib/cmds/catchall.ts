@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/cmds/catchall')
 
 import { inBrowser, isHeadless, hasProxy } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/bash-like/cmds/catchall')
 
 /**
  * Command handler that dispatches to an outer shell

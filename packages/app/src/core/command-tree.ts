@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/command-tree')
-debug('loading')
 
 import { CommandHandler, CommandTree, CommandTreeResolution, Disambiguator, ExecType, CatchAllOffer, ICatchAllHandler, ICommand, ICommandBase, ICommandHandlerWithEvents, ICommandOptions, IEvaluatorArgs, IEvent } from '../models/command'
 
@@ -25,6 +23,8 @@ import { UsageError, IUsageModel, IUsageRow } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { IExecOptions } from '../models/execOptions'
+const debug = Debug('core/command-tree')
+debug('loading')
 
 /**
  * The command tree module

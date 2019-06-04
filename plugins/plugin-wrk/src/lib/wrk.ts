@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('wrk/wrk')
 
 import eventBus from '@kui-shell/core/core/events'
 import { IEvaluatorArgs } from '@kui-shell/core/models/command'
@@ -24,6 +23,7 @@ import { lt as loadTest } from './lt'
 import { addRow } from './table'
 import { initUI, response } from './graphics'
 import * as history from './history'
+const debug = Debug('wrk/wrk')
 
 /**
  * Start a load test, hooked up to graphics

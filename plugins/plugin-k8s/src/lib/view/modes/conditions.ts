@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/view/modes/conditions')
 
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
@@ -28,6 +27,7 @@ import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
 import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
+const debug = Debug('k8s/view/modes/conditions')
 
 /**
  * Add a Conditions mode button to the given modes model, if called

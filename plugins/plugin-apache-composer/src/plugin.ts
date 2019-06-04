@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugin/apache-composer/init')
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -28,6 +27,7 @@ import appGet from './lib/controller/cmd/app-get'
 import appList from './lib/controller/cmd/app-list'
 import appConfig from './lib/controller/cmd/app-config'
 import * as usage from './usage'
+const debug = Debug('plugin/apache-composer/init')
 
 export default async (commandTree: CommandRegistrar) => {
   debug('initializing')

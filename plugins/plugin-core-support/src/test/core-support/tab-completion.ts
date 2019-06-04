@@ -17,12 +17,12 @@
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, keys, selectors, sidecar } = ui
-const { localIt, remoteIt } = common
 
 import { dirSync as tmpDirSync } from 'tmp'
 import { dirname, join } from 'path'
 import { openSync, closeSync } from 'fs'
+const { cli, keys, selectors, sidecar } = ui
+const { localIt, remoteIt } = common
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
 /** touch the given filepath */

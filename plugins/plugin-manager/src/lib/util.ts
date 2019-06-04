@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/plugin-manager/util')
-debug('loading')
 
 import * as colors from 'colors/safe'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import * as cli from '@kui-shell/core/webapp/cli'
+const debug = Debug('plugins/plugin-manager/util')
+debug('loading')
 
 /**
  * Return a message for the REPL, asking the user to reload

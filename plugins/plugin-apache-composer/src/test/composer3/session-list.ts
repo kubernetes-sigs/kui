@@ -18,9 +18,9 @@ import * as assert from 'assert'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
+import * as Debug from 'debug'
 const cli = ui.cli
 const sidecar = ui.sidecar
-import * as Debug from 'debug'
 const debug = Debug('tests/apache-composer/session-list')
 
 describe('session list and name filter', function (this: common.ISuite) {

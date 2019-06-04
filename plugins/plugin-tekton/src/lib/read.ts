@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tekton/lib/read')
 
 import { readFile } from 'fs'
 import { promisify } from 'util'
@@ -28,6 +27,7 @@ import { qexec, rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import { Task } from '../model/resource'
+const debug = Debug('plugins/tekton/lib/read')
 
 /** promisey readFile */
 const _read = promisify(readFile)

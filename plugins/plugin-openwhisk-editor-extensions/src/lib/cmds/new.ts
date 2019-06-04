@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk-editor-extensions/cmds/new')
 
 import * as repl from '@kui-shell/core/core/repl'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
@@ -30,6 +29,7 @@ import { lockIcon } from '@kui-shell/plugin-editor/lib/readonly'
 import strings from '../i18n/strings'
 import * as placeholders from '../placeholders'
 import { persister as compositionPersister } from '../model/composition-persister'
+const debug = Debug('plugins/openwhisk-editor-extensions/cmds/new')
 
 /**
  * Default settings

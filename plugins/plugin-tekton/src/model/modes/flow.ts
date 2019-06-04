@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('tekton/model/modes/flow')
 
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { ITab } from '@kui-shell/core/webapp/cli'
@@ -25,6 +24,7 @@ import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import flowView from '../../view/flow'
 import { getPipelineFromRef, getTasks } from '../fetch'
 import { isPipelineRun, IPipelineRun, IPipeline, isPipeline, Task } from '../resource'
+const debug = Debug('tekton/model/modes/flow')
 
 export interface IResponseObject {
   isFromFlowCommand?: boolean

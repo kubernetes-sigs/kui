@@ -15,11 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/electron-events')
-debug('loading')
 
 import { inElectron, Media, setMedia } from '../core/capabilities'
 import { qexec, pexec } from '../core/repl'
+const debug = Debug('webapp/electron-events')
+debug('loading')
 
 /**
  * Listen for the main process telling us to execute a command

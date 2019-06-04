@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
+import { spawn } from 'child_process'
 const debug = Debug('fetcher')
 
 import fs = require('fs')
 import path = require('path')
 import needle = require('needle')
 import extract = require('extract-zip')
-import { spawn } from 'child_process'
 
 /**
  * Initiate a fetch

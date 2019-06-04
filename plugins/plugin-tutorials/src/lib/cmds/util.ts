@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('tutorial.utils')
-
 import { join, basename, dirname } from 'path'
+
+const debug = require('debug')('tutorial.utils')
 
 /** enclosing directory for tutorials */
 const top = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))

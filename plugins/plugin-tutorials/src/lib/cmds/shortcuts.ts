@@ -17,13 +17,13 @@
 // DO NOT USE IMPORT
 // as it conflicts with the kui-builder kui-link-source-assets.sh
 // the typescript compiler moves the json files into the builddir, if we use import
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 const { name: gettingStartedDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json')
 const { name: kubernetesBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/kubernetes-basics/package.json')
 const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/coding-basics/package.json')
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
 
 import repl = require('@kui-shell/core/core/repl')
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * Here we register as a listener for "shortcut" commands, that make

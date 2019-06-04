@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/cmds/edit')
 
 import { respondToRepl } from '../util'
 import { IEntity as IEditorEntity, fetchEntity } from '../fetchers'
@@ -29,6 +28,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
+const debug = Debug('plugins/editor/cmds/edit')
 
 // so that users of the exported `edit` command have access to our
 // IEntity model

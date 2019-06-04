@@ -20,17 +20,17 @@
  *
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/history')
-debug('loading')
-
-const DEFAULT_HISTORY_N = 20 // the default number of history elements to show with /history
+import * as Debug from 'debug' // the default number of history elements to show with /history
 
 import * as historyModel from '@kui-shell/core/models/history'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import * as repl from '@kui-shell/core/core/repl'
+const debug = Debug('plugins/core-support/history')
+debug('loading')
+
+const DEFAULT_HISTORY_N = 20
 
 const parseN = str => {
   try {

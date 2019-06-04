@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/base64')
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/core-support/base64')
 
 /**
  * The command usage model

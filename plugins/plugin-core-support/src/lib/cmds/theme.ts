@@ -15,12 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/theme')
 
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
-
-import repl = require('@kui-shell/core/core/repl')
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import eventBus from '@kui-shell/core/core/events'
@@ -28,6 +25,9 @@ import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
 import { theme as settings, env } from '@kui-shell/core/core/settings'
+const debug = Debug('plugins/core-support/theme')
+
+import repl = require('@kui-shell/core/core/repl')
 
 /**
  * Key into userdata preference model that indicates that currently selected theme

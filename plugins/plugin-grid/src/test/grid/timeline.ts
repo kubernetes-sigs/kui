@@ -18,8 +18,8 @@ import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, sidecar } = ui
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+const { cli, sidecar } = ui
 
 describe('timeline visualization', function (this: common.ISuite) {
   before(openwhisk.before(this))

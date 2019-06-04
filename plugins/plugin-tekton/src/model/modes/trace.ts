@@ -15,11 +15,8 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tekton/models/modes/trace')
 
 import * as prettyPrintDuration from 'pretty-ms'
-
-import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
@@ -34,6 +31,9 @@ import success from '../../lib/success'
 import { IResponseObject } from './flow'
 import { getPipelineFromRef, getTasks } from '../fetch'
 import { IPipeline, IPipelineRun, Task, TaskRef } from '../resource'
+const debug = Debug('plugins/tekton/models/modes/trace')
+
+import repl = require('@kui-shell/core/core/repl')
 
 const viewName = 'Trace'
 

@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/fsm2graph')
 
 import * as $ from 'jquery'
 
@@ -28,6 +27,7 @@ import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
 import * as AST from './ast'
 import { INode, INodeOptions, IEdge } from './graph'
+const debug = Debug('plugins/wskflow/fsm2graph')
 
 const maxWidth = 100
 // const defaultWidth = 40

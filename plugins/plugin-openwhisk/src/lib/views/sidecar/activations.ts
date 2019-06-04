@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-declare var hljs
-
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/views/sidecar/activation')
 
 import * as prettyPrintDuration from 'pretty-ms'
 
@@ -31,6 +28,9 @@ import { ITab } from '@kui-shell/core/webapp/cli'
 
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
+
+declare var hljs
+const debug = Debug('plugins/openwhisk/views/sidecar/activation')
 
 export default (tab: ITab, entity, options: IShowOptions) => {
   debug('showing activation')

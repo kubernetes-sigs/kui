@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/cmds/git-diff')
 
 import * as path from 'path'
 
@@ -27,6 +26,7 @@ import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { onbranch, injectCSS } from '../util/git-support'
+const debug = Debug('plugins/bash-like/cmds/git-diff')
 
 const doDiff = async ({ command, execOptions }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
   const injector = injectCSS()

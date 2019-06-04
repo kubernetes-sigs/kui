@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/grid/cmds/grid')
 
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
@@ -37,6 +36,7 @@ import { modes } from '../modes'
 import { grid as usage } from '../../usage'
 import { Renderer, IHeader, nbsp, optionsToString, isSuccess, titleWhenNothingSelected, latencyBucket,
   displayTimeRange, prepareHeader, visualize } from '../util'
+const debug = Debug('plugins/grid/cmds/grid')
 
 const viewName = 'Grid'
 

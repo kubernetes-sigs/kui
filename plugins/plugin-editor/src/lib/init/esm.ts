@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/init/esm')
 
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
@@ -23,6 +22,7 @@ import * as monaco from 'monaco-editor'
 
 import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'
+const debug = Debug('plugins/editor/init/esm')
 
 /** the monaco editor uses the AMD module loader, and smashes the global.require; we need to finagle it a bit */
 let amdRequire

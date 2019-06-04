@@ -24,10 +24,10 @@ import { v4 as uuid } from 'uuid'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const cli = ui.cli
-const sidecar = ui.sidecar
 
 import { dirname } from 'path'
+const cli = ui.cli
+const sidecar = ui.sidecar
 const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const actionName1 = `bottom-bar-back-button-test-${uuid()}`

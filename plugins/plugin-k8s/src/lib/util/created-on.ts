@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/util/created-on')
-debug('loading')
 
 import { IKubeResource } from '../model/resource'
 
 import { IFormatter } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
+const debug = Debug('k8s/util/created-on')
+debug('loading')
 
 /**
  * Format the creationTimestamp of the given resource

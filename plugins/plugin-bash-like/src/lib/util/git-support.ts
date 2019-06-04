@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/util/git-support')
 
 import { dirname, join } from 'path'
 import { exec, spawn } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { injectCSS as inject, injectScript } from '@kui-shell/core/webapp/util/inject'
+const debug = Debug('plugins/bash-like/util/git-support')
 
 /**
  * Load the CSS for diff2html

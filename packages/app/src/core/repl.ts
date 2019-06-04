@@ -20,10 +20,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/repl')
-debug('loading')
-
-import minimist = require('yargs-parser')
 
 import { CommandTreeResolution, ExecType, IEvaluator, IEvaluatorArgs, YargsParserFlags } from '../models/command'
 
@@ -34,13 +30,17 @@ import * as commandTree from './command-tree'
 import { UsageError, IUsageModel, IUsageRow } from './usage-error'
 
 import { isHeadless, inBrowser, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
-import { streamTo as headlessStreamTo } from '../main/headless-support'
-import cli = require('../webapp/cli') // FIXME
+import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
 import { element } from '../webapp/util/dom' // FIXME
 import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
+const debug = Debug('core/repl')
+debug('loading')
+
+import minimist = require('yargs-parser')
+import cli = require('../webapp/cli')
 
 debug('finished loading modules')
 

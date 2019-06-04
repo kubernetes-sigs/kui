@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/util/help')
-
 import UsageError from '@kui-shell/core/core/usage-error'
+
+const debug = require('debug')('k8s/util/help')
 
 /**
  * Pretty-print the kubectl help output

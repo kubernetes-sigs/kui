@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/session-list')
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { sessionList } from '../../utility/usage'
+const debug = Debug('plugins/apache-composer/cmd/session-list')
 
 interface IListOptions {
   name?: string

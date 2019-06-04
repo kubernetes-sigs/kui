@@ -15,17 +15,17 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/plugin-assembler')
-debug('loading')
 
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as events from 'events'
-import mkdirp = require('mkdirp')
 import { exec } from 'child_process'
 
 import * as plugins from './plugins'
 import * as commandTree from './command-tree'
+const debug = Debug('core/plugin-assembler')
+debug('loading')
+import mkdirp = require('mkdirp')
 
 const TMP = 'plugins' // we'll stash the original plugins here
 const TMA = 'app' // we'll stash the original app here

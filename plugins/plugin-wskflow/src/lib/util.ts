@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/util')
 
 import * as sidecar from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
@@ -24,6 +23,7 @@ import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
+const debug = Debug('plugins/wskflow/util')
 
 /**
  * Return some line-oriented statistics about the given code.

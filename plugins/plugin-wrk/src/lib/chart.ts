@@ -15,10 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('wrk/chart')
-
-// from injectScript Chart below
-declare var Chart
 
 import eventBus from '@kui-shell/core/core/events'
 import { injectScript } from '@kui-shell/core/webapp/util/inject'
@@ -28,6 +24,10 @@ import * as parseDuration from 'parse-duration'
 
 import theme from './theme'
 import { transparent } from './util'
+const debug = Debug('wrk/chart')
+
+// from injectScript Chart below
+declare var Chart
 
 interface IOptions {
   noListen: boolean

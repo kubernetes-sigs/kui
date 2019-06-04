@@ -15,11 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/preloader')
-debug('loading')
 
 import * as commandTree from './command-tree'
 import { PreloadRegistration } from '../models/plugin'
+const debug = Debug('core/preloader')
+debug('loading')
 
 /**
  * This module allows for plugins to register themselves to be

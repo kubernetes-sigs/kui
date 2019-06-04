@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('webapp/bootstrap/init')
-debug('loading')
-
 import { inElectron } from '../../core/capabilities'
 import eventBus from '../../core/events'
-import commandTree = require('../../core/command-tree')
 import { extractSearchKey } from '../util/search'
+
+const debug = require('debug')('webapp/bootstrap/init')
+debug('loading')
+import commandTree = require('../../core/command-tree')
 
 /**
  * We don't (at least not for now) want to support drag and drop at the global scope

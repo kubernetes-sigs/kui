@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/open')
 
 import * as path from 'path'
 import * as events from 'events'
@@ -31,6 +30,7 @@ import { currentSelection, getSidecar, isVisible as isSidecarVisible, addSidecar
 import { IEntity as IEditorEntity } from './fetchers'
 import strings from '../i18n/strings'
 import { extension, language } from './file-types'
+const debug = Debug('plugins/editor/open')
 
 /**
  * Open the code editor

@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/util/mimic-dom')
-debug('loading')
 
 import Store from '../main/store'
+const debug = Debug('core/util/mimic-dom')
+debug('loading')
 
 /* export interface ElementMimic {
   _isFakeDom: boolean

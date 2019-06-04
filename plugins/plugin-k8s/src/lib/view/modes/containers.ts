@@ -15,9 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/view/modes/containers')
-
-import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
@@ -32,6 +29,9 @@ import insertView from '../insert-view'
 import { getActiveView, formatTable } from '../formatMultiTable'
 
 import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
+const debug = Debug('k8s/view/modes/containers')
+
+import repl = require('@kui-shell/core/core/repl')
 
 /** for drilldown back button */
 const viewName = 'Containers'

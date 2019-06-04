@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk-editor-extensions/cmds/compose')
 
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -29,6 +28,7 @@ import { openEditor } from '@kui-shell/plugin-editor/lib/open'
 import { loadComposition } from '@kui-shell/plugin-apache-composer/lib/utility/compile'
 
 import { handleParseError, persister } from '../model/composition-persister'
+const debug = Debug('plugins/openwhisk-editor-extensions/cmds/compose')
 
 export const composeUsage = {
   strict: 'compose',

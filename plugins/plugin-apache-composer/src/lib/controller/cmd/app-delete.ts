@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/app-delete')
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
@@ -23,6 +22,7 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { appDelete } from '../../utility/usage'
 import * as view from '../../view/entity-view'
+const debug = Debug('plugins/apache-composer/cmd/app-delete')
 
 export default async (commandTree: CommandRegistrar) => {
   /* command handler for app delete */

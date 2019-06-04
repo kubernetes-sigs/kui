@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core-support/history/reverse-i-search')
 
 import * as historyModel from '@kui-shell/core/models/history'
 import { ITab, getTabFromTarget, getBlockOfPrompt, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+const debug = Debug('core-support/history/reverse-i-search')
 
 interface KeyboardEventPlusPlus extends KeyboardEvent {
   inputType: string

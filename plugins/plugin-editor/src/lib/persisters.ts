@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/persisters')
 
 import { readFile, writeFile } from 'fs'
 import globalEventBus from '@kui-shell/core/core/events'
 
 import strings from '../i18n/strings'
+const debug = Debug('plugins/editor/persisters')
 
 /**
  * Logic for saving and reverting

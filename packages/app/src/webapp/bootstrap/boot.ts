@@ -20,9 +20,6 @@
 // https://stackoverflow.com/questions/40900791/cannot-redeclare-block-scoped-variable-in-unrelated-files
 
 // process.env.DEBUG = '*'
-const debug = require('debug')('webapp/bootstrap/boot')
-debug('loading')
-
 import * as initializer from './init'
 import eventBus from '../../core/events'
 import * as plugins from '../../core/plugins'
@@ -30,6 +27,9 @@ import * as repl from '../../core/repl'
 import * as query from '../query'
 import * as sidecar from '../views/sidecar'
 import * as electronEvents from '../electron-events'
+
+const debug = require('debug')('webapp/bootstrap/boot')
+debug('loading')
 
 /**
  * Look up an HTML element

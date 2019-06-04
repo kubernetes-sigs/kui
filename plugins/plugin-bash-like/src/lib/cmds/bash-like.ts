@@ -21,7 +21,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/cmds/general')
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -39,6 +38,7 @@ import { extractJSON } from '../util/json'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
+const debug = Debug('plugins/bash-like/cmds/general')
 
 /**
  * Strip off ANSI and other control characters from the given string

@@ -15,9 +15,18 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tutorials/play')
 
 import { dirname, join } from 'path'
+
+import { projectHome as projectHomeDir, readProject } from './util'
+import { wskflowCycle } from './wskflow'
+
+import { injectCSS, loadHTML } from '@kui-shell/core/webapp/util/inject'
+import { findFile } from '@kui-shell/core/core/find-file'
+import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui-shell/core/webapp/views/sidecar'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/tutorials/play')
 
 /** highlight.js global */
 declare const hljs
@@ -31,17 +40,8 @@ renderer.link = (href: string, title: string, text: string) => {
   return `<a class='bx--link' href='${href}'` + (title ? ' title="' + title + '"' : '') + `}>${text}</a>`
 }
 const marked = _ => Marked(_, { renderer })
-
-import { projectHome as projectHomeDir, readProject } from './util'
-import { wskflowCycle } from './wskflow'
-
-import { injectCSS, loadHTML } from '@kui-shell/core/webapp/util/inject'
-import { findFile } from '@kui-shell/core/core/find-file'
 import cli = require('@kui-shell/core/webapp/cli')
 import repl = require('@kui-shell/core/core/repl')
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 // TODO eliminate this jquery dependence
 let $

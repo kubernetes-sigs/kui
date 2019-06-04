@@ -20,12 +20,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/cmds/copy')
-
-import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar, ParsedOptions } from '@kui-shell/core/models/command'
 
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
+const debug = Debug('plugins/openwhisk/cmds/copy')
+
+import repl = require('@kui-shell/core/core/repl')
 
 /** name for the command */
 export const CMD = 'copy'

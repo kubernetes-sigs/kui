@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/pty/channel')
 
 import { Channel } from './channel'
+const debug = Debug('plugins/bash-like/pty/channel')
 
 /**
  * Thin wrapper on top of browser WebSocket impl

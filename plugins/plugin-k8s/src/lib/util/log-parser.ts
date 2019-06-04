@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-declare var hljs
-
 import * as Debug from 'debug'
-const debug = Debug('k8s/util/log-parser')
 
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
+
+declare var hljs
+const debug = Debug('k8s/util/log-parser')
 
 /**
  * Timestamp format. Usually one of 'long', 'short', or 'narrow',

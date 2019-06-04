@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('k8s/util/formatEntity')
-
 import eventBus from '@kui-shell/core/core/events'
 
 import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
 import { State, States, FinalState, watchStatus, rendering as stateRendering } from '../model/states'
+
+const debug = require('debug')('k8s/util/formatEntity')
 
 /**
  * Make a kube context attribute

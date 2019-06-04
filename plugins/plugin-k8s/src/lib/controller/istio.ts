@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/controller/istio')
 
 import { join } from 'path'
 import { exec } from 'child_process'
 
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
+const debug = Debug('k8s/controller/istio')
 
 const defaultIstioVersion = '1.1'
 

@@ -15,12 +15,18 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/plugins')
-debug('loading')
 
 import * as commandTree from './command-tree'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
 import { Disambiguator, ICatchAllHandler, ICommandOptions } from '../models/command'
+
+/**
+ * Plugin preloading support
+ *
+ */
+import preloader from './preloader'
+const debug = Debug('core/plugins')
+debug('loading')
 
 debug('modules loaded')
 
@@ -637,12 +643,6 @@ const prequire = async (route: string, options?: object) => {
 
   return registrar[route]
 }
-
-/**
- * Plugin preloading support
- *
- */
-import preloader from './preloader'
 export const preload = () => preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
 
 /** print to the javascript console the registered plugins */

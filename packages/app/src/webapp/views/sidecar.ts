@@ -15,10 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/views/sidecar')
-debug('loading')
-
-declare var hljs
 
 import * as prettyPrintDuration from 'pretty-ms'
 
@@ -34,6 +30,10 @@ import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
 import { MetadataBearing, isMetadataBearing, IEntitySpec, Entity } from '../../models/entity'
 import { IExecOptions } from '../../models/execOptions'
+const debug = Debug('webapp/views/sidecar')
+debug('loading')
+
+declare var hljs
 
 /**
  * e.g. 2017-06-15T14:41:15.60027911Z  stdout:

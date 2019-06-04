@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tutorial/list')
 
 import { readdir } from 'fs'
-
-import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { contentDir } from './util'
+const debug = Debug('plugins/tutorial/list')
+
+import repl = require('@kui-shell/core/core/repl')
 
 /**
  * Sort the available tutorials

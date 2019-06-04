@@ -15,14 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/controller/status')
-debug('loading')
 
 import { basename, join } from 'path'
 import { safeLoadAll as parseYAML } from 'js-yaml'
 
 import { findFile } from '@kui-shell/core/core/find-file'
-import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { IExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
@@ -35,6 +32,9 @@ import { ICRDResource, IKubeResource } from '../model/resource'
 import { States, FinalState } from '../model/states'
 
 import { formatContextAttr, formatEntity } from '../view/formatEntity'
+const debug = Debug('k8s/controller/status')
+debug('loading')
+import repl = require('@kui-shell/core/core/repl')
 
 /** icon to indicate "is a cluster" */
 const fontawesome = 'fas fa-network-wired'

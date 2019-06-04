@@ -15,16 +15,16 @@
  */
 
 import * as Debug from 'debug'
+
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
+
+import { getCreds } from './openwhisk'
 const debug = Debug('wrk/scriptgen')
 
 import fs = require('fs')
 import tmp = require('tmp')
 import url = require('url')
 import path = require('path')
-
-import { IEvaluatorArgs } from '@kui-shell/core/models/command'
-
-import { getCreds } from './openwhisk'
 
 /**
  * User has requested to test an openwhisk action

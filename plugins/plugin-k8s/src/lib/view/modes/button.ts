@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
+import repl = require('@kui-shell/core/core/repl')
 
 const makeButton = (overrides, fn?) => Object.assign({}, {
   direct: async (tab: ITab, args) => {

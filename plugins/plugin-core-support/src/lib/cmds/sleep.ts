@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/sleep')
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/core-support/sleep')
 
 /**
  * The command usage model

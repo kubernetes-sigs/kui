@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/cmds/wipe')
 
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import cli = require('@kui-shell/core/webapp/cli')
-import repl = require('@kui-shell/core/core/repl')
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/openwhisk/cmds/wipe')
+import cli = require('@kui-shell/core/webapp/cli')
+import repl = require('@kui-shell/core/core/repl')
 
 /**
  * This plugin introduces /wsk/wipe, which helps with removing all

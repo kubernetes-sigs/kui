@@ -20,10 +20,10 @@ import { readFile } from 'fs'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, normalizeHTML, selectors, sidecar } = ui
-const { rp, localDescribe } = common
 
 import { dirname, join } from 'path'
+const { cli, normalizeHTML, selectors, sidecar } = ui
+const { rp, localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const commandFile = `${ROOT}/data/openwhisk/commandFile.wsk`

@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/zoom')
 
 import eventBus from '@kui-shell/core/core/events'
 import UsageError from '@kui-shell/core/core/usage-error'
@@ -24,6 +23,7 @@ import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as path from 'path'
+const debug = Debug('plugins/core-support/zoom')
 
 /**
  * Keyboard event character codes

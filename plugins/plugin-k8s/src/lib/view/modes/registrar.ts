@@ -15,11 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/views/modes/registrar')
 
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { IKubeResource, IResource } from '../../model/resource'
+const debug = Debug('k8s/views/modes/registrar')
 
 type SidecarModeFilter = (resource: IKubeResource) => boolean
 

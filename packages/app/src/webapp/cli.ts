@@ -15,10 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/cli')
-debug('loading')
-
-declare var hljs
 
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
@@ -41,6 +37,10 @@ import { formatListResult, formatMultiListResult, formatTable } from './views/ta
 import { Table, isTable, isMultiTable } from './models/table'
 import { Formattable, getSidecar, IBadgeSpec, currentSelection, presentAs, showEntity, showCustom, isCustomSpec, ICustomSpec } from './views/sidecar'
 import { ISidecarMode } from './bottom-stripe'
+const debug = Debug('webapp/cli')
+debug('loading')
+
+declare var hljs
 
 /**
  * Make sure that the given repl block is visible.

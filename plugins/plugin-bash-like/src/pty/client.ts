@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/pty/client')
 
 import * as path from 'path'
 import * as xterm from 'xterm'
@@ -35,6 +34,7 @@ import { ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
+const debug = Debug('plugins/bash-like/pty/client')
 
 const enterApplicationModePattern = /\x1b\[\?1h/
 const exitApplicationModePattern = /\x1b\[\?1l/

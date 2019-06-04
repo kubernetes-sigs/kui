@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/main/headless-support')
 
 import { print } from './headless-pretty-print'
+const debug = Debug('core/main/headless-support')
 
 /**
  * This supports commads streaming their output to the console

@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/util/inject')
-debug('loading')
 
 import { isHeadless } from '../../core/capabilities'
+const debug = Debug('webapp/util/inject')
+debug('loading')
 
 interface IStylesheetDirect {
   css: string

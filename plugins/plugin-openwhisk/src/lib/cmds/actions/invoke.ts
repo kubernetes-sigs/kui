@@ -26,12 +26,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/cmds/actions/invoke')
-
-import repl = require('@kui-shell/core/core/repl')
 import { CommandHandler, CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { actions } from '../openwhisk-usage'
 import { synonyms } from '../../models/synonyms'
+const debug = Debug('plugins/openwhisk/cmds/actions/invoke')
+
+import repl = require('@kui-shell/core/core/repl')
 
 /**
  * Make a documentation struct

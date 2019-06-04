@@ -15,17 +15,18 @@
  */
 
 import * as Debug from 'debug'
+
+import * as fs from 'fs'
+import { join } from 'path'
+import { spawn } from 'child_process'
+import * as colors from 'colors/safe'
+import { theme } from '@kui-shell/settings/config.json'
 const debug = Debug('fetch-ui')
 
 if (require.main === module) {
   debug('called directly')
 }
-
-import * as fs from 'fs'
-import { join } from 'path'
-import { spawn } from 'child_process'
 import mkdirp = require('mkdirp')
-import * as colors from 'colors/safe'
 
 const variants = {
   win32: 'win32-x64.zip',
@@ -60,7 +61,6 @@ const versionFromEnv = process.env.VERSION && { version: process.env.VERSION }
 
 const { version } = versionFromEnv || versionFromPackageJson()
 const baseURL = 'https://s3-api.us-geo.objectstorage.softlayer.net/kui'
-import { theme } from '@kui-shell/settings/config.json'
 const { productName } = theme
 const file = `${encodeURIComponent(productName)}-${variants[process.platform]}`
 const url = `${baseURL}-${bucket(version)}/${file}`

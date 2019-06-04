@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/view/helm-status')
 
 import { preprocessTable, formatTable } from './formatTable'
+const debug = Debug('k8s/view/helm-status')
 
 /**
  * Approximate character width of the given table

@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tekton/lib/tekton2graph')
 
 import { encodeComponent } from '@kui-shell/core/core/repl'
 
@@ -26,6 +25,7 @@ import { flatten } from '@kui-shell/plugin-k8s/lib/util/util'
 
 import success from './success'
 import { IPipelineRun, IPipeline, isPipeline, Task, TaskName, TaskRef, Step, Port } from '../model/resource'
+const debug = Debug('plugins/tekton/lib/tekton2graph')
 
 interface INode extends BaseNode {
   nChildren: number

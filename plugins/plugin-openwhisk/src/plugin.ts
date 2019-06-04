@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/loader')
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -43,6 +42,7 @@ import core from './lib/cmds/openwhisk-core'
 import activationList from './lib/cmds/activations/list'
 
 import registerViews from './views'
+const debug = Debug('plugins/openwhisk/loader')
 
 export default async (commandTree: CommandRegistrar) => {
   const wsk = await core(commandTree)

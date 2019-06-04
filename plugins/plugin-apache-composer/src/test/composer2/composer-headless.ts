@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/tests/headless')
 
 import * as assert from 'assert'
 import * as path from 'path'
@@ -25,6 +24,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import { cli } from '@kui-shell/core/tests/lib/headless'
+const debug = Debug('plugins/apache-composer/tests/headless')
 
 interface IResponse {
   code: number

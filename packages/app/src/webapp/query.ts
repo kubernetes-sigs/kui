@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { inBrowser } from '../core/capabilities'
+
 const debug = require('debug')('webapp/query')
 debug('loading')
-
-import { inBrowser } from '../core/capabilities'
 import repl = require('../core/repl')
 
 export const init = async () => {

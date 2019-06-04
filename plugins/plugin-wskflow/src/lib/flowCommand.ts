@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/session-flow')
-debug('loading')
 
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
@@ -25,6 +23,8 @@ import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
 
 import { flow as usage } from './usage'
 import { zoomToFitButtons } from './util'
+const debug = Debug('plugins/wskflow/session-flow')
+debug('loading')
 
 debug('finished loading modules')
 

@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/discovery/helm-client-version')
 
 import { join } from 'path'
 import { major, minor } from 'semver'
+const debug = Debug('k8s/discovery/helm-client-version')
 
 /**
  * Attempt to pick a local helm executable that is compatible with
