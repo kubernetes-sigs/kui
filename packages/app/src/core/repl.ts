@@ -526,7 +526,7 @@ class InProcessExecutor implements IExecutor {
             // should we enforce this option?
             const enforceThisOption =
               onlyEnforceOptions === undefined || typeof onlyEnforceOptions === 'boolean' ? true
-                : onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`) ? true : false
+                : !!onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`)
 
             if (!enforceThisOption) {
               // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)

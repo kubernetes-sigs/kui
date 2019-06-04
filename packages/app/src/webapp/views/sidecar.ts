@@ -283,7 +283,7 @@ export function isCustomSpec (entity: Entity): entity is ICustomSpec {
 }
 function isPromise (content: CustomContent): content is Promise<HTMLElement> {
   const promise = content as Promise<HTMLElement>
-  return promise.then ? true : false
+  return !!promise.then
 }
 function isHTML (content: CustomContent): content is HTMLElement {
   return typeof content !== 'string'
@@ -682,7 +682,7 @@ export interface IBadgeSpec {
 }
 function isBadgeSpec (badge: Badge): badge is IBadgeSpec {
   const spec = badge as IBadgeSpec
-  return typeof badge !== 'string' && !(spec instanceof Element) && spec.title ? true : false
+  return !!(typeof badge !== 'string' && !(spec instanceof Element) && spec.title)
 }
 export type Badge = string | IBadgeSpec | Element
 
@@ -847,7 +847,7 @@ export const getSidecarState = (tab: ITab): SidecarState => {
 
 export const isVisible = (tab: ITab): boolean => {
   const sidecar = getSidecar(tab)
-  return sidecar.classList.contains('visible') && sidecar ? true : false
+  return !!(sidecar.classList.contains('visible') && sidecar)
 }
 
 export const isFullscreen = (tab: ITab) => {

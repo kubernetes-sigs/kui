@@ -42,7 +42,7 @@ const mode: ISidecarMode = {
         type: 'custom',
         isEntity: true,
         contentType: 'yaml',
-        content: safeDump(model ? model : models)
+        content: safeDump(model || models)
       }, model || {})
     }
   },

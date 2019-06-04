@@ -36,7 +36,7 @@ import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar
  */
 export const conditionsMode: ModeRegistration = {
   when: (resource: IKubeResource) => {
-    return resource.status && resource.status.conditions ? true : false
+    return !!(resource.status && resource.status.conditions)
   },
   mode: (command: string, resource: IResource) => {
     try {

@@ -336,7 +336,7 @@ class RenderState {
       sourcePort: sourcePort,
       target: targetId,
       targetPort: targetPort,
-      visited: this.visited ? this.visited[sourceId] && this.visited[targetId] ? true : false : undefined
+      visited: this.visited ? !!(this.visited[sourceId] && this.visited[targetId]) : undefined
     }
   }
 

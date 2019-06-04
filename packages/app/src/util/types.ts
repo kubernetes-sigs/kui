@@ -15,5 +15,5 @@
  */
 
 export function isHTML (message: any): message is HTMLElement {
-  return (message as HTMLElement).nodeName ? true : false
+  return !!(message as HTMLElement).nodeName
 }

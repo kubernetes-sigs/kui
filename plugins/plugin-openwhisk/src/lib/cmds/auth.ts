@@ -366,7 +366,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: I
 
   let hostConfig = {
     host: argv[0] || options.host, // the new apihost to use
-    ignoreCerts: options.ignoreCerts || options.insecureSSL || options.insecure ? true : false,
+    ignoreCerts: !!(options.ignoreCerts || options.insecureSSL || options.insecure),
     isLocal: false // is this a local openwhisk?
   }
 

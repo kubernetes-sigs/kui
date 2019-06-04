@@ -324,7 +324,7 @@ export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) =>
     container.classList.add('log-lines')
     // container.classList.add('fixed-table-layout')
 
-    const doWeHaveAnyFirstColumns = logEntries.findIndex(_ => _.timestamp || _.origin || _.provider || _.runLength > 1 ? true : false) >= 0
+    const doWeHaveAnyFirstColumns = logEntries.findIndex(_ => !!(_.timestamp || _.origin || _.provider || _.runLength > 1)) >= 0
 
     logEntries.filter(notEmpty).forEach(({ logType = '', timestamp = '', origin = '', provider = '', rest, runLength = 1 }) => {
       // dom for the log line

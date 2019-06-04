@@ -760,8 +760,8 @@ export const readIntention = async (argv: string[], noRetry = false): Promise<Co
 }
 
 /** command filters */
-const isAnAlias = (command: ICommand): boolean => command.options && command.options.synonymFor ? true : false
-const isDirFilter = (command: ICommand): boolean => command.children && !isAnAlias(command) ? true : false
+const isAnAlias = (command: ICommand): boolean => !!(command.options && command.options.synonymFor)
+const isDirFilter = (command: ICommand): boolean => !!(command.children && !isAnAlias(command))
 const isFileFilter = (command: ICommand): boolean => command.$ && !isAnAlias(command)
 
 class CommandModel {
