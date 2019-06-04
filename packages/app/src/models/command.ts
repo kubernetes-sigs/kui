@@ -158,6 +158,10 @@ export interface ICommandHandlerWithEvents extends IEvaluator {
   success: (args: { tab: ITab; type: ExecType; command: string; isDrilldown: boolean; parsedOptions: { [ key: string ]: any } }) => void
   error: (command: string, err: CodedError) => CodedError
 }
+export function isCommandHandlerWithEvents (evaluator: IEvaluator): evaluator is ICommandHandlerWithEvents {
+  const handler = evaluator as ICommandHandlerWithEvents
+  return handler.options !== undefined
+}
 
 export type CommandTreeResolution = boolean | ICommandHandlerWithEvents | CodedError
 
