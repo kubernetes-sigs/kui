@@ -89,7 +89,6 @@ const myreaddir = (dir: string): Promise<Record<string, boolean>> => new Promise
 
       // fallthrough to reject
       reject(err)
-
     } else if (!stats.isDirectory()) {
       // link or file or other
       resolve(toMap([dir]))

@@ -90,5 +90,4 @@ export default async (commandTree: CommandRegistrar) => {
       }
     }, { usage: sessionList })
   })
-
 }

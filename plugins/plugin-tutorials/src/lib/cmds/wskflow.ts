@@ -62,7 +62,6 @@ const hoverOn = elements => {
 
   /** initiate the timer loop */
   currentTask = setTimeout(() => {
-
     /** highlight one node, and deal with dispatching the async for the next iter */
     const one = (idx, iter) => {
       if (stop) {
@@ -74,7 +73,6 @@ const hoverOn = elements => {
         // we've reached the end of the list of elements to
         // highlight; start over!
         one(0, iter + 1)
-
       } else {
         const bounds = document.getElementById('wskflowSVG').getBoundingClientRect()
         const rect = element.getBoundingClientRect()
@@ -106,7 +104,6 @@ const hoverOn = elements => {
               one(idx + 1, iter)
             }
           }, stepInterval)
-
         } else if (!stop) {
           debug('skipping', element)
           one(idx + 1, iter)

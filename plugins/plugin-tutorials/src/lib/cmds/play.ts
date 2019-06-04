@@ -488,7 +488,6 @@ const commandFromFullscreen = (pane, command, display = command) => () => {
   if (!(command.startsWith('play') || command.startsWith('tutorial play'))) {
     pane.classList.add('minimized')
     pane.querySelector('.tutorial-minimized-message').innerHTML = `Tutorial paused while we execute the command <span class='monospace bx--link clickable clickable-blatant' onclick='repl.pexec("${command}"})'>${display}</span>.`
-
   } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
     // if we are in fullscreen mode, and this isn't a tutorial
     // play command, then wait a bit, to give time for the
@@ -614,7 +613,6 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
 
     if (!table) {
       extrasPart.classList.remove('visible')
-
     } else {
       // ok, then the page model specifies one or more tables
       if (Array.isArray(table)) {
@@ -709,7 +707,6 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
     if (stepNum !== obj.steps.length - 1) {
       nextButton.removeAttribute('disabled')
     }
-
   } else if (transition === 'input') {
     //
     // Handle transition via an input value
@@ -727,7 +724,6 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
       }
     }
     $(document).bind('keydown', handler)
-
   } else if (transition === 'enter') {
     //
     // Handle transition via the user hitting 'enter' on their keyboard
@@ -741,7 +737,6 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
       }
     }
     $(document).bind('keydown', handler)
-
   } else if (transition === 'click') {
     //
     // Handle transition via a click

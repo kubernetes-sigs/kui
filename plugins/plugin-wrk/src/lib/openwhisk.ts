@@ -39,7 +39,6 @@ export const getCreds = async (options) => {
         }
       }
     }))
-
   } else if (options.apiHost && options.auth) {
     // specified on command line
     return options

@@ -167,7 +167,6 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
             })
 
             ws.send(JSON.stringify({ type: 'state', state: 'ready' }))
-
           } catch (err) {
             console.error('could not exec', err)
           }
@@ -252,7 +251,6 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
 
         cachedPort = preexistingPort
         resolve({ port: cachedPort, exitNow })
-
       } else {
         cachedPort = await getPort()
         const server = createDefaultServer()

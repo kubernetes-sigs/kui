@@ -35,5 +35,4 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(`/wsk/app/async`, ({ command }) => {
     return repl.qfexec(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
   }, { usage: async })
-
 }

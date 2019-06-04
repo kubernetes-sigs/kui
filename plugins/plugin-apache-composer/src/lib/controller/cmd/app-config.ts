@@ -40,5 +40,4 @@ export default async (commandTree: CommandRegistrar) => {
     commandTree.synonym(`/${tree}/props`, () => { return `Composer version ${version}` }, cmd, { usage: properties('props'), noAuthOk: true })
     commandTree.synonym(`/${tree}/config`, () => { return `Composer version ${version}` }, cmd, { usage: properties('config'), noAuthOk: true })
   })
-
 }

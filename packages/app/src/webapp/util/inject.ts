@@ -81,7 +81,6 @@ export const injectCSS = (file: StylesheetSpec): void => {
     link.type = contentType
     document.getElementsByTagName('head')[0].appendChild(link)
   }
-
 }
 
 /**

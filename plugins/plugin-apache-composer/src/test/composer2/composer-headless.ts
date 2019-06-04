@@ -206,7 +206,6 @@ class Validation {
     this.async({ name, output, packageName, namespace })
     this.appGet({ name, packageName, namespace })
   }
-
 }
 
 describe('Composer Headless Test :', function (this: common.ISuite) {

@@ -32,6 +32,5 @@ export const apiToDefaultParams = (api): string => {
     } else {
       return res
     }
-
   }, '')
 }

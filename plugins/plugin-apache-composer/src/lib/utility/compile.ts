@@ -138,7 +138,6 @@ export const loadComposition = (inputFile, originalCode?, localCodePath?) => {
     composition = allowSourceVariation(composition, logMessage, errorMessage)
 
     return composition
-
   } catch (error) {
     // error handler
     const filename = localSourcePath && path.basename(localSourcePath)

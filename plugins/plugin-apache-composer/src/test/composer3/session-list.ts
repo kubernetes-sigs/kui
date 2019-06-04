@@ -129,5 +129,4 @@ describe('session list and name filter', function (this: common.ISuite) {
     .then(cli.expectOKWithCustom({ passthrough: true }))
     .then(async commandIndex => verifySessionList({ commandIndex, expectedSessions: ['if', 'if', 'if', appName, appName] }))
     .catch(common.oops(this)))
-
 })

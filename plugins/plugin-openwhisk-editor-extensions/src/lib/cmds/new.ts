@@ -278,7 +278,6 @@ export const persisters = {
           editor.updateText(entity)
         })
         .then(() => true)
-
     },
     save: (action, editor) => {
       debug('save', action)

@@ -116,7 +116,6 @@ const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.Pro
 
           env.KUBECONFIG = kubeconfigFilepath
           resolve(() => remove(path))
-
         } catch (err) {
           reject(err)
         }
