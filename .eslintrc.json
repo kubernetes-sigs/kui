@@ -18,7 +18,6 @@
     "no-lone-blocks": "off",
     "no-mixed-operators": "off",
     "no-return-assign": "off",
-    "no-template-curly-in-string": "off",
     "no-undef": "off",
     "no-unneeded-ternary": "off",
     "no-useless-constructor": "off",
