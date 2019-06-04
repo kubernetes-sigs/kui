@@ -69,5 +69,4 @@ export default async (commandTree: CommandRegistrar) => {
       .then(composition => client.deploy({ composition, overwrite: true })
         .then(view.formatCompositionEntity(execOptions)))
   }, { usage: create('update') })
-
 }

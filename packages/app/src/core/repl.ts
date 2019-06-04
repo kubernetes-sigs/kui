@@ -813,7 +813,6 @@ class InProcessExecutor implements IExecutor {
               }
             }
           })
-
       }
     } catch (err) {
       const e = err as Error

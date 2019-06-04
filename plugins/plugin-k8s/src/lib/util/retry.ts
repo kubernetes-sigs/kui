@@ -23,7 +23,6 @@ export const withRetryOnCode = (code: number) => (fn, cmd: string) => new Promis
   const iter = async () => {
     try {
       resolve(await fn())
-
     } catch (err) {
       if (err.code === code) {
         debug('retrying', cmd)

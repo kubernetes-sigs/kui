@@ -384,7 +384,6 @@ const getDirectReferences = (command: string) => async ({ execOptions, argv, arg
         entities: [ kubeEntity ]
       }
     }
-
   } else {
     const filepath = findFile(file)
     const isURL = file.match(/^http[s]?:\/\//)

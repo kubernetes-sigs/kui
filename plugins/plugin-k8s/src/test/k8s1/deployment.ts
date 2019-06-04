@@ -82,7 +82,6 @@ describe('electron deployment', function (this: common.ISuite) {
                       titles[0] === 'DEPLOYMENT' &&
                       titles[1] === 'PODS')
           })
-
       } catch (err) {
         common.oops(this)(err)
       }

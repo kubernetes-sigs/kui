@@ -30,5 +30,4 @@ export default async (commandTree: CommandRegistrar) => {
     return repl.qfexec(command.replace('app', 'action'))
       .then(result => view.formatDeleteResult(result))
   }, { usage: appDelete })
-
 }

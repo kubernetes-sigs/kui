@@ -54,7 +54,6 @@ const squashLogRuns = (isNotCloudLens: boolean, options: IOptions) => (soFar: IZ
       console.error(err)
     }
     current = { logType, timestamp, origin, rest, runLength, rawTimestamp: timestamp, provider: '' }
-
   } else {
     try {
       const match = logLine.match(/^([^\s]+)\s+({.*})\s*$/)

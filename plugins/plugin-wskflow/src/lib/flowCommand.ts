@@ -127,7 +127,6 @@ export default (commandTree: CommandRegistrar) => {
           content: view,
           isEntity: true
         })
-
       })
   }, { usage })
 }

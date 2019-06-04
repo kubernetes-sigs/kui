@@ -270,5 +270,4 @@ describe('app create and sessions', function (this: common.ISuite) {
   // disable pagination tests
   /* getSessions('sessions list --skip 1', 0, 2) // expect 2, if we skip 1 (since we expect 3 in total)
   getSessions('sessions list --limit 2', 0, 2) // expect 2, if we limit 2 (since we expect 3 in total) */
-
 })
