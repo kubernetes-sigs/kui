@@ -23,6 +23,7 @@ export interface IKubeStatusCondition {
 
 interface IKubeContainerStatus {
   name: string
+  containerID: string
   restartCount: number
   ready: boolean
   state: any
@@ -38,6 +39,7 @@ export interface IKubeStatus {
   completionTime?: string
   phase?: string
   podIP?: string
+  podName?: string // e.g. tekton PipelineRun or TaskRun
   qosClass?: string
   replicas?: number
   readyReplicas?: number
@@ -126,6 +128,24 @@ export interface ICRDResource extends IKubeResource {
       kind: string
       shortnames: string[]
     }
+  }
+}
+
+export interface IPod extends IKubeResource {
+  spec: {
+    containers: {
+      args: string[]
+      command: string[]
+      env: { name: string; value: string }[]
+      image: string
+      imagePullPolicy: string
+      name: string
+      resource: Record<string, any>
+      terminationMessagePath: string
+      terminationMessagePolicy: string
+      volumneMounts: { mountPath: string; name: string }[]
+      workingDir: string
+    }[]
   }
 }
 

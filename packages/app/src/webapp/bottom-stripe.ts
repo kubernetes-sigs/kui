@@ -17,7 +17,9 @@
 import * as Debug from 'debug'
 import { ITab } from './cli'
 import { removeAllDomChildren } from './util/dom'
-import { getSidecar, showCustom, ICustomSpec } from './views/sidecar'
+import { isTable } from './models/table'
+import { formatTable } from './views/table'
+import { getSidecar, showCustom, isCustomSpec, ICustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { IExecOptions } from '../models/execOptions'
 const debug = Debug('webapp/picture-in-picture')
@@ -231,10 +233,22 @@ const _addModeButton = (tab: ITab, bottomStripe: Element, opts: ISidecarMode, en
         try {
           const view = await callDirect(tab, direct, entity, execOptions)
           if (view && !actAsButton) {
-            if (isDirectViewEntity(direct) || leaveBottomStripeAlone) {
+            if (isTable(view) || isDirectViewEntity(direct) || leaveBottomStripeAlone) {
               changeActiveButton()
             }
-            Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
+
+            if (isCustomSpec(view)) {
+            // Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
+              showCustom(tab, view, { leaveBottomStripeAlone })
+            } else if (isTable(view)) {
+              const dom1 = document.createElement('div')
+              const dom2 = document.createElement('div')
+              dom1.classList.add('padding-content')
+              dom2.classList.add('result-as-table', 'result-as-vertical', 'repl-result', 'result-as-fixed-tables')
+              dom1.appendChild(dom2)
+              formatTable(tab, view, dom2, { usePip: true })
+              insertView(tab)(dom1)
+            }
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
               const button = bottomStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)

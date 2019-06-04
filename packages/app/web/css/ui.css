@@ -1441,6 +1441,9 @@ sidecar .result-as-table .big-top-pad:first-child {
 .clickable, .clickable-block {
     transition: color 150ms ease-in-out, text-decoration-color 150ms ease-in-out;
 }
+.clickable-color {
+    color: var(--color-base09);
+}
 .clickable-blatant {
     text-decoration: underline;
     text-decoration-color: var(--color-base04);
@@ -2747,7 +2750,7 @@ sidecar .sidecar-header-icon {
 .header .clickable:hover {
     color: var(--color-support-04);
 }
-.clickable:hover, .entity.actions:hover .entity-name-group:not(.header-cell) .entity-name {
+.clickable:not(.clickable-color):hover, .entity.actions:hover .entity-name-group:not(.header-cell) .entity-name {
     color: var(--color-brand-01);
 }
 

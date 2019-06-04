@@ -31,9 +31,8 @@ import success from '../../lib/success'
 import { IResponseObject } from './flow'
 import { getPipelineFromRef, getTasks } from '../fetch'
 import { IPipeline, IPipelineRun, Task, TaskRef } from '../resource'
-const debug = Debug('plugins/tekton/models/modes/trace')
 
-import repl = require('@kui-shell/core/core/repl')
+const debug = Debug('plugins/tekton/models/modes/trace')
 
 const viewName = 'Trace'
 
@@ -130,7 +129,7 @@ export const render = (tab: ITab, activations: ActivationLike[], container: Elem
     const clicky = document.createElement('span') as HTMLElement
     clicky.className = 'clickable'
     id.appendChild(clicky)
-    id.className = 'log-field activationId'
+    id.className = 'log-field'
     if (noCrop) id.classList.add('full-width')
     clicky.innerText = activation.activationId
     id.setAttribute('data-activation-id', id.innerText)
@@ -202,7 +201,7 @@ export const render = (tab: ITab, activations: ActivationLike[], container: Elem
       // bar.onclick = pip(show(activation))
       bar.setAttribute('data-balloon', prettyPrintDuration(activation.end ? activation.end - activation.start - initTime : initTime))
       bar.setAttribute('data-balloon-pos', balloonPos)
-      bar.onmouseover = () => legend.setAttribute('data-hover-type', 'execution-time')
+      bar.onmouseover = () => legend.setAttribute('data-hover-type', isSuccess ? 'execution-time' : 'failures')
       bar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
       // container initialization bar
@@ -299,10 +298,11 @@ export default traceMode
 
 export const traceView = (tab: ITab, run: IPipelineRun, pipeline: IPipeline, jsons: IKubeResource[]) => {
   const content = document.createElement('div')
-  content.classList.add('padding-content')
+  content.classList.add('padding-content', 'repl-result')
   content.style.flex = '1'
   content.style.display = 'flex'
   content.style.flexDirection = 'column'
+  content.style.overflowX = 'hidden'
 
   const runActivation = makeRunActivationLike(run)
   render(tab, [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)), content)
@@ -318,8 +318,6 @@ export const traceView = (tab: ITab, run: IPipelineRun, pipeline: IPipeline, jso
     duration: runActivation.duration,
     badges,
     content
-    // model: jsons
-    // modes: []
   }
 }
 
@@ -371,7 +369,9 @@ function makeTaskRunsActivationLike (run: IPipelineRun, pipeline: IPipeline, jso
     const taskRefName = taskRun.pipelineTaskName
     const task = taskRefName2Task[taskRefName]
 
-    if (task) {
+    if (!task) {
+      console.error('!! task not found', taskRefName, taskRefName2Task)
+    } else {
       const start = new Date(taskRun.status.startTime).getTime()
 
       /* task.visitedIdx = M.length
@@ -388,20 +388,23 @@ function makeTaskRunsActivationLike (run: IPipelineRun, pipeline: IPipeline, jso
         const end = new Date(stepRun.terminated.finishedAt).getTime()
         const success = stepRun.terminated.reason !== 'Error'
 
-        const step = task.spec.steps.find(_ => _.name === stepRun.name)
-        if (step) {
+        /* const step = task.spec.steps.find(_ => _.name === stepRun.name)
+        if (!step) {
+          console.error('!! step not found', stepRun.name, task.spec.steps)
+        } else if (step) {
           step.visitedIdx = M.length
-          M.push({
-            activationId: taskRun.pipelineTaskName,
-            name: stepRun.name,
-            start,
-            end,
-            duration: end - start,
-            response: {
-              success
-            }
-          })
-        }
+        } */
+
+        M.push({
+          activationId: taskRun.pipelineTaskName,
+          name: stepRun.name,
+          start,
+          end,
+          duration: end - start,
+          response: {
+            success
+          }
+        })
       })
     }
     return M
