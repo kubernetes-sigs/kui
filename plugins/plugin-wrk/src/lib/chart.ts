@@ -15,15 +15,14 @@
  */
 
 import * as Debug from 'debug'
+import * as parseDuration from 'parse-duration'
 
 import eventBus from '@kui-shell/core/core/events'
 import { injectScript } from '@kui-shell/core/webapp/util/inject'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
-import * as parseDuration from 'parse-duration'
-
 import theme from './theme'
-import { transparent } from './util'
+// import { transparent } from './util'
 const debug = Debug('wrk/chart')
 
 // from injectScript Chart below
@@ -68,7 +67,7 @@ export const init = (graphics, options: IOptions = new DefaultOptions()) => {
   /** create a ChartJS chart configuration object */
   const makeChartConfig = () => {
     // pick up the theme choices
-    const { fontFamily } = theme(ctx)
+    const { fontFamily } = theme()
     debug('theme', fontFamily)
 
     const chartData = {
@@ -108,7 +107,7 @@ export const init = (graphics, options: IOptions = new DefaultOptions()) => {
           labels: {
             fontFamily,
             usePointStyle: true,
-            filter: (item, data) => {
+            filter: (item) => {
               return item.text !== 'skip'
             }
           }
@@ -167,7 +166,7 @@ export const init = (graphics, options: IOptions = new DefaultOptions()) => {
   /** inject the current theme into the chart canvas */
   const injectTheme = (doUpdate = true) => {
     // pick up the theme choices
-    const { fontFamily, bar, area, areaStroke = area, areaBorderWidth = 4, border, borderWidth = 1, chart: chartStyle } = theme(ctx)
+    const { fontFamily, bar, area, borderWidth = 1, chart: chartStyle } = theme()
     debug('theme', fontFamily, bar)
 
     if (chartStyle && chartStyle.backgroundColor) {
@@ -199,22 +198,6 @@ export const init = (graphics, options: IOptions = new DefaultOptions()) => {
   }
   injectTheme(false)
 
-  const filler = (offset = 0) => {
-    labels.push(new Date().getTime() + offset)
-    lmin.data.push(null)
-    l25.data.push(null)
-    l50.data.push(null)
-    l75.data.push(null)
-    l99.data.push(null)
-    lmax.data.push(null)
-    rps.data.push(null)
-    // rpsmin.data.push(null)
-    // rpsmax.data.push(null)
-  }
-  // filler()
-  // filler(10000)
-  // chart.update()
-
   const right = document.querySelector('#sidecar .header-right-bits .custom-header-content')
   const label = document.createElement('div')
   const max = document.createElement('div')
@@ -241,11 +224,11 @@ export const init = (graphics, options: IOptions = new DefaultOptions()) => {
     //
     // register as a listener for load test updates, for the chart
     //
-    const listener = eventBus.on('/wrk/iter', row => {
-      const { N: nThreads, requestsPerSec, /* rpsMin, rpsMax, */ latency25, latency50, latency75, latency90, latency99, latencyMax, latencyMin } = row
+    eventBus.on('/wrk/iter', row => {
+      const { requestsPerSec, /* rpsMin, rpsMax, */ latency25, latency50, latency75, latency99, latencyMax, latencyMin } = row
 
       try {
-        const N = labels.length - 1
+        // const N = labels.length - 1
         // labels[N] = new Date().getTime()
         // l50[N] = parseDuration(latency50)
         // l99[N] = parseDuration(latency99)

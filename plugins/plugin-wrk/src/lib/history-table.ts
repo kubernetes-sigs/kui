@@ -21,13 +21,12 @@ import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { all } from './history'
 import { prettyUrl } from './util'
-import { replay } from './replay'
 import { initUI, response } from './graphics'
 import { insertRow, addCell, i18n } from './table'
 
 const viewName = 'Load Test History'
 
-export const list = ({ tab, parsedOptions: options }: IEvaluatorArgs) => {
+export const list = ({ tab }: IEvaluatorArgs) => {
   const graphics = initUI({ noChart: true })
   const resp = response(tab, graphics, { url: undefined, testName: 'Historical', defaultMode: 'history' })
 

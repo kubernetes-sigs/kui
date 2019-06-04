@@ -25,7 +25,7 @@ const debug = Debug('wrk/theme')
  * @param ctx this allows you e.g. to create gradients
  *
  */
-export default (ctx: CanvasRenderingContext2D) => {
+export default () => {
   const theme = getComputedStyle(document.body)
 
   //

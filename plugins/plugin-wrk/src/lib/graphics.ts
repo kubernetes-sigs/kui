@@ -19,7 +19,7 @@ import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views
 
 import * as chart from './chart'
 import { prettyUrl } from './util'
-import { addRow, init as initTable } from './table'
+import { init as initTable } from './table'
 
 const viewName = 'Load Tester'
 

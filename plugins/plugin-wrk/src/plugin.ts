@@ -21,7 +21,7 @@ import { start, end } from './lib/wrk'
 import init from './lib/init'
 import { last, show } from './lib/replay'
 import { list } from './lib/history-table'
-import { del, clear } from './lib/history'
+import { del } from './lib/history'
 import { script } from './lib/scriptgen'
 
 const opts = { noAuthOk: true }

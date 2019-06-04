@@ -20,7 +20,6 @@ import eventBus from '@kui-shell/core/core/events'
 import { qexec as $$ } from '@kui-shell/core/core/repl'
 
 import * as wrk from 'wrk'
-import { join } from 'path'
 import * as parseDuration from 'parse-duration'
 
 import { wrkPath, wrkExeName } from './init'
@@ -126,7 +125,7 @@ const Latency = {
   }
 }
 
-const _lt = ({ url: altURL, N = 1, results = [], options }) => ({ url, script, cleanupCallback = x => x }) => new Promise(async (resolve, reject) => {
+const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) => new Promise(async (resolve, reject) => {
   debug('url', url || altURL)
 
   // confirm that wrk is compiled and ready
