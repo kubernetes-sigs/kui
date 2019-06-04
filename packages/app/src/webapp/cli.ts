@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
 import UsageError from '../core/usage-error'
-import { inElectron, isHeadless } from '../core/capabilities'
+import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 
 import { Entity, SimpleEntity, isEntitySpec, isMessageBearingEntity } from '../models/entity'
@@ -887,13 +887,17 @@ export const listen = (prompt: HTMLInputElement) => {
         updateInputAndMoveCaretToEOL(prompt, newValue)
       }
     } else if (char === keys.PAGEUP) {
-      debug('pageup')
-      const { height } = document.body.getBoundingClientRect()
-      document.querySelector('tab.visible .repl-inner').scrollBy(0, -height)
+      if (inBrowser()) {
+        debug('pageup')
+        const { height } = document.body.getBoundingClientRect()
+        document.querySelector('tab.visible .repl-inner').scrollBy(0, -height)
+      }
     } else if (char === keys.PAGEDOWN) {
-      debug('pagedown')
-      const { height } = document.body.getBoundingClientRect()
-      document.querySelector('tab.visible .repl-inner').scrollBy(0, +height)
+      if (inBrowser()) {
+        debug('pagedown')
+        const { height } = document.body.getBoundingClientRect()
+        document.querySelector('tab.visible .repl-inner').scrollBy(0, +height)
+      }
     } else if (char === keys.C && event.ctrlKey) {
       // Ctrl+C, cancel
       doCancel()
