@@ -17,14 +17,13 @@
 import * as Debug from 'debug'
 
 import { inBrowser, assertHasProxy, assertLocalAccess } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/proxy-support/preload')
 
 /**
  * This is the module
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async () => {
   if (inBrowser()) {
     const { config } = await import('@kui-shell/core/core/settings')
     debug('config', config)

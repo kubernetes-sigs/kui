@@ -19,12 +19,12 @@ import * as Debug from 'debug'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { IReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
-import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
+import { isCommandHandlerWithEvents, IEvaluator, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as needle from 'needle'
 const debug = Debug('plugins/proxy-support/executor')
-import url = require('url')
 
 /**
  * The proxy server configuration.
@@ -46,10 +46,10 @@ const directEvaluator = new DirectReplEval()
 class ProxyEvaluator implements IReplEval {
   name = 'ProxyEvaluator'
 
-  async apply (command: string, execOptions: IExecOptions, evaluator, args) {
+  async apply (command: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
     debug('apply', evaluator)
 
-    if (evaluator.options && (evaluator.options.inBrowserOK || evaluator.options.inBrowserOk || evaluator.options.needsUI)) {
+    if (isCommandHandlerWithEvents(evaluator) && evaluator.options && (evaluator.options.inBrowserOk || evaluator.options.needsUI)) {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
