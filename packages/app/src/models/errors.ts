@@ -23,5 +23,5 @@ export interface CodedError extends Error {
 
 export function isCodedError (err: Error): err is CodedError {
   const error = err as CodedError
-  return UsageError.isUsageError(err) || error.code || error.statusCode ? true : false
+  return !!(UsageError.isUsageError(err) || error.code || error.statusCode)
 }

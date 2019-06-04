@@ -38,7 +38,7 @@ export const main = (argv: string[], env = process.env, execOptions?: IExecOptio
     const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv)
     initElectron(strippedArgv,
       { isRunningHeadless, forceUI },
-      env.subwindowPlease || subwindowPlease ? true : false,
+      !!(env.subwindowPlease || subwindowPlease),
       env.subwindowPrefs
         ? typeof env.subwindowPrefs === 'string'
           ? JSON.parse(env.subwindowPrefs) : env.subwindowPrefs

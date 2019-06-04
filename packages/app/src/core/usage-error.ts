@@ -731,7 +731,7 @@ interface IGenerator {
 }
 
 function isGenerator (row: UsageRow): row is IGenerator {
-  return (row as IGenerator).fn ? true : false
+  return !!(row as IGenerator).fn
 }
 
 type UsageRow = IUsageRow | IGenerator
@@ -757,7 +757,7 @@ interface BreadcrumbWithLabelProvider {
 type BreadcrumbLabel = string | BreadcrumbWithLabelProvider | BreadcrumbWithClickCommand
 function isBreadcrumbWithClickCommand (crumb: BreadcrumbLabel): crumb is BreadcrumbWithClickCommand {
   const breadcrumb = (crumb as BreadcrumbWithClickCommand)
-  return breadcrumb.label && breadcrumb.command ? true : false
+  return !!(breadcrumb.label && breadcrumb.command)
 }
 
 export interface IUsageModel {
@@ -821,12 +821,12 @@ interface MessageWithUsageModel extends MessageWithCode {
 
 function isMessageWithCode (msg: UsageLike): msg is MessageWithCode {
   const message = msg as MessageWithCode
-  return message.message && (message.code || message.statusCode || message.exitCode) ? true : false
+  return !!(message.message && (message.code || message.statusCode || message.exitCode))
 }
 
 function isMessageWithUsageModel (msg: UsageLike): msg is MessageWithUsageModel {
   const message = msg as MessageWithUsageModel
-  return message.usage ? true : false
+  return !!message.usage
 }
 
 type MessageLike = string | HTMLElement
@@ -865,7 +865,7 @@ export class UsageError extends Error implements CodedError {
 
   static isUsageError (error: Entity): error is UsageError {
     const err = error as UsageError
-    return err.formattedMessage && err.code ? true : false
+    return !!(err.formattedMessage && err.code)
   }
 }
 

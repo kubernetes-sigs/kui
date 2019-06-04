@@ -440,7 +440,7 @@ function addEdge (graph: INode, parent: INode, child: INode, { singletonSource, 
     sourcePort,
     target: child.id,
     targetPort,
-    visited: !hasRuns ? undefined : parent.visited && child.visited ? true : false
+    visited: !hasRuns ? undefined : !!(parent.visited && child.visited)
   })
 
   child.nParents++

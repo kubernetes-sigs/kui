@@ -26,7 +26,7 @@ interface ErrorWithResultField {
 
 function isErrorWithResultField (error: ErrorLike): error is ErrorWithResultField {
   const err = error as ErrorWithResultField
-  return err.error && err.error.response && err.error.response.result && err.error.response.result.error ? true : false
+  return !!(err.error && err.error.response && err.error.response.result && err.error.response.result.error)
 }
 
 interface ErrorWithNestedResultField {
@@ -43,7 +43,7 @@ interface ErrorWithNestedResultField {
 
 function isErrorWithNestedResultField (error: ErrorLike): error is ErrorWithNestedResultField {
   const err = error as ErrorWithNestedResultField
-  return err.error && err.error.response && err.error.response.result && err.error.response.result.error && err.error.response.result.error.error ? true : false
+  return !!(err.error && err.error.response && err.error.response.result && err.error.response.result.error && err.error.response.result.error.error)
 }
 
 interface ErrorWithNestedErrorField {
@@ -54,7 +54,7 @@ interface ErrorWithNestedErrorField {
 
 function isErrorWithNestedErrorField (error: ErrorLike): error is ErrorWithNestedErrorField {
   const err = error as ErrorWithNestedErrorField
-  return err.error && err.error.error ? true : false
+  return !!(err.error && err.error.error)
 }
 
 interface ErrorWithErrorField {
@@ -64,7 +64,7 @@ interface ErrorWithErrorField {
 
 function isErrorWithErrorField (error: ErrorLike): error is ErrorWithErrorField {
   const err = error as ErrorWithErrorField
-  return err.error && !err.message ? true : false
+  return !!(err.error && !err.message)
 }
 
 type ErrorLike = string | Error | ErrorWithResultField | ErrorWithNestedResultField | ErrorWithNestedErrorField | ErrorWithErrorField

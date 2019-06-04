@@ -44,7 +44,7 @@ const viewName = 'Pods'
  */
 export const podMode: ModeRegistration = {
   when: (resource: IKubeResource) => {
-    return resource.spec && resource.spec.selector ? true : false
+    return !!(resource.spec && resource.spec.selector)
   },
   mode: (command: string, resource: IResource) => {
     debug('addPods', resource)

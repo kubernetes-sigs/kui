@@ -20,7 +20,6 @@
     "no-return-assign": "off",
     "no-template-curly-in-string": "off",
     "no-undef": "off",
-    "no-unneeded-ternary": "off",
     "no-useless-constructor": "off",
     "no-useless-escape": "off",
     "no-useless-return": "off",
