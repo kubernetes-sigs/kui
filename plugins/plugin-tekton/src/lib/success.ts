@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-import { IEntitySpec } from '@kui-shell/core/models/entity'
+import { IKubeStatusCondition } from '@kui-shell/plugin-k8s/lib/model/resource'
 
-interface ActivationLike {
-  start: number
-  duration: number
-  logs?: string[]
-  statusCode?: number
-  response: {
-    success: boolean
-    result?: Record<string, any>
-  }
+/**
+ * Determine the success bit of a run element
+ *
+ */
+export default function success (conditions: IKubeStatusCondition[]): boolean {
+  const successCondition = conditions.find(_ => _.type === 'Succeeded')
+  return successCondition && (successCondition.status === true || (successCondition.status !== false && /true/i.test(successCondition.status)))
 }
-
-interface ExtendedActivationAttributes {
-  activationId: string
-  name: string
-  end?: number
-}
-
-export type ActivationLikeFull = ActivationLike & ExtendedActivationAttributes
-
-export default ActivationLike

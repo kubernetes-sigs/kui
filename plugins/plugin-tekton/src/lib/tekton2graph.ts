@@ -21,9 +21,10 @@ import { encodeComponent } from '@kui-shell/core/core/repl'
 
 import { INode as BaseNode, IEdge } from '@kui-shell/plugin-wskflow/lib/graph'
 import ActivationLike from '@kui-shell/plugin-wskflow/lib/activation'
-import { IKubeResource, IKubeStatusCondition } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import { flatten } from '@kui-shell/plugin-k8s/lib/util/util'
 
+import success from './success'
 import { IPipelineRun, IPipeline, isPipeline, Task, TaskName, TaskRef, Step, Port } from '../model/resource'
 
 interface INode extends BaseNode {
@@ -98,12 +99,6 @@ const getPipeline = (jsons: IKubeResource[]): IPipeline => {
       return pipeline
     }
   }
-}
-
-/** determine the success bit of a run element */
-function success (conditions: IKubeStatusCondition[]): boolean {
-  const successCondition = conditions.find(_ => _.type === 'Succeeded')
-  return successCondition && (successCondition.status === true || (successCondition.status !== false && /true/i.test(successCondition.status)))
 }
 
 /**

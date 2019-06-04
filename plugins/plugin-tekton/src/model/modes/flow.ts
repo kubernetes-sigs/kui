@@ -18,42 +18,18 @@ import * as Debug from 'debug'
 const debug = Debug('tekton/model/modes/flow')
 
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { rexec as $ } from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
-import { CodedError } from '@kui-shell/core/models/errors'
 
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import flowView from '../../view/flow'
+import { getPipelineFromRef, getTasks } from '../fetch'
 import { isPipelineRun, IPipelineRun, IPipeline, isPipeline, Task } from '../resource'
 
 export interface IResponseObject {
   isFromFlowCommand?: boolean
   model: IKubeResource[]
   resource: IKubeResource
-}
-
-/**
- * Get the Pipeline referenced by a PipelineRun
- *
- */
-function getPipelineFromRef (run: IPipelineRun): Promise<IPipeline> {
-  return $(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
-    .catch((err: CodedError) => {
-      if (err.code === 404) {
-        return undefined
-      } else {
-        throw err
-      }
-    })
-}
-
-/**
- * Retrieve all Tasks
- *
- */
-function getTasks (): Promise<Task[]> {
-  return $('kubectl get Task') // want Task.tekton.dev, but that is much slower
 }
 
 /**

@@ -16,6 +16,9 @@
 
 import { IKubeResource, IKubeStatusCondition, IKubeStatus } from '@kui-shell/plugin-k8s/lib/model/resource'
 
+/** this is the api version matcher; TODO refactor */
+const tektonAPI = /tekton.dev/
+
 export type TaskName = string
 
 /**
@@ -128,7 +131,9 @@ export interface IPipelineRun extends ITektonKubeResource {
 }
 export function isPipelineRun (resource: IKubeResource): resource is IPipelineRun {
   const run = resource as IPipelineRun
-  return run.spec !== undefined &&
+
+  return tektonAPI.test(run.apiVersion) &&
+    run.spec !== undefined &&
     run.kind === 'PipelineRun' &&
     run.spec.serviceAccount !== undefined &&
     run.spec.pipelineRef !== undefined
