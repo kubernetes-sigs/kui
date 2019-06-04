@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('wrk/lt')
 
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $$ } from '@kui-shell/core/core/repl'
@@ -26,6 +25,7 @@ import * as parseDuration from 'parse-duration'
 
 import { wrkPath, wrkExeName } from './init'
 import { generateScriptForAction, generateScriptForURL } from './scriptgen'
+const debug = Debug('wrk/lt')
 
 /**
  * Start a load test against the given url

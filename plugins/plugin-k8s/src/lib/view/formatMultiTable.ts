@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/view/formatMultiTable')
 
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { formatTable as format } from '@kui-shell/core/webapp/views/table'
 import { Table, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
+const debug = Debug('k8s/view/formatMultiTable')
 
 /** this will help us with finding our own view instances */
 const attr = 'k8s-table'

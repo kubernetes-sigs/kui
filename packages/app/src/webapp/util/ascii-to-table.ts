@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/webapp/util/ascii-to-table')
 
 import stripClean from 'strip-ansi'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
+const debug = Debug('core/webapp/util/ascii-to-table')
 
 /**
  * Find the column splits

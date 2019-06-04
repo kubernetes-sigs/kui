@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/usage-error')
 
 import { isHeadless } from './capabilities'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
-import repl = require('@kui-shell/core/core/repl')
 import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
 import { isHTML } from '../util/types'
+const debug = Debug('core/usage-error')
+import repl = require('@kui-shell/core/core/repl')
 
 interface IUsageOptions {
   noHide?: boolean

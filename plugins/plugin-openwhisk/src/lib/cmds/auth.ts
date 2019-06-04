@@ -21,21 +21,21 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/cmds/auth')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import eventBus from '@kui-shell/core/core/events'
 import { partial, ITab } from '@kui-shell/core/webapp/cli'
-import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import expandHomeDir from '@kui-shell/core/util/home'
 import UsageError from '@kui-shell/core/core/usage-error'
 
 import { getClient, owOpts } from './openwhisk-core'
-import namespace = require('../models/namespace')
 import { apiHost, auth as authModel } from '../models/auth'
+const debug = Debug('plugins/openwhisk/cmds/auth')
+import repl = require('@kui-shell/core/core/repl')
+import namespace = require('../models/namespace')
 
 /**
  * Location of the wskprops file

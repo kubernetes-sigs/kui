@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/plugin-manager/cmd/install')
-debug('loading')
 
 import * as tmp from 'tmp'
 import * as fs from 'fs-extra'
@@ -31,6 +29,8 @@ import compile from '@kui-shell/core/core/plugin-assembler'
 
 import { success } from '../util'
 import { install as usage } from '../../usage'
+const debug = Debug('plugins/plugin-manager/cmd/install')
+debug('loading')
 
 debug('finished module imports')
 

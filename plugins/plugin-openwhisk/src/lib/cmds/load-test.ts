@@ -21,13 +21,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/cmds/load-test')
-
-const prettyPrintDuration = require('pretty-ms')
 
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { parseOptions, getClient, owOpts } from './openwhisk-core'
+const debug = Debug('plugins/openwhisk/cmds/load-test')
+
+const prettyPrintDuration = require('pretty-ms')
 
 /**
  * Usage information

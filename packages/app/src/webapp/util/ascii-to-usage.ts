@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/webapp/util/ascii-to-usage')
 
 import UsageError from '../../core/usage-error'
 import { split } from '../../core/repl'
+const debug = Debug('core/webapp/util/ascii-to-usage')
 
 const sectionHeader = /([A-Z ]+):\s*$/
 const matcher = /[\n\r]([A-Z ]+:\s*[\n\r])/

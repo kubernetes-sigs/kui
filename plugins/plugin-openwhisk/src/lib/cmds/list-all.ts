@@ -19,8 +19,8 @@
  *
  */
 
-import repl = require('@kui-shell/core/core/repl')
 import { wsk } from './openwhisk-usage'
+import repl = require('@kui-shell/core/core/repl')
 
 /** usage model */
 const usage = cmd => ({

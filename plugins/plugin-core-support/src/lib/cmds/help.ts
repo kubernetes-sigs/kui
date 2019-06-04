@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/help')
-debug('loading')
 
 import UsageError from '@kui-shell/core/core/usage-error'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+const debug = Debug('plugins/core-support/help')
+debug('loading')
 
 /**
  * Respond with a top-level usage document

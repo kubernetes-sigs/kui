@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-declare var AMDLoader: any
-
 import * as path from 'path'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 
 import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'
+
+declare var AMDLoader: any
 
 /**
  * the monaco editor uses the AMD module loader, and smashes the global.require; we need to finagle it a bit

@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/k8s/preload')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
@@ -24,6 +23,7 @@ import { podMode } from './lib/view/modes/pods'
 import { conditionsMode } from './lib/view/modes/conditions'
 import { containersMode } from './lib/view/modes/containers'
 import registerSidecarMode from './lib/view/modes/registrar'
+const debug = Debug('plugins/k8s/preload')
 
 /**
  * This is the module

@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/entity-view')
 
 import * as repl from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import * as util from '../utility/ast'
+const debug = Debug('plugins/apache-composer/entity-view')
 
 const defaultMode = 'visualization'
 

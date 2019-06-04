@@ -15,15 +15,15 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/views/cli/activations/list')
-
-import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import * as prettyPrintDuration from 'pretty-ms'
+const debug = Debug('plugins/openwhisk/views/cli/activations/list')
+
+import repl = require('@kui-shell/core/core/repl')
 
 const viewName = 'Trace View'
 

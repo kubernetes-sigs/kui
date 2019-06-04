@@ -18,10 +18,15 @@ import * as assert from 'assert'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const cli = ui.cli
-const sidecar = ui.sidecar
 
 import { dirname } from 'path'
+
+import {
+  verifyNodeExists,
+  verifyTheBasicStuff
+} from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
+const cli = ui.cli
+const sidecar = ui.sidecar
 const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const actionName1 = 'foo1'
@@ -29,11 +34,6 @@ const actionName2 = 'foo2'
 const actionName3 = 'foo3'
 const seqName1 = 'seq1'
 const packageName1 = 'ppp1'
-
-import {
-  verifyNodeExists,
-  verifyTheBasicStuff
-} from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 
 describe('app create and sessions', function (this: common.ISuite) {
   before(openwhisk.before(this))

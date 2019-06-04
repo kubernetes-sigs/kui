@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('wrk/init')
 
 import { join } from 'path'
 import { spawn } from 'child_process'
@@ -23,6 +22,7 @@ import { exists, move, remove } from 'fs-extra'
 
 import { pexec as $, encodeComponent } from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
+const debug = Debug('wrk/init')
 
 /** location of /_pathTo_/wrk, i.e. the parent directory */
 export const wrkPath = (): string => userDataDir()

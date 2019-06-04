@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
 import { ok, ITab } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
@@ -24,6 +23,7 @@ import { Entity, IEntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
 import { IActivation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
+const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
 /**
  * Render an activation response in the CLI portion of the UI

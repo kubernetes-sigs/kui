@@ -15,17 +15,17 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/visualize')
-debug('loading')
 
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import injectCSS from './inject'
 
-type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
-
 import fsm2graph from './fsm2graph'
+const debug = Debug('plugins/wskflow/visualize')
+debug('loading')
+
+type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
 
 /**
  * Create the wskflow visualization for the given fsm

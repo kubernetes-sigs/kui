@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/proxy-support/executor')
 
 import UsageError from '@kui-shell/core/core/usage-error'
 import { IReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
@@ -24,6 +23,7 @@ import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOpt
 import { config } from '@kui-shell/core/core/settings'
 
 import * as needle from 'needle'
+const debug = Debug('plugins/proxy-support/executor')
 import url = require('url')
 
 /**

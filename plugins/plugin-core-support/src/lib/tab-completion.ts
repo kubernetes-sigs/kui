@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/tab completion')
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { keys } from '@kui-shell/core/webapp/keys'
@@ -27,6 +26,7 @@ import expandHomeDir from '@kui-shell/core/util/home'
 
 import * as fs from 'fs'
 import * as path from 'path'
+const debug = Debug('plugins/core-support/tab completion')
 
 /**
  * Escape the given string for bash happiness

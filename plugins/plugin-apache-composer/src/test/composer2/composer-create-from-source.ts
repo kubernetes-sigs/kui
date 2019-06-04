@@ -18,10 +18,10 @@ import { readdirSync } from 'fs'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const cli = ui.cli
-const sidecar = ui.sidecar
 
 import { dirname, join } from 'path'
+const cli = ui.cli
+const sidecar = ui.sidecar
 const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const srcDir = `${ROOT}/data/composer/composer-source` // inputs for create-from-source

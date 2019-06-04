@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tekton/controller/preview')
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import flowView from '../view/flow'
 import { parse, read } from '../lib/read'
+const debug = Debug('plugins/tekton/controller/preview')
 
 const usage = {
   command: 'flow',

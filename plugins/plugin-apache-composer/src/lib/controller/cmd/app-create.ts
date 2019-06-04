@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/app-create')
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
@@ -25,6 +24,7 @@ import { create } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 import * as compileUtil from '../../utility/compile'
 import * as client from '../client'
+const debug = Debug('plugins/apache-composer/cmd/app-create')
 
 export default async (commandTree: CommandRegistrar) => {
   /* command handler for app create */

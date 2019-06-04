@@ -15,11 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/controller/auth')
 
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { setAuth } from '../model/auth'
+const debug = Debug('k8s/controller/auth')
 
 const usage = {
   add: {

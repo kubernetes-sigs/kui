@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('main/main')
-debug('loading')
 
 import { IExecOptions } from '../models/execOptions'
 import { getCommand, initElectron, initHeadless } from './spawn-electron'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
+const debug = Debug('main/main')
+debug('loading')
 
 /**
  * This is the main entry point to kui

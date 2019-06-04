@@ -19,10 +19,10 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
-const { cli, selectors, sidecar } = ui
-const { localDescribe } = common
 
 import { dirname, join } from 'path'
+const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
 /** set the monaco editor text */

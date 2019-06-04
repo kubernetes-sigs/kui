@@ -31,25 +31,25 @@
  *
  */
 
+import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
+import { basename, join } from 'path'
+
+import expandHomeDir from '@kui-shell/core/util/home'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { current as currentNamespace } from '../../models/namespace'
+import { findFile } from '@kui-shell/core/core/find-file'
+
+import { deployHTMLViaOpenWhisk } from './_html'
+import { ANON_KEY, ANON_KEY_FQN, ANON_CODE, isAnonymousLet, isAnonymousLetFor } from './let-core'
 const debug = require('debug')('let')
 debug('loading')
 
 const baseName = process.env.BASE_NAME || 'anon'
 
 import minimist = require('yargs-parser')
-import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
-import { basename, join } from 'path'
 import needle = require('needle')
 import withRetry = require('promise-retry')
-
-import expandHomeDir from '@kui-shell/core/util/home'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { current as currentNamespace } from '../../models/namespace'
-import { findFile } from '@kui-shell/core/core/find-file'
 import repl = require('@kui-shell/core/core/repl')
-
-import { deployHTMLViaOpenWhisk } from './_html'
-import { ANON_KEY, ANON_KEY_FQN, ANON_CODE, isAnonymousLet, isAnonymousLetFor } from './let-core'
 
 debug('finished loading modules')
 

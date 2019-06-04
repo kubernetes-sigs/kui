@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/pty/channel')
 
 // import * as WebSocket from 'ws'
 import * as EventEmitter from 'events'
 
 import { onConnection, disableBashSessions } from './server'
+const debug = Debug('plugins/bash-like/pty/channel')
 
 export interface Channel {
   send: (msg: string) => void

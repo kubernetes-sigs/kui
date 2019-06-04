@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/tekton/view/flow')
 
 import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
@@ -34,6 +33,7 @@ import runMode from '../model/modes/run'
 import flowMode from '../model/modes/flow'
 import { IPipelineRun, Task, isTask } from '../model/resource'
 import tekton2graph from '../lib/tekton2graph'
+const debug = Debug('plugins/tekton/view/flow')
 
 /**
  * Format a repl response

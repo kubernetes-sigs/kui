@@ -15,11 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/pip')
-debug('loading')
-
-import repl = require('../core/repl')
-import bottomStripe = require('./bottom-stripe')
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
@@ -27,6 +22,11 @@ import Presentation from './views/presentation'
 import { popupListen, ITab } from './cli'
 import { IExecOptions } from '../models/execOptions'
 import { IEntitySpec } from '../models/entity'
+const debug = Debug('webapp/pip')
+debug('loading')
+
+import repl = require('../core/repl')
+import bottomStripe = require('./bottom-stripe')
 
 const _highlight = (op: string) => (highlightThis?: Element | Element[]) => {
   if (highlightThis) {

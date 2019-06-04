@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/about')
-debug('loading')
 
 import * as colors from 'colors/safe'
 
@@ -29,6 +27,8 @@ import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command
 import usage from './usage'
 import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
 import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
+const debug = Debug('plugins/core-support/about')
+debug('loading')
 
 /** should we show low-level version info, e.g. electron version etc.? */
 const showVersionInfo = true

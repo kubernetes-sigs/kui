@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('tekton/model/modes/modes')
 
 import { safeDump } from 'js-yaml'
 
@@ -26,6 +25,7 @@ import { ITab } from '@kui-shell/core/webapp/cli'
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import { IResponseObject } from './flow'
+const debug = Debug('tekton/model/modes/modes')
 
 /**
  * The sidecar mode for the tekton flow visualization

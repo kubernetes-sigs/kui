@@ -15,15 +15,15 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/activations/list')
-
-import repl = require('@kui-shell/core/core/repl')
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { registerListView } from '@kui-shell/core/webapp/cli'
 
 import { activations as usage } from '../openwhisk-usage'
 import { renderActivationListView } from '../../views/cli/activations/list'
+const debug = Debug('plugins/openwhisk/activations/list')
+
+import repl = require('@kui-shell/core/core/repl')
 
 interface IOptions {
   docs: boolean

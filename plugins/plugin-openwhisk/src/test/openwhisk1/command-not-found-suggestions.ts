@@ -19,9 +19,9 @@ import * as assert from 'assert'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, selectors, sidecar } = ui
 
 import { expectSuggestionsFor } from '@kui-shell/core/test/core/command-not-found-suggestions'
+const { cli, selectors, sidecar } = ui
 
 describe('Suggestions for command not found', function (this: common.ISuite) {
   before(openwhisk.before(this))

@@ -17,11 +17,11 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
+
+import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
 const appName1 = 'foo1'
-
-import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 describe('confirm that app update preserves annotations and parameters', function (this: common.ISuite) {

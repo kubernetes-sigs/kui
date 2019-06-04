@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/grid/utils')
-debug('loading')
 
 import { dirname, join } from 'path'
 import { v4 as uuid } from 'uuid'
@@ -37,6 +35,8 @@ import * as namespace from '@kui-shell/plugin-openwhisk/lib/models/namespace'
 import { range as rangeParser } from './time'
 import * as usage from '../usage'
 import defaults from '../defaults'
+const debug = Debug('plugins/grid/utils')
+debug('loading')
 
 export const nbsp = '\u00a0'
 export const newline = '\u000a'

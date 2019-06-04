@@ -15,11 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/editor/readonly')
 
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
+const debug = Debug('plugins/editor/readonly')
 
 /**
  * Enter read-only mode

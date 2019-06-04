@@ -15,11 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/views/diff')
 
 import { ITab } from '../cli'
 import { IRowDiff, Row } from '../models/table'
 import { formatOneRowResult } from '../views/table'
+const debug = Debug('webapp/views/diff')
 
 export const applyDiffTable = (diff: IRowDiff, tab: ITab, tableDom: HTMLElement, rows: HTMLElement[], prepareRows: Row[]) => {
   if (diff.rowUpdate && diff.rowUpdate.length > 0) {

@@ -24,14 +24,14 @@
  *
  */
 
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
+import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 import minimist = require('yargs-parser')
 
 import repl = require('@kui-shell/core/core/repl')
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
-import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 const { isAnonymousLet } = require('./actions/let-core')
-import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 /** sum of numbers in an array */
 // const arraySum = A => A.reduce((sum, c) => sum + c, 0)

@@ -20,11 +20,11 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
+import repl = require('@kui-shell/core/core/repl')
 
 /**
  * These options help guide the help system; this command needs a

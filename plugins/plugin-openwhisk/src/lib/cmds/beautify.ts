@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-declare var hljs
-
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import * as cli from '@kui-shell/core/webapp/cli'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
@@ -24,6 +22,8 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { update } from './openwhisk-core'
 import { synonyms } from '../models/synonyms'
 import { currentSelection } from '../models/openwhisk-entity'
+
+declare var hljs
 
 /**
  * A just for fun plugin: beautify the source code of the selected action

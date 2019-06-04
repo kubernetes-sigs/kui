@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('main/headless-pretty-print')
-debug('loading')
-
 import { fstatSync } from 'fs'
 import * as colors from 'colors/safe'
 
 import { ElementMimic } from '../util/mimic-dom'
+
+const debug = require('debug')('main/headless-pretty-print')
+debug('loading')
 
 const log = console.log
 const error = console.error

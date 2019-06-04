@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { maybeAsDate, TryLaterError } from '../util/util'
+
 const debug = require('debug')('k8s/states')
 
 import repl = require('@kui-shell/core/core/repl')
-
-import { maybeAsDate, TryLaterError } from '../util/util'
 
 /**
  * Resource status/states

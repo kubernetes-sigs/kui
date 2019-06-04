@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('main/headless')
-debug('loading')
 
 import * as colors from 'colors/safe'
 import * as events from 'events'
@@ -32,6 +30,8 @@ import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 // set the headless capability
 import { Media, setMedia } from '../core/capabilities'
+const debug = Debug('main/headless')
+debug('loading')
 setMedia(Media.Headless)
 
 // by default, we'll exit with an exit code of 0 when success is

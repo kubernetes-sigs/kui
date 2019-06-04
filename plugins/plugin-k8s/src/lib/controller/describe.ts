@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/controller/describe')
 
 import { safeDump } from 'js-yaml'
 
@@ -33,6 +32,7 @@ import { IKubeStatus, DefaultKubeStatus, IKubeMetadata, DefaultKubeMetadata, IKu
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
 import { apply as addRelevantModes } from '../view/modes/registrar'
+const debug = Debug('k8s/controller/describe')
 
 const usage = command => ({
   title: command,

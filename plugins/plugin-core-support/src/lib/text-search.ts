@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/text-search')
 
 import * as cli from '@kui-shell/core/webapp/cli'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import * as path from 'path'
+const debug = Debug('plugins/core-support/text-search')
 
 /**
  * This plugin implements a simple in-page text search, using Chrome's findInPage API.

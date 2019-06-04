@@ -28,7 +28,6 @@
     "prefer-promise-reject-errors": "off",
     "space-unary-ops": "off",
 
-    "import/first": "off",
     "import/no-duplicates": "off",
 
     "@typescript-eslint/ban-types": "off",

@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/picture-in-picture')
-
-import repl = require('../core/repl')
 import { ITab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showCustom, ICustomSpec } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { IExecOptions } from '../models/execOptions'
+const debug = Debug('webapp/picture-in-picture')
+
+import repl = require('../core/repl')
 
 /**
  * Bottom stripe button specification

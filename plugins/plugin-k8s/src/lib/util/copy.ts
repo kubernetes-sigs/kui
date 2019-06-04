@@ -23,8 +23,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/cmds/copy')
-debug('loading')
 
 import * as fs from 'fs'
 import { exists, lstat, ensureDir, remove, writeFile } from 'fs-extra'
@@ -32,6 +30,8 @@ import { basename, join } from 'path'
 import { dir as tmpDir, file as tmpFile } from 'tmp'
 
 import { isDirectory } from './util'
+const debug = Debug('k8s/cmds/copy')
+debug('loading')
 
 type CopyOutHandler = (src: string) => string
 

@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/view/modes/pods')
 
 import { qexec as $$ } from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
@@ -33,6 +32,7 @@ import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
 import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
+const debug = Debug('k8s/view/modes/pods')
 
 /** for drilldown back button */
 const viewName = 'Pods'

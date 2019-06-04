@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('webapp/views/table')
 
 import eventBus from '../../core/events'
 import { ITab, isPopup, getCurrentPrompt } from '../cli'
@@ -25,6 +24,7 @@ import { getActiveView } from './sidecar'
 import { Table, Row, Cell, Icon, TableStyle, WatchableTable, diffTableRows, isWatchableTable, isTable } from '../models/table'
 import { IWatchable } from '../models/basicModels'
 import { applyDiffTable } from '../views/diffTable'
+const debug = Debug('webapp/views/table')
 
 export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom: HTMLElement): void => {
   const tableDom = document.createElement('div')

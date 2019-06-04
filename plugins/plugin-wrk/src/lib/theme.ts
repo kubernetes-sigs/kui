@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('wrk/theme')
 
 import { transparent } from './util'
+const debug = Debug('wrk/theme')
 
 /**
  * Create a ChartJS theme that inherits from the current Kui theme.

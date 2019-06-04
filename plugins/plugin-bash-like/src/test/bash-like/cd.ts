@@ -18,11 +18,11 @@ import expandHomeDir from '@kui-shell/core/util/home'
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
-const { localDescribe } = common
 
 import { existsSync, unlinkSync } from 'fs'
 import { dirname, join, normalize } from 'path'
+const { cli, selectors, sidecar } = ui
+const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = dir => join(ROOT, dir)
 

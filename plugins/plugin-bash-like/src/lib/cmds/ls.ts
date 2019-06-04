@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/cmds/ls')
 
 import { lstat, readdir, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
@@ -29,6 +28,7 @@ import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/cor
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
+const debug = Debug('plugins/bash-like/cmds/ls')
 
 /** flatten an array of arrays */
 function flatten<T> (arrays: T[][]): T[] {

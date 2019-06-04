@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/plugin-manager/cmd/remove')
-debug('loading')
 
 import * as path from 'path'
 import { remove } from 'fs-extra'
@@ -27,6 +25,8 @@ import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command
 
 import { success } from '../util'
 import { remove as usage } from '../../usage'
+const debug = Debug('plugins/plugin-manager/cmd/remove')
+debug('loading')
 
 debug('finished module imports')
 

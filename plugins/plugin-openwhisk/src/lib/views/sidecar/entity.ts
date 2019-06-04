@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-declare var hljs
-
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/views/sidecar/entity')
 
 import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
@@ -34,6 +31,9 @@ import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'
 import { fillInActionDetails } from '../../cmds/openwhisk-core'
+
+declare var hljs
+const debug = Debug('plugins/openwhisk/views/sidecar/entity')
 
 // the naming convention of highlight.js sometimes differs from that of openwhisk
 const uiNameForKindMap = {

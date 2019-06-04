@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugin-k8s/view/form')
 
 import { safeDump } from 'js-yaml'
 
@@ -24,6 +23,7 @@ import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as Resources from '../model/resource'
+const debug = Debug('plugin-k8s/view/form')
 
 interface IFormElement {
   parent: Record<string, any>

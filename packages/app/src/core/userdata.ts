@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/userdata')
 
 import { join } from 'path'
 
 import store from '@kui-shell/core/models/store'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser, inElectron } from '@kui-shell/core/core/capabilities'
+const debug = Debug('core/userdata')
 
 interface Preferences {
   [key: string]: string

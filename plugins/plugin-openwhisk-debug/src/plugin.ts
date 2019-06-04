@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/local')
-debug('loading')
 
 import { Docker } from 'node-docker-api'
 import { kindToExtension } from './kinds'
@@ -25,8 +23,6 @@ import * as withRetry from 'promise-retry'
 import * as fs from 'fs-extra'
 import * as tmp from 'tmp'
 import extract from 'extract-zip'
-
-const docker = new Docker({ socketPath: '/var/run/docker.sock' })
 import dockerConfig from './config'
 import * as strings from './strings'
 import { main as usage } from './docs'
@@ -41,6 +37,10 @@ import { injectScript } from '@kui-shell/core/webapp/util/inject'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { addActivationModes } from '@kui-shell/plugin-openwhisk/lib/models/modes'
+const debug = Debug('plugins/local')
+debug('loading')
+
+const docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
 interface IProtoActivation {
   result?: any

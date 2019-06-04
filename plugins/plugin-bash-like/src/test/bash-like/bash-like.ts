@@ -16,12 +16,12 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors } = ui
-const { localDescribe } = common
 
 import * as assert from 'assert'
 import { exec } from 'child_process'
 import { unlinkSync, rmdirSync } from 'fs'
+const { cli, selectors } = ui
+const { localDescribe } = common
 
 /** expect the given folder within the help tree */
 export const header = folder => `Shell Docs

@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/wskflow/graph2doms')
 
 import * as d3 from 'd3'
 import * as $ from 'jquery'
@@ -29,6 +28,7 @@ import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
 import { INode } from './graph'
+const debug = Debug('plugins/wskflow/graph2doms')
 
 const defaultMaxLabelLength = 10
 

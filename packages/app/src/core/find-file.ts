@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('core/find-file')
-debug('loading')
 
 import { basename, dirname, join, resolve } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from './capabilities'
+const debug = Debug('core/find-file')
+debug('loading')
 
 /**
  * Maybe the given filepath is asar-relative, as indicated by a

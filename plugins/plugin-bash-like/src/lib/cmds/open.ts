@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-declare var hljs
-
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/cmds/open')
 
 import { basename, dirname } from 'path'
 import { readFile } from 'fs'
@@ -31,6 +28,9 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
+
+declare var hljs
+const debug = Debug('plugins/bash-like/cmds/open')
 
 /**
  * Decide how to display a given filepath

@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/core-support/run')
 
 import { readFile } from 'fs'
 import { dirname } from 'path'
@@ -25,6 +24,7 @@ import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+const debug = Debug('plugins/core-support/run')
 
 const execInSequence = async function (arr, status, idx: number) {
   const item = arr[idx]

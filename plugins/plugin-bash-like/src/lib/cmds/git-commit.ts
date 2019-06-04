@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/cmds/git-commit')
 
 import { join } from 'path'
 import { writeFile } from 'fs'
@@ -31,6 +30,7 @@ import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { status2Html } from './git-status'
 import { status, toplevel } from '../util/git-support'
+const debug = Debug('plugins/bash-like/cmds/git-commit')
 
 /**
  * TODO refactor

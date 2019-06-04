@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/pty/copy-out')
 
 import * as fs from 'fs'
 import { exec } from 'child_process'
 import { basename, dirname, join } from 'path'
 import { dir as tmpDir } from 'tmp'
 import { exists, lstat, copy, ensureDir, readdir, remove, writeFile, stat } from 'fs-extra'
+const debug = Debug('plugins/bash-like/pty/copy-out')
 
 /**
  * Copy one file out of the electron ASAR

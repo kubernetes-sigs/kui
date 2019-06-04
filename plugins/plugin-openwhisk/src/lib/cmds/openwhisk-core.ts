@@ -15,26 +15,26 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/cmds/core-commands')
-debug('loading')
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
-import repl = require('@kui-shell/core/core/repl')
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
-import historyModel = require('@kui-shell/core/models/history')
 import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import withHeader from '../models/withHeader'
-import namespace = require('../models/namespace')
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
+const debug = Debug('plugins/openwhisk/cmds/core-commands')
+debug('loading')
+import repl = require('@kui-shell/core/core/repl')
+import historyModel = require('@kui-shell/core/models/history')
+import namespace = require('../models/namespace')
 
 /**
  * This plugin adds commands for the core OpenWhisk API.

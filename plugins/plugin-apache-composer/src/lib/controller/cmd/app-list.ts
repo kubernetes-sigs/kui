@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/app-list')
 
 import * as repl from '@kui-shell/core/core/repl'
 import UsageError from '@kui-shell/core/core/usage-error'
@@ -25,6 +24,7 @@ import { appList } from '../../utility/usage'
 import * as astUtil from '../../utility/ast'
 
 import withHeader from '@kui-shell/plugin-openwhisk/lib/models/withHeader'
+const debug = Debug('plugins/apache-composer/cmd/app-list')
 
 /** for the table model */
 const type = 'composition'

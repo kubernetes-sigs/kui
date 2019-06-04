@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/clients/kiali')
 
 import * as needle from 'needle'
 import * as parseDuration from 'parse-duration'
 
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
+const debug = Debug('k8s/clients/kiali')
 
 export interface IKialiOptions {
   local: boolean

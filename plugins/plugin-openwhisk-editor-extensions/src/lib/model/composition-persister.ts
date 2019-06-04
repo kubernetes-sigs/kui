@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk-editor-extensions/model/composition-persister')
 
 import { basename } from 'path'
 
 import { pexec } from '@kui-shell/core/core/repl'
 import { extension } from '@kui-shell/plugin-editor/lib/file-types'
+const debug = Debug('plugins/openwhisk-editor-extensions/model/composition-persister')
 
 /**
  * If this is a Composer parse error, display the error as editor decorations

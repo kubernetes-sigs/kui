@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/plugin-manager/cmd/commands')
-debug('loading')
 
 import * as fs from 'fs-extra'
 import * as path from 'path'
@@ -26,6 +24,8 @@ import { userDataDir } from '@kui-shell/core/core/userdata'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { commands as usage } from '../../usage'
+const debug = Debug('plugins/plugin-manager/cmd/commands')
+debug('loading')
 
 debug('finished loading modules')
 

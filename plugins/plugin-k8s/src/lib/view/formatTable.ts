@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 const debug = require('debug')('k8s/formatters/formatTable')
 
 import repl = require('@kui-shell/core/core/repl')
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length, maxColumns) => {

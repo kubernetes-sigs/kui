@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/controller/kedit')
-debug('loading')
 
 import { basename, dirname, join } from 'path'
 
@@ -26,7 +24,6 @@ import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { IEntitySpec } from '@kui-shell/core/models/entity'
@@ -39,6 +36,9 @@ import { statusButton } from '../view/modes/status'
 import { get as relevantModes } from '../view/modes/registrar'
 import { formatEntity } from '../view/formatEntity'
 import { generateForm } from '../view/form'
+const debug = Debug('k8s/controller/kedit')
+debug('loading')
+import repl = require('@kui-shell/core/core/repl')
 
 const usage = {
   kedit: {

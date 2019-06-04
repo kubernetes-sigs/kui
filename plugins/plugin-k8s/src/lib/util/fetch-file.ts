@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/util/fetch-file')
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
+const debug = Debug('k8s/util/fetch-file')
 
 import needle = require('needle')
 

@@ -15,14 +15,14 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('main/spawn-electron')
-debug('loading')
 
 import windowDefaults from '../webapp/defaults'
 import { IExecOptions } from '../models/execOptions'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 import * as colors from 'colors/safe'
+const debug = Debug('main/spawn-electron')
+debug('loading')
 
 /**
  * Keep a global reference of the window object, if you don't, the window will

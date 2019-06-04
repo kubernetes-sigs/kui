@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/view/insert-view')
 
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { getActiveView, presentAs } from '@kui-shell/core/webapp/views/sidecar'
+const debug = Debug('k8s/view/insert-view')
 
 /**
  * Update the current view into the sidecar; this is helpful for tab

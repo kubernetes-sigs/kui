@@ -15,10 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/openwhisk/models/auth')
-debug('loading')
-
-import openwhisk = require('openwhisk')
 
 import { inBrowser, getAuthValue, setHasAuth, inElectron } from '@kui-shell/core/core/capabilities'
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
@@ -26,6 +22,10 @@ import { config } from '@kui-shell/core/core/settings'
 import store from '@kui-shell/core/models/store'
 
 import expandHomeDir from '@kui-shell/core/util/home'
+const debug = Debug('plugins/openwhisk/models/auth')
+debug('loading')
+
+import openwhisk = require('openwhisk')
 
 let wskprops
 try {

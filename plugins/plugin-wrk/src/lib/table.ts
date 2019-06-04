@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { IGraphics } from './graphics'
+
 import parseDuration = require('parse-duration')
 import prettyPrintDuration = require('pretty-ms')
-
-import { IGraphics } from './graphics'
 
 export const i18n = {
   requestsPerSec: 'REQUESTS PER SECOND',

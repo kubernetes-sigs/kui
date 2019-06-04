@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/core-support/prompt')
 
 import cli = require('@kui-shell/core/webapp/cli')
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * The command usage model

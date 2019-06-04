@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('tutorial get')
-debug('loading')
-
 import { entities, usage } from '../usage'
 import { modes } from './modes'
 import { projectHome as projectHomeDir, readProject } from './util'
 // import { renderStatusBadge } from './ui';
 // import { kindStrings } from './kinds';
 
-import { join } from 'path'
-import marked = require('marked') // markdown to
+import { join } from 'path' // markdown to
 
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import repl = require('@kui-shell/core/core/repl')
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+
+const debug = require('debug')('tutorial get')
+debug('loading')
+import marked = require('marked')
+import repl = require('@kui-shell/core/core/repl')
 
 debug('finished loading modules')
 

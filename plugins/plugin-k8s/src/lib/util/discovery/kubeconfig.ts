@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/discovery/kubeconfig')
 
 import { delimiter } from 'path'
 import { execSync } from 'child_process'
+const debug = Debug('k8s/discovery/kubeconfig')
 
 /**
  * On macOS, double-clicked and dock-launched processes do not have

@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/client')
 
 import * as path from 'path'
 import * as Client from 'openwhisk-composer/client'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
+const debug = Debug('plugins/apache-composer/client')
 
 const options = {
   ignore_certs: process.env.IGNORE_CERTS && process.env.IGNORE_CERTS !== 'false' && process.env.IGNORE_CERTS !== '0'

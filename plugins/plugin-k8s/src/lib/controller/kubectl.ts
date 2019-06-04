@@ -15,14 +15,11 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/controller/kubectl')
-debug('loading')
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
-import repl = require('@kui-shell/core/core/repl')
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
@@ -49,6 +46,9 @@ import { deleteResourceButton } from '../view/modes/crud'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
 import { apply as addRelevantModes } from '../view/modes/registrar'
+const debug = Debug('k8s/controller/kubectl')
+debug('loading')
+import repl = require('@kui-shell/core/core/repl')
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends IExecOptions {

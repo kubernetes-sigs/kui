@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-const isDev = false// require('electron-is-dev');
+// require('electron-is-dev');
 
 import { theme } from '@kui-shell/settings/config.json'
-const { productName } = theme
 import { Menu, MenuItemConstructorOptions } from 'electron'
+const isDev = false
+const { productName } = theme
 
 /**
  * Tell the renderer to execute a command

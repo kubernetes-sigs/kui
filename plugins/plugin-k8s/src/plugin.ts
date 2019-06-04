@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('k8s/loader')
-debug('loading')
 
 import auth from './lib/controller/auth'
 import contexts from './lib/controller/contexts'
@@ -27,6 +25,8 @@ import kiali from './lib/controller/kiali'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+const debug = Debug('k8s/loader')
+debug('loading')
 
 export default async (commandTree: CommandRegistrar) => {
   return Promise.all([
