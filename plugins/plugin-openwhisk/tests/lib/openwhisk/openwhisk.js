@@ -148,7 +148,9 @@ const cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY |
 exports.cleanAll = cleanAll
 
 exports.before = (ctx, opts) => {
-  ctx.retries(10)
+  if (process.env.TRAVIS_JOB_ID) {
+    ctx.retries(10) // don't retry the mocha.it in local testing
+  }
 
   return function () {
     const { cli } = ui
