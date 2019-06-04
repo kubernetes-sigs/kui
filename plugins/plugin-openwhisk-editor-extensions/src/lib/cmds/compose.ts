@@ -247,7 +247,7 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
           if (template.indexOf('@') >= 0) {
             readViaImport()
           } else {
-            reject('Unable to read the given template')
+            reject(new Error('Unable to read the given template'))
           }
         } else {
           readViaFilesystem()

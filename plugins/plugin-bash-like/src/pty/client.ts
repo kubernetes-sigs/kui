@@ -777,7 +777,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
         reject(err)
       } else {
         debug('error in client', err)
-        reject('Internal Error')
+        reject(new Error('Internal Error'))
       }
     }
   }
