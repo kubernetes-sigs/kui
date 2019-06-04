@@ -21,11 +21,16 @@ import { addPath } from '@kui-shell/core/core/find-file'
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import registerSidecarMode from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
+import { isPipelineRun } from './model/resource'
+
 /** this is the ISidecarMode model for the tekton run view */
 import runMode from './model/modes/run'
 
 /** this is the ISidecarMode model for the tekton flow view */
 import flowMode from './model/modes/flow'
+
+/** this is the ISidecarMode model for the tekton trace view */
+import traceMode from './model/modes/trace'
 
 /** this is the api version matcher; TODO refactor */
 const tektonAPI = /tekton.dev/
@@ -48,10 +53,17 @@ const runSpec = {
   }
 }
 
+/** sidecar mode for tekton Flow view */
+const traceSpec = {
+  mode: traceMode,
+  when: isPipelineRun
+}
+
 /** on preload, register our sidecar modes */
 export default () => {
   // registerSidecarMode(runSpec)
   registerSidecarMode(flowSpec)
+  registerSidecarMode(traceSpec)
 
   // register a "special path" that resolves
   const specialPath = join(dirname(require.resolve('@kui-shell/plugin-tekton/package.json')), 'samples/@demos')
