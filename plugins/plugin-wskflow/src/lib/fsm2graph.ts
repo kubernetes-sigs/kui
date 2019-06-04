@@ -17,8 +17,6 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/wskflow/fsm2graph')
 
-import * as $ from 'jquery'
-
 import * as repl from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'

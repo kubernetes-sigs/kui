@@ -21,7 +21,6 @@ import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs/lib/elk.bundled.js'
 
-import { pexec } from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
@@ -351,7 +350,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
 
     // add representing boxes for nodes
     const svgns = 'http://www.w3.org/2000/svg'
-    node.append((d, idx, group) => {
+    node.append((d) => {
       return document.createElementNS(svgns, d.properties && d.properties.kind === 'trigger' ? 'polygon' : 'rect')
     })
       .attr('class', d => {
@@ -384,7 +383,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
           if (d.type === 'action') { return 'pointer' } else { return 'normal' }
         }
       })
-      .on('mouseover', function (d, i) {
+      .on('mouseover', function (d) {
         let qtipText = ''
         let qtipPre = false
 
@@ -549,12 +548,12 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
             'top': qtipY
           })
         }
-      }).on('mouseout', function (d, i) {
+      }).on('mouseout', function () {
         $('.link').removeClass('hover')
         $('#qtip').removeClass('visible')
       }).on('mousedown', () => {
         enterClickMode = true
-      }).on('click', function (d, i) {
+      }).on('click', function (d) {
         if (!enterClickMode) return
         enterClickMode = false
 
@@ -602,7 +601,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
                 actListContent += `<div>${d.label}<break</break>${d.visited.length} activations, ordered by start time: </div>`
                 actListContent += "<ol style='padding-left: 15px;'>"
                 let date
-                d.visited.forEach((n, i) => {
+                d.visited.forEach((n) => {
                   // first part: time
                   let a = activations[n]
                   let start = new Date(a.start)
@@ -639,9 +638,9 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
 
                 $('#actList').html(actListContent).css('display', 'block')
 
-                $('.actItem').hover(function (e) {
+                $('.actItem').hover(function () {
                   $(this).css('text-decoration', 'none')
-                }, function (e) {
+                }, function () {
                   $(this).css('text-decoration', 'underline')
                 }).click(function (e) {
                   // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
@@ -656,7 +655,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
                   )(e) // pass along the raw dom event
                 })
 
-                $('#listClose').click(function (e) {
+                $('#listClose').click(function () {
                   $('#actList').css('display', 'none')
                   $('#' + d.id).children('rect').css('fill', wfColorAct.active)
                   $(this).css('fill', wfColorAct.activeHovered)
@@ -732,7 +731,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
             // render array literals
             const array = d.value
               .slice(0, maxLen - 1)
-              .map((ignore, idx) => _)
+              .map(() => _)
               .concat(rest)
             return `[${array}]` // '\u2026' horizontal ellipsis
           } else {
@@ -824,10 +823,10 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
       })
       .attr('data-visited', d => d.visited) // edge was visited?
       .attr('source', function (d) { return d.sourcePort })
-      .on('mouseout', function (edge, i) {
+      .on('mouseout', function () {
         $('#qtip').removeClass('visible')
       })
-      .on('mouseover', function (edge, i) {
+      .on('mouseover', function (edge) {
         if (edge.properties && edge.properties.type === 'retain') {
           // special handling of mouse hover events for retain edges
           // $(`#${edge.source}`).addClass('hover');
@@ -850,7 +849,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
         let path = ''
         if (d.sourcePoint && d.targetPoint) {
           path += 'M' + d.sourcePoint.x + ' ' + d.sourcePoint.y + ' ';
-          (d.bendPoints || []).forEach(function (bp, i) {
+          (d.bendPoints || []).forEach(function (bp) {
             path += 'L' + bp.x + ' ' + bp.y + ' '
           })
 
@@ -883,7 +882,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
     // edge labels
     const addEdgeLabels = () => links.forEach(edge => {
       if (edge.labels) {
-        edge.labels.forEach(({ text, x, y, width, height }) => {
+        edge.labels.forEach(({ text }) => {
           d3.select('#' + edge.source)
             .append('text')
             .classed('edge-label', true)
@@ -1053,7 +1052,7 @@ export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContaine
   }
 
   // when zoom-to-fit is active, the graph resizes as the window resizes. #422
-  $(window).unbind('resize').resize(e => {
+  $(window).unbind('resize').resize(() => {
     if (customZoom && $('#wskflowSVG').attr('viewBox') !== undefined) {
       // this code is called when the user is in custom zoom mode but the viewbox still exists
       // remove viewbox here to stop auto-resizing,
