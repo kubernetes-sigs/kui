@@ -111,7 +111,9 @@ exports.prepareElectron = prepareElectron
  *
  */
 exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
-  ctx.retries(10)
+  if (process.env.TRAVIS_JOB_ID) {
+    ctx.retries(10) // don't retry the mocha.it in local testing
+  }
 
   return function () {
     if (!noApp) {
