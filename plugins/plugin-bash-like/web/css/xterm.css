@@ -140,3 +140,16 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     color: var(--color-ui-01) !important;
 }
 
+/**
+ * When the xterm terminates, we signify lines that xtermjs inserted
+ * only for line wrapping, so that we can reflow them
+ * naturally. Please see `reflowLineWraps()` in `src/pty/client.ts`
+ * for the logic that establishes the `.xterm-is-wrapped` property.
+ * 
+ */
+.xterm-terminated .xterm-rows > div {
+    white-space: pre-wrap;
+}
+.xterm-is-wrapped {
+    display: inline;
+}

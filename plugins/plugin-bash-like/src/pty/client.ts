@@ -67,6 +67,7 @@ function setCachedSize (tab: ITab, { rows, cols }: { rows: number; cols: number 
 
 interface HTerminal extends xterm.Terminal {
   _core: {
+    buffer: { lines: { length: number; get: (idx: number) => { isWrapped: boolean } } }
     renderer: { _terminal: { cols: number; options: { letterSpacing: number }; charMeasure: { width: number } }; dimensions: { scaledCharWidth: number; actualCellWidth: number; actualCellHeight: number; canvasWidth: number; scaledCanvasWidth: number; scaledCellWidth: number } }
   }
 }
@@ -128,6 +129,26 @@ class Resizer {
 
   private isEmptyCursorRow (row: Element): boolean {
     return row.children.length === 1 && row.children[0].classList.contains('xterm-cursor')
+  }
+
+  /**
+   * xtermjs inserts lines to create a line-wrapping effect; this
+   * changes the behavior so that the browser can reflow them
+   * naturally (in tandem with some CSS)
+   *
+   */
+  reflowLineWraps () {
+    const rows = this.terminal.element.querySelector('.xterm-rows').children
+    const internalRows = this.terminal._core.buffer.lines
+    for (let idx = 0; idx < internalRows.length; idx++) {
+      const line = internalRows.get(idx)
+      if (line.isWrapped) {
+        if (idx > 0) {
+          rows[idx - 1].classList.add('xterm-is-wrapped')
+        }
+        rows[idx].classList.add('xterm-is-wrapped')
+      }
+    }
   }
 
   /**
@@ -665,6 +686,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
             cleanupEventHandlers()
             resizer.exitAltBufferMode()
             resizer.exitApplicationMode()
+            resizer.reflowLineWraps()
             resizer.hideTrailingEmptyBlanks(true)
             resizer.hideCursorOnlyRow()
 
