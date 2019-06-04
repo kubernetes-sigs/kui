@@ -17,8 +17,6 @@
 import * as Debug from 'debug'
 
 import * as assert from 'assert'
-import * as path from 'path'
-import { exec } from 'child_process'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
@@ -124,7 +122,7 @@ class Validation {
     })
   }
 
-  async ({ name, output, packageName = '', namespace = '' }) {
+  async ({ name, packageName = '', namespace = '' }) {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
@@ -203,7 +201,7 @@ class Validation {
     this.appList({ name, packageName, namespace })
     this.invoke({ name, output, packageName, namespace })
     if (params) this.invoke({ name, params, output: outputWithParams, packageName, namespace })
-    this.async({ name, output, packageName, namespace })
+    this.async({ name, packageName, namespace })
     this.appGet({ name, packageName, namespace })
   }
 }

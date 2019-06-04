@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar, expectSubset, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
+import { selectors, sidecar, expectSubset, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import {
-  input,
-  composerInput,
-  composerErrorInput,
   verifyNodeExists,
-  verifyEdgeExists,
-  verifyOutgoingEdgeExists,
-  verifyTheBasicStuff
+  verifyEdgeExists
 } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 const { localDescribe } = common
 

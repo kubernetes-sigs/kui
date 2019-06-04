@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/utility/parse')
 
 /* use wsk utility to parse parameters from a command */
 export const parseParams = (argv, wsk) => {

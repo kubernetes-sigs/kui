@@ -20,6 +20,8 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import * as assert from 'assert'
+import { Application } from 'spectron'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import * as ui from '@kui-shell/core/tests/lib/ui'
@@ -51,7 +53,7 @@ const inputs = [
 
 /** fetch source code for the app */
 const root = path.dirname(require.resolve('@kui-shell/plugin-apache-composer/package.json'))
-const src = app => fs.readFileSync(path.join(root, 'samples/@demos/', `${app}.js`)).toString()
+const src = (app: string) => fs.readFileSync(path.join(root, 'samples/@demos/', `${app}.js`)).toString()
 
 // hardcode for now... we need to generate this every time
 const ast = {
@@ -159,7 +161,7 @@ const graph = {
    * Invariant: graph has a given number of task and total nodes
    *
    */
-  hasNodes: ({ tasks: expectedTasks = 0, total: expectedTotal = 0, deployed: expectedDeployed = 0, values: expectedValues = 0 }) => async app => {
+  hasNodes: ({ tasks: expectedTasks = 0, total: expectedTotal = 0, deployed: expectedDeployed = 0, values: expectedValues = 0 }) => async (app: Application) => {
     const { client } = app
     // here we intentionally use just expectedX, because undefined and 0 are treated the same
     await client.waitUntil(async () => {
@@ -186,24 +188,12 @@ const graph = {
   }
 }
 
-/** turn array of strings into map from key:true */
-const toMap = A => A.reduce((M, item) => {
-  M[item] = true
-  return M
-}, {})
-
 /**
  * Common composer operations
  *
  */
 const composer = {
-  countSessions: (app, name) => {
-    return cli.do(`session list ${name}`, app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N => app.client.getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`))
-      .then(toMap)
-  },
-  getSessions: (app, nDone, { cmd = 'session list', expect = [] }) => {
+  getSessions: (app: Application, nDone: number, { cmd = 'session list', expect = [] }: { cmd?: string; expect: string[] }) => {
     return cli.do(cmd, app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async N => {

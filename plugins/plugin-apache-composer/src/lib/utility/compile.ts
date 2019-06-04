@@ -29,12 +29,12 @@ import { findFile } from '@kui-shell/core/core/find-file'
 
 import { currentSelection } from '@kui-shell/plugin-openwhisk/lib/models/openwhisk-entity'
 
-import { extractActionsFromAst, isValidAst } from './ast'
+import { isValidAst } from './ast'
 import { create } from './usage'
 import * as messages from './messages'
 const debug = Debug('plugins/apache-composer/utility/compile')
 
-export const sourceToComposition = ({ inputFile, name = '', recursive = false }) => new Promise(async (resolve, reject) => {
+export const sourceToComposition = ({ inputFile, name = '' }: { inputFile: string; name?: string }) => new Promise(async (resolve, reject) => {
   debug('validating source file', inputFile)
   const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
   if (extension === 'json' || extension === 'ast') { // we were given the AST directly
@@ -53,7 +53,7 @@ export const sourceToComposition = ({ inputFile, name = '', recursive = false })
     .catch(reject)
 })
 
-const loadSourceCode = (inputFile, localCodePath) => new Promise(async (resolve, reject) => {
+const loadSourceCode = (inputFile: string, localCodePath: string): Promise<string> => new Promise(async (resolve, reject) => {
   if (!inBrowser()) {
     debug('readFile in headless mode or for electron')
     fs.readFile(localCodePath, (err, data) => {
@@ -74,7 +74,7 @@ const loadSourceCode = (inputFile, localCodePath) => new Promise(async (resolve,
   }
 })
 
-export const loadComposition = (inputFile, originalCode?, localCodePath?) => {
+export const loadComposition = (inputFile: string, originalCode?: string, localCodePath?: string) => {
   if (inBrowser() && originalCode) {
     debug('loadComposition for webpack', originalCode)
     return originalCode
@@ -146,7 +146,7 @@ export const loadComposition = (inputFile, originalCode?, localCodePath?) => {
 }
 
 // give style freedom for users to write composition source
-const allowSourceVariation = (composition, logMessage, errorMessage) => {
+const allowSourceVariation = (composition, logMessage: string, errorMessage: string) => {
   if ((composition.main && isValidAst(composition.main)) || typeof composition.main === 'function') {
     debug('pulling composition from exports.main')
     composition = composition.main
@@ -185,7 +185,7 @@ const allowSourceVariation = (composition, logMessage, errorMessage) => {
  * inform users errros in the composition source provided
  *
  */
-const sourceErrHandler = (error, originalCode, filename) => {
+const sourceErrHandler = (error, originalCode: string, filename: string) => {
   const junkMatch = error.stack.match(/\s+at Object\.exports\.runInNewContext/) ||
                 error.stack.match(/\s+at Object\.runInNewContext/) ||
                 error.stack.match(/\s+at fs\.readFile/)
