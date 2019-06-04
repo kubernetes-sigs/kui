@@ -43,11 +43,11 @@ describe('host tests', function (this: common.ISuite) {
   it('should auto-cancel when using prefilled content', () => cli.do(`wsk host set <your_api_host>`, this.app)
     .then(cli.expectError(0, 'Operation cancelled')))
 
-  const { apihostIsLocal } = openwhisk
+  /* const { apihostIsLocal } = openwhisk
   const apihost = apihostIsLocal && process.env.MOCHA_RUN_TARGET !== 'webpack' ? 'local' : openwhisk.apihost // NOTE: 'wsk host set local' doesn't work in webpack for now
   it(`should restore host to original setting: ${openwhisk.apihost}`, () => cli.do(`wsk host set ${apihost}`, this.app)
     .then(cli.expectOK)
     .then(() => cli.do('wsk host get', this.app))
     .then(cli.expectOKWithCustom({ expect: openwhisk.apihost }))
-    .catch(common.oops(this)))
+    .catch(common.oops(this))) */
 })
