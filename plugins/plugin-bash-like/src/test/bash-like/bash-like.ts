@@ -17,7 +17,6 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
-import * as assert from 'assert'
 import { exec } from 'child_process'
 import { unlinkSync, rmdirSync } from 'fs'
 const { cli, selectors } = ui

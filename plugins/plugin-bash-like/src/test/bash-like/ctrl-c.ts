@@ -15,18 +15,19 @@
  */
 
 import * as assert from 'assert'
+import { Application } from 'spectron'
 
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli, selectors } = ui
 const { localIt } = common
 
 describe('Cancel via Ctrl+C', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  const cancel = (app, cmd = '') => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
+  const cancel = (app: Application, cmd = '') => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count => app.client.keys(cmd)

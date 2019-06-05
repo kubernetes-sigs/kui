@@ -22,7 +22,7 @@
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 const { localIt } = common
 
 describe('Comments and blank line handling', function (this: ISuite) {

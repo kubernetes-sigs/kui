@@ -19,8 +19,8 @@
 
 import * as fs from 'fs'
 import { promisify } from 'util'
-import { dirname, join } from 'path'
-import { exec, spawn } from 'child_process'
+import { join } from 'path'
+import { exec } from 'child_process'
 import { createServer, Server } from 'https'
 
 import { Channel } from './channel'
@@ -76,7 +76,7 @@ const touch = (filename: string) => {
   const close = promisify(fs.close)
   return open(filename, 'w').then(close)
 }
-let cacheHasBashSessionsDisable
+let cacheHasBashSessionsDisable: boolean
 const BSD = () => join(process.env.HOME, '.bash_sessions_disable')
 export const disableBashSessions = async (): Promise<ExitHandler> => {
   if (process.platform === 'darwin') {
@@ -91,9 +91,9 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
     }
   }
 
-  return async (exitCode: number) => { /* no-op */ }
+  return async () => { /* no-op */ }
 }
-const enableBashSessions = async (exitCode: number) => {
+const enableBashSessions = async () => {
   await promisify(fs.unlink)(BSD())
 }
 
@@ -126,19 +126,23 @@ const getLoginShell = async (): Promise<string> => new Promise((resolve, reject)
  *
  */
 export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
-  // use require because of the wrong module name in
-  // node-pty-prebuilt, see:
-  // https://github.com/daviwil/node-pty-prebuilt/issues/10
-  // const pty = require('node-pty-prebuilt')
-  const pty = await import('node-pty')
+  // for now, we need to use a dynamic import here, because the plugin
+  // compiler does not work versus node-pty's eager loading of the
+  // native modules -- we compile the native modules against electron,
+  // but the plugin compiler uses the platform nodejs :(
+  const { spawn } = await import('node-pty')
 
-  let shell
+  // re: importing node-pty twice: this is clumsy because typescript
+  // doesn't support module imports for dynamic imports, and node-pty
+  // exports IPty under a module of its creation
+  // @see https://github.com/microsoft/TypeScript/issues/22445
+  let shell: import('node-pty').IPty
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
     // console.log('message', data)
     try {
-      const msg = JSON.parse(data)
+      const msg: { type: string; data?: string; cmdline?: string; exitCode?: number; env?: Record<string, string>; cwd?: string; rows?: number; cols?: number } = JSON.parse(data)
 
       switch (msg.type) {
         case 'exit':
@@ -146,10 +150,10 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
 
         case 'exec':
           try {
-            shell = pty.spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
+            shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
               name: 'xterm-color',
-              rows: msg.rows && parseInt(msg.rows, 10),
-              cols: msg.cols && parseInt(msg.cols, 10),
+              rows: msg.rows,
+              cols: msg.cols,
               cwd: msg.cwd || process.cwd(),
               env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
             })
@@ -273,8 +277,6 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
  */
 let count = 0
 // const children = []
-let cachedSelf
-let selfHome
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/bash/websocket/open', ({ execOptions }) => new Promise(async (resolve, reject) => {
     const N = count++
@@ -315,46 +317,6 @@ export default (commandTree: CommandRegistrar) => {
           resolveWithHost(port)
         }
       })
-
-      // path to the build version of ourself
-      /* if (!cachedSelf) {
-        let self = require.resolve('@kui-shell/plugin-bash-like/pty/server')
-        if (/\.asar\//.test(self)) {
-        const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
-        cachedSelf = await copyOutFile(self)
-        selfHome = dirname(cachedSelf)
-        } else {
-        const { copyOutFile } = await import('./copy-out') // why the dynamic import? being browser friendly here
-        await copyOutFile(self)
-        cachedSelf = self
-        selfHome = dirname(dirname(dirname(require.resolve('@kui-shell/prescan'))))
-        }
-        }
-
-        // reinvoke ourselves in a separate process
-        const child = spawn('node', [cachedSelf, N], {
-        cwd: selfHome,
-        env: process.env
-        })
-        children.push(child)
-
-        child.stdout.on('data', data => {
-        const readyPattern = /^ready (\d+)\s*$/
-        const match = data.toString().match(readyPattern)
-        if (match) {
-        const port = match[1]
-        resolve(`ws://localhost:${port}/bash/${N}`)
-        }
-        })
-
-        child.stderr.on('data', data => {
-        console.error(data.toString())
-        })
-
-        child.on('close', (exitCode: number) => {
-        // debug('exitCode', exitCode)
-        children.splice(N, 1)
-        }) */
     }
   }), { noAuthOk: true })
 }
