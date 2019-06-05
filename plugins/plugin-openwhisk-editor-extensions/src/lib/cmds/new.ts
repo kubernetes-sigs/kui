@@ -17,13 +17,12 @@
 import * as Debug from 'debug'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
 import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
 import { language } from '@kui-shell/plugin-editor/lib/file-types'
-import { IEntity, fetchFile, registerFetcher } from '@kui-shell/plugin-editor/lib/fetchers'
+import { IEntity, fetchFile } from '@kui-shell/plugin-editor/lib/fetchers'
 import { lockIcon } from '@kui-shell/plugin-editor/lib/readonly'
 
 import strings from '../i18n/strings'
@@ -122,7 +121,7 @@ const checkForConformance = action => {
  * Fail with 409 if the given action name exists, otherwise succeed
  *
  */
-const failWith409 = _ => {
+const failWith409 = () => {
   const error = new Error(strings.editor.actionAlreadyExists)
   error['code'] = 409
   throw error
@@ -279,7 +278,7 @@ export const persisters = {
         })
         .then(() => true)
     },
-    save: (action, editor) => {
+    save: (action) => {
       debug('save', action)
       const namespacePart = action.namespace ? `/${action.namespace}/` : ''
 
