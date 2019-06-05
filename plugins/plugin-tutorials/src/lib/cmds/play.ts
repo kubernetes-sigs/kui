@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { dirname, join } from 'path'
 
-import { projectHome as projectHomeDir, readProject } from './util'
+import { readProject } from './util'
 import { wskflowCycle } from './wskflow'
 
 import { injectCSS, loadHTML } from '@kui-shell/core/webapp/util/inject'
@@ -745,7 +745,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
 
     // Show back button
     $(pane).find('.tBack').css('display', 'inline-block')
-    const handler = function (event) {
+    const handler = function () {
       $(this).unbind('click', handler)
       $(pane).prop('step', stepNum + 1)
       transitionSteps(tab, stepNum + 1, obj, pane)
@@ -793,7 +793,7 @@ const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
  * will help in positioning the highlight overlay.
  *
  */
-const setHighlightPosition = ({ selector, style }) => {
+const setHighlightPosition = ({ selector }) => {
   const element = document.querySelector(selector)
   if (!element) {
     console.error('highlight element not found')

@@ -127,7 +127,7 @@ export const usage = {
 }
 
 /** form a subtree usage model (TODO: this should be moved to a more common spot) */
-const mkToplevel = usage => {
+const mkToplevel = () => {
   const model = {
     strict: entity,
     command: entity,
@@ -146,4 +146,4 @@ const mkToplevel = usage => {
   return model
 }
 
-export const toplevel = mkToplevel(usage)
+export const toplevel = mkToplevel()

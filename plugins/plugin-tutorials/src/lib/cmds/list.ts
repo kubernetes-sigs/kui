@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { readdir } from 'fs'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { contentDir } from './util'
-const debug = Debug('plugins/tutorial/list')
 
 import repl = require('@kui-shell/core/core/repl')
 
