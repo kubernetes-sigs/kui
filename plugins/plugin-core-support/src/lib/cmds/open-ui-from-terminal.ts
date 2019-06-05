@@ -33,7 +33,7 @@ const docs = { usage, needsUI: true, fullscreen: false, noEcho: true, noHistory:
  */
 export default (commandTree: CommandRegistrar) => {
   /** command handler */
-  const doIt = cmd => ({ execOptions }) => {
+  const doIt = () => ({ execOptions }) => {
     if (!isHeadless() && (!execOptions || !execOptions.causedByHeadless)) {
       throw new Error(`Usage: This command is intended for use from the CLI, to launch this graphical Shell.
 You are already here. Welcome!`)
@@ -43,5 +43,5 @@ You are already here. Welcome!`)
   }
 
   // install the command handlers
-  commandTree.listen(`/shell`, doIt('shell'), docs)
+  commandTree.listen(`/shell`, doIt(), docs)
 }

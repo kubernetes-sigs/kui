@@ -135,7 +135,7 @@ const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer 
 const installKeyHandlers = (prompt: HTMLInputElement) => {
   if (prompt) {
     return [ listenForUpDown(prompt),
-      listenForEscape(prompt)
+      listenForEscape()
     ]
   } else {
     return []
@@ -234,7 +234,7 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
  * visible
  *
  */
-const listenForEscape = (prompt: HTMLInputElement) => {
+const listenForEscape = () => {
   // listen for escape key
   const previousKeyup = document.onkeyup
   const cleanup = () => { document.onkeyup = previousKeyup }
@@ -302,7 +302,7 @@ const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, p
   const inputWidth = tmp.clientWidth
   block.removeChild(tmp)
 
-  const { left, width: containerWidth } = input.getBoundingClientRect()
+  const { width: containerWidth } = input.getBoundingClientRect()
   const desiredLeft = inputWidth + 12
 
   if (desiredLeft + inputWidth < containerWidth) {
@@ -333,8 +333,8 @@ const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, p
     const args = repl.split(prompt.value)
     const currentText = args[temporaryContainer.lastIdx]
     const prevMatches = temporaryContainer.currentMatches
-    const newMatches = prevMatches.filter(({ match, option }) => match.indexOf(currentText) === 0)
-    const removedMatches = prevMatches.filter(({ match, option }) => match.indexOf(currentText) !== 0)
+    const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
+    const removedMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) !== 0)
 
     temporaryContainer.currentMatches = newMatches
     removedMatches.forEach(({ option }) => temporaryContainer.removeChild(option))

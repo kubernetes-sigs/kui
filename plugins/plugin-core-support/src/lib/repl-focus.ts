@@ -69,7 +69,7 @@ export default () => {
   })
 
   // dblclick comes third
-  repl.addEventListener('dblclick', (evt: MouseEvent) => {
+  repl.addEventListener('dblclick', () => {
     if (noCurrentTextSelection()) {
       clearTimeout(currentFinishAsync)
     }

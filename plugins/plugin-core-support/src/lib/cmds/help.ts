@@ -28,7 +28,7 @@ debug('loading')
  * Respond with a top-level usage document
  *
  */
-const help = (usage, docs) => ({ argvNoOptions: args }: IEvaluatorArgs) => {
+const help = (usage) => ({ argvNoOptions: args }: IEvaluatorArgs) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 
@@ -83,7 +83,7 @@ const help = (usage, docs) => ({ argvNoOptions: args }: IEvaluatorArgs) => {
  * The module. Here, we register as a listener for commands.
  *
  */
-export default async (commandTree: CommandRegistrar, { usage, docs }) => {
-  const helpCmd = commandTree.listen('/help', help(usage, docs), { noAuthOk: true, inBrowserOk: true })
-  commandTree.synonym('/?', help(usage, docs), helpCmd, { noAuthOk: true, inBrowserOk: true })
+export default async (commandTree: CommandRegistrar, { usage }) => {
+  const helpCmd = commandTree.listen('/help', help(usage), { noAuthOk: true, inBrowserOk: true })
+  commandTree.synonym('/?', help(usage), helpCmd, { noAuthOk: true, inBrowserOk: true })
 }

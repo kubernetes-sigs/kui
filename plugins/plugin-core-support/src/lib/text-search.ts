@@ -107,7 +107,7 @@ function registerListener () {
     evt.stopPropagation()
   }
 
-  searchInput.addEventListener('click', e => {
+  searchInput.addEventListener('click', () => {
     searchInput.focus()
   })
   searchInput.addEventListener('keyup', e => {
@@ -135,7 +135,7 @@ function registerListener () {
     }
   })
 
-  window.onbeforeunload = e => {
+  window.onbeforeunload = () => {
     stopSearch(false) // before reloading, clear all highlighted matched text
     app.remote.getCurrentWebContents().removeAllListeners('found-in-page') // remove listner
   }

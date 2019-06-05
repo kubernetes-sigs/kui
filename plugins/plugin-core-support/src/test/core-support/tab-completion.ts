@@ -21,7 +21,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirSync as tmpDirSync } from 'tmp'
 import { dirname, join } from 'path'
 import { openSync, closeSync } from 'fs'
-const { cli, keys, selectors, sidecar } = ui
+const { cli, keys } = ui
 const { localIt, remoteIt } = common
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
@@ -61,7 +61,7 @@ describe('Tab completion', function (this: ISuite) {
     })
     .catch(common.oops(this))
 
-  const tabbyWithOptions = (app, partial, expected?, full?, { click = undefined, nTabs = undefined, expectOK = true, iter = 0, expectedPromptAfterTab = undefined } = {}) => {
+  const tabbyWithOptions = (app, partial, expected?, full?, { click = undefined, nTabs = undefined, expectOK = true, expectedPromptAfterTab = undefined } = {}) => {
     return app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
       .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => parseInt(count, 10))

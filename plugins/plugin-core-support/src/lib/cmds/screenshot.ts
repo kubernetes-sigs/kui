@@ -94,7 +94,6 @@ const squishers = {
   full: hideCurrentReplBlock,
   repl: hideCurrentReplBlock
 }
-const flatten = arrays => [].concat.apply([], arrays)
 const _squish = (tab: ITab, which: string, selector: string, op) => {
   let squisher = squishers[which]
 

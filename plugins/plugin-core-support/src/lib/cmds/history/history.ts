@@ -24,7 +24,6 @@ import * as Debug from 'debug' // the default number of history elements to show
 
 import * as historyModel from '@kui-shell/core/models/history'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import UsageError from '@kui-shell/core/core/usage-error'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import * as repl from '@kui-shell/core/core/repl'
 const debug = Debug('plugins/core-support/history')
@@ -163,11 +162,11 @@ export default (commandTree: CommandRegistrar) => {
   // commandTree.listen('/history/purge', historyModel.wipe, { docs: 'Clear your command history' })
 
   /** re-execute from history */
-  const againCmd = op => ({ argv, execOptions, parsedOptions: options }) => {
+  const againCmd = () => ({ argv, execOptions }) => {
     const N = argv[1] || historyModel.getCursor() - 2 // use the last command, if the user entered only "!!"
     console.error(execOptions)
     return again(N, execOptions && execOptions.history)
   }
-  const cmd = commandTree.listen('/!!', againCmd('!!'), { usage: usage.again('!!'), noAuthOk: true })
-  commandTree.synonym('/again', againCmd('again'), cmd, { usage: usage.again('again'), noAuthOk: true })
+  const cmd = commandTree.listen('/!!', againCmd(), { usage: usage.again('!!'), noAuthOk: true })
+  commandTree.synonym('/again', againCmd(), cmd, { usage: usage.again('again'), noAuthOk: true })
 }

@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 
 import installReplFocusHandlers from './repl-focus'
 
-import { keys } from '@kui-shell/core/webapp/keys'
 import { isVisible as isSidecarVisible,
   toggle,
   toggleMaximization,
@@ -165,7 +164,7 @@ const addCommandEvaluationListeners = (): void => {
  */
 const oneTimeInit = (): void => {
   // focus the current prompt no matter where the user clicks in the left tab stripe
-  (document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = (evt: MouseEvent) => {
+  (document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
     getCurrentPrompt().focus()
   }
 
@@ -215,7 +214,6 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   currentTabButton.classList.remove('left-tab-stripe-button-selected')
 
   const newTabButton = currentTabButton.cloneNode(true) as HTMLElement
-  const newTabButtonIcon = newTabButton.querySelector('i')
   newTabButton.classList.add('left-tab-stripe-button-selected')
   newTabButton.setAttribute('data-tab-button-index', newTabId)
   currentTabButton.parentNode.appendChild(newTabButton)
