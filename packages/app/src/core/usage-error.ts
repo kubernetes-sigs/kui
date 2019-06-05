@@ -29,9 +29,6 @@ interface IUsageOptions {
   noBreadcrumb?: boolean
 }
 class DefaultUsageOptions implements IUsageOptions {
-  constructor () {
-    // empty
-  }
 }
 
 /**

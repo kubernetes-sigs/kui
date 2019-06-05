@@ -23,7 +23,4 @@ export interface IShowOptions {
 }
 
 export class DefaultShowOptions implements IShowOptions {
-  constructor () {
-    // empty
-  }
 }

@@ -87,10 +87,6 @@ export class WebViewChannelRendererSide extends EventEmitter implements Channel 
   readyState = ReadyState.OPEN
   private channelId: number
 
-  constructor () {
-    super()
-  }
-
   async init () {
     debug('IPC init')
     const { body } = await window['webview-proxy']({

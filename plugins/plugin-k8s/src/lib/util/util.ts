@@ -95,15 +95,9 @@ export const toOpenWhiskFQN = ({ kind, spec, metadata }): ITypedEntityName => {
 }
 
 export class StatusError extends Error {
-  constructor (message: string) {
-    super(message)
-  }
 }
 
 export class TryLaterError extends StatusError {
-  constructor (message: string) {
-    super(message)
-  }
 }
 
 export class NotFoundError extends StatusError {
