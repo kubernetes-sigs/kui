@@ -27,13 +27,12 @@ import dockerConfig from './config'
 import * as strings from './strings'
 import { main as usage } from './docs'
 
-import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
+import { UsageError } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { qexec, pexec } from '@kui-shell/core/core/repl'
 import { addNameToSidecarHeader, getSidecar, clearSelection, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { injectScript } from '@kui-shell/core/webapp/util/inject'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { addActivationModes } from '@kui-shell/plugin-openwhisk/lib/models/modes'
@@ -217,7 +216,7 @@ const doDebug = (tab: ITab, input: Object, argvWithoutOptions: string[], dashOpt
       const res = await runActionDebugger(action.name,
         action.code,
         action.kind,
-        Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv, dashOptions)
+        Object.assign({}, action.param, action.input, input), action.binary, spinnerDiv, returnDiv)
 
       displayAsActivation(tab, 'debug session', action, start, res)
 
@@ -321,13 +320,13 @@ const local = async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsed
         .catch(e => appendIncreContent(e, spinnerDiv, 'error'))
     } else if (argvWithoutOptions[1] === 'kill') {
       debug('executing kill command')
-      await kill(spinnerDiv)
+      await kill()
       return true
       // we will resolve the promise
     } else if (argvWithoutOptions[1] === 'clean') {
       debug('executing clean command')
       try {
-        return await clean(spinnerDiv)
+        return await clean()
       } catch (err) {
         appendIncreContent(err, spinnerDiv, 'error')
       }
@@ -402,7 +401,7 @@ const squash = err => {
  * Kill the current local docker container
  *
  */
-const kill = async (spinnerDiv: Element): Promise<void> => {
+const kill = async (): Promise<void> => {
   if (_container) {
     // if in this session there's a container started, remove it.
     debug('kill from variable')
@@ -430,10 +429,10 @@ const flatten = arrays => [].concat.apply([], arrays)
  * Remove the locally pulled copy of the image
  *
  */
-const clean = async (spinnerDiv: Element) => {
+const clean = async () => {
   debug('clean')
 
-  await kill(spinnerDiv)
+  await kill()
   debug('kill done')
 
   const images = await getImageDir()
@@ -471,7 +470,7 @@ const init = async (kind, spinnerDiv) => {
   } else {
     // for all other cases, stop and delete the container, reopen a new one
     try {
-      await kill(spinnerDiv)
+      await kill()
     } catch (err) {
       // ok
     }
@@ -722,7 +721,7 @@ const runActionInDocker = async (functionCode, functionKind, functionInput, isBi
       .catch(error => {
         if (_container && _container.stop && _container.delete) {
           console.error(error)
-          kill(spinnerDiv).then(() => {
+          kill().then(() => {
             // appendIncreContent('Done', spinnerDiv);
             throw error
           })
@@ -762,7 +761,7 @@ Promise.resolve(debugMainFunc(${JSON.stringify(input)}))
  * Run the given code inside a local debugging session
  *
  */
-const runActionDebugger = (actionName: string, functionCode: string, functionKind: string, functionInput: Object, isBinary: boolean, spinnerDiv: Element, returnDiv: Element, dashOptions) => new Promise((resolve, reject): IProtoActivation | void => {
+const runActionDebugger = (actionName: string, functionCode: string, functionKind: string, functionInput: Object, isBinary: boolean, spinnerDiv: Element, returnDiv: Element) => new Promise((resolve, reject): IProtoActivation | void => {
   debug('runActionDebugger', actionName)
 
   appendIncreContent('Preparing container', spinnerDiv)
