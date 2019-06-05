@@ -140,13 +140,23 @@ class Resizer {
   reflowLineWraps () {
     const rows = this.terminal.element.querySelector('.xterm-rows').children
     const internalRows = this.terminal._core.buffer.lines
-    for (let idx = 0; idx < internalRows.length; idx++) {
+    for (let idx = 0; idx < internalRows.length - 1; idx++) {
       const line = internalRows.get(idx)
-      if (line.isWrapped) {
-        if (idx > 0) {
-          rows[idx - 1].classList.add('xterm-is-wrapped')
+      const nextLine = internalRows.get(idx + 1)
+      if (nextLine.isWrapped) {
+        rows[idx + 1].classList.add('xterm-is-wrapped')
+
+        if (!line.isWrapped) {
+          // see https://github.com/IBM/kui/issues/1605 which covers
+          // wrapped -> notWrapped, from one line to the next;
+          // that the first of that pair belongs with the second, but
+          // itself wasn't created as a result of wrapping (that's my
+          // interpretation of `isWrapped` - @starpit)
+          rows[idx].classList.add('xterm-is-wrapped')
+          rows[idx].classList.add('xterm-is-wrapped-with-prefix-break')
+          // and the CSS for these two classes will be managed by
+          // web/css/xterm.css
         }
-        rows[idx].classList.add('xterm-is-wrapped')
       }
     }
   }

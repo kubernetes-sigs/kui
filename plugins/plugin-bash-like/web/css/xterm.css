@@ -153,3 +153,8 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 .xterm-is-wrapped {
     display: inline;
 }
+.xterm-is-wrapped-with-prefix-break:before {
+    /* see https://github.com/IBM/kui/issues/1605 */
+    display: block;
+    content: '';
+}
