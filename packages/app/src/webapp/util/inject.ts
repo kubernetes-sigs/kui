@@ -88,9 +88,7 @@ export const injectCSS = (file: StylesheetSpec): void => {
  *
  */
 export const uninjectCSS = ({ key }): void => {
-  if (isHeadless()) {
-    return
-  } else {
+  if (!isHeadless()) {
     const id = `injected-css-${key}`
     const link = document.getElementById(id)
 
