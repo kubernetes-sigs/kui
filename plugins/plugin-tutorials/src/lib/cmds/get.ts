@@ -145,7 +145,7 @@ const renderDeps = deps => {
  *
  */
 const fetchProjectData = () => info => {
-  const projectName = info.config.projectName
+  // const projectName = info.config.projectName
 
   // return Promise.all([ repl.qexec(`tutorial deps "${projectName}"`),
   //                   repl.qexec(`tutorial imports "${projectName}"`) ])
@@ -163,7 +163,7 @@ const doGet = async ({ argvNoOptions }) => {
   const args: string[] = argvNoOptions
   return setup(args)
     .then(fetchProjectData())
-    .then(({ info: { config: { projectName, name = projectName, kind = 'composition', description, api, choices, tutorial }, projectHome }, deps, imports }) => {
+    .then(({ info: { config: { projectName, name = projectName, api, choices, tutorial }, projectHome }, deps, imports }) => {
       //
       // @param name is an optional prettier name from the project
       // config projectName is its shortname, e.g. the name of

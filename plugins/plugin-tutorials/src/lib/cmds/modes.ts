@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const { apiToDefaultParams } = require('./api')
 const { modCmd } = require('./util')
 
 interface IMode {
