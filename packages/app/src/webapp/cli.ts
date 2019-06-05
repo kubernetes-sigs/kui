@@ -137,9 +137,7 @@ export const pasteQueuedInput = (value: string) => {
 const handleQueuedInput = async (nextBlock: HTMLElement) => {
   const queuedInput = disableInputQueueing()
 
-  if (!queuedInput) {
-    return
-  } else if (nextBlock && queuedInput.length > 0) {
+  if (nextBlock && queuedInput && queuedInput.length > 0) {
     debug('adding queued input to nextBlock')
 
     let nextPrompt = getPrompt(nextBlock)

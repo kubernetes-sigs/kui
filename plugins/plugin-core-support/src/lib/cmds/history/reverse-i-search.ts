@@ -225,7 +225,7 @@ function registerListener () {
     // re: RUNNING_SHELL_TEST; there seems to be some weird bug here; on linux, the ctrlKey modifier becomes sticky
     if (!document.activeElement.classList.contains('repl-input-element')) {
       // if we aren't focused on a repl input, don't bother
-      return
+
     } else if (evt.ctrlKey && (process.platform === 'darwin' || ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))) {
       const tab = getTabFromTarget(evt.srcElement)
       const activeSearch = tab['_kui_active_i_search']

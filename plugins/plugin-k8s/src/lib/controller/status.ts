@@ -104,7 +104,7 @@ const headerRow = (opts: IHeaderRow, kind?: string): Row => {
 function handleError (err: CodedError): CodedError {
   if (err.code === 404) {
     // e.g. no crds in this cluster
-    return
+
   } else {
     console.error(err)
     return err

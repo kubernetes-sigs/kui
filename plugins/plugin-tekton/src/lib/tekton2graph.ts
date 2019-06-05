@@ -332,15 +332,12 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
       addEdge(graph, lastStepOfParentTask, firstStepOfChildTask, { singletonSource: true, singletonTarget: true, hasRuns: runs !== undefined })
       parent.nChildren++
       child.nParents++
-      return
     } else if (!lastStepOfParentTask && firstStepOfChildTask) {
       addEdge(graph, parent, firstStepOfChildTask, { singletonSource: opts.singletonSource || false, singletonTarget: true, hasRuns: runs !== undefined })
       child.nParents++
-      return
     } else if (lastStepOfParentTask && !firstStepOfChildTask) {
       addEdge(graph, lastStepOfParentTask, child, { singletonSource: true, singletonTarget: opts.singletonTarget || false, hasRuns: runs !== undefined })
       parent.nChildren++
-      return
     } else {
       addEdge(graph, parent, child, Object.assign({}, opts, { hasRuns: runs !== undefined }))
     }
