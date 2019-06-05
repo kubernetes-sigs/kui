@@ -22,7 +22,8 @@ import { dirname, join } from 'path'
 import { readFileSync, unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
-const { cli, keys, selectors, sidecar, sleep } = ui
+
+const { cli, keys, selectors } = ui
 const { localDescribe } = common
 
 /** helpful selectors */
@@ -41,7 +42,7 @@ localDescribe('xterm copy paste', function (this: common.ISuite) {
 
   it(`should echo ${emittedText}`, async () => {
     try {
-      const res = cli.do(`echo ${emittedText}`, this.app)
+      await cli.do(`echo ${emittedText}`, this.app)
 
       // wait for the output to appear
       await this.app.client.waitForExist(rows(0))

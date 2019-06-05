@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-
 import * as assert from 'assert'
 import { dirname, join } from 'path'
 import { readFileSync, unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
-const { cli, keys, selectors, sidecar, sleep } = ui
+
+import * as common from '@kui-shell/core/tests/lib/common'
+import * as ui from '@kui-shell/core/tests/lib/ui'
+
+const { cli, keys, selectors } = ui
 const { localDescribe } = common
 
 /** helpful selectors */

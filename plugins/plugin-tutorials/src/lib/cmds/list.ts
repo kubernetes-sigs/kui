@@ -54,7 +54,6 @@ const doList = () => new Promise((resolve, reject) => {
           return
         }
 
-        const { skills } = await import('@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/tutorial.json')
         const attributes = []
 
         // add a "level" column

@@ -18,9 +18,7 @@ import * as Debug from 'debug'
 
 import { join } from 'path'
 import { writeFile } from 'fs'
-import { spawn } from 'child_process'
 
-import expandHomeDir from '@kui-shell/core/util/home'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec } from '@kui-shell/core/core/repl'
 import { clearSelection as clearSidecar, showEntity as showInSidecar } from '@kui-shell/core/webapp/views/sidecar'
@@ -48,13 +46,13 @@ const doExec = ({ command, argvNoOptions, execOptions, tab }: IEvaluatorArgs) =>
 
   let rawOut = ''
   let rawErr = ''
-  proc.stdout.on('data', data => {
+  proc.stdout.on('data', (data: Buffer) => {
     rawOut += data.toString()
   })
-  proc.stderr.on('data', data => {
+  proc.stderr.on('data', (data: Buffer) => {
     rawErr += data.toString()
   })
-  proc.on('close', exitCode => {
+  proc.on('close', (exitCode: number) => {
     if (exitCode === 0) {
       // note: no sidecar header if this launched from the command line ("subwindow mode")
       debug('done with 0 exit code', rawOut)
@@ -83,13 +81,12 @@ const doExec = ({ command, argvNoOptions, execOptions, tab }: IEvaluatorArgs) =>
  *
  */
 const doCommit = async (opts: IEvaluatorArgs) => {
-  const { tab, command, argvNoOptions, parsedOptions, execOptions } = opts
+  const { tab, command, argvNoOptions, parsedOptions } = opts
 
   if (argvNoOptions.length === 3 &&
       !(parsedOptions.F || parsedOptions.file ||
         parsedOptions.message || parsedOptions.m ||
         parsedOptions.help)) {
-    const file = argvNoOptions[argvNoOptions.length - 1]
     return new Promise(async (resolve, reject) => {
       try {
         const [ commentedStatus, toplevelDir ] = await Promise.all([ status(), toplevel() ])

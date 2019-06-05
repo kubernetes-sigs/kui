@@ -17,14 +17,14 @@
 import * as Debug from 'debug'
 
 import { inBrowser, isHeadless, hasProxy } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
 /**
  * Command handler that dispatches to an outer shell
  *
  */
-export const dispatchToShell = async ({ tab, block, command, argv, argvNoOptions, execOptions, parsedOptions, createOutputStream }: IEvaluatorArgs) => {
+export const dispatchToShell = async ({ tab, block, command, argvNoOptions, execOptions, parsedOptions, createOutputStream }: IEvaluatorArgs) => {
   debug('handling catchall', command)
 
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
