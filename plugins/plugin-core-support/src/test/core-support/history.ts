@@ -17,7 +17,7 @@
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli } = ui
 const { localDescribe } = common
 
 // TODO: test this in webpack

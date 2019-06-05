@@ -20,7 +20,7 @@ import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, keys } = ui
-const { localIt, remoteIt } = common
+const { localIt } = common
 
 const expectConsoleToBeClear = ({ app }) => {
   return app.client.waitUntil(() => {

@@ -22,7 +22,7 @@
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli } = ui
 
 /** expect the given folder within the help tree */
 // NOTE: Mengting Yan: webdriverio getText in linux chromium seems to return all texts of a heading element in a single line, fix me if it's not true

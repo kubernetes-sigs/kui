@@ -19,7 +19,7 @@ import * as assert from 'assert'
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, keys, selectors, sidecar } = ui
+const { cli, keys } = ui
 const { localDescribe } = common
 
 localDescribe('Text search', function (this: ISuite) {

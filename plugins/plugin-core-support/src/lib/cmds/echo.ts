@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-
 //
 // Note: for now, this is disabled in favor of the bash-like shell
 // echo; we should probably restore for support for browser/no-proxy
 // mode.
 //
 
-export default (commandTree: CommandRegistrar) => {
+export default () => {
 /*  commandTree.listen('/echo', ({ argvNoOptions }) => {
     return argvNoOptions.slice(1).join(' ') || true
   }) */

@@ -21,7 +21,7 @@ import * as colors from 'colors/safe'
 import * as repl from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { isHeadless, inElectron } from '@kui-shell/core/core/capabilities'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
@@ -135,7 +135,7 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
       anchor.href = href
     } else {
       anchor.href = '#'
-      anchor.onclick = (evt: Event) => {
+      anchor.onclick = () => {
         href()
         return false
       }

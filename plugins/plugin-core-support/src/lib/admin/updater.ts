@@ -170,7 +170,7 @@ const checkForUpdatesQuietly = () => checkForUpdates(true)
  * Install the command handlers and background checker
  *
  */
-export default (commandTree, require) => {
+export default (commandTree) => {
   const updater = new Updater(defaults.DELAY_ON_START, defaults.INTERVAL_IN_MILLIS)
 
   commandTree.listen(`/updater/check`,
