@@ -45,7 +45,7 @@ export default (editorWrapper: HTMLElement, options) => {
   // widget
   //
   let editor
-  const ready = () => new Promise((resolve, reject) => {
+  const ready = () => new Promise((resolve) => {
     const iter = () => {
       if (typeof AMDLoader === 'undefined') {
         setTimeout(iter, 20)

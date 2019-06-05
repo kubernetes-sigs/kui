@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { Application, SpectronClient } from 'spectron'
+import { Application } from 'spectron'
 import { ISuite } from '@kui-shell/core/tests/lib/common'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as assert from 'assert'
 
 import { dirname, join } from 'path'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 

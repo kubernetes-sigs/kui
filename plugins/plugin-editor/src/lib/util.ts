@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { language } from './file-types'
 import { save, revert } from './persisters'
-const debug = Debug('plugins/editor/util')
 
 /**
  * Prepare a response for the REPL. Consumes the output of

@@ -24,7 +24,6 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 
 import { persisters } from './persisters'
-import { gotoReadonlyLocalFile } from './readonly'
 const debug = Debug('plugins/editor/fetchers')
 
 /** allows us to reassign a string code to a numeric one */

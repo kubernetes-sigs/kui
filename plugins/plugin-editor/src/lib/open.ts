@@ -22,14 +22,13 @@ import * as events from 'events'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { IEntitySpec } from '@kui-shell/core/models/entity'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
 import { currentSelection, getSidecar, isVisible as isSidecarVisible, addSidecarHeaderIconText, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
 
 import { IEntity as IEditorEntity } from './fetchers'
 import strings from '../i18n/strings'
-import { extension, language } from './file-types'
+import { language } from './file-types'
 const debug = Debug('plugins/editor/open')
 
 /**
