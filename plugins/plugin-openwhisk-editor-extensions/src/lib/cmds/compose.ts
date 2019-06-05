@@ -94,7 +94,7 @@ const addWskflow = (tab: ITab) => (opts) => {
         } else {
           debug('handing off to the wskflow plugin')
           await visualize(tab, ast)
-            .then(({ view, controller }) => {
+            .then(({ view }) => {
               const currentSVG = wskflowContainer.querySelector('svg')
 
               if (currentSVG) {
@@ -126,7 +126,7 @@ const addWskflow = (tab: ITab) => (opts) => {
     // debug('wskflow editor change handler', lock)
 
     const mktemp = postfix => new Promise((resolve, reject) => {
-      require('tmp').file({ prefix: 'shell-', postfix }, (err, filepath, fd, cleanup) => {
+      require('tmp').file({ prefix: 'shell-', postfix }, (err, filepath) => {
         if (err) {
           console.error(err)
           reject(err)
@@ -135,7 +135,7 @@ const addWskflow = (tab: ITab) => (opts) => {
         }
       })
     })
-    const write = source => new Promise((resolve, reject) => {
+    const write = source => new Promise((resolve) => {
       require('fs').writeFile(filepath, source, async err => {
         if (err) {
           console.error(err)
@@ -159,7 +159,7 @@ const addWskflow = (tab: ITab) => (opts) => {
     const source = editor.getValue()
     await write(source)
 
-    const ast = await generateAST(source, filepath, action.exec.kind)
+    const ast = await generateAST(source, filepath)
     if (ast.statusCode || ast.code) {
       // some error generating the AST
       editor.clearDecorations()
@@ -264,7 +264,7 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
  * Turn source into composer IR
  *
  */
-const generateAST = (source, localCodePath, kind) => {
+const generateAST = (source, localCodePath) => {
   // const base = kind.substring(0, kind.indexOf(':')) || kind // maybe useful when we have python composer
   try {
     const result = loadComposition(localCodePath, source)
@@ -287,26 +287,6 @@ const compositionOptions = baseOptions => {
     persister // the persister impl
   }, baseOptions)
 }
-const addCompositionOptions = params => {
-  const [action] = params
-
-  const conductorAnnotation = action.annotations.find(({ key }) => key === 'conductor')
-  const ast = action.ast || (conductorAnnotation && conductorAnnotation.value !== true)
-
-  if (ast) {
-    const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
-    action.persister = persister
-
-    // for now, we can't edit compositions without a source annotation
-    if (!sourceAnnotation) {
-      const error = new Error('Support for editing deployed compositions not yet implemented')
-      error['statusCode'] = 406
-      throw error
-    }
-  }
-
-  return params
-}
 
 /**
  * Command handler to create a new action or app
@@ -328,7 +308,7 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   // generate AST, if we were given a template
   const compile = () => type === 'compositions' && options.template
     ? inBrowser() ? import('@kui-shell/plugin-apache-composer/samples' + findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
-      : generateAST(code, options.template, options.kind || defaults.kind)
+      : generateAST(code, options.template)
     : Promise.resolve()
 
   // our placeholder action
