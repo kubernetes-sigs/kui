@@ -8,6 +8,13 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "baseUrl": "../..",
+    "lib": [
+      "dom",
+      "esnext",
+      "es6",
+      "dom.iterable",
+      "scripthost"
+    ],
     "paths": {
       "@kui-shell/core/tests/*": ["packages/app/tests/*"],
       "@kui-shell/settings/*": ["packages/app/build/*"],
