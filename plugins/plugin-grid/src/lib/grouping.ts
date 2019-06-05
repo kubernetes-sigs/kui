@@ -67,7 +67,7 @@ export const summarizePerformance = (activations, options) => {
   const waitAvgForFastest = fastest.reduce((total, { wait }) => total + wait, 0) / nFast
   const initAvgForFastest = fastest.reduce((total, { init }) => total + init, 0) / nFast
   const durAvgForFastest = fastest.reduce((total, { executionTime }) => total + executionTime, 0) / nFast
-  const totalAvgForFastest = fastest.reduce((total, { duration, wait, init }) => total + duration, 0) / nFast
+  const totalAvgForFastest = fastest.reduce((total, { duration }) => total + duration, 0) / nFast
 
   /** why was the given activation so slow? */
   const explainOutlier = activation => {
@@ -311,7 +311,7 @@ const costOf = activation => {
  * Construct a success versus failure timeline model
  *
  */
-const successFailureTimeline = (activations, { nBuckets = 10000, full = false }) => {
+const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
   if (activations.length === 0) {
     return []
   }
@@ -439,7 +439,7 @@ export const groupByTimeBucket = (activations, options) => {
     const bucketIdx = ~~((activation.start - minTime) / bucketWidthInMillis)
     grouper(bucketArray[bucketIdx], activation)
     return bucketArray
-  }, new Array(nBuckets).fill(0).map(_ => ({}))) // an array of length nBuckets, of {} -- these will be activation groups, for each timeline bucket
+  }, new Array(nBuckets).fill(0).map(() => ({}))) // an array of length nBuckets, of {} -- these will be activation groups, for each timeline bucket
 
   // the buckets.map turns each timeline bucket, which right now is
   // a map from action path to action, into an array -- for easier

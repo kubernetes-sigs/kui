@@ -653,7 +653,7 @@ export default async (commandTree: CommandRegistrar) => {
     height: windowDefaults.height
   }
 
-  const cmd = commandTree.listen(`/wsk/table`, tableIt('table'), opts)
+  commandTree.listen(`/wsk/table`, tableIt('table'), opts)
 
   commandTree.listen(`/wsk/summary`, tableIt('summary'), opts)
 }

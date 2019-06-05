@@ -32,7 +32,7 @@ import { enDash, latencyBuckets } from './util'
  * @param options user options from the CLI
  *
  */
-export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement, { statData, errorRate, nFailures }, gridContainer: HTMLElement, options) => {
+export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement, { statData, nFailures }, gridContainer: HTMLElement) => {
   const existing = rightHeader.querySelector('.grid-header-key')
   const wrapper = existing || document.createElement('div')
   const existing2 = wrapper.querySelector('.cell-container')
