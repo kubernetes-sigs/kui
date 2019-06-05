@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
@@ -28,7 +27,7 @@ debug('done loading prereqs')
  * we're running in browser mode. It is slow to load.
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async () => {
   debug('initializing')
 
   if (!isHeadless()) {

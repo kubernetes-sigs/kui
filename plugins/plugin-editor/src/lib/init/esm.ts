@@ -24,9 +24,6 @@ import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'
 const debug = Debug('plugins/editor/init/esm')
 
-/** the monaco editor uses the AMD module loader, and smashes the global.require; we need to finagle it a bit */
-let amdRequire
-
 /** this is part of the finagling, to make sure we finagle only once */
 let initDone
 
@@ -60,7 +57,7 @@ export default (editorWrapper: HTMLElement, options) => {
   // widget
   //
   let editor
-  const ready = () => new Promise((resolve, reject) => {
+  const ready = () => new Promise((resolve) => {
     injectCSS({ css: require('monaco-editor/min/vs/editor/editor.main.css').toString(), key: 'editor.monaco.core' })
 
     /**

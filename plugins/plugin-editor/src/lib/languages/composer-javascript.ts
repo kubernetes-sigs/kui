@@ -97,7 +97,7 @@ export default monaco => ({
 
   provider: {
     triggerCharacters: ['.'],
-    provideCompletionItems: (model, position, token, context) => {
+    provideCompletionItems: (model, position) => {
       // Split everything the user has typed on the current line up at each space, and only look at the last word
       const lastChars = model.getValueInRange({ startLineNumber: position.lineNumber, startColumn: 0, endLineNumber: position.lineNumber, endColumn: position.column })
       const words = lastChars.replace('\t', '').split(' ')
