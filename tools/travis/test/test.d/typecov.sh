@@ -37,6 +37,10 @@ echo "  branch=$BRANCH"
 echo "  master=$MASTER"
 
 # bash does not support floating point comparison; we use bc -l instead
+if [ -n "$TRAVIS_JOB_ID" ]; then
+    # hmm, travis sometimes doesn't have bc
+    sudo apt-get install bc
+fi
 COMPARO=$(echo $MASTER'<='$BRANCH | bc -l)
 
 if [ $COMPARO == 0 ]; then
