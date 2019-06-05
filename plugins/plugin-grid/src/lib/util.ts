@@ -29,7 +29,7 @@ import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as namespace from '@kui-shell/plugin-openwhisk/lib/models/namespace'
 import { range as rangeParser } from './time'
@@ -318,12 +318,11 @@ export const prepareHeader = (tab: ITab, isRedraw = false): IHeader => {
  *
  */
 export type Renderer = (tab: ITab, options: Object, header: IHeader, uuid: string, isRedraw?: boolean) => void
-export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ tab, argv: fullArgv, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => {
+export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ tab, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
   const idx = argvNoOptions.indexOf(cmd)
-  const idx2 = fullArgv.indexOf(cmd)
 
   if (options.help || argvNoOptions[idx + 1] === 'help') {
     throw new UsageError(usage[cmd])

@@ -34,7 +34,7 @@ import { drawLegend } from '../legend'
 import { renderCell } from '../cell'
 import { modes } from '../modes'
 import { grid as usage } from '../../usage'
-import { Renderer, IHeader, nbsp, optionsToString, isSuccess, titleWhenNothingSelected, latencyBucket,
+import { IHeader, nbsp, optionsToString, isSuccess, titleWhenNothingSelected, latencyBucket,
   displayTimeRange, prepareHeader, visualize } from '../util'
 const debug = Debug('plugins/grid/cmds/grid')
 
@@ -312,7 +312,7 @@ const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, gro
     const onclick = drilldownWith(tab, viewName, `action get "${group.path}"`)
     addNameToSidecarHeader(getSidecar(tab), group.name, packageName, onclick)
 
-    drawLegend(tab, viewName, rightHeader, group, gridGrid, options)
+    drawLegend(tab, viewName, rightHeader, group, gridGrid)
   } else {
     const onclick = options.appName ? drilldownWith(tab, viewName, `app get "${options.appName}"`) : undefined
     const pathComponents = (options.appName || '').split('/')
@@ -322,7 +322,7 @@ const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, gro
     addNameToSidecarHeader(getSidecar(tab), name, packageName, onclick)
 
     if (groups.length > 0) {
-      drawLegend(tab, viewName, rightHeader, summary, gridGrid, options)
+      drawLegend(tab, viewName, rightHeader, summary, gridGrid)
     }
   }
 
@@ -334,7 +334,7 @@ const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, gro
     return
   }
 
-  groups.forEach((group, groupIdx) => {
+  groups.forEach((group) => {
     // prepare the grid structure
     const gridDom = redraw ? gridGrid.querySelector(`.grid[data-action-path="${group.path}"]`) : document.createElement('div')
     gridDom.className = 'grid'
