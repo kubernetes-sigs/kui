@@ -85,20 +85,6 @@ const doList = () => new Promise((resolve, reject) => {
           css: 'sans-serif hide-with-sidecar'
         })
 
-        if (false && skills) {
-          // add a "skills" column
-          const makeSkillBadge = skill => {
-            const badge = document.createElement('badge')
-            badge.innerText = skill
-            return badge
-          }
-
-          attributes.push({ key: 'skills',
-            value: skills.map(makeSkillBadge),
-            css: undefined
-          })
-        }
-
         // here is the entity model for list elements
         return {
           type: 'tutorials',

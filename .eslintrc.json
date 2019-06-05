@@ -13,7 +13,6 @@
   ],
   "rules": {
     "no-cond-assign": "off",
-    "no-constant-condition": "off",
     "no-control-regex": "off",
     "no-lone-blocks": "off",
     "no-mixed-operators": "off",
