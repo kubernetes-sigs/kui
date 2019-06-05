@@ -23,7 +23,7 @@ import { key } from '@kui-shell/core/core/repl'
  * export command
  *
  */
-const exportCommand = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) => {
+const exportCommand = ({ parsedOptions }: IEvaluatorArgs) => {
   const storage = JSON.parse(sessionStore().getItem(key)) || {}
 
   const tabId = getTabIndex(getCurrentTab())

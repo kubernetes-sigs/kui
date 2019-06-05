@@ -16,11 +16,10 @@
 
 import * as Debug from 'debug'
 
-import * as fs from 'fs'
-import { exec } from 'child_process'
 import { basename, dirname, join } from 'path'
 import { dir as tmpDir } from 'tmp'
-import { exists, lstat, copy, ensureDir, readdir, remove, writeFile, stat } from 'fs-extra'
+import { exists, copy, ensureDir, readdir, stat } from 'fs-extra'
+
 const debug = Debug('plugins/bash-like/pty/copy-out')
 
 /**
@@ -92,25 +91,3 @@ const copyRecursive = async (src: string, dest: string) => {
     return copy(src, dest)
   }
 }
-
-/** plain file copy that is ASAR-friendly */
-const copyFile = (src: string, target: string): Promise<string> => new Promise<string>(async (resolve, reject) => {
-  debug('copyFile', src, target)
-
-  let targetFile = target
-
-  // if target is a directory a new file with the same name will be created
-  if (await exists(target)) {
-    if ((await lstat(target)).isDirectory()) {
-      targetFile = join(target, basename(src))
-    }
-  }
-
-  fs.readFile(src, (err, data) => {
-    if (err) {
-      reject(err)
-    } else {
-      resolve(writeFile(targetFile, data))
-    }
-  })
-})

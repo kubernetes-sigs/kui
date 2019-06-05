@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { dirname, join } from 'path'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
-import { existsSync, unlinkSync } from 'fs'
-import { dirname, join } from 'path'
-const { cli, keys, selectors, sidecar, sleep } = ui
-const { dockerDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
+const { cli } = ui
+const { dockerDescribe } = common
 
 dockerDescribe('xterm auto-table', function (this: common.ISuite) {
   before(common.before(this))

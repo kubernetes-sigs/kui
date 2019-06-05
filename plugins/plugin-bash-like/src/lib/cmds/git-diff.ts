@@ -16,8 +16,6 @@
 
 import * as Debug from 'debug'
 
-import * as path from 'path'
-
 import { split } from '@kui-shell/core/core/repl'
 import { isPopup } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
@@ -29,7 +27,7 @@ import { onbranch, injectCSS } from '../util/git-support'
 const debug = Debug('plugins/bash-like/cmds/git-diff')
 
 const doDiff = async ({ command, execOptions }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
-  const injector = injectCSS()
+  injectCSS()
 
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
   const shell = await import('shelljs')

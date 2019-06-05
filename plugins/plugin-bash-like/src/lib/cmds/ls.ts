@@ -21,7 +21,6 @@ import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
-import UsageError from '@kui-shell/core/core/usage-error'
 import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
 import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/core/core/find-file'
