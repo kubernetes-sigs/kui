@@ -68,7 +68,7 @@ const doList = () => {
   const type = 'plugins'
 
   return fs.pathExists(moduleDir)
-    .then(exists => fs.readdir(moduleDir)) // read the top-level directory contents
+    .then(() => fs.readdir(moduleDir)) // read the top-level directory contents
     .then(dirs => Promise.all(dirs.map(extractNested(moduleDir)))) // extract any @foo/bar nested plugins
     .then(flatten) // if there are nested plugins, we need to flatten the arrays
     .then(getVersions(moduleDir))

@@ -22,7 +22,6 @@ import * as path from 'path'
 import { exec, spawn } from 'child_process'
 import * as which from 'which'
 
-import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import compile from '@kui-shell/core/core/plugin-assembler'
@@ -49,7 +48,7 @@ const doInstall = ({ argvNoOptions }: IEvaluatorArgs) => {
 
   // make a staging area for the npm install
   return new Promise((resolve, reject) => {
-    tmp.dir((err, pluginHome, cleanupDir) => {
+    tmp.dir((err, pluginHome) => {
       const cleanup = () => Promise.resolve(true)// fs.remove(pluginHome)//.then(cleanupDir, cleanupDir)
       const fail = err => {
         debug(err)
