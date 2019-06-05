@@ -50,9 +50,6 @@ interface IViewOptions {
   noHeader?: boolean
 }
 class DefaultViewOptions implements IViewOptions {
-  constructor () {
-    // empty
-  }
 }
 
 interface ICompositionWithCode {

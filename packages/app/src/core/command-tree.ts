@@ -210,9 +210,6 @@ export const subtreeSynonym = (route: string, master: ICommand, options = master
 }
 
 class DefaultCommandOptions implements ICommandOptions {
-  constructor () {
-    // empty
-  }
 }
 
 /**

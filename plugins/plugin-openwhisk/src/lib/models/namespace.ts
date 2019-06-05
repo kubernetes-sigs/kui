@@ -271,9 +271,6 @@ interface ICurrentOptions {
 }
 class DefaultCurrentOptions implements ICurrentOptions {
   noNamespaceOk = false
-  constructor () {
-    // blank
-  }
 }
 export const current = async (opts: ICurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
   const ns = currentNS

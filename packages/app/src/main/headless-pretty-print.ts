@@ -73,9 +73,6 @@ interface IPrettyOptions {
   extraColor?: string
 }
 class DefaultPrettyOptions implements IPrettyOptions {
-  constructor () {
-    // empty
-  }
 }
 let firstPrettyDom = true // so we can avoid initial newlines for headers
 const prettyDom = (dom: ElementMimic, logger = log, stream = process.stdout, _color: string, { columnWidths, extraColor: _extraColor }: IPrettyOptions = new DefaultPrettyOptions()) => {

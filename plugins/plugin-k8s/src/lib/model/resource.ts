@@ -50,9 +50,6 @@ export interface IKubeStatus {
 }
 export class DefaultKubeStatus implements IKubeStatus {
   message = undefined
-  constructor () {
-    // empty
-  }
 }
 
 interface IOwnerReferences {

@@ -28,9 +28,6 @@ interface IOptions {
   stderr?: string | HTMLElement
 }
 class DefaultOptions implements IOptions {
-  constructor () {
-    // empty
-  }
 }
 
 /**

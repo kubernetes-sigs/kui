@@ -18,7 +18,6 @@
     "no-mixed-operators": "off",
     "no-return-assign": "off",
     "no-undef": "off",
-    "no-useless-constructor": "off",
     "no-useless-escape": "off",
     "no-useless-return": "off",
 
