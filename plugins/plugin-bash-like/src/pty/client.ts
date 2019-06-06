@@ -599,7 +599,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
       // will always receive a `refresh` event when the animation
       // frame is done. see https://github.com/IBM/kui/issues/1272
       terminal.on('refresh', (evt: { start: number; end: number }) => {
-        // debug('refresh', evt.start, evt.end)
+        debug('refresh', evt.start, evt.end)
         resizer.hideTrailingEmptyBlanks()
         doScroll()
         notifyOfWriteCompletion(evt)
@@ -643,7 +643,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
 
           const maybeUsage = !resizer.wasEverInAltBufferMode() &&
             !definitelyNotUsage &&
-            (pendingUsage || formatUsage(cmdline, msg.data, { drilldownWithPip: true }))
+            (pendingUsage || formatUsage(cmdline, raw, { drilldownWithPip: true }))
 
           if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
             try {
@@ -676,7 +676,9 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
             debug('pending usage')
             pendingUsage = true
           } else {
-            definitelyNotUsage = true
+            if (raw.length > 500) {
+              definitelyNotUsage = true
+            }
             pendingWrites++
             terminal.write(msg.data)
           }
@@ -705,6 +707,7 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
 
             if (pendingUsage) {
               execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
+              xtermContainer.classList.add('xterm-invisible')
             } else if (pendingTable) {
               execOptions.stdout(pendingTable)
             } else if (expectingSemiStructuredOutput) {

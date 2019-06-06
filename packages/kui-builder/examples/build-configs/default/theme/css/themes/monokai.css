@@ -20,10 +20,6 @@ body[kui-theme="Monokai"] {
     --color-base0E: #ae81ff;
     --color-base0F: #cc6633;
 
-    --color-scrollbar-thumb: #20201C;
-    --color-scrollbar-thumb-border: #4D4D46;
-    --color-scrollbar-thumb-outline: #33332B;
-
     --color-light-red: hsla(338, 95%, 56%, 0.75);
     --color-light-green: hsla(80, 76%, 53%, 0.75);
     --color-light-yellow: hsla(35, 85%, 71%, 0.75);

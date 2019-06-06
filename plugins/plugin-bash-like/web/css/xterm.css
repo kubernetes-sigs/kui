@@ -158,3 +158,8 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     display: block;
     content: '';
 }
+
+/* in case we change our minds and want to hide it */
+.xterm-invisible {
+    display: none;
+}

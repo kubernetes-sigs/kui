@@ -23,10 +23,6 @@ body[kui-theme="Dark"] {
     --color-light-red: hsla(0, 80%, 75%, 50%);
     --color-light-green: hsla(66, 69%, 57%, 50%);
     --color-light-yellow: hsl(40, 81%, 70%);
-
-    --color-scrollbar-thumb: #141517;
-    --color-scrollbar-thumb-border: #424448;
-    --color-scrollbar-thumb-outline: #212327;
 }
 
 body[kui-theme="Dark"] #screenshot-captured {
