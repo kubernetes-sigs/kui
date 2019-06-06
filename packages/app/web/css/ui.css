@@ -2350,7 +2350,7 @@ sidecar.minimized .sidecar-header-icon-wrapper {
 }
 sidecar.minimized .sidecar-header-icon {
     width: initial;
-    height: 2rem;
+    height: 2em;
     flex: 1;
     transform-origin: 0% 0%;
     justify-content: flex-start;
@@ -2467,13 +2467,13 @@ sidecar .usage-error-wrapper .hideable {
     margin-top: 0; /* override h1 defaults */
 }
 .bx--breadcrumb-item {
-    margin-right: 1rem;
+    margin-right: 1em;
     display: flex;
     align-items: center;
     color: var(--color-brand-01);
 }
 .bx--breadcrumb-item--slash {
-    margin-left: 1rem;
+    margin-left: 1em;
     color: var(--color-text-02);
 }
 .bx--breadcrumb--no-trailing-slash .bx--breadcrumb-item:last-child .bx--breadcrumb-item--slash {
@@ -2521,19 +2521,19 @@ sidecar .usage-error-wrapper .hideable {
     padding: 0 0 0.5em;
 }
 .page-content h1 {
-    font-size: 3.375rem;
+    font-size: 3.375em;
     font-weight: 300;
     letter-spacing: 0;
     line-height: 1.25;
-    margin: -1.15rem 0 0 -3px;
+    margin: -1.15em 0 0 -3px;
     padding: 0;
     transition: .25s cubic-bezier(.5,0,.1,1);
 }
 .page-content h2, .page-h2 {
-    font-size: 1.75rem;
+    font-size: 1.75em;
     font-weight: 300;
-    margin-top: 3rem;
-    padding: 1rem 0 1.5rem;
+    margin-top: 3em;
+    padding: 1em 0 0;
     position: relative;
     line-height: 1.25;
 }
@@ -2541,11 +2541,11 @@ sidecar .usage-error-wrapper .hideable {
     background-color: var(--color-carbon-components-h3);
     content: "";
     display: block;
-    height: .3rem;
+    height: .3em;
     left: 0;
     position: absolute;
-    top: -.5rem;
-    width: 5rem;
+    top: -.5em;
+    width: 5em;
 }
 .page-content > h3:first-child, .page-content > h2:first-child, .page-content hr + h3 {
     margin-top: 0;
@@ -2553,21 +2553,21 @@ sidecar .usage-error-wrapper .hideable {
 }
 .page-content h3, .page-h3 {
     color: var(--color-carbon-components-h3);
-    font-size: 1.125rem;
+    font-size: 1.125em;
     font-weight: 600;
     letter-spacing: 0;
-    padding: 1rem 0 1rem;
+    padding: 1em 0 1em;
     line-height: 1.25em;
 }
 .page-content ol, .page-content ul {
-    font-size: 1rem;
+    font-size: 1em;
     line-height: 1.75;
-    margin: 1rem 0 1rem 1.5rem;
-    margin-top: 1rem;
+    margin: 1em 0 1em 1.5em;
+    margin-top: 1em;
 }
 .page-content li {
     font-weight: 400;
-    padding-left: .25rem;
+    padding-left: .25em;
     list-style-type: disc;
 }
 sidecar .page-content pre > code {
@@ -2899,8 +2899,8 @@ body {
     --color-ok: var(--color-green);
     --color-error: var(--color-red);
 
-    --color-scrollbar-thumb: black;
-    --color-scrollbar-thumb-border: var(--color-base04);
+    --color-scrollbar-thumb: var(--color-base04);
+    --color-scrollbar-thumb-border: var(--color-base02);
     --color-scrollbar-thumb-outline: transparent;
     --color-scrollbar-track: transparent;
 

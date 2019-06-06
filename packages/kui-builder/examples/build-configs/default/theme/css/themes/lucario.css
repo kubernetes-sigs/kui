@@ -29,10 +29,6 @@ body[kui-theme="Lucario"] {
     --color-light-green: hsla(108, 67%, 68%, 50%);
     --color-light-yellow:rgba(255, 255, 182, 50%);
 
-    --color-scrollbar-thumb: #121412;
-    --color-scrollbar-thumb-border: #3F433F;
-    --color-scrollbar-thumb-outline: #1C221C;
-
     --color-latency-0: #1b7837;
     --color-latency-1: #7fbf7b;
     --color-latency-2: #d9f0d3;

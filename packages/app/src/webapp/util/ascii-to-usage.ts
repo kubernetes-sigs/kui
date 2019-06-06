@@ -20,8 +20,9 @@ import UsageError from '../../core/usage-error'
 import { split } from '../../core/repl'
 const debug = Debug('core/webapp/util/ascii-to-usage')
 
-const sectionHeader = /([A-Z ]+):\s*$/
-const matcher = /[\n\r]([A-Z ]+:\s*[\n\r])/
+const sectionHeader = /([A-Za-z ]+):\s*$/
+const splitter = /[\n\r]([A-Za-z ]+:\s*[\n\r])/
+const matcher = /[\n\r]([A-Za-z ]+:\s[\n\r])\s+\w+/
 
 interface IOptions {
   drilldownWithPip?: boolean
@@ -60,10 +61,15 @@ const asciiToOptionsTable = (rows: string[]): IPair[] => {
   return table.length > 0 && table
 }
 
-export const formatUsage = (command: string, str: string, options: IOptions = new DefaultOptions()) => {
-  // debug('raw', str)
-  const rows = `\n${str}`.split(matcher)
-  // debug('rows', rows)
+export const formatUsage = (command: string, str: string, options: IOptions = new DefaultOptions()): UsageError => {
+  debug('raw', str)
+  if (!matcher.test(str)) {
+    debug('this does not look like a ASCII usage model')
+    return
+  }
+
+  const rows = `\n${str}`.split(splitter)
+  debug('rows', rows)
 
   if (rows.length > 2) {
     const sections = rows
@@ -99,7 +105,7 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
           rows: asciiToOptionsTable(section.rows) || section.rows.join('\n')
         }))
 
-      const header = nameSectionIdx >= 0 && sections[nameSectionIdx].rows[0]
+      const header = nameSectionIdx >= 0 ? sections[nameSectionIdx].rows[0] : rows[0]
       const example = usageSectionIdx >= 0 && sections[usageSectionIdx].rows[0]
       debug('header', header, nameSectionIdx)
       debug('example', example, usageSectionIdx)
@@ -128,6 +134,4 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
       return new UsageError({ messageDom: options.stderr, usage: model })
     }
   }
-
-  debug('this does not look like a ASCII usage model')
 }
