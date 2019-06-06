@@ -22,7 +22,9 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { podMode } from './lib/view/modes/pods'
 import { conditionsMode } from './lib/view/modes/conditions'
 import { containersMode } from './lib/view/modes/containers'
+import { lastAppliedMode } from './lib/view/modes/last-applied'
 import registerSidecarMode from './lib/view/modes/registrar'
+
 const debug = Debug('plugins/k8s/preload')
 
 /**
@@ -33,6 +35,7 @@ export default async (commandTree: CommandRegistrar) => {
   registerSidecarMode(podMode) // show pods of deployments
   registerSidecarMode(containersMode) // show containers of pods
   registerSidecarMode(conditionsMode) // show conditions of a variety of resource kinds
+  registerSidecarMode(lastAppliedMode) // show a last applied configuration tab
 
   if (inBrowser()) {
     debug('preload for browser')
