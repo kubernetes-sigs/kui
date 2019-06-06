@@ -32,6 +32,7 @@ import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
 import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
+
 const debug = Debug('k8s/view/modes/pods')
 
 /** for drilldown back button */
