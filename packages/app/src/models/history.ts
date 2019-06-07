@@ -15,14 +15,13 @@
  */
 
 import store from '@kui-shell/core/models/store'
+import { IRedact } from '@kui-shell/core/models/entity'
 
 // localStorage key; note: the value here holds no meaning, it is a
 // historical artifact, at this point
 const key = 'openwhisk.history'
 
 export interface HistoryLine {
-  entityType?: string
-  verb?: string
   response?: any
   raw?: string
 }
@@ -48,10 +47,10 @@ const guardedChange = (incr: number): number => {
  * Clear out all history
  *
  */
-export const wipe = () => {
+export const wipe = (): IRedact => {
   lines = []
   store().setItem(key, JSON.stringify(lines))
-  return true
+  return { redact: true }
 }
 
 /** add a line of repl history */

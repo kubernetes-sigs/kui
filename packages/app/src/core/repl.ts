@@ -35,6 +35,7 @@ import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
 import { element } from '../webapp/util/dom' // FIXME
 import sessionStore from '@kui-shell/core/models/sessionStore'
+import { isRedact } from '@kui-shell/core/models/entity'
 import { isHTML } from '../util/types'
 const debug = Debug('core/repl')
 debug('loading')
@@ -403,15 +404,6 @@ class InProcessExecutor implements IExecutor {
 
       debug(`issuing ${command} ${new Date()}`)
 
-      // add a history entry
-      if ((!execOptions || !execOptions.noHistory)) {
-        if (!execOptions || !execOptions.quiet) {
-          execOptions.history = addToHistory({
-            raw: command
-          })
-        }
-      }
-
       // the Read part of REPL
       const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
       const evaluator: CommandTreeResolution = await (
@@ -703,6 +695,23 @@ class InProcessExecutor implements IExecutor {
           })
         })
           .then(response => {
+            if (!isRedact(response)) {
+              // add a history entry
+              if ((!execOptions || !execOptions.noHistory)) {
+                if (!execOptions || !execOptions.quiet) {
+                  if (response.activationId) { // only store openwhisk activation Id for now. see the usage in command await
+                    addToHistory({ raw: command, response: { activationId: response.activationId } })
+                  } else {
+                    addToHistory({ raw: command })
+                  }
+                }
+              }
+            } else {
+              // NOTE: the command handler indicated that the response should be redacted from history and from the UI;
+              // thus, after interpreting the response as a redaction, we reassign it to `true` so that printResults emits just "ok"
+              response = true
+            }
+
             if (!execOptions.rawResponse && response && response.context && nextBlock) {
               // cli.setContextUI(response, nextBlock)
               return response.message
@@ -782,6 +791,13 @@ class InProcessExecutor implements IExecutor {
             }
           })
           .catch((err: CodedError) => {
+            // add a history entry
+            if ((!execOptions || !execOptions.noHistory)) {
+              if (!execOptions || !execOptions.quiet) {
+                addToHistory({ raw: command })
+              }
+            }
+
             // how should we handle the error?
             const returnIt = execOptions && execOptions.failWithUsage // return to caller; it'll take care of things from now
             const rethrowIt = execOptions && execOptions.rethrowErrors // rethrow the exception
@@ -912,6 +928,9 @@ export const installOopsHandler = (fn: OopsHandler) => {
   oopsHandler = fn
 }
 const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err: Error) => {
+  // add a history entry
+  addToHistory({ raw: command })
+
   if (oopsHandler) {
     debug('invoking registered oops handler')
     return oopsHandler(block, nextBlock)(err)

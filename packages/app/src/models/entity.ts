@@ -77,6 +77,17 @@ export function isMetadataBearing (spec: IEntitySpec): spec is MetadataBearing {
 }
 
 /**
+ * An entity not stored in the history model and returns nothing
+ *
+ */
+export interface IRedact {
+  redact: true
+}
+
+export function isRedact (entity: Entity): entity is IRedact {
+  return (entity as IRedact).redact
+}
+/**
  * A mostly scalar entity
  *
  */
@@ -88,4 +99,4 @@ export type SimpleEntity = Error | string | number | HTMLElement | IMessageBeari
  * Note: Array<any> will go away once we have fully typed tables
  *
  */
-export type Entity = SimpleEntity | IEntitySpec | ICustomSpec | boolean | any[] | Table
+export type Entity = SimpleEntity | IEntitySpec | ICustomSpec | boolean | any[] | Table | IRedact

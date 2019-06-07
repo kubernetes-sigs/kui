@@ -107,8 +107,11 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   const filterStr = filterIdx > 0 && argv[filterIdx]
   const filter = filterStr ? line => line.raw.indexOf(filterStr) >= 0 : () => true
 
-  const startIdx = Math.max(0, historyModel.getCursor() - N - 1)
-  const endIdx = historyModel.getCursor() - 1
+  /* don't use historyModel.getCursor() to get the index here
+  since the cursor will be changed if the users get the history
+  command in history by key up and down events */
+  const startIdx = Math.max(0, historyModel.lines.length - N)
+  const endIdx = historyModel.lines.length
   const recent = historyModel.lines.slice(startIdx, endIdx)
 
   debug('argv', argv)

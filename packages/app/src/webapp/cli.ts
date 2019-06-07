@@ -22,7 +22,7 @@ import UsageError from '../core/usage-error'
 import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 
-import { Entity, SimpleEntity, isEntitySpec, isMessageBearingEntity } from '../models/entity'
+import { Entity, SimpleEntity, isEntitySpec, isMessageBearingEntity, isRedact } from '../models/entity'
 import { ICommandHandlerWithEvents } from '../models/command'
 import { IExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
 import * as historyModel from '../models/history'
@@ -496,7 +496,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
   }
 
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
-    if (response && response !== true) {
+    if (response && response !== true && !isRedact(response)) {
       if (isTable(response)) {
         await printTable(tab, response, resultDom, execOptions, parsedOptions)
       } else if (Array.isArray(response)) {

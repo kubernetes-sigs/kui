@@ -116,7 +116,8 @@ const findActivationId = (options, activationId?: string) => new Promise((resolv
       return repl.qexec(`wsk activation last`).then(poll).catch(reject)
     } else {
       // otherwise, use our local history to find the last activation id
-      const lastActivationCommand = historyModel.find(entry => entry.entityType === 'actions' && (entry.verb === 'invoke' || entry.verb === 'async'))
+      const lastActivationCommand = historyModel.find(entry => entry.response && entry.response.activationId)
+
       debug('lastActivationCommand', lastActivationCommand)
 
       if (lastActivationCommand) {
