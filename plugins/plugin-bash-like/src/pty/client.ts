@@ -647,12 +647,16 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
               debug('tables', tables)
 
               if (tables && tables.length > 0) {
-                const tableData = tables.find(_ => _.rows !== undefined)
-                if (tableData) {
+                const tableRows = tables
+                  .filter(_ => _.rows !== undefined)
+                  .flatMap(_ => _.rows)
+
+                if (tableRows && tableRows.length > 0) {
+                  debug('tableRows', tableRows)
                   const command = argvNoOptions[0]
                   const verb = argvNoOptions[1]
                   const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
-                  const tableModel = formatTable(command, verb, entityType, parsedOptions, tableData.rows)
+                  const tableModel = formatTable(command, verb, entityType, parsedOptions, tableRows)
                   debug('tableModel', tableModel)
                   pendingTable = tableModel
                 }
@@ -766,8 +770,11 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
       let pendingUsage = false
       let definitelyNotUsage = false
       let pendingTable: Table
-      let definitelyNotTable = false
       let raw = ''
+
+      let definitelyNotTable = expectingSemiStructuredOutput ||
+        argvNoOptions[0] === 'grep' // short-term hack until we fix up ascii-to-table
+
       ws.on('message', onMessage)
     } catch (err) {
       if (err['code'] === 127 || err['code'] === 404) {
