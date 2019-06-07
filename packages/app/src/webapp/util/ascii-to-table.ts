@@ -169,6 +169,9 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const namespaceColumnIdx = lines[0].findIndex(({ key }) => key === 'NAMESPACE')
   const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
 
+  // e.g. Name: -> NAME
+  const keyForFirstColumn = lines[0][nameColumnIdx].key.replace(/:/g, '').toUpperCase()
+
   const allRows: Row[] = lines.map((columns, idx) => {
     const name = columns[nameColumnIdx].value
     const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
@@ -209,7 +212,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     })).concat(fillTo(columns.length, maxColumns))
 
     const row: Row = {
-      key: columns[nameColumnIdx].key,
+      key: keyForFirstColumn,
       name: nameForDisplay,
       fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
       onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below

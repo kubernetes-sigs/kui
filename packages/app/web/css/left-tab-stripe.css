@@ -196,7 +196,7 @@ body.subwindow .repl .horizontal-landing-zone {
     padding: 0 0 0 1em;
     transition: padding 150ms ease-in-out;
 }
-.repl-result > div {
+.repl-result > div, .repl-result .result-table-outer {
     padding-right: 1em;
 }
 .repl-prompt-right-elements {
