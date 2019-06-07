@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 
 import * as cli from '@kui-shell/core/webapp/cli'
+import { keys } from '@kui-shell/core/webapp/keys'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import * as path from 'path'
@@ -39,13 +40,13 @@ export default () => {
  * Listen for control/command+F
  *
  */
-function registerListener () {
+async function registerListener () {
   if (typeof document === 'undefined') return // return if no document
 
   const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
   injectCSS(path.join(root, 'web/css/text-search.css'))
 
-  const app = require('electron')
+  const app = await import('electron')
 
   // in case the document needs to be restyled as a consequence of the
   // searchBar visibility
@@ -76,11 +77,11 @@ function registerListener () {
   const searchCloseButton = document.getElementById('search-close-button')
   searchCloseButton.onclick = closeSearchBox
 
-  const searchText = value => {
+  const searchText = (value: string) => {
     searchFoundText.classList.remove('no-search-yet')
     app.remote.getCurrentWebContents().findInPage(value) // findInPage handles highlighting matched text in page
   }
-  const stopSearch = (clear) => {
+  const stopSearch = (clear: boolean) => {
     app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
     if (clear) { setTimeout(() => { cli.getCurrentPrompt().focus() }, 300) } // focus repl text input
   }
@@ -103,14 +104,14 @@ function registerListener () {
   })
 
   // we need to override the repl's global onpaste handler; see shell issue #693
-  searchInput.onpaste = evt => {
+  searchInput.onpaste = (evt: Event) => {
     evt.stopPropagation()
   }
 
   searchInput.addEventListener('click', () => {
     searchInput.focus()
   })
-  searchInput.addEventListener('keyup', e => {
+  searchInput.addEventListener('keyup', (e: KeyboardEvent) => {
     if (e.key === 'Enter') { // search when Enter is pressed and there is text in searchInput
       if (searchInput.value.length > 0) {
         searchText(searchInput.value)
@@ -124,8 +125,11 @@ function registerListener () {
     }
   })
 
-  document.getElementsByTagName('body')[0].addEventListener('keydown', function (e) {
-    if (e.keyCode === 70 && ((e.ctrlKey && process.platform !== 'darwin') || (e.metaKey && process.platform === 'darwin'))) { // ctrl/cmd-f opens search
+  document.body.addEventListener('keydown', function (e: KeyboardEvent) {
+    if (!e.defaultPrevented &&
+        e.keyCode === keys.F &&
+        ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)) {
+      // ctrl/cmd-f opens search, unless some interior region prevented default
       searchBar.classList.add('visible')
       addVisibilityStatusToDocument()
       searchBar.style.opacity = '' // see above "we need the initial opacity:0"
