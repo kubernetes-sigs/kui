@@ -23,7 +23,8 @@ import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
-import { IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { IEvaluatorArgs, CommandRegistrar } from '@kui-shell/core/models/command'
+import { IExecOptions } from '@kui-shell/core/models/execOptions'
 
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
@@ -33,7 +34,6 @@ import { currentSelection } from '../models/openwhisk-entity'
 const debug = Debug('plugins/openwhisk/cmds/core-commands')
 debug('loading')
 import repl = require('@kui-shell/core/core/repl')
-import historyModel = require('@kui-shell/core/models/history')
 import namespace = require('../models/namespace')
 
 /**
@@ -47,7 +47,7 @@ const isLinux = require('os').type() === 'Linux'
 
 debug('modules loaded')
 
-export const getClient = (execOptions) => {
+export const getClient = (execOptions: IExecOptions) => {
   if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
     return initOWFromConfig(execOptions.credentials.openwhisk)
   } else {
@@ -510,7 +510,7 @@ const standardViewModes = (defaultMode, fn?) => {
   }
 
   if (fn) {
-    return (options, argv, verb, execOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: entity => makeModes() })
+    return (options, argv, verb, execOptions: IExecOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: entity => makeModes() })
   } else {
     return (options, argv) => ({ modes: entity => makeModes() })
   }
@@ -571,7 +571,7 @@ specials.api = {
     }
 
     return {
-      preprocess: (_, execOptions) => {
+      preprocess: (_, execOptions: IExecOptions) => {
         // we need to confirm that the action is web-exported
         const ow = getClient(execOptions)
 
@@ -683,7 +683,7 @@ specials.api = {
 specials.actions = {
   get: standardViewModes(actionSpecificModes),
   update: BlankSpecial, // updated below
-  create: standardViewModes(actionSpecificModes, (options, argv, verb, execOptions) => {
+  create: standardViewModes(actionSpecificModes, (options, argv, verb, execOptions: IExecOptions) => {
     if (!options || !argv) return
 
     if (!options.action) options.action = {}
@@ -748,11 +748,11 @@ specials.actions = {
         if (argv[0].charAt(0) === '!') {
           // read the file from execOptions
           const key = argv[0].slice(1)
-          options.action.exec.code = execOptions && (execOptions.parameters[key] || execOptions.params[key])
+          options.action.exec.code = execOptions && (execOptions.parameters[key])
 
           // remove traces of this from params
           if (execOptions.parameters) delete execOptions.parameters[key]
-          if (execOptions.params) delete execOptions.params[key]
+
           options.action.parameters = options.action.parameters.filter(({ key: otherKey }) => key !== otherKey)
 
           debug('code passed programmatically', options.action, execOptions)
@@ -983,7 +983,7 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions, tab }: IEvaluatorArgs) => {
+const executor = (commandTree: CommandRegistrar, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions, tab }: IEvaluatorArgs) => {
   let entity = _entity
   let verb = _verb
 
@@ -1135,23 +1135,6 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
 
     debug(`calling openwhisk ${entity} ${verb} ${options.name}`, options)
 
-    // amend the history entry with the details
-    if (execOptions && execOptions.history) {
-      historyModel.update(execOptions.history, entry => {
-        entry.entityType = entity
-        entry.verb = verb
-        entry.name = options.name
-        entry.options = Object.assign({}, options)
-
-        if (options.action && options.action.exec) {
-          // don't store the code in history!
-          entry.options.action = Object.assign({}, options.action)
-          entry.options.action.exec = Object.assign({}, options.action.exec)
-          delete entry.options.action.exec.code
-        }
-      })
-    }
-
     const ow = getClient(execOptions)
 
     if (!ow[entity][verb]) {
@@ -1166,29 +1149,10 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
         .then(options => ow[entity][verb](options))
         .then(handle204(options.name))
         .then(postprocess)
-        .then(response => {
-          // amend the history entry with a selected subset of the response
-          if (execOptions && execOptions.history) {
-            historyModel.update(execOptions.history, entry => {
-              entry.response = { activationId: response.activationId }
-              return entry.response
-            })
-          }
-          return response
-        })
         .then(pretty)
         .then(correctMissingBindingName(options))
         .then(response => Array.isArray(response) ? Promise.all(response.map(pretty)) : response)
         .then(response => Array.isArray(response) && response.length > 0 ? withHeader(response, execOptions) : response)
-        .then(response => {
-          if (commandTree &&
-              (!execOptions || !execOptions.noHistory || (execOptions && execOptions.contextChangeOK)) && // don't update context for nested execs
-              (response.verb === 'get' || response.verb === 'create' || response.verb === 'update')) {
-            return response
-          } else {
-            return response
-          }
-        })
         .catch(err => {
           if (err.error && err.error.activationId) {
             // then this is a failed activation
@@ -1266,7 +1230,7 @@ export const fillInActionDetails = (Package, type = 'actions') => actionSummary 
 /** these are the module's exported functions */
 let self = {}
 
-const makeInit = (commandTree) => async (isReinit = false) => {
+const makeInit = (commandTree: CommandRegistrar) => async (isReinit = false) => {
   debug('init')
 
   // exported API
@@ -1320,10 +1284,10 @@ const makeInit = (commandTree) => async (isReinit = false) => {
     owOpts: owOpts,
 
     /** execute a wsk command without saving to the command history */
-    qexec: (command, execOptions) => executor(commandTree, history, command, Object.assign({}, { noHistory: true }, execOptions)),
+    qexec: (command: string, execOptions: IExecOptions) => executor(commandTree, history, command, Object.assign({}, { noHistory: true }, execOptions)),
 
     /** execute a wsk command with the given options */
-    exec: (command, execOptions) => {
+    exec: (command: string, execOptions: IExecOptions) => {
       try {
         return executor(commandTree, history, command, execOptions)
       } catch (err) {
@@ -1379,7 +1343,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
         const entities = (synonymsTable.entities[api] || []).concat([api])
         const verbs = synonymsTable.verbs[verb] || []
         entities.forEach(eee => {
-          commandTree.subtreeSynonym(`/wsk/${eee.nickname || eee}`, apiMaster, { usage: docs(eee.nickname || eee) })
+          commandTree.subtreeSynonym(`/wsk/${eee.nickname || eee}`, apiMaster)
 
           const handler = executor(commandTree, eee.name || api, verb, verb)
           const entityAliasMaster = commandTree.listen(`/wsk/${eee.nickname || eee}/${verb}`, handler, { usage: docs(api, verb) })
@@ -1556,7 +1520,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
 
         return ow[entityType].list(opts)
           .then(res => res[entityType])
-      })
+      }, {})
     })
   }
 
@@ -1565,7 +1529,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
 }
 
 let initSelf
-export default function (commandTree) {
+export default function (commandTree: CommandRegistrar) {
   initSelf = makeInit(commandTree)
   return initSelf(false)
 }
