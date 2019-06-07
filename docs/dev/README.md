@@ -22,8 +22,7 @@ credentials.
 
   - [Coding Strategy](#coding-strategy)
   - [Packaging](packaging.md)
-  - [Code Structure](lay-of-the-land.md)
-  - [Running Tests](local-testing.md)
+  - [Running Tests](#local-testing)
 
 ## Coding Strategy
 
