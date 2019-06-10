@@ -39,8 +39,9 @@ function init {
 function initProxy {
     pushd "$STAGING_DIR" > /dev/null
     cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,.dockerignore,app} .
-    if [ -d ~/.kube ]; then cp -a ~/.kube .; fi
-    if [ -d ~/.bluemix/plugins/container-service/clusters ]; then mkdir -p .bluemix/plugins/container-service && cp -a ~/.bluemix/plugins/container-service/clusters .bluemix/plugins/container-service; fi
+    # mkdir .kube and .bluemix if they don't exist, see issue: https://github.com/IBM/kui/issues/1647
+    if [ -d ~/.kube ]; then cp -a ~/.kube .; else mkdir .kube; fi
+    if [ -d ~/.bluemix/plugins/container-service/clusters ]; then mkdir -p .bluemix/plugins/container-service && cp -a ~/.bluemix/plugins/container-service/clusters .bluemix/plugins/container-service; else mkdir .bluemix; fi
     npm install --no-package-lock
     popd > /dev/null
 }
