@@ -20,10 +20,9 @@
  *
  */
 
-import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 const usage = {
   command: 'sidecar',
@@ -44,7 +43,7 @@ const usage = {
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
-const openSidecar = async ({ argv, command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const openSidecar = async () => {
   if (isHeadless()) {
     throw new Error(`Can't open sidecar in headless mode. Suggested command: sample sidecar --ui.`)
   }

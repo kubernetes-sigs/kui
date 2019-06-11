@@ -20,7 +20,7 @@
  */
 
 import { qexec as $ } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 /**
  * This is the command handler. Handlers can return plain strings,
@@ -35,7 +35,7 @@ import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
-const createEcho = ({ argv, command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const createEcho = () => {
   return $('wsk action let echo = x => x')
 }
 

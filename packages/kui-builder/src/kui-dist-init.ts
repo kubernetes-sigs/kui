@@ -20,8 +20,6 @@ import { join, dirname } from 'path'
 import * as colors from 'colors/safe'
 import { copy, exists, mkdir, mkdirp, writeFile } from 'fs-extra'
 
-import lernaJson = require('./defaults/lerna.json')
-
 /** simple message notifying the user that we are creating an asset */
 const creating = (what: string): void => {
   console.log(colors.green('✓') + ' creating ' + what)
