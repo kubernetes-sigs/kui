@@ -42,6 +42,7 @@
   "overrides": [
     {
       "files": [
+        "packages/kui-builder/**/*.ts",
         "plugins/plugin-apache-composer/**/*.ts",
         "plugins/plugin-bash-like/**/*.ts",
         "plugins/plugin-core-support/**/*.ts",

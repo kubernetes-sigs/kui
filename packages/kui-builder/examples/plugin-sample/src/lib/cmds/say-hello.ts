@@ -19,7 +19,7 @@
  *
  */
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 const usage = (command: string) => ({
   command,
@@ -40,7 +40,7 @@ const usage = (command: string) => ({
  * If you want the repl to print an error string in red text, then throw new Error("error message")
  *
  */
-const sayHello = ({ argv, command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const sayHello = () => {
   return 'hello world'
 }
 
