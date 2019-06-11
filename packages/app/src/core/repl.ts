@@ -317,7 +317,7 @@ class InProcessExecutor implements IExecutor {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
     const tab = execOptions.tab || cli.getCurrentTab()
-    debug('tab', cli.getTabIndex(tab))
+    debug('tab', tab)
 
     if (!isHeadless()) {
       const storage = JSON.parse(sessionStore().getItem(key)) || {}

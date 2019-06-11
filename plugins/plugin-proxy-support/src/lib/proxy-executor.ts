@@ -59,6 +59,7 @@ class ProxyEvaluator implements IReplEval {
         execOptions: Object.assign({}, execOptions, {
           isProxied: true,
           credentials: getValidCredentials(),
+          tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
           rawResponse: true // we will post-process the response
         })
       }
