@@ -51,6 +51,7 @@
         "plugins/plugin-openwhisk-debug/**/*.ts",
         "plugins/plugin-openwhisk-editor-extensions/**/*.ts",
         "plugins/plugin-proxy-support/**/*.ts",
+        "plugins/plugin-tekton/**/*.ts",
         "plugins/plugin-tutorials/**/*.ts",
         "plugins/plugin-wrk/**/*.ts",
         "plugins/plugin-wskflow/**/*.ts"

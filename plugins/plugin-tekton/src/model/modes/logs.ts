@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { ITab } from '@kui-shell/core/webapp/cli'
-import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import { rexec as $ } from '@kui-shell/core/core/repl'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
@@ -30,8 +24,6 @@ import { IResponseObject } from './flow'
 import { IPipelineRun, ITaskRun } from '../resource'
 
 import { IPod } from '@kui-shell/plugin-k8s/lib/model/resource'
-
-const debug = Debug('plugins/tekton/models/modes/trace')
 
 /**
  * The sidecar mode for the tekton logs of a PipelineRun

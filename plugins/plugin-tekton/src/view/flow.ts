@@ -31,7 +31,7 @@ import { zoomToFitButtons } from '@kui-shell/plugin-wskflow/lib/util'
 
 import runMode from '../model/modes/run'
 import flowMode from '../model/modes/flow'
-import { IPipelineRun, Task, isTask } from '../model/resource'
+import { IPipelineRun } from '../model/resource'
 import tekton2graph from '../lib/tekton2graph'
 const debug = Debug('plugins/tekton/view/flow')
 

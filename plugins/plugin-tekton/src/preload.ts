@@ -35,9 +35,6 @@ import traceMode from './model/modes/trace'
 /** this is the ISidecarMode model for the tekton pipelinerun logs view */
 import logsMode from './model/modes/logs'
 
-/** this is the api version matcher; TODO refactor */
-const tektonAPI = /tekton.dev/
-
 /**
  * A sidecar mode relevancy filter
  *

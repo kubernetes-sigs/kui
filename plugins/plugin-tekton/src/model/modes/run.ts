@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { safeDump } from 'js-yaml'
 
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { rexec as $ } from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
-
 import { IResponseObject } from './flow'
-
-const debug = Debug('tekton/model/modes/modes')
 
 /**
  * The sidecar mode for the tekton flow visualization

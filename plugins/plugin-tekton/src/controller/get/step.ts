@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { CodedError } from '@kui-shell/core/models/errors'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { fetchTask } from '../../lib/read'
-const debug = Debug('plugins/tekton/get/step')
 
 const usage = {
   command: 'step',
