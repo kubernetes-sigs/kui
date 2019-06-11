@@ -15,6 +15,8 @@
  */
 
 import * as Debug from 'debug'
+import * as fs from 'fs'
+import * as path from 'path'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { keys } from '@kui-shell/core/webapp/keys'
@@ -23,10 +25,24 @@ import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
+import { ParsedOptions } from '@kui-shell/core/models/execOptions'
+import minimist = require('yargs-parser')
 
-import * as fs from 'fs'
-import * as path from 'path'
 const debug = Debug('plugins/core-support/tab completion')
+
+/**
+ * A registrar for enumerators
+ *
+ */
+type Enumerator = (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompletedIdx: number, toBeCompleted: string) => string[] | Promise<string[]>
+const enumerators: Enumerator[] = []
+export function registerEnumerator (enumerator: Enumerator) {
+  enumerators.push(enumerator)
+}
+async function applyEnumerator (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompletedIdx: number, toBeCompleted: string): Promise<string[]> {
+  const lists = await Promise.all(enumerators.map(_ => _(command, argvNoOptions, options, toBeCompletedIdx, toBeCompleted)))
+  return lists.flatMap(x => x).filter(x => x)
+}
 
 /**
  * Escape the given string for bash happiness
@@ -158,6 +174,7 @@ const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: str
       const completion = completeWith(partial, matches[0].substring(0, idx), true)
       temporaryContainer.partial = temporaryContainer.partial + completion
       prompt.value = prompt.value + completion
+      return temporaryContainer.partial
     }
 
     for (idx = 0; idx < shortest; idx++) {
@@ -180,7 +197,7 @@ const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: str
 
     if (idx > 0) {
       // debug('partial complete at end')
-      partialComplete(idx)
+      return partialComplete(idx)
     }
   }
 }
@@ -281,7 +298,7 @@ const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, p
   temporaryContainer.className = 'tab-completion-temporary repl-temporary'
 
   const scrollContainer = document.createElement('div')
-  scrollContainer.className = 'scrollable'
+  scrollContainer.className = 'tab-completion-scroll-container'
   temporaryContainer.appendChild(scrollContainer)
   temporaryContainer.scrollContainer = scrollContainer
 
@@ -289,28 +306,6 @@ const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, p
     // see shell issue #699; chrome seems not to play the fade-in
     // animation when the window is offscreen
     temporaryContainer.classList.add('fade-in')
-  }
-
-  // determine pixel width of current input value
-  const tmp = document.createElement('div')
-  tmp.style.display = 'inline-block'
-  tmp.style.fontSize = '0.925em'
-  tmp.style.opacity = '0'
-  tmp.style.position = 'absolute'
-  tmp.innerText = input.value.substring(0, input.selectionStart)
-  block.appendChild(tmp)
-  const inputWidth = tmp.clientWidth
-  block.removeChild(tmp)
-
-  const { width: containerWidth } = input.getBoundingClientRect()
-  const desiredLeft = inputWidth + 12
-
-  if (desiredLeft + inputWidth < containerWidth) {
-    // the popup likely won't overflow to the right
-    temporaryContainer.style.marginLeft = `${desiredLeft}px`
-  } else {
-    // oops, it will overflow to the right; position it flush right, then
-    temporaryContainer.style.marginLeft = `calc(${containerWidth}px - 15em)`
   }
 
   // for later completion
@@ -374,13 +369,18 @@ const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, p
  * Add a suggestion to the suggestion container
  *
  */
-const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, prompt: HTMLInputElement, doEscape = false) => (match, idx: number) => {
+const addSuggestion = (temporaryContainer: TemporaryContainer, prefix: string, dirname: string, prompt: HTMLInputElement, doEscape = false) => (match, idx: number) => {
   const matchLabel = match.label || match
   const matchCompletion = match.completion || matchLabel
 
   const option = document.createElement('div')
   const optionInnerFill = document.createElement('span')
   const optionInner = document.createElement('a')
+
+  const innerPre = document.createElement('span')
+  const innerPost = document.createElement('span')
+  optionInner.appendChild(innerPre)
+  optionInner.appendChild(innerPost)
 
   temporaryContainer.scrollContainer.appendChild(option)
   option.appendChild(optionInnerFill)
@@ -389,7 +389,8 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, 
   // we want the clickable part to fill horizontal space
   optionInnerFill.className = 'tab-completion-temporary-fill'
 
-  optionInner.appendChild(document.createTextNode(matchLabel))
+  innerPre.innerText = prefix
+  innerPost.innerText = matchLabel.replace(new RegExp(`^${prefix}`), '')
 
   // maybe we have a doc string for the match?
   if (match.docs) {
@@ -401,6 +402,9 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, 
 
   option.className = 'tab-completion-option'
   optionInner.className = 'clickable plain-anchor'
+  innerPre.classList.add('tab-completion-option-pre')
+  innerPost.classList.add('tab-completion-option-post')
+
   if (idx === 0) {
     // first item is selected by default
     option.classList.add('selected')
@@ -420,7 +424,7 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, dirname: string, 
   // for incremental completion; see onChange handler above
   temporaryContainer.currentMatches.push({ match: matchLabel, completion: matchCompletion, option })
 
-  return { option, optionInner }
+  return { option, optionInner, innerPost }
 }
 
 /**
@@ -471,20 +475,18 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
             temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
           }
 
-          updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
+          const prefix = updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
 
           // add each match to that temporary div
           matches.forEach((match, idx) => {
-            const { option, optionInner } = addSuggestion(temporaryContainer, dirname, prompt, true)(match, idx)
+            const { option, optionInner, innerPost } = addSuggestion(temporaryContainer, prefix || '', dirname, prompt, true)(match, idx)
 
             // see if the match is a directory, so that we add a trailing slash
             const filepath = path.join(dirname, match)
             isDirectory(filepath)
               .then(isDir => {
                 if (isDir) {
-                  optionInner.innerText = match + '/'
-                } else {
-                  optionInner.innerText = match
+                  innerPost.innerText = innerPost.innerText + '/'
                 }
                 option.setAttribute('data-value', optionInner.innerText)
               }).catch(err => {
@@ -533,9 +535,29 @@ const filterAndPresentEntitySuggestions = (last: string, block: HTMLElement, pro
       temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
     }
 
-    updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
 
-    filteredList.forEach(addSuggestion(temporaryContainer, dirname, prompt))
+    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+  }
+}
+
+/**
+ * Given a list of entities, filter them and present options
+ *
+ */
+const presentEnumeratorSuggestions = (block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number, last: string) => (filteredList: string[]) => {
+  debug('presentEnumeratorSuggestions', filteredList)
+  if (filteredList.length === 1) {
+    complete(filteredList[0], prompt, { partial: last, dirname: false })
+  } else if (filteredList.length > 0) {
+    const partial = last
+    const dirname = undefined
+    if (!temporaryContainer) {
+      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+    }
+
+    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
   }
 }
 
@@ -565,7 +587,7 @@ const suggestCommandCompletions = (matches, partial: string, block: HTMLElement,
     }
 
     // add suggestions to the container
-    matches.forEach(addSuggestion(temporaryContainer, undefined, prompt))
+    matches.forEach(addSuggestion(temporaryContainer, partial, undefined, prompt))
   }
 }
 
@@ -601,7 +623,7 @@ export default () => {
   }
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
-  document.addEventListener('keydown', evt => {
+  document.addEventListener('keydown', async (evt: KeyboardEvent) => {
     const block = cli.getCurrentBlock()
     let temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
@@ -645,7 +667,7 @@ export default () => {
             // attached to the block, so tab means cycle
             // through the options
             const current = temporaryContainer.querySelector('.selected')
-            const next = (current.nextSibling || temporaryContainer.querySelector(':first-child')) as HTMLElement
+            const next = (current.nextSibling || temporaryContainer.querySelector('.tab-completion-option:first-child')) as HTMLElement
             if (next) {
               current.classList.remove('selected')
               next.classList.add('selected')
@@ -664,6 +686,7 @@ export default () => {
               handleUsage(usage.fn(usage.command))
             } else if (usageError.partialMatches || usageError.available) {
               // command not found, with partial matches that we can offer the user
+
               suggestCommandCompletions(usageError.partialMatches || usageError.available,
                 prompt.value,
                 block, prompt,
@@ -674,6 +697,7 @@ export default () => {
               // able to help with
               const required = usage.required || []
               const optionalPositionals = (usage.optional || []).filter(({ positional }) => positional)
+
               const oneofs = usage.oneof ? [usage.oneof[0]] : []
               const positionals = required.concat(oneofs).concat(optionalPositionals)
 
@@ -713,6 +737,23 @@ export default () => {
                   suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
                   break
                 }
+              }
+            }
+          }
+
+          const lastIdx = prompt.selectionStart
+          const { A: argv, endIndices } = repl._split(prompt.value, true, true) as repl.Split
+          const options = minimist(argv)
+          for (let ii = 0; ii < endIndices.length; ii++) {
+            if (endIndices[ii] >= lastIdx) {
+              // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
+              const last = prompt.value.substring(endIndices[ii - 1], lastIdx).replace(/^\s+/, '')
+
+              const argvNoOptions = options._
+              delete options._
+              const completions = await applyEnumerator(prompt.value, argvNoOptions, options, ii, last)
+              if (completions && completions.length > 0) {
+                return presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
               }
             }
           }
