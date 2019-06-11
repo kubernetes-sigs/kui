@@ -23,6 +23,7 @@ const debug = Debug('core/webapp/util/ascii-to-usage')
 const sectionHeader = /([A-Za-z ]+):\s*$/
 const splitter = /[\n\r]([A-Za-z ]+:\s*[\n\r])/
 const matcher = /[\n\r]([A-Za-z ]+:\s[\n\r])\s+\w+/
+const doubleNewline = /(\n\n)|(\r\r)|(\r\n\r\n)/
 
 interface IOptions {
   drilldownWithPip?: boolean
@@ -68,22 +69,31 @@ export const formatUsage = (command: string, str: string, options: IOptions = ne
     return
   }
 
-  const rows = `\n${str}`.split(splitter)
-  debug('rows', rows)
+  const rows = `\n${str}`
+    .split(splitter)
+    .flatMap(row => row.split(doubleNewline))
+    .filter(x => x)
+  debug('rows!', rows)
 
   if (rows.length > 2) {
     const sections = rows
       .slice(1)
-      .reduce((groups, row) => {
+      .reduce((groups, row, idx, A) => {
         const maybeHeader = row.match(sectionHeader)
         debug('maybeHeader', row, maybeHeader, groups.length)
 
         if (maybeHeader) {
           groups.push({ title: maybeHeader[1].toLowerCase(), rows: [] })
-        } else if (groups.length > 0) {
+        } else if (groups.length > 0 && !doubleNewline.test(row)) {
+          if (idx > 0 && doubleNewline.test(A[idx - 1])) {
+            // a double newline with no maybeHeader... we still want
+            // to create a new group, even if we don't have a title
+            groups.push({ title: '', rows: [] })
+          }
+
           const currentGroup = groups[groups.length - 1]
 
-          debug('row', row, currentGroup.title)
+          debug('row', row, currentGroup.title, doubleNewline.test(A[idx - 1]))
           currentGroup.rows = row
             .split(/\n/)
             .filter(x => x)
