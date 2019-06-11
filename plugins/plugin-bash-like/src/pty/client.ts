@@ -25,7 +25,7 @@ import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
-import { clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, ITab } from '@kui-shell/core/webapp/cli'
+import { setCustomCaret, clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, ITab } from '@kui-shell/core/webapp/cli'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
@@ -463,6 +463,9 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
       xtermContainer.classList.add('repl-output-like')
       // xtermContainer.classList.add('zoomable')
       parent.appendChild(xtermContainer)
+
+      // xtermjs will handle the "block"
+      setCustomCaret(block)
 
       const cachedSize = getCachedSize(tab)
       const { fontFamily, fontSize } = getFontProperties(false)

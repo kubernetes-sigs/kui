@@ -65,12 +65,24 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
     color: var(--color-text-02);
 }
 
-.xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
+.xterm-container .xterm-rows .xterm-cursor.xterm-cursor-block {
+    background-color: transparent !important;
+    outline-color: transparent !important;
+    transition-property: background-color, outline-color;
+    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
+}
+tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
     background-color: var(--color-support-01) !important;
+}
+.xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
+    background-color: var(--color-processing) !important;
+    outline-color: transparent;
     color: var(--color-base06) !important;
+    transition-property: background-color, outline-color;
+    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
 }
 .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
-    outline-color: var(--color-support-01);
+    outline-color: transparent !important;
 }
 
 /* rules for terminated xterm */
@@ -163,4 +175,8 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
 /* in case we change our minds and want to hide it */
 .xterm-invisible {
     display: none;
+}
+
+.repl-block.processing .xterm-rows {
+    margin-bottom: 0.25em;
 }

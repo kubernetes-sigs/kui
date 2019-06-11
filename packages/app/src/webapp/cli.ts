@@ -186,6 +186,14 @@ export const resetCount = (block: HTMLElement) => {
 }
 
 /**
+ * Allow commands to take charge of the cursor/caret/block rendering
+ *
+ */
+export const setCustomCaret = (block: HTMLElement) => {
+  block.classList.add('custom-caret')
+}
+
+/**
  * Set the processing/active status for the given block
  *
  */
@@ -197,6 +205,10 @@ export const setStatus = (block: HTMLElement, status: string) => {
 
     if (status === 'processing') {
       startInputQueueing()
+      if (!isHeadless()) {
+        const spinner = element('.repl-result-spinner', block)
+        scrollIntoView({ when: 0, element: spinner })
+      }
     } else if (status === 'repl-active') {
       getPrompt(block).value = ''
     }

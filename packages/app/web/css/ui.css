@@ -336,7 +336,7 @@ repl .repl-block.using-custom-prompt .repl-input input {
 }
 .repl-prompt-right-elements .repl-prompt-right-element-icon {
     margin-left: 1ex;
-    color: var(--color-ui-05);
+    color: var(--color-processing);
     font-size: 1.5em; /* see the comment for repl-input re: min-height; that should match this */
     transition: all 300ms ease-in-out;
 }
@@ -429,18 +429,25 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     align-items: stretch;
 }
 .repl-result-spinner {
-    opacity: 0;
-    height: 0;
-    width: 0;
+    font-size: 0.875em;
+}
+.repl-block.custom-caret .repl-result-spinner {
+    /* for commands with self-managed carets */
+    display: none;
 }
 .repl-block.processing .repl-result-spinner-inner {
     /* animation: spin 750ms linear infinite; */
-    height: 0;
-    width: 0;
+    height: auto;
+    width: auto;
+    opacity: 1;
+    transition-property: background-color;
+    transition-delay: 100ms; /* only show the spinner block if the command takes a bit longer */
     display: inline-block;
+    background-color: var(--color-processing);
+    margin-bottom: 0.25em;
 }
 .repl-block.processing .repl-result-spinner-inner:after {
-    content: '|';
+    content: '\00a0';
 }
 .repl-result pre {
     /* invocation results */
@@ -2934,6 +2941,9 @@ body {
     /* map keys and values */
     --color-map-key: var(--color-base0C);
     --color-map-value: var(--color-text-01);
+
+    /* "is processing" color */
+    --color-processing: var(--color-ui-05);
 
     /* tab colors */
     --color-tab-01: var(--color-base0D);
