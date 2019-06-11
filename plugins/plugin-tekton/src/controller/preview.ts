@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import flowView from '../view/flow'
 import { parse, read } from '../lib/read'
-const debug = Debug('plugins/tekton/controller/preview')
 
 const usage = {
   command: 'flow',
@@ -37,7 +34,7 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tekton/flow', async ({ command, argvNoOptions, tab }) => {
+  commandTree.listen('/tekton/flow', async ({ argvNoOptions, tab }) => {
     const filepath = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
     const raw = await read(filepath)
     const jsons = await parse(raw)

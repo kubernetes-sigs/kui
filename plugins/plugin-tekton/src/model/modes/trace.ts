@@ -20,7 +20,6 @@ import * as prettyPrintDuration from 'pretty-ms'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -34,8 +33,6 @@ import { IPipeline, IPipelineRun, Task, TaskRef } from '../resource'
 
 const debug = Debug('plugins/tekton/models/modes/trace')
 
-const viewName = 'Trace'
-
 interface IRenderOpts {
   noPip?: boolean
   noCrop?: boolean
@@ -48,7 +45,7 @@ interface IRenderOpts {
  *
  */
 export const render = (tab: ITab, activations: ActivationLike[], container: Element, opts: IRenderOpts = {}): void => {
-  const { noCrop = false, noPip = false, showStart = false, showTimeline = true } = opts
+  const { noCrop = false, showStart = false, showTimeline = true } = opts
 
   debug('trace', activations)
 
@@ -62,11 +59,6 @@ export const render = (tab: ITab, activations: ActivationLike[], container: Elem
   const logTable = document.createElement('table')
   logTable.className = 'log-lines log-lines-loose'
   container.appendChild(logTable)
-
-  // picture in picture
-  const pip = (cmd: string) => noPip
-    ? cmd
-    : pictureInPicture(tab, cmd, undefined, logTable, viewName, { parent: container })
 
   // duration of the activation. this will be helpful for
   // normalizing the bar dimensions
@@ -121,7 +113,6 @@ export const render = (tab: ITab, activations: ActivationLike[], container: Elem
     line.setAttribute('data-name', activation.name)
     if (idx === 0) line.classList.add('log-line-root')
 
-    let cellIdx = 0
     const nextCell = () => line.insertCell(-1)
 
     // column 1: activationId cell
@@ -372,9 +363,9 @@ function makeTaskRunsActivationLike (run: IPipelineRun, pipeline: IPipeline, jso
     if (!task) {
       console.error('!! task not found', taskRefName, taskRefName2Task)
     } else {
-      const start = new Date(taskRun.status.startTime).getTime()
+      /* const start = new Date(taskRun.status.startTime).getTime()
 
-      /* task.visitedIdx = M.length
+      task.visitedIdx = M.length
       M.push({
         start,
         duration: taskRun.status.completionTime ? new Date(taskRun.status.completionTime).getTime() - start : 0,

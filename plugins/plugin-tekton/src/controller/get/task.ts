@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { CodedError } from '@kui-shell/core/models/errors'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { fetchTask } from '../../lib/read'
-const debug = Debug('plugins/tekton/get/task')
 
 const usage = (command: string) => ({
   command,
@@ -38,7 +35,7 @@ const usage = (command: string) => ({
  * Command handler
  *
  */
-const getTask = (cmd: string) => async ({ command, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
 

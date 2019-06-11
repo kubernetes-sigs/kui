@@ -21,7 +21,6 @@ import { encodeComponent } from '@kui-shell/core/core/repl'
 import { INode as BaseNode, IEdge } from '@kui-shell/plugin-wskflow/lib/graph'
 import ActivationLike from '@kui-shell/plugin-wskflow/lib/activation'
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
-import { flatten } from '@kui-shell/plugin-k8s/lib/util/util'
 
 import success from './success'
 import { IPipelineRun, IPipeline, isPipeline, Task, TaskName, TaskRef, Step, Port } from '../model/resource'
@@ -40,10 +39,8 @@ interface IGraph extends INode {
 
 interface SymbolTable<N> { [key: string]: N }
 
-const maxWidth = 100
 const defaultHeight = 13
 const defaultCharWidth = 3.25
-const defaultCharHeight = 10
 
 /**
  * @return a blank IGraph instance with optional "children" subgraphs
