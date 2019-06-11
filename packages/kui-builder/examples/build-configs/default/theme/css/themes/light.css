@@ -60,6 +60,10 @@ body[kui-theme="Light"] {
     --color-field-01: #f4f7fb;
 }
 
+body[kui-theme="Light"] .repl-prompt-right-elements .repl-prompt-right-element-icon {
+    color: var(--color-gray);
+}
+
 body[kui-theme="Light"] badge.gray-background {
     background-color: var(--color-scrollbar-thumb);
 }

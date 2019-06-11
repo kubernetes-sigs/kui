@@ -190,9 +190,9 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     table-layout: fixed;
     width: 100%;
 }
-.result-table .cell-inner {
+/* .result-table .cell-inner { see https://github.com/IBM/kui/issues/1653
     white-space: pre-wrap;
-}
+} */
 .result-as-table .result-table-outer-wrapper {
     /* repl table */
     display: table-row;
