@@ -2355,7 +2355,7 @@ sidecar.minimized .sidecar-header-icon-wrapper {
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    margin: -2em 0;
+    margin: -1.75em 0;
     overflow: unset; /* see overflow:hidden for sidecar .sidecar-header-icon-wrapper */
 }
 sidecar.minimized .sidecar-header-icon {
