@@ -23,6 +23,7 @@ import { podMode } from './lib/view/modes/pods'
 import { conditionsMode } from './lib/view/modes/conditions'
 import { containersMode } from './lib/view/modes/containers'
 import { lastAppliedMode } from './lib/view/modes/last-applied'
+import registerTabCompletion from './lib/tab-completion'
 
 const debug = Debug('plugins/k8s/preload')
 
@@ -41,4 +42,6 @@ export default async () => {
     const { restoreAuth } = await import('./lib/model/auth')
     restoreAuth()
   }
+
+  registerTabCompletion()
 }

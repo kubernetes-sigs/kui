@@ -195,7 +195,7 @@ const usage = (command: string): UsageModel => ({
   title: command,
   command,
   strict: command,
-  onlyEnforceOptions: [ '-f' ],
+  onlyEnforceOptions: ['-f'],
   noHelp: true, // kubectl and helm both provide their own -h output
   docs: `Execute ${command} commands`,
   optional: [
@@ -688,6 +688,6 @@ export default async (commandTree: CommandRegistrar) => {
   await Promise.all(shorthands.map(verb => {
     return commandTree.listen(`/k8s/${verb}`,
       dispatchViaDelegationTo(kubectl),
-      { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
+      { usage: usage('kubectl'), requiresLocal: true, noAuthOk: ['openwhisk'] })
   }))
 }

@@ -1007,7 +1007,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
   })
   const argv = regularOptions._
 
-  let options = Object.assign({}, regularOptions, pair.kvOptions)
+  let options: Record<string, any> = Object.assign({}, regularOptions, pair.kvOptions)
   delete options._
 
   debug('exec', entity, verb, argv, options, execOptions)
