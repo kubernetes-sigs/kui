@@ -2434,6 +2434,7 @@ sidecar.minimized [data-balloon]:before, sidecar.minimized [data-balloon]:after 
 .usage-error-wrapper .marked-content p {
     /* marked markdown renderer paragraphs */
     margin: 0.25em 0;
+    white-space: pre-wrap;
 }
 .usage-error-wrapper .hideable {
     margin: 2em 0;
