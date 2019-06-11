@@ -193,20 +193,20 @@ body.subwindow .repl .horizontal-landing-zone {
     padding-top: 0;
 }
 .repl-input, .repl-output {
-    padding: 0 0 0 1em;
+    padding: 0 0 0 0.375rem;
     transition: padding 150ms ease-in-out;
 }
 .repl-result > div, .repl:not(.sidecar-visible) .repl-result .result-table-outer {
-    padding-right: 1em;
+    padding-right: 0.375rem;
 }
 .repl-prompt-right-elements {
-    padding-right: 1em;
+    padding-right: 0.375rem;
 }
 .repl.sidecar-visible .repl-input, .repl.sidecar-visible .repl-output {
-    padding-left: 1em;
+    padding-left: 0.375rem;
 }
 .repl.sidecar-visible .repl-output {
-    padding-right: 1em;
+    padding-right: 0.375rem;
 }
 
 #help-button.left-tab-stripe-button {

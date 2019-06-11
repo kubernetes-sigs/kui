@@ -45,9 +45,6 @@ tab.xterm-alt-buffer-mode .repl-inner .repl-block {
 tab.xterm-alt-buffer-mode .repl-inner .repl-block .repl-output {
     align-items: unset;
 }
-tab.xterm-alt-buffer-mode .repl {
-    background: var(--color-stripe-01);
-}
 tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .repl-input, tab.xterm-alt-buffer-mode .repl-result-spinner {
     display: none;
 }
