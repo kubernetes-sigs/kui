@@ -29,5 +29,11 @@ cd clients/default
 #
 npm run build:webpack
 
+if [ "$KUI_USE_PROXY" == true ]; then
+  npm run build:proxy
+  echo "run proxy"
+  nohup npx kui-run-proxy >/dev/null 2>&1  &
+fi
+
 echo "run webpack"
 nohup npx kui-run-webpack >/dev/null 2>&1  &

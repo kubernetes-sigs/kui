@@ -39,7 +39,8 @@ env:
 
     - WAIT_LAYERS="k8s"
       LAYERS="k8s1 k8s2"
-      MOCHA_TARGETS="electron"
+      MOCHA_TARGETS="webpack electron"
+      KUI_USE_PROXY=true
       NEEDS_HEADLESS=true
       NEEDS_KUBERNETES=true
 
