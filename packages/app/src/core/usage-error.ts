@@ -797,6 +797,7 @@ export interface UsageModel {
   optional?: IUsageRow[]
   oneof?: IUsageRow[]
   nRowsInViewport?: number | boolean
+  enumerator?: boolean
 }
 
 interface MessageWithCode {

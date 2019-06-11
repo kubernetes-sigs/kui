@@ -181,6 +181,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
       intro,
       sections,
       detailedExample,
+      enumerator: true,
       example: usageSection && usageSection[0] && usageSection[0].content.replace(/\s+$/, '')
     }
   })

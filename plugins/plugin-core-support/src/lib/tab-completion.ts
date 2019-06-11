@@ -540,6 +540,31 @@ const filterAndPresentEntitySuggestions = (last: string, block: HTMLElement, pro
 }
 
 /**
+ * Given a list of entities, filter them and present options
+ *
+ */
+const filterAndPresentNameSuggestions = (last: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number) => entities => {
+  if (entities && entities.body) {
+    const filteredList = entities.body.map(({ name }) => {
+      debug('name', name, 'idx', name.indexOf(last))
+      return (name.indexOf(last) === 0 && name)
+    }).filter(x => x)
+    debug('filtered list', filteredList)
+    if (filteredList.length === 1) {
+      complete(filteredList[0], prompt, { partial: last, dirname: false })
+    } else if (filteredList.length > 0) {
+      const partial = last
+      const dirname = undefined
+      if (!temporaryContainer) {
+        temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+      }
+      updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+      filteredList.forEach(addSuggestion(temporaryContainer, dirname, prompt))
+    }
+  }
+}
+
+/**
  * Command not found, but we have command completions to offer the user
  *
  */
@@ -664,16 +689,34 @@ export default () => {
               handleUsage(usage.fn(usage.command))
             } else if (usageError.partialMatches || usageError.available) {
               // command not found, with partial matches that we can offer the user
+
               suggestCommandCompletions(usageError.partialMatches || usageError.available,
                 prompt.value,
                 block, prompt,
                 temporaryContainer)
+            } else if (usage && usage.enumerator) {
+              const args = repl.split(prompt.value)
+
+              // if namespace has been set
+              const idxNameSpace = args.indexOf('-n')
+              let nameSpace = ''
+              if (idxNameSpace > 0 && idxNameSpace < args.length - 1) {
+                const nameSpaceOption = args.splice(idxNameSpace, 2)
+                nameSpace = ' ' + nameSpaceOption.join(' ')
+              }
+
+              const commandIdx = args.indexOf('pods') // the terminal command of the prompt
+              const nActuals = args.length - commandIdx - 1
+              const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
+              const last = args.length > 3 ? args[3] : ''
+              repl.qexec(args.slice(0, 3).join(' ') + nameSpace).then(filterAndPresentNameSuggestions(last, block, prompt, temporaryContainer, lastIdx))
             } else if (usage && usage.command) {
               // so we have a usage model; let's
               // determine what parameters we might be
               // able to help with
               const required = usage.required || []
               const optionalPositionals = (usage.optional || []).filter(({ positional }) => positional)
+
               const oneofs = usage.oneof ? [usage.oneof[0]] : []
               const positionals = required.concat(oneofs).concat(optionalPositionals)
 
