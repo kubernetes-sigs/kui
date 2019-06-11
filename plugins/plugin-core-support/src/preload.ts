@@ -41,7 +41,7 @@ const registration: PreloadRegistration = async (commandTree: CommandRegistrar, 
     ])
   }
 
-  if (!inBrowser()) await import('./lib/text-search').then(_ => _.default()) // in webpack, use the default text-search bar of browser
+  if (!isHeadless() && !inBrowser()) await import('./lib/text-search').then(_ => _.default()) // in webpack, use the default text-search bar of browser
 }
 
 export default registration

@@ -58,10 +58,8 @@ body[kui-theme="Light"] {
 
     --color-ui-06: #f4f7fb; /* nick made up this signifier, it's not from carbon-components */
     --color-field-01: #f4f7fb;
-}
 
-body[kui-theme="Light"] .repl-prompt-right-elements .repl-prompt-right-element-icon {
-    color: var(--color-gray);
+    --color-processing: var(--color-base02);
 }
 
 body[kui-theme="Light"] badge.gray-background {
