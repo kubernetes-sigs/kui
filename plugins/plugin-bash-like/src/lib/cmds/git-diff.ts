@@ -43,13 +43,13 @@ const doDiff = async ({ command, execOptions }: IEvaluatorArgs) => new Promise(a
 
   let rawOut = ''
   let rawErr = ''
-  proc.stdout.on('data', data => {
+  proc.stdout.on('data', (data: Buffer) => {
     rawOut += data.toString()
   })
-  proc.stderr.on('data', data => {
+  proc.stderr.on('data', (data: Buffer) => {
     rawErr += data.toString()
   })
-  proc.on('close', async exitCode => {
+  proc.on('close', async (exitCode: number) => {
     if (exitCode === 0) {
       if (rawOut.trim().length === 0) {
         debug('nothing to show')

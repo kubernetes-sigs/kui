@@ -15,6 +15,7 @@
  */
 
 import { dirname, join } from 'path'
+import { exec } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { injectCSS as inject } from '@kui-shell/core/webapp/util/inject'
@@ -40,22 +41,19 @@ export const injectCSS = async () => {
 }
 
 /**
- * Return git status, usually for consumption by a git commit
- *
- */
-export const status = () => new Promise(() => {})
-
-/**
- * Find the .git "toplevel" directory
- *
- */
-export const toplevel = (): Promise<string> => new Promise(() => {})
-
-/**
  * @return the current branch
  *
  */
-export const branch = (): Promise<string> => new Promise(() => {})
+export const branch = (): Promise<string> => new Promise((resolve, reject) => {
+  exec('git rev-parse --abbrev-ref HEAD', (err, branch, stderr) => {
+    if (err) {
+      console.error(stderr)
+      reject(err)
+    } else {
+      resolve(branch.trim())
+    }
+  })
+})
 
 /**
  * @return "On branch <branch>"

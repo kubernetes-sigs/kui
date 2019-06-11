@@ -140,7 +140,7 @@ const doStatus = async ({ command, execOptions, tab }: IEvaluatorArgs) => new Pr
   proc.stderr.on('data', (data: Buffer) => {
     rawErr += data.toString()
   })
-  proc.on('close', exitCode => {
+  proc.on('close', (exitCode: number) => {
     if (exitCode === 0) {
       // note: no sidecar header if this launched from the command line ("subwindow mode")
       resolve(asSidecarEntity('git status', status2Html(tab, rawOut, stats), {
