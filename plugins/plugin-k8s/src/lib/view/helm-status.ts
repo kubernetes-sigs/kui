@@ -45,7 +45,8 @@ export const format = async (command: string, verb: string, entityType: string, 
   const namespaceFromHelmStatusOutput = namespaceMatch[1]
   debug('namespace', namespaceFromHelmStatusOutput)
 
-  const namespaceFor = (entityType: string) => {
+  // const namespaceFor = (entityType: string) => {
+  const namespaceFor = () => {
     // i think the commented out bit was for some buggy controllers
     /* if (/ConfigMap(s?)|cm/i.test(entityType)) {
       return 'default'
@@ -82,7 +83,7 @@ export const format = async (command: string, verb: string, entityType: string, 
         table: formatTable(command,
           verb,
           entityType,
-          Object.assign({}, options, { namespace: namespaceFor(entityType) }),
+          Object.assign({}, options, { namespace: namespaceFor() }),
           preprocessTable([A.slice(1).join('\n')])[0])
       }
     })

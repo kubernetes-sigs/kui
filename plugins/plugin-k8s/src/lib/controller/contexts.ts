@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-const debug = Debug('k8s/controller/contexts')
 
 import repl = require('@kui-shell/core/core/repl')
 

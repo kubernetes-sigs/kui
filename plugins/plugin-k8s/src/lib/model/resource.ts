@@ -16,8 +16,11 @@
 
 export interface IKubeStatusCondition {
   lastProbeTime?: string
+  lastUpdateTime: string
   lastTransitionTime: string
   status: string | boolean
+  reason?: string
+  message: string
   type: string
 }
 
@@ -35,6 +38,7 @@ export interface IKubeLoadBalancer {
 
 export interface IKubeStatus {
   message: string
+  state?: string
   startTime?: string
   completionTime?: string
   phase?: string

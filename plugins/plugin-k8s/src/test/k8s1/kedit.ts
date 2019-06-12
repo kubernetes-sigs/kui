@@ -21,7 +21,7 @@ import { Application } from 'spectron'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
-import { safeLoad, safeLoadAll, safeDump } from 'js-yaml'
+import { safeLoad, safeDump } from 'js-yaml'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
@@ -71,8 +71,6 @@ const save = (app: Application) => async (): Promise<void> => {
 }
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
 const verifyYAML = (expected: object) => async (app: Application): Promise<void> => {
-  const selector = `${selectors.SIDECAR} .monaco-editor .view-lines`
-
   await app.client.waitUntil(async () => {
     const ok: boolean = await getValue(app)
       .then(expectYAML(expected, false, false)) // false: not a subset; false: do not throw, instead return boolean
@@ -98,7 +96,7 @@ describe('electron kedit', function (this: common.ISuite) {
     return this.app
   }
 
-  const switchToEdit = switchTo('edit')
+  switchTo('edit')
   const switchToRaw = (cmd: string) => async () => {
     if (cmd !== 'edit') {
       await switchTo('raw')()

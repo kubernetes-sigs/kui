@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import { exec } from 'child_process'
 
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
-import { pexec, rexec as $, qexec as $$, encodeComponent } from '@kui-shell/core/core/repl'
+import { pexec, qexec as $$, encodeComponent } from '@kui-shell/core/core/repl'
 
 import * as client from '../clients/kiali'
 import { States, TrafficLight } from '../model/states'
@@ -30,7 +30,7 @@ import parseDuration = require('parse-duration')
  * Install Kiali
  *
  */
-const installKiali = async ({ parsedOptions }: IEvaluatorArgs) => {
+const installKiali = async () => {
   const tmp = '/tmp' // FIXME
 
   // const ns = 'default' // FIXME
@@ -39,7 +39,7 @@ const installKiali = async ({ parsedOptions }: IEvaluatorArgs) => {
   // await $(`kubectl create secret generic kiali -n "${ns}" --from-literal=username="${username}" --from-literal=passphrase="${passphrase}"`)
 
   await new Promise((resolve, reject) => {
-    exec('bash <(curl -L http://git.io/getLatestKialiKubernetes)', { cwd: tmp, shell: 'bash' }, (err, stdout, stderr) => {
+    exec('bash <(curl -L http://git.io/getLatestKialiKubernetes)', { cwd: tmp, shell: 'bash' }, (err, stdout) => {
       if (err) {
         console.error(err)
         reject(err)
@@ -55,7 +55,7 @@ const installKiali = async ({ parsedOptions }: IEvaluatorArgs) => {
  * Uninstall Kiali
  *
  */
-const uninstallKiali = async ({ parsedOptions }: IEvaluatorArgs) => {
+const uninstallKiali = async () => {
   return $$('kubectl delete all,secrets,sa,configmaps,deployments,ingresses,clusterroles,clusterrolebindings,virtualservices,destinationrules,customresourcedefinitions --selector=app=kiali -n istio-system')
 }
 
@@ -127,7 +127,7 @@ const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
         value: States.Pending,
         outerCSS: 'text-center',
         css: TrafficLight.Yellow,
-        watch: async (iter: number) => {
+        watch: async () => {
           const health = await client.appHealth(app.name, new client.Namespace(list.namespace.name), rateInterval)
           const { errorRatio, inboundErrorRatio, outboundErrorRatio } = health.requests
 
@@ -174,11 +174,6 @@ const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
  */
 const ingressFor = (appName: string): Promise<string> => {
   return $$(`istio ingress "${appName}"`)
-}
-
-type Handler = (arg: string) => any
-const sendFirstArgTo = (command: string, handler: Handler) => ({ argvNoOptions: args }) => {
-  return handler(args[args.indexOf(command) + 1])
 }
 
 /**

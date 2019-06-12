@@ -17,8 +17,6 @@
 import * as Debug from 'debug'
 
 import { ITab } from '@kui-shell/core/webapp/cli'
-import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 
 import { IResource, IKubeResource } from '../../model/resource'

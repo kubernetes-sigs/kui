@@ -18,8 +18,6 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
-import assert = require('assert')
-
 const synonyms = ['kubectl']
 
 describe('electron configmap', function (this: common.ISuite) {

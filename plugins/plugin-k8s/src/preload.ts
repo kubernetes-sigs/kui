@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { podMode } from './lib/view/modes/pods'
 import { conditionsMode } from './lib/view/modes/conditions'
@@ -31,7 +30,7 @@ const debug = Debug('plugins/k8s/preload')
  * This is the module
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async () => {
   registerSidecarMode(podMode) // show pods of deployments
   registerSidecarMode(containersMode) // show containers of pods
   registerSidecarMode(conditionsMode) // show conditions of a variety of resource kinds
