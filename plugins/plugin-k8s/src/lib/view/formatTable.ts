@@ -129,18 +129,6 @@ const cssForValue = {
 }
 
 /**
- * If the given resource name is of the form <kind>/<name>, then
- * return kind, otherwise return undefined
- *
- */
-const resourceNameWithKindPattern = /^([^/]+)\/[^/]+$/
-const kindFromResourceName = fqn => {
-  const match = fqn.match(resourceNameWithKindPattern)
-  const kind = match && match.length === 2 && match[1]
-  return kind.charAt(kind.length - 1) === 's' ? kind : `${kind}s`
-}
-
-/**
  * Split the given string at the given split indices
  *
  */

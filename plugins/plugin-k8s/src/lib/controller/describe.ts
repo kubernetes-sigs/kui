@@ -19,8 +19,6 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
 import { isPopup } from '@kui-shell/core/webapp/cli'
-import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
@@ -33,18 +31,6 @@ import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
 import { apply as addRelevantModes } from '../view/modes/registrar'
 const debug = Debug('k8s/controller/describe')
-
-const usage = command => ({
-  title: command,
-  command,
-  strict: command,
-  onlyEnforceOptions: [ '-f' ],
-  noHelp: true, // kubectl and helm both provide their own -h output
-  docs: 'Show details of a specific resource or group of resources',
-  optional: [
-    { name: '-f', file: true, docs: 'Filename, directory, or URL to files to use to create the resource' }
-  ]
-})
 
 /** conditionally add a field, if it exists */
 function addField (label: string, value: any) {

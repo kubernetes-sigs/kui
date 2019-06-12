@@ -16,12 +16,9 @@
 
 import * as Debug from 'debug'
 
-import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
-import expandHomeDir from '@kui-shell/core/util/home'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
-import { ITab } from '@kui-shell/core/webapp/cli'
-import { oopsMessage } from '@kui-shell/core/core/oops'
 import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { IExecOptions } from '@kui-shell/core/models/execOptions'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
@@ -78,15 +75,6 @@ const parseYAML = async (str: string): Promise<any> => {
   return safeLoad(str)
 }
 
-/** add the user's option to the command line */
-const dashify = (str: string): string => {
-  if (str.length === 1) {
-    return `-${str}`
-  } else {
-    return `--${str}`
-  }
-}
-
 /**
  * Export credentials to the filesystem, if we need to
  *
@@ -98,7 +86,7 @@ const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.Pro
   if (!process.env.KUBECONFIG && execOptions && execOptions.credentials && execOptions.credentials.k8s) {
     debug('exporting kubernetes credentials')
     const { dir: tmpDir } = await import('tmp')
-    tmpDir(async (err, path, cleanupCallback) => {
+    tmpDir(async (err, path) => {
       if (err) {
         reject(err)
       } else {
@@ -200,35 +188,6 @@ const pre = (str: string): HTMLElement => {
   pre.innerText = str
 
   return pre
-}
-
-/**
- * Confirm either the command line did not specify a -f file, or
- * that the specified -f file exists
- *
- */
-const confirmFileExistence = async (filepathAsGiven: string, command: string): Promise<boolean> => {
-  debug('confirmFileExistence', filepathAsGiven)
-
-  if (!filepathAsGiven || filepathAsGiven.startsWith('http')) {
-    return true
-  } else if (!inBrowser()) {
-    const { pathExists } = require('fs-extra')
-    const filepath = findFile(filepathAsGiven)
-    debug('confirmFileExistence filepath', filepath)
-
-    if (!await pathExists(filepath)) {
-      debug('file does not exist')
-      throw new UsageError({
-        message: `The specified file does exist: ${filepathAsGiven}`,
-        extra: filepath,
-        code: 404,
-        usage: usage(command)
-      })
-    }
-  } else {
-    throw new UsageError({ message: '-f file not supported when running in a browser', usage: usage(command) })
-  }
 }
 
 const usage = (command: string): IUsageModel => ({
@@ -549,7 +508,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       }
     } else if (options.help || options.h || argv.length === 1 || isUsage) {
       try {
-        resolve(renderHelp(out, command, verb, originalCode, entityType))
+        resolve(renderHelp(out, command, verb, originalCode))
       } catch (err) {
         console.error('error rendering help', err)
         reject(out)
@@ -563,8 +522,8 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       const result = output === 'json'
         ? JSON.parse(out)
         : verb === 'logs' ? formatLogs(out)
-          : output === 'yaml' ? redactYAML(out, options)
-            : redactJSON(out, options)
+          : output === 'yaml' ? redactYAML(out)
+            : redactJSON(out)
 
       // debug('structured output', result)
 

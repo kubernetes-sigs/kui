@@ -204,7 +204,6 @@ const parseCloudLens = (raw: string, options: IOptions): any[] => {
  */
 const parseIstio = (raw: string): IZaprEntry[] => {
   let prevTimestamp: string
-  let idxOfPrevTimestamp: number
 
   return raw
     .split(/[\n\r]/)

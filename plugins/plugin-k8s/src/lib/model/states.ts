@@ -264,17 +264,17 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
  * Check the deployment status of an openwhisk entity
  *
  */
-const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
-  .then(() => ({ state: States.Online }))
-  .catch(err => {
-    if (err.statusCode === 404) {
-      return {
-        state: States.Offline
-      }
-    } else {
-      throw err
-    }
-  })
+// const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
+//   .then(() => ({ state: States.Online }))
+//   .catch(err => {
+//     if (err.statusCode === 404) {
+//       return {
+//         state: States.Offline
+//       }
+//     } else {
+//       throw err
+//     }
+//   })
 
 interface IWatch {
   apiVersion: string
@@ -376,8 +376,6 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
       (finalState === FinalState.OnlineLike && isOnlineLike(newState)) ||
       (finalState === FinalState.OfflineLike && isOfflineLike(newState))
     // || (!offlineOk && newState === States.Disparity);
-
-    const labels = watch.labels
 
     const getOpenWhiskResource = (exec: string) => repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
     const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${repl.encodeComponent(name)} ${contextOption(context)} ${ns(namespace)} -o yaml`

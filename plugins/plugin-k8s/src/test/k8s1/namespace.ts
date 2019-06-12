@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectYAMLSubset, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { cli, expectYAMLSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { defaultModeForGet, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
@@ -81,28 +81,6 @@ describe('electron namespace', function (this: common.ISuite) {
           .then(sidecar.expectMode(defaultModeForGet))
           .then(expectEditorText)
           .catch(common.oops(this))
-      })
-    }
-
-    /** kubectl get namespace */
-    const listIt = (name: string) => {
-      it(`should list that namespace ${name} via ${kubectl}`, async () => {
-        try {
-          const selector = await cli.do(`${kubectl} get namespace`, this.app)
-            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-
-          // wait for the badge to become green
-          await this.app.client.waitForExist(`${selector} badge.green-background`)
-
-          // now click on the table row
-          this.app.client.click(`${selector} .clickable`)
-          await sidecar.expectOpen(this.app)
-            .then(sidecar.expectMode(defaultModeForGet))
-            .then(sidecar.expectShowing(name))
-            .then(expectEditorText)
-        } catch (err) {
-          common.oops(this)(err)
-        }
       })
     }
 
