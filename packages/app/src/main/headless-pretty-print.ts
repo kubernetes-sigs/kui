@@ -228,10 +228,10 @@ const pp = _ => colors.dim(_ ? 'public' : 'private') // pretty publish
 const pk = _ => colors.green(_.find(({ key }) => key === 'exec').value) // pretty kind
 
 const rowify = {
-  compositions: ({ name, packageName, version, fsm, type, prettyKind }) => ({ name: pn(name, packageName), type: prettyKind }),
+  compositions: ({ name, packageName, prettyKind }) => ({ name: pn(name, packageName), type: prettyKind }),
   session: ({ sessionId, name, success, status, start }) => ({ sessionId, app: pn(name), start: colors.dim(prettyDate(start)), status: status === 'pending' ? colors.yellow(status) : success ? colors.green(status) : colors.red(status) }),
   activations: ({ activationId, name }) => ({ activationId, name: pn(name) }),
-  actions: ({ name, packageName, publish, annotations, version, header }) => ({ name: pn(name, packageName), 'published?': pp(publish), kind: pk(annotations), version: colors.dim(version) }),
+  actions: ({ name, packageName, publish, annotations, version }) => ({ name: pn(name, packageName), 'published?': pp(publish), kind: pk(annotations), version: colors.dim(version) }),
   triggers: ({ name, publish }) => ({ name: pn(name), 'published?': pp(publish) }),
   packages: ({ name, publish, binding }) => ({ name: pn(name), 'published?': pp(publish), binding }),
   plugins: ({ name, attributes }) => {

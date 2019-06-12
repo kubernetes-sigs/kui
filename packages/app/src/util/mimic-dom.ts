@@ -101,6 +101,7 @@ export class ElementMimic {
     return clone(this)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   querySelectorAll (selector: string): ElementMimic[] {
     return []
   }
@@ -130,10 +131,6 @@ export class ElementMimic {
   }
 }
 
-class ElementMimic2 extends ElementMimic {
-  input: ElementMimic = new ElementMimic()
-}
-
 /**
  * Create structures to mimic having a head
  *
@@ -161,9 +158,6 @@ export default function () {
   const dom0 = (): ElementMimic => {
     return new ElementMimic()
   }
-  const dom = (): ElementMimic2 => {
-    return new ElementMimic2()
-  }
 
   const document = {
     body: dom0(),
@@ -190,6 +184,7 @@ export default function () {
     },
     addEventListener: () => true,
     createTextNode: (text: string) => { const element = dom0(); element.innerText = text; return element },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     querySelector: (selector: string) => {
       return dom0()
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandTree, CommandRegistrar } from './command'
+import { CommandRegistrar } from './command'
 
 // TODO
 export type KuiPlugin = any

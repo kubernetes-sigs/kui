@@ -38,11 +38,6 @@ let nWindows = 0
 let electron
 let app
 
-interface Size {
-  width: number
-  height: number
-}
-
 /**
  * Spawn electron
  *
@@ -204,7 +199,7 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
 
   // deal with multiple processes
   if (!process.env.RUNNING_SHELL_TEST) {
-    app.on('second-instance', (event, commandLine: string[], workingDirectory: string) => {
+    app.on('second-instance', (event, commandLine: string[]) => {
       // Someone tried to run a second instance, open a new window
       // to handle it
       const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
@@ -397,7 +392,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     // open; e.g. one for docs, one for videos...
     let fixedWindows = {}
     const openFixedWindow = (opts) => {
-      const { type, event, url, options, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
+      const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
 
       const existing = fixedWindows[type] || {}
       const { window: existingWindow, url: currentURL } = existing

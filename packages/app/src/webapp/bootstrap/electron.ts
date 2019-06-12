@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const myDebug = require('debug')('webapp/bootstrap/electron')
-
 if (process.cwd() === '/') {
   // ugh, on macos, dock- and finder-launched apps have a cwd of /
   try {

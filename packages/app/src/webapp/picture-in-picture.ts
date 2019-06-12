@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity } from './views/sidecar'
-import sidecarSelector from './views/sidecar-selector'
 import Presentation from './views/presentation'
 import { popupListen, Tab } from './cli'
 import { ExecOptions } from '../models/execOptions'

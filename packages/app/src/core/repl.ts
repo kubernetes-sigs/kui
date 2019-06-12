@@ -30,11 +30,10 @@ import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
 import { UsageError, UsageModel, IUsageRow } from './usage-error'
 
-import { isHeadless, inBrowser, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
+import { isHeadless, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import pictureInPicture from '../webapp/picture-in-picture' // FIXME
 import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
-import { element } from '../webapp/util/dom' // FIXME
 import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
 const debug = Debug('core/repl')
@@ -803,7 +802,6 @@ class InProcessExecutor implements Executor {
               throw err
             } else {
               // indicate that the command was NOT successfuly completed
-              const orig = err
               err = evaluator.error(command, tab, (execOptions && execOptions.type) || ExecType.TopLevel, err)
 
               if (!nested && !rethrowIt) {

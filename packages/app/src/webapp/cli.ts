@@ -36,7 +36,7 @@ import { isHTML } from '../util/types'
 import Presentation from './views/presentation'
 import { formatListResult, formatMultiListResult, formatTable } from './views/table'
 import { Table, isTable, isMultiTable } from './models/table'
-import { Formattable, getSidecar, BadgeSpec, currentSelection, presentAs, showEntity, showCustom, isCustomSpec, CustomSpec } from './views/sidecar'
+import { Formattable, getSidecar, BadgeSpec, presentAs, showEntity, showCustom, isCustomSpec, CustomSpec } from './views/sidecar'
 import { SidecarMode } from './bottom-stripe'
 
 const debug = Debug('webapp/cli')
@@ -295,7 +295,6 @@ export type Streamable = SimpleEntity | Table | Table[] | CustomSpec
 export const streamTo = (tab: Tab, block: Element) => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
   // so we can scroll this into view as streaming output arrives
-  const spinner = element('.repl-result-spinner', block)
 
   let previousLine: HTMLElement
   return async (response: Streamable, killLine = false) => {
@@ -823,7 +822,7 @@ export const clearPendingTextSelection = () => {
 export const setPendingTextSelection = (str: string) => {
   pendingTextSelection = str
   if (!document.oncopy) {
-    document.addEventListener('select', (evt: Event) => {
+    document.addEventListener('select', () => {
       pendingTextSelection = undefined
     })
     document.addEventListener('copy', (evt: ClipboardEvent) => {
@@ -1325,6 +1324,7 @@ export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, 
   return { mode: 'prompt' }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const init = async (prefs = {}) => {
   debug('init')
 

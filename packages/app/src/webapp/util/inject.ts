@@ -103,7 +103,7 @@ export const uninjectCSS = ({ key }): void => {
  * Inject a script
  *
  */
-export const injectScript = (url: any): Promise<any> => new Promise((resolve, reject) => {
+export const injectScript = (url: any): Promise<any> => new Promise((resolve) => {
   const type = 'script'
   const id = `injected-${type}-${url.key || url}`
 

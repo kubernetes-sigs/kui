@@ -330,11 +330,6 @@ interface DirectViewControllerSpec {
   parameters: object
 }
 
-function isDirectViewControllerSpec (direct: DirectViewController): direct is DirectViewControllerSpec {
-  const spec = direct as DirectViewControllerSpec
-  return spec.plugin !== undefined && spec.module !== undefined
-}
-
 /**
  * Call a "direct" impl
  *

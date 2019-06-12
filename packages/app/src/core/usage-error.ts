@@ -394,7 +394,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
         rowsPart.style.maxHeight = `calc(${nRowsInViewport} * 3em + 1px)`
       }
 
-      examples.forEach(({ command, docs }, idx) => {
+      examples.forEach(({ command, docs }) => {
         const exampleContainer = div(undefined, 'present-as-quotation')
         rowsPart.appendChild(exampleContainer)
 
@@ -583,8 +583,8 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
         return total + nRowsOf(section, idx)
       }, 0)
 
-      stringSections.forEach((section, idx) => {
-        const { title, rows, nRowsInViewport } = section
+      stringSections.forEach((section) => {
+        const { title, rows } = section
         makeTable(title,
           rows,
           left)
@@ -833,7 +833,6 @@ type UsageLike = MessageLike | MessageWithUsageModel //  | IUsageRowGenerator
 export class UsageError extends Error implements CodedError {
   private formattedMessage: Promise<HTMLElement>
   raw: UsageLike
-  private extra: UsageOptions
   code: number
 
   constructor (message: UsageLike, extra?: UsageOptions) {
@@ -843,7 +842,6 @@ export class UsageError extends Error implements CodedError {
       Error.captureStackTrace(this, this.constructor)
     }
     this.raw = message
-    this.extra = extra
     this.code = isMessageWithCode(message) ? message.statusCode || message.code || message.exitCode : 500
 
     if (typeof message === 'string') {

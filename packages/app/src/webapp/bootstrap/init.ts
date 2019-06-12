@@ -57,6 +57,7 @@ const setDefaultCommandContext = () => {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const init = (prefs = {}) => {
   debug('init')
 
@@ -67,7 +68,7 @@ export const init = (prefs = {}) => {
 
   setDefaultCommandContext()
 
-  window.addEventListener('beforeunload', evt => {
+  window.addEventListener('beforeunload', () => {
     eventBus.emit('/window/reload')
   })
 

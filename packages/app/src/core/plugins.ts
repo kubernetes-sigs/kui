@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import * as commandTree from './command-tree'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
-import { Disambiguator, CatchAllHandler, CommandOptions } from '../models/command'
+import { Disambiguator, CatchAllHandler } from '../models/command'
 
 /**
  * Plugin preloading support
@@ -56,7 +56,7 @@ let prescan: PrescanModel
  *
  */
 type Filter = (path: string) => boolean
-export const scanForModules = async (dir: string, quiet = false, filter: Filter = _ => true) => {
+export const scanForModules = async (dir: string, quiet = false, filter: Filter = () => true) => {
   debug('scanForModules %s', dir)
 
   const fs = await import('fs')
@@ -148,17 +148,6 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
 }
 
 /**
- * Allow one plugin to require another
- *
- */
-const _prequire = (module: string): KuiPlugin => {
-  debug('_prequire %s', module)
-
-  if (registrar.hasOwnProperty(module)) return registrar[module]
-  else throw new Error('Module not found: ' + module)
-}
-
-/**
  * Turn a map {k1:true, k2:true} into an array of the keys
  *
  */
@@ -178,12 +167,6 @@ const loadPlugin = async (route: string, pluginPath: string) => {
   debug('loadPlugin %s', route)
 
   const deps: { [key: string]: boolean } = {}
-
-  // for assembly mode, override prequire
-  const preq = (module: string): KuiPlugin => {
-    deps[module] = true
-    return _prequire(module)
-  }
 
   // and override commandTree.listen
   const cmdToPlugin = {}
@@ -219,7 +202,6 @@ const loadPlugin = async (route: string, pluginPath: string) => {
   }
 
   const pluginLoaderRef = await import(pluginPath)
-  const preloaderRef = await import(pluginPath)
   const pluginLoader: PluginRegistration = pluginLoaderRef.default || pluginLoaderRef
 
   if (typeof pluginLoader === 'function') {
@@ -324,7 +306,7 @@ const topologicalSortForScan = async (pluginPaths: string[], iter: number, lastE
 interface LocalOptions extends PrescanOptions {
   pluginRootAbsolute?: string
 }
-const resolveFromLocalFilesystem = async (opts: LocalOptions = {}, quiet = false) => {
+const resolveFromLocalFilesystem = async (opts: LocalOptions = {}) => {
   debug('resolveFromLocalFilesystem')
 
   const path = await import('path')
@@ -387,6 +369,7 @@ export const init = async () => {
  * Load the prescan model, in preparation for loading the shell
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const loadPrescan = async (userDataDir: string): Promise<PrescanModel> => {
   try {
     prescanned = (await import('@kui-shell/prescan')) as PrescanModel

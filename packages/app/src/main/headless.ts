@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import * as colors from 'colors/safe'
-import * as events from 'events'
 
 import * as repl from '../core/repl'
 import mimicDom from '../util/mimic-dom'
