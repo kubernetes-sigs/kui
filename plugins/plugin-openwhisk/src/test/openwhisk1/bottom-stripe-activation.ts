@@ -25,7 +25,7 @@ import * as assert from 'assert'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 
 const actionName = 'foo'
 
@@ -40,7 +40,7 @@ describe('Sidecar bottom stripe interactions for activations', function (this: c
       await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('logs'))
       return sidecar.expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(actualLogs => {
           if (actualLogs.replace(/\s+/g, '').indexOf(expectedLogs.replace(/\s+/g, '')) < 0) {
             console.error(actualLogs.replace(/\s+/g, '') + ' != ' + expectedLogs.replace(/\s+/g, ''))
@@ -57,7 +57,7 @@ describe('Sidecar bottom stripe interactions for activations', function (this: c
       await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
       return sidecar.expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(ui.expectSubset(subsetOfAnnotations))
         .catch(common.oops(this))
     })
@@ -67,7 +67,7 @@ describe('Sidecar bottom stripe interactions for activations', function (this: c
       await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('result'))
       return sidecar.expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(ui.expectStruct(expectedResult))
         .catch(common.oops(this))
     })
@@ -77,7 +77,7 @@ describe('Sidecar bottom stripe interactions for activations', function (this: c
       await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('raw'))
       return sidecar.expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(ui.expectSubset({ name, namespace: ui.expectedNamespace() })) // parts of the raw annotation record
         .catch(common.oops(this))
     })

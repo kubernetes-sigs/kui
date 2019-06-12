@@ -22,7 +22,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname, join } from 'path'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = 'foo1'
@@ -34,7 +34,7 @@ const actionName18 = 'foo18'
 
 const rimraf = filepath => {
   if (fs.existsSync(filepath)) {
-    fs.readdirSync(filepath).forEach((file, index) => {
+    fs.readdirSync(filepath).forEach((file) => {
       const curPath = join(filepath, file)
       if (fs.lstatSync(curPath).isDirectory()) {
         rimraf(curPath)

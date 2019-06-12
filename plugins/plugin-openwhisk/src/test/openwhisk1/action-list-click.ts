@@ -17,7 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
@@ -45,7 +45,7 @@ describe('create action list it then click to show it again', function (this: co
 
     // click on the row entity, and expect sidecar to show it
     .then(N => this.app.client.click(`${ui.selectors.OUTPUT_N(N)} .entity[data-name="${actionName}"] .entity-name.clickable`))
-    .then(_ => this.app)
+    .then(() => this.app)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName))
 

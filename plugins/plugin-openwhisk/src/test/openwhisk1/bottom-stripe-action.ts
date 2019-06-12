@@ -28,7 +28,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 // so we can compare the content of code mode
 import { readFileSync } from 'fs'
 import * as path from 'path'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 const { localDescribe } = common
 
 const actionName = 'foo'
@@ -59,7 +59,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function (this: 
       await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
       return sidecar.expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
         .then(ui.expectSubset(expectedAnnotations))
         .catch(common.oops(this))
     })
@@ -69,7 +69,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function (this: 
       await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('code'))
       return sidecar.expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(app => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
         .then(code => assert.strictEqual(code.replace(/\s+/g, ''), expectedSrc.replace(/\s+/g, '')))
         .catch(common.oops(this))
     })

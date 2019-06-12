@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import cp from './lib/cmds/copy'
@@ -42,7 +40,6 @@ import core from './lib/cmds/openwhisk-core'
 import activationList from './lib/cmds/activations/list'
 
 import registerViews from './views'
-const debug = Debug('plugins/openwhisk/loader')
 
 export default async (commandTree: CommandRegistrar) => {
   const wsk = await core(commandTree)
@@ -72,7 +69,7 @@ export default async (commandTree: CommandRegistrar) => {
 
   // rule extension
   await on(commandTree)
-  await every(commandTree, wsk)
+  await every(commandTree)
 
   // views
   await modes(commandTree, wsk)

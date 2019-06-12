@@ -23,8 +23,6 @@ import { activations as usage } from '../openwhisk-usage'
 import { renderActivationListView } from '../../views/cli/activations/list'
 const debug = Debug('plugins/openwhisk/activations/list')
 
-import repl = require('@kui-shell/core/core/repl')
-
 interface IOptions {
   docs: boolean
   limit: number

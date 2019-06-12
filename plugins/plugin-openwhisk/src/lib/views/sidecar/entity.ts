@@ -18,12 +18,10 @@ import * as Debug from 'debug'
 
 import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
-import eventBus from '@kui-shell/core/core/events'
 
-import { addModeButtons } from '@kui-shell/core/webapp/bottom-stripe'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { formatOneListResult } from '@kui-shell/core/webapp/views/table'
-import { addBadge, addNameToSidecarHeader, addVersionBadge, beautify, clearBadges, getSidecar, linkify, renderField } from '@kui-shell/core/webapp/views/sidecar'
+import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { IShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
@@ -213,7 +211,7 @@ export const showEntity = async (tab: cli.ITab, entity, sidecar: Element, option
         // form a fake AST, so we can use the wskflow visualization
         // wskflw now use the IR, so we have to fake a IR instead of a AST
         // const key = idx => `action_${idx}`
-        Promise.all(entity.exec.components.map((actionName, idx, A) => repl.qexec(`wsk action get "${actionName}"`)
+        Promise.all(entity.exec.components.map((actionName) => repl.qexec(`wsk action get "${actionName}"`)
           .then(action => {
             const anonymousCode = isAnonymousLet(action)
             if (anonymousCode) {

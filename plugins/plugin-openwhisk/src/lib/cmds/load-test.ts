@@ -37,7 +37,7 @@ const usage = (verb: string) => `Usage: ${verb} <action> [--numIters|-n N] [--nu
 
 const costFns = {
   duration: {
-    cost: (duration: string, memory: string) => duration, // nothing fancy, duration alone is our measure
+    cost: (duration: string) => duration, // nothing fancy, duration alone is our measure
     pretty: prettyPrintDuration, // use the pretty-ms module to render durations
 
     summary: D => D.N === 0 ? `No such recent activity of ${D.name}` : `The <strong>average</strong> duration of <strong>${D.N}</strong> ${D.N === 1 ? 'activation' : 'activations'} ${D.name ? 'of ' + D.name : ''} was <strong>${prettyPrintDuration(D.totalCost / D.N)}</strong>.`
@@ -195,7 +195,7 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
     numErrors?: number
   }
 
-  return new Promise<ITally>((resolve, reject) => {
+  return new Promise<ITally>((resolve) => {
     // tally of results
     const tally: ITally = {
       durations: {

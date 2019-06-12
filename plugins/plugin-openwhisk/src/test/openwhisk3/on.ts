@@ -19,7 +19,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { expectRule } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 
 const actionName = 'foo'
 const actionName2 = 'foo2'

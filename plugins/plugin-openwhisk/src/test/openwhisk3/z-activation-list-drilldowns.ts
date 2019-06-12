@@ -22,7 +22,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, keys, selectors, sidecar } = ui
+const { cli, keys, sidecar } = ui
 
 describe('List activations, then drill down to summary views', function (this: common.ISuite) {
   before(openwhisk.before(this))

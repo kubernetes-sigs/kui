@@ -575,7 +575,7 @@ const _render = args => {
  * A handler intended to be passed to cli.registerListView
  *
  */
-export const renderActivationListView = (tab: ITab, activations: Object[], container: Element, parsedOptions, execOptions) => {
+export const renderActivationListView = (tab: ITab, activations: Object[], container: Element, parsedOptions) => {
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)

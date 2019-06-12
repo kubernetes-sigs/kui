@@ -19,7 +19,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 describe('History', function (this: common.ISuite) {

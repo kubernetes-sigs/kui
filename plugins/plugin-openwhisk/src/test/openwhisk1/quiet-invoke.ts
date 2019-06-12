@@ -19,14 +19,12 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as assert from 'assert'
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 

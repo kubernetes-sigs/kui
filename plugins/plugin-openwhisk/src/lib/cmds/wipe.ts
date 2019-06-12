@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/openwhisk/cmds/wipe')

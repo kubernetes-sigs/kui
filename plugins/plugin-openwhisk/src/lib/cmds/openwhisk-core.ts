@@ -510,9 +510,9 @@ const standardViewModes = (defaultMode, fn?) => {
   }
 
   if (fn) {
-    return (options, argv, verb, execOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: entity => makeModes() })
+    return (options, argv, verb, execOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: () => makeModes() })
   } else {
-    return (options, argv) => ({ modes: entity => makeModes() })
+    return () => ({ modes: () => makeModes() })
   }
 }
 
@@ -812,7 +812,7 @@ specials.actions = {
       options.action.exec.main = options.main
     }
   }),
-  list: (options, argv) => {
+  list: (options) => {
     // support for `wsk action list <packageName>` see shell issue #449
     if (options && options.name) {
       const parts = (options.name.match(/\//g) || []).length
@@ -830,7 +830,7 @@ specials.actions = {
       delete options.name
     }
   },
-  invoke: (options, argv) => {
+  invoke: (options) => {
     eventBus.emit('/action/invoke', { name: options.name, namespace: options.namespace })
 
     if (options && options.action && options.action.parameters) {
@@ -844,11 +844,11 @@ specials.actions = {
 
 specials.activations = {
   // activations list always gets full docs, and has a default limit of 10, but can be overridden
-  list: (options, argv) => activationModes({ options: Object.assign({}, { limit: 10 }, options, { docs: false }) }),
-  get: (options, argv) => activationModes()
+  list: (options) => activationModes({ options: Object.assign({}, { limit: 10 }, options, { docs: false }) }),
+  get: () => activationModes()
 }
 specials.packages = {
-  list: (options, argv) => {
+  list: (options) => {
     if (options) {
       options.namespace = options.name
     }
@@ -897,7 +897,7 @@ specials.rules = {
 }
 specials.triggers = {
   get: standardViewModes('parameters'),
-  invoke: (options, argv) => {
+  invoke: (options) => {
     if (options && options.trigger && options.trigger.parameters) {
       options.params = options.trigger && options.trigger.parameters && options.trigger.parameters.reduce((M, kv) => {
         M[kv.key] = kv.value
@@ -906,7 +906,7 @@ specials.triggers = {
     }
   },
   update: BlankSpecial, // updated below
-  create: standardViewModes('parameters', (options, argv) => {
+  create: standardViewModes('parameters', (options) => {
     if (options && options.feed) {
       // the openwhisk npm is a bit bizarre here for feed creation
       const feedName = options.feed
@@ -947,7 +947,7 @@ export const parseOptions = (argvFull, type) => {
 }
 
 const agent = new (require('https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 })
-export const owOpts = (options = {}, execOptions = {}) => {
+export const owOpts = (options = {}) => {
   if (isLinux) {
     // options.forever = true
     options['timeout'] = 5000
@@ -1076,7 +1076,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
 
   // pre and post-process the output of openwhisk; default is do nothing
   let postprocess = x => x
-  let preprocess = (options, execOptions) => options
+  let preprocess = (options) => options
 
   if (entity === 'activations' && verb === 'get' && options.last) {
     // special case for wsk activation get --last
@@ -1159,10 +1159,10 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
     } else {
       // if (isLinux && (!execOptions || !execOptions.noRetry) && options.retry !== false) options.timeout = 5000 // linux bug
 
-      owOpts(options, execOptions)
+      owOpts(options)
 
       return Promise.resolve(options)
-        .then(options => preprocess(options, execOptions))
+        .then(options => preprocess(options))
         .then(options => ow[entity][verb](options))
         .then(handle204(options.name))
         .then(postprocess)

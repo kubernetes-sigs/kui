@@ -63,7 +63,7 @@ const doEvery = async ({ argv }) => {
  * Register the command
  *
  */
-export default (commandTree, require) => {
+export default (commandTree) => {
   // install the routes
   commandTree.listen('/wsk/every', doEvery, { docs: 'Execute an OpenWhisk action periodically; e.g. "every 5 sec do foo"' })
   // commandTree.listen('/wsk/never', doEvery, { docs: 'Remove a periodic execution; e.g. "never 5 sec do foo"' })
