@@ -16,10 +16,10 @@
 
 import * as Debug from 'debug'
 
-import { CommandHandler, CommandTree, CommandTreeResolution, Disambiguator, ExecType, CatchAllOffer, CatchAllHandler, Command, CommandBase, CommandHandlerWithEvents, CommandOptions, EvaluatorArgs, Event } from '../models/command'
+import { CommandHandler, CommandTree, CommandTreeResolution, Disambiguator, ExecType, CatchAllOffer, CatchAllHandler, Command, CommandBase, CommandHandlerWithEvents, CommandOptions, Event } from '../models/command'
 
 import eventBus from './events'
-import { UsageError, UsageModel, IUsageRow } from './usage-error'
+import { UsageError } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
@@ -32,6 +32,7 @@ const debug = Debug('core/command-tree')
  *
  */
 const root = () => undefined // this will trigger a re-parse using Context.current as the path prefix
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const interior = (x?: string[], y?: number, z?: number) => undefined // this will trigger a re-parse using Context.current as the path prefix
 const newTree = (): CommandTree => ({ $: root(), key: '/', route: '/', children: {}, parent: undefined })
 const model: CommandTree = newTree() // this is the model of registered listeners, a tree
@@ -520,7 +521,6 @@ const disambiguate = async (argv: string[], noRetry = false) => {
     } else if (idx === argv.length - 1 && leaf.children) {
       // then the match is indeed a subtree
       debug('validating disambiguation')
-      let foundMatch = false
       const next = argv[argv.length - 1]
       for (let cmd in leaf.children) {
         if (cmd === next) {
@@ -759,11 +759,6 @@ export const readIntention = async (argv: string[], noRetry = false): Promise<Co
     return cmd
   }
 }
-
-/** command filters */
-const isAnAlias = (command: Command): boolean => !!(command.options && command.options.synonymFor)
-const isDirFilter = (command: Command): boolean => !!(command.children && !isAnAlias(command))
-const isFileFilter = (command: Command): boolean => command.$ && !isAnAlias(command)
 
 class CommandModel {
   /**

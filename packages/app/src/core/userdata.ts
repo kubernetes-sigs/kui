@@ -20,7 +20,7 @@ import { join } from 'path'
 
 import store from '@kui-shell/core/models/store'
 import expandHomeDir from '@kui-shell/core/util/home'
-import { inBrowser, inElectron } from '@kui-shell/core/core/capabilities'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 const debug = Debug('core/userdata')
 
 interface Preferences {
@@ -119,7 +119,7 @@ const fsyncPreferences = async (prefs: Preferences): Promise<Preferences> => {
  * Purge the preference model
  *
  */
-const purgePreferences = async (): Promise<void> => {
+export const purgePreferences = async (): Promise<void> => {
   debug('purgePreferences')
 
   if (inBrowser()) {

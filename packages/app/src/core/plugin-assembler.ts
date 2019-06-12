@@ -18,18 +18,12 @@ import * as Debug from 'debug'
 
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import * as events from 'events'
-import { exec } from 'child_process'
 
 import * as plugins from './plugins'
 import * as commandTree from './command-tree'
+
 const debug = Debug('core/plugin-assembler')
 debug('loading')
-import mkdirp = require('mkdirp')
-
-const TMP = 'plugins' // we'll stash the original plugins here
-const TMA = 'app' // we'll stash the original app here
-
 debug('modules loaded')
 
 /**
@@ -127,27 +121,6 @@ export const scanForJsFiles = (dir: string) => readDirRecursively(dir).filter(s 
 interface File {
   path: string
   root?: boolean
-}
-
-/**
- * Find js files in root/modules
- *
- */
-const scanModules = async (root: string): Promise<File[]> => {
-  const { plugins: modules = {} } = await plugins.scanForModules(root, true)
-
-  const files = []
-
-  Object.keys(modules).map(route => {
-    scanForJsFiles(path.join(modules[route], '..'))
-      .filter(file => !file.match(/tests\/data/) && !file.match(/\/@/))
-      .forEach(file => {
-        files.push({ path: file.replace(root + '/', '') })
-      })
-  })
-
-  debug('scanModules', files)
-  return files
 }
 
 interface Node {

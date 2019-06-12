@@ -31,14 +31,6 @@ import * as electronEvents from '../electron-events'
 const debug = require('debug')('webapp/bootstrap/boot')
 debug('loading')
 
-/**
- * Look up an HTML element
- *
- */
-const element = (id: string): HTMLElement => {
-  return document.querySelector(id) as HTMLElement
-}
-
 function catastrophe (err: Error) {
   console.error('restart needed')
   console.error(err)

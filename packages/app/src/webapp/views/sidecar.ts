@@ -18,12 +18,11 @@ import * as Debug from 'debug'
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Tab, isPopup, isTab, scrollIntoView, oops, getTabFromTarget } from '../cli'
+import { Tab, isPopup, scrollIntoView, oops, getTabFromTarget } from '../cli'
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
-import { SidecarMode, css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
-import { formatOneListResult } from '../views/table'
+import { css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
 import { keys } from '../keys'
 import { ShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
@@ -113,18 +112,11 @@ export const getActiveView = (tab: Tab) => {
   return container
 }
 
-const tryParseDate = (str: string): number | string => {
-  try {
-    return new Date(str).getTime()
-  } catch (e) {
-    return str
-  }
-}
-
 /**
  * Render the given field of the given entity in the given dom container
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const renderField = async (container: HTMLElement, entity: EntitySpec, field: string, noRetry = false) => {
   if (field === 'raw') {
     // special case for displaying the record, raw, in its entirety
@@ -217,6 +209,7 @@ export const renderField = async (container: HTMLElement, entity: EntitySpec, fi
         if (match[3].indexOf('{') >= 0) {
           // possibly JSON?
           try {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const obj = JSON.parse(match[3])
             const beautify = require('js-beautify').js_beautify
             const prettier = beautify(match[3], { indent_size: 2 })
@@ -732,10 +725,7 @@ export interface BadgeSpec {
   css?: string
   onclick?: (evt: MouseEvent) => boolean
 }
-function isBadgeSpec (badge: Badge): badge is BadgeSpec {
-  const spec = badge as BadgeSpec
-  return !!(typeof badge !== 'string' && !(spec instanceof Element) && spec.title)
-}
+
 export type Badge = string | BadgeSpec | Element
 
 export interface BadgeOptions {
@@ -1022,6 +1012,7 @@ export const showGenericEntity = (tab: Tab, entity: EntitySpec | CustomSpec, opt
 
   // the name of the entity, for the header
   const viewName = entity.prettyType || entity.type
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const nameDom = addNameToSidecarHeader(sidecar, entity.name, entity.packageName, undefined, viewName)
 
   clearBadges(tab)

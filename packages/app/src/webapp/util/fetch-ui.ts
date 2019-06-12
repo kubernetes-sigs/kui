@@ -198,7 +198,7 @@ const doneWaitOrFetch = (notifyOfProgress = false) => (stagingAreaBase: string) 
                 file
               ],
               { stdio: 'inherit', detached: true })
-              child.on('close', (code, signal) => {
+              child.on('close', (code) => {
                 debug('close', code)
                 if (code !== 0) {
                   handle(err)

@@ -17,11 +17,10 @@
 import * as assert from 'assert'
 
 import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
-
 import * as ui from '@kui-shell/core/tests/lib/ui'
-
 import { theme as settings } from '@kui-shell/core/core/settings'
-const { cli, selectors, sidecar } = ui
+
+const { cli, sidecar } = ui
 
 describe('About command', function (this: ISuite) {
   before(commonBefore(this))

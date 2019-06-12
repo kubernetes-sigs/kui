@@ -16,8 +16,6 @@
 
 import * as Debug from 'debug'
 
-import stripClean from 'strip-ansi'
-
 import * as repl from '@kui-shell/core/core/repl'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
@@ -81,7 +79,7 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
       // look to see if any of the possibleRows violate the
       // columnStarts alignment; this is a good indication that the
       // possibleRows are not really rows of a table
-      const endOfTable = possibleRows.findIndex((row, rowIdx) => {
+      const endOfTable = possibleRows.findIndex((row) => {
         const nope = columnStarts.findIndex(idx => {
           return idx > 0 && !/\s/.test(row[idx - 1])
         })
@@ -92,7 +90,7 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
 
       const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
-      const preprocessed = rows.map((line, idx) => {
+      const preprocessed = rows.map((line) => {
         return split(line, columnStarts, headerCells)
       }).filter(x => x)
       debug('preprocessed', preprocessed)

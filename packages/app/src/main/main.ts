@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 
 import { ExecOptions } from '../models/execOptions'
 import { getCommand, initElectron, initHeadless } from './spawn-electron'
-import ISubwindowPrefs from '../models/SubwindowPrefs'
 const debug = Debug('main/main')
 debug('loading')
 

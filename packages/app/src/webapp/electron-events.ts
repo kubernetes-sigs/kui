@@ -145,6 +145,7 @@ export const tellMain = (message, channel?) => new Promise(async (resolve, rejec
   }
 })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const init = (prefs = {}) => {
   return initializeIPC().then(({ remote, ipcRenderer }) => {
     listenForRemoteEvents(ipcRenderer)

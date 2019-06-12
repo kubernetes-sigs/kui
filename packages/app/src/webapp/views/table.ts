@@ -16,13 +16,10 @@
 
 import * as Debug from 'debug'
 
-import eventBus from '../../core/events'
 import { Tab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
-import { getActiveView } from './sidecar'
 import { Table, Row, Cell, Icon, TableStyle, WatchableTable, diffTableRows, isWatchableTable, isTable } from '../models/table'
-import { Watchable } from '../models/basicModels'
 import { applyDiffTable } from '../views/diffTable'
 const debug = Debug('webapp/views/table')
 
@@ -595,7 +592,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
  * @deprecated in favor of new formatOneRowResult()
  *
  */
-export const formatOneListResult = (tab: Tab, options?) => (entity, idx, A) => {
+export const formatOneListResult = (tab: Tab, options?) => entity => {
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
   dom.setAttribute('data-name', entity.name)

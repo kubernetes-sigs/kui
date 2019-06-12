@@ -17,7 +17,7 @@
 import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
 
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+const { cli } = ui
 
 describe('Error handling', function (this: ISuite) {
   before(commonBefore(this))
