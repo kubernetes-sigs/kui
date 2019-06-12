@@ -19,6 +19,7 @@ import * as Debug from 'debug'
 import { qexec as $$ } from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
+import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { selectorToString } from '../../util/selectors'
 
@@ -26,8 +27,6 @@ import { IResource, IKubeResource } from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
-
-import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 const debug = Debug('k8s/view/modes/pods')
 
@@ -39,7 +38,7 @@ const viewName = 'Pods'
  * the given resource.
  *
  */
-export const podMode: ModeRegistration = {
+export const podMode: ModeRegistration<IKubeResource> = {
   when: (resource: IKubeResource) => {
     // let's see if the resource refers to a pod in some fashion
     return (resource.spec !== undefined && resource.spec.selector !== undefined) || // e.g. Deployment

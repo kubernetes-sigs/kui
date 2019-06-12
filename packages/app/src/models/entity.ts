@@ -65,7 +65,8 @@ export interface MetadataBearing {
   kind?: string
   metadata?: {
     name: string
-    namespace: string
+    namespace?: string
+    creationTimestamp?: string
   }
 }
 export function isMetadataBearing (spec: IEntitySpec): spec is MetadataBearing {

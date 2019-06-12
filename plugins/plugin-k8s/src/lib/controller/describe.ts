@@ -29,7 +29,7 @@ import { IKubeStatus, DefaultKubeStatus, IKubeMetadata, DefaultKubeMetadata, IKu
 
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
-import { apply as addRelevantModes } from '../view/modes/registrar'
+
 const debug = Debug('k8s/controller/describe')
 
 /** conditionally add a field, if it exists */
@@ -166,14 +166,11 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     const command = 'kubectl'
     const resource: IResource = { kind: yaml.kind, name: yaml.metadata.name, resource: yaml }
     modes.push(statusButton(command, resource, FinalState.NotPendingLike))
-
-    // consult the view registrar for registered view modes
-    // relevant to this resource
-    addRelevantModes(modes, command, resource)
   }
   modes.push({
     mode: 'raw',
     direct: `${getCmd} -o ${output}`,
+    order: 999,
     leaveBottomStripeAlone: true
   })
   modes.push(deleteResourceButton())

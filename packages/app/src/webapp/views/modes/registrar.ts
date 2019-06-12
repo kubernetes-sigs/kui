@@ -16,31 +16,31 @@
 
 import * as Debug from 'debug'
 
+import { MetadataBearing } from '@kui-shell/core/models/entity'
 import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-import { IKubeResource, IResource } from '../../model/resource'
-const debug = Debug('k8s/views/modes/registrar')
+const debug = Debug('webapp/views/mode-registrar')
 
-export type SidecarModeFilter = (resource: IKubeResource) => boolean
+export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Resource) => boolean
 
 /**
  * Interpretation: if the kubernetes resources passes the given "when"
  * filter, then add the given sidecar mode
  *
  */
-export interface ModeRegistration {
-  when: SidecarModeFilter // when this filter returns true...
-  mode: ISidecarMode | ((command: string, resource: IResource) => ISidecarMode) // ...display this mode option
+export interface ModeRegistration<Resource extends MetadataBearing> {
+  when: SidecarModeFilter<Resource> // when this filter returns true...
+  mode: ISidecarMode | ((command: string, resource: { resource: Resource }) => ISidecarMode) // ...display this mode option
 }
 
 /** registered mode handlers */
-const registrar: ModeRegistration[] = []
+const registrar: ModeRegistration<MetadataBearing>[] = []
 
 /**
  * Register a new mode
  *
  */
-export function registerSidecarMode (registration: ModeRegistration) {
+export function registerSidecarMode<Resource extends MetadataBearing> (registration: ModeRegistration<Resource>) {
   registrar.push(registration)
 }
 export default registerSidecarMode
@@ -49,7 +49,7 @@ export default registerSidecarMode
  * @return the relevant modes for the given command on the given resource
  *
  */
-export function get (command: string, resource: IResource): ISidecarMode[] {
+export function get<Resource extends MetadataBearing> (command: string, resource: { resource: Resource }): ISidecarMode[] {
   debug('get relevant modes', resource)
   const modes: ISidecarMode[] = []
   apply(modes, command, resource)
@@ -61,9 +61,17 @@ export function get (command: string, resource: IResource): ISidecarMode[] {
  * to the given modes model
  *
  */
-export function apply (modes: ISidecarMode[], command: string, resource: IResource) {
+export function apply<Resource extends MetadataBearing> (modes: ISidecarMode[], command: string, resource: { resource: Resource }) {
   registrar
-    .filter(({ when }) => when(resource.resource)) // if relevant...
+    .filter(({ when }) => {
+      // filter out any irrelevant modes (for this resource)
+      try {
+        return when(resource.resource)
+      } catch (err) {
+        debug('warning: registered mode threw an exception during filter', err)
+        return false
+      }
+    })
     .forEach(({ mode }) => {
       // then either push it on the mode model, or replace an existing mode
       /* if (override) {

@@ -17,12 +17,13 @@
 import * as Debug from 'debug'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+import registerSidecarMode from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { podMode } from './lib/view/modes/pods'
 import { conditionsMode } from './lib/view/modes/conditions'
 import { containersMode } from './lib/view/modes/containers'
 import { lastAppliedMode } from './lib/view/modes/last-applied'
-import registerSidecarMode from './lib/view/modes/registrar'
 
 const debug = Debug('plugins/k8s/preload')
 
