@@ -15,8 +15,8 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { ITab, ViewHandler, registerListView, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
-import { ISidecarViewHandler, registerEntityView as registerSidecarEntityView } from '@kui-shell/core/webapp/views/sidecar'
+import { ITab, ViewHandler, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
+import { registerEntityView as registerSidecarEntityView } from '@kui-shell/core/webapp/views/sidecar'
 import { IShowOptions } from '@kui-shell/core/webapp/views/show-options'
 import { Entity } from '@kui-shell/core/models/entity'
 

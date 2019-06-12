@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, selectors, sidecar } = ui
+const { cli, sidecar } = ui
 
 const delay = 3000
 const actionName = 'foo'

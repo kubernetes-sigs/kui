@@ -15,6 +15,8 @@
  */
 
 import * as Debug from 'debug'
+import { existsSync, readFileSync } from 'fs'
+import { type as osType } from 'os'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
@@ -30,11 +32,11 @@ import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
-const debug = Debug('plugins/openwhisk/cmds/core-commands')
-debug('loading')
 import repl = require('@kui-shell/core/core/repl')
 import historyModel = require('@kui-shell/core/models/history')
 import namespace = require('../models/namespace')
+
+const debug = Debug('plugins/openwhisk/cmds/core-commands')
 
 /**
  * This plugin adds commands for the core OpenWhisk API.
@@ -43,7 +45,7 @@ import namespace = require('../models/namespace')
 
 import minimist = require('yargs-parser')
 import usage = require('./openwhisk-usage')
-const isLinux = require('os').type() === 'Linux'
+const isLinux = osType() === 'Linux'
 
 debug('modules loaded')
 
@@ -72,13 +74,13 @@ for (let type in isCRUDable) crudableTypes.push(type)
 
 // some verbs not directly exposed by the openwhisk npm (hidden in super-prototypes)
 const alreadyHaveGet = { namespaces: true, activations: true }
-const extraVerbsForAllTypes = type => alreadyHaveGet[type] ? [] : ['get']
+const extraVerbsForAllTypes = (type: string) => alreadyHaveGet[type] ? [] : ['get']
 const extraVerbsForAllCRUDableTypes = ['delete', 'update']
-const extraVerbs = type => extraVerbsForAllTypes(type).concat(isCRUDable[type] ? extraVerbsForAllCRUDableTypes : [])
+const extraVerbs = (type: string) => extraVerbsForAllTypes(type).concat(isCRUDable[type] ? extraVerbsForAllCRUDableTypes : [])
 
 /** given /a/b/c, return /a/b */
-const parseNamespace = fqn => fqn.substring(0, fqn.lastIndexOf('/'))
-const parseName = fqn => fqn.substring(fqn.lastIndexOf('/') + 1)
+const parseNamespace = (fqn: string) => fqn.substring(0, fqn.lastIndexOf('/'))
+const parseName = (fqn: string) => fqn.substring(fqn.lastIndexOf('/') + 1)
 
 const booleans = {
   actions: {
@@ -107,7 +109,7 @@ const aliases = {
 }
 
 /** turn a key-value map into an array of {key:, value:} objects */
-const toArray = map => {
+const toArray = (map: Record<string, string>) => {
   const A = []
   for (let key in map) {
     A.push({ key: key, value: map[key] })
@@ -115,15 +117,17 @@ const toArray = map => {
   return A
 }
 
+type ParameterMap = Record<string, { parameters?: { key: string; value: string }[]; limits?: Record<string, number> }>
+
 /** update the parameter mapping M.params with the mapping stored in a given file */
-const paramFile = (M, idx, argv, type) => {
+const paramFile = (M: ParameterMap, idx: number, argv: string[], type: string) => {
   if (!M[type]) M[type] = {}
   if (!M[type].parameters) {
     M[type].parameters = []
   }
 
   const file = argv[++idx]
-  const params = JSON.parse(require('fs').readFileSync(expandHomeDir(file)).toString())
+  const params = JSON.parse(readFileSync(expandHomeDir(file)).toString())
   M[type].parameters = M[type].parameters.concat(toArray(params))
 
   return idx + 1
@@ -149,7 +153,7 @@ const isBinary = {
   mp4: true
 }
 
-const handleKeyValuePairAsArray = key => (M, idx, argv, type) => {
+const handleKeyValuePairAsArray = (key: string) => (M, idx: number, argv: string[], type: string) => {
   if (!argv[idx + 1] || !argv[idx + 2]) {
     return idx + 1
   }
@@ -180,7 +184,7 @@ const handleKeyValuePairAsArray = key => (M, idx, argv, type) => {
 
   const paramName = argv[++idx]
   let paramValue = argv[++idx]
-  let startQuote
+  let startQuote: string
   if (paramValue.startsWith('"')) {
     startQuote = '"'
   } else if (paramValue.startsWith("'")) {
@@ -205,16 +209,15 @@ const handleKeyValuePairAsArray = key => (M, idx, argv, type) => {
       paramValue = `@${process.env[paramValue.substring(2)]}`
     }
 
-    const fs = require('fs')
     const location = expandHomeDir(paramValue.substring(1))
-    if (!fs.existsSync(location)) {
+    if (!existsSync(location)) {
       throw new Error(`Requested parameter @file does not exist: ${location}`)
     } else {
       const extension = location.substring(location.lastIndexOf('.') + 1)
       const encoding = isBinary[extension] ? 'base64' : 'utf8'
       debug('encoding', encoding)
 
-      paramValue = fs.readFileSync(location).toString(encoding)
+      paramValue = readFileSync(location).toString(encoding)
     }
   }
 
@@ -240,7 +243,7 @@ function isNumeric (input) {
   // eslint-disable-next-line eqeqeq
   return (input - 0) == input && ('' + input).trim().length > 0
 }
-const limits = key => (M, idx, argv, type) => {
+const limits = (key: string) => (M: ParameterMap, idx: number, argv: string[], type: string) => {
   if (!M[type]) M[type] = {}
   if (!M[type].limits) M[type].limits = {}
 
@@ -275,7 +278,7 @@ const keyValueParams = {
   '-t': limits('timeout'),
   '--timeout': limits('timeout')
 }
-const extractKeyValuePairs = (argv, type) => {
+const extractKeyValuePairs = (argv: string[], type: string) => {
   const options = {}
   for (let idx = 0; idx < argv.length;) {
     const handler = keyValueParams[argv[idx]]
@@ -459,7 +462,7 @@ const extensionToKind = {
 }
 
 /** return the fully qualified form of the given entity name */
-const fqn = name => {
+const fqn = (name: string): string => {
   const A = name.split('/')
   if (A.length < 3) {
     // just the action name (length === 1) or just the packag/eaction (length === 2)
@@ -510,18 +513,20 @@ const standardViewModes = (defaultMode, fn?) => {
   }
 
   if (fn) {
-    return (options, argv, verb, execOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: entity => makeModes() })
+    return (options, argv, verb, execOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: () => makeModes() })
   } else {
-    return (options, argv) => ({ modes: entity => makeModes() })
+    return () => ({ modes: () => makeModes() })
   }
 }
 
 /** flatten an array of arrays */
-const flatten = arrays => [].concat.apply([], arrays)
+function flatten<T> (arrays: T[][]): T[] {
+  return [].concat.apply([], arrays)
+}
 
 /** api gateway actions */
 specials.api = {
-  get: (options, argv) => {
+  get: (options, argv: string[]) => {
     if (!options) return
     const maybeVerb = argv[1]
     const split = options.name.split('/')
@@ -555,7 +560,7 @@ specials.api = {
       }
     }
   },
-  create: (options, argv) => {
+  create: (options, argv: string[]) => {
     if (argv && argv.length === 3) {
       options.basepath = options.name
       options.relpath = argv[0]
@@ -761,8 +766,7 @@ specials.actions = {
             throw new Error('Could not find code')
           }
         } else {
-          const fs = require('fs')
-          options.action.exec.code = fs.readFileSync(filepath).toString(encoding)
+          options.action.exec.code = readFileSync(filepath).toString(encoding)
         }
 
         if (!options.action.annotations) options.action.annotations = []
@@ -812,7 +816,7 @@ specials.actions = {
       options.action.exec.main = options.main
     }
   }),
-  list: (options, argv) => {
+  list: (options) => {
     // support for `wsk action list <packageName>` see shell issue #449
     if (options && options.name) {
       const parts = (options.name.match(/\//g) || []).length
@@ -830,7 +834,7 @@ specials.actions = {
       delete options.name
     }
   },
-  invoke: (options, argv) => {
+  invoke: (options) => {
     eventBus.emit('/action/invoke', { name: options.name, namespace: options.namespace })
 
     if (options && options.action && options.action.parameters) {
@@ -844,11 +848,11 @@ specials.actions = {
 
 specials.activations = {
   // activations list always gets full docs, and has a default limit of 10, but can be overridden
-  list: (options, argv) => activationModes({ options: Object.assign({}, { limit: 10 }, options, { docs: false }) }),
-  get: (options, argv) => activationModes()
+  list: (options) => activationModes({ options: Object.assign({}, { limit: 10 }, options, { docs: false }) }),
+  get: () => activationModes()
 }
 specials.packages = {
-  list: (options, argv) => {
+  list: (options) => {
     if (options) {
       options.namespace = options.name
     }
@@ -856,7 +860,7 @@ specials.packages = {
   get: standardViewModes('content'),
   create: standardViewModes('content'),
   update: standardViewModes('content'),
-  bind: async (options, argv) => {
+  bind: async (options, argv: string[]) => {
     // the binding syntax is a bit peculiar...
     const parentPackage = options.name
     const bindingName = argv[0]
@@ -884,7 +888,7 @@ specials.packages = {
   }
 }
 specials.rules = {
-  create: (options, argv) => {
+  create: (options, argv: string[]) => {
     if (argv) {
       options.trigger = argv[0]
       options.action = argv[1]
@@ -897,7 +901,7 @@ specials.rules = {
 }
 specials.triggers = {
   get: standardViewModes('parameters'),
-  invoke: (options, argv) => {
+  invoke: (options) => {
     if (options && options.trigger && options.trigger.parameters) {
       options.params = options.trigger && options.trigger.parameters && options.trigger.parameters.reduce((M, kv) => {
         M[kv.key] = kv.value
@@ -906,7 +910,7 @@ specials.triggers = {
     }
   },
   update: BlankSpecial, // updated below
-  create: standardViewModes('parameters', (options, argv) => {
+  create: standardViewModes('parameters', (options) => {
     if (options && options.feed) {
       // the openwhisk npm is a bit bizarre here for feed creation
       const feedName = options.feed
@@ -935,9 +939,9 @@ specials.rules.update = specials.rules.create
 specials.triggers.update = specials.triggers.create
 
 /** actions => action */
-const toOpenWhiskKind = type => type.substring(0, type.length - 1)
+const toOpenWhiskKind = (type: string) => type.substring(0, type.length - 1)
 
-export const parseOptions = (argvFull, type) => {
+export const parseOptions = (argvFull: string[], type: string) => {
   const kvOptions = extractKeyValuePairs(argvFull, type)
   const argvWithoutKeyValuePairs = argvFull.filter(x => x) // remove nulls
   return {
@@ -947,7 +951,7 @@ export const parseOptions = (argvFull, type) => {
 }
 
 const agent = new (require('https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 })
-export const owOpts = (options = {}, execOptions = {}) => {
+export const owOpts = (options = {}) => {
   if (isLinux) {
     // options.forever = true
     options['timeout'] = 5000
@@ -1076,7 +1080,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
 
   // pre and post-process the output of openwhisk; default is do nothing
   let postprocess = x => x
-  let preprocess = (options, execOptions) => options
+  let preprocess = (options) => options
 
   if (entity === 'activations' && verb === 'get' && options.last) {
     // special case for wsk activation get --last
@@ -1159,10 +1163,10 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
     } else {
       // if (isLinux && (!execOptions || !execOptions.noRetry) && options.retry !== false) options.timeout = 5000 // linux bug
 
-      owOpts(options, execOptions)
+      owOpts(options)
 
       return Promise.resolve(options)
-        .then(options => preprocess(options, execOptions))
+        .then(options => preprocess(options))
         .then(options => ow[entity][verb](options))
         .then(handle204(options.name))
         .then(postprocess)

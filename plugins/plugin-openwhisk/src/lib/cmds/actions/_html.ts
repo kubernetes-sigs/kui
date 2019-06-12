@@ -27,7 +27,7 @@ import repl = require('@kui-shell/core/core/repl')
  * Deploy a linked asset
  *
  */
-const link = (dir, file, name) => new Promise((resolve, reject) => {
+const link = (dir, file) => new Promise((resolve, reject) => {
   const filepath = pathResolve(dir, file)
   lstat(filepath, (err, stats) => {
     if (stats) {
@@ -87,11 +87,11 @@ export const deployHTMLViaOpenWhisk = location => new Promise((resolve, reject) 
           onopentag: (name, attribs) => {
             if (name === 'script' && attribs.src) {
               const webbed = webbify(attribs.src)
-              Ps.push(link(dir, attribs.src, webbed))
+              Ps.push(link(dir, attribs.src))
               attribs.src = webbed
             } else if (name === 'link' && attribs.href) {
               const webbed = webbify(attribs.href)
-              Ps.push(link(dir, attribs.href, webbed))
+              Ps.push(link(dir, attribs.href))
               attribs.href = webbed
             }
 

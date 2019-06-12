@@ -22,7 +22,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname, join } from 'path'
-const { cli, normalizeHTML, selectors, sidecar } = ui
+const { cli, normalizeHTML } = ui
 const { rp, localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 

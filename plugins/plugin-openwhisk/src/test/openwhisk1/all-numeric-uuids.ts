@@ -17,7 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, selectors, sidecar } = ui
+const { cli } = ui
 
 // see https://github.com/ibm-functions/shell/issues/284
 describe('Confirm proper handling of all-numeric uuids', function (this: common.ISuite) {

@@ -88,7 +88,7 @@ const fetch = activationId => new Promise((resolve, reject) => {
  * Check to see whether the given activation has completed
  *
  */
-const poll = activation => new Promise((resolve, reject) => {
+const poll = activation => new Promise((resolve) => {
   const iter = () => {
     if (activation.end || activation.response.status) {
       // then the activation has finished!

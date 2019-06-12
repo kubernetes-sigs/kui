@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { current } from '../models/namespace'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-const debug = Debug('plugins/openwhisk/cmds/namespace/current')
-import repl = require('@kui-shell/core/core/repl')
 
 export default (commandTree: CommandRegistrar) => {
   // register namespace.current command
