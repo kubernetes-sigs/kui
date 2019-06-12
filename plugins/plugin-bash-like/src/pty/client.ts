@@ -19,6 +19,7 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import * as xterm from 'xterm'
 import stripClean from 'strip-ansi'
+import { safeLoad } from 'js-yaml'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
 import eventBus from '@kui-shell/core/core/events'
@@ -240,7 +241,7 @@ class Resizer {
     const sizeElement = this.tab.querySelector(selectorForSize)
     const enclosingRect = sizeElement.getBoundingClientRect()
 
-    const selectorForWidthPad = '.repl-inner .repl-block.processing .repl-output'
+    const selectorForWidthPad = '.repl-inner .repl-block .repl-output'
     const widthPadElement = this.tab.querySelector(selectorForWidthPad)
     const heightPadElement = sizeElement
 
@@ -427,6 +428,18 @@ const getOrCreateChannel = async (cmdline: string, channelFactory: ChannelFactor
     debug('reusing existing websocket')
     doExec(cachedws)
     return cachedws
+  }
+}
+
+/**
+ * safeLoad from js-yaml, but protected with try/catch
+ *
+ */
+function safeLoadWithCatch (raw: string): Record<string, any> {
+  try {
+    return safeLoad(raw)
+  } catch (err) {
+    console.error(err)
   }
 }
 
@@ -713,13 +726,16 @@ export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOpt
             } else if (pendingTable) {
               execOptions.stdout(pendingTable)
             } else if (expectingSemiStructuredOutput) {
+              const resource = contentType === 'yaml' ? safeLoadWithCatch(raw) : JSON.parse(raw)
               execOptions.stdout({
                 type: 'custom',
                 isEntity: true,
                 name: argvNoOptions.slice(3).join(' '),
                 prettyType: argvNoOptions[2],
                 contentType,
-                content: raw
+                content: raw,
+                resource,
+                modes: [{ mode: 'raw', direct: cmdline, defaultMode: true }]
               })
             }
 

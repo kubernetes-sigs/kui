@@ -15,6 +15,7 @@
  */
 
 import * as Debug from 'debug'
+
 import { ITab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { isTable } from './models/table'
@@ -22,9 +23,10 @@ import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, ICustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { IExecOptions } from '../models/execOptions'
-const debug = Debug('webapp/picture-in-picture')
-
+import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/modes/registrar'
 import repl = require('../core/repl')
+
+const debug = Debug('webapp/picture-in-picture')
 
 /**
  * Bottom stripe button specification
@@ -34,9 +36,12 @@ export interface ISidecarMode {
   mode: string
   label?: string
 
+  // sort order; default is as given
+  order?: number
+
   // weak: if we have exclusively flush:right buttons, then snap them all left
   // right: always place this button flush:right
-  // default: normal flex LTR flow rules
+  // default: use the order? field if defined; otherwise: order mode tabs/buttons as given
   flush?: 'right' | 'weak'
 
   selected?: boolean
@@ -168,7 +173,7 @@ const _addModeButton = (tab: ITab, bottomStripe: Element, opts: ISidecarMode, en
   }
 
   let container = bottomStripe
-  if (flush === 'right') {
+  if (flush === 'right' || flush === 'weak') {
     let fillContainer = bottomStripe.querySelector('.fill-container.flush-right')
     if (!fillContainer) {
       fillContainer = document.createElement('div')
@@ -350,12 +355,22 @@ export const addModeButton = (tab: ITab, mode: ISidecarMode, entity: Record<stri
 }
 
 export const addModeButtons = (tab: ITab, modesUnsorted: ISidecarMode[] = [], entity, options?: IBottomStripOptions) => {
-  // place flush:right items at the end
+  // consult the view registrar for registered view modes
+  // relevant to this resource
+  const command = ''
+  addRelevantModes(modesUnsorted, command, entity)
+
+  // Place flush:right items at the end. Notes on flush:weak; this
+  // means place to the right, unless there are no flush:right|weak
+  // buttons.
   const modes = modesUnsorted.sort((a, b) => {
     if (a.flush === b.flush ||
         a.flush === 'weak' && b.flush === 'right' ||
         a.flush === 'right' && b.flush === 'weak') {
-      return 0
+      // then use the natural order of a versus b: a mode model can
+      // optionally specify a numeric sort order; if not specified,
+      // then use the order as given
+      return (a.order || 0) - (b.order || 0)
     } else {
       if (a.flush === 'right' || a.flush === 'weak') {
         return 1

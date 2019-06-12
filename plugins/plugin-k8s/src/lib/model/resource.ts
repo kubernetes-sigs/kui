@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { MetadataBearing } from '@kui-shell/core/models/entity'
+
 export interface IKubeStatusCondition {
   lastProbeTime?: string
   lastUpdateTime: string
@@ -89,7 +91,7 @@ interface RoleRef {
   name: string
 }
 
-export interface IKubeResource {
+export interface IKubeResource extends MetadataBearing {
   apiVersion: string
   kind: string
   metadata?: IKubeMetadata

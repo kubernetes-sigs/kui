@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { basename, dirname, join } from 'path'
-
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
@@ -26,18 +25,19 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { IEntitySpec } from '@kui-shell/core/models/entity'
+import { get as relevantModes } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { FinalState } from '../model/states'
 import { IKubeResource, IResource } from '../model/resource'
 
 import { redactYAML } from '../view/redact'
 import { statusButton } from '../view/modes/status'
-import { get as relevantModes } from '../view/modes/registrar'
 import { formatEntity } from '../view/formatEntity'
 import { generateForm } from '../view/form'
-const debug = Debug('k8s/controller/kedit')
-debug('loading')
+
 import repl = require('@kui-shell/core/core/repl')
+
+const debug = Debug('k8s/controller/kedit')
 
 const usage = {
   kedit: {

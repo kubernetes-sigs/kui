@@ -18,13 +18,13 @@ import * as Debug from 'debug'
 
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { IResource, IKubeResource } from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
-import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 const debug = Debug('k8s/view/modes/conditions')
 
 /**
@@ -32,7 +32,7 @@ const debug = Debug('k8s/view/modes/conditions')
  * for by the given resource.
  *
  */
-export const conditionsMode: ModeRegistration = {
+export const conditionsMode: ModeRegistration<IKubeResource> = {
   when: (resource: IKubeResource) => {
     return !!(resource.status && resource.status.conditions)
   },

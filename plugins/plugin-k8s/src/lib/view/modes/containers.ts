@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { Row } from '@kui-shell/core/webapp/models/table'
+import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { IResource, IKubeResource } from '../../model/resource'
 
@@ -26,7 +27,6 @@ import { TrafficLight } from '../../model/states'
 import insertView from '../insert-view'
 import { getActiveView, formatTable } from '../formatMultiTable'
 
-import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 const debug = Debug('k8s/view/modes/containers')
 
 import repl = require('@kui-shell/core/core/repl')
@@ -39,7 +39,7 @@ const viewName = 'Containers'
  * for by the given resource.
  *
  */
-export const containersMode: ModeRegistration = {
+export const containersMode: ModeRegistration<IKubeResource> = {
   when: (resource: IKubeResource) => {
     return resource.spec && resource.spec.containers
   },

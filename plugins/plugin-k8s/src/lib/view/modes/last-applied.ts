@@ -20,10 +20,10 @@ import { safeDump } from 'js-yaml'
 
 import { ITab } from '@kui-shell/core/webapp/cli'
 import { ICustomSpec } from '@kui-shell/core/webapp/views/sidecar'
+import { Table } from '@kui-shell/core/webapp/models/table'
+import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { IResource, IKubeResource } from '../../model/resource'
-
-import { ModeRegistration } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 const debug = Debug('k8s/view/modes/last-applied')
 
@@ -32,7 +32,7 @@ const debug = Debug('k8s/view/modes/last-applied')
  * the given resource.
  *
  */
-export const lastAppliedMode: ModeRegistration = {
+export const lastAppliedMode: ModeRegistration<IKubeResource> = {
   when: hasLastApplied,
   mode: (command: string, resource: IResource) => {
     debug('lastApplied', resource)

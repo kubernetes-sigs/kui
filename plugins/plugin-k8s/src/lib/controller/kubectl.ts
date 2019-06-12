@@ -42,10 +42,11 @@ import { preprocessTable, formatTable } from '../view/formatTable'
 import { deleteResourceButton } from '../view/modes/crud'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
-import { apply as addRelevantModes } from '../view/modes/registrar'
+
+import repl = require('@kui-shell/core/core/repl')
+
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
-import repl = require('@kui-shell/core/core/repl')
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends IExecOptions {
@@ -564,10 +565,6 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       if (verb === 'get') {
         const resource: IResource = { kind: command !== 'helm' && yaml.kind, name: entity, resource: yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
-
-        // consult the view registrar for registered view modes
-        // relevant to this resource
-        addRelevantModes(modes, command, resource)
 
         deleteResourceButton(() => renderAndViewStatus(opts.tab, { command, resource, finalState: FinalState.OfflineLike }))
         modes.push(deleteResourceButton())

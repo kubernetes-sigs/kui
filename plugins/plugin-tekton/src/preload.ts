@@ -17,9 +17,9 @@
 import { dirname, join } from 'path'
 
 import { addPath } from '@kui-shell/core/core/find-file'
+import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
-import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/plugin-k8s/lib/view/modes/registrar'
 
 import { isPipeline, isPipelineRun, isTask } from './model/resource'
 
@@ -39,7 +39,7 @@ import logsMode from './model/modes/logs'
  * A sidecar mode relevancy filter
  *
  */
-function either (...filters: SidecarModeFilter[]): SidecarModeFilter {
+function either (...filters: SidecarModeFilter<IKubeResource>[]): SidecarModeFilter<IKubeResource> {
   return (resource: IKubeResource) => filters.some(filter => filter(resource))
 }
 

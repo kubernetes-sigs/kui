@@ -30,8 +30,8 @@ import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
 import { MetadataBearing, isMetadataBearing, IEntitySpec, Entity } from '../../models/entity'
 import { IExecOptions } from '../../models/execOptions'
+
 const debug = Debug('webapp/views/sidecar')
-debug('loading')
 
 declare var hljs
 
@@ -276,17 +276,31 @@ export interface ICustomSpec extends IEntitySpec, MetadataBearing {
   badges?: IBadgeSpec[]
   contentType?: string
   contentTypeProjection?: string
+  resource?: MetadataBearing
 }
+
+/**
+ * Entity with a "resource" field that is MetadataBearing
+ *
+ */
+export interface MetadataBearingByReference extends ICustomSpec {
+  resource: MetadataBearing
+}
+export function isMetadataBearingByReference (spec: Entity): spec is MetadataBearingByReference {
+  const ref = spec as MetadataBearingByReference
+  return ref !== undefined && ref.resource !== undefined && isMetadataBearing(ref.resource)
+}
+
 export function isCustomSpec (entity: Entity): entity is ICustomSpec {
   const custom = entity as ICustomSpec
   return custom !== undefined && (custom.type === 'custom' || custom.renderAs === 'custom')
 }
-function isPromise (content: CustomContent): content is Promise<HTMLElement> {
-  const promise = content as Promise<HTMLElement>
+function isPromise<T> (content: CustomContent): content is Promise<T> {
+  const promise = content as Promise<T>
   return !!promise.then
 }
 function isHTML (content: CustomContent): content is HTMLElement {
-  return typeof content !== 'string'
+  return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
 }
 export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExecOptions, resultDom?: Element) => {
   if (!custom || !custom.content) return
@@ -534,25 +548,60 @@ export const updateSidecarHeader = (tab: ITab, update: IHeaderUpdate, sidecar = 
   }
 }
 
+/** format the creation time of a resource */
+const createdOn = (resource: MetadataBearing): HTMLElement => {
+  const startTime = /* resource.status && resource.status.startTime || */ resource.metadata.creationTimestamp
+  const prefixText = /* resource.status && resource.status.startTime ? 'Started on ' : */ 'Created on '
+
+  if (!startTime) {
+    return
+  }
+
+  const message = document.createElement('div')
+  const datePart = document.createElement('strong')
+
+  message.appendChild(document.createTextNode(prefixText))
+  message.appendChild(datePart)
+  try {
+    datePart.appendChild(prettyPrintTime(Date.parse(startTime)))
+  } catch (err) {
+    debug('error trying to parse this creationTimestamp', resource)
+    console.error('error parsing creationTimestamp', err)
+    datePart.innerText = resource.metadata.creationTimestamp
+  }
+
+  return message
+}
+
 /**
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
 export const addNameToSidecarHeader = async (sidecar: ISidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?: IEntitySpec | ICustomSpec) => {
-  debug('addNameToSidecarHeader', name)
+  debug('addNameToSidecarHeader', name, isMetadataBearingByReference(entity), entity)
 
   // maybe entity.content is a metadat-bearing entity that we can
   // mine for identifying characteristics
-  const meta = isMetadataBearing(entity) && entity
-  if (meta) {
+  const metadataBearer = isMetadataBearing(entity) && entity ||
+    isMetadataBearingByReference(entity) && entity.resource
+  if (metadataBearer) {
     if (!name) {
-      name = meta.metadata.name
+      name = metadataBearer.metadata.name
     }
     if (!packageName) {
-      packageName = meta.metadata.namespace || ''
+      packageName = metadataBearer.metadata.namespace || ''
     }
     if (!viewName) {
-      viewName = meta.kind
+      viewName = metadataBearer.kind
+    }
+
+    if (!subtext) {
+      // if we weren't given a "subtext", and we find legitimate
+      // "created on" metadata, then show that as the subtext
+      const maybe = createdOn(metadataBearer)
+      if (maybe) {
+        subtext = maybe
+      }
     }
   }
 
@@ -608,7 +657,7 @@ export const addNameToSidecarHeader = async (sidecar: ISidecar, name: string | E
  * Call a formatter
  *
  */
-export type Formattable = IFormatter | string | Promise<string>
+export type Formattable = IFormatter | string | Promise<string> | HTMLElement
 export interface IFormatter {
   plugin: string
   module: string
@@ -617,14 +666,17 @@ export interface IFormatter {
 }
 function isFormatter (spec: Formattable): spec is IFormatter {
   return typeof spec !== 'string' &&
+    !isHTML(spec) &&
     !(spec instanceof Promise) &&
     spec.plugin !== undefined &&
     spec.module !== undefined &&
     spec.operation !== undefined &&
     spec.parameters !== undefined
 }
-const call = async (spec: Formattable): Promise<string | Element> => {
-  if (!isFormatter(spec)) {
+const call = async (spec: Formattable): Promise<string | HTMLElement> => {
+  if (isPromise(spec)) {
+    return spec
+  } else if (!isFormatter(spec)) {
     return Promise.resolve(spec)
   } else {
     const provider = await import(`@kui-shell/plugin-${spec.plugin}/${spec.module}`)
