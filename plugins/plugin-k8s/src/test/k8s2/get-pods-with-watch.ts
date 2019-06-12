@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 /** name of the pod */
@@ -142,7 +142,7 @@ const watchPods = function (this: common.ISuite, kubectl: string, ns: string) {
       await this.app.client.waitForExist(selector2ButOffline)
 
       // create again
-      const selector4 = await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
+      await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
 
       // the "online" badge from the watch had better now exist again after the create
       // (i.e. we had better actually be watching!)

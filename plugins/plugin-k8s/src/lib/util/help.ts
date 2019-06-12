@@ -23,10 +23,9 @@ const debug = require('debug')('k8s/util/help')
  *
  * @param command e.g. helm versus kubectl
  * @param verb e.g. list versus get
- * @param entityType? e.g. crd
  *
  */
-export const renderHelp = (out: string, command: string, verb: string, exitCode: number, entityType?: string) => {
+export const renderHelp = (out: string, command: string, verb: string, exitCode: number) => {
   debug('renderHelp')
 
   // kube and helm help often have a `Use "this command" to do that operation`
@@ -40,7 +39,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
 
   // form the detailedExample model from the use part we stripped out
   const detailedExampleFromUsePart = usePart && usePart.filter(x => x).map(line => {
-    const [ _, command, docs ] = line.split(/^Use "([^"]+)"\s+(.*)\s*$/)
+    const [ , command, docs ] = line.split(/^Use "([^"]+)"\s+(.*)\s*$/)
     return { command, docs }
   })
 
@@ -110,7 +109,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
       .split(/^\s*(?:#\s+)/mg)
       .map(x => x.trim())
       .filter(x => x)
-      .map((group, idx, A) => {
+      .map((group) => {
         //
         // Explanation: compare `kubectl completion -h` to `kubectl get -h`
         // The former Examples section has a structure of (Summary, MultiLineDetail)
@@ -124,7 +123,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
         //
         const match = group.match(/(.*)[\n\r]([\s\S]+)/)
         if (match && match.length === 3) {
-          const [_, firstPartFull, secondPartFull] = match
+          const [, firstPartFull, secondPartFull] = match
 
           const firstPart = removeSolitaryAndTrailingPeriod(firstPartFull)
           const secondPart = removeSolitaryAndTrailingPeriod(secondPartFull)

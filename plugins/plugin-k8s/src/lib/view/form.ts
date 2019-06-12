@@ -40,28 +40,6 @@ interface IFormGroup {
 }
 
 /**
- * Traverse the given yaml
- *
- */
-const findParent = (yaml: Record<string, any>, path: string[]): Record<string, any> => {
-  debug('findParent', yaml, path)
-  if (!yaml || path.length === 1) {
-    throw new Error('Cannot find path')
-  } else {
-    const desiredKey = path[0]
-    for (let key in yaml) {
-      if (key === desiredKey) {
-        if (path.length === 2) {
-          return yaml[key]
-        } else {
-          return findParent(yaml[key], path.slice(1))
-        }
-      }
-    }
-  }
-}
-
-/**
  * Update the given path in the given yaml to have the given value
  *
  */

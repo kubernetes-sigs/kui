@@ -71,7 +71,8 @@ const redactWithPattern = (str: string, pattern: RegExp): string => {
  * Redact the given YAML
  *
  */
-export const redactYAML = (str: string, options?): string => {
+// export const redactYAML = (str: string, options?): string => {
+export const redactYAML = (str: string): string => {
   return patterns.reduce(redactWithPattern, str)
 }
 
@@ -79,7 +80,8 @@ export const redactYAML = (str: string, options?): string => {
  * Redact the given JSON
  *
  */
-export const redactJSON = (obj: any, options?): any => {
+// export const redactJSON = (obj: any, options?): any => {
+export const redactJSON = (obj: any): any => {
   // FIXME
   return obj
 }

@@ -38,14 +38,3 @@ export const selectorToString = (selector: Selector): string => {
 
   return stringified
 }
-
-const valueToString = (value: Selector | string): string => {
-  if (typeof value === 'string') {
-    return value
-  } else {
-    return Object
-      .keys(value)
-      .map(key => `${key}=${value[key]}`)
-      .join(',')
-  }
-}

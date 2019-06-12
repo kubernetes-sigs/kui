@@ -15,10 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-
-import assert = require('assert')
+import { cli } from '@kui-shell/core/tests/lib/ui'
 
 const synonyms = ['helm']
 

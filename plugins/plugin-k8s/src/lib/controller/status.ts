@@ -26,7 +26,7 @@ import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { CodedError } from '@kui-shell/core/models/errors'
 
 import { withRetryOn404 } from '../util/retry'
-import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
+import { flatten, isDirectory } from '../util/util'
 
 import { ICRDResource, IKubeResource } from '../model/resource'
 import { States, FinalState } from '../model/states'
@@ -308,7 +308,7 @@ const errorEntity = (execOptions: IExecOptions, base: IKubeResource, backupNames
 interface FinalStateOptions extends ParsedOptions {
   'final-state': FinalState
 }
-const getDirectReferences = (command: string) => async ({ execOptions, argv, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const getDirectReferences = (command: string) => async ({ execOptions, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
   const idx = argvNoOptions.indexOf(command) + 1
@@ -483,7 +483,7 @@ const findControlledResources = async (args: IEvaluatorArgs, kubeEntities: IKube
   debug('findControlledResources', kubeEntities)
 
   const raw = Object.assign({}, args.execOptions, { raw: true })
-  const pods = removeDuplicateResources(flatten(await Promise.all(kubeEntities.map(({ kind, metadata: { labels, namespace, name } }) => {
+  const pods = removeDuplicateResources(flatten(await Promise.all(kubeEntities.map(({ kind, metadata: { labels, namespace } }) => {
     if (labels && labels.app && kind !== 'Pod') {
       const pods: Promise<IKubeResource[]> = repl.qexec(`kubectl get pods -n "${namespace || 'default'}" -l "app=${labels.app}" -o json`,
         undefined, undefined, raw)

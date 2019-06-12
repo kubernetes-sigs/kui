@@ -17,9 +17,7 @@
 import * as Debug from 'debug'
 import { ITab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
-import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Row } from '@kui-shell/core/webapp/models/table'
 
 import { IResource, IKubeResource } from '../../model/resource'
 
@@ -69,20 +67,6 @@ export const containersButton = (command: string, resource: IResource, overrides
     parameters: { command, resource }
   }
 }, overrides || {})
-
-/**
- * Format a timestamp field from the status.containers model; these might be null
- *
- */
-const formatTimestamp = (timestamp: string): string => {
-  debug('formatTimestamp', timestamp)
-
-  if (!timestamp) {
-    return ''
-  } else {
-    return new Date(timestamp).toLocaleString()
-  }
-}
 
 /**
  * Render the tabular containers view
@@ -161,7 +145,7 @@ const bodyModel = (tab: ITab, resource: IResource): Row[] => {
         tag: 'badge',
         outerCSS: 'capitalize',
         css: stateKey === 'running' ? TrafficLight.Green : stateKey === 'terminated' ? TrafficLight.Red : TrafficLight.Yellow,
-        watch: async (idx: number) => {
+        watch: async () => {
           // { value, done = false, css, onclick, others = [], unchanged = false, outerCSS }
           const pod = await repl.qexec(`kubectl get pod ${podName} -n ${ns} -o json`, undefined, undefined, { raw: true })
 

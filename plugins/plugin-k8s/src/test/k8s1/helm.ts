@@ -15,10 +15,9 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { cli } from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
-import * as Debug from 'debug'
-const debug = Debug('plugins/apache-composer/cmd/app-invoke')
+
 describe('helm commands', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))

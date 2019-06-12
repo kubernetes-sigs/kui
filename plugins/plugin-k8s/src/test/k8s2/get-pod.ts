@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import assert = require('assert')
@@ -51,25 +51,6 @@ describe('electron get pod', function (this: common.ISuite) {
 
       // check that the ready check mark is green
       await this.app.client.waitForExist(`${table} .entity[data-name="nginx"] [data-key="ready"].green-text .fa-check-circle`)
-    }
-
-    /**
-     * Interact with the Raw tab
-     *
-     */
-    const testRawTab = async () => {
-      this.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
-
-      // expect to see some familiar bits of a pod in the editor under the raw tab
-      return this.app.client.getText(`${selectors.SIDECAR} .monaco-editor .view-lines`)
-        .then(expectSubset({
-          apiVersion: 'v1',
-          kind: 'Pod',
-          metadata: {
-            name: 'nginx',
-            namespace: ns
-          }
-        }))
     }
 
     const ns: string = createNS()

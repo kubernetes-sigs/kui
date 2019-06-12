@@ -18,15 +18,11 @@ import * as Debug from 'debug'
 
 import { qexec as $$ } from '@kui-shell/core/core/repl'
 import { ITab } from '@kui-shell/core/webapp/cli'
-import drilldown from '@kui-shell/core/webapp/picture-in-picture'
-import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Table } from '@kui-shell/core/webapp/models/table'
 
 import { selectorToString } from '../../util/selectors'
 
 import { IResource, IKubeResource } from '../../model/resource'
-import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'

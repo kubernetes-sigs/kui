@@ -20,7 +20,7 @@ import { safeDump, safeLoad as parseYAML } from 'js-yaml'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectYAMLSubset, expectSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 import path = require('path')
 import assert = require('assert')

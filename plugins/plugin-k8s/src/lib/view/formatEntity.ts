@@ -16,8 +16,8 @@
 
 import eventBus from '@kui-shell/core/core/events'
 
-import { flatten, isDirectory, toOpenWhiskFQN } from '../util/util'
-import { State, States, FinalState, watchStatus, rendering as stateRendering } from '../model/states'
+import { toOpenWhiskFQN } from '../util/util'
+import { States, FinalState, watchStatus, rendering as stateRendering } from '../model/states'
 
 const debug = require('debug')('k8s/util/formatEntity')
 
@@ -60,7 +60,6 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
 
   // see if anyone else changes the expected final state
   const watch = { apiVersion, kind, name, namespace, type, fqn, context, labels }
-  let conflictingFinalStates = false
   const eventType = '/kubectl/state/expect'
   const listener = ({ watch: other, finalState: otherFinalState }) => {
     if (watch.kind === other.kind &&
@@ -69,7 +68,6 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
         finalState !== otherFinalState) {
       debug('conflicting final states', watch, finalState, otherFinalState)
 
-      conflictingFinalStates = true
       eventBus.removeListener(eventType, listener)
     }
   }

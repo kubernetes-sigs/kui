@@ -18,9 +18,6 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar, getValueFromMonaco, expectYAML } from '@kui-shell/core/tests/lib/ui'
 import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
-import { dirname } from 'path'
-const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
-
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
 

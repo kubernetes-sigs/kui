@@ -19,13 +19,12 @@ import * as Debug from 'debug'
 import { basename, dirname, join } from 'path'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
-import { IExecOptions } from '@kui-shell/core/models/execOptions'
+import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { ITab } from '@kui-shell/core/webapp/cli'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { Table } from '@kui-shell/core/webapp/models/table'
 import { IEntitySpec } from '@kui-shell/core/models/entity'
 
 import { FinalState } from '../model/states'
@@ -59,7 +58,7 @@ const usage = {
  * Show a customized view of a given yaml in the editor
  *
  */
-const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab, parsedOptions: ParsedOptions, execOptions: IExecOptions) => {
+const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab) => {
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
@@ -175,7 +174,7 @@ const showAsTable = (yamls: any[], filepathAsGiven: string, parsedOptions): Tabl
  * kedit command handler
  *
  */
-const kedit = async ({ tab, execOptions, argv, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const kedit = async ({ tab, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]
@@ -199,7 +198,7 @@ const kedit = async ({ tab, execOptions, argv, argvNoOptions, parsedOptions }: I
     if (yamlIdx < 0) {
       throw new Error('Cannot find the specified resource')
     } else {
-      return showResource(yamls[yamlIdx], filepath, tab, parsedOptions, execOptions)
+      return showResource(yamls[yamlIdx], filepath, tab)
     }
   }
 }

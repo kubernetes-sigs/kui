@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+
+import { IKubeResource } from './resource'
 import { maybeAsDate, TryLaterError } from '../util/util'
 
-const debug = require('debug')('k8s/states')
-
 import repl = require('@kui-shell/core/core/repl')
+
+const debug = Debug('k8s/states')
 
 /**
  * Resource status/states
@@ -171,7 +174,7 @@ const kindForQuery = (apiVersion: string, kind: string): string => {
  * Get a status struct from the status.conditions array
  *
  */
-const getStatusFromConditions = response => {
+const getStatusFromConditions = (response: IKubeResource) => {
   if (response.status && !response.status.state && response.status.conditions) {
     // use the status.conditions, rather than status.state
     const conditions = response.status.conditions
@@ -264,17 +267,17 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
  * Check the deployment status of an openwhisk entity
  *
  */
-const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
-  .then(() => ({ state: States.Online }))
-  .catch(err => {
-    if (err.statusCode === 404) {
-      return {
-        state: States.Offline
-      }
-    } else {
-      throw err
-    }
-  })
+// const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
+//   .then(() => ({ state: States.Online }))
+//   .catch(err => {
+//     if (err.statusCode === 404) {
+//       return {
+//         state: States.Offline
+//       }
+//     } else {
+//       throw err
+//     }
+//   })
 
 interface IWatch {
   apiVersion: string
@@ -291,7 +294,7 @@ interface IWatch {
  * Determine whether a kube Deployment is ready
  *
  */
-const getStatusOfDeployment = (kubeEntity, desiredFinalState: FinalState): IStatus => {
+const getStatusOfDeployment = (kubeEntity: IKubeResource, desiredFinalState: FinalState): IStatus => {
   const desireIsOffline = desiredFinalState === FinalState.OfflineLike
 
   if (!kubeEntity) {
@@ -309,8 +312,8 @@ const getStatusOfDeployment = (kubeEntity, desiredFinalState: FinalState): IStat
         message: readyCondition.lastUpdateTime // readyCondition.message
       }
     } else {
-      const desiredReplicas = kubeEntity.spec.replicas
-      const currentReplicas = (kubeEntity.status && kubeEntity.status.readyReplicas) || 0
+      const desiredReplicas: number = kubeEntity.spec.replicas
+      const currentReplicas: number = (kubeEntity.status && kubeEntity.status.readyReplicas) || 0
       const maybeCondition = kubeEntity.status &&
         kubeEntity.status.conditions &&
         kubeEntity.status.conditions[0]
@@ -341,7 +344,7 @@ const getStatusOfDeployment = (kubeEntity, desiredFinalState: FinalState): IStat
  *
  */
 export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalState, count = 120) => {
-  const finalState = typeof finalStateStr === 'string' ? FinalState[finalStateStr] : finalStateStr
+  const finalState: FinalState = typeof finalStateStr === 'string' ? FinalState[finalStateStr] : finalStateStr
 
   const { kind, name, namespace, type, fqn, context } = watch
   // debug('watchStatus', finalStateStr, FinalState[finalState], kind, name);
@@ -376,8 +379,6 @@ export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalSt
       (finalState === FinalState.OnlineLike && isOnlineLike(newState)) ||
       (finalState === FinalState.OfflineLike && isOfflineLike(newState))
     // || (!offlineOk && newState === States.Disparity);
-
-    const labels = watch.labels
 
     const getOpenWhiskResource = (exec: string) => repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
     const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${repl.encodeComponent(name)} ${contextOption(context)} ${ns(namespace)} -o yaml`

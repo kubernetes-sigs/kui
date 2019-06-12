@@ -15,7 +15,6 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 import { kubectl, cli as kui, CLI } from '@kui-shell/core/tests/lib/headless'
 
