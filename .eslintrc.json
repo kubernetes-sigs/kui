@@ -50,6 +50,7 @@
         "plugins/plugin-grid/**/*.ts",
         "plugins/plugin-k8s/**/*.ts",
         "plugins/plugin-manager/**/*.ts",
+        "plugins/plugin-openwhisk/**/*.ts",
         "plugins/plugin-openwhisk-debug/**/*.ts",
         "plugins/plugin-openwhisk-editor-extensions/**/*.ts",
         "plugins/plugin-proxy-support/**/*.ts",

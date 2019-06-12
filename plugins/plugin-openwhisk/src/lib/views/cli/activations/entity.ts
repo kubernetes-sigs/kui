@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import { ok, ITab } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { pexec } from '@kui-shell/core/core/repl'
-import { Entity, IEntitySpec } from '@kui-shell/core/models/entity'
+import { IEntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
 import { IActivation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'

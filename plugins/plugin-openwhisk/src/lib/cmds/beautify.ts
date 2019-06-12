@@ -15,7 +15,6 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import * as cli from '@kui-shell/core/webapp/cli'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -30,7 +29,7 @@ declare var hljs
  *
  */
 export default async (commandTree: CommandRegistrar) => {
-  synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ block, nextBlock, execOptions, tab }) => {
+  synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ execOptions, tab }) => {
     if (isHeadless()) {
       throw new Error('beautify not supported in headless mode')
     }

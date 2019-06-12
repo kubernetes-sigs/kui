@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
 import { Application } from 'spectron'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, keys, selectors, sidecar } = ui
+const { cli, keys, sidecar } = ui
 
 /** execute the given async task n times */
 const doTimes = (n: number, task: () => Promise<void>) => {
@@ -62,7 +61,7 @@ describe('Tab completion openwhisk', function (this: common.ISuite) {
     })
     .catch(common.oops(this))
 
-  const tabbyWithOptions = (app: Application, partial: string, expected?: string[], full?: string, { click = undefined, nTabs = undefined, expectOK = true, iter = 0, expectedPromptAfterTab = undefined } = {}) => {
+  const tabbyWithOptions = (app: Application, partial: string, expected?: string[], full?: string, { click = undefined, nTabs = undefined, expectOK = true, expectedPromptAfterTab = undefined } = {}) => {
     return app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
       .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => parseInt(count, 10))
@@ -124,20 +123,6 @@ describe('Tab completion openwhisk', function (this: common.ISuite) {
         return common.oops(this)(err)
       })
   }
-
-  const tabbyWithOptionsThenCancel = (app: Application, partial: string, expected: string[]) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-    .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
-    .then(count => parseInt(count, 10))
-    .then(count => app.client.setValue(ui.selectors.CURRENT_PROMPT, partial)
-      .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), partial))
-      .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
-      .then(() => app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
-      .then(() => app.client.getText(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
-      .then(ui.expectArray(expected))
-      .then(() => app.client.keys('ffffff')) // type something random
-      .then(() => app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 20000, true))) // wait for non-existence of the temporary
-    .then(() => this.app.client.keys(ui.ctrlC)) // clear the line
-    .catch(common.oops(this))
 
   it('should create an action foo', () => cli.do('let foo = x=>x', this.app)
     .then(cli.expectOK)

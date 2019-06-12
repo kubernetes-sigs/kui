@@ -37,7 +37,7 @@ import repl = require('@kui-shell/core/core/repl')
  * Make a documentation struct
  *
  */
-const docs = (syn: string) => ({
+const docs = () => ({
   usage: actions.available.find(({ command }) => command === 'invoke')
 })
 
@@ -133,7 +133,7 @@ export default async (commandTree: CommandRegistrar) => {
   const asyncInvoke = doAsync(rawHandler) //             ... and for async
 
   synonyms('actions').map(syn => {
-    const invokeOpts = docs(syn)
+    const invokeOpts = docs()
     const asyncOpts = {
       usage: Object.assign({}, invokeOpts.usage, {
         command: 'async',

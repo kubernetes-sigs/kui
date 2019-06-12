@@ -19,17 +19,14 @@
  *
  */
 
-import * as assert from 'assert'
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+const { cli } = ui
 const { validateNamespace, expectedNamespace } = ui
 
 const API_HOST = process.env.API_HOST
-const APP_TITLE = process.env.APP_TITLE || 'Kui Shell'
+// const APP_TITLE = process.env.APP_TITLE || 'Kui Shell'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
 
 const selectors = {

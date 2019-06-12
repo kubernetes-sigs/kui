@@ -21,8 +21,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, selectors, sidecar } = ui
-const { rp } = common
+const { cli } = ui
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const HTML_WITH_JS_INPUT = `${ROOT}/data/openwhisk/hello-with-script.html`

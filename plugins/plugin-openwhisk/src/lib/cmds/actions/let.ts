@@ -214,7 +214,7 @@ const makeZipActionFromZipFile = (wsk, name: string, location: string, options, 
   try {
     debug('makeZipActionFromZipFile', name, location, options)
 
-    lstat(location, (err, stats) => {
+    lstat(location, (err) => {
       if (err) {
         console.error(err)
         reject(new Error(`I think you asked to create a zip action, but the specified zip file does not exist: ${location}`))

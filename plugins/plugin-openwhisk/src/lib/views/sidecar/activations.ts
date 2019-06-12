@@ -23,7 +23,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import { IShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
+import { IShowOptions } from '@kui-shell/core/webapp/views/show-options'
 import { ITab } from '@kui-shell/core/webapp/cli'
 
 import { isActivationId } from '../../models/activation'
