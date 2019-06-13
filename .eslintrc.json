@@ -35,32 +35,16 @@
     }],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-object-literal-type-assertion": "off",
-    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/no-var-requires": "off"
   },
   "overrides": [
     {
       "files": [
-        "packages/kui-builder/**/*.ts",
-        "plugins/plugin-apache-composer/**/*.ts",
-        "plugins/plugin-bash-like/**/*.ts",
-        "plugins/plugin-core-support/**/*.ts",
-        "plugins/plugin-editor/**/*.ts",
-        "plugins/plugin-grid/**/*.ts",
-        "plugins/plugin-k8s/**/*.ts",
-        "plugins/plugin-manager/**/*.ts",
-        "plugins/plugin-openwhisk/**/*.ts",
-        "plugins/plugin-openwhisk-debug/**/*.ts",
-        "plugins/plugin-openwhisk-editor-extensions/**/*.ts",
-        "plugins/plugin-proxy-support/**/*.ts",
-        "plugins/plugin-tekton/**/*.ts",
-        "plugins/plugin-tutorials/**/*.ts",
-        "plugins/plugin-wrk/**/*.ts",
-        "plugins/plugin-wskflow/**/*.ts"
+        "packages/app/**/*.ts"
       ],
       "rules": {
-        "@typescript-eslint/no-unused-vars": 1
+        "@typescript-eslint/no-unused-vars": "off"
       }
     }
   ]
