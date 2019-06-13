@@ -220,3 +220,119 @@ body.subwindow .repl .horizontal-landing-zone {
 #help-button.left-tab-stripe-button:hover i {
     color: var(--color-brand-02) !important;
 }
+
+
+body.os-darwin .left-tab-stripe {
+    padding-left: calc(78px + 1em);
+    padding-top: 0;
+    flex-basis: auto;
+}
+
+.main {
+    flex-direction: column;
+}
+
+.left-tab-stripe {
+    height: 36px;
+    flex-direction: row;
+    padding: 0;
+}
+
+.left-tab-stripe-buttons {
+    display: flex;
+    padding-top: 8px;
+}
+
+.left-tab-stripe-button {
+    position: relative;
+    display: flex;
+    color: var(--color-text-01);
+    opacity: 1;
+    transition: color 600ms ease-in-out, opacity 300ms ease-in-out;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-base02);
+    min-width: 8em;
+    margin: 0;
+    border-radius: 4px / 6px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: 1px solid transparent;
+    border-top: none;
+    border-bottom: none;
+}
+
+.left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
+    /* bottom shadow for not-selected tabs */
+    border-bottom: 1px solid var(--color-base01);
+}
+
+.left-tab-stripe-button:only-child {
+    opacity: 1;
+}
+
+.left-tab-stripe-button-selected {
+    background: var(--color-ui-01);
+    border-color: var(--color-base03);
+    box-shadow: 0 0 2px var(--color-base01);
+}
+
+.left-tab-stripe-buttons .left-tab-stripe-button:after {
+    content: '';
+}
+
+.left-tab-stripe-button > i {
+    font-style: normal;
+}
+
+.left-tab-stripe-buttons .left-tab-stripe-button > i {
+    display: none;
+}
+
+.left-tab-stripe-button-label {
+    padding: 0 0.5em;
+    color: var(--color-text-01);
+    direction: unset;
+    max-width: 25em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* processing... */
+.left-tab-stripe-button.processing .left-tab-stripe-button-label {
+    color: var(--color-base0C);
+}
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected).processing .left-tab-stripe-button-label {
+    /* for background tabs... we need more contrast */
+    color: var(--color-base03);
+}
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected).processing .left-tab-stripe-button-label:after {
+    content: " \2731";
+}
+
+.left-tab-stripe-bottom-buttons {
+    display: flex;
+}
+
+.left-tab-stripe-bottom-buttons .left-tab-stripe-button {
+    margin: 0;
+    min-width: unset;
+    padding: 0 0.5em;
+    background: none;
+    justify-content: center;
+}
+
+.left-tab-stripe-button-selected .left-tab-stripe-button-label {
+    opacity: 1;
+}
+
+.left-tab-stripe-button.smaller-button i {
+    font-size: 1.25em;
+    color: var(--color-base06) !important;
+    filter: none !important;
+}
+
+body {
+    --color-stripe-01: var(--color-base02);
+}

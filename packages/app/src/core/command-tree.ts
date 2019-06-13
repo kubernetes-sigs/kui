@@ -23,8 +23,9 @@ import { UsageError, UsageModel, IUsageRow } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
+import { Tab } from '../webapp/cli'
+
 const debug = Debug('core/command-tree')
-debug('loading')
 
 /**
  * The command tree module
@@ -324,9 +325,15 @@ const withEvents = (evaluator: CommandHandler, leaf: CommandBase, partialMatches
         }
       }
 
-      if (leaf && eventBus) eventBus.emit('/command/resolved', event)
+      if (leaf && eventBus) eventBus.emit('/command/complete', event)
     },
-    error: (command: string, err: CodedError): CodedError => {
+    error: (command: string, tab: Tab, execType: ExecType, err: CodedError): CodedError => {
+      event.tab = tab
+      event.execType = execType
+      event.command = command
+      event.error = oopsMessage(err)
+      if (leaf && eventBus) eventBus.emit('/command/complete', event)
+
       if (err.code === 127) {
         // command not found
         const suggestions = suggestPartialMatches(partialMatches, true, err['hide']) // true: don't throw an exception
@@ -334,9 +341,6 @@ const withEvents = (evaluator: CommandHandler, leaf: CommandBase, partialMatches
         return suggestions
       }
 
-      event.command = command
-      event.error = oopsMessage(err)
-      if (leaf && eventBus) eventBus.emit('/command/resolved', event)
       return err
     }
   }

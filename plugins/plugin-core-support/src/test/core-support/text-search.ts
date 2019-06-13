@@ -26,42 +26,61 @@ localDescribe('Text search', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should open the search bar when cmd+f is pressed', () => this.app.client.keys([ui.ctrlOrMeta, 'f'])
-    .then(() => this.app.client.isVisible('#search-bar'))
-    .then(r => assert.ok(r, 'search-bar visible'))
-    .catch(common.oops(this)))
-
-  it('should not close the search bar if pressing esc outside of search input', () => this.app.client.click(ui.selectors.CURRENT_PROMPT_BLOCK)
-    .then(() => this.app.client.keys(keys.ESCAPE))
-    .then(() => this.app.client.isVisible('#search-bar'))
-    .then(r => assert.ok(r, 'assert if search-bar is visible'))
-    .catch(common.oops(this)))
-
-  it('should focus on search input when search input is pressed', () => this.app.client.click('#search-input')
-    .then(() => this.app.client.hasFocus('#search-input'))
-    .then(r => assert.ok(r, 'assert if search-input is focused'))
-    .catch(common.oops(this)))
-
-  it('should close the search bar if pressing esc in search input', () => this.app.client.setValue('#search-input', keys.ESCAPE)
-    .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
-    .catch(common.oops(this)))
-
-  // re-open, so that we can test the close button
-  it('should open the search bar when cmd+f is pressed', () => this.app.client.keys([ui.ctrlOrMeta, 'f'])
-    .then(() => this.app.client.isVisible('#search-bar'))
-    .then(r => assert.ok(r, 'search-bar visible'))
-    .catch(common.oops(this)))
-
   // 2 matches test
-  it('should close the search bar if clicking the close button', () => this.app.client.click('#search-close-button')
-    .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
-    .catch(common.oops(this)))
   it('should add grumble to the repl', () => cli.do('grumble', this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))
   it('should add another grumble to the repl', () => cli.do('grumble', this.app)
     .then(cli.expectError(404))
     .catch(common.oops(this)))
+  it('should add bojangles to the repl', () => cli.do('bojangles', this.app)
+    .then(cli.expectError(404))
+    .catch(common.oops(this)))
+
+  it('should open the search bar when cmd+f is pressed', async () => {
+    await this.app.client.keys([ui.ctrlOrMeta, 'f'])
+    await this.app.client.waitForVisible('#search-bar')
+  })
+
+  it('should not close the search bar if pressing esc outside of search input', async () => {
+    await this.app.client.click(ui.selectors.CURRENT_PROMPT_BLOCK)
+    await this.app.client.keys(keys.ESCAPE)
+    await this.app.client.waitForVisible('#search-bar')
+  })
+
+  it('should focus on search input when search input is pressed', async () => {
+    await this.app.client.waitUntil(async () => {
+      await this.app.client.click('#search-input')
+      const hasFocus = await this.app.client.hasFocus('#search-input')
+      return hasFocus
+    })
+  })
+
+  it('should close the search bar if pressing esc in search input', async () => {
+    await this.app.client.setValue('#search-input', keys.ESCAPE)
+    await this.app.client.waitForVisible('#search-bar', 2000, true) // reverse: true
+  })
+
+  // re-open, so that we can test the close button
+  // !!! Notes: some odd chrome or chromedriver bugs: if you click on
+  // the close button, then chrome/chromedriver/whatever refuses to
+  // accept any input; both setValue on the INPUT and the ctrlOrMeta+F
+  // fail
+  /* it('should open the search bar when cmd+f is pressed', async () => {
+    await this.app.client.keys([ui.ctrlOrMeta, 'f'])
+    await this.app.client.waitForVisible('#search-bar')
+  })
+
+  it('should close the search bar if clicking the close button', async () => {
+    await new Promise(resolve => setTimeout(resolve, 5000))
+    await this.app.client.click('#search-close-button')
+    await this.app.client.waitForVisible('#search-bar', 2000, true) // reverse: true
+    await this.app.client.waitUntil(async () => {
+      const hasFocus = await this.app.client.hasFocus(ui.selectors.CURRENT_PROMPT)
+      return hasFocus
+    })
+  }) */
+
   it('should find 2 matches for grumble', async () => {
     try {
       this.app.client.keys([ui.ctrlOrMeta, 'f'])
@@ -70,7 +89,7 @@ localDescribe('Text search', function (this: ISuite) {
       await this.app.client.waitUntil(async () => {
         await this.app.client.setValue('#search-input', `grumble${keys.ENTER}`)
         const txt = await this.app.client.getText('#search-found-text')
-        return txt === '2 matches'
+        return txt === '2 matches' // two executions, no tab title match
       })
     } catch (err) {
       common.oops(this)(err)
@@ -81,9 +100,6 @@ localDescribe('Text search', function (this: ISuite) {
   it('should close the search bar if clicking the close button', () => this.app.client.click('#search-close-button')
     .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
     .catch(common.oops(this)))
-  it('should add bojangles to the repl', () => cli.do('bojangles', this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
   it('should find 1 match for bojangles', () => this.app.client.keys([ui.ctrlOrMeta, 'f'])
     .then(() => this.app.client.waitForVisible('#search-bar'))
     .then(() => this.app.client.hasFocus('#search-input'))
@@ -91,7 +107,7 @@ localDescribe('Text search', function (this: ISuite) {
     .then(() => this.app.client.waitUntil(async () => {
       await this.app.client.setValue('#search-input', `bojangles${keys.ENTER}`)
       const txt = await this.app.client.getText('#search-found-text')
-      return txt === '1 match'
+      return txt === '2 matches' // one execution, plus tab title match
     }))
     .catch(common.oops(this)))
 

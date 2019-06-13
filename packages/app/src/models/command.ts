@@ -156,7 +156,7 @@ export interface CommandHandlerWithEvents extends Evaluator {
   route: string
   options: CommandOptions
   success: (args: { tab: Tab; type: ExecType; command: string; isDrilldown: boolean; parsedOptions: { [ key: string ]: any } }) => void
-  error: (command: string, err: CodedError) => CodedError
+  error: (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError
 }
 export function isCommandHandlerWithEvents (evaluator: Evaluator): evaluator is CommandHandlerWithEvents {
   const handler = evaluator as CommandHandlerWithEvents
