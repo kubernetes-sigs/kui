@@ -26,7 +26,7 @@
  */
 
 import * as Debug from 'debug'
-import { CommandHandler, CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { CommandHandler, CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { actions } from '../openwhisk-usage'
 import { synonyms } from '../../models/synonyms'
 const debug = Debug('plugins/openwhisk/cmds/actions/invoke')
@@ -83,7 +83,7 @@ const respond = (options: ParsedOptions) => response => {
  * impl to perform a blocking invocation.
  *
  */
-const doInvoke = (rawInvoke: CommandHandler) => (opts: IEvaluatorArgs) => {
+const doInvoke = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
   if (!opts.argv.find(opt => opt === '-b' || opt === '-r' || opt === '--blocking' || opt === '--result')) {
     // doInvoke means blocking invoke, so make sure that the argv
     // indicates that we want a blocking invocation
@@ -113,7 +113,7 @@ const doInvoke = (rawInvoke: CommandHandler) => (opts: IEvaluatorArgs) => {
  * `invoke.
  *
  */
-const doAsync = (rawInvoke: CommandHandler) => (opts: IEvaluatorArgs) => {
+const doAsync = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
   const idx = opts.argv.findIndex(arg => arg === 'async')
   opts.argv[idx] = 'invoke'
   opts.command = opts.command.slice(0).replace(/^async/, 'invoke') // clone it, via slice, to avoid contaminating command history

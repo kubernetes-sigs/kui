@@ -16,13 +16,13 @@
 
 import * as Debug from 'debug'
 
-import { CommandHandler, CommandTree, CommandTreeResolution, Disambiguator, ExecType, CatchAllOffer, ICatchAllHandler, ICommand, ICommandBase, ICommandHandlerWithEvents, ICommandOptions, IEvaluatorArgs, IEvent } from '../models/command'
+import { CommandHandler, CommandTree, CommandTreeResolution, Disambiguator, ExecType, CatchAllOffer, CatchAllHandler, Command, CommandBase, CommandHandlerWithEvents, CommandOptions, EvaluatorArgs, Event } from '../models/command'
 
 import eventBus from './events'
-import { UsageError, IUsageModel, IUsageRow } from './usage-error'
+import { UsageError, UsageModel, IUsageRow } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
-import { IExecOptions } from '../models/execOptions'
+import { ExecOptions } from '../models/execOptions'
 const debug = Debug('core/command-tree')
 debug('loading')
 
@@ -37,7 +37,7 @@ const model: CommandTree = newTree() // this is the model of registered listener
 const intentions: CommandTree = newTree() // this is the model of registered intentional listeners
 
 let disambiguator: Disambiguator = {} // map from command name to disambiguations
-export const catchalls: ICatchAllHandler[] = [] // handlers for command not found
+export const catchalls: CatchAllHandler[] = [] // handlers for command not found
 
 debug('finished loading modules')
 
@@ -100,7 +100,7 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
  * Navigate the given tree model, following the given path as [n1,n2,n3]
  *
  */
-const treeMatch = (model: CommandTree, path: string[], readonly = false, hide = false, idxStart = 0, noWildcard = false): ICommand => {
+const treeMatch = (model: CommandTree, path: string[], readonly = false, hide = false, idxStart = 0, noWildcard = false): Command => {
   let parent = model
   let cur
 
@@ -150,7 +150,7 @@ const treeMatch = (model: CommandTree, path: string[], readonly = false, hide = 
     return cur
   }
 }
-const match = (path: string[], readonly: boolean): ICommand => {
+const match = (path: string[], readonly: boolean): Command => {
   return treeMatch(model, path, readonly)
 }
 
@@ -158,7 +158,7 @@ const match = (path: string[], readonly: boolean): ICommand => {
  * Register a subtree in the command tree
  *
  */
-export const subtree = (route: string, options: ICommandOptions) => {
+export const subtree = (route: string, options: CommandOptions) => {
   const myListen = options.listen || listen
   const path = route.split('/').splice(1)
   const leaf = match(path, false /*, options */)
@@ -199,7 +199,7 @@ export const subtree = (route: string, options: ICommandOptions) => {
  * Register a synonym of a subtree
  *
  */
-export const subtreeSynonym = (route: string, master: ICommand, options = master.options) => {
+export const subtreeSynonym = (route: string, master: Command, options = master.options) => {
   if (route !== master.route) { // <-- don't alias to yourself!
     const mySubtree = subtree(route, Object.assign({}, options, { synonymFor: master }))
 
@@ -209,14 +209,14 @@ export const subtreeSynonym = (route: string, master: ICommand, options = master
   }
 }
 
-class DefaultCommandOptions implements ICommandOptions {
+class DefaultCommandOptions implements CommandOptions {
 }
 
 /**
  * Register a command handler on the given route
  *
  */
-const _listen = (model: CommandTree, route: string, handler: CommandHandler, options: ICommandOptions = new DefaultCommandOptions()) => {
+const _listen = (model: CommandTree, route: string, handler: CommandHandler, options: CommandOptions = new DefaultCommandOptions()) => {
   const path = route.split('/').splice(1)
   const leaf = treeMatch(model, path, false, options.hide)
 
@@ -258,14 +258,14 @@ const _listen = (model: CommandTree, route: string, handler: CommandHandler, opt
     return leaf
   }
 }
-export const listen = (route: string, handler: CommandHandler, options: ICommandOptions) => _listen(model, route, handler, options)
+export const listen = (route: string, handler: CommandHandler, options: CommandOptions) => _listen(model, route, handler, options)
 
 /**
  * Register a command handler on the given route, as a synonym of the given master handler
  *    master is the return value of `listen`
  *
  */
-export const synonym = (route: string, handler: CommandHandler, master: ICommand, options = master.options) => {
+export const synonym = (route: string, handler: CommandHandler, master: Command, options = master.options) => {
   if (route !== master.route) {
     // don't alias to yourself!
     const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
@@ -280,16 +280,16 @@ export const synonym = (route: string, handler: CommandHandler, master: ICommand
  * Register an intentional action
  *
  */
-export const intention = (route: string, handler: CommandHandler, options: ICommandOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
+export const intention = (route: string, handler: CommandHandler, options: CommandOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
 
 /**
  *
  * @return a command handler with success and failure event handlers
  *
  */
-const withEvents = (evaluator: CommandHandler, leaf: ICommandBase, partialMatches?: ICommand[]): ICommandHandlerWithEvents => {
+const withEvents = (evaluator: CommandHandler, leaf: CommandBase, partialMatches?: Command[]): CommandHandlerWithEvents => {
   // let the world know we have resolved a command, and are about to evaluate it
-  const event: IEvent = {
+  const event: Event = {
     // context: currentContext()
     // ANONYMIZE: namespace: namespace.current()
   }
@@ -346,7 +346,7 @@ const withEvents = (evaluator: CommandHandler, leaf: ICommandBase, partialMatche
  * Parse the given argv, and return an evaluator or throw an Error
  *
  */
-const _read = async (model: CommandTree, argv: string[], contextRetry: string[], originalArgv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
+const _read = async (model: CommandTree, argv: string[], contextRetry: string[], originalArgv: string[]): Promise<boolean | CommandHandlerWithEvents> => {
   let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
   let evaluator = leaf && leaf.$
   debug('read', argv)
@@ -453,7 +453,7 @@ export const setDefaultCommandContext = (commandContext: string[]) => {
 }
 
 /** read, with retries based on the current context */
-const internalRead = (model: CommandTree, argv: string[]): Promise<boolean | ICommandHandlerWithEvents> => {
+const internalRead = (model: CommandTree, argv: string[]): Promise<boolean | CommandHandlerWithEvents> => {
   if (argv[0] === 'kui') argv.shift()
   return _read(model, argv, Context.current, argv)
 }
@@ -549,7 +549,7 @@ const commandNotFoundMessageWithPartialMatches = 'The following commands are par
  * We could not find a registered command handler
  *
  */
-const commandNotFound = async (argv: string[], partialMatches?: ICommand[], execOptions?: IExecOptions) => {
+const commandNotFound = async (argv: string[], partialMatches?: Command[], execOptions?: ExecOptions) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
@@ -573,7 +573,7 @@ const commandNotFound = async (argv: string[], partialMatches?: ICommand[], exec
   return suggestPartialMatches(partialMatches)
 }
 
-export const suggestPartialMatches = (partialMatches?: ICommand[], noThrow = false, hide = false): CodedError => {
+export const suggestPartialMatches = (partialMatches?: Command[], noThrow = false, hide = false): CodedError => {
   debug('suggestPartialMatches', partialMatches)
 
   // filter out any partial matches without usage info
@@ -608,7 +608,7 @@ export const suggestPartialMatches = (partialMatches?: ICommand[], noThrow = fal
  * command completions to what they typed.
  *
  */
-const formatPartialMatches = (partialMatches: ICommand[]): UsageError => {
+const formatPartialMatches = (partialMatches: Command[]): UsageError => {
   return new UsageError({
     message: commandNotFoundMessage,
     usage: {
@@ -624,7 +624,7 @@ const formatPartialMatches = (partialMatches: ICommand[]): UsageError => {
  * for some command at this root. Return all such prefix matches.
  *
  */
-const findPartialMatchesAt = (subtree: ICommand, partial: string): ICommand[] => {
+const findPartialMatchesAt = (subtree: Command, partial: string): Command[] => {
   debug('scanning for partial matches', partial, subtree)
 
   const matches = []
@@ -644,12 +644,12 @@ const findPartialMatchesAt = (subtree: ICommand, partial: string): ICommand[] =>
   return matches
 }
 
-interface IRoute {
+interface Route {
   route: string
 }
 
 /** remove duplicates of leaf nodes from a given array */
-const removeDuplicates = async (arr: IRoute[]): Promise<IRoute[]> => {
+const removeDuplicates = async (arr: Route[]): Promise<Route[]> => {
   return (await Promise.all(arr))
     .filter(x => x)
     .reduce((state, item) => {
@@ -665,12 +665,12 @@ const removeDuplicates = async (arr: IRoute[]): Promise<IRoute[]> => {
     }, { M: {}, A: [] })['A']
 }
 
-export function isSuccessfulCommandResolution (resolution: CommandTreeResolution): resolution is ICommandHandlerWithEvents {
-  return (resolution as ICommandHandlerWithEvents).eval !== undefined
+export function isSuccessfulCommandResolution (resolution: CommandTreeResolution): resolution is CommandHandlerWithEvents {
+  return (resolution as CommandHandlerWithEvents).eval !== undefined
 }
 
 /** here, we will use implicit context resolutions */
-export const read = async (argv: string[], noRetry = false, noSubtreeRetry = false, execOptions: IExecOptions): Promise<CommandTreeResolution> => {
+export const read = async (argv: string[], noRetry = false, noSubtreeRetry = false, execOptions: ExecOptions): Promise<CommandTreeResolution> => {
   let cmd = (await disambiguate(argv))
 
   if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
@@ -757,17 +757,17 @@ export const readIntention = async (argv: string[], noRetry = false): Promise<Co
 }
 
 /** command filters */
-const isAnAlias = (command: ICommand): boolean => !!(command.options && command.options.synonymFor)
-const isDirFilter = (command: ICommand): boolean => !!(command.children && !isAnAlias(command))
-const isFileFilter = (command: ICommand): boolean => command.$ && !isAnAlias(command)
+const isAnAlias = (command: Command): boolean => !!(command.options && command.options.synonymFor)
+const isDirFilter = (command: Command): boolean => !!(command.children && !isAnAlias(command))
+const isFileFilter = (command: Command): boolean => command.$ && !isAnAlias(command)
 
 class CommandModel {
   /**
    * Call the given callback function `fn` for each node in the command tree
    *
    */
-  forEachNode (fn: (command: ICommand) => void) {
-    const iter = (root: ICommand) => {
+  forEachNode (fn: (command: Command) => void) {
+    const iter = (root: Command) => {
       if (root) {
         fn(root)
         if (root.children) {
@@ -799,9 +799,9 @@ export const getModel = () => new CommandModel()
  *
  */
 export const proxy = (plugin: string) => ({
-  catchall: (offer: CatchAllOffer, handler: CommandHandler, prio = 0, options: ICommandOptions = new DefaultCommandOptions()) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
-  listen: (route: string, handler: CommandHandler, options: ICommandOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
-  intention: (route: string, handler: CommandHandler, options: ICommandOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
+  catchall: (offer: CatchAllOffer, handler: CommandHandler, prio = 0, options: CommandOptions = new DefaultCommandOptions()) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
+  listen: (route: string, handler: CommandHandler, options: CommandOptions) => listen(route, handler, Object.assign({}, options, { plugin: plugin })),
+  intention: (route: string, handler: CommandHandler, options: CommandOptions) => intention(route, handler, Object.assign({}, options, { plugin: plugin })),
   synonym,
   subtree,
   subtreeSynonym,

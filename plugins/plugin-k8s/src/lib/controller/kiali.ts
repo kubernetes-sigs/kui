@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { exec } from 'child_process'
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { pexec, qexec as $$, encodeComponent } from '@kui-shell/core/core/repl'
 
 import * as client from '../clients/kiali'
@@ -76,7 +76,7 @@ const errorRatioToTextCss = (errorRatio: number): string => {
  * `kiali get apps` command handler
  *
  */
-const getApps = async ({ parsedOptions }: IEvaluatorArgs) => {
+const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
   const pollingInterval = parsedOptions.watch ? parseDuration(parsedOptions.watch) : 10000
   const list = await client.appList(parsedOptions.namespace && new client.Namespace(parsedOptions.namespace))
 
@@ -192,5 +192,5 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.synonym('/k/get/app', getApps, getAppsCmd2, { noAuthOk: true })
 
   commandTree.listen('/kiali/console', () => client.consoleView(), { noAuthOk: true })
-  commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView((parsedOptions as any) as client.IKialiOptions), { noAuthOk: true })
+  commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView((parsedOptions as any) as client.KialiOptions), { noAuthOk: true })
 }

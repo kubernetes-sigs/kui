@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
@@ -29,7 +29,7 @@ import { sort, versionSorter, statDataSorter } from '../sorting'
 import { groupByAction } from '../grouping'
 import { modes } from '../modes'
 import { summary as usage } from '../../usage'
-import { IHeader, leftArrowHead, rightArrowHead, enDash, emDash, optionsToString, titleWhenNothingSelected, displayTimeRange, visualize } from '../util'
+import { Header, leftArrowHead, rightArrowHead, enDash, emDash, optionsToString, titleWhenNothingSelected, displayTimeRange, visualize } from '../util'
 
 const defaultBottom = 25
 const defaultTop = 75 // default range to show in summary
@@ -89,7 +89,7 @@ const percent = fraction => `${100 * fraction}%`
  * Drill down to the grid for for a given list of activations
  *
  */
-const showGridForActivationList = (tab: ITab, activations) => drilldownWith(tab, viewName, () => {
+const showGridForActivationList = (tab: Tab, activations) => drilldownWith(tab, viewName, () => {
   require('./grid')(undefined, undefined, { activations, tab })
   return Promise.resolve('ok')
 })
@@ -98,7 +98,7 @@ const showGridForActivationList = (tab: ITab, activations) => drilldownWith(tab,
  * Visualize the activation data
  *
  */
-const drawTable = (tab: ITab, options, header: IHeader, uuid: string) => activations => {
+const drawTable = (tab: Tab, options, header: Header, uuid: string) => activations => {
   const eventBus = new events.EventEmitter()
   const content = document.createElement('div')
   content.className = 'activation-viz-plugin'
@@ -126,7 +126,7 @@ const drawTable = (tab: ITab, options, header: IHeader, uuid: string) => activat
  * re-sorting.
  *
  */
-const _drawTable = (tab: ITab, options, header: IHeader, content: Element, groupData, eventBus, uuid: string, sorter = statDataSorter(defaultTop), sortDir = +1) => {
+const _drawTable = (tab: Tab, options, header: Header, content: Element, groupData, eventBus, uuid: string, sorter = statDataSorter(defaultTop), sortDir = +1) => {
   const { groups } = groupData
   const tableHeader = document.createElement('table')
   const tableScrollContainer = document.createElement('div')

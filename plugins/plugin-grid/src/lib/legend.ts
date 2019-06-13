@@ -16,7 +16,7 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 
 import { renderCell } from './cell'
 import { enDash, latencyBuckets } from './util'
@@ -32,7 +32,7 @@ import { enDash, latencyBuckets } from './util'
  * @param options user options from the CLI
  *
  */
-export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement, { statData, nFailures }, gridContainer: HTMLElement) => {
+export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement, { statData, nFailures }, gridContainer: HTMLElement) => {
   const existing = rightHeader.querySelector('.grid-header-key')
   const wrapper = existing || document.createElement('div')
   const existing2 = wrapper.querySelector('.cell-container')
@@ -67,7 +67,7 @@ export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement
    * Render one legend entry
    *
    */
-  interface IEntryOptions {
+  interface EntryOptions {
     zoom: number
     labelAsTooltip?: boolean
     useThisLabelInstead?: string
@@ -75,7 +75,7 @@ export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement
     balloonLength?: string
     onclick?: () => boolean | void
   }
-  const entry = (labelText, labelValue, isFailure, latBucket, options: IEntryOptions) => {
+  const entry = (labelText, labelValue, isFailure, latBucket, options: EntryOptions) => {
     const existing3 = wrapper2.querySelector(`.grid[label="${labelText}"]`)
     const wrapper3 = existing3 || document.createElement('div')
     const existingEntry = wrapper3.querySelector('table')
@@ -158,7 +158,7 @@ export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement
     // number of cells with this coloration
     const count = statData.latBuckets[idx]
 
-    const opts: IEntryOptions = {
+    const opts: EntryOptions = {
       zoom: -1,
       useThisLabelInstead: (idx === A.length - 1 ? '>' : '') + (upper >= 500 && upper < 1000 ? `${(upper / 1000).toLocaleString()}s` : prettyPrintDuration(upper))
     }
@@ -174,7 +174,7 @@ export const drawLegend = (tab: ITab, viewName: string, rightHeader: HTMLElement
   //
   // render the legend entry for failures
   //
-  const opts: IEntryOptions = { zoom: -1, useThisLabelInstead: 'fail' }
+  const opts: EntryOptions = { zoom: -1, useThisLabelInstead: 'fail' }
   if (nFailures > 0) {
     opts.onclick = toggleFilter(-1)
   }

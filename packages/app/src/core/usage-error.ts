@@ -24,11 +24,11 @@ import { isHTML } from '../util/types'
 const debug = Debug('core/usage-error')
 import repl = require('@kui-shell/core/core/repl')
 
-interface IUsageOptions {
+interface UsageOptions {
   noHide?: boolean
   noBreadcrumb?: boolean
 }
-class DefaultUsageOptions implements IUsageOptions {
+class DefaultUsageOptions implements UsageOptions {
 }
 
 /**
@@ -120,12 +120,12 @@ const breadcrumbFromCommand = async (command: string): Promise<string> => {
 }
 
 /** make a single breadcrumb for the UI; defaultCommand means use the string as a command */
-interface ICrumbOptions {
+interface CrumbOptions {
   breadcrumb: BreadcrumbLabel
   preserveCase?: boolean
   noSlash?: boolean
 }
-const makeBreadcrumb = (options: ICrumbOptions): Promise<Element> => {
+const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
   let cmd: string
   let label: string | Promise<string>
 
@@ -169,7 +169,7 @@ const makeBreadcrumb = (options: ICrumbOptions): Promise<Element> => {
  * Format the given usage message
  *
  */
-const format = async (message: UsageLike, options: IUsageOptions = new DefaultUsageOptions()): Promise<HTMLElement> => {
+const format = async (message: UsageLike, options: UsageOptions = new DefaultUsageOptions()): Promise<HTMLElement> => {
   debug('format message', message)
 
   if (typeof message === 'string') {
@@ -183,7 +183,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
     return format(message.fn(message.command), undefined, options) */
   } else {
     // these are the fields of the usage message
-    const usage: IUsageModel = message.usage
+    const usage: UsageModel = message.usage
 
     const { command, docs, title, breadcrumb = title || command, header = docs && `${docs}.`, example, detailedExample, sampleInputs,
       intro, sections, // the more general case: the usage model has custom sections
@@ -266,7 +266,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
       const rootCrumb = { breadcrumb: { label: 'Shell Docs', command: 'help' } }
       const parentChain = (usage.parents || []).map(breadcrumb => ({ breadcrumb }))
       const thisCommand = { breadcrumb, noSlash: true, preserveCase }
-      const breadcrumbs: ICrumbOptions[] = [
+      const breadcrumbs: CrumbOptions[] = [
         rootCrumb,
         ...parentChain,
         thisCommand
@@ -336,7 +336,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
     const scrollRegions = []
 
     // any minimally formatted sections? e.g. `intro` and `section` fields
-    const makeSection = (parent = right, noMargin = false) => ({ title, content }: ITitledContent) => {
+    const makeSection = (parent = right, noMargin = false) => ({ title, content }: TitledContent) => {
       const wrapper = bodyPart(noMargin)
       const prePart = prefix(title)
       const contentPart = document.createElement('pre')
@@ -573,7 +573,7 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
 
       tableSections.sort(({ rows: a }, { rows: b }) => a.length - b.length)
 
-      const nRowsOf = (section: IUsageSection, idx: number) => {
+      const nRowsOf = (section: UsageSection, idx: number) => {
         debug('nRowsOf', section, section.rows.length, section.nRowsInViewport, defaultNRowsInViewport(idx, section.rows.length))
         return Math.min(section.rows.length,
           section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length)
@@ -661,11 +661,12 @@ const format = async (message: UsageLike, options: IUsageOptions = new DefaultUs
   }
 }
 
-interface IDetailedExample {
+interface DetailedExample {
   command: string
   docs: string
 }
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface IUsageRow {
   commandPrefix?: string
   commandSuffix?: string
@@ -722,24 +723,24 @@ export interface IUsageRow {
   allowed?: (number | string | boolean)[]
 }
 
-interface IGenerator {
+interface Generator {
   command: string
   fn: (command: string) => IUsageRow
 }
 
-function isGenerator (row: UsageRow): row is IGenerator {
-  return !!(row as IGenerator).fn
+function isGenerator (row: UsageRow): row is Generator {
+  return !!(row as Generator).fn
 }
 
-type UsageRow = IUsageRow | IGenerator
+type UsageRow = IUsageRow | Generator
 
-interface IUsageSection {
+interface UsageSection {
   title: string
   rows: IUsageRow[]
   nRowsInViewport?: number
 }
 
-interface ITitledContent {
+interface TitledContent {
   title: string
   content: string
 }
@@ -757,9 +758,9 @@ function isBreadcrumbWithClickCommand (crumb: BreadcrumbLabel): crumb is Breadcr
   return !!(breadcrumb.label && breadcrumb.command)
 }
 
-export interface IUsageModel {
+export interface UsageModel {
   // usage generator
-  fn?: (command: string) => IUsageModel
+  fn?: (command: string) => UsageModel
 
   // don't offer --help
   noHelp?: boolean
@@ -780,10 +781,10 @@ export interface IUsageModel {
   docs?: string
   header?: string
   example?: string
-  detailedExample?: IDetailedExample | IDetailedExample[]
+  detailedExample?: DetailedExample | DetailedExample[]
   sampleInputs?: IUsageRow[]
-  intro?: ITitledContent
-  sections?: IUsageSection[]
+  intro?: TitledContent
+  sections?: UsageSection[]
   commandPrefix?: string
   commandPrefixNotNeeded?: boolean
   commandSuffix?: string
@@ -810,7 +811,7 @@ interface MessageWithCode {
 interface MessageWithUsageModel extends MessageWithCode {
   messageDom?: MessageLike
 
-  usage?: IUsageModel
+  usage?: UsageModel
 
   // allow for arbitrary attachments to help with error reporting
   extra?: any
@@ -832,10 +833,10 @@ type UsageLike = MessageLike | MessageWithUsageModel //  | IUsageRowGenerator
 export class UsageError extends Error implements CodedError {
   private formattedMessage: Promise<HTMLElement>
   raw: UsageLike
-  private extra: IUsageOptions
+  private extra: UsageOptions
   code: number
 
-  constructor (message: UsageLike, extra?: IUsageOptions) {
+  constructor (message: UsageLike, extra?: UsageOptions) {
     super()
 
     if (Error.captureStackTrace) {
@@ -852,7 +853,7 @@ export class UsageError extends Error implements CodedError {
     }
   }
 
-  getUsageModel (): IUsageModel {
+  getUsageModel (): UsageModel {
     return (this.raw as MessageWithUsageModel).usage
   }
 

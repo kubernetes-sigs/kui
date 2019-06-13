@@ -24,7 +24,7 @@
  *
  */
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 import minimist = require('yargs-parser')
@@ -153,7 +153,7 @@ export default async (commandTree: CommandRegistrar) => {
    * This is the core logic
    *
    */
-  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: IEvaluatorArgs) => {
+  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: EvaluatorArgs) => {
     const options = minimist(fullArgv, { alias: { q: 'quiet', f: 'force', r: 'recursive' }, boolean: ['quiet', 'force', 'recursive'], configuration: { 'parse-numbers': false, 'camel-case-expansion': false } })
     const argv = options._
     const toBeDeletedList = argv.slice(argv.indexOf('rimraf') + 1)

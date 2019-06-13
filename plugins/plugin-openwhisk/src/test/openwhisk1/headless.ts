@@ -27,6 +27,7 @@ import { cli } from '@kui-shell/core/tests/lib/headless'
 
 import { dirname, join } from 'path'
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 interface ISuite extends Suite {
   app: Application
 }
@@ -35,7 +36,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.
 
 export const { version: expectedVersion } = require('@kui-shell/settings/package.json')
 
-interface IResponse {
+interface Response {
   code: number
   output: string
   stderr?: string

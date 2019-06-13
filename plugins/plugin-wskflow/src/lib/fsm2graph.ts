@@ -17,14 +17,14 @@
 import * as Debug from 'debug'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
 import * as AST from './ast'
-import { INode, INodeOptions, IEdge } from './graph'
+import { Node, NodeOptions, Edge } from './graph'
 const debug = Debug('plugins/wskflow/fsm2graph')
 
 const maxWidth = 100
@@ -34,7 +34,7 @@ const defaultCharWidth = 5
 const defaultCharHeight = 10
 
 class RenderState {
-  readonly graphData: INode
+  readonly graphData: Node
   dummyCount = 0
   taskIndex = 0
   visited: Record<string, number[]>
@@ -82,9 +82,9 @@ class RenderState {
     return dummyId
   }
 
-  drawNodeNew (id: string, label: string, type?: string, properties?, options?: INodeOptions): INode {
+  drawNodeNew (id: string, label: string, type?: string, properties?, options?: NodeOptions): Node {
     // console.log(id)
-    let o: INode = {
+    let o: Node = {
       id,
       label,
       type,
@@ -292,7 +292,7 @@ class RenderState {
     return o
   }
 
-  drawEdgeNew (sourceId: string, targetId: string, layer, type?: string, direction?: string, sourcePort?: string, targetPort?: string): IEdge {
+  drawEdgeNew (sourceId: string, targetId: string, layer, type?: string, direction?: string, sourcePort?: string, targetPort?: string): Edge {
     // let sourcePort, targetPort;
 
     for (let i = 0; i < layer.children.length; i++) {
@@ -338,7 +338,7 @@ class RenderState {
     }
   }
 
-  ir2graph (ir: AST.Node, gm: INode, id: string, prevId: string[], options = {}): string[] { // ir and graph model
+  ir2graph (ir: AST.Node, gm: Node, id: string, prevId: string[], options = {}): string[] { // ir and graph model
     if (ir.type === 'sequence' || ir.type === 'seq' || Array.isArray(ir)) {
       // for an array of things, prevId is the previous element
       // console.log(ir, gm, id, prevId);
@@ -552,7 +552,7 @@ class RenderState {
           //          |
           //        Join (we'll render this just below)
           const body = ir.components || ir.body
-          const ellipsis: AST.ILiteral = { type: 'literal', value: '...' }
+          const ellipsis: AST.Literal = { type: 'literal', value: '...' }
           const spreadItOut = [ body, body, ellipsis, body ]
           exits = spreadItOut.map((component, idx) => {
             return this.ir2graph(component, gm, `${id}-component-${idx}`, parent, options)[0]
@@ -617,7 +617,7 @@ function id2log (id: string): string {
   return id.replace(/-components/g, '').replace(/__origin/g, '').replace(/__terminus/g, '')
 }
 
-export default async function fsm2graph (tab: ITab, ir: AST.Node, containerElement?: HTMLElement, acts?: ActivationLike[], options?, rule?): Promise<any> {
+export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElement?: HTMLElement, acts?: ActivationLike[], options?, rule?): Promise<any> {
   // console.log(ir, containerElement, acts);
 
   const renderState = new RenderState(acts)
@@ -693,8 +693,8 @@ export default async function fsm2graph (tab: ITab, ir: AST.Node, containerEleme
       .then(result => {
         const notDeployed = []
 
-        const graphChildrenStatus = (childrens: INode[], id: string, deployed: boolean) => {
-          return childrens.forEach((children: INode) => {
+        const graphChildrenStatus = (childrens: Node[], id: string, deployed: boolean) => {
+          return childrens.forEach((children: Node) => {
             if (children.id === id) children.deployed = deployed
             else if (children.children) return graphChildrenStatus(children.children, id, deployed)
           })

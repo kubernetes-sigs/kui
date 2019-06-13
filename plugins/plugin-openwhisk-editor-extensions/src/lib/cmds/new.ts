@@ -17,12 +17,12 @@
 import * as Debug from 'debug'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
 import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
 import { language } from '@kui-shell/plugin-editor/lib/file-types'
-import { IEntity, fetchFile } from '@kui-shell/plugin-editor/lib/fetchers'
+import { Entity, fetchFile } from '@kui-shell/plugin-editor/lib/fetchers'
 import { lockIcon } from '@kui-shell/plugin-editor/lib/readonly'
 
 import strings from '../i18n/strings'
@@ -153,7 +153,7 @@ export const gotoReadonlyView = ({ getEntity }) => async () => {
  * compatible with the editor
  *
  */
-export const fetchAction = (check = checkForConformance, tryLocal = true) => (name: string, parsedOptions?, execOptions?): Promise<IEntity> => {
+export const fetchAction = (check = checkForConformance, tryLocal = true) => (name: string, parsedOptions?, execOptions?): Promise<Entity> => {
   if (name.charAt(0) === '!') {
     const parameterName = name.substring(1)
     const source = execOptions.parameters && execOptions.parameters[parameterName]
@@ -213,7 +213,7 @@ export const prepareEditorWithAction = ([action, updateFn]) => {
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined, persister = persisters.actions } = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
+export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined, persister = persisters.actions } = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)

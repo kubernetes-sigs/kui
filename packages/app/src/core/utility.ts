@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-interface IOptions {
+interface Options {
   [key: string]: string | boolean | number
 }
 
@@ -25,7 +25,7 @@ interface IOptions {
  * user.
  *
  */
-export const optionsToString = (options: IOptions) => {
+export const optionsToString = (options: Options) => {
   let str = ''
   for (let key in options) {
     // underscore comes from minimist
@@ -48,7 +48,7 @@ export const optionsToString = (options: IOptions) => {
  * Check for unknown options
  *
  */
-export const hasUnknownOptions = (options: IOptions, expected: string[]) => {
+export const hasUnknownOptions = (options: Options, expected: string[]) => {
   const M = expected.reduce((M, key) => { M[key] = true; return M }, {})
   for (let opt in options) {
     // underscore comes from minimist

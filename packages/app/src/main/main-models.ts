@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export interface IQuittable {
+export interface Quittable {
   quit: () => void
 }

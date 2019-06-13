@@ -21,13 +21,13 @@
 
 import * as Debug from 'debug'
 
-import { CommandTreeResolution, ExecType, IEvaluator, IEvaluatorArgs, YargsParserFlags } from '../models/command'
+import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserFlags } from '../models/command'
 
-import { IExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
+import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
-import { UsageError, IUsageModel, IUsageRow } from './usage-error'
+import { UsageError, UsageModel, IUsageRow } from './usage-error'
 
 import { isHeadless, inBrowser, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
@@ -55,18 +55,18 @@ export const key = 'kui.symbol_table'
  * backed by an implementation of this interface
  *
  */
-export interface IExecutor {
+export interface Executor {
   name: string
-  exec (commandUntrimmed: string, execOptions: IExecOptions)
+  exec (commandUntrimmed: string, execOptions: ExecOptions)
 }
 
 /**
  * Apply the given evaluator to the given arguments
  *
  */
-export interface IReplEval {
+export interface ReplEval {
   name: string
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
+  apply (commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs)
 }
 
 /**
@@ -74,15 +74,15 @@ export interface IReplEval {
  * the default evaluator implementation.
  *
  */
-export class DirectReplEval implements IReplEval {
+export class DirectReplEval implements ReplEval {
   name = 'DirectReplEval'
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
+  apply (commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
-let currentEvaluatorImpl: IReplEval = new DirectReplEval()
+let currentEvaluatorImpl: ReplEval = new DirectReplEval()
 
-export const setEvaluatorImpl = (impl: IReplEval): void => {
+export const setEvaluatorImpl = (impl: ReplEval): void => {
   debug('setting evaluator impl', impl.name)
   currentEvaluatorImpl = impl
 }
@@ -131,14 +131,14 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
-export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: IExecOptions): Promise<any> => {
+export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: ExecOptions): Promise<any> => {
   // context change ok, final exec in a chain of nested execs
   return qexec(command, block, true, execOptions, nextBlock)
 }
-export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement): Promise<any> => {
+export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }
-export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: IExecOptions, nextBlock?: HTMLElement): Promise<any> => {
+export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return exec(command, Object.assign({
     block: block,
     nextBlock: nextBlock,
@@ -161,7 +161,7 @@ export const rexec = (command: string, execOptions = emptyExecOptions()) => {
  * Programmatic exec, as opposed to human typing and hitting enter
  *
  */
-export const pexec = (command: string, execOptions?: IExecOptions) => {
+export const pexec = (command: string, execOptions?: ExecOptions) => {
   return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions))
 }
 
@@ -192,11 +192,11 @@ const resolveEnvVar = (variable: string): string => {
  * Split the given string into an argv
  *
  */
-export interface ISplit {
+export interface Split {
   A: string[]
   endIndices: number[]
 }
-export const _split = (str: string, removeOuterQuotes = true, returnIndices = false, removeInlineOuterQuotes = false): ISplit | string[] => {
+export const _split = (str: string, removeOuterQuotes = true, returnIndices = false, removeInlineOuterQuotes = false): Split | string[] => {
   const A: string[] = []
   const endIndices: number[] = []
   const stack: string[] = []
@@ -310,7 +310,7 @@ const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
  * Execute the given command-line directly in this process
  *
  */
-class InProcessExecutor implements IExecutor {
+class InProcessExecutor implements Executor {
   name = 'InProcessExecutor'
 
   async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
@@ -423,8 +423,8 @@ class InProcessExecutor implements IExecutor {
         //
         // fetch the usage model for the command
         //
-        const _usage: IUsageModel = evaluator.options && evaluator.options.usage
-        const usage: IUsageModel = _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
+        const _usage: UsageModel = evaluator.options && evaluator.options.usage
+        const usage: UsageModel = _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
         // debug('usage', usage)
 
         if (execOptions && execOptions.failWithUsage && !usage) {
@@ -862,14 +862,14 @@ class InProcessExecutor implements IExecutor {
   }
 } /* InProcessExecutor */
 
-const emptyExecOptions = (): IExecOptions => new DefaultExecOptions()
+const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
 
 /**
  * Execute the given command-line. This function operates by
  * delegation to the IExecutor impl.
  *
  */
-let currentExecutorImpl: IExecutor = new InProcessExecutor()
+let currentExecutorImpl: Executor = new InProcessExecutor()
 export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions()) => {
   return currentExecutorImpl.exec(commandUntrimmed, execOptions)
 }
@@ -878,7 +878,7 @@ export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions())
  * Update the executor impl
  *
  */
-export const setExecutorImpl = (impl: IExecutor): void => {
+export const setExecutorImpl = (impl: Executor): void => {
   debug('updating executor impl', impl.name)
   currentExecutorImpl = impl
 }

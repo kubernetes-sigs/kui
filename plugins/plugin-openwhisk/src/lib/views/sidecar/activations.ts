@@ -23,8 +23,8 @@ import * as repl from '@kui-shell/core/core/repl'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import { IShowOptions } from '@kui-shell/core/webapp/views/show-options'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
+import { Tab } from '@kui-shell/core/webapp/cli'
 
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
@@ -32,7 +32,7 @@ import { render as renderActivationTable } from '../cli/activations/list'
 declare var hljs
 const debug = Debug('plugins/openwhisk/views/sidecar/activation')
 
-export default (tab: ITab, entity, options: IShowOptions) => {
+export default (tab: Tab, entity, options: ShowOptions) => {
   debug('showing activation')
 
   const sidecar = getSidecar(tab)

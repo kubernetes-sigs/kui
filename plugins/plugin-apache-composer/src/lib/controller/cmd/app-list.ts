@@ -30,7 +30,7 @@ const type = 'composition'
 const prettyType = 'compositions'
 const prettyKind = type
 
-interface IListOptions {
+interface ListOptions {
   name?: string
   count?: number
   limit?: number
@@ -43,7 +43,7 @@ interface IListOptions {
  */
 export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(`/wsk/app/list`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
-    const parsedOptions = (options as any) as IListOptions
+    const parsedOptions = (options as any) as ListOptions
 
     const limit = parsedOptions.limit || 10 // limit 10 sessions in session list if users didn't specify --limit
 

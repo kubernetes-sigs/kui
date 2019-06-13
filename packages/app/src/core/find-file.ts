@@ -28,13 +28,13 @@ debug('loading')
  * leading @ character?
  *
  */
-interface ISpecialPath {
+interface SpecialPath {
   prefix: string
   filepath: string
   command?: string
 }
-const specialPaths: ISpecialPath[] = [] // any special paths added via self.addPath
-const defaultSpecial: ISpecialPath = { prefix: '', filepath: join(__dirname, '..') } // default special is the app/ top-level
+const specialPaths: SpecialPath[] = [] // any special paths added via self.addPath
+const defaultSpecial: SpecialPath = { prefix: '', filepath: join(__dirname, '..') } // default special is the app/ top-level
 
 /**
  * If original has a trailing slash, make sure resolved has one, too

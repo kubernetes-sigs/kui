@@ -21,7 +21,7 @@ import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
 import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
@@ -324,7 +324,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
  * ls command handler
  *
  */
-const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs): Promise<true | Table> => {
+const doLs = (cmd: string) => ({ command, execOptions, argvNoOptions: argv, parsedOptions: options }: EvaluatorArgs): Promise<true | Table> => {
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
   const filepath = findFile(expandHomeDir(filepathAsGiven), { safe: true, keepRelative: true })
 

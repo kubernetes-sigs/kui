@@ -22,7 +22,7 @@ import { readFile } from 'fs'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { qexec } from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -36,7 +36,7 @@ const debug = Debug('plugins/bash-like/cmds/open')
  * Decide how to display a given filepath
  *
  */
-const open = async (tab: ITab, filepath: string, hljs) => {
+const open = async (tab: Tab, filepath: string, hljs) => {
   debug('open', filepath)
 
   const fullpath = findFile(expandHomeDir(filepath))

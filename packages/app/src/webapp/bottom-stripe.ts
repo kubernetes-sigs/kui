@@ -16,13 +16,13 @@
 
 import * as Debug from 'debug'
 
-import { ITab } from './cli'
+import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { isTable } from './models/table'
 import { formatTable } from './views/table'
-import { getSidecar, showCustom, isCustomSpec, ICustomSpec, insertView } from './views/sidecar'
+import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
-import { IExecOptions } from '../models/execOptions'
+import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/modes/registrar'
 import repl = require('../core/repl')
 
@@ -32,7 +32,7 @@ const debug = Debug('webapp/picture-in-picture')
  * Bottom stripe button specification
  *
  */
-export interface ISidecarMode {
+export interface SidecarMode {
   mode: string
   label?: string
 
@@ -64,7 +64,7 @@ export interface ISidecarMode {
   command?: any
   direct?: DirectViewController
 
-  execOptions?: IExecOptions
+  execOptions?: ExecOptions
 
   defaultMode?: boolean
 
@@ -79,7 +79,7 @@ export interface ISidecarMode {
   replSilence?: boolean
 }
 
-interface IBottomStripOptions {
+interface BottomStripOptions {
   show?: string
   preserveBackButton?: boolean
 }
@@ -88,19 +88,19 @@ export const rawCSS = {
   buttons: '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits'
 }
 export const css = {
-  buttons: (tab: ITab) => sidecarSelector(tab, rawCSS.buttons),
-  backContainer: (tab: ITab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
-  backButton: (tab: ITab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
+  buttons: (tab: Tab) => sidecarSelector(tab, rawCSS.buttons),
+  backContainer: (tab: Tab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
+  backButton: (tab: Tab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
   button: 'sidecar-bottom-stripe-button',
   buttonActingAsButton: 'sidecar-bottom-stripe-button-as-button',
   buttonActingAsRadioButton: 'sidecar-bottom-stripe-button-as-radio-button',
-  modeContainer: (tab: ITab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
+  modeContainer: (tab: Tab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
   active: 'sidecar-bottom-stripe-button-active',
   selected: 'selected',
   hidden: 'hidden'
 }
 
-const _addModeButton = (tab: ITab, bottomStripe: Element, opts: ISidecarMode, entity, show: string) => {
+const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, entity, show: string) => {
   const { mode, label, flush, selected, selectionController, visibleWhen,
     leaveBottomStripeAlone = false,
     fontawesome, labelBelow, // show label below the fontawesome?
@@ -301,27 +301,27 @@ const _addModeButton = (tab: ITab, bottomStripe: Element, opts: ISidecarMode, en
  * across remote proxies, and thus is preferable to the former.
  *
  */
-type DirectViewController = string | DirectViewControllerFunction | IDirectViewControllerSpec | IDirectViewEntity
-type DirectViewControllerFunction = (tab: ITab, entity: object) => PromiseLike<object> | object | void
+type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
+type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
 
-interface IDirectViewEntity extends ICustomSpec {
+interface DirectViewEntity extends CustomSpec {
   isEntity: boolean
 }
 
-function isDirectViewEntity (direct: DirectViewController): direct is IDirectViewEntity {
-  const entity = direct as IDirectViewEntity
+function isDirectViewEntity (direct: DirectViewController): direct is DirectViewEntity {
+  const entity = direct as DirectViewEntity
   return entity.isEntity !== undefined
 }
 
-interface IDirectViewControllerSpec {
+interface DirectViewControllerSpec {
   plugin: string
   module: string
   operation: string
   parameters: object
 }
 
-function isDirectViewControllerSpec (direct: DirectViewController): direct is IDirectViewControllerSpec {
-  const spec = direct as IDirectViewControllerSpec
+function isDirectViewControllerSpec (direct: DirectViewController): direct is DirectViewControllerSpec {
+  const spec = direct as DirectViewControllerSpec
   return spec.plugin !== undefined && spec.module !== undefined
 }
 
@@ -329,7 +329,7 @@ function isDirectViewControllerSpec (direct: DirectViewController): direct is ID
  * Call a "direct" impl
  *
  */
-const callDirect = async (tab: ITab, makeView: DirectViewController, entity, execOptions: IExecOptions) => {
+const callDirect = async (tab: Tab, makeView: DirectViewController, entity, execOptions: ExecOptions) => {
   if (typeof makeView === 'string') {
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
@@ -349,12 +349,12 @@ const callDirect = async (tab: ITab, makeView: DirectViewController, entity, exe
   }
 }
 
-export const addModeButton = (tab: ITab, mode: ISidecarMode, entity: Record<string, any>) => {
+export const addModeButton = (tab: Tab, mode: SidecarMode, entity: Record<string, any>) => {
   const bottomStripe = css.modeContainer(tab)
   return _addModeButton(tab, bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (tab: ITab, modesUnsorted: ISidecarMode[] = [], entity, options?: IBottomStripOptions) => {
+export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], entity, options?: BottomStripOptions) => {
   // consult the view registrar for registered view modes
   // relevant to this resource
   const command = ''
@@ -388,7 +388,7 @@ export const addModeButtons = (tab: ITab, modesUnsorted: ISidecarMode[] = [], en
   }
 
   // for going back
-  const addModeButtons = (tab: ITab, modes: ISidecarMode[], entity, show: string) => {
+  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity, show: string) => {
     const bottomStripe = css.modeContainer(tab)
     removeAllDomChildren(bottomStripe)
 

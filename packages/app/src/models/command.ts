@@ -15,9 +15,9 @@
  */
 
 import { CodedError } from './errors'
-import { IExecOptions } from './execOptions'
-import { IUsageModel } from '../core/usage-error'
-import { ITab } from '../webapp/cli'
+import { ExecOptions } from './execOptions'
+import { UsageModel } from '../core/usage-error'
+import { Tab } from '../webapp/cli'
 
 /**
  * "top-level", meaning the user hit enter in the CLI,
@@ -31,9 +31,9 @@ export enum ExecType {
   Nested
 }
 
-export interface ICommandOptions extends ICapabilityRequirements {
+export interface CommandOptions extends CapabilityRequirements {
   // explicitly provided usage model?
-  usage?: IUsageModel
+  usage?: UsageModel
 
   // yargs-parser flags
   flags?: YargsParserFlags
@@ -61,7 +61,7 @@ export interface ICommandOptions extends ICapabilityRequirements {
 
   listen?: any // FIXME
   docs?: string
-  synonymFor?: ICommand
+  synonymFor?: Command
   hide?: boolean
   override?: any
   plugin?: string
@@ -70,9 +70,9 @@ export interface ICommandOptions extends ICapabilityRequirements {
   requiresFullyQualifiedRoute?: boolean
 }
 
-export interface IEvent {
+export interface Event {
   // context: string
-  tab?: ITab
+  tab?: Tab
   command?: string
   route?: string
   plugin?: string
@@ -91,15 +91,15 @@ export interface ParsedOptions {
  * Evaluator args
  *
  */
-export interface IEvaluatorArgs {
-  tab: ITab
+export interface EvaluatorArgs {
+  tab: Tab
   block: HTMLElement | boolean
   nextBlock: HTMLElement
   parsedOptions: ParsedOptions
   command: string
   argv: string[]
   argvNoOptions: string[]
-  execOptions: IExecOptions
+  execOptions: ExecOptions
   createOutputStream: () => WritableStream
 }
 
@@ -107,43 +107,43 @@ export interface IEvaluatorArgs {
 export type CommandResponse = any
 
 /** base command handler */
-export type CommandHandler = (args: IEvaluatorArgs) => CommandResponse | Promise<CommandResponse>
+export type CommandHandler = (args: EvaluatorArgs) => CommandResponse | Promise<CommandResponse>
 
 /**
  * Evaluator
  *
  */
-export interface IEvaluator {
+export interface Evaluator {
   eval: CommandHandler
 }
 
-export interface ICommandBase {
+export interface CommandBase {
   route: string
-  options?: ICommandOptions
+  options?: CommandOptions
 }
 
 type CommandKey = string
 // we can't use CommandKey here; yay tsc; TS1336
 interface CommandKeyMap {
-  [key: string]: ICommand
+  [key: string]: Command
 }
 // we can't use CommandKey here; yay tsc; TS1336
 export interface Disambiguator {
-  [key: string]: ICommandBase[]
+  [key: string]: CommandBase[]
 }
 
-export interface ICommand extends ICommandBase {
+export interface Command extends CommandBase {
   $: CommandHandler
   key: CommandKey
-  parent: ICommand
+  parent: Command
   children?: CommandKeyMap
   synonyms?: CommandKeyMap
 }
 
 /** a command tree rooted by a command */
-export type CommandTree = ICommand
+export type CommandTree = Command
 
-export interface ICapabilityRequirements {
+export interface CapabilityRequirements {
   needsUI?: boolean
   inBrowserOk?: boolean
   requiresLocal?: boolean
@@ -151,26 +151,26 @@ export interface ICapabilityRequirements {
   fullscreen?: boolean
 }
 
-export interface ICommandHandlerWithEvents extends IEvaluator {
-  subtree: ICommandBase
+export interface CommandHandlerWithEvents extends Evaluator {
+  subtree: CommandBase
   route: string
-  options: ICommandOptions
-  success: (args: { tab: ITab; type: ExecType; command: string; isDrilldown: boolean; parsedOptions: { [ key: string ]: any } }) => void
+  options: CommandOptions
+  success: (args: { tab: Tab; type: ExecType; command: string; isDrilldown: boolean; parsedOptions: { [ key: string ]: any } }) => void
   error: (command: string, err: CodedError) => CodedError
 }
-export function isCommandHandlerWithEvents (evaluator: IEvaluator): evaluator is ICommandHandlerWithEvents {
-  const handler = evaluator as ICommandHandlerWithEvents
+export function isCommandHandlerWithEvents (evaluator: Evaluator): evaluator is CommandHandlerWithEvents {
+  const handler = evaluator as CommandHandlerWithEvents
   return handler.options !== undefined
 }
 
-export type CommandTreeResolution = boolean | ICommandHandlerWithEvents | CodedError
+export type CommandTreeResolution = boolean | CommandHandlerWithEvents | CodedError
 
 export type YargsParserFlags = { [key in 'boolean' | 'alias']: string[] }
 
 /** a catch all handler is presented with an offer to handle a given argv */
 export type CatchAllOffer = (argv: string[]) => boolean
 
-export interface ICatchAllHandler extends ICommandBase {
+export interface CatchAllHandler extends CommandBase {
   prio: number
   plugin: string // registered plugin
   offer: CatchAllOffer // does the handler accept the given command?
@@ -178,9 +178,9 @@ export interface ICatchAllHandler extends ICommandBase {
 }
 
 export interface CommandRegistrar {
-  find: (route: string, noOverride?: boolean) => Promise<ICommand>
-  listen: (route: string, handler: CommandHandler, options: ICommandOptions) => ICommand
-  synonym: (route: string, handler: CommandHandler, master: ICommand, options: ICommandOptions) => void
-  subtree: (route: string, options: ICommandOptions) => ICommand
-  subtreeSynonym: (route: string, masterTree: ICommand) => void
+  find: (route: string, noOverride?: boolean) => Promise<Command>
+  listen: (route: string, handler: CommandHandler, options: CommandOptions) => Command
+  synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) => void
+  subtree: (route: string, options: CommandOptions) => Command
+  subtreeSynonym: (route: string, masterTree: Command) => void
 }

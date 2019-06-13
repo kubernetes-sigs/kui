@@ -20,7 +20,7 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
@@ -53,7 +53,7 @@ const idMatch = (entity, entityId) => {
 }
 
 export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => {
-  const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args, tab }: IEvaluatorArgs) => {
+  const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args, tab }: EvaluatorArgs) => {
     const entityId = args[args.indexOf(mode) + 1]
     const selection = currentSelection(tab)
 

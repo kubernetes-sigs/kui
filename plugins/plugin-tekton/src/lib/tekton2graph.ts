@@ -18,22 +18,22 @@ import * as Debug from 'debug'
 
 import { encodeComponent } from '@kui-shell/core/core/repl'
 
-import { INode as BaseNode, IEdge } from '@kui-shell/plugin-wskflow/lib/graph'
+import { Node as BaseNode, Edge } from '@kui-shell/plugin-wskflow/lib/graph'
 import ActivationLike from '@kui-shell/plugin-wskflow/lib/activation'
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import success from './success'
-import { IPipelineRun, IPipeline, isPipeline, Task, TaskName, TaskRef, Step, Port } from '../model/resource'
+import { PipelineRun, Pipeline, isPipeline, Task, TaskName, TaskRef, Step, Port } from '../model/resource'
 const debug = Debug('plugins/tekton/lib/tekton2graph')
 
-interface INode extends BaseNode {
+interface Node extends BaseNode {
   nChildren: number
   nParents: number
 }
 
-interface IGraph extends INode {
-  readonly edges: IEdge[]
-  children: INode[]
+interface Graph extends Node {
+  readonly edges: Edge[]
+  children: Node[]
   runs: ActivationLike[]
 }
 
@@ -46,7 +46,7 @@ const defaultCharWidth = 3.25
  * @return a blank IGraph instance with optional "children" subgraphs
  *
  */
-const makeSubGraph = (label = 'root', { visited, children, tooltip, tooltipColor, type, onclick }: { visited?: number[]; children: INode[]; tooltip?: string; tooltipColor?: string; type?: string; onclick?: string } = { children: [] }): INode => {
+const makeSubGraph = (label = 'root', { visited, children, tooltip, tooltipColor, type, onclick }: { visited?: number[]; children: Node[]; tooltip?: string; tooltipColor?: string; type?: string; onclick?: string } = { children: [] }): Node => {
   return {
     id: label,
     label,
@@ -66,7 +66,7 @@ const makeSubGraph = (label = 'root', { visited, children, tooltip, tooltipColor
 const stepId = (taskRef: TaskRef, step: Step): string => `__step__${taskRef.name}__${step.name}`
 
 /** find the pipeline in a given set of resource definitions */
-const getPipeline = (jsons: IKubeResource[]): IPipeline => {
+const getPipeline = (jsons: KubeResource[]): Pipeline => {
   const declaredPipeline = jsons.find(_ => _.kind === 'Pipeline')
 
   if (isPipeline(declaredPipeline)) {
@@ -77,7 +77,7 @@ const getPipeline = (jsons: IKubeResource[]): IPipeline => {
       console.error('!!!', jsons)
       throw new Error('No pipeline defined, and no Tasks defined')
     } else {
-      const pipeline: IPipeline = {
+      const pipeline: Pipeline = {
         apiVersion: 'tekton.dev/v1alpha1',
         kind: 'Pipeline',
         metadata: {
@@ -103,7 +103,7 @@ const getPipeline = (jsons: IKubeResource[]): IPipeline => {
  * is compatible with the ELK graph layout toolkit.
  *
  */
-export default async function (jsons: IKubeResource[], filepath?: string, run?: IPipelineRun): Promise<IGraph> {
+export default async function (jsons: KubeResource[], filepath?: string, run?: PipelineRun): Promise<Graph> {
   debug('jsons', jsons)
   const pipeline = getPipeline(jsons)
   debug('pipeline', pipeline)
@@ -185,7 +185,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
     return M
   }, startVisit.concat(endVisit))
 
-  const graph: IGraph = {
+  const graph: Graph = {
     id: 'root',
     label: 'root',
     edges: [],
@@ -199,7 +199,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
     }
   }
 
-  const start: INode = {
+  const start: Node = {
     id: 'Entry',
     label: 'start',
     type: 'Entry',
@@ -213,7 +213,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
       fontSize: '4.5px'
     }
   }
-  const end: INode = {
+  const end: Node = {
     id: 'Exit',
     label: 'end',
     type: 'Exit',
@@ -228,15 +228,15 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
     }
   }
 
-  const symbolTable: SymbolTable<INode> = pipeline.spec.tasks
-    .reduce((symtab: SymbolTable<INode>, taskRef: TaskRef) => {
+  const symbolTable: SymbolTable<Node> = pipeline.spec.tasks
+    .reduce((symtab: SymbolTable<Node>, taskRef: TaskRef) => {
       const task: Task = taskName2Task[taskRef.taskRef.name]
       debug('TaskRef', taskRef.name, task)
 
       // -f file argument for drilldowns, if we have one
       const filearg = filepath ? `-f ${encodeComponent(filepath)}` : ''
 
-      let node: INode
+      let node: Node
       if (task && task.spec.steps && task.spec.steps.length > 0) {
         //
         // in this case, we do have a full Task definition, which
@@ -255,7 +255,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
           onclick: `tekton get task ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(task.metadata.name)} ${filearg}`,
           visited: task.visitedIdx !== undefined ? [task.visitedIdx] : undefined,
           children: task.spec.steps.map(step => {
-            const stepNode: INode = {
+            const stepNode: Node = {
               id: stepId(taskRef, step),
               label: step.name,
               width: step.name.length * defaultCharWidth,
@@ -275,7 +275,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
           })
         })
 
-        subgraph.children.slice(1).reduce((cur: INode, next: INode) => {
+        subgraph.children.slice(1).reduce((cur: Node, next: Node) => {
           addEdge(subgraph, cur, next, { hasRuns: runs !== undefined })
           return next
         }, subgraph.children[0])
@@ -305,7 +305,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
       return symtab
     }, {})
 
-  const lastStepOf = (node: INode): INode => {
+  const lastStepOf = (node: Node): Node => {
     const taskRef = taskRefName2TaskRef[node.id]
     const task = taskRefName2Task[node.id]
 
@@ -313,7 +313,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
       symbolTable[stepId(taskRef, task.spec.steps[task.spec.steps.length - 1])]
   }
 
-  const firstStepOf = (node: INode): INode => {
+  const firstStepOf = (node: Node): Node => {
     const taskRef = taskRefName2TaskRef[node.id]
     const task = taskRefName2Task[node.id]
 
@@ -321,7 +321,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
       symbolTable[stepId(taskRef, task.spec.steps[0])]
   }
 
-  const _addEdge = (parent: INode, child: INode, opts: IEdgeOptions = { hasRuns: runs !== undefined }) => {
+  const _addEdge = (parent: Node, child: Node, opts: EdgeOptions = { hasRuns: runs !== undefined }) => {
     const lastStepOfParentTask = lastStepOf(parent)
     const firstStepOfChildTask = firstStepOf(child)
 
@@ -398,7 +398,7 @@ export default async function (jsons: IKubeResource[], filepath?: string, run?: 
   return graph
 }
 
-interface IEdgeOptions {
+interface EdgeOptions {
   singletonSource?: boolean
   singletonTarget?: boolean
   hasRuns: boolean
@@ -408,7 +408,7 @@ interface IEdgeOptions {
  * Add an edge between parent and child nodes
  *
  */
-function addEdge (graph: INode, parent: INode, child: INode, { singletonSource, singletonTarget, hasRuns }: IEdgeOptions) {
+function addEdge (graph: Node, parent: Node, child: Node, { singletonSource, singletonTarget, hasRuns }: EdgeOptions) {
   debug('addEdge', parent.id, child.id)
 
   if (!parent.ports) {

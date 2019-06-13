@@ -21,7 +21,7 @@ import * as path from 'path'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { commands as usage } from '../../usage'
 const debug = Debug('plugins/plugin-manager/cmd/commands')
@@ -29,7 +29,7 @@ debug('loading')
 
 debug('finished loading modules')
 
-const doList = ({ argvNoOptions }: IEvaluatorArgs) => {
+const doList = ({ argvNoOptions }: EvaluatorArgs) => {
   const prescanned = path.join(userDataDir(), 'plugins', '.pre-scanned')
 
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]

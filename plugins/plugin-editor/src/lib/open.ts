@@ -19,14 +19,14 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import * as events from 'events'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
 import { currentSelection, getSidecar, isVisible as isSidecarVisible, addSidecarHeaderIconText, addNameToSidecarHeader, addVersionBadge } from '@kui-shell/core/webapp/views/sidecar'
 
-import { IEntity as IEditorEntity } from './fetchers'
+import { Entity as EditorEntity } from './fetchers'
 import strings from '../i18n/strings'
 import { language } from './file-types'
 const debug = Debug('plugins/editor/open')
@@ -41,7 +41,7 @@ const debug = Debug('plugins/editor/open')
  *     - content: a dom that contains the instance; this must be attached somewhere!
  *
  */
-export const openEditor = async (tab: ITab, name: string, options, execOptions) => {
+export const openEditor = async (tab: Tab, name: string, options, execOptions) => {
   debug('openEditor')
 
   const sidecar = getSidecar(tab)
@@ -119,7 +119,7 @@ export const openEditor = async (tab: ITab, name: string, options, execOptions) 
 
     editorWrapper['editor'] = editor
 
-    return (entity: IEditorEntity) => {
+    return (entity: EditorEntity) => {
       debug('updater', entity)
       const eventBus = new events.EventEmitter()
 

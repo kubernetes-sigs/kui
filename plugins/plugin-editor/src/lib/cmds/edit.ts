@@ -17,21 +17,21 @@
 import * as Debug from 'debug'
 
 import { respondToRepl } from '../util'
-import { IEntity as IEditorEntity, fetchEntity } from '../fetchers'
+import { Entity as EditorEntity, fetchEntity } from '../fetchers'
 import * as usage from '../../usage'
 import { lockIcon as defaultLock } from '../readonly'
 import { applyOverrides } from '../overrides'
 import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import { IExecOptions } from '@kui-shell/core/models/execOptions'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 const debug = Debug('plugins/editor/cmds/edit')
 
 // so that users of the exported `edit` command have access to our
 // IEntity model
-export type IEditorEntity = IEditorEntity
+export type EditorEntity = EditorEntity
 
 class DefaultCustomization {
   lock: object = undefined
@@ -39,11 +39,11 @@ class DefaultCustomization {
 
 class DefaultExecOptions {
   noSidecarHeader = false
-  parameters: IEditorEntity = undefined
+  parameters: EditorEntity = undefined
   custom = new DefaultCustomization()
 }
 
-interface IEditorOptions {
+interface EditorOptions {
   readOnly?: boolean
 }
 
@@ -51,7 +51,7 @@ interface IEditorOptions {
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (tab: ITab, entity: IEditorEntity, options: IEditorOptions) => editCmd({
+export const edit = (tab: Tab, entity: EditorEntity, options: EditorOptions) => editCmd({
   tab,
   argvNoOptions: [],
   parsedOptions: options,
@@ -66,7 +66,7 @@ export const edit = (tab: ITab, entity: IEditorEntity, options: IEditorOptions) 
  * Command handler for `edit <entity>`
  *
  */
-const editCmd = async ({ tab, argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { tab: ITab; argvNoOptions: string[]; parsedOptions: IEditorOptions; execOptions: IExecOptions }) => {
+const editCmd = async ({ tab, argvNoOptions = [], parsedOptions = {}, execOptions = new DefaultExecOptions() }: { tab: Tab; argvNoOptions: string[]; parsedOptions: EditorOptions; execOptions: ExecOptions }) => {
   debug('edit command execution started', execOptions)
 
   // maybe the caller is passing us the name and entity programmatically?

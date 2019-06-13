@@ -29,7 +29,7 @@ export enum Media {
 }
 
 /** map from provider to credentials */
-interface ICredentialsMap {
+interface CredentialsMap {
   [key: string]: any
 }
 
@@ -42,7 +42,7 @@ class State {
   hasLocalAccess = true // may change as media changes or assertLocalAccess is called
   hasProxy = false
   media = Media.Unknown
-  validCredentials: ICredentialsMap = {} // map to the credentials
+  validCredentials: CredentialsMap = {} // map to the credentials
 }
 let state: State = new State()
 
@@ -110,13 +110,13 @@ export const getAuthValue = (provider: string, key: string) => {
  * Return a map of all valid credentials
  *
  */
-export const getValidCredentials = (): ICredentialsMap => state.validCredentials
+export const getValidCredentials = (): CredentialsMap => state.validCredentials
 
 /**
  * Inject the credentials map
  *
  */
-export const setValidCredentials = (creds: ICredentialsMap): void => {
+export const setValidCredentials = (creds: CredentialsMap): void => {
   debug('setValidCredentials', creds)
   state.validCredentials = creds
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
-export const drilldownWith = (tab: ITab, returnTo: string, command: string | (() => Promise<string>), highlightThis?: HTMLElement, callThese = []) => event => {
+export const drilldownWith = (tab: Tab, returnTo: string, command: string | (() => Promise<string>), highlightThis?: HTMLElement, callThese = []) => event => {
   // invoke any precursor functions
   callThese.forEach(_ => _())
 

@@ -24,7 +24,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { cli } from '@kui-shell/core/tests/lib/headless'
 const debug = Debug('plugins/apache-composer/tests/headless')
 
-interface IResponse {
+interface Response {
   code: number
   output: {}
   stderr?: string

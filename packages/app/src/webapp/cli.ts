@@ -23,8 +23,8 @@ import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 
 import { Entity, SimpleEntity, isEntitySpec, isMessageBearingEntity } from '../models/entity'
-import { ICommandHandlerWithEvents } from '../models/command'
-import { IExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
+import { CommandHandlerWithEvents } from '../models/command'
+import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
 import * as historyModel from '../models/history'
 import { CodedError, isCodedError } from '../models/errors'
 
@@ -35,8 +35,8 @@ import { isHTML } from '../util/types'
 import Presentation from './views/presentation'
 import { formatListResult, formatMultiListResult, formatTable } from './views/table'
 import { Table, isTable, isMultiTable } from './models/table'
-import { Formattable, getSidecar, IBadgeSpec, currentSelection, presentAs, showEntity, showCustom, isCustomSpec, ICustomSpec } from './views/sidecar'
-import { ISidecarMode } from './bottom-stripe'
+import { Formattable, getSidecar, BadgeSpec, currentSelection, presentAs, showEntity, showCustom, isCustomSpec, CustomSpec } from './views/sidecar'
+import { SidecarMode } from './bottom-stripe'
 const debug = Debug('webapp/cli')
 debug('loading')
 
@@ -265,7 +265,7 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
 }
 
 /** plugins can register view handlers for a given type: string */
-export type ViewHandler = (tab: ITab, response: Entity, resultDom: Element, parsedOptions: ParsedOptions, execOptions: IExecOptions) => Promise<any> | void
+export type ViewHandler = (tab: Tab, response: Entity, resultDom: Element, parsedOptions: ParsedOptions, execOptions: ExecOptions) => Promise<any> | void
 interface ViewRegistrar { [key: string]: ViewHandler }
 
 /**
@@ -290,8 +290,8 @@ export const registerEntityView = (kind: string, handler: ViewHandler) => {
  * Stream output to the given block
  *
  */
-export type Streamable = SimpleEntity | Table | Table[] | ICustomSpec
-export const streamTo = (tab: ITab, block: Element) => {
+export type Streamable = SimpleEntity | Table | Table[] | CustomSpec
+export const streamTo = (tab: Tab, block: Element) => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
   // so we can scroll this into view as streaming output arrives
   const spinner = element('.repl-result-spinner', block)
@@ -359,10 +359,10 @@ export const createPopupContentContainer = (css: string[] = [], presentation?: P
   return resultDom
 }
 
-interface IPopupEntity {
+interface PopupEntity {
   prettyType?: string
-  modes?: ISidecarMode[]
-  badges?: IBadgeSpec[]
+  modes?: SidecarMode[]
+  badges?: BadgeSpec[]
   controlHeaders?: boolean | string[]
   presentation?: Presentation
   subtext?: Formattable
@@ -372,7 +372,7 @@ interface IPopupEntity {
  * Render popup content in the given container
  *
  */
-const renderPopupContent = (command: string, container: Element, execOptions: IExecOptions, entity: IPopupEntity = {}) => {
+const renderPopupContent = (command: string, container: Element, execOptions: ExecOptions, entity: PopupEntity = {}) => {
   debug('renderPopupContent', command, entity)
 
   const { prettyType = '', modes = [], badges = [], controlHeaders = false, presentation = Presentation.SidecarFullscreenForPopups } = entity
@@ -433,7 +433,7 @@ export const isPopup = () => document.body.classList.contains('subwindow')
  * Standard handling of Table responses
  *
  */
-const printTable = async (tab: ITab, response: Table, resultDom: HTMLElement, execOptions?: IExecOptions, parsedOptions?: ParsedOptions) => {
+const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement, execOptions?: ExecOptions, parsedOptions?: ParsedOptions) => {
   //
   // some sort of list response; format as a table
   //
@@ -456,7 +456,7 @@ const printTable = async (tab: ITab, response: Table, resultDom: HTMLElement, ex
  * Render the results of a command evaluation in the "console"
  *
  */
-export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: ITab, resultDom: HTMLElement, echo = true, execOptions?: IExecOptions, parsedOptions?: ParsedOptions, command?: string, evaluator?: ICommandHandlerWithEvents) => (response: Entity) => {
+export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Tab, resultDom: HTMLElement, echo = true, execOptions?: ExecOptions, parsedOptions?: ParsedOptions, command?: string, evaluator?: CommandHandlerWithEvents) => (response: Entity) => {
   debug('printResults', response)
 
   // does the command handler want to be incognito in the UI?
@@ -714,16 +714,16 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: IT
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ITab extends HTMLElement { }
+export interface Tab extends HTMLElement { }
 const tabTagPattern = /tab/i
-export function isTab (node: Element): node is ITab {
+export function isTab (node: Element): node is Tab {
   return tabTagPattern.test(node.tagName)
 }
-export const getTabIndex = (tab: ITab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
-export const sameTab = (tab1: ITab, tab2: ITab): boolean => {
+export const getTabIndex = (tab: Tab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
+export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
   return getTabIndex(tab1) === getTabIndex(tab2)
 }
-export const getTabFromTarget = (target: EventTarget): ITab => {
+export const getTabFromTarget = (target: EventTarget): Tab => {
   if (target) {
     let iter = target as Element
 
@@ -741,11 +741,11 @@ export const getTabFromTarget = (target: EventTarget): ITab => {
   // fallthrough
   return document.querySelector('tab.visible')
 }
-export const getCurrentTab = (): ITab => {
+export const getCurrentTab = (): Tab => {
   return getTabFromTarget(document.activeElement)
 }
 
-export const getInitialBlock = (tab: ITab): HTMLElement => {
+export const getInitialBlock = (tab: Tab): HTMLElement => {
   return tab.querySelector('.repl .repl-block.repl-initial')
 }
 export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
@@ -776,7 +776,7 @@ export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
 export const getPromptLeft = (block: Element) => {
   return block.querySelector('.repl-prompt-righty')
 }
-export const getCurrentPromptLeft = (tab: ITab) => {
+export const getCurrentPromptLeft = (tab: Tab) => {
   return getPromptLeft(getCurrentBlock(tab))
 }
 
@@ -1088,7 +1088,7 @@ export const doCancel = () => {
  * Paste a command, but do not eval it
  *
  */
-export const partial = (cmd: string, execOptions: IExecOptions = new DefaultExecOptions()) => {
+export const partial = (cmd: string, execOptions: ExecOptions = new DefaultExecOptions()) => {
   const prompt = getCurrentPrompt()
   if (prompt) {
     debug('applying partial', cmd)
@@ -1190,17 +1190,17 @@ export const showHelp = (command: string, block: HTMLElement, nextBlock: HTMLEle
   return oops(command, block, nextBlock)(error) && false
 }
 
-type PromptCompleter = IRepromptSpec | Promise<Entity>
+type PromptCompleter = RepromptSpec | Promise<Entity>
 
-interface IRepromptSpec {
+interface RepromptSpec {
   completion?: PromptCompletionHandler // for reprompt
   onpaste?: string
   placeholder?: string
   reprompt?: boolean // recursively prompt?
 }
 
-function isRequestingReprompt (spec: PromptCompleter): spec is IRepromptSpec {
-  return (spec as IRepromptSpec).reprompt
+function isRequestingReprompt (spec: PromptCompleter): spec is RepromptSpec {
+  return (spec as RepromptSpec).reprompt
 }
 
 interface PromptCompletionData {
@@ -1209,7 +1209,7 @@ interface PromptCompletionData {
 
 export type PromptCompletionHandler = (data: PromptCompletionData) => PromptCompleter
 
-interface IPromptOptions {
+interface PromptOptions {
   dangerous?: boolean
   placeholder?: string
   onpaste?: string
@@ -1221,7 +1221,7 @@ interface IPromptOptions {
  * Prompt the user for information
  *
  */
-export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, tab: ITab, options: IPromptOptions, completion: PromptCompletionHandler) => {
+export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, tab: Tab, options: PromptOptions, completion: PromptCompletionHandler) => {
   debug('prompt', options)
 
   const selection = block.querySelector('.repl-selection') as HTMLElement

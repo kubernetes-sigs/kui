@@ -38,11 +38,11 @@ const foojs = join(ROOT, 'data/openwhisk/headless/foo.js')
 const foojsSource = readFileSync(foojs).toString()
 
 /** wait for the creation to finish, then navigate a bit */
-interface ICreateSpec {
+interface CreateSpec {
   name: string
   kind: string
 }
-const waitForCreate = function (this: common.ISuite, spec: ICreateSpec) {
+const waitForCreate = function (this: common.ISuite, spec: CreateSpec) {
   const { name, kind } = spec
 
   it(`should wait for creation of resource named ${name}`, async () => {
@@ -62,10 +62,10 @@ const waitForCreate = function (this: common.ISuite, spec: ICreateSpec) {
 }
 
 /** wait for the deletion to finish */
-interface IDeleteSpec {
+interface DeleteSpec {
   name: string
 }
-const waitForDelete = function (this: common.ISuite, spec: IDeleteSpec) {
+const waitForDelete = function (this: common.ISuite, spec: DeleteSpec) {
   const { name } = spec
 
   it(`should wait for deletion of resource named ${name}`, async () => {
@@ -77,11 +77,11 @@ const waitForDelete = function (this: common.ISuite, spec: IDeleteSpec) {
 }
 
 /** wait for the invocationion to finish */
-interface IInvokeSpec {
+interface InvokeSpec {
   name: string
   result: object
 }
-const waitForInvoke = function (this: common.ISuite, spec: IInvokeSpec) {
+const waitForInvoke = function (this: common.ISuite, spec: InvokeSpec) {
   const { name } = spec
 
   it(`should wait for invocation of resource named ${name}`, async () => {
@@ -92,10 +92,10 @@ const waitForInvoke = function (this: common.ISuite, spec: IInvokeSpec) {
 }
 
 /** expect an error with the given code */
-interface IErrorSpec {
+interface ErrorSpec {
   code: number | string
 }
-const expectError = function (this: common.ISuite, spec: IErrorSpec) {
+const expectError = function (this: common.ISuite, spec: ErrorSpec) {
   it(`should present an error with code ${spec.code}`, () => {
     return this.app.client.waitUntil(async () => {
       const elt = await this.app.client.element(`.repl-result .oops[data-status-code="${spec.code}"]`)

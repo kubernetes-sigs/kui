@@ -19,28 +19,28 @@ import { dirname, join } from 'path'
 import { addPath } from '@kui-shell/core/core/find-file'
 import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/modes/registrar'
 
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import { isPipeline, isPipelineRun, isTask } from './model/resource'
 
-/** this is the ISidecarMode model for the tekton run view */
+/** this is the SidecarMode model for the tekton run view */
 // import runMode from './model/modes/run'
 
-/** this is the ISidecarMode model for the tekton flow view */
+/** this is the SidecarMode model for the tekton flow view */
 import flowMode from './model/modes/flow'
 
-/** this is the ISidecarMode model for the tekton trace view */
+/** this is the SidecarMode model for the tekton trace view */
 import traceMode from './model/modes/trace'
 
-/** this is the ISidecarMode model for the tekton pipelinerun logs view */
+/** this is the SidecarMode model for the tekton pipelinerun logs view */
 import logsMode from './model/modes/logs'
 
 /**
  * A sidecar mode relevancy filter
  *
  */
-function either (...filters: SidecarModeFilter<IKubeResource>[]): SidecarModeFilter<IKubeResource> {
-  return (resource: IKubeResource) => filters.some(filter => filter(resource))
+function either (...filters: SidecarModeFilter<KubeResource>[]): SidecarModeFilter<KubeResource> {
+  return (resource: KubeResource) => filters.some(filter => filter(resource))
 }
 
 /** sidecar mode for tekton Flow view */

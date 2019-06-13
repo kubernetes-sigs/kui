@@ -217,11 +217,11 @@ const summarizeWhole2 = (allActivations, options) => {
  * taking care of providing us with activations.
  *
  */
-interface ISplit {
+interface Split {
   version?: string | SemVer
   groupKey: string
 }
-type SplitterFunction = (activation, path: string) => ISplit
+type SplitterFunction = (activation, path: string) => Split
 const addToGroup = (options, totals, splitRequested = false, splitter?: SplitterFunction) => (groups, activation) => {
   const _path = pathOf(activation)
   const path = options.subgrouping === 'success' ? isSuccess(activation) ? 'success' : 'failure'

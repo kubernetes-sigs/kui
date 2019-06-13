@@ -19,9 +19,9 @@ import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import Presentation from './views/presentation'
-import { popupListen, ITab } from './cli'
-import { IExecOptions } from '../models/execOptions'
-import { IEntitySpec } from '../models/entity'
+import { popupListen, Tab } from './cli'
+import { ExecOptions } from '../models/execOptions'
+import { EntitySpec } from '../models/entity'
 const debug = Debug('webapp/pip')
 debug('loading')
 
@@ -43,14 +43,14 @@ const highlight = _highlight('add')
 interface PipOptions {
   parent?: Element
   exec?: 'qexec' | 'pexec'
-  execOptions?: IExecOptions
+  execOptions?: ExecOptions
 }
 
 /**
  * Make an DOM event handler that will restore the given pippedContainer
  *
  */
-const restore = (tab: ITab, pippedContainer: boolean | Element, previousPresentation: Presentation, sidecarClass: string, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], escapeHandler: (evt: KeyboardEvent) => boolean, options?: PipOptions) => () => {
+const restore = (tab: Tab, pippedContainer: boolean | Element, previousPresentation: Presentation, sidecarClass: string, capturedHeaders: CapturedHeader[], highlightThis: Element | Element[], escapeHandler: (evt: KeyboardEvent) => boolean, options?: PipOptions) => () => {
   debug('restore')
 
   const sidecar = getSidecar(tab)
@@ -104,7 +104,7 @@ const restore = (tab: ITab, pippedContainer: boolean | Element, previousPresenta
  *
  *
  */
-const pip = (tab: ITab, container: boolean | Element, previousPresentation: Presentation, capturedHeaders: ICapturedHeader[], highlightThis: Element | Element[], returnTo = 'previous view', options?: PipOptions) => {
+const pip = (tab: Tab, container: boolean | Element, previousPresentation: Presentation, capturedHeaders: CapturedHeader[], highlightThis: Element | Element[], returnTo = 'previous view', options?: PipOptions) => {
   try {
     if (container !== true && container !== false) {
       container.parentNode.removeChild(container)
@@ -163,7 +163,7 @@ const pip = (tab: ITab, container: boolean | Element, previousPresentation: Pres
     container.onclick = restoreFn
 } */
 
-interface ICapturedHeader {
+interface CapturedHeader {
   selector: string
   node: Element
   redraw: Function
@@ -174,7 +174,7 @@ interface ICapturedHeader {
  * Capture and clone the given selector
  *
  */
-const capture = (tab: ITab, selector: string, redraw?: Function): ICapturedHeader => {
+const capture = (tab: Tab, selector: string, redraw?: Function): CapturedHeader => {
   const node = tab.querySelector(selector)
   return {
     selector, // remember how to find the replacement
@@ -190,7 +190,7 @@ const capture = (tab: ITab, selector: string, redraw?: Function): ICapturedHeade
  *
  */
 type StringProducing = () => Promise<string>
-export default (tab: ITab, command: string | IEntitySpec | StringProducing, highlightThis: Element | Element[], ccontainer: string | Element, returnTo?: string, options?: PipOptions) => (event?: Event) => {
+export default (tab: Tab, command: string | EntitySpec | StringProducing, highlightThis: Element | Element[], ccontainer: string | Element, returnTo?: string, options?: PipOptions) => (event?: Event) => {
   if (event) event.stopPropagation()
 
   // maybe ccontainer is a query selector
@@ -230,7 +230,7 @@ export default (tab: ITab, command: string | IEntitySpec | StringProducing, high
   if (typeof command === 'string') {
     debug('drilling down with string command')
 
-    const execOptions: IExecOptions = Object.assign({}, {
+    const execOptions: ExecOptions = Object.assign({}, {
       isDrilldown: true,
       preserveBackButton: true,
       rethrowErrors: true,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { addBadge } from '@kui-shell/core/webapp/views/sidecar'
 
 /**
@@ -36,7 +36,7 @@ export const formatWebActionURL = action => {
  * with an onclick handler that invokes the web action endpoint.
  *
  */
-export const addWebBadge = (tab: ITab, action) => {
+export const addWebBadge = (tab: Tab, action) => {
   const isWebExported = action.annotations && action.annotations.find(kv => kv.key === 'web-export' && kv.value)
   if (isWebExported) {
     const anchor = document.createElement('a')

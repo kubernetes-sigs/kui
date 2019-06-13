@@ -136,12 +136,12 @@ const cancelAsyncs = obj => {
 
 /** Sidecar management. TODO extract this */
 const sidecarManager = {
-  enterFullscreen: (tab: cli.ITab) => {
+  enterFullscreen: (tab: cli.Tab) => {
     showSidecar(tab)
     toggleMaximization(tab)
   },
 
-  exitFullscreen: (tab: cli.ITab) => {
+  exitFullscreen: (tab: cli.Tab) => {
     clearSelection(tab)
     toggleMaximization(tab)
   }
@@ -151,7 +151,7 @@ const sidecarManager = {
  * Close the current tutorial
  *
  */
-const close = (tab: cli.ITab, pane: Element, obj, delay = 500) => () => new Promise<boolean>(resolve => {
+const close = (tab: cli.Tab, pane: Element, obj, delay = 500) => () => new Promise<boolean>(resolve => {
   debug('close')
 
   // cancel any background tasks
@@ -195,7 +195,7 @@ const isOnePageFullscreenTutorial = obj => obj.steps && obj.steps.length === 1 &
  * Launches the specified tutorial
  *
  */
-const showTutorial = (tab: cli.ITab, tutorialName: string, obj) => {
+const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
   debug('showTutorial', obj)
 
   // remove the sidecar, if it's open
@@ -504,7 +504,7 @@ const commandFromFullscreen = (pane, command, display = command) => () => {
  * Handle transitions between steps
  *
  */
-const transitionSteps = (tab: cli.ITab, stepNum: number, obj, pane) => {
+const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
   debug('step', stepNum, obj)
 
   // cancel any background tasks

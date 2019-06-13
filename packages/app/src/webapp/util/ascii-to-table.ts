@@ -27,7 +27,7 @@ const debug = Debug('core/webapp/util/ascii-to-table')
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: string[]): { rows?: IPair[][]; trailingString?: string }[] => {
+export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingString?: string }[] => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
@@ -128,7 +128,7 @@ const isKubeLike = (command: string): boolean => kubelike.test(command)
  * TODO factor out kube-specifics to plugin-k8s
  *
  */
-export const formatTable = (command: string, verb: string, entityType: string, options: ParsedOptions, lines: IPair[][]): Table => {
+export const formatTable = (command: string, verb: string, entityType: string, options: ParsedOptions, lines: Pair[][]): Table => {
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -242,11 +242,11 @@ export const formatTable = (command: string, verb: string, entityType: string, o
  * Split the given string at the given split indices
  *
  */
-interface IPair {
+interface Pair {
   key: string
   value: string
 }
-const split = (str: string, splits: number[], headerCells?: string[]): IPair[] => {
+const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],

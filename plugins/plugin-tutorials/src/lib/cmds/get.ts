@@ -74,7 +74,7 @@ const setup = (args: string[]) => {
   return readProject(projectHome)
 }
 
-interface IParagraph {
+interface Paragraph {
   title: string
   text?: string
   content?: any
@@ -84,7 +84,7 @@ interface IParagraph {
  * Render a paragraph with a left-side float-like icon
  *
  */
-const paragraphWithIcon = ({ title, text, content }: IParagraph) => {
+const paragraphWithIcon = ({ title, text, content }: Paragraph) => {
   const paragraph = document.createElement('div')
   paragraph.className = 'project-config-paragraph project-config-items'
 

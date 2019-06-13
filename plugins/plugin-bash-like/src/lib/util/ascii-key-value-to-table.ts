@@ -23,18 +23,18 @@
  * and capture the `(k1,v1)` pairs. The return value will be:
  *   `[ { name: 'k1', attributes: [ { name: 'v1' } ] }, ... ]`
  */
-interface IAttr {
+interface Attr {
   name: string
   value: string
   css: string
 }
-interface IPair {
+interface Pair {
   type: string
   name: string
   onclick: boolean
-  attributes: IAttr[]
+  attributes: Attr[]
 }
-export default (str: string): IPair[] | void => {
+export default (str: string): Pair[] | void => {
   const kvPattern = /^([^=]+)=(.+)$/gm
 
   let match = kvPattern.exec(str)

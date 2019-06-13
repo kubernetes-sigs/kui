@@ -15,7 +15,7 @@
  */
 
 import { CodedError } from '@kui-shell/core/models/errors'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { fetchTask } from '../../lib/read'
 
@@ -32,7 +32,7 @@ const usage = {
   ]
 }
 
-const getStep = async ({ argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const getStep = async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf('step') + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf('step') + 2]
   const stepName = argvNoOptions[argvNoOptions.indexOf('step') + 3]

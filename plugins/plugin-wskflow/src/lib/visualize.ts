@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import injectCSS from './inject'
@@ -31,7 +31,7 @@ type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void
  * Create the wskflow visualization for the given fsm
  *
  */
-export default async (tab: ITab, passedFsm: Record<string, any>, container?: HTMLElement, w?: number, h?: number, activations?, options?, rule?): Promise<any> => {
+export default async (tab: Tab, passedFsm: Record<string, any>, container?: HTMLElement, w?: number, h?: number, activations?, options?, rule?): Promise<any> => {
   if (isHeadless()) {
     return
   }

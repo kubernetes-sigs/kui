@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { IKubeStatusCondition } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeStatusCondition } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 /**
  * Determine the success bit of a run element
  *
  */
-export default function success (conditions: IKubeStatusCondition[]): boolean {
+export default function success (conditions: KubeStatusCondition[]): boolean {
   const successCondition = conditions.find(_ => _.type === 'Succeeded')
   return successCondition && (successCondition.status === true || (successCondition.status !== false && /true/i.test(successCondition.status)))
 }

@@ -15,7 +15,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IResponseStructure {
+export interface ResponseStructure {
 }
 
 export type IReplResponse =
@@ -23,4 +23,4 @@ export type IReplResponse =
   boolean | Promise<boolean> |
   number | Promise<number> |
   string | Promise<string> |
-  IResponseStructure | Promise<IResponseStructure>
+  ResponseStructure | Promise<ResponseStructure>

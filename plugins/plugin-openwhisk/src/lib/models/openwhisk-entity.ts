@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
-import { IEntitySpec } from '@kui-shell/core/models/entity'
+import { Tab } from '@kui-shell/core/webapp/cli'
+import { EntitySpec } from '@kui-shell/core/models/entity'
 import { currentSelection as baseSelection } from '@kui-shell/core/webapp/views/sidecar'
 
-export interface IOpenWhiskEntity extends IEntitySpec {
+export interface OpenWhiskEntity extends EntitySpec {
   namespace: string
   exec?: {
     kind: string
@@ -27,27 +27,27 @@ export interface IOpenWhiskEntity extends IEntitySpec {
   }
 }
 
-export function currentSelection (tab: ITab) {
-  return baseSelection(tab) as IOpenWhiskEntity
+export function currentSelection (tab: Tab) {
+  return baseSelection(tab) as OpenWhiskEntity
 }
 
-export interface IActivationResponse {
+export interface ActivationResponse {
   success: boolean
   result: Object
 }
 
-export interface IActivation {
-  entity?: IEntitySpec
+export interface Activation {
+  entity?: EntitySpec
   activationId: string
-  response: IActivationResponse
+  response: ActivationResponse
 }
 
-export function isActivationSpec (response: IActivation | IEntitySpec): response is IActivation {
-  const activation = response as IActivation
+export function isActivationSpec (response: Activation | EntitySpec): response is Activation {
+  const activation = response as Activation
   return activation.response !== undefined && activation.activationId !== undefined
 }
 
-export function isAsyncActivationSpec (response: IActivation | IEntitySpec): response is IActivation {
-  const activation = response as IActivation
+export function isAsyncActivationSpec (response: Activation | EntitySpec): response is Activation {
+  const activation = response as Activation
   return activation.response === undefined && activation.activationId !== undefined
 }

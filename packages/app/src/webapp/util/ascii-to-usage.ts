@@ -25,11 +25,11 @@ const splitter = /[\n\r]([A-Za-z ]+:\s*[\n\r])/
 const matcher = /[\n\r]([A-Za-z ]+:\s[\n\r])\s+\w+/
 const doubleNewline = /(\n\n)|(\r\r)|(\r\n\r\n)/
 
-interface IOptions {
+interface Options {
   drilldownWithPip?: boolean
   stderr?: string | HTMLElement
 }
-class DefaultOptions implements IOptions {
+class DefaultOptions implements Options {
 }
 
 /**
@@ -39,12 +39,12 @@ class DefaultOptions implements IOptions {
  *   bar  bar description
  *
  */
-interface IPair {
+interface Pair {
   command: string
   alias?: string
   docs: string
 }
-const asciiToOptionsTable = (rows: string[]): IPair[] => {
+const asciiToOptionsTable = (rows: string[]): Pair[] => {
   const table = rows.map(line => {
     const [command, docs] = line.split(/\s\s+/)
 
@@ -62,7 +62,7 @@ const asciiToOptionsTable = (rows: string[]): IPair[] => {
   return table.length > 0 && table
 }
 
-export const formatUsage = (command: string, str: string, options: IOptions = new DefaultOptions()): UsageError => {
+export const formatUsage = (command: string, str: string, options: Options = new DefaultOptions()): UsageError => {
   debug('raw', str)
   if (!matcher.test(str)) {
     debug('this does not look like a ASCII usage model')

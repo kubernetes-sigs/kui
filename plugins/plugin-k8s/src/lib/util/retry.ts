@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
+import { ExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
 const debug = require('debug')('k8s/util/retry')
 
 import repl = require('@kui-shell/core/core/repl')
@@ -43,7 +43,7 @@ export const withRetryOn404 = withRetryOnCode(404)
  * Swallow 404s
  *
  */
-export const okIf404 = async (command: string, execOptions: IExecOptions = new DefaultExecOptions()) => {
+export const okIf404 = async (command: string, execOptions: ExecOptions = new DefaultExecOptions()) => {
   try {
     await repl.qexec(command, undefined, undefined, execOptions)
   } catch (err) {

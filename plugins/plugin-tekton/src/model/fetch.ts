@@ -17,13 +17,13 @@
 import { rexec as $ } from '@kui-shell/core/core/repl'
 import { CodedError } from '@kui-shell/core/models/errors'
 
-import { IPipelineRun, IPipeline, Task } from './resource'
+import { PipelineRun, Pipeline, Task } from './resource'
 
 /**
  * Get the Pipeline referenced by a PipelineRun
  *
  */
-export function getPipelineFromRef (run: IPipelineRun): Promise<IPipeline> {
+export function getPipelineFromRef (run: PipelineRun): Promise<Pipeline> {
   return $(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
     .catch((err: CodedError) => {
       if (err.code === 404) {

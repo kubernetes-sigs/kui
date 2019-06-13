@@ -26,13 +26,13 @@ import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
-import { setCustomCaret, clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, ITab } from '@kui-shell/core/webapp/cli'
+import { setCustomCaret, clearPendingTextSelection, setPendingTextSelection, clearTextSelection, disableInputQueueing, pasteQueuedInput, scrollIntoView, sameTab, Tab } from '@kui-shell/core/webapp/cli'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ParsedOptions } from '@kui-shell/core/models/command'
-import { IExecOptions } from '@kui-shell/core/models/execOptions'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 const debug = Debug('plugins/bash-like/pty/client')
@@ -42,7 +42,7 @@ const exitApplicationModePattern = /\x1b\[\?1l/
 const enterAltBufferPattern = /\x1b\[\??(47|1047|1049)h/
 const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 
-interface ISize {
+interface Size {
   resizeGeneration: number
   sidecarState: SidecarState
   rows: number
@@ -54,15 +54,15 @@ if (window) {
     resizeGeneration++
   })
 }
-function getCachedSize (tab: ITab): ISize {
-  const cachedSize: ISize = tab['_kui_pty_cachedSize']
+function getCachedSize (tab: Tab): Size {
+  const cachedSize: Size = tab['_kui_pty_cachedSize']
   if (cachedSize &&
       cachedSize.sidecarState === getSidecarState(tab) &&
       cachedSize.resizeGeneration === resizeGeneration) {
     return cachedSize
   }
 }
-function setCachedSize (tab: ITab, { rows, cols }: { rows: number; cols: number }) {
+function setCachedSize (tab: Tab, { rows, cols }: { rows: number; cols: number }) {
   tab['_kui_pty_cachedSize'] = { rows, cols, sidecarState: getSidecarState(tab), resizeGeneration }
 }
 
@@ -75,7 +75,7 @@ interface HTerminal extends xterm.Terminal {
 
 class Resizer {
   /** our tab */
-  private tab: ITab
+  private tab: Tab
 
   /** exit alt buffer mode async */
   private exitAlt?: NodeJS.Timeout
@@ -96,7 +96,7 @@ class Resizer {
   private _ws: Channel
   private readonly resizeNow: () => void
 
-  constructor (terminal: xterm.Terminal, tab: ITab) {
+  constructor (terminal: xterm.Terminal, tab: Tab) {
     this.tab = tab
     this.terminal = terminal as HTerminal
 
@@ -104,7 +104,7 @@ class Resizer {
     window.addEventListener('resize', this.resizeNow) // window resize
 
     const ourTab = tab
-    eventBus.on('/sidecar/toggle', ({ tab }: { tab: ITab }) => {
+    eventBus.on('/sidecar/toggle', ({ tab }: { tab: Tab }) => {
       // sidecar resize
       if (sameTab(tab, ourTab)) {
         this.resizeNow()
@@ -448,7 +448,7 @@ function safeLoadWithCatch (raw: string): Record<string, any> {
  *
  */
 let alreadyInjectedCSS: boolean
-export const doExec = (tab: ITab, block: HTMLElement, cmdline: string, argvNoOptions: string[], parsedOptions: ParsedOptions, execOptions: IExecOptions) => new Promise((resolve, reject) => {
+export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOptions: string[], parsedOptions: ParsedOptions, execOptions: ExecOptions) => new Promise((resolve, reject) => {
   debug('doExec', cmdline)
 
   const contentType = parsedOptions.o || parsedOptions.output || parsedOptions.out

@@ -15,10 +15,10 @@
  */
 
 import { Table } from '../webapp/models/table'
-import { ICustomSpec } from '../webapp/views/sidecar'
-import { ISidecarMode } from '../webapp/bottom-stripe'
+import { CustomSpec } from '../webapp/views/sidecar'
+import { SidecarMode } from '../webapp/bottom-stripe'
 
-export interface IEntitySpec {
+export interface EntitySpec {
   type?: string
   kind?: string
 
@@ -35,7 +35,7 @@ export interface IEntitySpec {
   controlHeaders?: boolean | string[]
   uuid?: string
   sidecarHeader?: boolean
-  modes?: ISidecarMode[]
+  modes?: SidecarMode[]
 
   version?: string
   duration?: number
@@ -43,16 +43,16 @@ export interface IEntitySpec {
   annotations?: { key: string; value: any }[]
 }
 
-export interface IMessageBearingEntity {
+export interface MessageBearingEntity {
   message: string
 }
 
-export function isMessageBearingEntity (entity: Entity): entity is IMessageBearingEntity {
-  return (entity as IMessageBearingEntity).message !== undefined
+export function isMessageBearingEntity (entity: Entity): entity is MessageBearingEntity {
+  return (entity as MessageBearingEntity).message !== undefined
 }
 
-export function isEntitySpec (entity: Entity): entity is IEntitySpec {
-  const spec = entity as IEntitySpec
+export function isEntitySpec (entity: Entity): entity is EntitySpec {
+  const spec = entity as EntitySpec
   return spec.verb !== undefined || spec.type !== undefined || spec.name !== undefined
 }
 
@@ -69,7 +69,7 @@ export interface MetadataBearing {
     creationTimestamp?: string
   }
 }
-export function isMetadataBearing (spec: IEntitySpec): spec is MetadataBearing {
+export function isMetadataBearing (spec: EntitySpec): spec is MetadataBearing {
   const meta = spec as MetadataBearing
   return meta !== undefined &&
     meta.kind !== undefined &&
@@ -81,7 +81,7 @@ export function isMetadataBearing (spec: IEntitySpec): spec is MetadataBearing {
  * A mostly scalar entity
  *
  */
-export type SimpleEntity = Error | string | number | HTMLElement | IMessageBearingEntity
+export type SimpleEntity = Error | string | number | HTMLElement | MessageBearingEntity
 
 /**
  * A potentially more complex entity with a "spec"
@@ -89,4 +89,4 @@ export type SimpleEntity = Error | string | number | HTMLElement | IMessageBeari
  * Note: Array<any> will go away once we have fully typed tables
  *
  */
-export type Entity = SimpleEntity | IEntitySpec | ICustomSpec | boolean | any[] | Table
+export type Entity = SimpleEntity | EntitySpec | CustomSpec | boolean | any[] | Table

@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import { join } from 'path'
 import { exec } from 'child_process'
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
 const debug = Debug('k8s/controller/istio')
 
@@ -36,7 +36,7 @@ const squash = (err: Error) => {
  * Install istio
  *
  */
-const installIstio106 = async ({ parsedOptions }: IEvaluatorArgs) => {
+const installIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
   const tmp = '/tmp' // FIXME
   const platform = process.platform === 'darwin' ? 'osx' : process.platform === 'win32' ? 'win' : 'linux'
   const version = parsedOptions.version || '1.0.6'
@@ -85,7 +85,7 @@ const installIstio106 = async ({ parsedOptions }: IEvaluatorArgs) => {
  * Uninstall istio
  *
  */
-const uninstallIstio106 = async ({ parsedOptions }: IEvaluatorArgs) => {
+const uninstallIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
   const version = parsedOptions.version || '1.0.6'
 
   await Promise.all([
@@ -120,7 +120,7 @@ const uninstallBookinfo = async () => {
  * Return the istio ingress URL
  *
  */
-const ingress = async ({ argvNoOptions: args }: IEvaluatorArgs) => {
+const ingress = async ({ argvNoOptions: args }: EvaluatorArgs) => {
   const [ ingressHost, ingressPort ] = await Promise.all([
     $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`),
     $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}'`),

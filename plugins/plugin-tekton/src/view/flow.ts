@@ -19,19 +19,19 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Tab } from '@kui-shell/core/webapp/cli'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import injectCSS from '@kui-shell/plugin-wskflow/lib/inject'
 import { zoomToFitButtons } from '@kui-shell/plugin-wskflow/lib/util'
 
 import runMode from '../model/modes/run'
 import flowMode from '../model/modes/flow'
-import { IPipelineRun } from '../model/resource'
+import { PipelineRun } from '../model/resource'
 import tekton2graph from '../lib/tekton2graph'
 const debug = Debug('plugins/tekton/view/flow')
 
@@ -39,7 +39,7 @@ const debug = Debug('plugins/tekton/view/flow')
  * Format a repl response
  *
  */
-export default async (tab: ITab, jsons: IKubeResource[], run?: IPipelineRun, raw: string = safeDump(jsons), filepath?: string) => {
+export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: string = safeDump(jsons), filepath?: string) => {
   const [graph, graph2doms] = await Promise.all([
     tekton2graph(jsons, filepath, run), // generate the graph model
     import('@kui-shell/plugin-wskflow/lib/graph2doms'), // overlap that work with importing the graph renderer
@@ -62,7 +62,7 @@ export default async (tab: ITab, jsons: IKubeResource[], run?: IPipelineRun, raw
   })
   debug('content', content)
 
-  const tektonModes: ISidecarMode[] = [
+  const tektonModes: SidecarMode[] = [
     flowMode,
     runMode,
     {

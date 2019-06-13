@@ -16,11 +16,11 @@
 
 import * as Debug from 'debug'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
-import { IResource, IKubeResource } from '../../model/resource'
+import { Resource, KubeResource } from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
@@ -32,11 +32,11 @@ const debug = Debug('k8s/view/modes/conditions')
  * for by the given resource.
  *
  */
-export const conditionsMode: ModeRegistration<IKubeResource> = {
-  when: (resource: IKubeResource) => {
+export const conditionsMode: ModeRegistration<KubeResource> = {
+  when: (resource: KubeResource) => {
     return !!(resource.status && resource.status.conditions)
   },
-  mode: (command: string, resource: IResource) => {
+  mode: (command: string, resource: Resource) => {
     try {
       return conditionsButton(command, resource)
     } catch (err) {
@@ -51,7 +51,7 @@ export const conditionsMode: ModeRegistration<IKubeResource> = {
  * for the given resource
  *
  */
-export const conditionsButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
+export const conditionsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
   mode: 'conditions',
   direct: {
     plugin: 'k8s',
@@ -79,7 +79,7 @@ const formatTimestamp = (timestamp: string): string => {
  * Render the tabular conditions view
  *
  */
-export const renderConditions = async (tab: ITab, command: string, resource: IResource) => {
+export const renderConditions = async (tab: Tab, command: string, resource: Resource) => {
   debug('renderConditions', command, resource)
 
   const anyProbeTimes = resource.resource.status.conditions.some(_ => !!_.lastProbeTime)
@@ -154,10 +154,10 @@ export const renderConditions = async (tab: ITab, command: string, resource: IRe
  * Render a conditions table and show it in the sidecar
  *
  */
-interface IParameters {
+interface Parameters {
   command: string
-  resource: IResource
+  resource: Resource
 }
-export const renderAndViewConditions = (tab: ITab, parameters: IParameters) => {
+export const renderAndViewConditions = (tab: Tab, parameters: Parameters) => {
   renderConditions(tab, parameters.command, parameters.resource).then(insertView(tab))
 }

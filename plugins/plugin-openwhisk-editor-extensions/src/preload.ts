@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import { persisters } from './lib/cmds/new'
@@ -36,7 +36,7 @@ export default async () => {
     const { lockIcon, edit } = await import('@kui-shell/plugin-editor/lib/readonly')
     const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
 
-    const getEntity = (tab: ITab) => {
+    const getEntity = (tab: Tab) => {
       const entity = currentSelection(tab)
       entity['persister'] = persisters.actions
       debug('getEntity', entity)

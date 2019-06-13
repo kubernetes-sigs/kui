@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/openwhisk/cmds/wipe')
 import cli = require('@kui-shell/core/webapp/cli')
 import repl = require('@kui-shell/core/core/repl')
@@ -125,7 +125,7 @@ const doWipe = () => doWipe1().then(() => doWipe2()).then(() => {
   }
 })
 
-const doWipeWithConfirmation = async ({ tab, block, nextBlock }: IEvaluatorArgs) => {
+const doWipeWithConfirmation = async ({ tab, block, nextBlock }: EvaluatorArgs) => {
   //
   // first, hide the sidecar
   //

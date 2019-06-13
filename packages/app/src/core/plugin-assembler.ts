@@ -42,7 +42,7 @@ const prescanned = (): string => require.resolve('@kui-shell/prescan')
  * Write the plugin list to the .pre-scanned.json file in app/plugins/.pre-scanned.json
  *
  */
-const writeToFile = async (modules: plugins.IPrescanModel): Promise<void> => {
+const writeToFile = async (modules: plugins.PrescanModel): Promise<void> => {
   debug('writeToFile', process.cwd(), prescanned())
 
   let str
@@ -59,7 +59,7 @@ const writeToFile = async (modules: plugins.IPrescanModel): Promise<void> => {
  * Read the current .pre-scanned.json file
  *
  */
-const readFile = async (): Promise<IPrescan> => {
+const readFile = async (): Promise<Prescan> => {
   try {
     const data = (await fs.readFile(prescanned())).toString()
 
@@ -84,7 +84,7 @@ const readFile = async (): Promise<IPrescan> => {
  * Find what's new in after versus before, two structures
  *
  */
-const diff = (beforeModel: IPrescan, afterModel: IPrescan, reverseDiff = false): PrescanDiff => {
+const diff = (beforeModel: Prescan, afterModel: Prescan, reverseDiff = false): PrescanDiff => {
   const { commandToPlugin: before } = beforeModel
   const { commandToPlugin: after } = afterModel
 
@@ -124,7 +124,7 @@ const readDirRecursively = (dir: string): string[] => {
  */
 export const scanForJsFiles = (dir: string) => readDirRecursively(dir).filter(s => s.endsWith('.js'))
 
-interface IFile {
+interface File {
   path: string
   root?: boolean
 }
@@ -133,7 +133,7 @@ interface IFile {
  * Find js files in root/modules
  *
  */
-const scanModules = async (root: string): Promise<IFile[]> => {
+const scanModules = async (root: string): Promise<File[]> => {
   const { plugins: modules = {} } = await plugins.scanForModules(root, true) // eslint-disable-line
 
   const files = []
@@ -150,14 +150,14 @@ const scanModules = async (root: string): Promise<IFile[]> => {
   return files
 }
 
-interface INode {
+interface Node {
   route: string
   usage?: Object
   docs?: string
-  children?: { [key: string]: INode }
+  children?: { [key: string]: Node }
 }
 
-interface IPrescan {
+interface Prescan {
   commandToPlugin?: Object
 }
 
@@ -185,11 +185,11 @@ const makeTree = (map: plugins.PrescanUsage, docs: plugins.PrescanDocs) => {
   keys.sort()
 
   /** create new node */
-  const newLeaf = (route: string): INode => ({ route })
-  const newNode = (route: string): INode => Object.assign(newLeaf(route), { children: {} })
+  const newLeaf = (route: string): Node => ({ route })
+  const newNode = (route: string): Node => Object.assign(newLeaf(route), { children: {} })
 
   /** get or create a subtree */
-  const getOrCreate = (tree: INode, pathPrefix: string) => {
+  const getOrCreate = (tree: Node, pathPrefix: string) => {
     if (!tree.children) {
       tree.children = {}
     }
@@ -229,7 +229,7 @@ const makeTree = (map: plugins.PrescanUsage, docs: plugins.PrescanDocs) => {
  * of commands.
  *
  */
-const amendWithUsageModels = (modules: plugins.IPrescanModel) => {
+const amendWithUsageModels = (modules: plugins.PrescanModel) => {
   modules.docs = {}
   modules.usage = {}
 
@@ -285,7 +285,7 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
     path: fixupOnePath(plugin.path)
   }))
 
-  const model: plugins.IPrescanModel = Object.assign(modules, {
+  const model: plugins.PrescanModel = Object.assign(modules, {
     preloads: fixupPaths(modules.preloads),
     flat: fixupPaths(modules.flat)
   })

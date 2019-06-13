@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import * as util from '../utility/ast'
@@ -76,7 +76,7 @@ export const formatSessionGet = response => {
   }
 }
 
-export const visualizeComposition = async (tab: ITab, response, execOptions) => {
+export const visualizeComposition = async (tab: Tab, response, execOptions) => {
   debug('Visualizing Composition', response)
 
   const action = response.message || response

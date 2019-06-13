@@ -20,7 +20,7 @@ import UsageError from '@kui-shell/core/core/usage-error'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
@@ -28,7 +28,7 @@ debug('loading')
  * Respond with a top-level usage document
  *
  */
-const help = (usage) => ({ argvNoOptions: args }: IEvaluatorArgs) => {
+const help = (usage) => ({ argvNoOptions: args }: EvaluatorArgs) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 

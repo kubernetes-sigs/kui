@@ -21,8 +21,8 @@
  *
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { Tab } from '@kui-shell/core/webapp/cli'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 import { addPrettyType, getClient, owOpts } from '../openwhisk-core'
@@ -37,10 +37,10 @@ const fixedOf = val => () => val // the match is always a fixed value
  *
  */
 const matchers = [
-  { pattern: /^\s*webbify\s+as\s+(.+)\s*$/, action: (_, tab: ITab) => currentSelection(tab), mimeType: matchOf(1) },
+  { pattern: /^\s*webbify\s+as\s+(.+)\s*$/, action: (_, tab: Tab) => currentSelection(tab), mimeType: matchOf(1) },
   { pattern: /^\s*webbify\s+(.+)\s+as\s+(.+)\s*$/, action: matchOf(1), mimeType: matchOf(2) },
   { pattern: /^\s*webbify\s+(.+)\s*$/, action: matchOf(1), mimeType: fixedOf('json') },
-  { pattern: /^\s*webbify\s*$/, action: (_, tab: ITab) => currentSelection(tab), mimeType: fixedOf('json') }
+  { pattern: /^\s*webbify\s*$/, action: (_, tab: Tab) => currentSelection(tab), mimeType: fixedOf('json') }
 ]
 
 /**
@@ -80,7 +80,7 @@ const addAnnotations = (annotations, mimeType) => {
  * required annotations, then updates the backend.
  *
  */
-const doWebbify = ({ command, execOptions, tab }: IEvaluatorArgs) => {
+const doWebbify = ({ command, execOptions, tab }: EvaluatorArgs) => {
   return Promise.all(matchers.map(matcher => ({ matcher: matcher, match: command.match(matcher.pattern) })))
     .then(matches => matches.filter(match => match.match)) // filter out only matching patterns
     .then(matches => matches && matches[0]) // and take the first one (we've ordered the patterns in priority order)

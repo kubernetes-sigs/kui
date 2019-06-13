@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import sessionStore from '@kui-shell/core/models/sessionStore'
 import { getTabIndex, getCurrentTab } from '@kui-shell/core/webapp/cli'
 import { key } from '@kui-shell/core/core/repl'
@@ -23,7 +23,7 @@ import { key } from '@kui-shell/core/core/repl'
  * export command
  *
  */
-const exportCommand = ({ parsedOptions }: IEvaluatorArgs) => {
+const exportCommand = ({ parsedOptions }: EvaluatorArgs) => {
   const storage = JSON.parse(sessionStore().getItem(key)) || {}
 
   const tabId = getTabIndex(getCurrentTab())

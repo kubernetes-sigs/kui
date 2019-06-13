@@ -20,7 +20,7 @@ import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
@@ -34,7 +34,7 @@ import { drawLegend } from '../legend'
 import { renderCell } from '../cell'
 import { modes } from '../modes'
 import { grid as usage } from '../../usage'
-import { IHeader, nbsp, optionsToString, isSuccess, titleWhenNothingSelected, latencyBucket,
+import { Header, nbsp, optionsToString, isSuccess, titleWhenNothingSelected, latencyBucket,
   displayTimeRange, prepareHeader, visualize } from '../util'
 const debug = Debug('plugins/grid/cmds/grid')
 
@@ -163,11 +163,11 @@ const colorBy = (strategy, gridGrid = document.querySelector(`.${css.content} .$
  * Visualize the activation data
  *
  */
-interface IOptions {
+interface Options {
   timeline?: boolean
   zoom?: number
 }
-const drawGrid = (tab: ITab, options: IOptions, header: IHeader, uuid: string, redraw = false) => (activations: Object[]) => {
+const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redraw = false) => (activations: Object[]) => {
   debug('drawGrid', redraw)
 
   const existingContent = sidecarSelector(tab, `.custom-content .${css.content}`) as HTMLElement
@@ -284,7 +284,7 @@ const smartZoom = numCells => {
  * re-sorting.
  *
  */
-const _drawGrid = (tab: ITab, options, { leftHeader, rightHeader }, content, groupData, sorter = countSorter, sortDir = +1, redraw) => {
+const _drawGrid = (tab: Tab, options, { leftHeader, rightHeader }, content, groupData, sorter = countSorter, sortDir = +1, redraw) => {
   const { groups, summary, timeline } = groupData
 
   sort(groups, sorter, sortDir)
@@ -455,7 +455,7 @@ const minTimestamp = activations => {
  * Render the grid as a timeline
  *
  */
-const drawAsTimeline = (tab: ITab, timelineData: { activations: Record<string, any>; nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
+const drawAsTimeline = (tab: Tab, timelineData: { activations: Record<string, any>; nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
   debug('drawAsTimeline', zoomLevelForDisplay)
 
   const { activations, nBuckets } = timelineData

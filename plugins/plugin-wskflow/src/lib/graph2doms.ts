@@ -20,13 +20,13 @@ import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs/lib/elk.bundled.js'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
-import { INode } from './graph'
+import { Node } from './graph'
 const debug = Debug('plugins/wskflow/graph2doms')
 
 const defaultMaxLabelLength = 10
@@ -43,7 +43,7 @@ const wfColorAct = {
 
 const containerId = 'wskflowDiv'
 
-export default function graph2doms (tab: ITab, JSONgraph: INode, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>; composites?: { label: { fontSize: string; offset: { x: number; y: number } } } } = {}) {
+export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?: Element, activations?: ActivationLike[], { layoutOptions = {}, composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } } }: { layoutOptions?: Record<string, string | boolean | number>; composites?: { label: { fontSize: string; offset: { x: number; y: number } } } } = {}) {
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 

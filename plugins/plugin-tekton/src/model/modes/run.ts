@@ -16,18 +16,18 @@
 
 import { safeDump } from 'js-yaml'
 
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Tab } from '@kui-shell/core/webapp/cli'
 
-import { IResponseObject } from './flow'
+import { ResponseObject } from './flow'
 
 /**
  * The sidecar mode for the tekton flow visualization
  *
  */
-const mode: ISidecarMode = {
+const mode: SidecarMode = {
   mode: 'Run Config',
-  direct: async (tab: ITab, _: IResponseObject) => {
+  direct: async (tab: Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
       // then _ is already the response we need
       const models = _.model.filter(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')

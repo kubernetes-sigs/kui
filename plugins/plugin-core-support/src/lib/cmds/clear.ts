@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { resetCount } from '@kui-shell/core/webapp/cli'
 const debug = Debug('plugins/core-support/clear')
@@ -32,7 +32,7 @@ const usage = {
   ]
 }
 
-const clear = ({ parsedOptions, tab }: IEvaluatorArgs) => {
+const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
   if (!isHeadless()) {
     if (!parsedOptions.k) {
       // don't keep the current active prompt

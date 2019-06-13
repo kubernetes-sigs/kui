@@ -16,10 +16,10 @@
 
 import * as Debug from 'debug'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from './new'
 import { extension, language } from '@kui-shell/plugin-editor/lib/file-types'
@@ -57,7 +57,7 @@ module.exports = composer.sequence('A', 'B')`,
  * Add the wskflow visualization component to the given content
  *
  */
-const addWskflow = (tab: ITab) => (opts) => {
+const addWskflow = (tab: Tab) => (opts) => {
   debug('addWskflow', opts)
 
   if (isHeadless()) return opts
@@ -292,7 +292,7 @@ const compositionOptions = baseOptions => {
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined }) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
+export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined }) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
