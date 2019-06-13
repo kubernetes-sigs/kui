@@ -23,6 +23,10 @@ echo "testing webpack build from $(pwd)"
 
 cd clients/default
 
+if [ "$KUI_USE_PROXY" == "true" ]; then
+  npm run build:proxy
+fi
+
 #
 # we expect "docker not found" error on travis osx
 # we still want to test the webpack build logic before building docker image

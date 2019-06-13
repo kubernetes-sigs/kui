@@ -19,4 +19,8 @@
 set -e
 set -o pipefail
 
-docker build . -t kui-proxy
+if [ "$KUI_USE_HTTP" == "true" ]; then
+  docker build . -t kui-proxy -f Dockerfile.http
+else
+  docker build . -t kui-proxy
+fi

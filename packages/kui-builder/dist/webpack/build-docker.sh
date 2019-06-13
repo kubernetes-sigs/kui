@@ -30,7 +30,7 @@ BUILDDIR=${KUI_BUILDDIR-"$CLIENT_HOME"/dist/webpack}
 echo "build-docker CLIENT_HOME=$CLIENT_HOME"
 echo "build-docker BUILDDIR=$BUILDDIR"
 
-if [ "$KUI_USE_HTTP" != true ]; then
+if [ "$KUI_USE_HTTP" != "true" ]; then
   # create the self-signed certificate
   CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
   cp -a "$CLIENT_HOME"/.keys .
@@ -41,7 +41,7 @@ fi
 cp -a "$BUILDDIR" build
 
 # finally, build the docker image
-if [ "$KUI_USE_HTTP" == true ]; then
+if [ "$KUI_USE_HTTP" == "true" ]; then
   docker build . -t kui-webpack -f Dockerfile.http
 else
   docker build . -t kui-webpack

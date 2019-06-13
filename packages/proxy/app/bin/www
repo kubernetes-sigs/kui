@@ -5,9 +5,6 @@
  */
 
 const debug = require('debug')('kui-proxy/webapp')
-const https = require('https')
-const fs = require('fs')
-
 const { app, setServer } = require('../app')
 
 /**
@@ -17,19 +14,25 @@ const { app, setServer } = require('../app')
 const port = normalizePort(process.env.PORT || '3000')
 app.set('port', port)
 
-/** server options */
-const options = {
-  key: fs.readFileSync('.keys/key.pem'),
-  cert: fs.readFileSync('.keys/cert.pem'),
-  passphrase: process.env.PASSPHRASE,
-  requestCert: false,
-  rejectUnauthorized: false
+/**
+ * Create HTTP(S) server.
+ */
+let server
+
+if (process.env.KUI_USE_HTTP) {
+  server = require('http').createServer(app)
+} else {
+  const fs = require('fs')
+  const options = {
+    key: fs.readFileSync('.keys/key.pem'),
+    cert: fs.readFileSync('.keys/cert.pem'),
+    passphrase: process.env.PASSPHRASE,
+    requestCert: false,
+    rejectUnauthorized: false
+  }
+  server = require('https').createServer(options, app)
 }
 
-/**
- * Create HTTP server.
- */
-const server = https.createServer(options, app)
 setServer(server, port)
 
 /**
