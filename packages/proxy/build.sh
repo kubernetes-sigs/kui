@@ -38,7 +38,7 @@ function init {
 # install the proxy-specific build bits
 function initProxy {
     pushd "$STAGING_DIR" > /dev/null
-    cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,.dockerignore,app} .
+    cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,Dockerfile.http,.dockerignore,app} .
     # mkdir .kube and .bluemix if they don't exist, see issue: https://github.com/IBM/kui/issues/1647
     if [ -d ~/.kube ]; then cp -a ~/.kube .; else mkdir .kube; fi
     if [ -d ~/.bluemix/plugins/container-service/clusters ]; then mkdir -p .bluemix/plugins/container-service && cp -a ~/.bluemix/plugins/container-service/clusters .bluemix/plugins/container-service; else mkdir .bluemix; fi
@@ -56,10 +56,12 @@ function headless {
 
 # create the self-signed certificate
 function cert {
+  if [ "$KUI_USE_HTTP" != "true" ]; then
     pushd "$BUILDER_HOME/dist/webpack" > /dev/null
     CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
     cp -a "$CLIENT_HOME"/.keys "$STAGING_DIR"/app/bin
     popd
+  fi
 }
 
 # create a docker image that can host the proxy
