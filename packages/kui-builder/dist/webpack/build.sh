@@ -134,7 +134,7 @@ function init {
 # install the webpackery bits
 function initWebpack {
     pushd "$STAGING_DIR" > /dev/null
-    cp -a "$BUILDER_HOME"/dist/webpack/{package.json,webpack.config.js,build-docker.sh,Dockerfile,bin,conf.d} .
+    cp -a "$BUILDER_HOME"/dist/webpack/{package.json,webpack.config.js,build-docker.sh,Dockerfile,Dockerfile.http,bin,conf.d} .
     npm install --no-package-lock
     popd > /dev/null
 }
