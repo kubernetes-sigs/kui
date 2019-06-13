@@ -24,6 +24,7 @@ import * as Debug from 'debug'
 import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserFlags } from '../models/command'
 
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
+import eventBus from '@kui-shell/core/core/events'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
@@ -690,6 +691,13 @@ class InProcessExecutor implements Executor {
         //
         debug('eval', currentEvaluatorImpl.name)
         return Promise.resolve().then(() => {
+          eventBus.emit('/command/start', {
+            tab,
+            route: evaluator.route,
+            command,
+            execType: (execOptions && execOptions.type) || ExecType.TopLevel
+          })
+
           return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
             tab,
             block: block || true,
@@ -796,7 +804,7 @@ class InProcessExecutor implements Executor {
             } else {
               // indicate that the command was NOT successfuly completed
               const orig = err
-              err = evaluator.error(command, err)
+              err = evaluator.error(command, tab, (execOptions && execOptions.type) || ExecType.TopLevel, err)
 
               if (!nested && !rethrowIt) {
                 debug('reporting command execution error to user via repl')

@@ -8,7 +8,7 @@
 
     <link href="${cssHome}not-electron.css" rel="stylesheet" type="text/css" >
     <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" >
-    <link href="${cssHome}left-tab-stripe.css" rel="stylesheet" type="text/css" >
+    <link href="${cssHome}${tabStripe}" rel="stylesheet" type="text/css" >
     <link href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
@@ -55,10 +55,10 @@
           </div>
         </div>
         <div class='left-tab-stripe-bottom-buttons'>
-          <div class='left-tab-stripe-button new-tab-button smaller-button' id='new-tab-button' data-balloon='Open a new tab' data-balloon-pos='right' data-balloon-length='fit'>
-            <i class='fas fa-plus repl-prompt-right-element-icon deemphasize'></i>
+          <div class='left-tab-stripe-button new-tab-button smaller-button' id='new-tab-button' data-balloon-disabled='Open a new tab' data-balloon-pos='right' data-balloon-length='fit'>
+            <i class='repl-prompt-right-element-icon deemphasize'>&#xFF0B;</i>
           </div>
-          <div class='left-tab-stripe-button theme-button smaller-button' id='theme-button' data-balloon='Choose a color theme' data-balloon-pos='right' data-balloon-length='fit'>
+          <div class='left-tab-stripe-button theme-button smaller-button' id='theme-button' data-balloon-disabled='Choose a color theme' data-balloon-pos='right' data-balloon-length='fit'>
             <i class='fas fa-brush'></i>
           </div>
           <div class='left-tab-stripe-button smaller-button' id='help-button'>

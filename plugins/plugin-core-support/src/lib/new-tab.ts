@@ -28,6 +28,8 @@ import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, Tab, setStatus } 
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { theme } from '@kui-shell/core/core/settings'
+
 const debug = Debug('plugins/core-support/new-tab')
 
 const usage = {
@@ -126,7 +128,19 @@ const addKeyboardListeners = (): void => {
  *
  */
 const addCommandEvaluationListeners = (): void => {
-  eventBus.on('/command/resolved', (event: Event) => {
+  eventBus.on('/command/complete', (event: Event) => {
+    if (event.execType !== undefined &&
+        event.execType !== ExecType.Nested &&
+        !event.isDrilldown &&
+        event.route) {
+      // ignore nested, which means one plugin calling another
+      // ignore drilldown events; keep the top-level command in the display
+      debug('got event', event)
+      getTabButton(event.tab).classList.remove('processing')
+    }
+  })
+
+  eventBus.on('/command/start', (event: Event) => {
     if (event.execType !== undefined &&
         event.execType !== ExecType.Nested &&
         !event.isDrilldown &&
@@ -135,22 +149,23 @@ const addCommandEvaluationListeners = (): void => {
       // ignore drilldown events; keep the top-level command in the display
       debug('got event', event)
 
-      const tab = event.tab || getCurrentTab()
+      const tab = event.tab
 
       if (event.route !== undefined &&
           !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
       ) {
-        if (event.route.match(/^\/clear/)) {
+        if (/^\/clear/.test(event.route)) {
           // nbsp in the case of clear, except if the sidecar is open;
           // then attempt to continue displaying the command that
           // produced the sidecar; TODO this isn't quite right; we
           // need to find a way to capture that sidecar-producing
           // command
           if (!isSidecarVisible(tab)) {
-            getTabButtonLabel(tab).innerText = '\u00a0'
+            getTabButtonLabel(tab).innerText = theme['productName']
           }
         } else {
           getTabButtonLabel(tab).innerText = event.command
+          getTabButton(tab).classList.add('processing')
         }
       }
     }
@@ -183,6 +198,8 @@ const oneTimeInit = (): void => {
 
   // initialize the first tab
   perTabInit(getCurrentTab(), false)
+
+  getTabButtonLabel(getCurrentTab()).innerText = theme['productName']
 }
 
 /**
@@ -215,10 +232,11 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   const newTabButton = currentTabButton.cloneNode(true) as HTMLElement
   newTabButton.classList.add('left-tab-stripe-button-selected')
+  newTabButton.classList.remove('processing')
   newTabButton.setAttribute('data-tab-button-index', newTabId)
   currentTabButton.parentNode.appendChild(newTabButton)
 
-  getTabButtonLabel(currentVisibleTab).innerText = '\u00a0' // nbsp
+  getTabButtonLabel(newTab).innerText = 'New Tab'
 
   newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
 
