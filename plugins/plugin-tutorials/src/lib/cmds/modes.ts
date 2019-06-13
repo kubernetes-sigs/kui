@@ -16,7 +16,7 @@
 
 const { modCmd } = require('./util')
 
-interface IMode {
+interface Mode {
   mode: string
   label?: string
   command: Function
@@ -30,7 +30,7 @@ interface IMode {
 }
 
 /** view modes */
-const _modes: IMode[] = [
+const _modes: Mode[] = [
   { mode: 'get', label: 'About' },
   { mode: 'api', label: 'API' },
   { mode: 'config', label: 'Configure' }
@@ -39,7 +39,7 @@ const _modes: IMode[] = [
 }))
 
 /** flush-right buttons for the bottom stripe */
-const buttons: IMode[] = [
+const buttons: Mode[] = [
   /* { mode: 'deploy', label: 'Deploy', //fontawesome: 'fas fa-cloud-upload-alt',
       balloon: 'Deploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} deploy "${name}"` },
@@ -66,9 +66,9 @@ const buttons: IMode[] = [
 ]
 
 /** Combined mode model (for the bottom stripe) */
-export const modes = (defaultMode: string, api, choices): IMode[] => {
+export const modes = (defaultMode: string, api, choices): Mode[] => {
   // add the defaultMode attribute to the matching IMode
-  const modes: IMode[] = _modes
+  const modes: Mode[] = _modes
     .filter(({ mode }) => mode === 'get' || mode === 'api' && api || mode === 'config' && choices)
     .map(_ => _.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _)
 

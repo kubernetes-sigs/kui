@@ -17,20 +17,20 @@
 import * as Debug from 'debug'
 
 import eventBus from '../../core/events'
-import { ITab, isPopup, getCurrentPrompt } from '../cli'
+import { Tab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
 import { getActiveView } from './sidecar'
 import { Table, Row, Cell, Icon, TableStyle, WatchableTable, diffTableRows, isWatchableTable, isTable } from '../models/table'
-import { IWatchable } from '../models/basicModels'
+import { Watchable } from '../models/basicModels'
 import { applyDiffTable } from '../views/diffTable'
 const debug = Debug('webapp/views/table')
 
-interface ITableFormatOptions {
+interface TableFormatOptions {
   usePip?: boolean
 }
 
-export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom: HTMLElement, options: ITableFormatOptions = {}): void => {
+export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: HTMLElement, options: TableFormatOptions = {}): void => {
   const tableDom = document.createElement('div')
   tableDom.classList.add('result-table')
 
@@ -172,7 +172,7 @@ export const formatTable = (tab: ITab, table: Table | WatchableTable, resultDom:
   }
 }
 
-interface IRowFormatOptions extends ITableFormatOptions {
+interface RowFormatOptions extends TableFormatOptions {
   excludePackageName?: boolean
 }
 
@@ -180,7 +180,7 @@ interface IRowFormatOptions extends ITableFormatOptions {
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (tab: ITab, options: IRowFormatOptions = {}) => (entity: Row): HTMLElement => {
+export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
@@ -592,7 +592,7 @@ export const formatOneRowResult = (tab: ITab, options: IRowFormatOptions = {}) =
  * @deprecated in favor of new formatOneRowResult()
  *
  */
-export const formatOneListResult = (tab: ITab, options?) => (entity, idx, A) => {
+export const formatOneListResult = (tab: Tab, options?) => (entity, idx, A) => {
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
   dom.setAttribute('data-name', entity.name)
@@ -1001,7 +1001,7 @@ export const sortBody = (rows: Row[]): Row[] => {
  *
  */
 
-const prepareTable = (tab: ITab, response: Table | WatchableTable): Row[] => {
+const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
   const { header, body, noSort } = response
 
   if (header) {
@@ -1020,7 +1020,7 @@ const prepareTable = (tab: ITab, response: Table | WatchableTable): Row[] => {
  * Format a tabular view
  *
  */
-export const formatTableResult = (tab: ITab, response: Table): HTMLElement[] => {
+export const formatTableResult = (tab: Tab, response: Table): HTMLElement[] => {
   debug('formatTableResult', response)
   return prepareTable(tab, response).map(formatOneRowResult(tab))
 }
@@ -1030,7 +1030,7 @@ export const formatTableResult = (tab: ITab, response: Table): HTMLElement[] => 
  * @deprecated in favor of new formatTableResult()
  *
  */
-export const formatListResult = (tab: ITab, response) => {
+export const formatListResult = (tab: Tab, response) => {
   debug('formatListResult', response)
 
   // sort the list, then format each element, then add the results to the resultDom
@@ -1053,7 +1053,7 @@ export const formatListResult = (tab: ITab, response) => {
  * Format a table of tables view
  *
  */
-export const formatMultiListResult = async (tab: ITab, response, resultDom: Element) => {
+export const formatMultiListResult = async (tab: Tab, response, resultDom: Element) => {
   debug('formatMultiListResult', response)
 
   return Promise.all(response.filter(x => x.length > 0).map(async (table, idx, tables) => {

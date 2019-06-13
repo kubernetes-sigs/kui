@@ -21,16 +21,16 @@ import * as path from 'path'
 
 import * as usage from '../usage'
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import * as repl from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
 import * as messages from '@kui-shell/plugin-apache-composer/lib/utility/messages' // TODO: import from plugin js file
@@ -44,14 +44,14 @@ const viewName = 'preview' // for back button and sidecar header labels
 const viewNameLong = 'App Visualization' //    ... long form
 const defaultMode = 'visualization' // on open, which view mode should be selected?
 
-interface IViewOptions {
+interface ViewOptions {
   renderFunctionsInView?: boolean
   noHeader?: boolean
 }
-class DefaultViewOptions implements IViewOptions {
+class DefaultViewOptions implements ViewOptions {
 }
 
-interface ICompositionWithCode {
+interface CompositionWithCode {
   ast?: any
   code?: string
 }
@@ -97,7 +97,7 @@ export default (commandTree: CommandRegistrar) => {
     }
   })
 
-  const render = (tab: ITab, input: string, options, execOptions, mode) => new Promise((resolve, reject) => {
+  const render = (tab: Tab, input: string, options, execOptions, mode) => new Promise((resolve, reject) => {
     debug('options', options)
 
     let fsmPromise
@@ -129,13 +129,13 @@ export default (commandTree: CommandRegistrar) => {
     const name = path.basename(input)
 
     // create a fake action/entity record
-    const formatForUser = (mode: string) => async (composition: ICompositionWithCode) => {
+    const formatForUser = (mode: string) => async (composition: CompositionWithCode) => {
       debug('formatForUser', composition)
 
       const { ast } = composition
       const code = await readFile(input)
       // pass through cli options for the wskflow renderer
-      const viewOptions: IViewOptions = new DefaultViewOptions()
+      const viewOptions: ViewOptions = new DefaultViewOptions()
 
       coreModes.push(wskflowUtil.codeViewMode(code))
 
@@ -152,7 +152,7 @@ export default (commandTree: CommandRegistrar) => {
       const visualize = (await import('./visualize')).default
       const { view, controller } = await wskflowUtil.wskflow(tab, visualize, { ast, name, viewOptions, container: execOptions.container, namespace: undefined })
 
-      const modes: ISidecarMode[] = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
+      const modes: SidecarMode[] = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
       modes.splice(modes.length, 0, ...coreModes)
       const extraModes = wskflowUtil.zoomToFitButtons(controller)
 
@@ -233,7 +233,7 @@ export default (commandTree: CommandRegistrar) => {
   })
 
   /** command handler */
-  const doIt = (cmd: string, mode = defaultMode) => ({ tab, execOptions, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => new Promise((resolve, reject) => {
+  const doIt = (cmd: string, mode = defaultMode) => ({ tab, execOptions, argvNoOptions, parsedOptions: options }: EvaluatorArgs) => new Promise((resolve, reject) => {
     const idx = argvNoOptions.indexOf(cmd)
     const inputFile = argvNoOptions[idx + 1]
 

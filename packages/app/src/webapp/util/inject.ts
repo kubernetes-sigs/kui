@@ -20,22 +20,22 @@ import { isHeadless } from '../../core/capabilities'
 const debug = Debug('webapp/util/inject')
 debug('loading')
 
-interface IStylesheetDirect {
+interface StylesheetDirect {
   css: string
   key: string
 }
-interface IStylesheetFile {
+interface StylesheetFile {
   path: string
   key: string
 }
-function isAStylesheetDirect (object: StylesheetSpec): object is IStylesheetDirect {
+function isAStylesheetDirect (object: StylesheetSpec): object is StylesheetDirect {
   return typeof object !== 'string' && 'css' in object && 'key' in object
 }
-function isAStylesheetFile (object: StylesheetSpec): object is IStylesheetFile {
+function isAStylesheetFile (object: StylesheetSpec): object is StylesheetFile {
   return typeof object !== 'string' && 'path' in object && 'key' in object
 }
 
-type StylesheetSpec = IStylesheetDirect | IStylesheetFile | string
+type StylesheetSpec = StylesheetDirect | StylesheetFile | string
 
 /**
  * Inject a stylesheet

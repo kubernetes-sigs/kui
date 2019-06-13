@@ -266,13 +266,13 @@ export const list = async () => {
  * Return the currently selected namespace
  *
  */
-interface ICurrentOptions {
+interface CurrentOptions {
   noNamespaceOk: boolean
 }
-class DefaultCurrentOptions implements ICurrentOptions {
+class DefaultCurrentOptions implements CurrentOptions {
   noNamespaceOk = false
 }
-export const current = async (opts: ICurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
+export const current = async (opts: CurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
   const ns = currentNS
   debug('current', ns)
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
 
 const makeButton = (overrides, fn?) => Object.assign({}, {
-  direct: async (tab: ITab, args) => {
+  direct: async (tab: Tab, args) => {
     const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
     const response = await repl.pexec(`kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
       { noStatus: !!fn, tab })

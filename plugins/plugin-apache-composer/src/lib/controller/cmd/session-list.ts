@@ -23,7 +23,7 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { sessionList } from '../../utility/usage'
 const debug = Debug('plugins/apache-composer/cmd/session-list')
 
-interface IListOptions {
+interface ListOptions {
   name?: string
   count?: number
   limit?: number
@@ -37,7 +37,7 @@ export default async (commandTree: CommandRegistrar) => {
   /* command handler for session list */
   sessionSyns.forEach(noun => {
     commandTree.listen(`/wsk/${noun}/list`, async ({ argvNoOptions, parsedOptions: options }) => {
-      const parsedOptions = (options as any) as IListOptions
+      const parsedOptions = (options as any) as ListOptions
 
       const limit = parsedOptions.limit === undefined ? 10 : parsedOptions.limit // limit 10 sessions in session list if users didn't specify --limit
       const skip = parsedOptions.skip || 0 // skip 0 sessions in session list by default if users didn't specify --skip

@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { formatTable as format } from '@kui-shell/core/webapp/views/table'
 import { Table, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 const debug = Debug('k8s/view/formatMultiTable')
@@ -26,7 +26,7 @@ const debug = Debug('k8s/view/formatMultiTable')
 /** this will help us with finding our own view instances */
 const attr = 'k8s-table'
 
-export const getActiveView = (tab: ITab) => {
+export const getActiveView = (tab: Tab) => {
   return getActiveSidecarView(tab).querySelector(`[${attr}]`)
 }
 
@@ -34,7 +34,7 @@ export const getActiveView = (tab: ITab) => {
  * Update table for picture-in-picture style drilldowns
  *
  */
-const updateTableForPip = (tab: ITab, viewName: string, execOptions) => (table: Table) => {
+const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (table: Table) => {
   debug('pip update for table', table)
 
   table.body.forEach(row => {
@@ -63,7 +63,7 @@ const updateTableForPip = (tab: ITab, viewName: string, execOptions) => (table: 
  * Return a table view for the given table model
  *
  */
-export const formatTable = (tab: ITab, model: Table | Table[], { usePip = false, viewName = 'previous view', execOptions = {} } = {}): HTMLElement => {
+export const formatTable = (tab: Tab, model: Table | Table[], { usePip = false, viewName = 'previous view', execOptions = {} } = {}): HTMLElement => {
   debug('formatTable model', model)
 
   const resultDomOuter = document.createElement('div')

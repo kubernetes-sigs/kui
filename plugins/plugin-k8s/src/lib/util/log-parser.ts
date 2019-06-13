@@ -34,8 +34,8 @@ const timestampFormat = 'short'
  * Squash runs of the same log entry
  *
  */
-const squashLogRuns = (isNotCloudLens: boolean, options: IOptions) => (soFar: IZaprEntry[], logLine: string): IZaprEntry[] => {
-  let current: IZaprEntry
+const squashLogRuns = (isNotCloudLens: boolean, options: Options) => (soFar: ZaprEntry[], logLine: string): ZaprEntry[] => {
+  let current: ZaprEntry
 
   if (!isNotCloudLens) {
     const columns = logLine.split(/\s+/)
@@ -93,12 +93,12 @@ const squashLogRuns = (isNotCloudLens: boolean, options: IOptions) => (soFar: IZ
   return soFar
 }
 
-interface IOptions {
+interface Options {
   asHTML?: boolean
   asJSON?: boolean
 }
 
-interface IZaprEntry {
+interface ZaprEntry {
   timestamp: string | Text | Element
   rawTimestamp: string
   logType: string
@@ -130,7 +130,7 @@ function findIndex (A: string[], pattern: RegExp, startIdx: number): number {
  * @return undefined if we don't have any log entries
  *
  */
-const parseZapr = (raw: string): IZaprEntry[] => {
+const parseZapr = (raw: string): ZaprEntry[] => {
   const pattern = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(DEBUG|INFO|ERROR)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/m
 
   const records = raw.split(pattern).filter(x => x !== '\n')
@@ -186,7 +186,7 @@ const parseZapr = (raw: string): IZaprEntry[] => {
  * @return undefined if we don't have any log entries
  *
  */
-const parseCloudLens = (raw: string, options: IOptions): any[] => {
+const parseCloudLens = (raw: string, options: Options): any[] => {
   const pattern = /^(?=[IEF][0-9]+)/m
   const linesByCloudLens = raw.split(pattern)
 
@@ -202,7 +202,7 @@ const parseCloudLens = (raw: string, options: IOptions): any[] => {
  * Parser for istio logs
  *
  */
-const parseIstio = (raw: string): IZaprEntry[] => {
+const parseIstio = (raw: string): ZaprEntry[] => {
   let prevTimestamp: string
 
   return raw
@@ -214,7 +214,7 @@ const parseIstio = (raw: string): IZaprEntry[] => {
         const logType = record.level || record.logType || ''
         const origin = record.instance || record.provider || record.caller || ''
 
-        const zapr: IZaprEntry = {
+        const zapr: ZaprEntry = {
           timestamp: timestamp ? prettyPrintTime(timestamp, timestampFormat, prevTimestamp) : '',
           rawTimestamp: timestamp,
           logType,
@@ -268,7 +268,7 @@ const parseIstio = (raw: string): IZaprEntry[] => {
         const provider = (match && match[providerIndex]) || ''
         const rest = (match && match[restIndex]) || line
 
-        const zapr: IZaprEntry = {
+        const zapr: ZaprEntry = {
           timestamp: timestamp && prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
           rawTimestamp: timestamp,
           logType,
@@ -283,7 +283,7 @@ const parseIstio = (raw: string): IZaprEntry[] => {
         return zapr
       }
     })
-    .reduce((lines: IZaprEntry[], line: IZaprEntry, idx) => {
+    .reduce((lines: ZaprEntry[], line: ZaprEntry, idx) => {
       // try to reduce down log entries with the same (timestamp, origin, provider)
       if (idx > 0) {
         const prevLine = lines[lines.length - 1]
@@ -305,14 +305,14 @@ const parseIstio = (raw: string): IZaprEntry[] => {
 }
 
 /** filter out empty log entries */
-const notEmpty = (_: IZaprEntry) => _.timestamp || _.rest || _.origin || _.provider
+const notEmpty = (_: ZaprEntry) => _.timestamp || _.rest || _.origin || _.provider
 
 /**
  * Format the kubectl access logs
  *
  */
-export const formatLogs = (raw: string, options: IOptions = { asHTML: true }) => {
-  const logEntries: IZaprEntry[] = parseZapr(raw) || parseIstio(raw) || parseCloudLens(raw, options)
+export const formatLogs = (raw: string, options: Options = { asHTML: true }) => {
+  const logEntries: ZaprEntry[] = parseZapr(raw) || parseIstio(raw) || parseCloudLens(raw, options)
   debug('logEntries', logEntries)
 
   if (!options.asHTML) {

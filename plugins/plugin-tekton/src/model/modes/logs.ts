@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Tab } from '@kui-shell/core/webapp/cli'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { rexec as $ } from '@kui-shell/core/core/repl'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import { IResponseObject } from './flow'
-import { IPipelineRun, ITaskRun } from '../resource'
+import { ResponseObject } from './flow'
+import { PipelineRun, TaskRun } from '../resource'
 
-import { IPod } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { Pod } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 /**
  * The sidecar mode for the tekton logs of a PipelineRun
  *
  */
-const mode: ISidecarMode = {
+const mode: SidecarMode = {
   mode: 'Logs',
-  direct: async (tab: ITab, _: IResponseObject) => {
-    const run = _.resource as IPipelineRun
+  direct: async (tab: Tab, _: ResponseObject) => {
+    const run = _.resource as PipelineRun
 
-    const [ taskRuns, pods ]: [ ITaskRun[], IPod[] ] = await Promise.all([
+    const [ taskRuns, pods ]: [ TaskRun[], Pod[] ] = await Promise.all([
       $(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
       $(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
     ])

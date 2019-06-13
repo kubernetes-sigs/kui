@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IGraphics } from './graphics'
+import { Graphics } from './graphics'
 
 import parseDuration = require('parse-duration')
 import prettyPrintDuration = require('pretty-ms')
@@ -72,7 +72,7 @@ export const insertRow = table => {
  * Add a row to the table
  *
  */
-export const addRow = (graphics: IGraphics) => (rowData?) => {
+export const addRow = (graphics: Graphics) => (rowData?) => {
   const row = insertRow(graphics.table)
   if (!rowData) {
     // header row

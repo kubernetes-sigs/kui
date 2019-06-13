@@ -16,7 +16,7 @@
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 
-export interface ITypedEntityName {
+export interface TypedEntityName {
   type: string
   fqn: string
   actionName?: string
@@ -73,7 +73,7 @@ export const isDirectory = (filepath: string): Promise<boolean> => new Promise<b
  * OpenWhisk asset per spec.
  *
  */
-export const toOpenWhiskFQN = ({ kind, spec, metadata }): ITypedEntityName => {
+export const toOpenWhiskFQN = ({ kind, spec, metadata }): TypedEntityName => {
   if (kind === 'Function' || kind === 'Composition') {
     // FunctionSpec
     const actionName = spec.name || metadata.name

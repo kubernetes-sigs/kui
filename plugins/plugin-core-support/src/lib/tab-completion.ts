@@ -254,7 +254,7 @@ const listenForEscape = () => {
   return cleanup
 }
 
-interface IMatch {
+interface Match {
   match: string
   completion: any
   option: HTMLElement
@@ -267,7 +267,7 @@ interface TemporaryContainer extends HTMLDivElement {
   partial?: string
   dirname?: string
   cleanup?: () => void
-  currentMatches?: IMatch[]
+  currentMatches?: Match[]
 }
 
 /**
@@ -702,7 +702,7 @@ export default () => {
                 }
               }
             } else if (!inBrowser()) {
-              const { A: args, endIndices } = repl._split(prompt.value, true, true) as repl.ISplit
+              const { A: args, endIndices } = repl._split(prompt.value, true, true) as repl.Split
               const lastIdx = prompt.selectionStart
               debug('falling back on local file completion', args, lastIdx)
 

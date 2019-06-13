@@ -18,17 +18,17 @@ import * as Debug from 'debug'
 
 import { basename, dirname, join } from 'path'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
-import { IEntitySpec } from '@kui-shell/core/models/entity'
+import { EntitySpec } from '@kui-shell/core/models/entity'
 import { get as relevantModes } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { FinalState } from '../model/states'
-import { IKubeResource, IResource } from '../model/resource'
+import { KubeResource, Resource } from '../model/resource'
 
 import { redactYAML } from '../view/redact'
 import { statusButton } from '../view/modes/status'
@@ -58,7 +58,7 @@ const usage = {
  * Show a customized view of a given yaml in the editor
  *
  */
-const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab) => {
+const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
@@ -71,11 +71,11 @@ const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab) =>
   // override the type shown in the sidecar header to show the
   // resource kind
   const typeOverride = yaml.kind
-  const nameOverride = (resource: IKubeResource) => (resource.metadata && resource.metadata.name) || basename(filepath)
+  const nameOverride = (resource: KubeResource) => (resource.metadata && resource.metadata.name) || basename(filepath)
 
   // add our mode buttons
   const resource = { kind: yaml.kind, filepathForDrilldown: filepath, resource: yaml }
-  const addModeButtons = (defaultMode: string) => (response: IEntitySpec) => {
+  const addModeButtons = (defaultMode: string) => (response: EntitySpec) => {
     response['modes'] = (response['modes'] || []).concat([
       { mode: 'edit', direct: openAsForm },
       ...relevantModes('kubectl', { resource: yaml }),
@@ -95,14 +95,14 @@ const showResource = async (yaml: IKubeResource, filepath: string, tab: ITab) =>
     return response
   }
 
-  interface Resource extends IResource {
+  interface ResourceSource extends Resource {
     source: string
   }
 
   const { safeLoad, safeDump } = await import('js-yaml')
 
   /** re-extract the structure from raw yaml string */
-  const extract = (rawText: string, entity?: Resource): Resource => {
+  const extract = (rawText: string, entity?: ResourceSource): ResourceSource => {
     const resource = editorEntity.resource = safeLoad(rawText)
     editorEntity.source = rawText
     editorEntity.name = resource.metadata.name
@@ -174,7 +174,7 @@ const showAsTable = (yamls: any[], filepathAsGiven: string, parsedOptions): Tabl
  * kedit command handler
  *
  */
-const kedit = async ({ tab, argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]

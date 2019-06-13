@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
@@ -111,7 +111,7 @@ const _render = args => {
     showResult = false, showStart = false, showTimeline = true,
     skip, limit,
     parsedOptions } = args
-  const tab: ITab = args.tab
+  const tab: Tab = args.tab
 
   const currentRows = container.querySelectorAll('tr.log-line')
 
@@ -575,7 +575,7 @@ const _render = args => {
  * A handler intended to be passed to cli.registerListView
  *
  */
-export const renderActivationListView = (tab: ITab, activations: Object[], container: Element, parsedOptions) => {
+export const renderActivationListView = (tab: Tab, activations: Object[], container: Element, parsedOptions) => {
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)

@@ -25,8 +25,8 @@ import * as Debug from 'debug'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import eventBus from '@kui-shell/core/core/events'
-import { partial, ITab } from '@kui-shell/core/webapp/cli'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { partial, Tab } from '@kui-shell/core/webapp/cli'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import expandHomeDir from '@kui-shell/core/util/home'
 import UsageError from '@kui-shell/core/core/usage-error'
@@ -136,7 +136,7 @@ usage.host.toplevel.available = [usage.host.get, usage.host.set]
  * The message we will use to inform the user of a auth switch event
  *
  */
-const informUserOfChange = (tab: ITab, subject?: string) => () => {
+const informUserOfChange = (tab: Tab, subject?: string) => () => {
   setTimeout(async () => eventBus.emit('/auth/change', {
     namespace: await namespace.current(),
     subject: subject
@@ -279,7 +279,7 @@ const list = async (): Promise<Table> => {
 const slice = (argv, verb) => argv.slice(argv.indexOf(verb) + 1)
 const firstArg = (argv, verb) => argv[argv.indexOf(verb) + 1]
 
-interface IUseOptions {
+interface UseOptions {
   save?: boolean
 }
 
@@ -287,14 +287,14 @@ interface IUseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: IEvaluatorArgs) => namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
+const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: EvaluatorArgs) => namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
   if (auth) {
     /**
      * e.g. auth switch [auth] (=> options.save is undefined)
      *      auth switch [auth] --save (=> options.save is true)
      *      auth switch [auth] --no-save (=> options.save is false)
      */
-    const options = (parsedOptions as any) as IUseOptions
+    const options = (parsedOptions as any) as UseOptions
     if (options.save === false) {
       return namespace.use(auth)
         .then(informUserOfChange(tab))
@@ -328,7 +328,7 @@ const clicky = (parent: HTMLElement, cmd: string, exec) => {
  * Command impl for auth add
  *
  */
-const addFn = (tab: ITab, key: string, subject: string) => {
+const addFn = (tab: Tab, key: string, subject: string) => {
   debug('add', key, subject)
 
   const previousAuth = authModel.get()
@@ -361,7 +361,7 @@ const addFn = (tab: ITab, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: IEvaluatorArgs) => {
+const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
@@ -546,7 +546,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.subtree('/wsk/host', { usage: usage.host.toplevel })
   commandTree.subtree('/wsk/auth', { usage: usage.auth.toplevel })
 
-  const add = ({ argvNoOptions, tab }: IEvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
+  const add = ({ argvNoOptions, tab }: EvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
   commandTree.listen('/wsk/auth/switch', use('switch'), { usage: usage.auth.switch, noAuthOk: true, inBrowserOk: true })
   commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true, inBrowserOk: true })

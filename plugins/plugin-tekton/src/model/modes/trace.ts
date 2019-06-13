@@ -17,23 +17,23 @@
 import * as Debug from 'debug'
 
 import * as prettyPrintDuration from 'pretty-ms'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import { ActivationLikeFull as ActivationLike } from '@kui-shell/plugin-wskflow/lib/activation'
 
 import success from '../../lib/success'
-import { IResponseObject } from './flow'
+import { ResponseObject } from './flow'
 import { getPipelineFromRef, getTasks } from '../fetch'
-import { IPipeline, IPipelineRun, Task, TaskRef } from '../resource'
+import { Pipeline, PipelineRun, Task, TaskRef } from '../resource'
 
 const debug = Debug('plugins/tekton/models/modes/trace')
 
-interface IRenderOpts {
+interface RenderOpts {
   noPip?: boolean
   noCrop?: boolean
   showStart?: boolean
@@ -44,7 +44,7 @@ interface IRenderOpts {
  * Render a trace view in the given container
  *
  */
-export const render = (tab: ITab, activations: ActivationLike[], container: Element, opts: IRenderOpts = {}): void => {
+export const render = (tab: Tab, activations: ActivationLike[], container: Element, opts: RenderOpts = {}): void => {
   const { noCrop = false, showStart = false, showTimeline = true } = opts
 
   debug('trace', activations)
@@ -274,10 +274,10 @@ export const render = (tab: ITab, activations: ActivationLike[], container: Elem
  * Sidecar mode for a pipeline run trace view
 *
 */
-const traceMode: ISidecarMode = {
+const traceMode: SidecarMode = {
   mode: 'trace',
-  direct: async (tab: ITab, _: IResponseObject) => {
-    const resource = _.resource as IPipelineRun
+  direct: async (tab: Tab, _: ResponseObject) => {
+    const resource = _.resource as PipelineRun
     const [ pipeline, tasks ] = await Promise.all([ getPipelineFromRef(resource), getTasks() ])
     return traceView(tab, resource, pipeline, tasks)
   },
@@ -287,7 +287,7 @@ const traceMode: ISidecarMode = {
 
 export default traceMode
 
-export const traceView = (tab: ITab, run: IPipelineRun, pipeline: IPipeline, jsons: IKubeResource[]) => {
+export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]) => {
   const content = document.createElement('div')
   content.classList.add('padding-content', 'repl-result')
   content.style.flex = '1'
@@ -312,7 +312,7 @@ export const traceView = (tab: ITab, run: IPipelineRun, pipeline: IPipeline, jso
   }
 }
 
-function makeRunActivationLike (run: IPipelineRun): ActivationLike {
+function makeRunActivationLike (run: PipelineRun): ActivationLike {
   const start = run && run.status && run.status.startTime && new Date(run.status.startTime)
   const end = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
   const duration = start && end && (end.getTime() - start.getTime())
@@ -331,7 +331,7 @@ function makeRunActivationLike (run: IPipelineRun): ActivationLike {
 
 interface SymbolTable<N> { [key: string]: N }
 
-function makeSymbolTables (pipeline: IPipeline, jsons: IKubeResource[]) {
+function makeSymbolTables (pipeline: Pipeline, jsons: KubeResource[]) {
   // map from Task.metadata.name to Task
   const taskName2Task: SymbolTable<Task> = jsons
     .filter(_ => _.kind === 'Task')
@@ -350,7 +350,7 @@ function makeSymbolTables (pipeline: IPipeline, jsons: IKubeResource[]) {
   return { taskRefName2Task }
 }
 
-function makeTaskRunsActivationLike (run: IPipelineRun, pipeline: IPipeline, jsons: IKubeResource[]): ActivationLike[] {
+function makeTaskRunsActivationLike (run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]): ActivationLike[] {
   const runs = run && run.status.taskRuns
 
   const { taskRefName2Task } = makeSymbolTables(pipeline, jsons)

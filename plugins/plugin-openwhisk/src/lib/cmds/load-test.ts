@@ -22,7 +22,7 @@
 
 import * as Debug from 'debug'
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { parseOptions, getClient, owOpts } from './openwhisk-core'
 const debug = Debug('plugins/openwhisk/cmds/load-test')
@@ -163,7 +163,7 @@ const makeValidator = (template, { numThreads, numIters }) => {
  * The loadtest command handler
  *
  */
-const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv, parsedOptions, execOptions }: IEvaluatorArgs) => {
+const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv, parsedOptions, execOptions }: EvaluatorArgs) => {
   const pair = parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
   const options: Record<string, any> = Object.assign({}, parsedOptions, pair.kvOptions)
 
@@ -187,7 +187,7 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
 
   console.error(`loadtest action=${action} numThreads=${numThreads} numIters=${numIters} thinkTime=${thinkTime}`, options)
 
-  interface ITally {
+  interface Tally {
     durations: {
       success: number[]
       failure: number[]
@@ -195,9 +195,9 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
     numErrors?: number
   }
 
-  return new Promise<ITally>((resolve) => {
+  return new Promise<Tally>((resolve) => {
     // tally of results
-    const tally: ITally = {
+    const tally: Tally = {
       durations: {
         success: [],
         failure: []

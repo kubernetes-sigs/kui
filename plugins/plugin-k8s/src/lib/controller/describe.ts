@@ -20,12 +20,12 @@ import { safeDump } from 'js-yaml'
 
 import { isPopup } from '@kui-shell/core/webapp/cli'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import createdOn from '../util/created-on'
 
 import { FinalState } from '../model/states'
-import { IKubeStatus, DefaultKubeStatus, IKubeMetadata, DefaultKubeMetadata, IKubeResource, IResource } from '../model/resource'
+import { KubeStatus, DefaultKubeStatus, KubeMetadata, DefaultKubeMetadata, KubeResource, Resource } from '../model/resource'
 
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
@@ -64,7 +64,7 @@ const describe = async ({ command, parsedOptions, execOptions }) => {
     debug('describeCmd', describeCmd)
     debug('getCmd', getCmd)
 
-    const resource: IKubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
+    const resource: KubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
 
     const response = await renderDescribe(command, getCmd, describeCmd, resource, parsedOptions)
     if (!response || !response.content || response.content === '{}' || Object.keys(response.content).length === 0) {
@@ -84,12 +84,12 @@ const describe = async ({ command, parsedOptions, execOptions }) => {
  * Render a describe summary
  *
  */
-const renderDescribe = async (command: string, getCmd: string, describeCmd: string, resource: IKubeResource, parsedOptions) => {
+const renderDescribe = async (command: string, getCmd: string, describeCmd: string, resource: KubeResource, parsedOptions) => {
   debug('renderDescribe', command, resource)
 
   const { spec = {} } = resource
-  const metadata: IKubeMetadata = resource.metadata || new DefaultKubeMetadata()
-  const status: IKubeStatus = resource.status || new DefaultKubeStatus()
+  const metadata: KubeMetadata = resource.metadata || new DefaultKubeMetadata()
+  const status: KubeStatus = resource.status || new DefaultKubeStatus()
 
   const output = parsedOptions.o || parsedOptions.output || 'yaml'
   const name = metadata.name
@@ -152,7 +152,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
     }
   }))
 
-  const modes: ISidecarMode[] = [
+  const modes: SidecarMode[] = [
     {
       mode: 'summary',
       defaultMode: true,
@@ -164,7 +164,7 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   const yaml = resource
   {
     const command = 'kubectl'
-    const resource: IResource = { kind: yaml.kind, name: yaml.metadata.name, resource: yaml }
+    const resource: Resource = { kind: yaml.kind, name: yaml.metadata.name, resource: yaml }
     modes.push(statusButton(command, resource, FinalState.NotPendingLike))
   }
   modes.push({

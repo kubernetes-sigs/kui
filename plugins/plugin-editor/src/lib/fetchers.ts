@@ -27,16 +27,16 @@ import { persisters } from './persisters'
 const debug = Debug('plugins/editor/fetchers')
 
 /** allows us to reassign a string code to a numeric one */
-interface IErrorWithAnyCode extends Error {
+interface ErrorWithAnyCode extends Error {
   code: any
 }
 
-interface IExecSpec {
+interface ExecSpec {
   kind: string
   code: string
 }
 
-interface IKeyValuePair {
+interface KeyValuePair {
   key: string
   value: string
 }
@@ -45,20 +45,20 @@ interface Getter {
   getEntity: () => object
 }
 
-export interface IEntity extends MetadataBearing {
+export interface Entity extends MetadataBearing {
   type: string
   name: string
   viewName?: string
   extractName?: (raw: string) => string // re-extract name from raw source, e.g. after a save or revert
   lock?: any // set to false if you don't want a lock icon
   filepath?: string
-  exec: IExecSpec
+  exec: ExecSpec
   persister: any
   gotoReadonlyView?: (Getter) => any
-  annotations: IKeyValuePair[]
+  annotations: KeyValuePair[]
 }
 
-export type IFetcher = (name: string, parsedOptions?, execOptions?) => Promise<IEntity>
+export type IFetcher = (name: string, parsedOptions?, execOptions?) => Promise<Entity>
 
 /**
  * Register an entity fetcher for a given entity kind
@@ -75,7 +75,7 @@ export const registerFetcher = (fetcher: IFetcher): void => {
  * the text for the given named entity
  *
  */
-export const fetchEntity = async (name: string, parsedOptions, execOptions): Promise<IEntity> => {
+export const fetchEntity = async (name: string, parsedOptions, execOptions): Promise<Entity> => {
   let lastError
   for (let idx = 0; idx < fetchers.length; idx++) {
     const { fetcher } = fetchers[idx]
@@ -105,10 +105,10 @@ export const fetchEntity = async (name: string, parsedOptions, execOptions): Pro
 export const fetchFile: IFetcher = (name: string) => {
   debug('fetching local file', name)
 
-  return new Promise<IEntity>((resolve, reject) => {
+  return new Promise<Entity>((resolve, reject) => {
     const filepath = findFile(expandHomeDir(name))
 
-    lstat(filepath, (err2: IErrorWithAnyCode, stats) => {
+    lstat(filepath, (err2: ErrorWithAnyCode, stats) => {
       if (err2) {
         if (err2.code === 'ENOENT') {
           err2.code = 404

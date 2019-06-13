@@ -18,12 +18,12 @@ import * as Debug from 'debug'
 
 import { safeDump } from 'js-yaml'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
-import { ICustomSpec } from '@kui-shell/core/webapp/views/sidecar'
+import { Tab } from '@kui-shell/core/webapp/cli'
+import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
-import { IResource, IKubeResource } from '../../model/resource'
+import { Resource, KubeResource } from '../../model/resource'
 
 const debug = Debug('k8s/view/modes/last-applied')
 
@@ -32,9 +32,9 @@ const debug = Debug('k8s/view/modes/last-applied')
  * the given resource.
  *
  */
-export const lastAppliedMode: ModeRegistration<IKubeResource> = {
+export const lastAppliedMode: ModeRegistration<KubeResource> = {
   when: hasLastApplied,
-  mode: (command: string, resource: IResource) => {
+  mode: (command: string, resource: Resource) => {
     debug('lastApplied', resource)
     try {
       return {
@@ -58,7 +58,7 @@ export const lastAppliedMode: ModeRegistration<IKubeResource> = {
  * Extract the last-applied-configuration annotation
  *
  */
-function getLastAppliedRaw (resource: IKubeResource): string {
+function getLastAppliedRaw (resource: KubeResource): string {
   // kube stores the last applied configuration (if any) in a raw json string
   return resource.metadata.annotations &&
     resource.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']
@@ -68,25 +68,25 @@ function getLastAppliedRaw (resource: IKubeResource): string {
  * @return whether the given resource has a last applied configuration annotation
  *
  */
-function hasLastApplied (resource: IKubeResource): boolean {
+function hasLastApplied (resource: KubeResource): boolean {
   return getLastAppliedRaw(resource) !== undefined
 }
 
-interface IParameters {
+interface Parameters {
   command: string
-  resource: IResource
+  resource: Resource
 }
 
-export const renderAndViewLastApplied = async (tab: ITab, parameters: IParameters) => {
+export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewLastApplied', command, resource)
 
   return toCustomSpec(getLastAppliedRaw(resource.resource))
 }
 
-function toCustomSpec (raw: string): ICustomSpec {
+function toCustomSpec (raw: string): CustomSpec {
   // oof, it comes in as a JSON string, but we want a YAML string
-  const resource: IKubeResource = JSON.parse(raw) // we will extract some parameters from this
+  const resource: KubeResource = JSON.parse(raw) // we will extract some parameters from this
   const content = safeDump(resource) // this is what we want to show up in the UI
 
   return {

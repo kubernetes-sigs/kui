@@ -16,20 +16,20 @@
 
 import * as Debug from 'debug'
 
-import { ok, ITab } from '@kui-shell/core/webapp/cli'
+import { ok, Tab } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { pexec } from '@kui-shell/core/core/repl'
-import { IEntitySpec } from '@kui-shell/core/models/entity'
+import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
-import { IActivation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
+import { Activation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
 const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
 /**
  * Render an activation response in the CLI portion of the UI
  *
  */
-export default async (tab: ITab, response: IActivation | IEntitySpec, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<boolean> => {
+export default async (tab: Tab, response: Activation | EntitySpec, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<boolean> => {
   if (isAsyncActivationSpec(response)) {
     // probably non-blocking invoke
     // say "ok: invoked foo with id xxx"

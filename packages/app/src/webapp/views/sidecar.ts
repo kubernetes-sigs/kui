@@ -18,18 +18,18 @@ import * as Debug from 'debug'
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { ITab, isPopup, isTab, scrollIntoView, oops, getTabFromTarget } from '../cli'
+import { Tab, isPopup, isTab, scrollIntoView, oops, getTabFromTarget } from '../cli'
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
-import { ISidecarMode, css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
+import { SidecarMode, css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
 import { formatOneListResult } from '../views/table'
 import { keys } from '../keys'
-import { IShowOptions, DefaultShowOptions } from './show-options'
+import { ShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
-import { MetadataBearing, isMetadataBearing, IEntitySpec, Entity } from '../../models/entity'
-import { IExecOptions } from '../../models/execOptions'
+import { MetadataBearing, isMetadataBearing, EntitySpec, Entity } from '../../models/entity'
+import { ExecOptions } from '../../models/execOptions'
 
 const debug = Debug('webapp/views/sidecar')
 
@@ -69,24 +69,24 @@ export const beautify = (kind: string, code: string) => {
  * Return the sidecar model
  *
  */
-interface ISidecar extends HTMLElement {
-  entity: IEntitySpec | ICustomSpec
+interface Sidecar extends HTMLElement {
+  entity: EntitySpec | CustomSpec
   uuid?: string
 }
-export const getSidecar = (tab: ITab): ISidecar => {
+export const getSidecar = (tab: Tab): Sidecar => {
   debug('getSidecar', tab)
-  return tab.querySelector('sidecar') as ISidecar
+  return tab.querySelector('sidecar') as Sidecar
 }
 
-export const currentSelection = (tab: ITab): IEntitySpec | ICustomSpec => {
+export const currentSelection = (tab: Tab): EntitySpec | CustomSpec => {
   const sidecar = getSidecar(tab)
   return sidecar && sidecar.entity
 }
-export const clearSelection = async (tab: ITab) => {
+export const clearSelection = async (tab: Tab) => {
   // true means also clear selection model
   return hide(tab, true)
 }
-export const maybeHideEntity = (tab: ITab, entity: IEntitySpec): boolean => {
+export const maybeHideEntity = (tab: Tab, entity: EntitySpec): boolean => {
   const sidecar = getSidecar(tab)
 
   const entityMatchesSelection = sidecar.entity &&
@@ -104,7 +104,7 @@ export const maybeHideEntity = (tab: ITab, entity: IEntitySpec): boolean => {
  * Return the container of the current active sidecar view
  *
  */
-export const getActiveView = (tab: ITab) => {
+export const getActiveView = (tab: Tab) => {
   const sidecar = getSidecar(tab)
   const activeView = sidecar.getAttribute('data-active-view')
   const container = sidecar.querySelector(activeView)
@@ -124,7 +124,7 @@ const tryParseDate = (str: string): number | string => {
  * Render the given field of the given entity in the given dom container
  *
  */
-export const renderField = async (container: HTMLElement, entity: IEntitySpec, field: string, noRetry = false) => {
+export const renderField = async (container: HTMLElement, entity: EntitySpec, field: string, noRetry = false) => {
   if (field === 'raw') {
     // special case for displaying the record, raw, in its entirety
     const value = Object.assign({}, entity)
@@ -267,13 +267,13 @@ export const renderField = async (container: HTMLElement, entity: IEntitySpec, f
  *
  */
 type CustomContent = string | Record<string, any> | HTMLElement | Promise<HTMLElement>
-export interface ICustomSpec extends IEntitySpec, MetadataBearing {
+export interface CustomSpec extends EntitySpec, MetadataBearing {
   isREPL?: boolean
   presentation?: Presentation
   renderAs?: string
   subtext?: Formattable
   content: CustomContent
-  badges?: IBadgeSpec[]
+  badges?: BadgeSpec[]
   contentType?: string
   contentTypeProjection?: string
   resource?: MetadataBearing
@@ -283,7 +283,7 @@ export interface ICustomSpec extends IEntitySpec, MetadataBearing {
  * Entity with a "resource" field that is MetadataBearing
  *
  */
-export interface MetadataBearingByReference extends ICustomSpec {
+export interface MetadataBearingByReference extends CustomSpec {
   resource: MetadataBearing
 }
 export function isMetadataBearingByReference (spec: Entity): spec is MetadataBearingByReference {
@@ -291,8 +291,8 @@ export function isMetadataBearingByReference (spec: Entity): spec is MetadataBea
   return ref !== undefined && ref.resource !== undefined && isMetadataBearing(ref.resource)
 }
 
-export function isCustomSpec (entity: Entity): entity is ICustomSpec {
-  const custom = entity as ICustomSpec
+export function isCustomSpec (entity: Entity): entity is CustomSpec {
+  const custom = entity as CustomSpec
   return custom !== undefined && (custom.type === 'custom' || custom.renderAs === 'custom')
 }
 function isPromise<T> (content: CustomContent): content is Promise<T> {
@@ -302,7 +302,7 @@ function isPromise<T> (content: CustomContent): content is Promise<T> {
 function isHTML (content: CustomContent): content is HTMLElement {
   return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
 }
-export const showCustom = async (tab: ITab, custom: ICustomSpec, options?: IExecOptions, resultDom?: Element) => {
+export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
   if (!custom || !custom.content) return
   debug('showCustom', custom, options, resultDom)
 
@@ -531,11 +531,11 @@ export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement)
  * Update sidecar header
  *
  */
-interface IHeaderUpdate {
+interface HeaderUpdate {
   name?: string
   packageName?: string
 }
-export const updateSidecarHeader = (tab: ITab, update: IHeaderUpdate, sidecar = getSidecar(tab)) => {
+export const updateSidecarHeader = (tab: Tab, update: HeaderUpdate, sidecar = getSidecar(tab)) => {
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
 
   if (update.name) {
@@ -577,7 +577,7 @@ const createdOn = (resource: MetadataBearing): HTMLElement => {
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
-export const addNameToSidecarHeader = async (sidecar: ISidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?: IEntitySpec | ICustomSpec) => {
+export const addNameToSidecarHeader = async (sidecar: Sidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?: EntitySpec | CustomSpec) => {
   debug('addNameToSidecarHeader', name, isMetadataBearingByReference(entity), entity)
 
   // maybe entity.content is a metadat-bearing entity that we can
@@ -657,14 +657,14 @@ export const addNameToSidecarHeader = async (sidecar: ISidecar, name: string | E
  * Call a formatter
  *
  */
-export type Formattable = IFormatter | string | Promise<string> | HTMLElement
-export interface IFormatter {
+export type Formattable = Formatter | string | Promise<string> | HTMLElement
+export interface Formatter {
   plugin: string
   module: string
   operation: string
   parameters: object
 }
-function isFormatter (spec: Formattable): spec is IFormatter {
+function isFormatter (spec: Formattable): spec is Formatter {
   return typeof spec !== 'string' &&
     !isHTML(spec) &&
     !(spec instanceof Promise) &&
@@ -707,15 +707,15 @@ export const linkify = (dom: Element): void => {
  * Sidecar badges
  *
  */
-interface IBadgeOptions {
+interface BadgeOptions {
   css?: string
   onclick?
   badgesDom: Element
 }
-class DefaultBadgeOptions implements IBadgeOptions {
+class DefaultBadgeOptions implements BadgeOptions {
   readonly badgesDom: HTMLElement
 
-  constructor (tab: ITab) {
+  constructor (tab: Tab) {
     this.badgesDom = getSidecar(tab).querySelector('.sidecar-header .badges')
   }
 }
@@ -726,19 +726,19 @@ class DefaultBadgeOptions implements IBadgeOptions {
  * fontawesome icon representation.
  *
  */
-export interface IBadgeSpec {
+export interface BadgeSpec {
   title: string
   fontawesome?: string
   css?: string
   onclick?: (evt: MouseEvent) => boolean
 }
-function isBadgeSpec (badge: Badge): badge is IBadgeSpec {
-  const spec = badge as IBadgeSpec
+function isBadgeSpec (badge: Badge): badge is BadgeSpec {
+  const spec = badge as BadgeSpec
   return !!(typeof badge !== 'string' && !(spec instanceof Element) && spec.title)
 }
-export type Badge = string | IBadgeSpec | Element
+export type Badge = string | BadgeSpec | Element
 
-export const addBadge = (tab: ITab, badgeText: Badge, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: IBadgeOptions = new DefaultBadgeOptions(tab)) => {
+export const addBadge = (tab: Tab, badgeText: Badge, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: BadgeOptions = new DefaultBadgeOptions(tab)) => {
   debug('addBadge', badgeText, badgesDom)
 
   const badge = document.createElement('badge') as HTMLElement
@@ -785,7 +785,7 @@ export const addBadge = (tab: ITab, badgeText: Badge, { css, onclick, badgesDom 
  * If the entity has a version attribute, then render it
  *
  */
-export const addVersionBadge = (tab: ITab, entity: IEntitySpec, { clear = false, badgesDom = undefined } = {}) => {
+export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, badgesDom = undefined } = {}) => {
   if (clear) {
     clearBadges(tab)
   }
@@ -794,7 +794,7 @@ export const addVersionBadge = (tab: ITab, entity: IEntitySpec, { clear = false,
   }
 }
 
-export const clearBadges = (tab: ITab) => {
+export const clearBadges = (tab: Tab) => {
   const sidecar = getSidecar(tab)
   const header = sidecar.querySelector('.sidecar-header')
   removeAllDomChildren(header.querySelector('.badges'))
@@ -804,11 +804,11 @@ export const clearBadges = (tab: ITab) => {
  * @return the enclosing tab for the given sidecar
  *
  */
-export const getEnclosingTab = (sidecar: ISidecar): ITab => {
+export const getEnclosingTab = (sidecar: Sidecar): Tab => {
   return getTabFromTarget(sidecar)
 }
 
-export const hide = (tab: ITab, clearSelectionToo = false) => {
+export const hide = (tab: Tab, clearSelectionToo = false) => {
   debug('hide')
 
   const sidecar = getSidecar(tab)
@@ -837,11 +837,11 @@ export const hide = (tab: ITab, clearSelectionToo = false) => {
   return true
 }
 
-const setVisibleClass = (sidecar: ISidecar) => {
+const setVisibleClass = (sidecar: Sidecar) => {
   sidecar.classList.add('visible')
 }
 
-const setVisible = (sidecar: ISidecar) => {
+const setVisible = (sidecar: Sidecar) => {
   const tab = getEnclosingTab(sidecar)
 
   setVisibleClass(sidecar)
@@ -857,7 +857,7 @@ const setVisible = (sidecar: ISidecar) => {
   setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 600)
 }
 
-export const show = (tab: ITab, block?: HTMLElement, nextBlock?: HTMLElement) => {
+export const show = (tab: Tab, block?: HTMLElement, nextBlock?: HTMLElement) => {
   debug('show')
 
   const sidecar = getSidecar(tab)
@@ -884,7 +884,7 @@ export enum SidecarState {
  * @return the view state of the sidecar in a given tab
  *
  */
-export const getSidecarState = (tab: ITab): SidecarState => {
+export const getSidecarState = (tab: Tab): SidecarState => {
   const sidecar = getSidecar(tab)
   if (tab.classList.contains('sidecar-full-screen')) {
     return SidecarState.FullScreen
@@ -897,16 +897,16 @@ export const getSidecarState = (tab: ITab): SidecarState => {
   }
 }
 
-export const isVisible = (tab: ITab): boolean => {
+export const isVisible = (tab: Tab): boolean => {
   const sidecar = getSidecar(tab)
   return !!(sidecar.classList.contains('visible') && sidecar)
 }
 
-export const isFullscreen = (tab: ITab) => {
+export const isFullscreen = (tab: Tab) => {
   return tab.classList.contains('sidecar-full-screen')
 }
 
-export const presentAs = (tab: ITab, presentation?: Presentation) => {
+export const presentAs = (tab: Tab, presentation?: Presentation) => {
   if (presentation || presentation === Presentation.Default) {
     document.body.setAttribute('data-presentation', Presentation[presentation].toString())
     if (!isPopup() && presentation === Presentation.Default) {
@@ -921,7 +921,7 @@ export const presentAs = (tab: ITab, presentation?: Presentation) => {
  * Ensure that we are in sidecar maximization mode
  *
  */
-export const setMaximization = (tab: ITab, op = 'add') => {
+export const setMaximization = (tab: Tab, op = 'add') => {
   if (document.body.classList.contains('subwindow')) {
     document.body.classList[op]('sidecar-full-screen')
     document.body.classList[op]('sidecar-visible')
@@ -935,7 +935,7 @@ export const setMaximization = (tab: ITab, op = 'add') => {
  * Toggle sidecar maximization
  *
  */
-export const toggleMaximization = (tab: ITab) => {
+export const toggleMaximization = (tab: Tab) => {
   setMaximization(tab, 'toggle')
 }
 
@@ -943,13 +943,13 @@ export const toggleMaximization = (tab: ITab) => {
  * Toggle sidecar visibility
  *
  */
-export const toggle = (tab: ITab) => isVisible(tab) ? hide(tab) : show(tab)
+export const toggle = (tab: Tab) => isVisible(tab) ? hide(tab) : show(tab)
 
 /**
  * Generic entity rendering
  *
  */
-export const showGenericEntity = (tab: ITab, entity: IEntitySpec | ICustomSpec, options: IShowOptions = new DefaultShowOptions()) => {
+export const showGenericEntity = (tab: Tab, entity: EntitySpec | CustomSpec, options: ShowOptions = new DefaultShowOptions()) => {
   debug('showGenericEntity', entity, options)
 
   const sidecar = getSidecar(tab)
@@ -1004,7 +1004,7 @@ export const showGenericEntity = (tab: ITab, entity: IEntitySpec | ICustomSpec, 
  * Register a renderer for a given <kind>
  *
  */
-export type ISidecarViewHandler = (tab: ITab, entity: Object, sidecar: Element, options: IShowOptions) => void
+export type ISidecarViewHandler = (tab: Tab, entity: Object, sidecar: Element, options: ShowOptions) => void
 const registeredEntityViews = {}
 export const registerEntityView = (kind: string, handler: ISidecarViewHandler) => {
   registeredEntityViews[kind] = handler
@@ -1014,7 +1014,7 @@ export const registerEntityView = (kind: string, handler: ISidecarViewHandler) =
  * Load the given entity into the sidecar UI
  *
  */
-export const showEntity = (tab: ITab, entity: IEntitySpec | ICustomSpec, options: IShowOptions = new DefaultShowOptions()) => {
+export const showEntity = (tab: Tab, entity: EntitySpec | CustomSpec, options: ShowOptions = new DefaultShowOptions()) => {
   if (isCustomSpec(entity)) {
     // caller could have called showCustom, but we will be gracious
     // here, and redirect the call
@@ -1095,7 +1095,7 @@ export const init = async () => {
  * mode switching.
  *
  */
-export const insertView = (tab: ITab) => (view: HTMLElement) => {
+export const insertView = (tab: Tab) => (view: HTMLElement) => {
   debug('insertView', view)
 
   const container = getActiveView(tab)

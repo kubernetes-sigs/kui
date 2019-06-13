@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import * as historyModel from '@kui-shell/core/models/history'
-import { ITab, getTabFromTarget, getBlockOfPrompt, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
+import { Tab, getTabFromTarget, getBlockOfPrompt, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 const debug = Debug('core-support/history/reverse-i-search')
@@ -47,7 +47,7 @@ export default () => {
 /** state of the reverse-i-search */
 class ActiveISearch {
   private isSearchActive = true
-  private readonly tab: ITab
+  private readonly tab: Tab
   private readonly currentOnKeypress
   private readonly currentOnInput
   private currentSearchIdx = -1
@@ -60,7 +60,7 @@ class ActiveISearch {
   private readonly prompt: HTMLInputElement
   private readonly promptLeft: Element
 
-  constructor (tab: ITab) {
+  constructor (tab: Tab) {
     this.tab = tab
     this.prompt = getCurrentPrompt(tab)
     this.promptLeft = getCurrentPromptLeft(tab)

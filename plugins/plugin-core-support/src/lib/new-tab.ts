@@ -24,10 +24,10 @@ import { isVisible as isSidecarVisible,
   clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, ITab, setStatus } from '@kui-shell/core/webapp/cli'
+import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, Tab, setStatus } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, IEvent, ExecType, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/core-support/new-tab')
 
 const usage = {
@@ -42,9 +42,9 @@ const usage = {
  * Helper methods to crawl the DOM
  *
  */
-const getTabButton = (tab: ITab) => element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(tab)}"]`)
+const getTabButton = (tab: Tab) => element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(tab)}"]`)
 const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
-const getTabButtonLabel = (tab: ITab) => getTabButton(tab).querySelector('.left-tab-stripe-button-label') as HTMLElement
+const getTabButtonLabel = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-label') as HTMLElement
 
 /**
  * Otherwise global state that we want to keep per tab
@@ -126,7 +126,7 @@ const addKeyboardListeners = (): void => {
  *
  */
 const addCommandEvaluationListeners = (): void => {
-  eventBus.on('/command/resolved', (event: IEvent) => {
+  eventBus.on('/command/resolved', (event: Event) => {
     if (event.execType !== undefined &&
         event.execType !== ExecType.Nested &&
         !event.isDrilldown &&
@@ -244,7 +244,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
  * Initialize events for a new tab
  *
  */
-const perTabInit = (tab: ITab, doListen = true) => {
+const perTabInit = (tab: Tab, doListen = true) => {
   if (doListen) {
     listen(getCurrentPrompt(tab))
   }
@@ -287,7 +287,7 @@ const perTabInit = (tab: ITab, doListen = true) => {
  * Same as newTab, but done asynchronously
  *
  */
-const newTabAsync = ({ execOptions }: IEvaluatorArgs) => {
+const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
   if (execOptions.nested) {
     newTab()
     return true

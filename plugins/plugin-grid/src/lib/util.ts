@@ -24,12 +24,12 @@ import eventBus from '@kui-shell/core/core/events'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as namespace from '@kui-shell/plugin-openwhisk/lib/models/namespace'
 import { range as rangeParser } from './time'
@@ -296,11 +296,11 @@ export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) =>
  * Prepare the sidecar header for the drawing routines to fill in
  *
  */
-export interface IHeader {
+export interface Header {
   leftHeader: Element
   rightHeader: Element
 }
-export const prepareHeader = (tab: ITab, isRedraw = false): IHeader => {
+export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
   const sidecar = getSidecar(tab)
   const leftHeader = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
   const rightHeader = sidecar.querySelector('.header-right-bits .custom-header-content')
@@ -317,8 +317,8 @@ export const prepareHeader = (tab: ITab, isRedraw = false): IHeader => {
  * The command handler for visualizing as a table
  *
  */
-export type Renderer = (tab: ITab, options: Object, header: IHeader, uuid: string, isRedraw?: boolean) => void
-export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ tab, argvNoOptions, parsedOptions: options }: IEvaluatorArgs) => {
+export type Renderer = (tab: Tab, options: Object, header: Header, uuid: string, isRedraw?: boolean) => void
+export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ tab, argvNoOptions, parsedOptions: options }: EvaluatorArgs) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch

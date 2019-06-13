@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import { MetadataBearing } from '@kui-shell/core/models/entity'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 const debug = Debug('webapp/views/mode-registrar')
 
@@ -30,7 +30,7 @@ export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Res
  */
 export interface ModeRegistration<Resource extends MetadataBearing> {
   when: SidecarModeFilter<Resource> // when this filter returns true...
-  mode: ISidecarMode | ((command: string, resource: { resource: Resource }) => ISidecarMode) // ...display this mode option
+  mode: SidecarMode | ((command: string, resource: { resource: Resource }) => SidecarMode) // ...display this mode option
 }
 
 /** registered mode handlers */
@@ -49,9 +49,9 @@ export default registerSidecarMode
  * @return the relevant modes for the given command on the given resource
  *
  */
-export function get<Resource extends MetadataBearing> (command: string, resource: { resource: Resource }): ISidecarMode[] {
+export function get<Resource extends MetadataBearing> (command: string, resource: { resource: Resource }): SidecarMode[] {
   debug('get relevant modes', resource)
-  const modes: ISidecarMode[] = []
+  const modes: SidecarMode[] = []
   apply(modes, command, resource)
   return modes
 }
@@ -61,7 +61,7 @@ export function get<Resource extends MetadataBearing> (command: string, resource
  * to the given modes model
  *
  */
-export function apply<Resource extends MetadataBearing> (modes: ISidecarMode[], command: string, resource: { resource: Resource }) {
+export function apply<Resource extends MetadataBearing> (modes: SidecarMode[], command: string, resource: { resource: Resource }) {
   registrar
     .filter(({ when }) => {
       // filter out any irrelevant modes (for this resource)

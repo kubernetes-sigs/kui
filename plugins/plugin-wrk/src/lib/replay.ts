@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
-import { IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as history from './history'
 import { initUI, response } from './graphics'
@@ -25,12 +25,12 @@ import { addRow } from './table'
 /** have some fun with replay... add a pause, in milliseconds, between each iter */
 const playbackPause = 0
 
-interface IOptions {
+interface Options {
   noTable?: boolean
   label?: string
 }
 
-class DefaultOptions implements IOptions {
+class DefaultOptions implements Options {
   noTable = false
 }
 
@@ -38,7 +38,7 @@ class DefaultOptions implements IOptions {
  * Replay a previous dataset
  *
  */
-export const replay = (tab: ITab, { url, dataset, testName }, graphics = initUI(), options: IOptions = new DefaultOptions()) => {
+export const replay = (tab: Tab, { url, dataset, testName }, graphics = initUI(), options: Options = new DefaultOptions()) => {
   const resp = response(tab, graphics, Object.assign({ url, testName }, options))
 
   if (!options.noTable) {
@@ -68,7 +68,7 @@ export const replay = (tab: ITab, { url, dataset, testName }, graphics = initUI(
  * Visualize the most recent data set
  *
  */
-export const last = ({ tab }: IEvaluatorArgs) => {
+export const last = ({ tab }: EvaluatorArgs) => {
   const last = history.last()
   if (!last) {
     throw new Error('You have no load test runs available for viewing')
@@ -81,7 +81,7 @@ export const last = ({ tab }: IEvaluatorArgs) => {
  * Visualize the idx-th most recent data set
  *
  */
-export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: IEvaluatorArgs) => {
+export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: EvaluatorArgs) => {
   const idx = args[args.indexOf('show') + 1]
   if (idx === undefined || options.help) {
     console.error(idx, args)

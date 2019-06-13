@@ -18,14 +18,14 @@ import * as Debug from 'debug'
 
 import { safeDump } from 'js-yaml'
 
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as Resources from '../model/resource'
 const debug = Debug('plugin-k8s/view/form')
 
-interface IFormElement {
+interface FormElement {
   parent: Record<string, any>
   path: string[]
   key: string
@@ -34,9 +34,9 @@ interface IFormElement {
   optional?: boolean
 }
 
-interface IFormGroup {
+interface FormGroup {
   title: string
-  choices: IFormElement[]
+  choices: FormElement[]
 }
 
 /**
@@ -64,7 +64,7 @@ type ChoiceTextArea = HTMLTextAreaElement & FormAmendments
  * Save the current form choices
  *
  */
-const doSave = (tab: ITab, form: HTMLFormElement, yaml: Resources.IKubeResource, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
+const doSave = (tab: Tab, form: HTMLFormElement, yaml: Resources.KubeResource, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
   if (button) {
     button.classList.add('yellow-background')
     button.classList.add('repeating-pulse')
@@ -102,12 +102,12 @@ const doSave = (tab: ITab, form: HTMLFormElement, yaml: Resources.IKubeResource,
  * Generate form groups from a given kube resource
  *
  */
-const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
-  const groups: IFormGroup[] = []
+const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
+  const groups: FormGroup[] = []
 
   const push = (group: string, key: string | number, { parent = yaml, path = [key.toString()], skip = {} }: { parent?: Record<string, any>; path?: string[]; skip?: Record<string, boolean> } = {}) => {
     const formGroup = groups.find(({ title }) => title === group) ||
-      { title: group, choices: [] as IFormElement[] }
+      { title: group, choices: [] as FormElement[] }
 
     const { choices } = formGroup
 
@@ -195,7 +195,7 @@ const formGroups = (yaml: Resources.IKubeResource): IFormGroup[] => {
  * Present a form view over a resource
  *
  */
-export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filepath: string, name: string, kind: string, onSave: (rawText: string) => any) => {
+export const generateForm = (tab: Tab) => (yaml: Resources.KubeResource, filepath: string, name: string, kind: string, onSave: (rawText: string) => any) => {
   const formElements = formGroups(yaml)
   debug('generate form', formElements)
 
@@ -254,7 +254,7 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
     form.className = 'form'
     itemRight.appendChild(form)
 
-    const formatChoice = (extraCSS?: string) => (element: IFormElement) => {
+    const formatChoice = (extraCSS?: string) => (element: FormElement) => {
       const row = document.createElement('div')
       row.className = 'bx--form-item'
       if (extraCSS) row.classList.add(extraCSS)
@@ -301,7 +301,7 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
           groups.shortChoices.push(choice)
         }
         return groups
-      }, { shortChoices: [] as IFormElement[], longChoices: [] as IFormElement[] })
+      }, { shortChoices: [] as FormElement[], longChoices: [] as FormElement[] })
 
     console.error('!!!!!!', element.choices.length === 2 && isKeyLike.test(element.choices[0].key) && element.choices[1].key === 'value' && isLongPattern.test(element.choices[0].value.toString()), shortChoices, longChoices)
 
@@ -313,7 +313,7 @@ export const generateForm = (tab: ITab) => (yaml: Resources.IKubeResource, filep
     }
   })
 
-  const modes: ISidecarMode[] = [
+  const modes: SidecarMode[] = [
     { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(tab, form, yaml, filepath, onSave), visibleWhen: 'edit' },
     { mode: 'revert', flush: 'right', actAsButton: true, direct: () => form.reset(), visibleWhen: 'edit' }
   ]

@@ -17,13 +17,13 @@
 import * as Debug from 'debug'
 
 import { qexec as $$ } from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { selectorToString } from '../../util/selectors'
 
-import { IResource, IKubeResource } from '../../model/resource'
+import { Resource, KubeResource } from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
@@ -38,13 +38,13 @@ const viewName = 'Pods'
  * the given resource.
  *
  */
-export const podMode: ModeRegistration<IKubeResource> = {
-  when: (resource: IKubeResource) => {
+export const podMode: ModeRegistration<KubeResource> = {
+  when: (resource: KubeResource) => {
     // let's see if the resource refers to a pod in some fashion
     return (resource.spec !== undefined && resource.spec.selector !== undefined) || // e.g. Deployment
       (resource.status !== undefined && resource.status.podName !== undefined) // e.g. tekton TaskRun or PipelineRun
   },
-  mode: (command: string, resource: IResource) => {
+  mode: (command: string, resource: Resource) => {
     debug('addPods', resource)
     try {
       return podsButton(command, resource)
@@ -60,7 +60,7 @@ export const podMode: ModeRegistration<IKubeResource> = {
  * given resource
  *
  */
-const podsButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
+const podsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
   mode: 'pods',
   direct: {
     plugin: 'k8s',
@@ -74,12 +74,12 @@ const podsButton = (command: string, resource: IResource, overrides?) => Object.
  * Render the tabular pods view
  *
  */
-interface IParameters {
+interface Parameters {
   command: string
-  resource: IResource
+  resource: Resource
 }
 
-export const renderAndViewPods = async (tab: ITab, parameters: IParameters) => {
+export const renderAndViewPods = async (tab: Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewPods', command, resource)
 

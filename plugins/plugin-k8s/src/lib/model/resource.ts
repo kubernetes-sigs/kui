@@ -16,7 +16,7 @@
 
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 
-export interface IKubeStatusCondition {
+export interface KubeStatusCondition {
   lastProbeTime?: string
   lastUpdateTime: string
   lastTransitionTime: string
@@ -26,7 +26,7 @@ export interface IKubeStatusCondition {
   type: string
 }
 
-interface IKubeContainerStatus {
+interface KubeContainerStatus {
   name: string
   containerID: string
   restartCount: number
@@ -34,11 +34,11 @@ interface IKubeContainerStatus {
   state: any
 }
 
-export interface IKubeLoadBalancer {
+export interface KubeLoadBalancer {
   ingress: string
 }
 
-export interface IKubeStatus {
+export interface KubeStatus {
   message: string
   state?: string
   startTime?: string
@@ -52,29 +52,29 @@ export interface IKubeStatus {
   availableReplicas?: number
   unavailableReplicas?: number
   updatedReplicas?: number
-  loadBalancer?: IKubeLoadBalancer
-  containerStatuses?: IKubeContainerStatus[]
-  conditions?: IKubeStatusCondition[]
+  loadBalancer?: KubeLoadBalancer
+  containerStatuses?: KubeContainerStatus[]
+  conditions?: KubeStatusCondition[]
 }
-export class DefaultKubeStatus implements IKubeStatus {
+export class DefaultKubeStatus implements KubeStatus {
   message = undefined
 }
 
-interface IOwnerReferences {
+interface OwnerReferences {
   kind: string
   name: string
 }
 
-export interface IKubeMetadata {
+export interface KubeMetadata {
   name: string
   namespace?: string
   labels?: { [key: string]: string }
   annotations?: object
   creationTimestamp?: string
   generation?: string
-  ownerReferences?: IOwnerReferences[]
+  ownerReferences?: OwnerReferences[]
 }
-export class DefaultKubeMetadata implements IKubeMetadata {
+export class DefaultKubeMetadata implements KubeMetadata {
   kind = undefined
   name = undefined
 }
@@ -91,44 +91,44 @@ interface RoleRef {
   name: string
 }
 
-export interface IKubeResource extends MetadataBearing {
+export interface KubeResource extends MetadataBearing {
   apiVersion: string
   kind: string
-  metadata?: IKubeMetadata
-  status?: IKubeStatus
+  metadata?: KubeMetadata
+  status?: KubeStatus
   spec?: any
   data?: object
 }
 
 /** Role */
-interface IRole extends IKubeResource {
+interface Role extends KubeResource {
   rules: RoleRule[]
 }
-export function isRole (resource: IKubeResource): resource is IRole {
-  const role = resource as IRole
+export function isRole (resource: KubeResource): resource is Role {
+  const role = resource as Role
   return role.rules !== undefined
 }
 
 /** RoleBinding */
-interface IRoleBinding extends IKubeResource {
+interface RoleBinding extends KubeResource {
   roleRef: RoleRef
   subjects: { kind: string; name: string }[]
 }
-export function isRoleBinding (resource: IKubeResource): resource is IRoleBinding {
-  const rb = resource as IRoleBinding
+export function isRoleBinding (resource: KubeResource): resource is RoleBinding {
+  const rb = resource as RoleBinding
   return rb.roleRef !== undefined && rb.subjects !== undefined
 }
 
 /** ServiceAccount */
-interface IServiceAccount extends IKubeResource {
+interface ServiceAccount extends KubeResource {
   secrets: { name: string }[]
 }
-export function isServiceAccount (resource: IKubeResource): resource is IServiceAccount {
-  const sa = resource as IServiceAccount
+export function isServiceAccount (resource: KubeResource): resource is ServiceAccount {
+  const sa = resource as ServiceAccount
   return sa.secrets !== undefined
 }
 
-export interface ICRDResource extends IKubeResource {
+export interface CRDResource extends KubeResource {
   spec: {
     names: {
       kind: string
@@ -137,7 +137,7 @@ export interface ICRDResource extends IKubeResource {
   }
 }
 
-export interface IPod extends IKubeResource {
+export interface Pod extends KubeResource {
   spec: {
     containers: {
       args: string[]
@@ -155,11 +155,11 @@ export interface IPod extends IKubeResource {
   }
 }
 
-export interface IResource {
+export interface Resource {
   filepathForDrilldown?: string
   kind?: string
   name?: string
-  resource: IKubeResource
+  resource: KubeResource
 }
 
-export default IResource
+export default Resource

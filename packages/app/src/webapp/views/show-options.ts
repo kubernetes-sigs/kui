@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export interface IShowOptions {
+export interface ShowOptions {
   show?: string
   echo?: boolean
   leaveBottomStripeAlone?: boolean
@@ -22,5 +22,5 @@ export interface IShowOptions {
   modes?: any[]
 }
 
-export class DefaultShowOptions implements IShowOptions {
+export class DefaultShowOptions implements ShowOptions {
 }

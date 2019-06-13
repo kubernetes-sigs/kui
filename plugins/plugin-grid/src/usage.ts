@@ -23,7 +23,7 @@ const all = ['summary',
   'grid']
 const allExcept = cmd => all.filter(_ => _ !== cmd)
 
-interface IOptional {
+interface Optional {
   name: string
   alias?: string
   docs?: string
@@ -38,7 +38,7 @@ interface IOptional {
 }
 
 /** optional arguments */
-const optional: IOptional[] = [
+const optional: Optional[] = [
   { name: 'action|app', positional: true, docs: 'include only activity for the given action or composition', entity: 'action' },
   { name: '--success', boolean: true, docs: 'include only successful activations' },
   { name: '--failure', boolean: true, docs: 'include only failed activations' },

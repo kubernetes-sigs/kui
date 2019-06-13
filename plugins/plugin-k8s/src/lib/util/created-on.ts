@@ -16,9 +16,9 @@
 
 import * as Debug from 'debug'
 
-import { IKubeResource } from '../model/resource'
+import { KubeResource } from '../model/resource'
 
-import { IFormatter } from '@kui-shell/core/webapp/views/sidecar'
+import { Formatter } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 const debug = Debug('k8s/util/created-on')
 debug('loading')
@@ -29,7 +29,7 @@ debug('loading')
  *
  * @param resource a kubernetes resource
  */
-export default (resource: IKubeResource): IFormatter => {
+export default (resource: KubeResource): Formatter => {
   const startTime = resource && ((resource.metadata && resource.metadata.creationTimestamp) || (resource.status && resource.status.startTime))
   if (startTime) {
     return {
@@ -44,7 +44,7 @@ export default (resource: IKubeResource): IFormatter => {
 }
 
 interface Parameters {
-  resource: IKubeResource
+  resource: KubeResource
 }
 
 /** format the creation time of a resource */

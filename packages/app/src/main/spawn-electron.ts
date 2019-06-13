@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import windowDefaults from '../webapp/defaults'
-import { IExecOptions } from '../models/execOptions'
+import { ExecOptions } from '../models/execOptions'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 import * as colors from 'colors/safe'
@@ -38,7 +38,7 @@ let nWindows = 0
 let electron
 let app
 
-interface ISize {
+interface Size {
   width: number
   height: number
 }
@@ -262,7 +262,7 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
  * Bootstrap headless mode
  *
  */
-export async function initHeadless (argv: string[], force = false, isRunningHeadless = false, execOptions?: IExecOptions) {
+export async function initHeadless (argv: string[], force = false, isRunningHeadless = false, execOptions?: ExecOptions) {
   if (/* noHeadless !== true && */ force || isRunningHeadless) {
     debug('initHeadless')
 
@@ -591,12 +591,12 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
  * Strip off the command to be executed from the given argv
  *
  */
-interface ICommand {
+interface Command {
   argv: string[]
   subwindowPlease: boolean
   subwindowPrefs: ISubwindowPrefs
 }
-export const getCommand = (argv: string[]): ICommand => {
+export const getCommand = (argv: string[]): Command => {
   debug('getCommand', argv)
   const dashDash = argv.lastIndexOf('--')
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)

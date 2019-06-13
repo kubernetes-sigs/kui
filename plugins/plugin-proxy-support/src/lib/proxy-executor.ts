@@ -17,11 +17,11 @@
 import * as Debug from 'debug'
 
 import UsageError from '@kui-shell/core/core/usage-error'
-import { IReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
+import { ReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
-import { IExecOptions } from '@kui-shell/core/models/execOptions'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
-import { isCommandHandlerWithEvents, IEvaluator, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as needle from 'needle'
 const debug = Debug('plugins/proxy-support/executor')
@@ -43,10 +43,10 @@ const directEvaluator = new DirectReplEval()
  * A repl.exec implementation that proxies to the packages/proxy container
  *
  */
-class ProxyEvaluator implements IReplEval {
+class ProxyEvaluator implements ReplEval {
   name = 'ProxyEvaluator'
 
-  async apply (command: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
+  async apply (command: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     debug('apply', evaluator)
 
     if (isCommandHandlerWithEvents(evaluator) && evaluator.options && (evaluator.options.inBrowserOk || evaluator.options.needsUI)) {

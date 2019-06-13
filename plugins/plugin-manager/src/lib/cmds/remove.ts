@@ -21,7 +21,7 @@ import { remove } from 'fs-extra'
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import compile from '@kui-shell/core/core/plugin-assembler'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { success } from '../util'
 import { remove as usage } from '../../usage'
@@ -30,7 +30,7 @@ debug('loading')
 
 debug('finished module imports')
 
-const doRemove = ({ argvNoOptions }: IEvaluatorArgs) => {
+const doRemove = ({ argvNoOptions }: EvaluatorArgs) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)

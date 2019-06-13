@@ -132,12 +132,12 @@ const cssForValue = {
  * Split the given string at the given split indices
  *
  */
-interface IPair {
+interface Pair {
   key: string
   value: string
 }
 
-const split = (str: string, splits: number[], headerCells?: string[]): IPair[] => {
+const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
@@ -181,7 +181,7 @@ export const preprocessTable = (raw: string[]) => {
   })
 }
 
-export const formatTable = (command: string, verb: string, entityTypeFromCommandLine: string, options, preTable: IPair[][]): Table => {
+export const formatTable = (command: string, verb: string, entityTypeFromCommandLine: string, options, preTable: Pair[][]): Table => {
   debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we

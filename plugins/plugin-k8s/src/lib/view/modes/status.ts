@@ -15,10 +15,10 @@
  */
 
 import * as Debug from 'debug'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 
 import { FinalState } from '../../model/states'
-import IResource from '../../model/resource'
+import Resource from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
@@ -31,7 +31,7 @@ import repl = require('@kui-shell/core/core/repl')
  * the given resource
  *
  */
-export const statusButton = (command: string, resource: IResource, finalState: FinalState, overrides?) => Object.assign({}, {
+export const statusButton = (command: string, resource: Resource, finalState: FinalState, overrides?) => Object.assign({}, {
   mode: 'status',
   direct: {
     plugin: 'k8s',
@@ -46,7 +46,7 @@ export const statusButton = (command: string, resource: IResource, finalState: F
  * around the formatMultiListResult() output.
  *
  */
-export const renderStatus = async (tab: ITab, command: string, resource: IResource, finalState: FinalState) => {
+export const renderStatus = async (tab: Tab, command: string, resource: Resource, finalState: FinalState) => {
   debug('renderStatus', command, resource.filepathForDrilldown, resource.kind, resource.name, finalState, resource.resource)
 
   // TODO: helm status doesn't yet support watching; so no final-state for helm status
@@ -70,12 +70,12 @@ export const renderStatus = async (tab: ITab, command: string, resource: IResour
  * Render status table, and then place it in a DOM
  *
  */
-interface IParameters {
+interface Parameters {
   command: string
-  resource: IResource
+  resource: Resource
   finalState: FinalState
 }
-export const renderAndViewStatus = (tab: ITab, parameters: IParameters) => {
+export const renderAndViewStatus = (tab: Tab, parameters: Parameters) => {
   const { command, resource, finalState } = parameters
   renderStatus(tab, command, resource, finalState).then(insertView(tab))
 }

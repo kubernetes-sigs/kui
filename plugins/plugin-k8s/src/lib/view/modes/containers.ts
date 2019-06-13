@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { Row } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
 
-import { IResource, IKubeResource } from '../../model/resource'
+import { Resource, KubeResource } from '../../model/resource'
 
 import { TrafficLight } from '../../model/states'
 
@@ -39,11 +39,11 @@ const viewName = 'Containers'
  * for by the given resource.
  *
  */
-export const containersMode: ModeRegistration<IKubeResource> = {
-  when: (resource: IKubeResource) => {
+export const containersMode: ModeRegistration<KubeResource> = {
+  when: (resource: KubeResource) => {
     return resource.spec && resource.spec.containers
   },
-  mode: (command: string, resource: IResource) => {
+  mode: (command: string, resource: Resource) => {
     try {
       return containersButton(command, resource)
     } catch (err) {
@@ -58,7 +58,7 @@ export const containersMode: ModeRegistration<IKubeResource> = {
  * for the given resource
  *
  */
-export const containersButton = (command: string, resource: IResource, overrides?) => Object.assign({}, {
+export const containersButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
   mode: 'containers',
   direct: {
     plugin: 'k8s',
@@ -72,7 +72,7 @@ export const containersButton = (command: string, resource: IResource, overrides
  * Render the tabular containers view
  *
  */
-export const renderContainers = async (tab: ITab, command: string, resource: IResource) => {
+export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
   debug('renderContainers', command, resource)
 
   return formatTable(tab, {
@@ -87,7 +87,7 @@ export const renderContainers = async (tab: ITab, command: string, resource: IRe
  * Render the table header model
  *
  */
-const headerModel = (resource: IResource): Row => {
+const headerModel = (resource: Resource): Row => {
   const statuses = resource.resource.status && resource.resource.status.containerStatuses
 
   const specAttrs = [
@@ -113,7 +113,7 @@ const headerModel = (resource: IResource): Row => {
  * Render the table body model
  *
  */
-const bodyModel = (tab: ITab, resource: IResource): Row[] => {
+const bodyModel = (tab: Tab, resource: Resource): Row[] => {
   const pod = resource.resource
   const statuses = pod.status && pod.status.containerStatuses
 
@@ -210,7 +210,7 @@ const bodyModel = (tab: ITab, resource: IResource): Row[] => {
  * Return a drilldown function that shows container logs
  *
  */
-const showLogs = (tab: ITab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
+const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
   const podName = repl.encodeComponent(pod.metadata.name)
   const containerName = repl.encodeComponent(container.name)
   const ns = repl.encodeComponent(pod.metadata.namespace)
@@ -230,10 +230,10 @@ const showLogs = (tab: ITab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexe
  * Render a containers table and show it in the sidecar
  *
  */
-interface IParameters {
+interface Parameters {
   command: string
-  resource: IResource
+  resource: Resource
 }
-export const renderAndViewContainers = (tab: ITab, parameters: IParameters) => {
+export const renderAndViewContainers = (tab: Tab, parameters: Parameters) => {
   renderContainers(tab, parameters.command, parameters.resource).then(insertView(tab))
 }

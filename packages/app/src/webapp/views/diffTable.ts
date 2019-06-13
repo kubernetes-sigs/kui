@@ -16,12 +16,12 @@
 
 import * as Debug from 'debug'
 
-import { ITab } from '../cli'
-import { IRowDiff, Row } from '../models/table'
+import { Tab } from '../cli'
+import { RowDiff, Row } from '../models/table'
 import { formatOneRowResult } from '../views/table'
 const debug = Debug('webapp/views/diff')
 
-export const applyDiffTable = (diff: IRowDiff, tab: ITab, tableDom: HTMLElement, rows: HTMLElement[], prepareRows: Row[]) => {
+export const applyDiffTable = (diff: RowDiff, tab: Tab, tableDom: HTMLElement, rows: HTMLElement[], prepareRows: Row[]) => {
   if (diff.rowUpdate && diff.rowUpdate.length > 0) {
     debug('update rows', diff.rowUpdate)
     diff.rowUpdate.map(update => {

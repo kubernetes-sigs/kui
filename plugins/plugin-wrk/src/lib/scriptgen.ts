@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { getCreds } from './openwhisk'
 const debug = Debug('wrk/scriptgen')
@@ -104,7 +104,7 @@ export const generateScriptForURL = ({ method = 'GET' }) => () => new Promise((r
  * Command handler to generate a lua script to run load against a given action
  *
  */
-export const script = async ({ argvNoOptions: argv, parsedOptions: options }: IEvaluatorArgs) => {
+export const script = async ({ argvNoOptions: argv, parsedOptions: options }: EvaluatorArgs) => {
   const namespace = await import('@kui-shell/plugin-openwhisk/lib/models/namespace')
 
   const rootDir = path.join(__dirname, '..')

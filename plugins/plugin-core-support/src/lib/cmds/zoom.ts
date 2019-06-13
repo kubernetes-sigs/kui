@@ -20,7 +20,7 @@ import eventBus from '@kui-shell/core/core/events'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as path from 'path'
 const debug = Debug('plugins/core-support/zoom')
@@ -99,7 +99,7 @@ const usage = {
  * Command handler for zoom set
  *
  */
-const set = ({ argvNoOptions }: IEvaluatorArgs) => {
+const set = ({ argvNoOptions }: EvaluatorArgs) => {
   const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   return _set(newZoom)
 }

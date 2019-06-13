@@ -16,9 +16,9 @@
 import * as Debug from 'debug'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { optionsToString } from '@kui-shell/core/core/utility'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
@@ -31,12 +31,12 @@ const debug = Debug('plugins/wskflow/util')
  * @return { nLines, maxLineLength } for the given code
  *
  */
-interface ITextualProperties {
+interface TextualProperties {
   nLines: number
   maxLineLength: number
 }
 
-export const textualPropertiesOfCode = (code: string): ITextualProperties => {
+export const textualPropertiesOfCode = (code: string): TextualProperties => {
   const lines = code.split(/[\n\r]/)
   const nLines = lines.length
   const maxLineLength = lines.reduce((max, line) => Math.max(max, line.length), 0)
@@ -100,7 +100,7 @@ export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode
  * like an app
  *
  */
-export const decorateAsApp = async (tab: ITab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
+export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
   debug('decorateAsApp', options)
   action.prettyType = badges.app
 
@@ -150,7 +150,7 @@ export const decorateAsApp = async (tab: ITab, { action, input, commandPrefix = 
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (tab: ITab, visualize, { ast, name, namespace, viewOptions, container }) => {
+export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = await repl.qexec('wsk rule list')
@@ -170,7 +170,7 @@ export const wskflow = async (tab: ITab, visualize, { ast, name, namespace, view
  * @param visibleWhenShowing only show the zoom buttons when the given mode is active
  *
  */
-export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): ISidecarMode[] => {
+export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): SidecarMode[] => {
   if (controller && controller.register) {
     const events = require('events')
     const zoom1to1Bus = new events.EventEmitter()

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { update } from './openwhisk-core'
@@ -172,7 +172,7 @@ const logThen = f => err => {
  * @param attr will be 'parameters' or 'annotations'
  *
  */
-const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions, tab }: IEvaluatorArgs) => {
+const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions, tab }: EvaluatorArgs) => {
   /** fetch the given entity with the given type */
   const fetchEntityWithType = (name, type) => repl.qexec(`wsk ${type} get ${name}`)
 

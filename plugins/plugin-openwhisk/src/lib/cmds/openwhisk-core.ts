@@ -21,11 +21,11 @@ import { type as osType } from 'os'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
+import { UsageError, UsageModel } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
-import { IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
@@ -472,7 +472,7 @@ const fqn = (name: string): string => {
   }
 }
 
-interface ISpecial {
+interface Special {
   get?: any
   bind?: any
   list?: any
@@ -480,7 +480,7 @@ interface ISpecial {
   create?: any
   update?: any
 }
-const BlankSpecial: ISpecial = { create: false, update: false }
+const BlankSpecial: Special = { create: false, update: false }
 const specials = {
   api: BlankSpecial,
   actions: BlankSpecial,
@@ -987,7 +987,7 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions, tab }: IEvaluatorArgs) => {
+const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions, tab }: EvaluatorArgs) => {
   let entity = _entity
   let verb = _verb
 
@@ -1207,7 +1207,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
             const code = err.statusCode || err.code
             const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity]
             const _usageModel = __usageModel.available && __usageModel.available.find(({ command }) => command === verb)
-            const usageModel: IUsageModel = _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
+            const usageModel: UsageModel = _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
 
             console.error(err)
             if (!usageModel) {

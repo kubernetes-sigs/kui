@@ -19,7 +19,7 @@
  *
  */
 
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
@@ -48,7 +48,7 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: IEvaluatorArgs) => {
+const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: EvaluatorArgs) => {
   const idx = argv.indexOf(op) + 1
   const oldName = argv[idx]
   const newName = argv[idx + 1]

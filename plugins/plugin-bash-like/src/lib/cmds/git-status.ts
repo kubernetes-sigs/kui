@@ -19,9 +19,9 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import { spawn } from 'child_process'
 
-import { partial, ITab } from '@kui-shell/core/webapp/cli'
+import { partial, Tab } from '@kui-shell/core/webapp/cli'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -32,7 +32,7 @@ const debug = Debug('plugins/bash-like/cmds/git-status')
  * Look for modified: and turn them into git diff links
  *
  */
-export const status2Html = (tab: ITab, rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
+export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
   injectCSS()
 
   const mods = rawOut
@@ -119,7 +119,7 @@ const noCurrentTextSelection = () => window.getSelection().toString().trim().len
  * git status command handler
  *
  */
-const doStatus = async ({ command, execOptions, tab }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
+const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) => new Promise(async (resolve, reject) => {
   const stats = numstat()
   const currentBranch = onbranch()
 
@@ -159,12 +159,12 @@ const doStatus = async ({ command, execOptions, tab }: IEvaluatorArgs) => new Pr
  * git diff --numstat row; we will consume these numbers as strings, so no need to parseInt them
  *
  */
-interface IStat {
+interface Stat {
   added: string
   deleted: string
 }
 interface Stats {
-  [key: string]: IStat
+  [key: string]: Stat
 }
 const numstat = (): Promise<Stats> => new Promise<Stats>((resolve, reject) => {
   const child = spawn('git', ['diff', '--numstat']) // `--relative=${path.basename(process.cwd())}`])

@@ -19,14 +19,14 @@ import * as Debug from 'debug'
 import { split } from '@kui-shell/core/core/repl'
 import { isPopup } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { onbranch, injectCSS } from '../util/git-support'
 const debug = Debug('plugins/bash-like/cmds/git-diff')
 
-const doDiff = async ({ command, execOptions }: IEvaluatorArgs) => new Promise(async (resolve, reject) => {
+const doDiff = async ({ command, execOptions }: EvaluatorArgs) => new Promise(async (resolve, reject) => {
   injectCSS()
 
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)

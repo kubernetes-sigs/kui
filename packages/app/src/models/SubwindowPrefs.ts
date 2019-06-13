@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-interface ISubwindowPrefs {
+interface SubwindowPrefs {
   fullscreen?: boolean
   useContentSize?: boolean
   synonymFor?: object
@@ -24,4 +24,4 @@ interface ISubwindowPrefs {
   bringYourOwnWindow?: () => void
 }
 
-export default ISubwindowPrefs
+export default SubwindowPrefs

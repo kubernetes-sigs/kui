@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IKubeResource, IKubeStatusCondition, IKubeStatus } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource, KubeStatusCondition, KubeStatus } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 /** this is the api version matcher; TODO refactor */
 const tektonAPI = /tekton.dev/
@@ -26,17 +26,17 @@ export type TaskName = string
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ITektonKubeResource extends IKubeResource {
+interface TektonKubeResource extends KubeResource {
   // intentionally empty
 }
 
-export interface ITaskRun extends IKubeResource {
+export interface TaskRun extends KubeResource {
   pipelineTaskName: string
-  status: IKubeStatus & {
+  status: KubeStatus & {
     podName: string
     startTime: string
     completionTime?: string
-    conditions: IKubeStatusCondition[]
+    conditions: KubeStatusCondition[]
     steps: {
       name: string
       terminated?: {
@@ -50,8 +50,8 @@ export interface ITaskRun extends IKubeResource {
   }
 }
 
-export interface ITaskRuns {
-  [key: string]: ITaskRun
+export interface TaskRuns {
+  [key: string]: TaskRun
 }
 
 export interface Port {
@@ -80,39 +80,39 @@ export interface Step {
   visitedIdx?: number
 }
 
-interface IResource {
+interface Resource {
   name: string
   type: string
   targetPath?: string
 }
 
-export interface Task extends ITektonKubeResource {
+export interface Task extends TektonKubeResource {
   kind: 'Task'
   visitedIdx?: number
   spec: {
     inputs: {
-      resources: IResource[]
+      resources: Resource[]
       params: { name: string; description: string; default: string }[]
     }
     steps: Step[]
   }
 }
 
-export function isTask (resource: IKubeResource): resource is Task {
+export function isTask (resource: KubeResource): resource is Task {
   return resource &&
     tektonAPI.test(resource.apiVersion) &&
     resource.kind === 'Task'
 }
 
-export interface IPipeline extends ITektonKubeResource {
+export interface Pipeline extends TektonKubeResource {
   kind: 'Pipeline'
   spec: {
-    resources?: IResource[]
+    resources?: Resource[]
     tasks: TaskRef[]
   }
 }
-export function isPipeline (resource: IKubeResource): resource is IPipeline {
-  const run = resource as IPipeline
+export function isPipeline (resource: KubeResource): resource is Pipeline {
+  const run = resource as Pipeline
   return run &&
     tektonAPI.test(run.apiVersion) &&
     run.spec !== undefined &&
@@ -120,7 +120,7 @@ export function isPipeline (resource: IKubeResource): resource is IPipeline {
     run.spec.tasks !== undefined
 }
 
-export interface IPipelineRun extends ITektonKubeResource {
+export interface PipelineRun extends TektonKubeResource {
   kind: 'PipelineRun'
   spec: {
     serviceAccount: string
@@ -129,12 +129,12 @@ export interface IPipelineRun extends ITektonKubeResource {
     pipelineRef: { name: string }
     trigger: { type: 'manual' }
   }
-  status: IKubeStatus & {
-    taskRuns: ITaskRuns
+  status: KubeStatus & {
+    taskRuns: TaskRuns
   }
 }
-export function isPipelineRun (resource: IKubeResource): resource is IPipelineRun {
-  const run = resource as IPipelineRun
+export function isPipelineRun (resource: KubeResource): resource is PipelineRun {
+  const run = resource as PipelineRun
 
   return tektonAPI.test(run.apiVersion) &&
     run.spec !== undefined &&

@@ -68,14 +68,14 @@ export const setGraphicalShellIsOpen = () => {
  * Try to pretty print one of our fake doms
  *
  */
-interface IPrettyOptions {
+interface PrettyOptions {
   columnWidths?: { [key: number]: number }
   extraColor?: string
 }
-class DefaultPrettyOptions implements IPrettyOptions {
+class DefaultPrettyOptions implements PrettyOptions {
 }
 let firstPrettyDom = true // so we can avoid initial newlines for headers
-const prettyDom = (dom: ElementMimic, logger = log, stream = process.stdout, _color: string, { columnWidths, extraColor: _extraColor }: IPrettyOptions = new DefaultPrettyOptions()) => {
+const prettyDom = (dom: ElementMimic, logger = log, stream = process.stdout, _color: string, { columnWidths, extraColor: _extraColor }: PrettyOptions = new DefaultPrettyOptions()) => {
   debug('prettyDom')
 
   const isHeader = dom.nodeType === 'h1' || dom.nodeType === 'h2' || dom.nodeType === 'h3' || dom.nodeType === 'h4'

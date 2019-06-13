@@ -25,7 +25,7 @@ import { preload, init as pluginsInit } from '../core/plugins'
 import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
 import { CodedError } from '../models/errors'
 import UsageError from '../core/usage-error'
-import { IExecOptions } from '../models/execOptions'
+import { ExecOptions } from '../models/execOptions'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 // set the headless capability
@@ -93,7 +93,7 @@ const success = quit => async out => {
     debug('graphical shell is open')
   }
 }
-const failure = (quit, execOptions?: IExecOptions) => async (err: CodedError) => {
+const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => {
   if (execOptions && execOptions.rethrowErrors) {
     throw err
   }
@@ -197,7 +197,7 @@ const initCommandContext = async (commandContext: string) => {
  * Initialize headless mode
  *
  */
-export const main = async (app, mainFunctions, rawArgv = process.argv, execOptions?: IExecOptions) => {
+export const main = async (app, mainFunctions, rawArgv = process.argv, execOptions?: ExecOptions) => {
   debug('main')
 
   const ourCommandContext = rawArgv.find(_ => !!_.match(commandContextPattern))

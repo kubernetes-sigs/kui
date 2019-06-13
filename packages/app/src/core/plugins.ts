@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import * as commandTree from './command-tree'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
-import { Disambiguator, ICatchAllHandler, ICommandOptions } from '../models/command'
+import { Disambiguator, CatchAllHandler, CommandOptions } from '../models/command'
 
 /**
  * Plugin preloading support
@@ -41,7 +41,7 @@ const usage = {} // as we scan for plugins, we'll memoize their usage models
 const flat = []
 const registrar: { [key: string]: KuiPlugin } = {} // this is the registrar for plugins
 
-let prescanned: IPrescanModel
+let prescanned: PrescanModel
 
 debug('globals initialized')
 
@@ -49,7 +49,7 @@ debug('globals initialized')
  * when in live (not scanning) mode, this will store the result of a
  * previous plugin scan
  */
-let prescan: IPrescanModel
+let prescan: PrescanModel
 
 /**
  * Scan for plugins incorporated via app/plugins/package.json
@@ -307,10 +307,10 @@ const topologicalSortForScan = async (pluginPaths: string[], iter: number, lastE
  * Look for plugins by scanning the local filesystem
  *
  */
-interface ILocalOptions extends IPrescanOptions {
+interface LocalOptions extends PrescanOptions {
   pluginRootAbsolute?: string
 }
-const resolveFromLocalFilesystem = async (opts: ILocalOptions = {}, quiet = false) => {
+const resolveFromLocalFilesystem = async (opts: LocalOptions = {}, quiet = false) => {
   debug('resolveFromLocalFilesystem')
 
   const path = await import('path')
@@ -353,7 +353,7 @@ export const init = async () => {
   debug('init')
 
   // global
-  prescan = (await loadPrescan(pluginRoot)) as IPrescanModel
+  prescan = (await loadPrescan(pluginRoot)) as PrescanModel
 
   // disabled: userData plugins
   /* .then(builtins => loadPrescan(path.join(app.getPath('userData'), 'plugins'))
@@ -373,9 +373,9 @@ export const init = async () => {
  * Load the prescan model, in preparation for loading the shell
  *
  */
-const loadPrescan = async (userDataDir: string): Promise<IPrescanModel> => {
+const loadPrescan = async (userDataDir: string): Promise<PrescanModel> => {
   try {
-    prescanned = (await import('@kui-shell/prescan')) as IPrescanModel
+    prescanned = (await import('@kui-shell/prescan')) as PrescanModel
     return prescanned
   } catch (err) {
     debug('prescanned does not exist or is not valid JSON', err)
@@ -416,7 +416,7 @@ const loadPrescan = async (userDataDir: string): Promise<IPrescanModel> => {
  * Make a plugin resolver from a given prescan model
  *
  */
-const makeResolver = (prescan: IPrescanModel) => {
+const makeResolver = (prescan: PrescanModel) => {
   debug('makeResolver')
 
   /** memoize resolved plugins */
@@ -519,16 +519,16 @@ const makeResolver = (prescan: IPrescanModel) => {
   return resolver
 } /* makeResolver */
 
-interface IPrescanCommandDefinition {
+interface PrescanCommandDefinition {
   route: string
   path: string
 }
-export type PrescanCommandDefinitions = IPrescanCommandDefinition[]
+export type PrescanCommandDefinitions = PrescanCommandDefinition[]
 export interface PrescanDocs {
   [key: string]: string
 }
 export type PrescanUsage = any // FIXME something like: { [key: string]: ICommandOptions }
-export interface IPrescanModel {
+export interface PrescanModel {
   docs: PrescanDocs
   preloads: PrescanCommandDefinitions
   commandToPlugin: { [key: string]: string }
@@ -537,10 +537,10 @@ export interface IPrescanModel {
   overrides: { [key: string]: string }
   usage: PrescanUsage
   disambiguator: Disambiguator
-  catchalls: ICatchAllHandler[]
+  catchalls: CatchAllHandler[]
 }
 
-interface IPrescanOptions {
+interface PrescanOptions {
   externalOnly?: boolean
 }
 
@@ -548,7 +548,7 @@ interface IPrescanOptions {
  * Generate a prescan model
  *
  */
-export const generatePrescanModel = async (opts: IPrescanOptions): Promise<IPrescanModel> => {
+export const generatePrescanModel = async (opts: PrescanOptions): Promise<PrescanModel> => {
   debug('generatePrescanModel', opts)
 
   const state = opts.externalOnly && commandTree.startScan()
@@ -601,7 +601,7 @@ export const generatePrescanModel = async (opts: IPrescanOptions): Promise<IPres
  * Assemble the plugins for faster loading
  *
  */
-export const assemble = (opts: IPrescanOptions): Promise<IPrescanModel> => {
+export const assemble = (opts: PrescanOptions): Promise<PrescanModel> => {
   return generatePrescanModel(Object.assign({ assembly: true }, opts))
 }
 

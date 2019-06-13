@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Tab } from '@kui-shell/core/webapp/cli'
 
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import flowView from '../../view/flow'
 import { getPipelineFromRef, getTasks } from '../fetch'
 import { isPipelineRun, isPipeline } from '../resource'
 
-export interface IResponseObject {
+export interface ResponseObject {
   isFromFlowCommand?: boolean
-  model: IKubeResource[]
-  resource: IKubeResource
+  model: KubeResource[]
+  resource: KubeResource
 }
 
 /**
  * The sidecar mode for the tekton flow visualization
  *
  */
-const flowMode: ISidecarMode = {
+const flowMode: SidecarMode = {
   mode: 'flow',
-  direct: async (tab: ITab, _: IResponseObject) => {
+  direct: async (tab: Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
       // then _ is already the response we need
       return _
@@ -43,11 +43,11 @@ const flowMode: ISidecarMode = {
       const resource = _.resource
       if (isPipelineRun(resource)) {
         const [ pipeline, tasks ] = await Promise.all([ getPipelineFromRef(resource), getTasks() ])
-        return flowView(tab, [pipeline as IKubeResource].concat(tasks), resource)
+        return flowView(tab, [pipeline as KubeResource].concat(tasks), resource)
       } else if (isPipeline(resource)) {
         // fetch any accompanying Tasks
         const tasks = await getTasks()
-        return flowView(tab, [resource as IKubeResource].concat(tasks))
+        return flowView(tab, [resource as KubeResource].concat(tasks))
       } else {
         return flowView(tab, [resource])
       }

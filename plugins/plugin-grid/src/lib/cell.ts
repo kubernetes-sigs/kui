@@ -17,13 +17,13 @@
 import * as prettyPrintDuration from 'pretty-ms'
 import { drilldownWith } from './drilldown'
 import { newline, latencyBucket } from './util'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 
 /**
  * Draw the given activation in the given cell (a dom)
  *
  */
-export const renderCell = (tab: ITab, returnTo: string, cell: HTMLElement, activation: Record<string, any>, isFailure: boolean = !activation.response.success, duration: number = activation.end - activation.start, latBucket: number = isFailure ? -1 : latencyBucket(duration), options) => {
+export const renderCell = (tab: Tab, returnTo: string, cell: HTMLElement, activation: Record<string, any>, isFailure: boolean = !activation.response.success, duration: number = activation.end - activation.start, latBucket: number = isFailure ? -1 : latencyBucket(duration), options) => {
   let returnValue = cell
   if (!cell) {
     // then the caller asked us to make the container

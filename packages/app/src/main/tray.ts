@@ -22,7 +22,7 @@
  */
 
 import { join } from 'path'
-import { IQuittable } from './main-models'
+import { Quittable } from './main-models'
 
 /**
  * Returns the tray object. The caller is responsible for grabbing a
@@ -30,7 +30,7 @@ import { IQuittable } from './main-models'
  * it in a BrowserWindow object.
  *
  */
-export default ({ Tray, Menu }, app: IQuittable, createWindow: Function) => {
+export default ({ Tray, Menu }, app: Quittable, createWindow: Function) => {
   const screen = require('electron').screen
   const screenSize = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
   const dimensions = { width: 800, height: 600 }

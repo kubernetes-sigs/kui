@@ -31,9 +31,9 @@ import { UsageError } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { qexec, pexec } from '@kui-shell/core/core/repl'
 import { addNameToSidecarHeader, getSidecar, clearSelection, currentSelection, showEntity } from '@kui-shell/core/webapp/views/sidecar'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { addActivationModes } from '@kui-shell/plugin-openwhisk/lib/models/modes'
 const debug = Debug('plugins/local')
@@ -41,7 +41,7 @@ debug('loading')
 
 const docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
-interface IProtoActivation {
+interface ProtoActivation {
   result?: any
   logs?: string[]
   init_time?: number
@@ -145,7 +145,7 @@ export default async (commandTree: CommandRegistrar) => {
   })
 }
 
-const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: string[], spinnerDiv: Element) => new Promise(async () => {
+const doInvoke = async (tab: Tab, input: Object, argvWithoutOptions: string[], spinnerDiv: Element) => new Promise(async () => {
   try {
     debug('executing invoke command')
 
@@ -178,7 +178,7 @@ const doInvoke = async (tab: ITab, input: Object, argvWithoutOptions: string[], 
  * Local debug
  *
  */
-const doDebug = (tab: ITab, input: Object, argvWithoutOptions: string[], dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
+const doDebug = (tab: Tab, input: Object, argvWithoutOptions: string[], dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
   debug('executing debug command')
 
   resolve([{
@@ -232,7 +232,7 @@ const doDebug = (tab: ITab, input: Object, argvWithoutOptions: string[], dashOpt
  * Main command handler routine
  *
  */
-const local = async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsedOptions: dashOptions, tab }: IEvaluatorArgs) => {
+const local = async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsedOptions: dashOptions, tab }: EvaluatorArgs) => {
   // we always want to have "local" at the front, so e.g. invoke => local invoke
   if (argvWithoutOptions[0] && argvWithoutOptions[0] !== 'local') {
     argvWithoutOptions.unshift('local')
@@ -345,7 +345,7 @@ const local = async ({ argv: fullArgv, argvNoOptions: argvWithoutOptions, parsed
  * If the user has selected an entity, e.g. via a previous "action get", then fill it in
  *
  */
-const fillInWithImplicitEntity = (tab: ITab, args: string[], idx: number): string => {
+const fillInWithImplicitEntity = (tab: Tab, args: string[], idx: number): string => {
   const entity = currentSelection(tab)
   if (entity) {
     const pathAnno = entity.annotations.find(({ key }) => key === 'path')
@@ -542,12 +542,12 @@ const init = async (kind, spinnerDiv) => {
  * input data for that activation.
  *
  */
-interface IProtoAction {
+interface ProtoAction {
   name: string
   kind?: string
   input: Object
 }
-const getActionNameAndInputFromActivations = async (actId, spinnerDiv): Promise<IProtoAction> => {
+const getActionNameAndInputFromActivations = async (actId, spinnerDiv): Promise<ProtoAction> => {
   if (!actId.trim().match(uuidPattern)) {
     // then actId is really an action name, so there's nothing to do here
     return { name: actId, input: {} }
@@ -668,7 +668,7 @@ const fetchLogs = container => result => {
  * action, we can avoid calling /init again.
  *
  */
-const runActionInDocker = async (functionCode, functionKind, functionInput, isBinary, spinnerDiv): Promise<IProtoActivation> => {
+const runActionInDocker = async (functionCode, functionKind, functionInput, isBinary, spinnerDiv): Promise<ProtoActivation> => {
   let start
   let init
 
@@ -761,7 +761,7 @@ Promise.resolve(debugMainFunc(${JSON.stringify(input)}))
  * Run the given code inside a local debugging session
  *
  */
-const runActionDebugger = (actionName: string, functionCode: string, functionKind: string, functionInput: Object, isBinary: boolean, spinnerDiv: Element, returnDiv: Element) => new Promise((resolve, reject): IProtoActivation | void => {
+const runActionDebugger = (actionName: string, functionCode: string, functionKind: string, functionInput: Object, isBinary: boolean, spinnerDiv: Element, returnDiv: Element) => new Promise((resolve, reject): ProtoActivation | void => {
   debug('runActionDebugger', actionName)
 
   appendIncreContent('Preparing container', spinnerDiv)
@@ -1001,7 +1001,7 @@ const errorSpinner = spinnerDiv => iconForSpinner(spinnerDiv, 'fas fa-exclamatio
  * name stored in data.
  *
  */
-const updateSidecarHeader = (tab: ITab, viewName: string) => data => {
+const updateSidecarHeader = (tab: Tab, viewName: string) => data => {
   const { name } = data
   const split = name.split('/')
   const packageName = split.length > 3 ? split[2] : undefined
@@ -1061,7 +1061,7 @@ const createTempFolder = () => new Promise((resolve, reject) => {
  *
  *
  */
-const displayAsActivation = async (tab: ITab, sessionType: string, { kind, name: actionName, name }: { kind: string; actionName: string; name: string }, start: number, protoActivation?: IProtoActivation) => {
+const displayAsActivation = async (tab: Tab, sessionType: string, { kind, name: actionName, name }: { kind: string; actionName: string; name: string }, start: number, protoActivation?: ProtoActivation) => {
   try {
     // when the session ended
     const end = Date.now()
@@ -1112,7 +1112,7 @@ const closeDebuggerUI = () => {
  * Clean up the debugger UI and close the sidecar
  *
  */
-const stopDebugger = (tab: ITab) => () => {
+const stopDebugger = (tab: Tab) => () => {
   closeDebuggerUI()
   clearSelection(tab)
 }

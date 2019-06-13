@@ -23,7 +23,7 @@ import { exec, spawn } from 'child_process'
 import * as which from 'which'
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import compile from '@kui-shell/core/core/plugin-assembler'
 
 import { success } from '../util'
@@ -33,7 +33,7 @@ debug('loading')
 
 debug('finished module imports')
 
-const doInstall = ({ argvNoOptions }: IEvaluatorArgs) => {
+const doInstall = ({ argvNoOptions }: EvaluatorArgs) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('install') + 1)

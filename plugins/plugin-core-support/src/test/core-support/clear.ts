@@ -35,13 +35,13 @@ describe('Clear the console', function (this: ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  interface IPromptOptions {
+  interface PromptOptions {
     enteredString?: string
     enteredPlaceholder?: string
     expectedPlaceholder?: string
     cancel?: boolean
   }
-  const doPrompt = (opts: IPromptOptions) => async () => {
+  const doPrompt = (opts: PromptOptions) => async () => {
     const { enteredString, enteredPlaceholder = '', expectedPlaceholder = 'Test prompt', cancel = false } = opts
 
     try {

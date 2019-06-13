@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-interface IPort {
+interface Port {
   id: string
 }
 
-export interface INode {
+export interface Node {
   readonly id: string
   readonly type?: string
   label: string
@@ -37,15 +37,15 @@ export interface INode {
   height?: number
   layoutOptions?: Record<string, any>
   properties?: Record<string, any>
-  ports?: IPort[]
+  ports?: Port[]
   visited?: number[]
-  children?: INode[]
-  edges?: IEdge[]
+  children?: Node[]
+  edges?: Edge[]
   deployed?: boolean
   readonly onclick?: string
 }
 
-export interface INodeOptions {
+export interface NodeOptions {
   value?: string
   tooltip?: string
   tooltipHeader?: string
@@ -53,7 +53,7 @@ export interface INodeOptions {
   renderFunctionsInView?: boolean
 }
 
-export interface IEdge {
+export interface Edge {
   id: string
   source: string
   sourcePort: string

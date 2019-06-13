@@ -18,10 +18,10 @@ import * as Debug from 'debug'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { UsageError, IUsageModel } from '@kui-shell/core/core/usage-error'
-import { CommandRegistrar, CommandHandler, ExecType, IEvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
-import { IExecOptions } from '@kui-shell/core/models/execOptions'
-import { ISidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { UsageError, UsageModel } from '@kui-shell/core/core/usage-error'
+import { CommandRegistrar, CommandHandler, ExecType, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { CodedError } from '@kui-shell/core/models/errors'
 
 import abbreviations from './abbreviations'
@@ -31,10 +31,10 @@ import { fillInTheBlanks } from '../util/discovery/kubeconfig'
 import pickHelmClient from '../util/discovery/helm-client'
 import createdOn from '../util/created-on'
 
-import { IResource, IKubeResource } from '../model/resource'
+import { Resource, KubeResource } from '../model/resource'
 import { FinalState } from '../model/states'
 import { Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
-import { IDelete } from '@kui-shell/core/webapp/models/basicModels'
+import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { redactJSON, redactYAML } from '../view/redact'
 import { registry as formatters } from '../view/registry'
@@ -49,7 +49,7 @@ const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface KubeExecOptions extends IExecOptions {
+interface KubeExecOptions extends ExecOptions {
 /*  credentials?: {
     k8s: {
       kubeconfig: string
@@ -71,7 +71,7 @@ const kubelike = /kubectl|oc/
 const isKubeLike = (command: string): boolean => kubelike.test(command)
 
 /** lazily load js-yaml and invoke its yaml parser */
-const parseYAML = async (str: string): Promise<IKubeResource> => {
+const parseYAML = async (str: string): Promise<KubeResource> => {
   const { safeLoad } = await import('js-yaml')
   return safeLoad(str)
 }
@@ -140,7 +140,7 @@ const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string
  * Display the given string as a REPL table
  *
  */
-const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options: ParsedOptions, execOptions: KubeExecOptions): Table | Table[] | HTMLElement | IDelete => {
+const table = (decodedResult: string, stderr: string, command: string, verb: string, entityType: string, entity: string, options: ParsedOptions, execOptions: KubeExecOptions): Table | Table[] | HTMLElement | Delete => {
   debug('displaying as table', verb, entityType)
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
@@ -191,7 +191,7 @@ const pre = (str: string): HTMLElement => {
   return pre
 }
 
-const usage = (command: string): IUsageModel => ({
+const usage = (command: string): UsageModel => ({
   title: command,
   command,
   strict: command,
@@ -203,7 +203,7 @@ const usage = (command: string): IUsageModel => ({
   ]
 })
 
-const prepareUsage = async (command: string): Promise<IUsageModel> => {
+const prepareUsage = async (command: string): Promise<UsageModel> => {
   debug('prepareUsage', command)
 
   try {
@@ -229,7 +229,7 @@ const prepareUsage = async (command: string): Promise<IUsageModel> => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
 // eslint-disable-next-line promise/param-names
-const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promise(async (resolveBase, reject) => {
+const executeLocally = (command: string) => (opts: EvaluatorArgs) => new Promise(async (resolveBase, reject) => {
   const { block, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand, createOutputStream } = opts
 
   const isKube = isKubeLike(command)
@@ -533,7 +533,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
         return resolve(result)
       }
 
-      const modes: ISidecarMode[] = [{
+      const modes: SidecarMode[] = [{
         mode: 'result',
         direct: rawCommand,
         label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
@@ -563,7 +563,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
       // badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
 
       if (verb === 'get') {
-        const resource: IResource = { kind: command !== 'helm' && yaml.kind, name: entity, resource: yaml }
+        const resource: Resource = { kind: command !== 'helm' && yaml.kind, name: entity, resource: yaml }
         modes.push(statusButton(command, resource, FinalState.NotPendingLike))
 
         deleteResourceButton(() => renderAndViewStatus(opts.tab, { command, resource, finalState: FinalState.OfflineLike }))
@@ -648,7 +648,7 @@ const helm = executeLocally('helm')
  * Delegate 'k8s <verb>' to 'kubectl verb'
  *
  */
-const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: IEvaluatorArgs) => {
+const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: EvaluatorArgs) => {
   if (opts.argv[0] === 'k8s') {
     opts.argv[0] = 'kubectl'
     opts.argvNoOptions[0] = 'kubectl'

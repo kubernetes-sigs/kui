@@ -18,10 +18,10 @@ import * as url from 'url'
 import * as path from 'path'
 
 import { pexec } from '@kui-shell/core/core/repl'
-import { ITab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
-interface IMarkdown {
+interface Markdown {
   title: HTMLElement
   body: HTMLElement
 }
@@ -30,7 +30,7 @@ interface IMarkdown {
  * Render a markdown file as HTML
  *
  */
-export default (tab: ITab, suffix: string, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+export default (tab: Tab, suffix: string, source: string, fullpath: string, hljs): Promise<Markdown> => {
   if (suffix === 'md') {
     return markdownify(tab, source, fullpath, hljs)
   } else if (suffix === 'adoc') {
@@ -76,7 +76,7 @@ const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
  * Render an asciidoc file as HTML
  *
  */
-const asciidocify = async (tab: ITab, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+const asciidocify = async (tab: Tab, source: string, fullpath: string, hljs): Promise<Markdown> => {
   const Asciidoctor = await import('asciidoctor.js')
   const asciidoctor = Asciidoctor()
 
@@ -88,7 +88,7 @@ const asciidocify = async (tab: ITab, source: string, fullpath: string, hljs): P
  * Render a markdown file as HTML
  *
  */
-const markdownify = async (tab: ITab, source: string, fullpath: string, hljs): Promise<IMarkdown> => {
+const markdownify = async (tab: Tab, source: string, fullpath: string, hljs): Promise<Markdown> => {
   // use marked, but render links specially
   const Marked = await import('marked')
   const renderer = new Marked.Renderer()
@@ -149,7 +149,7 @@ const markdownify = async (tab: ITab, source: string, fullpath: string, hljs): P
  * Wrap a formatted innerHTML
  *
  */
-const wrap = (tab: ITab, htmlString: string, fullpath: string, hljs): IMarkdown => {
+const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown => {
   const body = document.createElement('div')
   body.classList.add('padding-content')
   body.classList.add('overflow-auto')

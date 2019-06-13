@@ -23,7 +23,7 @@ import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { formatOneListResult } from '@kui-shell/core/webapp/views/table'
 import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { IShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
+import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
@@ -43,7 +43,7 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
  * Load the given entity into the sidecar UI
  *
  */
-export const showEntity = async (tab: cli.ITab, entity, sidecar: Element, options: IShowOptions = new DefaultShowOptions()) => {
+export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options: ShowOptions = new DefaultShowOptions()) => {
   debug('showEntity', entity, sidecar, options)
 
   // this return value will show up in the repl; true would be only "ok" appears
@@ -383,7 +383,7 @@ export const showEntity = async (tab: cli.ITab, entity, sidecar: Element, option
  * A small shim on top of the wskflow renderer
  *
  */
-const wskflow = async (tab: cli.ITab, ast: Record<string, any>, rule?) => {
+const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)
   const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default

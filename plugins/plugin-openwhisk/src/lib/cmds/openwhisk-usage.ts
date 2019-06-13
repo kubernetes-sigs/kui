@@ -54,14 +54,14 @@ const deployedRule = deployed(rule)
 const maybeDeployedRule = deployedRule // nothing special for now; this is for update, which takes either a name or an entity
 
 /** required source file parameter */
-interface IOption {
+interface Option {
   name: string
   alias?: string
   positional?: boolean
   file?: boolean
   docs: string
 }
-const sourceFile: IOption[] = [{ name: 'sourceFile', positional: true, file: true, docs: 'a local path to the action source' }]
+const sourceFile: Option[] = [{ name: 'sourceFile', positional: true, file: true, docs: 'a local path to the action source' }]
 
 /** required activationId parameter */
 const activationID: any[] = [{ name: 'activationId', docs: 'an activation ID', entity: 'activation' }]

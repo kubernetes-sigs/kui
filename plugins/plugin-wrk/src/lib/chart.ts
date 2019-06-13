@@ -28,15 +28,15 @@ const debug = Debug('wrk/chart')
 // from injectScript Chart below
 declare var Chart
 
-interface IOptions {
+interface Options {
   noListen: boolean
 }
 
-class DefaultOptions implements IOptions {
+class DefaultOptions implements Options {
   noListen = false
 }
 
-export const init = (graphics, options: IOptions = new DefaultOptions()) => {
+export const init = (graphics, options: Options = new DefaultOptions()) => {
   if (graphics.chart === undefined) {
     // then we weren't asked to make a chart
     return

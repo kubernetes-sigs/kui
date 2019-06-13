@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { IExecOptions } from '../models/execOptions'
+import { ExecOptions } from '../models/execOptions'
 import { getCommand, initElectron, initHeadless } from './spawn-electron'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 const debug = Debug('main/main')
@@ -26,7 +26,7 @@ debug('loading')
  * This is the main entry point to kui
  *
  */
-export const main = (argv: string[], env = process.env, execOptions?: IExecOptions) => {
+export const main = (argv: string[], env = process.env, execOptions?: ExecOptions) => {
   const forceUI = !!argv.find(arg => arg === '--ui') || !!env.KUI_POPUP
   const isShell = !!argv.find(arg => arg === 'shell')
   const kuiShell = forceUI || isShell

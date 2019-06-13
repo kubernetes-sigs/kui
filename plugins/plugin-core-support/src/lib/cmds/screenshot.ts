@@ -18,7 +18,7 @@ import { dirname, join } from 'path'
 
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { getCurrentPrompt, ITab } from '@kui-shell/core/webapp/cli'
+import { getCurrentPrompt, Tab } from '@kui-shell/core/webapp/cli'
 import { keys } from '@kui-shell/core/webapp/keys'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
@@ -68,11 +68,11 @@ const round = Math.round
 const selectors = {
   full: 'body', // everything
   'default': 'body > .page', // everything but header
-  sidecar: (tab: ITab) => sidecarSelector(tab), // entire sidecar region
-  repl: (tab: ITab) => tab.querySelector('.repl'), // entire REPL region
-  nth: (tab: ITab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
-  'last-full': (tab: ITab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
-  last: (tab: ITab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
+  sidecar: (tab: Tab) => sidecarSelector(tab), // entire sidecar region
+  repl: (tab: Tab) => tab.querySelector('.repl'), // entire REPL region
+  nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
+  'last-full': (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
+  last: (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
 }
 
 /**
@@ -94,7 +94,7 @@ const squishers = {
   full: hideCurrentReplBlock,
   repl: hideCurrentReplBlock
 }
-const _squish = (tab: ITab, which: string, selector: string, op) => {
+const _squish = (tab: Tab, which: string, selector: string, op) => {
   let squisher = squishers[which]
 
   if (typeof squisher === 'function') {
@@ -120,7 +120,7 @@ const _squish = (tab: ITab, which: string, selector: string, op) => {
     return doNotSquish
   }
 }
-const squish = (tab: ITab, which: string, selector: string) => _squish(tab, which, selector, (dryRun: boolean, element: HTMLElement, property, value, css) => {
+const squish = (tab: Tab, which: string, selector: string) => _squish(tab, which, selector, (dryRun: boolean, element: HTMLElement, property, value, css) => {
   if (dryRun) {
     const scrollers = element.querySelectorAll('.overflow-auto')
     for (let idx = 0; idx < scrollers.length; idx++) {
@@ -134,7 +134,7 @@ const squish = (tab: ITab, which: string, selector: string) => _squish(tab, whic
     if (property) element.style[property] = value
   }
 })
-const unsquish = (tab: ITab, which: string, selector: string) => _squish(tab, which, selector, (_, element: HTMLElement, property, value, css) => {
+const unsquish = (tab: Tab, which: string, selector: string) => _squish(tab, which, selector, (_, element: HTMLElement, property, value, css) => {
   if (css) element.classList.remove(css)
   if (property) element.style[property] = null
 })

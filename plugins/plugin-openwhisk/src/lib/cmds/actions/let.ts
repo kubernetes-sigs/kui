@@ -91,11 +91,11 @@ const isRemote = location => location.includes('https:') || location.includes('h
  * Resolve the given url to a local file, even if it is remote.
  *
  */
-interface IRemote {
+interface Remote {
   location: string
   removeWhenDone: boolean
 }
-const fetchRemote = (location, mimeType): Promise<IRemote> => new Promise((resolve, reject) => {
+const fetchRemote = (location, mimeType): Promise<Remote> => new Promise((resolve, reject) => {
   const locationWithoutQuotes = location.replace(patterns.quotes, '')
   debug(`fetchRemote? ${locationWithoutQuotes}`)
 
@@ -536,16 +536,16 @@ export default async (commandTree, wsk) => {
      * Take an expression of a component and wrap, if it is an interior inline function
      *
      */
-    interface IKeyValue {
+    interface KeyValue {
       key: string
       value: string
     }
-    interface IEntity {
+    interface Entity {
       name: string
       namespace?: string
-      annotations?: IKeyValue[]
+      annotations?: KeyValue[]
     }
-    const furlSequenceComponent = (parentActionName: string) => (component: string, idx: number): Promise<IEntity> => {
+    const furlSequenceComponent = (parentActionName: string) => (component: string, idx: number): Promise<Entity> => {
       const intentionMatch = component.match(patterns.intention.inline)
       const match = component.match(patterns.action.expr.inline)
 
@@ -574,7 +574,7 @@ export default async (commandTree, wsk) => {
         }
       }
     }
-    const furl = (components: string[], parentActionName: string): Promise<IEntity[]> => {
+    const furl = (components: string[], parentActionName: string): Promise<Entity[]> => {
       return Promise.all(components.map(furlSequenceComponent(parentActionName)))
     }
 

@@ -15,7 +15,7 @@
  */
 
 import { CodedError } from '@kui-shell/core/models/errors'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { fetchTask } from '../../lib/read'
 
@@ -35,7 +35,7 @@ const usage = (command: string) => ({
  * Command handler
  *
  */
-const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: IEvaluatorArgs) => {
+const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
 

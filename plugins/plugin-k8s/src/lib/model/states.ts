@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { IKubeResource } from './resource'
+import { KubeResource } from './resource'
 import { maybeAsDate, TryLaterError } from '../util/util'
 
 import repl = require('@kui-shell/core/core/repl')
@@ -93,7 +93,7 @@ const isOfflineLike = (state: State): boolean => stateGroups[FinalState.OfflineL
 /** isPendingLike is the remainder of isOnlineLike and isOfflineLike */
 const isPendingLike = (state: State): boolean => !isOnlineLike(state) && !isOfflineLike(state)
 
-export interface IStatus {
+export interface Status {
   state?: State
   phase?: State
   message?: string
@@ -174,7 +174,7 @@ const kindForQuery = (apiVersion: string, kind: string): string => {
  * Get a status struct from the status.conditions array
  *
  */
-const getStatusFromConditions = (response: IKubeResource) => {
+const getStatusFromConditions = (response: KubeResource) => {
   if (response.status && !response.status.state && response.status.conditions) {
     // use the status.conditions, rather than status.state
     const conditions = response.status.conditions
@@ -194,7 +194,7 @@ const getStatusFromConditions = (response: IKubeResource) => {
  * Get the deployment status of the given resource name of the given kind
  *
  */
-export const getStatus = async (desiredFinalState: FinalState, apiVersion: string, kind: string, name: string, namespace?: string, context?: string): Promise<IStatus> => {
+export const getStatus = async (desiredFinalState: FinalState, apiVersion: string, kind: string, name: string, namespace?: string, context?: string): Promise<Status> => {
   try {
     const cmd = `kubectl get ${contextOption(context)} ${kindForQuery(apiVersion, kind)} ${name} ${ns(namespace)} -o json`
     // debug('getStatus', cmd);
@@ -279,7 +279,7 @@ export const getStatus = async (desiredFinalState: FinalState, apiVersion: strin
 //     }
 //   })
 
-interface IWatch {
+interface Watch {
   apiVersion: string
   kind: string
   name: string
@@ -294,7 +294,7 @@ interface IWatch {
  * Determine whether a kube Deployment is ready
  *
  */
-const getStatusOfDeployment = (kubeEntity: IKubeResource, desiredFinalState: FinalState): IStatus => {
+const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: FinalState): Status => {
   const desireIsOffline = desiredFinalState === FinalState.OfflineLike
 
   if (!kubeEntity) {
@@ -343,7 +343,7 @@ const getStatusOfDeployment = (kubeEntity: IKubeResource, desiredFinalState: Fin
  * Watch a resource for its deployment status
  *
  */
-export const watchStatus = async (watch: IWatch, finalStateStr: string | FinalState, count = 120) => {
+export const watchStatus = async (watch: Watch, finalStateStr: string | FinalState, count = 120) => {
   const finalState: FinalState = typeof finalStateStr === 'string' ? FinalState[finalStateStr] : finalStateStr
 
   const { kind, name, namespace, type, fqn, context } = watch

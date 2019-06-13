@@ -15,11 +15,11 @@
  */
 
 import { ExecType } from './command'
-import { ITab, Streamable } from '../webapp/cli'
+import { Tab, Streamable } from '../webapp/cli'
 
-export interface IExecOptions {
+export interface ExecOptions {
   // force execution in a given tab?
-  tab?: ITab
+  tab?: Tab
 
   isProxied?: boolean
   noDelegation?: boolean
@@ -71,7 +71,7 @@ export interface IExecOptions {
   entity?: any
 }
 
-export class DefaultExecOptions implements IExecOptions {
+export class DefaultExecOptions implements ExecOptions {
   readonly type: ExecType
 
   constructor (type: ExecType = ExecType.TopLevel) {
@@ -80,9 +80,9 @@ export class DefaultExecOptions implements IExecOptions {
 }
 
 export class DefaultExecOptionsForTab extends DefaultExecOptions {
-  readonly tab: ITab
+  readonly tab: Tab
 
-  constructor (tab: ITab) {
+  constructor (tab: Tab) {
     super()
     this.tab = tab
   }

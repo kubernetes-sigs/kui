@@ -24,7 +24,7 @@ import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { qexec, rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
 
-import { IKubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import { Task } from '../model/resource'
 const debug = Debug('plugins/tekton/lib/read')
@@ -38,7 +38,7 @@ const knownKinds = /PipelineResource|Pipeline|Task/
  * Parse a resource spec
  *
  */
-export const parse = async (raw: string | PromiseLike<string>): Promise<IKubeResource[]> => {
+export const parse = async (raw: string | PromiseLike<string>): Promise<KubeResource[]> => {
   return safeLoadAll(await raw)
     .filter(_ => knownKinds.test(_.kind))
 }
@@ -57,7 +57,7 @@ export const read = async (filepath: string): Promise<string> => {
  */
 export const fetchTask = async (pipelineName: string, taskName: string, filepath: string): Promise<Task> => {
   if (filepath) {
-    const model: IKubeResource[] = await parse(read(filepath))
+    const model: KubeResource[] = await parse(read(filepath))
     const task = taskName ? model.find(_ => _.kind === 'Task' && _.metadata.name === taskName) : model.filter(_ => _.kind === 'Task')
     return task as Task
   } else if (!taskName) {

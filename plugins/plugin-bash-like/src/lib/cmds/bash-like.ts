@@ -26,8 +26,8 @@ import { exec } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, IEvaluatorArgs } from '@kui-shell/core/models/command'
-import { IExecOptions } from '@kui-shell/core/models/execOptions'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -35,7 +35,7 @@ import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
 const debug = Debug('plugins/bash-like/cmds/general')
 
-export const doShell = (argv: string[], options, execOptions?: IExecOptions) => new Promise(async (resolve, reject) => {
+export const doShell = (argv: string[], options, execOptions?: ExecOptions) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
     reject(new Error('Local file access not supported when running in a browser'))
   }
@@ -112,7 +112,7 @@ export const doShell = (argv: string[], options, execOptions?: IExecOptions) => 
   doExec(cmdLine, execOptions).then(resolve, reject)
 })
 
-export const doExec = (cmdLine: string, execOptions: IExecOptions) => new Promise(async (resolve, reject) => {
+export const doExec = (cmdLine: string, execOptions: ExecOptions) => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
 
   const proc = exec(cmdLine, {
@@ -202,7 +202,7 @@ const usage = {
  * cd command
  *
  */
-const cd = ({ command, parsedOptions, execOptions }: IEvaluatorArgs) => {
+const cd = ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
   const dir = repl.split(command, true, true)[1] || ''
   debug('cd dir', dir)
   return doShell(['!', 'cd', dir], parsedOptions, execOptions)

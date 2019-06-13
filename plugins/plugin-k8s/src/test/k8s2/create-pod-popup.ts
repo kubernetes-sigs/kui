@@ -67,13 +67,13 @@ const verifyTextExists = function (this: common.ISuite, expectedSubstring: strin
 }
 
 /** wait for the creation to finish, then navigate a bit */
-interface ICreateSpec {
+interface CreateSpec {
   name: string
   kind: string
   ns?: string
 }
 
-const waitForCreate = function (this: common.ISuite, spec: ICreateSpec) {
+const waitForCreate = function (this: common.ISuite, spec: CreateSpec) {
   const { name, kind, ns } = spec
 
   it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {

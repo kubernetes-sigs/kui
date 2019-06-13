@@ -23,7 +23,7 @@ import { activations as usage } from '../openwhisk-usage'
 import { renderActivationListView } from '../../views/cli/activations/list'
 const debug = Debug('plugins/openwhisk/activations/list')
 
-interface IOptions {
+interface Options {
   docs: boolean
   limit: number
   skip?: number
@@ -38,7 +38,7 @@ interface IOptions {
 const fqnPattern = /^\/[^/]+\/(([^/]+\/)?.*)$/
 
 /** unless the user asks for a limit explicitly, let's use a fairly low default limit */
-const baseOptions: IOptions = {
+const baseOptions: Options = {
   limit: 10,
   docs: false
 }
