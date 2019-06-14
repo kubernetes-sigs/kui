@@ -51,7 +51,7 @@ interface Parameters {
 export const format = (parameters: Parameters): Element => {
   const { resource } = parameters
 
-  const startTime = resource.status && resource.status.startTime || resource.metadata.creationTimestamp
+  const startTime = (resource.status && resource.status.startTime) || resource.metadata.creationTimestamp
   const prefixText = resource.status && resource.status.startTime ? 'Started on ' : 'Created on '
 
   const message = document.createElement('div')

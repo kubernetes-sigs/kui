@@ -42,7 +42,7 @@ export const getCreds = async (options) => {
   } else if (options.apiHost && options.auth) {
     // specified on command line
     return options
-  } else if (options.apiHost && !options.auth || !options.apiHost && options.auth) {
+  } else if ((options.apiHost && !options.auth) || (!options.apiHost && options.auth)) {
     throw new Error('Please specify both --apiHost and --auth')
   } else {
     // use the global settings

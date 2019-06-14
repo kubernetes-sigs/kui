@@ -582,8 +582,8 @@ export const addNameToSidecarHeader = async (sidecar: Sidecar, name: string | El
 
   // maybe entity.content is a metadat-bearing entity that we can
   // mine for identifying characteristics
-  const metadataBearer = isMetadataBearing(entity) && entity ||
-    isMetadataBearingByReference(entity) && entity.resource
+  const metadataBearer = (isMetadataBearing(entity) && entity) ||
+    (isMetadataBearingByReference(entity) && entity.resource)
   if (metadataBearer) {
     if (!name) {
       name = metadataBearer.metadata.name

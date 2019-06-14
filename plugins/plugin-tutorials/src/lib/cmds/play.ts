@@ -432,7 +432,7 @@ const renderOneTable = (parent, pane) => table => {
 
         row.forEach((cell, idx) => {
           const value = typeof cell === 'string' ? cell : cell.value
-          const onclick = cell.onclick || cell.command && commandFromFullscreen(pane, cell.command, cell.display)
+          const onclick = cell.onclick || (cell.command && commandFromFullscreen(pane, cell.command, cell.display))
 
           debug('cell', value)
           const cellDom = document.createElement('div')
