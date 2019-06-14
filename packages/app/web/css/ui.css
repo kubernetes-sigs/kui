@@ -75,29 +75,8 @@ body .page > .header {
     padding: 0.75ex 0;
 }
 .application-icon {
-    transition: transform .8s ease-in-out, opacity 0s linear;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: contain;
-}
-body.still-loading .application-icon {
-    animation: pulse 1000ms infinite alternate-reverse;
-}
-.application-icon:hover {
-    opacity: 1;
-    filter: hue-rotate(-20deg) brightness(0.925);
-    cursor: pointer;
-}
-body:not(.not-electron) .application-icon {
+    /* hide the application by default; custom clients can override this */
     display: none;
-}
-.application-icon {
-    width: 3.75em;
-    height: 3.75em;
-    margin: 1em auto;
-    -webkit-app-region: no-drag;
-    transition: all 650ms ease-in-out;
-    opacity: 0.75;
 }
 .header .application-name {
     font-size: 1.125rem;
@@ -2002,16 +1981,6 @@ body.os-darwin:not(.fullscreen) .header {
     padding-left: 5em;
 }
 
-body.sidecar-is-minimized .application-icon {
-    /* scoot the icon to be flush right when the sidecar is minimized, so
-   that the icon will be horizontally centered on the vertical stripe
-   that represents the minimized sidecar */
-    right: 0;
-}
-body.subwindow.still-loading .application-icon {
-    transition: all 150ms ease-in-out;
-    transition-delay: 1750ms;
-}
 body.subwindow .header {
     margin: 0;
 }
