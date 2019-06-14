@@ -7,7 +7,7 @@
   "steps": [
     {
       "heading": "Developing with Kui",
-      "content": "Kui Shell offers a new development experience for building cloud-native applications. By combining the power of familiar **CLIs** with **visualizations** in high-impact areas, Kui enables you to manipulate complex JSON and YAML data models, integrate disparate tooling, and provides quick access to aggregate views of operational data.",
+      "content": "The Kui terminal is a CLI with a GUI twist, an open-source terminal that offers fast visual assist where it matters, and gets out of the way when decades of enduring goodness is good enough. By combining the power of familiar **CLIs** with **visualizations** in high-impact areas, Kui enables you to manipulate complex JSON and YAML data models, integrate disparate tooling, and provides quick access to aggregate views of operational data.",
       "renderingHints": "fifty-fifty",
       "extras": {
         "learnMore": {
@@ -15,10 +15,10 @@
         },
         "nextSteps": [
           { "command": "auth", "display": "authentication", "doc": "To create and invoke, you will need to be authenticated", "when": "no-auth" },
+          { "command": "themes", "doc": "Choose a Theme"},
           { "command": "tutorial kubernetes starter", "display": "kubernetes basics", "doc": "An **interactive tutorial** that shows some Kubernetes starter material" },
           { "command": "tutorials", "doc": "Choose from the **full list of tutorials**" },
           { "command": "combinators", "doc": "A **reference guide** to Apache Composer programming" },
-          { "command": "tutorial composer basics", "display": "composer basics", "doc": "An **interactive tutorial** that shows how to code, deploy, and invoke for Apache Composer" },
           { "command": "composer help", "doc": "Explore the Composition Service **CLI commands**", "when": "auth", "hidden": true },
           { "command": "wsk help", "doc": "Explore the **Cloud Function** commands", "hidden": true }
         ],
