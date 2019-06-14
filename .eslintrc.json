@@ -12,7 +12,6 @@
     "@typescript-eslint/eslint-plugin"
   ],
   "rules": {
-    "no-cond-assign": "off",
     "no-control-regex": "off",
     "no-mixed-operators": "off",
     "no-return-assign": "off",
