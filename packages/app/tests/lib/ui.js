@@ -162,6 +162,10 @@ const expectOK = (appAndCount, opt) => {
 const grabFocus = (app) => {
   return app.client.click(selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.waitForEnabled(selectors.CURRENT_PROMPT_BLOCK))
+    .catch(err => {
+      console.error(err)
+      // probably ok, we are doing this is just in case it helps
+    })
 }
 
 exports.cli = {

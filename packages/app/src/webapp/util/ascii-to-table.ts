@@ -33,11 +33,13 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
   return raw.map(table => {
     const header = table
       .substring(0, table.indexOf('\n'))
+      .replace(/\t/g, ' ')
 
     const headerCells = header
       .split(/(\t|\s\s)+\s?/)
       .filter(x => x && !x.match(/(\t|\s\s)/))
       .map(_ => _.trim())
+    debug('headerCells', headerCells)
 
     // now we scan the header row to determine the column start indices
     const columnStarts: number[] = []
@@ -55,6 +57,8 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
         jdx = newJdx
       }
       columnStarts.push(jdx + offset)
+
+      jdx = newJdx + headerCells[idx].length
     }
 
     debug('columnStarts', columnStarts, headerCells)
