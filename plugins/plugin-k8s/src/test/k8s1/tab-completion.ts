@@ -35,8 +35,8 @@ describe('Tab completion for kubectl get', function (this: ISuite) {
     // namespace names
     const commonPrefix = 'foo-'
     const uniquePrefix = 'blammmmmo-' // something prefix-distinct from the first two
-    const ns: string = createNS(commonPrefix)
-    const ns2: string = createNS(commonPrefix)
+    const ns: string = createNS(`${commonPrefix}aaaa-`)
+    const ns2: string = createNS(`${commonPrefix}bbbb-`) // we want ns to be lexicographically < ns2
     const ns3: string = createNS(uniquePrefix)
 
     allocateNS(this, ns)

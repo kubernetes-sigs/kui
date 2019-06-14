@@ -68,6 +68,9 @@ export interface MetadataBearing {
     namespace?: string
     creationTimestamp?: string
   }
+  spec?: {
+    displayName?: string
+  }
 }
 export function isMetadataBearing (spec: EntitySpec): spec is MetadataBearing {
   const meta = spec as MetadataBearing

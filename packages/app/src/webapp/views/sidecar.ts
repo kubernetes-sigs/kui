@@ -440,11 +440,13 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
           const { edit } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
           debug('successfully loaded editor', custom)
 
+          const metadataBearer = isMetadataBearingByReference(custom) ? custom.resource : custom
+
           const entity /*: IEditorEntity */ = {
             type: custom.prettyType,
             name: custom.name,
-            kind: custom.kind,
-            metadata: custom.metadata,
+            kind: metadataBearer.kind,
+            metadata: metadataBearer.metadata,
             persister: () => true,
             annotations: [],
             exec: {
@@ -510,6 +512,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
  *
  */
 export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement) => {
+  debug('addSidecarHeaderIconText', viewName)
   const iconDom = element('.sidecar-header-icon', sidecar)
 
   if (viewName) {
@@ -582,16 +585,17 @@ export const addNameToSidecarHeader = async (sidecar: Sidecar, name: string | El
 
   // maybe entity.content is a metadat-bearing entity that we can
   // mine for identifying characteristics
-  const metadataBearer = (isMetadataBearing(entity) && entity) ||
-    (isMetadataBearingByReference(entity) && entity.resource)
+  const metadataBearer = isMetadataBearingByReference(entity) ? entity.resource
+    : isMetadataBearing(entity) && entity
   if (metadataBearer) {
-    if (!name) {
-      name = metadataBearer.metadata.name
+    const maybeName = metadataBearer.spec && (metadataBearer.spec.displayName || metadataBearer.metadata.name)
+    if (maybeName) {
+      name = maybeName
     }
     if (!packageName) {
       packageName = metadataBearer.metadata.namespace || ''
     }
-    if (!viewName) {
+    if (metadataBearer.kind) {
       viewName = metadataBearer.kind
     }
 

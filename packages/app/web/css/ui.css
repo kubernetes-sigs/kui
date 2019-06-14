@@ -530,10 +530,11 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-.repl.sidecar-visible .result-table .entity-name-group:not(.entity-name-group-narrow) {
+.repl.sidecar-visible .result-table .entity-name-group:first-child:not(.entity-name-group-narrow) {
     /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
     width: 100%;
     max-width: 0; /* important! 0 not 0% */
+    min-width: 5em;
 }
 .result-table .entity-name-group-narrow {
     max-width: 16em;
