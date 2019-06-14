@@ -28,7 +28,8 @@ const { productName, gettingStarted } = theme
  */
 const tellRendererToExecute = async (command: string, exec = 'qexec') => {
   const { webContents } = await import('electron')
-  const focusedWindow = webContents.getFocusedWebContents()
+  const focusedWindow = webContents.getFocusedWebContents() ||
+        webContents.getAllWebContents()[0] // see https://github.com/IBM/kui/issues/1717
 
   const devTools = webContents.getAllWebContents().map(_ => _.devToolsWebContents).filter(x => x)
   const isFocusedWindowDevTools = devTools.find(_ => _.id === focusedWindow.id)
