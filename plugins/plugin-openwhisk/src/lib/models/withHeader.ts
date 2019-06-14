@@ -22,7 +22,7 @@
  *
  */
 export default (rows, execOptions) => {
-  if (rows.length === 0 || !execOptions.showHeader && (execOptions.nested || rows[0].type === 'activations')) {
+  if (rows.length === 0 || (!execOptions.showHeader && (execOptions.nested || rows[0].type === 'activations'))) {
     return rows
   } else {
     const cell = (value, outerCSS = '') => [{ value, outerCSS: `header-cell ${outerCSS}` }]

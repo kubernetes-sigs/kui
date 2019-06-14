@@ -400,7 +400,7 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
 
     let poller
     let disabled = false
-    if (extraOptions && extraOptions.live || options.live) {
+    if ((extraOptions && extraOptions.live) || options.live) {
       debug('live mode')
       // eventBus.on('/mirror/update', () => fetchAndDraw(true))
       poller = setInterval(() => {

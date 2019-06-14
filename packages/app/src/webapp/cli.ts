@@ -553,7 +553,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
           ok(resultDom.parentElement).classList.add('ok-for-list')
         }
       } else if (isCustomSpec(response)) {
-        if (echo || execOptions && execOptions.replSilence) {
+        if (echo || (execOptions && execOptions.replSilence)) {
           const presentation = await showCustom(tab, response, execOptions, customContainer)
 
           if (!isPopup()) {

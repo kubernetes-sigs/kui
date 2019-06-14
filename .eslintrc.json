@@ -13,7 +13,6 @@
   ],
   "rules": {
     "no-control-regex": "off",
-    "no-mixed-operators": "off",
     "no-return-assign": "off",
     "no-undef": "off",
     "no-useless-escape": "off",

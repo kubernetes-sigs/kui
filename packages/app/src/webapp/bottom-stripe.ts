@@ -365,8 +365,8 @@ export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], enti
   // buttons.
   const modes = modesUnsorted.sort((a, b) => {
     if (a.flush === b.flush ||
-        a.flush === 'weak' && b.flush === 'right' ||
-        a.flush === 'right' && b.flush === 'weak') {
+        (a.flush === 'weak' && b.flush === 'right') ||
+        (a.flush === 'right' && b.flush === 'weak')) {
       // then use the natural order of a versus b: a mode model can
       // optionally specify a numeric sort order; if not specified,
       // then use the order as given
