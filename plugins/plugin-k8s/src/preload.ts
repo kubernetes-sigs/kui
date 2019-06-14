@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 import registerSidecarMode from '@kui-shell/core/webapp/views/modes/registrar'
 
 import { podMode } from './lib/view/modes/pods'
