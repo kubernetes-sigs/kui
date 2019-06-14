@@ -242,24 +242,15 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
       }
     })
 
-  /* if (isHeadless()) {
-    //
-    // when running headless, attempt to use the user's chosen editor
-    //
-    return makeAction()
-      .then(openTextEditor)
-      .then(() => colors.green('ok') + ': opened a new scratch composition in your editor')
-  } else */ {
-    //
-    // otherwise, open the in-Shell editor
-    // then update the editor to show the placeholder action
-    // then send a response back to the repl
-    //
-    return betterNotExist(name, options)
-      .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
-      .then(prepareEditorWithAction)
-      .then(respondToRepl(undefined, ['is-modified']))
-  }
+  //
+  // otherwise, open the in-Shell editor
+  // then update the editor to show the placeholder action
+  // then send a response back to the repl
+  //
+  return betterNotExist(name, options)
+    .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
+    .then(prepareEditorWithAction)
+    .then(respondToRepl(undefined, ['is-modified']))
 }
 
 export const persisters = {

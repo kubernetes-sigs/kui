@@ -47,12 +47,7 @@ export const format = async (command: string, verb: string, entityType: string, 
 
   // const namespaceFor = (entityType: string) => {
   const namespaceFor = () => {
-    // i think the commented out bit was for some buggy controllers
-    /* if (/ConfigMap(s?)|cm/i.test(entityType)) {
-      return 'default'
-    } else */ {
-      return namespaceFromHelmStatusOutput
-    }
+    return namespaceFromHelmStatusOutput
   }
 
   const resources = resourcesString

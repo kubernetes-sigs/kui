@@ -34,14 +34,7 @@ export const init = async () => {
         // execute ?command=<command>
         const queryExec = () => repl.pexec(query.command)
 
-        /* const queryNamespace = query.namespace
-        if (queryNamespace && queryNamespace !== await currentNamespace()) {
-          // switch to another namespace temporarily and then execute the command
-          repl.pexec(`auth switch ${queryNamespace} --no-save`)
-            .then(queryExec)
-        } else */ {
-          queryExec()
-        }
+        queryExec()
       }
     }
   }
