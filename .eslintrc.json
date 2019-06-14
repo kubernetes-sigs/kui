@@ -14,7 +14,6 @@
   "rules": {
     "no-cond-assign": "off",
     "no-control-regex": "off",
-    "no-lone-blocks": "off",
     "no-mixed-operators": "off",
     "no-return-assign": "off",
     "no-undef": "off",
