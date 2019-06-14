@@ -134,7 +134,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
       // stash this so that the implicit entity model works
       sidecar.entity = entity
 
-      addSidecarHeaderIconText(entity.type || entity.kind, sidecar)
+      addSidecarHeaderIconText(entity.kind || entity.type, sidecar)
 
       // isModified display
       const subtext = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
