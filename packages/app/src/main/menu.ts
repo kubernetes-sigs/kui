@@ -16,10 +16,11 @@
 
 // require('electron-is-dev');
 
-import { theme } from '@kui-shell/settings/config.json'
+import { theme } from '@kui-shell/core/core/settings'
 import { Menu, MenuItemConstructorOptions } from 'electron'
+
 const isDev = false
-const { productName } = theme
+const { productName, gettingStarted } = theme
 
 /**
  * Tell the renderer to execute a command
@@ -58,7 +59,7 @@ const newTab = () => tellRendererToExecute('tab new')
  */
 const closeTab = () => tellRendererToExecute('tab close')
 
-export const install = (createWindow: Function) => {
+export const install = (createWindow: () => void) => {
   if (!isDev) {
     const fileMenuItems: MenuItemConstructorOptions[] = [
       { label: 'New Window',
@@ -81,42 +82,23 @@ export const install = (createWindow: Function) => {
       fileMenuItems.push({ role: 'quit' })
     }
 
+    const themeMenuItem: MenuItemConstructorOptions = {
+      label: 'Choose a Theme',
+      click: () => {
+        try {
+          tellRendererToExecute('themes', 'pexec')
+        } catch (err) {
+          console.log(err)
+        }
+      }
+    }
+
     const helpMenuItems: MenuItemConstructorOptions[] = [
       {
-        label: 'Getting Started with Composer',
+        label: `Getting Started with ${productName}`,
         click: () => {
           try {
-            tellRendererToExecute('getting started')
-          } catch (err) {
-            console.log(err)
-          }
-        }
-      },
-      {
-        label: 'Composer Coding 101',
-        click: () => {
-          try {
-            tellRendererToExecute('coding basics')
-          } catch (err) {
-            console.log(err)
-          }
-        }
-      },
-      {
-        label: 'Combinator Reference Guide',
-        click: () => {
-          try {
-            tellRendererToExecute('combinators')
-          } catch (err) {
-            console.log(err)
-          }
-        }
-      },
-      {
-        label: 'Interactive Tutorials',
-        click: () => {
-          try {
-            tellRendererToExecute('tutorials')
+            tellRendererToExecute(gettingStarted || 'getting started')
           } catch (err) {
             console.log(err)
           }
@@ -152,6 +134,8 @@ export const install = (createWindow: Function) => {
       {
         label: 'View',
         submenu: [
+          themeMenuItem,
+          { type: 'separator' },
           { accelerator: process.platform === 'darwin' ? 'Meta+R' : 'Shift+CmdOrCtrl+R', role: 'reload' },
           //          { role: 'forcereload' },
           { role: 'toggledevtools' },

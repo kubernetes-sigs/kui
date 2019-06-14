@@ -15,6 +15,7 @@
   "productSubName": "Kui",
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
+  "gettingStarted": "getting started",
   "highlightTheme": "mono-blue",
   "defaultTheme": "Light",
   "themes": [

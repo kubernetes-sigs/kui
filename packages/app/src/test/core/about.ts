@@ -33,15 +33,15 @@ describe('About command', function (this: ISuite) {
     .then(sidecar.expectShowing(settings.productName))
     .catch(common.oops(this)))
 
-  it('should open the about window via button click', async () => {
+  it('should open the getting started tutor via button click', async () => {
     try {
       await this.app.client.refresh()
       await this.app.client.click('#help-button')
 
-      await Promise.all([
-        sidecar.expectOpen(this.app),
-        sidecar.expectShowing(settings.productName)(this.app)
-      ])
+      await this.app.client.waitForVisible('#tutorialPane')
+
+      const tutorialName = await this.app.client.getText('#tutorialPane .tutorial-header .tutorial-header-tutorial-name')
+      assert.strict.equal(tutorialName.toLowerCase(), 'getting started')
     } catch (err) {
       common.oops(this)(err)
     }

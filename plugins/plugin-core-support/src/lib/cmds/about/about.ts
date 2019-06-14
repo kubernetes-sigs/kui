@@ -27,8 +27,8 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import usage from './usage'
 import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
 import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
+
 const debug = Debug('plugins/core-support/about')
-debug('loading')
 
 /** should we show low-level version info, e.g. electron version etc.? */
 const showVersionInfo = true
@@ -320,5 +320,5 @@ export default (commandTree: CommandRegistrar) => {
 
 export const preload = () => {
   // install click handlers
-  (document.querySelector('#help-button') as HTMLElement).onclick = () => repl.pexec('about')
+  (document.querySelector('#help-button') as HTMLElement).onclick = () => repl.pexec(settings.gettingStarted || 'getting started')
 }

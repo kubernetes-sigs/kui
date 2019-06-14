@@ -16,6 +16,19 @@
 
 import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
-export const theme = t
+interface Theme {
+  productName: string
+  gettingStarted?: string
+  ogDescription?: string
+
+  largeIcon: string
+
+  userAgent?: string
+
+  defaultTheme: string
+  themes: { name: string; css: string; description?: string; style: string }[]
+}
+
+export const theme: Theme = t
 export const env = e
 export const config = c
