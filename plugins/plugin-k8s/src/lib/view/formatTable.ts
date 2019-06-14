@@ -154,7 +154,7 @@ export const preprocessTable = (raw: string[]) => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
-    const header = table.substring(0, table.indexOf('\n'))
+    const header = table.substring(0, table.indexOf('\n')).replace(/\t/g, ' ')
     const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
     const columnStarts: number[] = []
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
