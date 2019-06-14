@@ -85,7 +85,9 @@ const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
 const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nClicks = 1) => {
   it(`should click on theme button and present theme list, then click on ${clickOn.name}`, async () => {
     try {
-      ctx.app.client.click('#theme-button')
+      ctx.app.client.click('#help-button')
+      await ctx.app.client.waitForExist('#tutorialPane .tutorial-content-command[data-command="themes"]')
+      ctx.app.client.click('#tutorialPane .tutorial-content-command[data-command="themes"]')
 
       const checkMarkCell = `.entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
       const nameCell = `.entity.theme[data-name="${clickOn.name}"] > div > .clickable`

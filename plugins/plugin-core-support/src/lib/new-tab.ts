@@ -131,10 +131,8 @@ const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/complete', (event: Event) => {
     if (event.execType !== undefined &&
         event.execType !== ExecType.Nested &&
-        !event.isDrilldown &&
         event.route) {
       // ignore nested, which means one plugin calling another
-      // ignore drilldown events; keep the top-level command in the display
       debug('got event', event)
       getTabButton(event.tab).classList.remove('processing')
     }
@@ -143,10 +141,8 @@ const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/start', (event: Event) => {
     if (event.execType !== undefined &&
         event.execType !== ExecType.Nested &&
-        !event.isDrilldown &&
         event.route) {
       // ignore nested, which means one plugin calling another
-      // ignore drilldown events; keep the top-level command in the display
       debug('got event', event)
 
       const tab = event.tab

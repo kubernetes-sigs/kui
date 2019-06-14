@@ -273,9 +273,6 @@ export const plugin = (commandTree: CommandRegistrar) => {
  */
 export const preload = () => {
   if (!isHeadless()) {
-    debug('preload')
-    document.getElementById('theme-button').onclick = () => repl.pexec('themes')
-
     if (inBrowser() || !document.body.hasAttribute('kui-theme')) {
       debug('loading theme for webpack client')
       switchToPersistedThemeChoice()
