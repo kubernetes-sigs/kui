@@ -443,6 +443,7 @@ const renderOneTable = (parent, pane) => table => {
           cellDom.appendChild(cellDomClickable)
           if (onclick) {
             cellDomClickable.className = 'tutorial-content-command clickable clickable-blatant bx--link'
+            cellDomClickable.setAttribute('data-command', cell.value)
             cellDom.onclick = onclick
           }
 

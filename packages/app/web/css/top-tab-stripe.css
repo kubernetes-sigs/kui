@@ -267,6 +267,11 @@ body.os-darwin .left-tab-stripe {
     border-bottom: 1px solid var(--color-base01);
 }
 
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label {
+    /* make not-selected tabs a bit more visible */
+    color: var(--color-text-01);
+}
+
 .left-tab-stripe-button:only-child {
     opacity: 1;
 }
@@ -290,8 +295,8 @@ body.os-darwin .left-tab-stripe {
 }
 
 .left-tab-stripe-button-label {
-    padding: 0 0.5em;
-    color: var(--color-text-01);
+    padding: 0 1em;
+    font-weight: 500;
     direction: unset;
     max-width: 25em;
     overflow: hidden;
@@ -313,6 +318,7 @@ body.os-darwin .left-tab-stripe {
 
 .left-tab-stripe-bottom-buttons {
     display: flex;
+    border-left: 1px inset var(--color-base02);
 }
 
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
