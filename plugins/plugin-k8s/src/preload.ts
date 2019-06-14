@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import registerSidecarMode from '@kui-shell/core/webapp/views/modes/registrar'
+import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 import { podMode } from './lib/view/modes/pods'
 import { conditionsMode } from './lib/view/modes/conditions'
@@ -28,6 +29,18 @@ import registerTabCompletion from './lib/tab-completion'
 const debug = Debug('plugins/k8s/preload')
 
 /**
+ * This is the capabilities registraion
+ *
+ */
+export const registerCapability: CapabilityRegistration = async () => {
+  if (inBrowser()) {
+    debug('register capabilities for browser')
+    const { restoreAuth } = await import('./lib/model/auth')
+    restoreAuth()
+  }
+}
+
+/**
  * This is the module
  *
  */
@@ -36,12 +49,5 @@ export default async () => {
   registerSidecarMode(containersMode) // show containers of pods
   registerSidecarMode(conditionsMode) // show conditions of a variety of resource kinds
   registerSidecarMode(lastAppliedMode) // show a last applied configuration tab
-
-  if (inBrowser()) {
-    debug('preload for browser')
-    const { restoreAuth } = await import('./lib/model/auth')
-    restoreAuth()
-  }
-
   registerTabCompletion()
 }

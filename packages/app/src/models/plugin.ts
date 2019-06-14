@@ -22,3 +22,5 @@ export type KuiPlugin = any
 export type PluginRegistration = (commandTree: CommandRegistrar, options?) => Promise<any>
 
 export type PreloadRegistration = (commandTree: CommandRegistrar, options?) => Promise<void>
+
+export type CapabilityRegistration = () => Promise<void>
