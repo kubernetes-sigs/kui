@@ -108,7 +108,7 @@ export const tabbyWithOptions = (app, partial, expected?, full?, { click = undef
         return app
       }
     })
-    .catch(err => this.app.client.keys(ui.ctrlC) // clear the line
+    .catch(err => app.client.keys(ui.ctrlC) // clear the line
       .then(() => common.oops(app)(err)))
 }
 
@@ -123,5 +123,5 @@ export const tabbyWithOptionsThenCancel = (app, partial, expected) => app.client
     .then(ui.expectArray(expected))
     .then(() => app.client.keys('ffffff')) // type something random
     .then(() => app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 20000, true))) // wait for non-existence of the temporary
-  .then(() => this.app.client.keys(ui.ctrlC)) // clear the line
+  .then(() => app.client.keys(ui.ctrlC)) // clear the line
   .catch(common.oops(app))
