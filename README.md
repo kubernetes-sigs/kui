@@ -18,10 +18,12 @@ data.
 
 The fastest option is to install a prebuilt release.
 
-[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org)
+```sh
+curl -sL https://raw.githubusercontent.com/IBM/kui/master/tools/install.sh | sh
+```
 
 Visit the [Kui Installation Guide](docs/installation.md)
-for installation details and alternative installation options.
+for details and alternative options.
 
 ## Contributing
 
