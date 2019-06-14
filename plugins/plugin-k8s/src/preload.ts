@@ -28,6 +28,18 @@ import { lastAppliedMode } from './lib/view/modes/last-applied'
 const debug = Debug('plugins/k8s/preload')
 
 /**
+ * This is the capabilities registraion
+ *
+ */
+export const registerCapabilities = async () => {
+  if (inBrowser()) {
+    debug('register capabilities for browser')
+    const { restoreAuth } = await import('./lib/model/auth')
+    restoreAuth()
+  }
+}
+
+/**
  * This is the module
  *
  */
@@ -36,10 +48,4 @@ export default async () => {
   registerSidecarMode(containersMode) // show containers of pods
   registerSidecarMode(conditionsMode) // show conditions of a variety of resource kinds
   registerSidecarMode(lastAppliedMode) // show a last applied configuration tab
-
-  if (inBrowser()) {
-    debug('preload for browser')
-    const { restoreAuth } = await import('./lib/model/auth')
-    restoreAuth()
-  }
 }

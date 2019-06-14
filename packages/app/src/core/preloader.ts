@@ -30,6 +30,19 @@ export default async (prescan, options) => {
   debug('init', prescan.preloads)
 
   const jobs = Promise.all(prescan.preloads.map(async module => {
+    // extended the capabilities of Kui
+    try {
+      const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
+      const registration = registrationRef.registerCapabilities
+      if (registration) {
+        await registration()
+        debug('registered capabilities %s', module.path)
+      }
+    } catch (err) {
+      debug('error registering capabilities', module.path, err)
+      console.error(err)
+    }
+  })).then(() => Promise.all(prescan.preloads.map(async module => {
     // FIXME to support field-installed plugin paths
     try {
       debug('preloading %s', module.path)
@@ -45,7 +58,7 @@ export default async (prescan, options) => {
       debug('error invoking preload', module.path, err)
       console.error(err)
     }
-  }))
+  })))
 
   try {
     await jobs
