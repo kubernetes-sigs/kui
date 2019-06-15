@@ -21,6 +21,7 @@ import { oopsMessage } from '../core/oops'
 import UsageError from '../core/usage-error'
 import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
+import { installContext } from './prompt'
 
 import { Entity, SimpleEntity, isEntitySpec, isMessageBearingEntity } from '../models/entity'
 import { CommandHandlerWithEvents } from '../models/command'
@@ -37,8 +38,8 @@ import { formatListResult, formatMultiListResult, formatTable } from './views/ta
 import { Table, isTable, isMultiTable } from './models/table'
 import { Formattable, getSidecar, BadgeSpec, currentSelection, presentAs, showEntity, showCustom, isCustomSpec, CustomSpec } from './views/sidecar'
 import { SidecarMode } from './bottom-stripe'
+
 const debug = Debug('webapp/cli')
-debug('loading')
 
 declare var hljs
 
@@ -745,7 +746,7 @@ export const getCurrentTab = (): Tab => {
   return getTabFromTarget(document.activeElement)
 }
 
-export const getInitialBlock = (tab: Tab): HTMLElement => {
+const getInitialBlock = (tab: Tab): HTMLElement => {
   return tab.querySelector('.repl .repl-block.repl-initial')
 }
 export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
@@ -760,7 +761,7 @@ export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return (block && block.querySelector && block.querySelector('input'))
 }
-export const getInitialPrompt = (tab = getCurrentTab()): HTMLInputElement => {
+const getInitialPrompt = (tab: Tab): HTMLInputElement => {
   return getPrompt(getInitialBlock(tab))
 }
 export const getPromptFromTarget = (target: EventTarget): HTMLInputElement => {
@@ -975,8 +976,7 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
   const currentIndex = currentBlock.parentNode ? parseInt(currentBlock.getAttribute('data-input-count'), 10) : -1
   nextBlock.setAttribute('data-input-count', (currentIndex + 1).toString())
 
-  // if you want to have the current directory displayed with the prompt
-  // nextBlock.querySelector('.repl-context').innerText = process.cwd() === process.env.HOME ? '~' : basename(process.cwd());
+  installContext(nextBlock)
 
   scrollIntoView({ when: 100 })
 
@@ -1328,7 +1328,9 @@ export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, 
 export const init = async (prefs = {}) => {
   debug('init')
 
-  listen(getInitialPrompt())
+  const tab = getCurrentTab()
+  installContext(getInitialBlock(tab))
+  listen(getInitialPrompt(tab))
 
   // in popup mode, cmd/ctrl+L should focus the repl input
   if (isPopup()) {

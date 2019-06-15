@@ -159,7 +159,7 @@ function main(args) {
   //
   const src = file => fs.readFileSync(join(ROOT, 'data', file)).toString()
   it('should create a zip action via let with params and annotations', () => cli.do(`let ${actionName16b}.zip = ${ROOT}/data/openwhisk/zip -p yy 33 -a aa yoyo`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName16b))
+    .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName16b))
     .then(sidecar.expectBadge('zip'))
@@ -183,7 +183,7 @@ function main(args) {
   // python zip action
   //
   it('should create a python zip ', () => cli.do(`let ${actionName16c}.zip = ${ROOT}/data/openwhisk/zip-python --kind python`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName16c))
+    .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName16c))
     .then(sidecar.expectBadge('zip'))
@@ -195,7 +195,7 @@ function main(args) {
   // zip action without npm install
   //
   it('should create a zip action via let', () => cli.do(`let ${actionName16}.zip = ${ROOT}/data/openwhisk/zip`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName16))
+    .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName16))
     .then(sidecar.expectSource(fs.readFileSync(join(ROOT, 'data/openwhisk/zip/index.js')).toString())) // sidecar should display the source to index.js
@@ -220,7 +220,7 @@ function main(args) {
   it('should create a zip action with npm install via let', () => rimraf([`${ROOT}/data/openwhisk/zip-action/src/node_modules/**`])
     .then(() => assert.ok(!fs.existsSync(`${ROOT}/data/openwhisk/zip-action/src/node_modules`)))
     .then(() => cli.do(`let ${actionName18}.zip = ${ROOT}/data/openwhisk/zip-action/src`, this.app))
-    .then(cli.expectContext('/wsk/actions', actionName18))
+    .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName18)))
   // invoke it
