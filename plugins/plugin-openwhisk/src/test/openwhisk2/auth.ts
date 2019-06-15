@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,18 +73,12 @@ describe('auth tests', function (this: common.ISuite) {
   // list should show only foo
   it(`should find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
 
-  it(`should have no selection context after switching context`, () => cli.do('list', this.app)
-    .then(cli.expectContext(undefined, ''))) // don't care about command context (undefined), and selection must be empty ('')
-
   // switch back to second namespace
   it('should switch to the second namespace, using the CLI switch command', () => cli.do(`wsk auth switch ${ns2}`, this.app)
     .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })))
 
   // list should show only foo2
   it(`should find the foo2 action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo2')))
-
-  it(`should have no selection context after switching auth`, () => cli.do('list', this.app)
-    .then(cli.expectContext(undefined, ''))) // don't care about command context (undefined), and selection must be empty ('')
 
   // wsk auth list should so both installed namespaces
   ui.aliases.list.forEach(cmd => {

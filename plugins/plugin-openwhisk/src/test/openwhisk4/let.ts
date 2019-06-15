@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,20 +140,20 @@ describe('Create an action via let core tests', function (this: common.ISuite) {
     .then(sidecar.expectShowing(actionName11)))
 
   it('should create an HTML web action via let', () => cli.do(`let ${actionName3} = ${ROOT}/data/openwhisk/hello.html`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName3))
+    .then(cli.expectOKWithAny)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName3))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_WEB_ACTION_URL)))
 
   it('should create a packaged HTML web action via let', () => cli.do(`let ${packageName3}/${actionName14} = ${ROOT}/data/openwhisk/hello.html`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName14))
+    .then(cli.expectOKWithString(actionName14)) // actionName14 will be part of the URL that appears in the command line response
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName14, undefined, undefined, packageName3))
     .then(sidecar.expectBadge('web'))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_WEB_ACTION_URL)))
 
   it('should create an anonymous function with -p and -a', () => cli.do(`let ${actionName22} = x=>x -a x 3 -p y 4`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName22))
+    .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName22)))
   it('should switch to parameters mode', () => cli.do('parameters', this.app)
@@ -170,7 +170,7 @@ describe('Create an action via let core tests', function (this: common.ISuite) {
     .then(ui.expectSubset({ 'x': 3 })))
 
   it('should create an HTML web action via let, with actions and parameters', () => cli.do(`let ${actionName8} = ${ROOT}/data/openwhisk/hello.html -a x 3 -p y 4`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName8))
+    .then(cli.expectOKWithString(actionName8)) // actionName8 will be part of the URL in the command line response
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName8))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_WEB_ACTION_URL)))
@@ -188,14 +188,14 @@ describe('Create an action via let core tests', function (this: common.ISuite) {
     .then(ui.expectSubset({ 'x': 3, 'web-export': true, 'content-type-extension': 'html' })))
 
   it('should create an SVG web action via let', () => cli.do(`let icon = ${ROOT}/data/openwhisk/icon.svg`, this.app)
-    .then(cli.expectContext('/wsk/actions', 'icon'))
+    .then(cli.expectOKWithString('icon.svg')) // icon.svg will be part of the URL in the command line response
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('icon'))
     .then(sidecar.expectBadge('web'))
     .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_WEB_ACTION_URL)))
 
   it('should create a JSON web action via let', () => cli.do(`let ${actionName15}.json = x=>x`, this.app)
-    .then(cli.expectContext('/wsk/actions', actionName15))
+    .then(cli.expectOKWithString(actionName15)) // actionName15 will be part of teh URL in the command line response
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName15))
     .then(sidecar.expectBadge('web'))
