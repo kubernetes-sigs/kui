@@ -34,14 +34,33 @@ const debug = Debug('plugins/core-support/tab completion')
  * A registrar for enumerators
  *
  */
-type Enumerator = (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompletedIdx: number, toBeCompleted: string) => string[] | Promise<string[]>
+type Enumerator = (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompleted: string) => string[] | Promise<string[]>
 const enumerators: Enumerator[] = []
 export function registerEnumerator (enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
-async function applyEnumerator (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompletedIdx: number, toBeCompleted: string): Promise<string[]> {
-  const lists = await Promise.all(enumerators.map(_ => _(command, argvNoOptions, options, toBeCompletedIdx, toBeCompleted)))
+async function applyEnumerator (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompleted: string): Promise<string[]> {
+  const lists = await Promise.all(enumerators.map(_ => _(command, argvNoOptions, options, toBeCompleted)))
   return lists.flatMap(x => x).filter(x => x)
+}
+/**
+ * Given a list of entities, filter them and present options
+ *
+ */
+const presentEnumeratorSuggestions = (block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number, last: string) => (filteredList: string[]) => {
+  debug('presentEnumeratorSuggestions', filteredList)
+  if (filteredList.length === 1) {
+    complete(filteredList[0], prompt, { partial: last, dirname: false })
+  } else if (filteredList.length > 0) {
+    const partial = last
+    const dirname = undefined
+    if (!temporaryContainer) {
+      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+    }
+
+    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+  }
 }
 
 /**
@@ -542,26 +561,6 @@ const filterAndPresentEntitySuggestions = (last: string, block: HTMLElement, pro
 }
 
 /**
- * Given a list of entities, filter them and present options
- *
- */
-const presentEnumeratorSuggestions = (block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number, last: string) => (filteredList: string[]) => {
-  debug('presentEnumeratorSuggestions', filteredList)
-  if (filteredList.length === 1) {
-    complete(filteredList[0], prompt, { partial: last, dirname: false })
-  } else if (filteredList.length > 0) {
-    const partial = last
-    const dirname = undefined
-    if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
-    }
-
-    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
-    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
-  }
-}
-
-/**
  * Command not found, but we have command completions to offer the user
  *
  */
@@ -744,18 +743,22 @@ export default () => {
           const lastIdx = prompt.selectionStart
           const { A: argv, endIndices } = repl._split(prompt.value, true, true) as repl.Split
           const options = minimist(argv)
-          for (let ii = 0; ii < endIndices.length; ii++) {
-            if (endIndices[ii] >= lastIdx) {
-              // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
-              const last = prompt.value.substring(endIndices[ii - 1], lastIdx).replace(/^\s+/, '')
+          const toBeCompletedIdx = endIndices.findIndex(idx => idx >= lastIdx) // e.g. git branch f<tab>
+          const completingTrailingEmpty = lastIdx > endIndices[endIndices.length - 1] // e.g. git branch <tab>
+          if (toBeCompletedIdx >= 0 || completingTrailingEmpty) {
+            // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
+            const last = completingTrailingEmpty
+              ? ''
+              : prompt.value.substring(endIndices[toBeCompletedIdx - 1], lastIdx).replace(/^\s+/, '')
 
-              const argvNoOptions = options._
-              delete options._
-              const completions = await applyEnumerator(prompt.value, argvNoOptions, options, ii, last)
-              if (completions && completions.length > 0) {
-                return presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
-              }
+            const argvNoOptions = options._
+            delete options._
+            const completions = await applyEnumerator(prompt.value, argvNoOptions, options, last)
+            if (completions && completions.length > 0) {
+              return presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
             }
+
+            // intentional fallthrough
           }
 
           try {

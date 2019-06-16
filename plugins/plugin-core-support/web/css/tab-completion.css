@@ -1,7 +1,6 @@
 .tab-completion-temporary {
     margin-top: 0.375em;
     font-size: 0.75em;
-    border-left: 1ex solid var(--color-base05);
 }
 
 .tab-completion-temporary .tab-completion-scroll-container {
@@ -10,14 +9,36 @@
  }
 
 .tab-completion-temporary .tab-completion-scroll-container > div {
-    min-width: 16.667%;
-
     padding: 1em 1.5em 1em 1em;
     text-decoration: none;
 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    border-left: 1ex solid transparent;
+    transition: all 300ms ease-in-out;
+}
+
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(2):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(2):first-child ~ .tab-completion-option {
+    /* 5 entries in the tab completion list? */
+    max-width: 50%;
+}
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(3):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(3):first-child ~ .tab-completion-option {
+    /* 5 entries in the tab completion list? */
+    max-width: 33%;
+}
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(4):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(4):first-child ~ .tab-completion-option {
+    /* 4 entries in the tab completion list? */
+    max-width: 25%;
+}
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(5):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(5):first-child ~ .tab-completion-option {
+    /* 5 entries in the tab completion list? */
+    max-width: 20%;
+}
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(n+6), .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(n+6) ~ .tab-completion-option {
+    /* more than 6 entries in the tab completion list? */
+    width: 20%;
 }
 
 .tab-completion-temporary .tab-completion-scroll-container > div > .tab-completion-temporary-fill {
@@ -26,7 +47,6 @@
 }
 
 .tab-completion-temporary .clickable {
-    border-bottom: 1px solid transparent;
     text-decoration: none;
     transition: 250ms;
 }
@@ -34,18 +54,17 @@
 /* selection */
 .tab-completion-temporary .tab-completion-scroll-container > div.selected, .tab-completion-temporary .tab-completion-scroll-container > div:hover {
     background-color: var(--color-ui-05);
+    border-left-color: var(--color-base05);
 }
 .tab-completion-temporary:hover .tab-completion-scroll-container > div.selected:not(:hover) {
     background-color: transparent;
 }
 .tab-completion-temporary:hover .tab-completion-scroll-container > div.selected:not(:hover) .clickable {
-    border-bottom-color: transparent;
     color: inherit;
 }
 .tab-completion-temporary .tab-completion-scroll-container > div.selected .clickable, .tab-completion-temporary .tab-completion-scroll-container > div:hover .clickable {
 }
 .tab-completion-temporary .tab-completion-scroll-container > div:hover .clickable, .tab-completion-temporary .tab-completion-scroll-container > div.selected .clickable {
-    border-bottom-color: var(--color-text-01);
 }
 
 /* prefix match of tab completion entries */

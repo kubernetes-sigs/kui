@@ -23,7 +23,7 @@ import { registerEnumerator } from '@kui-shell/plugin-core-support/lib/tab-compl
  * Tab completion of kube resource names
  *
  */
-async function completeResourceNames (command: string, args: string[], options: ParsedOptions, toBeCompletedIdx: number, toBeCompleted: string): Promise<string[]> {
+async function completeResourceNames (command: string, args: string[], options: ParsedOptions, toBeCompleted: string): Promise<string[]> {
   if ((args[0] === 'kubectl' || args[0] === 'k') &&
       (args[1] === 'get' ||
        args[1] === 'describe' ||
