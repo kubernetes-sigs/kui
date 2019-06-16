@@ -16,6 +16,7 @@
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
+import registerGitTabCompletion from './lib/tab-completion/git'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
 /**
@@ -23,5 +24,6 @@ import { preload as registerCatchAll } from './lib/cmds/catchall'
  *
  */
 export default (commandTree: CommandRegistrar) => {
+  registerGitTabCompletion()
   return registerCatchAll(commandTree)
 }
