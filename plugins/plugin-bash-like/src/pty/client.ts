@@ -145,7 +145,9 @@ class Resizer {
       const line = internalRows.get(idx)
       const nextLine = internalRows.get(idx + 1)
       if (nextLine.isWrapped) {
-        rows[idx + 1].classList.add('xterm-is-wrapped')
+        if (rows[idx + 1]) {
+          rows[idx + 1].classList.add('xterm-is-wrapped')
+        }
 
         if (!line.isWrapped) {
           // see https://github.com/IBM/kui/issues/1605 which covers
@@ -153,8 +155,10 @@ class Resizer {
           // that the first of that pair belongs with the second, but
           // itself wasn't created as a result of wrapping (that's my
           // interpretation of `isWrapped` - @starpit)
-          rows[idx].classList.add('xterm-is-wrapped')
-          rows[idx].classList.add('xterm-is-wrapped-with-prefix-break')
+          if (rows[idx]) {
+            rows[idx].classList.add('xterm-is-wrapped')
+            rows[idx].classList.add('xterm-is-wrapped-with-prefix-break')
+          }
           // and the CSS for these two classes will be managed by
           // web/css/xterm.css
         }
