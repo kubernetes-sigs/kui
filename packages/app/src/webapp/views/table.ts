@@ -1008,7 +1008,7 @@ const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
     header.outerCSS = `${header.outerCSS || ''} header-cell`
 
     if (header.attributes) {
-      header.attributes.forEach(cell => cell.outerCSS = `${cell.outerCSS || ''} header-cell`)
+      header.attributes.forEach(cell => { cell.outerCSS = `${cell.outerCSS || ''} header-cell` })
     }
   }
   // sort the list, then format each element, then add the results to the resultDom

@@ -98,7 +98,9 @@ const apihost = async (options: KialiOptions = new DefaultOptions()) => {
       if (ingress.status.loadBalancer.ingress.length > 0) {
         // [0]??
         const { ip } = ingress.status.loadBalancer.ingress[0]
-        return cachedApihost = `https://${ip}:${port}`
+        cachedApihost = `https://${ip}:${port}`
+
+        return cachedApihost
       } else {
         throw new Error(`kiali ingress has no exposed IPs`)
       }
