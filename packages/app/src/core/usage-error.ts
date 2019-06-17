@@ -361,7 +361,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
         .trim()
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/(\[[^\[\]]+\])/g, '<span class="even-lighter-text">$1</span>') // lighter text for [optional args]
+        .replace(/(\[[^[\]]+\])/g, '<span class="even-lighter-text">$1</span>') // lighter text for [optional args]
       const textPart = div()
       textPart.innerHTML = html
 

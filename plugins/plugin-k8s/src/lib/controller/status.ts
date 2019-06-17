@@ -400,7 +400,7 @@ const getDirectReferences = (command: string) => async ({ execOptions, argvNoOpt
 
       const files: string[] = await readdir(filepath)
       const yamls = files
-        .filter(_ => _.match(/^[^\.#].*\.yaml$/))
+        .filter(_ => _.match(/^[^\\.#].*\.yaml$/))
         .map(file => join(filepath, file))
 
       if (files.find(file => file === 'seeds')) {
