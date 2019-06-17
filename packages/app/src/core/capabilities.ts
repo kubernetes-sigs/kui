@@ -65,7 +65,7 @@ export const hasProxy = () => state.hasProxy
  * Assert that Kui is supported by a remote proxy
  *
  */
-export const assertHasProxy = () => state.hasProxy = true
+export const assertHasProxy = () => { state.hasProxy = true }
 
 /**
  * Update the media, e.g. to indicate that we are running in a browser
