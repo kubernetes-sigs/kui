@@ -106,16 +106,16 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     right: 0.25em;
     transform: translateY(-50%);
     color: transparent;
-    font-weight: bold;
     font-size: 1em;
-    transition: color 150ms ease-in-out;
+    transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+    padding: 1px;
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer {
     color: var(--color-text-02);
 }
 .left-tab-stripe-buttons .left-tab-stripe-button .left-tab-stripe-button-closer:hover {
-    cursor: pointer;
-    color: var(--color-base08);
+    background: var(--color-ui-04);
+    color: var(--color-text-02);
 }
 
 .left-tab-stripe-button.smaller-button i {
