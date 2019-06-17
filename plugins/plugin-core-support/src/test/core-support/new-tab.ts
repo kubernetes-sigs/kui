@@ -198,4 +198,10 @@ common.localDescribe('new tab from active tab that is emitting output via button
     .then(cli.expectOKWithString('hi'))
     .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
     .catch(common.oops(this)))
+
+  it('should close by clicking on the tab closer button', async () => {
+    this.app.client.click('.left-tab-stripe-button-selected .left-tab-stripe-button-closer')
+    await this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true)
+    await this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]')
+  })
 })

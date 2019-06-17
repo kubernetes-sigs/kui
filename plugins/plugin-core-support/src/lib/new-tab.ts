@@ -47,6 +47,7 @@ const usage = {
 const getTabButton = (tab: Tab) => element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(tab)}"]`)
 const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
 const getTabButtonLabel = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-label') as HTMLElement
+const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
 
 /**
  * Otherwise global state that we want to keep per tab
@@ -268,6 +269,9 @@ const perTabInit = (tab: Tab, doListen = true) => {
   // to a separate source file
   installReplFocusHandlers()
 
+  // tab close button
+  getTabCloser(tab).onclick = () => closeTab(tab)
+
   // maximize button
   sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
     debug('toggle sidecar maximization')
@@ -339,7 +343,7 @@ const reindexTabs = () => {
  * Close the current tab
  *
  */
-const closeTab = () => {
+const closeTab = (tab = getCurrentTab()) => {
   const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
   if (nTabs <= 1) {
     debug('closing window')
@@ -347,15 +351,14 @@ const closeTab = () => {
     return true
   }
 
-  const currentVisibleTab = getCurrentTab()
-  const currentTabButton = getCurrentTabButton()
-  const currentTabId = parseInt(currentTabButton.getAttribute('data-tab-button-index'), 10)
+  const tabButton = getTabButton(tab)
+  const tabId = parseInt(tabButton.getAttribute('data-tab-button-index'), 10)
 
-  currentVisibleTab.parentNode.removeChild(currentVisibleTab)
-  currentTabButton.parentNode.removeChild(currentTabButton)
+  tab.parentNode.removeChild(tab)
+  tabButton.parentNode.removeChild(tabButton)
 
   // true means we only want to activate the given tab
-  switchTab(currentTabId === 1 ? 2 : currentTabId - 1, true)
+  switchTab(tabId === 1 ? 2 : tabId - 1, true)
 
   getCurrentPrompt().focus()
 
@@ -368,7 +371,7 @@ const registerCommandHandlers = (commandTree: CommandRegistrar) => {
   commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
     { usage, needsUI: true, noAuthOk: true })
   commandTree.listen('/tab/new', newTabAsync, { needsUI: true, noAuthOk: true })
-  commandTree.listen('/tab/close', closeTab, { needsUI: true, noAuthOk: true })
+  commandTree.listen('/tab/close', () => closeTab(), { needsUI: true, noAuthOk: true })
 }
 
 export default async (commandTree: CommandRegistrar) => {
