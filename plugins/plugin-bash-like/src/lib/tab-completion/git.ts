@@ -16,14 +16,17 @@
 
 import { exec } from 'child_process'
 
-import { ParsedOptions } from '@kui-shell/core/models/execOptions'
-import { registerEnumerator } from '@kui-shell/plugin-core-support/lib/tab-completion'
+import { CommandLine } from '@kui-shell/core/models/command'
+import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/lib/tab-completion'
 
 /**
  * Tab completion handler for git branch names
  *
  */
-async function completeGitBranches (command: string, args: string[], options: ParsedOptions, toBeCompleted: string): Promise<string[]> {
+async function completeGitBranches (commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+  const { argvNoOptions: args } = commandLine
+  const { toBeCompleted } = spec
+
   if (args[0] === 'git' &&
       (args[1] === 'checkout' ||
           args[1] === 'branch')

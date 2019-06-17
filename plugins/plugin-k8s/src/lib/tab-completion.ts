@@ -15,32 +15,64 @@
  */
 
 import { rexec as $$ } from '@kui-shell/core/core/repl'
-import { ParsedOptions } from '@kui-shell/core/models/execOptions'
+import { CommandLine } from '@kui-shell/core/models/command'
 
-import { registerEnumerator } from '@kui-shell/plugin-core-support/lib/tab-completion'
+import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/lib/tab-completion'
 
 /**
  * Tab completion of kube resource names
  *
  */
-async function completeResourceNames (command: string, args: string[], options: ParsedOptions, toBeCompleted: string): Promise<string[]> {
-  if ((args[0] === 'kubectl' || args[0] === 'k') &&
-      (args[1] === 'get' ||
-       args[1] === 'describe' ||
-       args[1] === 'annotate' ||
-       args[1] === 'label' ||
-       (args[1] === 'delete' && !options.f && !options.file))) {
-    const entityType = args[2]
-    const optionals = Object.keys(options)
-      .filter(_ => !/^(-o|--output)/.test(_)) // remove any existing -o, because we want to use -o name
-      .map(key => `${key.length === 1 ? `-${key}` : `--${key}`} ${options[key]}`)
+async function completeResourceNames (commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+  const { argvNoOptions, argv, parsedOptions } = commandLine
 
-    const list: string[] = (await $$(`kubectl get ${entityType} ${optionals.join(' ')} -o name`))
-      .split(/[\n\r]/)
-      .map(_ => _.replace(/^\w+\//, ''))
+  // index of the arg just before the one to be completed
+  const previous = spec.toBeCompletedIdx === -1 ? commandLine.argv.length : spec.toBeCompletedIdx - 1
+  if (previous >= 0 && (argv[previous] === '-n' || argv[previous] === '--namespace')) {
+    //
+    // then we are being asked to complete a namespace
+    //
+    const cmd = `kubectl get ns ${optionals(commandLine, _ => _ !== '-n' && _ !== '--namespace')} -o name`
+    return getMatchingStrings(cmd, spec)
+  } else if ((argvNoOptions[0] === 'kubectl' || argvNoOptions[0] === 'k') &&
+      (argvNoOptions[1] === 'get' ||
+       argvNoOptions[1] === 'describe' ||
+       argvNoOptions[1] === 'annotate' ||
+       argvNoOptions[1] === 'label' ||
+       (argvNoOptions[1] === 'delete' && !parsedOptions.f && !parsedOptions.file))) {
+    //
+    // then we are being asked to complete a resource name
+    //
+    const entityType = argvNoOptions[2]
 
-    return list.filter(name => name.startsWith(toBeCompleted))
+    const cmd = `kubectl get ${entityType} ${optionals(commandLine)} -o name`
+    return getMatchingStrings(cmd, spec)
   }
+}
+
+/**
+ * Invoke an enumeration command and return the filtered list of matching strings
+ *
+ */
+async function getMatchingStrings (cmd: string, spec: TabCompletionSpec): Promise<string[]> {
+  const list: string[] = (await $$(cmd)).split(/[\n\r]/)
+    .map(_ => _.replace(/^\w+\//, ''))
+
+  return list.filter(name => name.startsWith(spec.toBeCompleted))
+}
+
+/**
+ * Strip off the ParsedOptions in a way that lets us make an enumeration query safely
+ *
+ */
+function optionals (commandLine: CommandLine, filter: (key: string) => boolean = () => true) {
+  const { parsedOptions: options } = commandLine
+
+  return Object.keys(options)
+    .filter(filter)
+    .filter(_ => !/^(-o|--output)/.test(_)) // remove any existing -o, because we want to use -o name
+    .map(key => `${key.length === 1 ? `-${key}` : `--${key}`} ${options[key]}`)
+    .join(' ')
 }
 
 /**

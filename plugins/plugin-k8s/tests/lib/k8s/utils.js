@@ -23,7 +23,7 @@ const { cli, selectors } = ui
 // the default tab we expect to see on "get"
 exports.defaultModeForGet = 'summary'
 
-exports.createNS = () => uuid()
+exports.createNS = (prefix = '') => `${prefix}${uuid()}`
 
 exports.allocateNS = (ctx, ns, theCli = cli) => {
   it(`should create a namespace ${ns} `, () => {

@@ -25,7 +25,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
-import { ParsedOptions } from '@kui-shell/core/models/execOptions'
+import { CommandLine } from '@kui-shell/core/models/command'
 import minimist = require('yargs-parser')
 
 const debug = Debug('plugins/core-support/tab completion')
@@ -34,13 +34,26 @@ const debug = Debug('plugins/core-support/tab completion')
  * A registrar for enumerators
  *
  */
-type Enumerator = (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompleted: string) => string[] | Promise<string[]>
+export interface TabCompletionSpec {
+  /**
+   * The prefix of the to-be-completed parameter that has been typed
+   * so far.
+   */
+  toBeCompleted: string
+
+  /**
+   * An index into CommandLine.argv, or -1 if it is the trailing
+   * argument that is to be completed.
+   */
+  toBeCompletedIdx: number
+}
+type Enumerator = (commandLine: CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
 const enumerators: Enumerator[] = []
 export function registerEnumerator (enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
-async function applyEnumerator (command: string, argvNoOptions: string[], options: ParsedOptions, toBeCompleted: string): Promise<string[]> {
-  const lists = await Promise.all(enumerators.map(_ => _(command, argvNoOptions, options, toBeCompleted)))
+async function applyEnumerator (commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+  const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
   return lists.flatMap(x => x).filter(x => x)
 }
 /**
@@ -749,9 +762,26 @@ export default () => {
               ? ''
               : prompt.value.substring(endIndices[toBeCompletedIdx - 1], lastIdx).replace(/^\s+/, '')
 
+            // argvNoOptions is argv without the options; we can get
+            // this directly from yargs-parser's '_'
             const argvNoOptions = options._
-            delete options._
-            const completions = await applyEnumerator(prompt.value, argvNoOptions, options, last)
+            delete options._ // so that parsedOptions doesn't have the '_' part
+
+            // a parsed out version of the command line
+            const commandLine = {
+              command: prompt.value,
+              argv,
+              argvNoOptions,
+              parsedOptions: options
+            }
+
+            // a specification of what we want to be completed
+            const spec = {
+              toBeCompletedIdx, // index into argv
+              toBeCompleted: last // how much of that argv has been filled in so far
+            }
+
+            const completions = await applyEnumerator(commandLine, spec)
             if (completions && completions.length > 0) {
               return presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
             }

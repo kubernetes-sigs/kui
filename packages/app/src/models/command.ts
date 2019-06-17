@@ -88,19 +88,68 @@ export interface ParsedOptions {
 }
 
 /**
- * Evaluator args
+ * This information represents a command line, but split out in
+ * various useful ways.
  *
  */
-export interface EvaluatorArgs {
-  tab: Tab
-  block: HTMLElement | boolean
-  nextBlock: HTMLElement
-  parsedOptions: ParsedOptions
+export interface CommandLine {
+  /**
+   * the raw command string, as given by the user
+   */
   command: string
+
+  /** the result of a whitespace split applied to the `command` string
+   * that pays attention to backslash escaping and quotations
+   */
   argv: string[]
+
+  /**
+   * the residual of `argv` without `parsedOptions`
+   */
   argvNoOptions: string[]
+
+  /**
+   * the dash options parsed out in a way that pays attention to n-ary
+   * options such as `--option key value`
+   */
+  parsedOptions: ParsedOptions
+}
+
+/**
+ * The full set of data passed to a command handler
+ *
+ */
+export interface EvaluatorArgs extends CommandLine {
+  /**
+   * The tab context in which the command was initiated
+   */
+  tab: Tab
+
+  /**
+   * Optional command channel options that one command can use to
+   * influence the execution of another.
+   */
   execOptions: ExecOptions
+
+  /**
+   * Commands can use this to stream output to the UI, rather than
+   * using the normal request-response interaction between the REPL
+   * and the command.
+   */
   createOutputStream: () => WritableStream
+
+  /**
+   * EXPERT MODE: The REPL block in which this command was initiated
+   * (rarely used, but useful for more complex UI extensions)
+   */
+  block: HTMLElement | boolean
+
+  /**
+   * EXPERT MODE: The REPL block that will house the *subsequent*
+   * command execution (rarely used, but useful for more complex UI
+   * extensions)
+   */
+  nextBlock: HTMLElement
 }
 
 // TODO

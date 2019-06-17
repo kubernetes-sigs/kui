@@ -28,8 +28,10 @@ declare var defaultModeForGet: string
 /**
  * Allocate a new unique namespace name
  *
+ * @param prefix the (optional) prefix of the generated namespace name
+ *
  */
-declare function createNS (): string
+declare function createNS (prefix?: string): string
 
 /**
  * Install a mocha test to allocate the given namespace `ns`
