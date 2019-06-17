@@ -37,10 +37,12 @@ import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 const debug = Debug('plugins/bash-like/pty/client')
 
+/* eslint-disable no-control-regex */
 const enterApplicationModePattern = /\x1b\[\?1h/
 const exitApplicationModePattern = /\x1b\[\?1l/
 const enterAltBufferPattern = /\x1b\[\??(47|1047|1049)h/
 const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
+/* eslint-enable no-control-regex */
 
 interface Size {
   resizeGeneration: number
