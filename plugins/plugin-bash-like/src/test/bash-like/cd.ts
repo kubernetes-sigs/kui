@@ -25,7 +25,7 @@ import { dirname, join, normalize } from 'path'
 const { cli } = ui
 const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
-const rootRelative = dir => join(ROOT, dir)
+const rootRelative = (dir: string) => join(ROOT, dir)
 
 localDescribe('Change local shell directory', function (this: ISuite) {
   before(common.before(this))

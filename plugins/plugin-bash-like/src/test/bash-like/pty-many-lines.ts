@@ -17,7 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
-const { cli, keys, selectors } = ui
+const { cli } = ui
 const { localDescribe } = common
 
 localDescribe('pty output with many lines', function (this: common.ISuite) {

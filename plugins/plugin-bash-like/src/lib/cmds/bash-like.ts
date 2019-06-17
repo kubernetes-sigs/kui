@@ -26,7 +26,7 @@ import { exec } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { handleNonZeroExitCode } from '../util/exec'
@@ -35,7 +35,7 @@ import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
 const debug = Debug('plugins/bash-like/cmds/general')
 
-export const doShell = (argv: string[], options, execOptions?: ExecOptions) => new Promise(async (resolve, reject) => {
+export const doShell = (argv: string[], options: ParsedOptions, execOptions?: ExecOptions) => new Promise(async (resolve, reject) => {
   if (inBrowser()) {
     reject(new Error('Local file access not supported when running in a browser'))
   }
