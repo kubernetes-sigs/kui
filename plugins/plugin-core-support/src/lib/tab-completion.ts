@@ -311,8 +311,6 @@ interface TemporaryContainer extends HTMLDivElement {
  *
  */
 const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, partial: string, dirname?: string, lastIdx?: number) => {
-  const input = block.querySelector('input')
-
   const temporaryContainer = document.createElement('div') as TemporaryContainer
   temporaryContainer.className = 'tab-completion-temporary repl-temporary'
 

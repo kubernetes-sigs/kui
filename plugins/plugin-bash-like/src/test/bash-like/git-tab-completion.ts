@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'path'
+import { join } from 'path'
 import { remove } from 'fs-extra'
 import { exec } from 'child_process'
 import { dir as createTemporaryDirectory } from 'tmp'
@@ -23,7 +23,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/tab-completion-util'
 
-const { cli, selectors } = ui
+const { cli } = ui
 
 const testRepo = 'test-repo.git'
 const testClone = 'test-clone'
@@ -58,9 +58,6 @@ function gitClone (tmpdir: string) {
   })
 }
 
-function addFoo (tmpdir: string) {
-}
-
 function makeBranch (branchName: string, tmpdir: string) {
   return checkout(branchName, tmpdir, '-b')
 }
@@ -93,7 +90,7 @@ common.localDescribe('Tab completion for git branches', function (this: common.I
 
   let tmpdir: string
   it('should create temporary directory', () => new Promise((resolve, reject) => {
-    createTemporaryDirectory((err, path, _cleanupCallback) => {
+    createTemporaryDirectory((err, path) => {
       if (err) {
         reject(err)
       } else {
