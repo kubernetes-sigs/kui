@@ -45,19 +45,6 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     overflow: auto;
 }
 
-.left-tab-stripe-button {
-    position: relative;
-    display: flex;
-    margin: 1em 0;
-    flex-direction: column;
-    color: var(--color-text-01);
-    opacity: 1;
-    transition: color 600ms ease-in-out, opacity: 300ms ease-in-out;
-}
-.left-tab-stripe-button:only-child {
-    opacity: 0;
-}
-
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
     margin: 1.375em 0;
 }
@@ -110,24 +97,29 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 /* these two rules give us the tab index label that appears inside of the tabs */
 .left-tab-stripe-buttons .left-tab-stripe-button {
     counter-increment: tab-index;
+    -webkit-app-region: no-drag;
 }
-.left-tab-stripe-buttons .left-tab-stripe-button:after {
-    content: counter(tab-index);
+.left-tab-stripe-buttons .left-tab-stripe-button-closer {
+    content: '\d7'; /* unicode multiplication sign */
     position: absolute;
-    top: calc(0.6875 / 3 * 100%); /* matching 0.6875em here, and 3em for `fas fa-square` */
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--color-base06);
+    top: 50%;
+    right: 0.25em;
+    transform: translateY(-50%);
+    color: transparent;
     font-weight: bold;
-    font-size: 0.6875em;
-    transition: font-size 150ms ease-in-out;
+    font-size: 1em;
+    transition: color 150ms ease-in-out;
+}
+.left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer {
+    color: var(--color-text-02);
+}
+.left-tab-stripe-buttons .left-tab-stripe-button .left-tab-stripe-button-closer:hover {
+    cursor: pointer;
+    color: var(--color-base08);
 }
 
 .left-tab-stripe-button.smaller-button i {
     font-size: 2em;
-}
-.left-tab-stripe-button.left-tab-stripe-button-selected:after {
-    font-size: 0.875em;
 }
 body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i {
     filter: grayscale(0.5) opacity(0.5);
@@ -266,18 +258,10 @@ body.os-darwin .left-tab-stripe {
     color: var(--color-text-01);
 }
 
-.left-tab-stripe-button:only-child {
-    opacity: 1;
-}
-
 .left-tab-stripe-button-selected {
     background: var(--color-ui-01);
     border-color: var(--color-base03);
     box-shadow: 0 0 2px var(--color-base01);
-}
-
-.left-tab-stripe-buttons .left-tab-stripe-button:after {
-    content: '';
 }
 
 .left-tab-stripe-button > i {
@@ -289,7 +273,8 @@ body.os-darwin .left-tab-stripe {
 }
 
 .left-tab-stripe-button-label {
-    padding: 0 1em;
+    flex: 1;
+    padding: 0 1.25em 0 1em;
     font-weight: 500;
     direction: unset;
     max-width: 25em;
