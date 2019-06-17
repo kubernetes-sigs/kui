@@ -39,7 +39,7 @@ export const format = async (command: string, verb: string, entityType: string, 
   debug('verb', verb)
   debug('entityType', entityType)
 
-  const [ headerString, resourcesString, notesString ] = response.split(/RESOURCES:|(?=\NOTES:)/)
+  const [ headerString, resourcesString, notesString ] = response.split(/RESOURCES:|(?=NOTES:)/)
 
   const namespaceMatch = response.match(/^NAMESPACE:\s+(.*)$/m) || []
   const namespaceFromHelmStatusOutput = namespaceMatch[1]

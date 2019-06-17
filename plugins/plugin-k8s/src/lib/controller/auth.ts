@@ -69,7 +69,7 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
                 debug('got ca', ca)
 
                 /** matches a kube PEM certificate */
-                const certPattern = /^\s*-----BEGIN CERTIFICATE-----[^\-]+-----END CERTIFICATE-----\s*$/
+                const certPattern = /^\s*-----BEGIN CERTIFICATE-----[^-]+-----END CERTIFICATE-----\s*$/
 
                 if (!ca.match(certPattern)) {
                   return Promise.reject(new Error('This does not look like a kubernetes certificate'))

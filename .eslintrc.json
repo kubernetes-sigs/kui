@@ -15,7 +15,6 @@
     "no-control-regex": "off",
     "no-return-assign": "off",
     "no-undef": "off",
-    "no-useless-escape": "off",
 
     "import/no-duplicates": "off",
 
