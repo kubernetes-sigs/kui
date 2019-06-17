@@ -31,9 +31,37 @@ describe('Tab completion for kubectl get', function (this: ISuite) {
   after(common.after(this))
 
   synonyms.forEach(kubectl => {
-    const ns: string = createNS()
+    // use a common prefix, so that we can test tab completion of
+    // namespace names
+    const commonPrefix = 'foo-'
+    const uniquePrefix = 'blammmmmo-' // something prefix-distinct from the first two
+    const ns: string = createNS(commonPrefix)
+    const ns2: string = createNS(commonPrefix)
+    const ns3: string = createNS(uniquePrefix)
 
     allocateNS(this, ns)
+    allocateNS(this, ns2)
+    allocateNS(this, ns3)
+
+    it(`should tab complete unique namespace`, () => {
+      return tabby(this.app,
+        `k get pods -n ${uniquePrefix.charAt(0)}`,
+        `k get pods -n ${ns3}`,
+        false) // it's ok to have an error, as we don't have any pods, yet
+    })
+
+    it(`should tab complete namespaces not unique`, () => {
+      return tabbyWithOptions(this.app,
+        `k get pods -n ${commonPrefix.charAt(0)}`,
+        [ns, ns2],
+        `k get pods -n ${ns}`,
+        {
+          click: 0,
+          expectOK: false, // it's ok to have an error, as we don't have any pods, yet
+          expectedPromptAfterTab: `k get pods -n ${commonPrefix}`
+        })
+    })
+
     it(`should create sample pod from URL via ${kubectl}`, () => {
       return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
@@ -71,6 +99,9 @@ describe('Tab completion for kubectl get', function (this: ISuite) {
           expectedPromptAfterTab: `k get pods -n ${ns} tab-completion-`
         })
     })
+
     deleteNS(this, ns)
+    deleteNS(this, ns2)
+    deleteNS(this, ns3)
   })
 })
