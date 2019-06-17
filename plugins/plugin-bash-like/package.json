@@ -35,6 +35,10 @@
     "ws": "7.0.0",
     "xterm": "3.13.0"
   },
+  "devDependencies": {
+    "@types/marked": "^0.6.5",
+    "@types/shelljs": "^0.8.5"
+  },
   "kui": {
     "exclude": {
       "headless": [

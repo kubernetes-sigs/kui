@@ -40,8 +40,8 @@ function flatten<T> (arrays: T[][]): T[] {
  *
  */
 const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx = str.length - 1) => {
-  let candidate
-  let candidateIdx
+  let candidate: string
+  let candidateIdx: number
 
   for (let idx = endIdx; idx >= 0; idx--) {
     const maybe = str.slice(idx, endIdx + 1)

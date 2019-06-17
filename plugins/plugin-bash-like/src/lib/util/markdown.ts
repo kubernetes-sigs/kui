@@ -188,7 +188,7 @@ const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown =>
   }
 
   const titles = wrapper.querySelectorAll('h1')
-  let title
+  let title: HTMLElement
   if (titles.length === 1) {
     title = titles[0]
     title.parentNode.removeChild(title)
