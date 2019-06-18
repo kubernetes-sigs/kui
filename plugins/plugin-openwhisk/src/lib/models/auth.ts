@@ -74,9 +74,9 @@ export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || store().ge
 
 let authKey = process.env.__OW_API_KEY || wskprops.AUTH || store().getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 
-let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
+let apigwToken = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
 
-let apigw_space_guid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
+let apigwSpaceGuid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
 export let ow
 
 let userRequestedIgnoreCerts = store().getItem(localStorageKey.ignoreCerts) !== undefined
@@ -110,8 +110,8 @@ export const initOW = () => {
   const owConfig = {
     apihost: apihost || 'unknown',
     api_key: authKey || 'unknown',
-    apigw_token,
-    apigw_space_guid,
+    apigw_token: apigwToken,
+    apigw_space_guid: apigwSpaceGuid,
     ignore_certs: ignoreCerts(apihost)
   }
 

@@ -53,8 +53,8 @@ const update = (parent: Record<string, any>, path: string[], value: string | num
 
 interface FormAmendments extends HTMLElement {
   value: string
-  __kui_path: string[]
-  __kui_parent: Record<string, any>
+  __kuiPath: string[]
+  __kuiParent: Record<string, any>
 }
 
 type ChoiceInput = HTMLInputElement & FormAmendments
@@ -74,8 +74,8 @@ const doSave = (tab: Tab, form: HTMLFormElement, yaml: Resources.KubeResource, f
     const inputs = form.querySelectorAll('.bx--text-input')
     for (let idx = 0; idx < inputs.length; idx++) {
       const input = inputs[idx] as FormAmendments
-      const path = input.__kui_path
-      const parent = input.__kui_parent
+      const path = input.__kuiPath
+      const parent = input.__kuiParent
       update(parent, path, input.value)
 
       const label = input.getAttribute('data-form-label')
@@ -283,8 +283,8 @@ export const generateForm = (tab: Tab) => (yaml: Resources.KubeResource, filepat
       inputPart.setAttribute('placeholder', element.placeholder || element.key)
       inputPart.setAttribute('data-typeof', inputType) // facilitate number- or boolean-specific rendering
       inputPart.setAttribute('data-form-label', element.key)
-      inputPart.__kui_path = element.path
-      inputPart.__kui_parent = element.parent
+      inputPart.__kuiPath = element.path
+      inputPart.__kuiParent = element.parent
       row.appendChild(inputPart)
     }
 
