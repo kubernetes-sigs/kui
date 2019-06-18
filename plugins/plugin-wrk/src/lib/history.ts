@@ -34,6 +34,19 @@ export const clear = (): boolean => {
 }
 
 /**
+ * @return the history of data sets
+ *
+ */
+export const all = () => {
+  const history = localStorage.getItem(lsKeys.history)
+  if (history) {
+    return JSON.parse(history)
+  } else {
+    return []
+  }
+}
+
+/**
  * Delete selected history
  *
  */
@@ -104,17 +117,4 @@ export const last = () => {
  */
 export const get = (idx: number) => {
   return all()[idx]
-}
-
-/**
- * @return the history of data sets
- *
- */
-export const all = () => {
-  const history = localStorage.getItem(lsKeys.history)
-  if (history) {
-    return JSON.parse(history)
-  } else {
-    return []
-  }
 }

@@ -270,48 +270,6 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
   })
 }
 
-/**
- * Sidecar mode for a pipeline run trace view
-*
-*/
-const traceMode: SidecarMode = {
-  mode: 'trace',
-  direct: async (tab: Tab, _: ResponseObject) => {
-    const resource = _.resource as PipelineRun
-    const [ pipeline, tasks ] = await Promise.all([ getPipelineFromRef(resource), getTasks() ])
-    return traceView(tab, resource, pipeline, tasks)
-  },
-  defaultMode: true,
-  leaveBottomStripeAlone: true
-}
-
-export default traceMode
-
-export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]) => {
-  const content = document.createElement('div')
-  content.classList.add('padding-content', 'repl-result')
-  content.style.flex = '1'
-  content.style.display = 'flex'
-  content.style.flexDirection = 'column'
-  content.style.overflowX = 'hidden'
-
-  const runActivation = makeRunActivationLike(run)
-  render(tab, [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)), content)
-
-  const badges: Badge[] = [ 'Tekton' ]
-
-  return {
-    type: 'custom',
-    isEntity: true,
-    name: run.metadata.name,
-    packageName: run.metadata.namespace,
-    prettyType: 'PipelineRun',
-    duration: runActivation.duration,
-    badges,
-    content
-  }
-}
-
 function makeRunActivationLike (run: PipelineRun): ActivationLike {
   const start = run && run.status && run.status.startTime && new Date(run.status.startTime)
   const end = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
@@ -405,3 +363,45 @@ function makeTaskRunsActivationLike (run: PipelineRun, pipeline: Pipeline, jsons
 
   return activations
 }
+
+export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]) => {
+  const content = document.createElement('div')
+  content.classList.add('padding-content', 'repl-result')
+  content.style.flex = '1'
+  content.style.display = 'flex'
+  content.style.flexDirection = 'column'
+  content.style.overflowX = 'hidden'
+
+  const runActivation = makeRunActivationLike(run)
+  render(tab, [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)), content)
+
+  const badges: Badge[] = [ 'Tekton' ]
+
+  return {
+    type: 'custom',
+    isEntity: true,
+    name: run.metadata.name,
+    packageName: run.metadata.namespace,
+    prettyType: 'PipelineRun',
+    duration: runActivation.duration,
+    badges,
+    content
+  }
+}
+
+/**
+ * Sidecar mode for a pipeline run trace view
+*
+*/
+const traceMode: SidecarMode = {
+  mode: 'trace',
+  direct: async (tab: Tab, _: ResponseObject) => {
+    const resource = _.resource as PipelineRun
+    const [ pipeline, tasks ] = await Promise.all([ getPipelineFromRef(resource), getTasks() ])
+    return traceView(tab, resource, pipeline, tasks)
+  },
+  defaultMode: true,
+  leaveBottomStripeAlone: true
+}
+
+export default traceMode

@@ -46,17 +46,6 @@ export function registerSidecarMode<Resource extends MetadataBearing> (registrat
 export default registerSidecarMode
 
 /**
- * @return the relevant modes for the given command on the given resource
- *
- */
-export function get<Resource extends MetadataBearing> (command: string, resource: { resource: Resource }): SidecarMode[] {
-  debug('get relevant modes', resource)
-  const modes: SidecarMode[] = []
-  apply(modes, command, resource)
-  return modes
-}
-
-/**
  * Apply all registered modes that are relevant to the given resource
  * to the given modes model
  *
@@ -99,4 +88,15 @@ export function apply<Resource extends MetadataBearing> (modes: SidecarMode[], c
         }
       } */
     })
+}
+
+/**
+ * @return the relevant modes for the given command on the given resource
+ *
+ */
+export function get<Resource extends MetadataBearing> (command: string, resource: { resource: Resource }): SidecarMode[] {
+  debug('get relevant modes', resource)
+  const modes: SidecarMode[] = []
+  apply(modes, command, resource)
+  return modes
 }

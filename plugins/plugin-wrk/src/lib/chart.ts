@@ -147,11 +147,6 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
 
   const chart = graphics.container.chart = new Chart(ctx, makeChartConfig())
 
-  //
-  // when the theme changes, trigger a chart redraw
-  //
-  eventBus.on('/theme/change', () => injectTheme(true))
-
   const labels = chart.data.labels
   const l99 = chart.data.datasets[1]
   const l50 = chart.data.datasets[2]
@@ -196,6 +191,12 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
       chart.update()
     }
   }
+
+  //
+  // when the theme changes, trigger a chart redraw
+  //
+  eventBus.on('/theme/change', () => injectTheme(true))
+
   injectTheme(false)
 
   const right = document.querySelector('#sidecar .header-right-bits .custom-header-content')

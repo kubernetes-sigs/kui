@@ -101,17 +101,6 @@ export interface Status {
 }
 
 /**
- * How do we want to color the text for the given resource deployment state?
- *
- */
-export const rendering = {
-  cssForState: (state: State): string => {
-    return `min-width-6em ${state2Traffic(state).toString()}`
-  },
-  outerCSS: 'no-wrap'
-}
-
-/**
  * A rollup of State to "traffic light" model
  *
  */
@@ -141,6 +130,17 @@ export const trafficMerge = (t1: TrafficLight, t2: TrafficLight): TrafficLight =
   } else {
     return TrafficLight.Green
   }
+}
+
+/**
+ * How do we want to color the text for the given resource deployment state?
+ *
+ */
+export const rendering = {
+  cssForState: (state: State): string => {
+    return `min-width-6em ${state2Traffic(state).toString()}`
+  },
+  outerCSS: 'no-wrap'
 }
 
 /** format a CLI --context option, if we have one */
@@ -186,6 +186,55 @@ const getStatusFromConditions = (response: KubeResource) => {
     return {
       state: conditions[0].reason || conditions[0].type,
       message: (conditionForMessage && conditionForMessage.message) || conditions[0].lastTransitionTime
+    }
+  }
+}
+
+/**
+ * Determine whether a kube Deployment is ready
+ *
+ */
+const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: FinalState): Status => {
+  const desireIsOffline = desiredFinalState === FinalState.OfflineLike
+
+  if (!kubeEntity) {
+    return {
+      state: desireIsOffline ? States.Offline : States.Pending,
+      message: 'resource not yet available'
+    }
+  } else {
+    const readyCondition = kubeEntity.status &&
+      kubeEntity.status.conditions &&
+      kubeEntity.status.conditions.find(({ reason }) => reason === 'MinimumReplicasAvailable')
+    if (readyCondition) {
+      return {
+        state: desireIsOffline ? States.Pending : States.Online,
+        message: readyCondition.lastUpdateTime // readyCondition.message
+      }
+    } else {
+      const desiredReplicas: number = kubeEntity.spec.replicas
+      const currentReplicas: number = (kubeEntity.status && kubeEntity.status.readyReplicas) || 0
+      const maybeCondition = kubeEntity.status &&
+        kubeEntity.status.conditions &&
+        kubeEntity.status.conditions[0]
+      const message = maybeCondition && maybeCondition.message
+
+      if (currentReplicas >= desiredReplicas) {
+        return {
+          state: States.Online,
+          message
+        }
+      } else if (currentReplicas === 0) {
+        return {
+          state: desireIsOffline ? States.Offline : States.Pending,
+          message
+        }
+      } else {
+        return {
+          state: States.Pending,
+          message
+        }
+      }
     }
   }
 }
@@ -288,55 +337,6 @@ interface Watch {
   namespace?: string
   context?: string
   labels?: any
-}
-
-/**
- * Determine whether a kube Deployment is ready
- *
- */
-const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: FinalState): Status => {
-  const desireIsOffline = desiredFinalState === FinalState.OfflineLike
-
-  if (!kubeEntity) {
-    return {
-      state: desireIsOffline ? States.Offline : States.Pending,
-      message: 'resource not yet available'
-    }
-  } else {
-    const readyCondition = kubeEntity.status &&
-      kubeEntity.status.conditions &&
-      kubeEntity.status.conditions.find(({ reason }) => reason === 'MinimumReplicasAvailable')
-    if (readyCondition) {
-      return {
-        state: desireIsOffline ? States.Pending : States.Online,
-        message: readyCondition.lastUpdateTime // readyCondition.message
-      }
-    } else {
-      const desiredReplicas: number = kubeEntity.spec.replicas
-      const currentReplicas: number = (kubeEntity.status && kubeEntity.status.readyReplicas) || 0
-      const maybeCondition = kubeEntity.status &&
-        kubeEntity.status.conditions &&
-        kubeEntity.status.conditions[0]
-      const message = maybeCondition && maybeCondition.message
-
-      if (currentReplicas >= desiredReplicas) {
-        return {
-          state: States.Online,
-          message
-        }
-      } else if (currentReplicas === 0) {
-        return {
-          state: desireIsOffline ? States.Offline : States.Pending,
-          message
-        }
-      } else {
-        return {
-          state: States.Pending,
-          message
-        }
-      }
-    }
-  }
 }
 
 /**

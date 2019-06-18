@@ -78,6 +78,9 @@ const touch = (filename: string) => {
 }
 let cacheHasBashSessionsDisable: boolean
 const BSD = () => join(process.env.HOME, '.bash_sessions_disable')
+const enableBashSessions = async () => {
+  await promisify(fs.unlink)(BSD())
+}
 export const disableBashSessions = async (): Promise<ExitHandler> => {
   if (process.platform === 'darwin') {
     if (cacheHasBashSessionsDisable === undefined) {
@@ -92,9 +95,6 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
   }
 
   return async () => { /* no-op */ }
-}
-const enableBashSessions = async () => {
-  await promisify(fs.unlink)(BSD())
 }
 
 /**

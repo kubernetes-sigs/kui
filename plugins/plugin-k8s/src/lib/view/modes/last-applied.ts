@@ -27,6 +27,24 @@ import { Resource, KubeResource } from '../../model/resource'
 const debug = Debug('k8s/view/modes/last-applied')
 
 /**
+ * Extract the last-applied-configuration annotation
+ *
+ */
+function getLastAppliedRaw (resource: KubeResource): string {
+  // kube stores the last applied configuration (if any) in a raw json string
+  return resource.metadata.annotations &&
+    resource.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']
+}
+
+/**
+ * @return whether the given resource has a last applied configuration annotation
+ *
+ */
+function hasLastApplied (resource: KubeResource): boolean {
+  return getLastAppliedRaw(resource) !== undefined
+}
+
+/**
  * Add a Pods mode button to the given modes model, if called for by
  * the given resource.
  *
@@ -53,34 +71,9 @@ export const lastAppliedMode: ModeRegistration<KubeResource> = {
   }
 }
 
-/**
- * Extract the last-applied-configuration annotation
- *
- */
-function getLastAppliedRaw (resource: KubeResource): string {
-  // kube stores the last applied configuration (if any) in a raw json string
-  return resource.metadata.annotations &&
-    resource.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']
-}
-
-/**
- * @return whether the given resource has a last applied configuration annotation
- *
- */
-function hasLastApplied (resource: KubeResource): boolean {
-  return getLastAppliedRaw(resource) !== undefined
-}
-
 interface Parameters {
   command: string
   resource: Resource
-}
-
-export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
-  const { command, resource } = parameters
-  debug('renderAndViewLastApplied', command, resource)
-
-  return toCustomSpec(getLastAppliedRaw(resource.resource))
 }
 
 function toCustomSpec (raw: string): CustomSpec {
@@ -97,4 +90,11 @@ function toCustomSpec (raw: string): CustomSpec {
     contentType: 'yaml',
     content
   }
+}
+
+export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
+  const { command, resource } = parameters
+  debug('renderAndViewLastApplied', command, resource)
+
+  return toCustomSpec(getLastAppliedRaw(resource.resource))
 }

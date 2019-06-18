@@ -99,6 +99,43 @@ const getPipeline = (jsons: KubeResource[]): Pipeline => {
 }
 
 /**
+ * Add an edge between parent and child nodes
+ *
+ */
+function addEdge (graph: Node, parent: Node, child: Node, { singletonSource, singletonTarget, hasRuns }: EdgeOptions) {
+  debug('addEdge', parent.id, child.id)
+
+  if (!parent.ports) {
+    parent.ports = []
+  }
+  if (!child.ports) {
+    child.ports = []
+  }
+
+  const targetPort = `${child.id}-` + (singletonTarget ? 'pTargetSingleton' : `p${child.ports.length}`)
+  if (!child.ports.find(_ => _.id === targetPort)) {
+    child.ports.push({ id: targetPort })
+  }
+
+  const sourcePort = `${parent.id}-` + (singletonSource ? 'pSourceSingleton' : `p${parent.ports.length}`)
+  if (!parent.ports.find(_ => _.id === sourcePort)) {
+    parent.ports.push({ id: sourcePort })
+  }
+
+  graph.edges.push({
+    id: `${parent.id}-${child.id}`,
+    source: parent.id,
+    sourcePort,
+    target: child.id,
+    targetPort,
+    visited: !hasRuns ? undefined : !!(parent.visited && child.visited)
+  })
+
+  child.nParents++
+  parent.nChildren++
+}
+
+/**
  * Turn a raw yaml form of a tekton pipeline into a graph model that
  * is compatible with the ELK graph layout toolkit.
  *
@@ -402,41 +439,4 @@ interface EdgeOptions {
   singletonSource?: boolean
   singletonTarget?: boolean
   hasRuns: boolean
-}
-
-/**
- * Add an edge between parent and child nodes
- *
- */
-function addEdge (graph: Node, parent: Node, child: Node, { singletonSource, singletonTarget, hasRuns }: EdgeOptions) {
-  debug('addEdge', parent.id, child.id)
-
-  if (!parent.ports) {
-    parent.ports = []
-  }
-  if (!child.ports) {
-    child.ports = []
-  }
-
-  const targetPort = `${child.id}-` + (singletonTarget ? 'pTargetSingleton' : `p${child.ports.length}`)
-  if (!child.ports.find(_ => _.id === targetPort)) {
-    child.ports.push({ id: targetPort })
-  }
-
-  const sourcePort = `${parent.id}-` + (singletonSource ? 'pSourceSingleton' : `p${parent.ports.length}`)
-  if (!parent.ports.find(_ => _.id === sourcePort)) {
-    parent.ports.push({ id: sourcePort })
-  }
-
-  graph.edges.push({
-    id: `${parent.id}-${child.id}`,
-    source: parent.id,
-    sourcePort,
-    target: child.id,
-    targetPort,
-    visited: !hasRuns ? undefined : !!(parent.visited && child.visited)
-  })
-
-  child.nParents++
-  parent.nChildren++
 }

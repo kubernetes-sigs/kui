@@ -19,6 +19,14 @@ import UsageError from '@kui-shell/core/core/usage-error'
 const debug = require('debug')('k8s/util/help')
 
 /**
+ * Some of the kubectl doc strings try to be polite have form
+ * sentences with a trailing period. In a visual form, as long as it
+ * is a single sentence, this is less necessary.
+ *
+ */
+const removeSolitaryAndTrailingPeriod = (str: string) => str.replace(/^\s*([^.]+)[.]\s*$/, '$1').trim()
+
+/**
  * Pretty-print the kubectl help output
  *
  * @param command e.g. helm versus kubectl
@@ -185,11 +193,3 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
     }
   })
 }
-
-/**
- * Some of the kubectl doc strings try to be polite have form
- * sentences with a trailing period. In a visual form, as long as it
- * is a single sentence, this is less necessary.
- *
- */
-const removeSolitaryAndTrailingPeriod = (str: string) => str.replace(/^\s*([^.]+)[.]\s*$/, '$1').trim()

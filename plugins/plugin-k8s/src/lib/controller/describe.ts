@@ -42,45 +42,6 @@ function addField (label: string, value: any) {
 }
 
 /**
- * kubectl describe
- *
- */
-const describe = async ({ command, parsedOptions, execOptions }) => {
-  const noDelegationPlease = Object.assign({}, execOptions)
-  delete noDelegationPlease.delegationOk
-
-  // in case of failure, we fall back to executing the original command
-  const fallback = () => $$(command, undefined, undefined, noDelegationPlease)
-
-  try {
-    const getCmd = command
-      .replace(/describe/, 'get')
-      .replace(/(-o|--output)[= ](yaml|json)/, '')
-
-    const describeCmd = command
-      .replace(/get/, 'describe')
-      .replace(/(-o|--output)[= ](yaml|json)/, '')
-
-    debug('describeCmd', describeCmd)
-    debug('getCmd', getCmd)
-
-    const resource: KubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
-
-    const response = await renderDescribe(command, getCmd, describeCmd, resource, parsedOptions)
-    if (!response || !response.content || response.content === '{}' || Object.keys(response.content).length === 0) {
-      debug('the describe summary is empty, falling back to base view')
-      return fallback()
-    } else {
-      return response
-    }
-  } catch (err) {
-    // failsafe in case we got too clever
-    console.error('error trying to be clever with describe', err)
-    return fallback()
-  }
-}
-
-/**
  * Render a describe summary
  *
  */
@@ -215,6 +176,45 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   debug('description', description, resource)
 
   return description
+}
+
+/**
+ * kubectl describe
+ *
+ */
+const describe = async ({ command, parsedOptions, execOptions }) => {
+  const noDelegationPlease = Object.assign({}, execOptions)
+  delete noDelegationPlease.delegationOk
+
+  // in case of failure, we fall back to executing the original command
+  const fallback = () => $$(command, undefined, undefined, noDelegationPlease)
+
+  try {
+    const getCmd = command
+      .replace(/describe/, 'get')
+      .replace(/(-o|--output)[= ](yaml|json)/, '')
+
+    const describeCmd = command
+      .replace(/get/, 'describe')
+      .replace(/(-o|--output)[= ](yaml|json)/, '')
+
+    debug('describeCmd', describeCmd)
+    debug('getCmd', getCmd)
+
+    const resource: KubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
+
+    const response = await renderDescribe(command, getCmd, describeCmd, resource, parsedOptions)
+    if (!response || !response.content || response.content === '{}' || Object.keys(response.content).length === 0) {
+      debug('the describe summary is empty, falling back to base view')
+      return fallback()
+    } else {
+      return response
+    }
+  } catch (err) {
+    // failsafe in case we got too clever
+    console.error('error trying to be clever with describe', err)
+    return fallback()
+  }
 }
 
 export default describe

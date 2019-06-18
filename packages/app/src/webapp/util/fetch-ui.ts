@@ -113,6 +113,31 @@ const waitForDone = (notifyOfProgress: boolean, stagingArea: string, doneLock: s
 })
 
 /**
+ * Promisey mkdirp that handles EEXIST gracefully
+ *
+ */
+const mkdir = (filepath: string): Promise<void> => {
+  try {
+    debug('mkdir', filepath)
+    return new Promise((resolve, reject) => {
+      mkdirp(filepath, fs.constants.S_IRWXU, err => {
+        debug('mkdir done', err)
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
+  } catch (err) {
+    debug('got error in mkdir', err)
+    if (err.code !== 'EEXIST') {
+      throw err
+    }
+  }
+}
+
+/**
  * If we're not done downloading, either wait for completion of the
  * download, or initiate a download
  *
@@ -190,31 +215,6 @@ const doneWaitOrFetch = (notifyOfProgress = false) => (stagingAreaBase: string) 
     }
   })).catch(reject)
 })
-
-/**
- * Promisey mkdirp that handles EEXIST gracefully
- *
- */
-const mkdir = (filepath: string): Promise<void> => {
-  try {
-    debug('mkdir', filepath)
-    return new Promise((resolve, reject) => {
-      mkdirp(filepath, fs.constants.S_IRWXU, err => {
-        debug('mkdir done', err)
-        if (err) {
-          reject(err)
-        } else {
-          resolve()
-        }
-      })
-    })
-  } catch (err) {
-    debug('got error in mkdir', err)
-    if (err.code !== 'EEXIST') {
-      throw err
-    }
-  }
-}
 
 export const fetch = doneWaitOrFetch(false)
 export const watch = (stagingArea: string) => ({ wait: () => doneWaitOrFetch(true)(stagingArea) })

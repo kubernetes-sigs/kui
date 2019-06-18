@@ -24,6 +24,9 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
+  const ns: string = createNS()
+  const inNamespace = `-n ${ns}`
+
   /** delete the given pod */
   const deleteIt = (name: string, errOk = false) => {
     it(`should delete the pod ${name} via ${kubectl}`, () => {
@@ -85,8 +88,6 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   //
   // here come the tests
   //
-  const ns: string = createNS()
-  const inNamespace = `-n ${ns}`
   allocateNS(this, ns)
 
   const nginx = 'nginx'

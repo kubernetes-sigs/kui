@@ -120,6 +120,12 @@ export const consoleView = async (options: KialiOptions = new DefaultOptions()) 
   return `${await apihost(options)}/kiali/console`
 }
 
+const _modes = [
+  { mode: 'apps', command: () => 'kiali get apps' },
+  { mode: 'graph', command: () => 'kiali graph --local' }
+]
+export const modes = (defaultMode: string) => _modes.map(_ => Object.assign({}, _, { defaultMode: _.mode === defaultMode }))
+
 /**
  * @return the endpoint of the Kiali graph view
  * e.g. graph/namespaces/?edges=noEdgeLabels&graphType=versionedApp&namespaces=default&injectServiceNodes=true&duration=60&pi=15000&layout=dagre
@@ -177,12 +183,6 @@ hr { border-top-color: #809980 !important; }
     content
   }
 }
-
-const _modes = [
-  { mode: 'apps', command: () => 'kiali get apps' },
-  { mode: 'graph', command: () => 'kiali graph --local' }
-]
-export const modes = (defaultMode: string) => _modes.map(_ => Object.assign({}, _, { defaultMode: _.mode === defaultMode }))
 
 /**
  * Fetch the Kiali graph model

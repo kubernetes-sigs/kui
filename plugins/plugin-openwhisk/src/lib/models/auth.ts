@@ -59,18 +59,18 @@ const localStorageKey = {
   auth: 'wsk.auth'
 }
 
-/**
- *
- *
- */
-export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || store().getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost') || getDefaultApiHost()
-
 function getDefaultApiHost () {
   if (inElectron() && config && config['electron-host']) {
     return config['electron-host']
   }
   return window.location ? window.location.host : ''
 }
+
+/**
+ *
+ *
+ */
+export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || store().getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost') || getDefaultApiHost()
 
 let authKey = process.env.__OW_API_KEY || wskprops.AUTH || store().getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 

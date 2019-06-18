@@ -119,6 +119,8 @@ describe('grid visualization', function (this: common.ISuite) {
     .then(cli.expectError(498))
     .catch(common.oops(this)))
 
+  const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
+
   //
   // time range queries
   //
@@ -143,7 +145,6 @@ describe('grid visualization', function (this: common.ISuite) {
   })
 
   /** switch between tabs */
-  const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
   const switchTo = (tab: string) => {
     const button = ui.selectors.SIDECAR_MODE_BUTTON(tab)
 

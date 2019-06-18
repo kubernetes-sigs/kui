@@ -34,6 +34,21 @@ const debug = Debug('k8s/view/modes/pods')
 const viewName = 'Pods'
 
 /**
+ * Return a sidecar mode button model that shows a pods table for the
+ * given resource
+ *
+ */
+const podsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
+  mode: 'pods',
+  direct: {
+    plugin: 'k8s',
+    module: 'lib/view/modes/pods',
+    operation: 'renderAndViewPods',
+    parameters: { command, resource }
+  }
+}, overrides || {})
+
+/**
  * Add a Pods mode button to the given modes model, if called for by
  * the given resource.
  *
@@ -54,21 +69,6 @@ export const podMode: ModeRegistration<KubeResource> = {
     }
   }
 }
-
-/**
- * Return a sidecar mode button model that shows a pods table for the
- * given resource
- *
- */
-const podsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
-  mode: 'pods',
-  direct: {
-    plugin: 'k8s',
-    module: 'lib/view/modes/pods',
-    operation: 'renderAndViewPods',
-    parameters: { command, resource }
-  }
-}, overrides || {})
 
 /**
  * Render the tabular pods view

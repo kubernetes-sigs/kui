@@ -40,6 +40,24 @@ const uiNameForKindMap = {
 const uiNameForKind = kind => uiNameForKindMap[kind] || kind
 
 /**
+ * A small shim on top of the wskflow renderer
+ *
+ */
+const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
+  debug('wskflow', ast, rule)
+  const sidecar = getSidecar(tab)
+  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
+
+  sidecar.classList.add('custom-content')
+  const container = sidecarSelector(tab, '.custom-content')
+  removeAllDomChildren(container)
+
+  const { view } = await visualize(tab, ast, undefined, undefined, undefined, undefined, undefined, rule)
+  container.appendChild(view)
+  sidecar.setAttribute('data-active-view', '.custom-content > div')
+}
+
+/**
  * Load the given entity into the sidecar UI
  *
  */
@@ -378,21 +396,3 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
   //
   return Promise.resolve(responseToRepl)
 } /* showEntity */
-
-/**
- * A small shim on top of the wskflow renderer
- *
- */
-const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
-  debug('wskflow', ast, rule)
-  const sidecar = getSidecar(tab)
-  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
-
-  sidecar.classList.add('custom-content')
-  const container = sidecarSelector(tab, '.custom-content')
-  removeAllDomChildren(container)
-
-  const { view } = await visualize(tab, ast, undefined, undefined, undefined, undefined, undefined, rule)
-  container.appendChild(view)
-  sidecar.setAttribute('data-active-view', '.custom-content > div')
-}

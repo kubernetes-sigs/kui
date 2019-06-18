@@ -32,14 +32,14 @@ const defaultMode = 'visualization'
 export const formatSessionResponse = activation => {
   activation.prettyType = 'sessions'
 
+  const path = activation.annotations.find(({ key }) => key === 'path').value
+
   // entity onclick handler
   activation.onclick = () => repl.pexec(`app get "/${path}"`)
 
   // add our visualization view mode
   if (!activation.modes) activation.modes = []
   activation.modes.find(({ mode }) => mode === 'logs').label = 'trace'
-
-  const path = activation.annotations.find(({ key }) => key === 'path').value
 
   activation.modes.push({
     mode: defaultMode,

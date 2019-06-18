@@ -33,6 +33,16 @@ const defaultHeight = 20
 const defaultCharWidth = 5
 const defaultCharHeight = 10
 
+/**
+ * Capitalize a given string
+ *
+ */
+const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1)
+
+function id2log (id: string): string {
+  return id.replace(/-components/g, '').replace(/__origin/g, '').replace(/__terminus/g, '')
+}
+
 class RenderState {
   readonly graphData: Node
   dummyCount = 0
@@ -613,8 +623,39 @@ class RenderState {
   }
 }
 
-function id2log (id: string): string {
-  return id.replace(/-components/g, '').replace(/__origin/g, '').replace(/__terminus/g, '')
+/**
+ * @return the cumulative number of nodes in the given composition that are not of type Function
+ *
+ */
+const numNonFunctions = composition => {
+  if (composition === undefined) return 0
+  if (composition.type === 'function') {
+    return 0
+  } else if (composition.type) {
+    // then this is a compound node of some type
+    let sum = 0
+    for (let key in composition) {
+      sum += numNonFunctions(composition[key])
+    }
+    return sum + 1
+  } else if (Array.isArray(composition)) {
+    return composition.reduce((sum, sub) => sum + numNonFunctions(sub), 0)
+  } else {
+    return 0
+  }
+}
+
+/**
+ * Heuristic: is this composition "pretty simple"?
+ *
+ */
+const isSimpleComposition = ir => {
+  const isShort = ir.components ? ir.components.length <= 2 : true
+  const numNonFuncs = numNonFunctions(ir)
+  const atMostOneNonFunction = numNonFuncs <= 3
+
+  debug('isSimpleComposition', isShort, numNonFuncs)
+  return isShort && atMostOneNonFunction
 }
 
 export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElement?: HTMLElement, acts?: ActivationLike[], options?, rule?): Promise<any> {
@@ -781,44 +822,3 @@ export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElemen
   const graph2doms = (await import('./graph2doms')).default
   return graph2doms(tab, renderState.graphData, containerElement, renderState.activations)
 }
-
-/**
- * Heuristic: is this composition "pretty simple"?
- *
- */
-const isSimpleComposition = ir => {
-  const isShort = ir.components ? ir.components.length <= 2 : true
-  const numNonFuncs = numNonFunctions(ir)
-  const atMostOneNonFunction = numNonFuncs <= 3
-
-  debug('isSimpleComposition', isShort, numNonFuncs)
-  return isShort && atMostOneNonFunction
-}
-
-/**
- * @return the cumulative number of nodes in the given composition that are not of type Function
- *
- */
-const numNonFunctions = composition => {
-  if (composition === undefined) return 0
-  if (composition.type === 'function') {
-    return 0
-  } else if (composition.type) {
-    // then this is a compound node of some type
-    let sum = 0
-    for (let key in composition) {
-      sum += numNonFunctions(composition[key])
-    }
-    return sum + 1
-  } else if (Array.isArray(composition)) {
-    return composition.reduce((sum, sub) => sum + numNonFunctions(sub), 0)
-  } else {
-    return 0
-  }
-}
-
-/**
- * Capitalize a given string
- *
- */
-const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1)
