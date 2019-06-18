@@ -13,8 +13,7 @@
     "build:electron-for-development": "npm run build:configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done",
     "build:hoist": "lerna bootstrap --ignore-prepublish --hoist",
     "postinstall": "npm run build:hoist && npm run build:electron-for-development",
-    "start": "node bin/kui shell",
-    "publish": "lerna publish"
+    "start": "node bin/kui shell"
   },
   "dependencies": {},
   "devDependencies": {

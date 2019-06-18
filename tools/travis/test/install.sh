@@ -24,6 +24,10 @@ if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == composer/kui ] ||
   exit 0
 fi
 
+if [ "$TRAVIS_BUILD_STAGE_NAME" == "Npm release" ]; then
+  exit 0
+fi
+
 if [ ! -d bin ]; then
     mkdir bin
 fi

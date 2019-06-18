@@ -71,7 +71,27 @@ env:
 
 install: ./tools/travis/test/install.sh
 script: ./tools/travis/test/script.sh
+
 after_success: ./tools/travis/publishers/cos.sh
+
+jobs:
+  include:
+    - stage: npm release
+      node_js: "8"
+      script: 
+        - echo "NPM Deploying Started ..."
+        - echo "Repo name:$TRAVIS_REPO_SLUG"
+        - echo "Branch name:$TRAVIS_BRANCH"
+      before_deploy:
+        - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
+      deploy:
+          - provider: script
+            script: npm install && npx lerna publish preminor --no-git-tag-version --no-push --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            skip_cleanup: true
+            keep_history: true
+            on:
+              branch: master
+              repo: IBM/kui
 
 notifications:
   webhooks:
