@@ -19,13 +19,13 @@ import * as Debug from 'debug'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-const debug = Debug('webapp/views/mode-registrar')
+const debug = Debug('webapp/views/registrar/modes')
 
 export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Resource) => boolean
 
 /**
- * Interpretation: if the kubernetes resources passes the given "when"
- * filter, then add the given sidecar mode
+ * Interpretation: if the resource passes the given "when" filter,
+ * then add the given sidecar mode
  *
  */
 export interface ModeRegistration<Resource extends MetadataBearing> {

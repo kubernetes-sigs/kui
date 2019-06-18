@@ -20,7 +20,7 @@ import { safeDump } from 'js-yaml'
 
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
+import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { Resource, KubeResource } from '../../model/resource'
 

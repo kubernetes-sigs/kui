@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import { qexec as $$ } from '@kui-shell/core/core/repl'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
+import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { selectorToString } from '../../util/selectors'
 
@@ -56,7 +56,7 @@ const podsButton = (command: string, resource: Resource, overrides?) => Object.a
 export const podMode: ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => {
     // let's see if the resource refers to a pod in some fashion
-    return (resource.spec !== undefined && resource.spec.selector !== undefined) || // e.g. Deployment
+    return resource.kind === 'Deployment' ||
       (resource.status !== undefined && resource.status.podName !== undefined) // e.g. tekton TaskRun or PipelineRun
   },
   mode: (command: string, resource: Resource) => {

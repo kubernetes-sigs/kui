@@ -17,7 +17,8 @@
 import * as Debug from 'debug'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import registerSidecarMode from '@kui-shell/core/webapp/views/modes/registrar'
+import registerSidecarMode from '@kui-shell/core/webapp/views/registrar/modes'
+import registerSidecarBadge from '@kui-shell/core/webapp/views/registrar/badges'
 import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 import { podMode } from './lib/view/modes/pods'
@@ -25,6 +26,11 @@ import { conditionsMode } from './lib/view/modes/conditions'
 import { containersMode } from './lib/view/modes/containers'
 import { lastAppliedMode } from './lib/view/modes/last-applied'
 import registerTabCompletion from './lib/tab-completion'
+
+// olm-focused
+import { crdsMode } from './lib/view/modes/crds'
+import { iconBadge } from './lib/view/modes/icon'
+import { descriptionMode } from './lib/view/modes/description'
 
 const debug = Debug('plugins/k8s/preload')
 
@@ -50,4 +56,9 @@ export default async () => {
   registerSidecarMode(conditionsMode) // show conditions of a variety of resource kinds
   registerSidecarMode(lastAppliedMode) // show a last applied configuration tab
   registerTabCompletion()
+
+  // olm-focused
+  registerSidecarMode(crdsMode) // show any owned crds
+  registerSidecarMode(descriptionMode) // show description
+  registerSidecarBadge(iconBadge) // olm icon
 }

@@ -646,7 +646,7 @@ body[kui-theme-style="dark"] .repl-result:not(.result-table-with-custom-entity-c
     opacity: 0.6;
     margin-right: 1ex;
 }
-.repl-result-prefix, badge {
+.repl-result-prefix, badge:not(.badge-as-image) {
     font-weight: 400;
     transition: all 150ms ease-in-out;
     font-size: 0.825em;
@@ -2612,12 +2612,16 @@ badge {
     white-space: nowrap;
     font-weight: 600;
 }
+badge.badge-as-image img {
+    width: 5em;
+    height: auto;
+}
 badge.badge-as-fontawesome {
     padding: 0;
     font-size: 1.5em;
     color: var(--color-base0C);
 }
-.repl-result-prefix, badge:not(.badge-as-fontawesome) {
+.repl-result-prefix, badge:not(.badge-as-fontawesome):not(.badge-as-image) {
     background-color: var(--color-tag-beta-fill);
     color: var(--color-tag-beta-text);
     font-family: var(--font-sans-serif);

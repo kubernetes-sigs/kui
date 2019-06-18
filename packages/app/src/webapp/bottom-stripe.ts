@@ -23,7 +23,7 @@ import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
-import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/modes/registrar'
+import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
 import repl = require('../core/repl')
 
 const debug = Debug('webapp/picture-in-picture')
@@ -242,14 +242,28 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
               changeActiveButton()
             }
 
-            if (isCustomSpec(view)) {
+            if (typeof view === 'string') {
+              const dom = document.createElement('div')
+              dom.classList.add('padding-content')
+              dom.classList.add('scrollable')
+              dom.classList.add('scrollable-auto')
+              dom.innerText = view
+              insertView(tab)(dom)
+            } else if (view.nodeName) {
+              const dom = document.createElement('div')
+              dom.classList.add('padding-content')
+              dom.classList.add('scrollable')
+              dom.classList.add('scrollable-auto')
+              dom.appendChild(view)
+              insertView(tab)(dom)
+            } else if (isCustomSpec(view)) {
             // Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
               showCustom(tab, view, { leaveBottomStripeAlone })
             } else if (isTable(view)) {
               const dom1 = document.createElement('div')
               const dom2 = document.createElement('div')
               dom1.classList.add('padding-content')
-              dom2.classList.add('result-as-table', 'result-as-vertical', 'repl-result', 'result-as-fixed-tables')
+              dom2.classList.add('result-as-table', 'result-as-vertical', 'repl-result')
               dom1.appendChild(dom2)
               formatTable(tab, view, dom2, { usePip: true })
               insertView(tab)(dom1)
