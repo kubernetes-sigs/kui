@@ -448,7 +448,7 @@ class InProcessExecutor implements Executor {
         const commandFlags: YargsParserFlags = (evaluator.options && evaluator.options.flags) ||
           (evaluator.options && evaluator.options.synonymFor &&
            evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
-          ({} as YargsParserFlags)
+          ({} as YargsParserFlags) // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
         const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name))
 
