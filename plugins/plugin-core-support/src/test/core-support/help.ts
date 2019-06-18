@@ -19,8 +19,7 @@
  *
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
@@ -39,12 +38,12 @@ ${folder2}`
 export const doHelp = function (cmd, { code = 500, expect = undefined } = {}) {
   return it(`should show help via ${cmd}`, () => cli.do(cmd, this.app)
     .then(cli.expectError(code, expect))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 }
 
 describe('Help command', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(commonBefore(this))
+  after(commonAfter(this))
 
   //
   // and now here come the tests...

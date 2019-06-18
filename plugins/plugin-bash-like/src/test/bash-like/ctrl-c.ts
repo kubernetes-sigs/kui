@@ -17,15 +17,13 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors } = ui
-const { localIt } = common
 
 describe('Cancel via Ctrl+C', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(commonBefore(this))
+  after(commonAfter(this))
 
   const cancel = (app: Application, cmd = '') => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
@@ -36,7 +34,7 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
       .then(cli.expectBlank)
       .then(() => app.client.getValue(ui.selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
       .then(input => assert.strictEqual(input, cmd)))
-    .catch(common.oops(this))
+    .catch(oops(this))
 
   it('should hit ctrl+c', () => cancel(this.app))
   it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
@@ -56,7 +54,7 @@ describe('Cancel via Ctrl+C', function (this: ISuite) {
         return /\^C/.test(actualText)
       })
     } catch (err) {
-      common.oops(this)(err)
+      oops(this)(err)
     }
   })
 })

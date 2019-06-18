@@ -16,11 +16,9 @@
 
 import * as assert from 'assert'
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, keys } = ui
-const { localIt } = common
 
 const expectConsoleToBeClear = ({ app }) => {
   return app.client.waitUntil(() => {
@@ -32,8 +30,8 @@ const expectConsoleToBeClear = ({ app }) => {
 }
 
 describe('Clear the console', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(commonBefore(this))
+  after(commonAfter(this))
 
   interface PromptOptions {
     enteredString?: string
@@ -58,7 +56,7 @@ describe('Clear the console', function (this: ISuite) {
         return cli.expectOKWithString(enteredString)(res)
       }
     } catch (err) {
-      common.oops(this)(err)
+      oops(this)(err)
     }
   }
   const enteredString = 'does this work?'
@@ -80,7 +78,7 @@ describe('Clear the console', function (this: ISuite) {
 
   it('should clear the console', () => cli.do('clear', this.app)
     .then(expectConsoleToBeClear)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   // get something on the screen
   localIt(`should list files again`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
@@ -93,24 +91,24 @@ describe('Clear the console', function (this: ISuite) {
     })
     .then(() => this.app.client.getValue(selectors.CURRENT_PROMPT))
     .then(text => assert.strictEqual(text, JUNK))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   // hit enter, and expect that JUNK to fail
   it(`should fail with command not found`, () => {
     return cli.do('nope', this.app)
       .then(cli.expectError(404))
-      .catch(common.oops(this))
+      .catch(oops(this))
   })
 
   // get something on the screen
   localIt(`should list files yet again`, () => cli.do('ls ../..', this.app)
     .then(cli.expectOKWith('README.md'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should clear properly despite existing prompt', () => cli.do('prompt', this.app) // wipe will change the placeholder text
     .then(async () => {
       await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
       return expectConsoleToBeClear({ app: this.app })
     })
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 })

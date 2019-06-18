@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
-const { localDescribe } = common
 
 /**
  * Take a screenshot with the given "which" specification (e.g. "full"
@@ -34,12 +32,12 @@ const takeScreenshot = function (ctx, which = '') {
       .then(() => ctx.app.client.waitForExist('#screenshot-captured', 5000, true)) // false meaning better not be visible
       .then(() => res)
       .then(cli.expectOKWithCustom({ expect: 'Successfully captured a screenshot to the clipboard' })))
-    .catch(common.oops(ctx))
+    .catch(oops(ctx))
 }
 
 localDescribe('screenshot', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(commonBefore(this))
+  after(commonAfter(this))
 
   it('should fail take screenshot last as the first command', () => cli.do(`screenshot last`, this.app)
     .then(cli.expectError(0, 'You requested to screenshot the last REPL output, but this is the first command')))
@@ -60,7 +58,7 @@ localDescribe('screenshot', function (this: ISuite) {
     .then(cli.expectOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing('Kui Shell', undefined, undefined, 'README.md'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   // now screenshot sidecar should work
   it('should take screenshot sidecar', () => takeScreenshot(this, 'sidecar'))
