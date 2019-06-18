@@ -17,7 +17,7 @@
 import { dirname, join } from 'path'
 
 import { addPath } from '@kui-shell/core/core/find-file'
-import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/modes/registrar'
+import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 

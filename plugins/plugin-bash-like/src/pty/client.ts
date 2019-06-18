@@ -736,17 +736,23 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
             } else if (expectingSemiStructuredOutput) {
               try {
                 const resource = contentType === 'yaml' ? safeLoadWithCatch(stripClean(raw)) : JSON.parse(stripClean(raw))
-                execOptions.stdout({
-                  type: 'custom',
-                  isEntity: true,
-                  name: argvNoOptions[0] === 'cat' ? path.basename(argvNoOptions[1]) : argvNoOptions.slice(3).join(' '),
-                  packageName: argvNoOptions[0] === 'cat' && path.dirname(argvNoOptions[1]),
-                  prettyType: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
-                  contentType,
-                  content: stripClean(raw),
-                  resource,
-                  modes: [{ mode: 'raw', direct: cmdline, defaultMode: true }]
-                })
+
+                if (typeof resource === 'string') {
+                  // degenerate case e.g. cat foo.json | jq .something.something => string rather than struct
+                  execOptions.stdout(resource)
+                } else {
+                  execOptions.stdout({
+                    type: 'custom',
+                    isEntity: true,
+                    name: argvNoOptions[0] === 'cat' ? path.basename(argvNoOptions[1]) : argvNoOptions.slice(3).join(' '),
+                    packageName: argvNoOptions[0] === 'cat' && path.dirname(argvNoOptions[1]),
+                    prettyType: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
+                    contentType,
+                    content: stripClean(raw),
+                    resource,
+                    modes: [{ mode: 'raw', direct: cmdline, defaultMode: true }]
+                  })
+                }
               } catch (err) {
                 console.error('error parsing as semi structured output')
                 console.error(stripClean(raw))

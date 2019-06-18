@@ -272,7 +272,7 @@ const fillTo = (length, maxColumns) => {
 }
 
 /** decorate certain columns specially */
-const outerCSSForKey = {
+export const outerCSSForKey = {
   NAME: 'entity-name-group',
   READY: 'a-few-numbers-wide',
   STATE: 'badge-width',
@@ -310,7 +310,7 @@ const outerCSSForKey = {
   SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
 }
 
-const cssForKey = {
+export const cssForKey = {
   // kubectl get events
   NAME: 'entity-name',
   SOURCE: 'lighter-text smaller-text',

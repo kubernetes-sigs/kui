@@ -23,7 +23,8 @@ export interface KubeStatusCondition {
   status: string | boolean
   reason?: string
   message: string
-  type: string
+  type?: string
+  phase?: string
 }
 
 interface KubeContainerStatus {
@@ -155,11 +156,11 @@ export interface Pod extends KubeResource {
   }
 }
 
-export interface Resource {
+export interface Resource<T = KubeResource> {
   filepathForDrilldown?: string
   kind?: string
   name?: string
-  resource: KubeResource
+  resource: T
 }
 
 export default Resource

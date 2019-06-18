@@ -30,6 +30,7 @@ import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
 import { MetadataBearing, isMetadataBearing, EntitySpec, Entity } from '../../models/entity'
 import { ExecOptions } from '../../models/execOptions'
+import { apply as addRelevantBadges } from './registrar/badges'
 
 const debug = Debug('webapp/views/sidecar')
 
@@ -413,8 +414,15 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     }
   }
 
+  // badges
   if (custom && custom.badges) {
     custom.badges.forEach(badge => addBadge(tab, badge, { badgesDom }))
+  }
+  if (isMetadataBearingByReference(custom)) {
+    const badgeOptions: BadgeOptions = {
+      badgesDom: sidecar.querySelector('.sidecar-header .custom-header-content .badges')
+    }
+    addRelevantBadges(tab, custom, badgeOptions)
   }
 
   const replView = tab.querySelector('.repl')
@@ -711,7 +719,26 @@ export const linkify = (dom: Element): void => {
  * Sidecar badges
  *
  */
-interface BadgeOptions {
+/**
+ * This is the most complete form of a badge specification, allowing
+ * the caller to provide a title, an onclick handler, and an optional
+ * fontawesome icon representation.
+ *
+ */
+export interface BadgeSpec {
+  title: string
+  fontawesome?: string
+  image?: HTMLImageElement
+  css?: string
+  onclick?: (evt: MouseEvent) => boolean
+}
+function isBadgeSpec (badge: Badge): badge is BadgeSpec {
+  const spec = badge as BadgeSpec
+  return !!(typeof badge !== 'string' && !(spec instanceof Element) && spec.title)
+}
+export type Badge = string | BadgeSpec | Element
+
+export interface BadgeOptions {
   css?: string
   onclick?
   badgesDom: Element
@@ -723,24 +750,6 @@ class DefaultBadgeOptions implements BadgeOptions {
     this.badgesDom = getSidecar(tab).querySelector('.sidecar-header .badges')
   }
 }
-
-/**
- * This is the most complete form of a badge specification, allowing
- * the caller to provide a title, an onclick handler, and an optional
- * fontawesome icon representation.
- *
- */
-export interface BadgeSpec {
-  title: string
-  fontawesome?: string
-  css?: string
-  onclick?: (evt: MouseEvent) => boolean
-}
-function isBadgeSpec (badge: Badge): badge is BadgeSpec {
-  const spec = badge as BadgeSpec
-  return !!(typeof badge !== 'string' && !(spec instanceof Element) && spec.title)
-}
-export type Badge = string | BadgeSpec | Element
 
 export const addBadge = (tab: Tab, badgeText: Badge, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: BadgeOptions = new DefaultBadgeOptions(tab)) => {
   debug('addBadge', badgeText, badgesDom)
@@ -754,7 +763,13 @@ export const addBadge = (tab: Tab, badgeText: Badge, { css, onclick, badgesDom =
     badge.appendChild(badgeText as Element)
   } else {
     // otherwise, badge is an IBadgeSpec
-    if (badgeText.fontawesome) {
+    if (badgeText.image) {
+      // badge is an HTMLImageElement
+      badgeText.image.alt = badgeText.title
+      badge.appendChild(badgeText.image)
+      badge.classList.add('badge-as-image')
+    } else if (badgeText.fontawesome) {
+      // badge is a named fontawesome icon
       const awesome = document.createElement('i')
       awesome.className = badgeText.fontawesome
       badge.classList.add('badge-as-fontawesome')

@@ -17,10 +17,10 @@
 import * as Debug from 'debug'
 
 import { Tab } from '@kui-shell/core/webapp/cli'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/modes/registrar'
+import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
+import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
-import { Resource, KubeResource } from '../../model/resource'
+import { Resource, KubeResource, KubeStatusCondition } from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
@@ -66,8 +66,6 @@ export const conditionsMode: ModeRegistration<KubeResource> = {
  *
  */
 const formatTimestamp = (timestamp: string): string => {
-  debug('formatTimestamp', timestamp)
-
   if (!timestamp) {
     return ''
   } else {
@@ -83,8 +81,8 @@ export const renderConditions = async (tab: Tab, command: string, resource: Reso
   debug('renderConditions', command, resource)
 
   const anyProbeTimes = resource.resource.status.conditions.some(_ => !!_.lastProbeTime)
-  const probeHeader: any[] = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
-  const probeBody = (condition): any[] => {
+  const probeHeader: Cell[] = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
+  const probeBody = (condition: KubeStatusCondition): Cell[] => {
     if (anyProbeTimes) {
       return [{
         key: 'lastProbeTime',
@@ -96,16 +94,33 @@ export const renderConditions = async (tab: Tab, command: string, resource: Reso
     }
   }
 
+  const anyMessages = resource.resource.status.conditions.some(_ => !!_.message)
+  const messageHeader: Cell[] = anyMessages ? [{ value: 'MESSAGE' }] : []
+  const messageBody = (condition: KubeStatusCondition): Cell[] => {
+    if (anyMessages) {
+      return [{
+        key: 'message',
+        value: condition.message,
+        css: 'pre-wrap'
+      }]
+    } else {
+      return []
+    }
+  }
+
+  const standardHeaderCells: Cell[] = [
+    { value: 'TRANSITION TIME', outerCSS: 'header-cell min-width-date-like' },
+    { value: 'STATUS', outerCSS: 'header-cell very-narrow text-center' }
+  ]
+
   const headerModel: Row = {
     type: 'condition',
     name: 'CONDITION',
     outerCSS: 'header-cell',
-    attributes: probeHeader.concat([
-      { value: 'TRANSITION TIME', outerCSS: 'header-cell min-width-date-like' },
-      { value: 'STATUS', outerCSS: 'header-cell very-narrow text-center' }
-    ])
+    attributes: probeHeader.concat(standardHeaderCells).concat(messageHeader)
   }
 
+  // sort from most recent to least recent
   resource.resource.status.conditions.sort((a, b) => {
     if (!a.lastTransitionTime && b.lastTransitionTime) {
       return 1
@@ -114,26 +129,33 @@ export const renderConditions = async (tab: Tab, command: string, resource: Reso
     } else if (!a.lastTransitionTime && !b.lastTransitionTime) {
       return 0
     } else {
-      return new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()
+      return new Date(b.lastTransitionTime).getTime() - new Date(a.lastTransitionTime).getTime()
     }
   })
 
-  const bodyModel: Row[] = resource.resource.status.conditions.map(condition => ({
-    type: 'condition',
-    name: condition.type,
-    onclick: false,
-    attributes: probeBody(condition).concat([
+  const bodyModel: Row[] = resource.resource.status.conditions.map(condition => {
+    const success = condition.status === 'True' || /Succeed/i.test(condition.reason)
+    const failure = condition.status === 'False' || /Failed/i.test(condition.reason)
+
+    const standardBodyCells: Cell[] = [
       { key: 'lastTransitionTime', value: formatTimestamp(condition.lastTransitionTime), outerCSS: 'min-width-date-like smaller-text' },
       {
         key: 'status',
-        value: condition.status,
+        value: (condition.status || condition.reason).toString(),
         outerCSS: 'text-center larger-text',
-        fontawesome: condition.status === 'True' ? 'fas fa-check-circle'
-          : condition.status === 'False' ? 'fas fa-times-circle' : 'fas fa-question-circle',
-        css: condition.status === 'True' ? 'green-text' : condition.status === 'False' ? 'red-text' : 'yellow-text'
+        fontawesome: success ? 'fas fa-check-circle'
+          : failure ? 'fas fa-times-circle' : 'fas fa-question-circle',
+        css: success ? 'green-text' : failure ? 'red-text' : 'yellow-text'
       }
-    ])
-  }))
+    ]
+
+    return {
+      type: 'condition',
+      name: condition.type || condition.reason,
+      onclick: false,
+      attributes: probeBody(condition).concat(standardBodyCells).concat(messageBody(condition))
+    }
+  })
 
   const tableModel: Table = {
     header: headerModel,

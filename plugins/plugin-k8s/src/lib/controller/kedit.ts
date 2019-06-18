@@ -25,7 +25,7 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { EntitySpec } from '@kui-shell/core/models/entity'
-import { get as relevantModes } from '@kui-shell/core/webapp/views/modes/registrar'
+import { get as relevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { FinalState } from '../model/states'
 import { KubeResource, Resource } from '../model/resource'
