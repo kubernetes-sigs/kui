@@ -457,7 +457,9 @@ let alreadyInjectedCSS: boolean
 export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOptions: string[], parsedOptions: ParsedOptions, execOptions: ExecOptions) => new Promise((resolve, reject) => {
   debug('doExec', cmdline)
 
-  const contentType = parsedOptions.o || parsedOptions.output || parsedOptions.out
+  const contentType = parsedOptions.o || parsedOptions.output || parsedOptions.out ||
+    (argvNoOptions[0] === 'cat' && /json$/.test(argvNoOptions[1]) && 'json') ||
+    (argvNoOptions[0] === 'cat' && /yaml$/.test(argvNoOptions[1]) && 'yaml')
   const expectingSemiStructuredOutput = /yaml|json/.test(contentType)
 
   const injectingCSS = !alreadyInjectedCSS
@@ -655,16 +657,16 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
             // ... same here
             resizer.exitAltBufferMode()
           } else if (!resizer.inAltBufferMode()) {
-            raw += stripClean(msg.data)
+            raw += msg.data
           }
 
           const maybeUsage = !resizer.wasEverInAltBufferMode() &&
             !definitelyNotUsage &&
-            (pendingUsage || formatUsage(cmdline, raw, { drilldownWithPip: true }))
+            (pendingUsage || formatUsage(cmdline, stripClean(raw), { drilldownWithPip: true }))
 
           if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
             try {
-              const tables = preprocessTable(raw.split(/^(?=NAME|Name|ID|\n\*)/m))
+              const tables = preprocessTable(stripClean(raw).split(/^(?=NAME|Name|ID|\n\*)/m))
                 .filter(x => x)
               debug('tables', tables)
 
@@ -727,22 +729,29 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
             xtermContainer.classList.add('xterm-terminated')
 
             if (pendingUsage) {
-              execOptions.stdout(formatUsage(cmdline, raw, { drilldownWithPip: true }))
+              execOptions.stdout(formatUsage(cmdline, stripClean(raw), { drilldownWithPip: true }))
               xtermContainer.classList.add('xterm-invisible')
             } else if (pendingTable) {
               execOptions.stdout(pendingTable)
             } else if (expectingSemiStructuredOutput) {
-              const resource = contentType === 'yaml' ? safeLoadWithCatch(raw) : JSON.parse(raw)
-              execOptions.stdout({
-                type: 'custom',
-                isEntity: true,
-                name: argvNoOptions.slice(3).join(' '),
-                prettyType: argvNoOptions[2],
-                contentType,
-                content: raw,
-                resource,
-                modes: [{ mode: 'raw', direct: cmdline, defaultMode: true }]
-              })
+              try {
+                const resource = contentType === 'yaml' ? safeLoadWithCatch(stripClean(raw)) : JSON.parse(stripClean(raw))
+                execOptions.stdout({
+                  type: 'custom',
+                  isEntity: true,
+                  name: argvNoOptions[0] === 'cat' ? path.basename(argvNoOptions[1]) : argvNoOptions.slice(3).join(' '),
+                  packageName: argvNoOptions[0] === 'cat' && path.dirname(argvNoOptions[1]),
+                  prettyType: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
+                  contentType,
+                  content: stripClean(raw),
+                  resource,
+                  modes: [{ mode: 'raw', direct: cmdline, defaultMode: true }]
+                })
+              } catch (err) {
+                console.error('error parsing as semi structured output')
+                console.error(stripClean(raw))
+                execOptions.stdout(stripClean(raw))
+              }
             }
 
             // grab a copy of the terminal now that it has terminated;
