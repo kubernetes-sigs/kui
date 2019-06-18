@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint @typescript-eslint/camelcase: ["error", { allow: ["session_get", "session_result"] }] */
+
 import { actions, activations, skipAndLimit } from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-usage'
 import { sampleInputs } from './sample-inputs'
 

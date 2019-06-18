@@ -22,11 +22,11 @@ export const extractSearchKey = (key: string): string => {
   if (typeof URLSearchParams === 'function') {
     return new URLSearchParams(window.location.search).get(key)
   } else {
-    return polyfill_getUrlParameter(key)
+    return polyfillGetUrlParameter(key)
   }
 }
 
-function polyfill_getUrlParameter (name: string): string {
+function polyfillGetUrlParameter (name: string): string {
   name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]')
   const regex = new RegExp('[\\?&]' + name + '=([^&#]*)')
   const results = regex.exec(location.search)
