@@ -1008,6 +1008,7 @@ export const showGenericEntity = (tab: Tab, entity: EntitySpec | CustomSpec, opt
  * Register a renderer for a given <kind>
  *
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type ISidecarViewHandler = (tab: Tab, entity: Object, sidecar: Element, options: ShowOptions) => void
 const registeredEntityViews = {}
 export const registerEntityView = (kind: string, handler: ISidecarViewHandler) => {

@@ -575,6 +575,7 @@ const _render = args => {
  * A handler intended to be passed to cli.registerListView
  *
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const renderActivationListView = (tab: Tab, activations: Object[], container: Element, parsedOptions) => {
   debug('rendering activation list view', activations)
 

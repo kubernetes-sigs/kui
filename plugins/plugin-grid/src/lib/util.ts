@@ -317,6 +317,7 @@ export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
  * The command handler for visualizing as a table
  *
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type Renderer = (tab: Tab, options: Object, header: Header, uuid: string, isRedraw?: boolean) => void
 export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ tab, argvNoOptions, parsedOptions: options }: EvaluatorArgs) => {
   debug('visualize')
