@@ -592,8 +592,8 @@ export const addNameToSidecarHeader = async (sidecar: Sidecar, name: string | El
     if (maybeName) {
       name = maybeName
     }
-    if (!packageName) {
-      packageName = metadataBearer.metadata.namespace || ''
+    if (metadataBearer.metadata.namespace) {
+      packageName = metadataBearer.metadata.namespace
     }
     if (metadataBearer.kind) {
       viewName = metadataBearer.kind

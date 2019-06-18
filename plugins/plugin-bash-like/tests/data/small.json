@@ -1,0 +1,34 @@
+{
+  "apiVersion": "operators.coreos.com/v1alpha1",
+  "kind": "ClusterServiceVersion",
+  "metadata": {
+    "name": "couchbase-operator.v1.1.0",
+    "namespace": "openshift-operators"
+  },
+  "spec": {
+    "displayName": "Couchbase Operator",
+    "apiservicedefinitions": {},
+    "customresourcedefinitions": {
+      "owned": [
+        {
+          "description": "Manages Couchbase clusters",
+          "displayName": "Couchbase Cluster",
+          "kind": "CouchbaseCluster",
+          "name": "couchbaseclusters.couchbase.com",
+          "resources": [
+            {
+              "kind": "Service",
+              "name": "",
+              "version": "v1"
+            },
+            {
+              "kind": "Pod",
+              "name": "",
+              "version": "v1"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
