@@ -137,6 +137,18 @@ const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string
 }
 
 /**
+ * Ensure that the given string is display in a whitespace-preserving way
+ *
+ */
+const pre = (str: string): HTMLElement => {
+  const pre = document.createElement('div')
+  pre.classList.add('whitespace')
+  pre.innerText = str
+
+  return pre
+}
+
+/**
  * Display the given string as a REPL table
  *
  */
@@ -177,18 +189,6 @@ const table = (decodedResult: string, stderr: string, command: string, verb: str
     // otherwise, display the raw output
     return pre(decodedResult)
   }
-}
-
-/**
- * Ensure that the given string is display in a whitespace-preserving way
- *
- */
-const pre = (str: string): HTMLElement => {
-  const pre = document.createElement('div')
-  pre.classList.add('whitespace')
-  pre.innerText = str
-
-  return pre
 }
 
 const usage = (command: string): UsageModel => ({

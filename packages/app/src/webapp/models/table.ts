@@ -108,17 +108,6 @@ export class Table {
 
 export interface WatchableTable extends Table, Watchable {}
 
-export function formatWatchableTable (model: Table | Table[], watch: Watchable) {
-  if (isTable(model)) {
-    return Object.assign(model, watch)
-  } else if (isMultiTable(model)) {
-    model.forEach(table => Object.assign(table, watch))
-  } else {
-    // TODO: we might need to consider the variance of model, throw error for now
-    throw new Error('models other than table(s) are not supported in watch mode yet')
-  }
-}
-
 export function isTable (model: any): model is Table {
   return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
 }
@@ -129,6 +118,17 @@ export function isMultiTable (model: any): model is Table[] {
 
 export function isWatchableTable (model: Table | WatchableTable): model is WatchableTable {
   return model && isTable(model) && (model as Watchable).refreshCommand && (model as Watchable).watchByDefault !== undefined
+}
+
+export function formatWatchableTable (model: Table | Table[], watch: Watchable) {
+  if (isTable(model)) {
+    return Object.assign(model, watch)
+  } else if (isMultiTable(model)) {
+    model.forEach(table => Object.assign(table, watch))
+  } else {
+    // TODO: we might need to consider the variance of model, throw error for now
+    throw new Error('models other than table(s) are not supported in watch mode yet')
+  }
 }
 
 export class Icon {

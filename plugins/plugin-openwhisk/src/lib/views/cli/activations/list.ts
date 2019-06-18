@@ -92,20 +92,6 @@ const findItemInAnnotations = (name, activation) => {
   if (activation && activation.annotations && activation.annotations.find((item) => item.key === name)) { return activation.annotations.find((item) => item.key === name).value } else { return 0 } // if no time item, return 0
 }
 
-/**
- * Given a list of activationIds, render a list view and place it in
- * the given container
- *
- */
-export const render = opts => {
-  debug('render', opts)
-
-  try {
-    _render(opts)
-  } catch (err) {
-    console.error(err)
-  }
-}
 const _render = args => {
   const { entity, activationIds, container, noCrop = false, noPip = false,
     showResult = false, showStart = false, showTimeline = true,
@@ -569,6 +555,21 @@ const _render = args => {
 
       return true // success
     })
+}
+
+/**
+ * Given a list of activationIds, render a list view and place it in
+ * the given container
+ *
+ */
+export const render = opts => {
+  debug('render', opts)
+
+  try {
+    _render(opts)
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 /**

@@ -18,22 +18,6 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/editor/file-types')
 
 /**
- * What is the filename extension for the given kind?
- *
- */
-export const extension = kind => {
-  const lang = language(kind)
-  debug('extension', kind, lang)
-
-  switch (lang) {
-    case 'javascript': return '.js'
-    case 'typescript': return '.js'
-    case 'python': return '.py'
-    default: return `.${lang}` // e.g. .swift, .php, .go
-  }
-}
-
-/**
  * What is the monaco "language" for the given kind?
  *    only nodejs and compositions diverge from monaco's notation
  */
@@ -56,5 +40,21 @@ export const language = kind => {
     return 'yaml'
   } else {
     return base
+  }
+}
+
+/**
+ * What is the filename extension for the given kind?
+ *
+ */
+export const extension = kind => {
+  const lang = language(kind)
+  debug('extension', kind, lang)
+
+  switch (lang) {
+    case 'javascript': return '.js'
+    case 'typescript': return '.js'
+    case 'python': return '.py'
+    default: return `.${lang}` // e.g. .swift, .php, .go
   }
 }

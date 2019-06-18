@@ -54,6 +54,50 @@ module.exports = composer.sequence('A', 'B')`,
 }
 
 /**
+ * Are the two ASTs different?
+ *
+ */
+const differentASTs = (ast1, ast2) => {
+  if (!!ast1 !== !!ast2) {
+    // one or the other is null
+    return true
+  } else if (typeof ast1 !== typeof ast2) {
+    return true
+  } else if (ast1 === ast2) {
+    return false
+  } else if (typeof ast1 === 'string') {
+    // we just checked ===, so they are different if these are string keys
+    return true
+  } else if (ast1.type !== ast2.type) {
+    return true
+  } else if (Array.isArray(ast1) && ast1.length !== ast2.length) {
+    return true
+  } else {
+    for (let key in ast1) {
+      if (key.charAt(0) === '.') continue
+      else if (differentASTs(ast1[key], ast2[key])) {
+        return true
+      }
+    }
+    return false
+  }
+}
+
+/**
+ * Turn source into composer IR
+ *
+ */
+const generateAST = (source, localCodePath) => {
+  // const base = kind.substring(0, kind.indexOf(':')) || kind // maybe useful when we have python composer
+  try {
+    const result = loadComposition(localCodePath, source)
+    return Promise.resolve(result)
+  } catch (error) {
+    return Promise.resolve(error)
+  }
+}
+
+/**
  * Add the wskflow visualization component to the given content
  *
  */
@@ -183,36 +227,6 @@ const addWskflow = (tab: Tab) => (opts) => {
 }
 
 /**
- * Are the two ASTs different?
- *
- */
-const differentASTs = (ast1, ast2) => {
-  if (!!ast1 !== !!ast2) {
-    // one or the other is null
-    return true
-  } else if (typeof ast1 !== typeof ast2) {
-    return true
-  } else if (ast1 === ast2) {
-    return false
-  } else if (typeof ast1 === 'string') {
-    // we just checked ===, so they are different if these are string keys
-    return true
-  } else if (ast1.type !== ast2.type) {
-    return true
-  } else if (Array.isArray(ast1) && ast1.length !== ast2.length) {
-    return true
-  } else {
-    for (let key in ast1) {
-      if (key.charAt(0) === '.') continue
-      else if (differentASTs(ast1[key], ast2[key])) {
-        return true
-      }
-    }
-    return false
-  }
-}
-
-/**
  * Create the initial code for new actions/compositions
  *
  */
@@ -257,20 +271,6 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
         readViaFilesystem()
       }
     })
-  }
-}
-
-/**
- * Turn source into composer IR
- *
- */
-const generateAST = (source, localCodePath) => {
-  // const base = kind.substring(0, kind.indexOf(':')) || kind // maybe useful when we have python composer
-  try {
-    const result = loadComposition(localCodePath, source)
-    return Promise.resolve(result)
-  } catch (error) {
-    return Promise.resolve(error)
   }
 }
 

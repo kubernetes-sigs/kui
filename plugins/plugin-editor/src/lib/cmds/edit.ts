@@ -48,21 +48,6 @@ interface EditorOptions {
 }
 
 /**
- * Open editor to a given entity, passed programmatically
- *
- */
-export const edit = (tab: Tab, entity: EditorEntity, options: EditorOptions) => editCmd({
-  tab,
-  argvNoOptions: [],
-  parsedOptions: options,
-  execOptions: {
-    parameters: entity,
-    custom: undefined,
-    noSidecarHeader: true
-  }
-})
-
-/**
  * Command handler for `edit <entity>`
  *
  */
@@ -108,6 +93,21 @@ const editCmd = async ({ tab, argvNoOptions = [], parsedOptions = {}, execOption
   const lock = (custom && custom.lock) || (entity.lock !== undefined ? entity.lock : (entity.gotoReadonlyView || defaultLock))
   return respondToRepl(lock ? [ lock ] : [])(model)
 }
+
+/**
+ * Open editor to a given entity, passed programmatically
+ *
+ */
+export const edit = (tab: Tab, entity: EditorEntity, options: EditorOptions) => editCmd({
+  tab,
+  argvNoOptions: [],
+  parsedOptions: options,
+  execOptions: {
+    parameters: entity,
+    custom: undefined,
+    noSidecarHeader: true
+  }
+})
 
 export default async (commandTree: CommandRegistrar) => {
   // command registration: edit an existing entity

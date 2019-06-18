@@ -96,53 +96,6 @@ export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode
 }
 
 /**
- * Amend the result of an `action get`, to make the entity appear more
- * like an app
- *
- */
-export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
-  debug('decorateAsApp', options)
-  action.prettyType = badges.app
-
-  if (astUtil.hasAst(action)) {
-    action.ast = astUtil.astAnnotation(action).value
-  }
-
-  if (action.exec) {
-    action.exec.prettyKind = 'composition'
-  }
-
-  if (doVisualize) {
-    // pass through cli options for the wskflow renderer
-    const viewOptions: { [propName: string]: any } = {}
-    if (options.functions) {
-      // note we must be careful not to pass false; only undefined
-      viewOptions.renderFunctionsInView = options.functions // render all inline functions directly in the view?
-    }
-    if (options.noHeader) {
-      viewOptions.noHeader = true
-    }
-
-    const visualize = require('./visualize').default
-    const { view, controller } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
-
-    const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
-    if (sourceAnnotation) {
-      action.source = sourceAnnotation.value
-    }
-
-    action.modes = (action.modes || []).filter(_ => _.mode !== 'code')
-      .concat(vizAndfsmViewModes(visualize, commandPrefix, undefined, input, action.ast, options.originalOptions || options))
-      .concat(sourceAnnotation ? [ codeViewMode(action.source) ] : [])
-      .concat(zoomToFitButtons(controller))
-    debug('action', action)
-    return view || action
-  } else {
-    return action
-  }
-}
-
-/**
  * Render the wskflow visualization for the given fsm.
  *
  * `container` is optional; wskflow will render in the default way in
@@ -214,5 +167,52 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
   } else {
     // probably some error initializing wskflow; try to safeguard against that
     return []
+  }
+}
+
+/**
+ * Amend the result of an `action get`, to make the entity appear more
+ * like an app
+ *
+ */
+export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
+  debug('decorateAsApp', options)
+  action.prettyType = badges.app
+
+  if (astUtil.hasAst(action)) {
+    action.ast = astUtil.astAnnotation(action).value
+  }
+
+  if (action.exec) {
+    action.exec.prettyKind = 'composition'
+  }
+
+  if (doVisualize) {
+    // pass through cli options for the wskflow renderer
+    const viewOptions: { [propName: string]: any } = {}
+    if (options.functions) {
+      // note we must be careful not to pass false; only undefined
+      viewOptions.renderFunctionsInView = options.functions // render all inline functions directly in the view?
+    }
+    if (options.noHeader) {
+      viewOptions.noHeader = true
+    }
+
+    const visualize = require('./visualize').default
+    const { view, controller } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
+
+    const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
+    if (sourceAnnotation) {
+      action.source = sourceAnnotation.value
+    }
+
+    action.modes = (action.modes || []).filter(_ => _.mode !== 'code')
+      .concat(vizAndfsmViewModes(visualize, commandPrefix, undefined, input, action.ast, options.originalOptions || options))
+      .concat(sourceAnnotation ? [ codeViewMode(action.source) ] : [])
+      .concat(zoomToFitButtons(controller))
+    debug('action', action)
+    return view || action
+  } else {
+    return action
   }
 }

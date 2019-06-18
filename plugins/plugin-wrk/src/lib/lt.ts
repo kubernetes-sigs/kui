@@ -26,17 +26,8 @@ import { wrkPath, wrkExeName } from './init'
 import { generateScriptForAction, generateScriptForURL } from './scriptgen'
 const debug = Debug('wrk/lt')
 
-/**
- * Start a load test against the given url
- *
- */
-export const lt = options => $$(`wsk action get "${options.url}"`)
-  .then(generateScriptForAction(options))
-  .catch(generateScriptForURL(options))
-  .then(_lt(options))
-
-const find = arr => {
-  for (let idx = 0; idx < arr.length - 1; idx++) {
+const findReverse = arr => {
+  for (let idx = arr.length - 1; idx > 0; idx--) {
     if (arr[idx].N > 0) {
       return idx
     }
@@ -44,8 +35,8 @@ const find = arr => {
   return -1
 }
 
-const findReverse = arr => {
-  for (let idx = arr.length - 1; idx > 0; idx--) {
+const find = arr => {
+  for (let idx = 0; idx < arr.length - 1; idx++) {
     if (arr[idx].N > 0) {
       return idx
     }
@@ -255,3 +246,12 @@ const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) => new
   // cleanupCallback()
   throw err
 })
+
+/**
+ * Start a load test against the given url
+ *
+ */
+export const lt = options => $$(`wsk action get "${options.url}"`)
+  .then(generateScriptForAction(options))
+  .catch(generateScriptForURL(options))
+  .then(_lt(options))

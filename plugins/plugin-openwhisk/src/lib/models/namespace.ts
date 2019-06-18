@@ -93,30 +93,6 @@ export const setApiHost = (apiHost = '') => {
    }))
    self.__lookup = () => apiHost.get().then(host => read().then(model => console.error(`Namespace list for ${host} is ${model.namespaces ? JSON.stringify(model.namespaces) : 'empty'}`))) */
 
-const setNamespace = (namespace: string) => {
-  if (!namespace) {
-    return setNeedsNamespace()
-  }
-
-  // UI bits
-  debug(`setNamespace ${namespace}`)
-  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
-  namespaceDom.className = 'clickable' // remove any prior oops
-  namespaceDom.onclick = () => repl.pexec('wsk auth list')
-  namespaceDom.innerText = namespace
-  namespaceDom.setAttribute('data-value', namespace)
-
-  const hostDom = document.querySelector('#openwhisk-api-host') as HTMLElement
-  hostDom.className = 'clickable'
-  hostDom.onclick = () => cli.partial('host set <your_api_host>')
-
-  // cache
-  currentNS = namespace
-
-  // persistence bits
-  return persist(namespace, authModel.get())
-}
-
 /**
  * User does not have a namespace! warn the user of how to proceed
  *
@@ -156,6 +132,26 @@ export const setPleaseSelectNamespace = () => {
   namespaceDom.className += ' oops'
   namespaceDom.innerText = 'please select a namespace'
   namespaceDom.removeAttribute('data-value')
+}
+
+/**
+ * List known namespaces
+ *
+ */
+export const list = async () => {
+  const model = await read()
+  const namespaces = model.namespaces
+  const A = []
+
+  for (let namespace in namespaces) {
+    A.push({
+      namespace: namespace,
+      auth: namespaces[namespace]
+    })
+  }
+
+  debug('list', A)
+  return A
 }
 
 /**
@@ -220,6 +216,30 @@ const persist = (namespace, auth) => {
   })
 }
 
+const setNamespace = (namespace: string) => {
+  if (!namespace) {
+    return setNeedsNamespace()
+  }
+
+  // UI bits
+  debug(`setNamespace ${namespace}`)
+  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
+  namespaceDom.className = 'clickable' // remove any prior oops
+  namespaceDom.onclick = () => repl.pexec('wsk auth list')
+  namespaceDom.innerText = namespace
+  namespaceDom.setAttribute('data-value', namespace)
+
+  const hostDom = document.querySelector('#openwhisk-api-host') as HTMLElement
+  hostDom.className = 'clickable'
+  hostDom.onclick = () => cli.partial('host set <your_api_host>')
+
+  // cache
+  currentNS = namespace
+
+  // persistence bits
+  return persist(namespace, authModel.get())
+}
+
 /**
  * Initialize the apihost and namespace bits of the UI
  *
@@ -240,26 +260,6 @@ export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
         throw err
       }
     })
-}
-
-/**
- * List known namespaces
- *
- */
-export const list = async () => {
-  const model = await read()
-  const namespaces = model.namespaces
-  const A = []
-
-  for (let namespace in namespaces) {
-    A.push({
-      namespace: namespace,
-      auth: namespaces[namespace]
-    })
-  }
-
-  debug('list', A)
-  return A
 }
 
 /**

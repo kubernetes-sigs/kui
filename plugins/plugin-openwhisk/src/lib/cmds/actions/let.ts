@@ -87,6 +87,30 @@ const rp = url => {
  */
 const isRemote = location => location.includes('https:') || location.includes('http:')
 
+const patterns = {
+  action: {
+    expr: {
+      inline: /\s*([^=]+)\s*=>\s*(.+)/,
+      full: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*([^=]+\s*=>\s*.+)/,
+      fromFileWithExtension: /^.*(const|let)\s+([^=]+)(\.\w+)\s*=\s*(.*)/,
+      fromFile: /^.*(const|let)\s+([^=]+)(\.\w+)?\s*=\s*(.*)/
+    }
+  },
+  intention: {
+    inline: /\s*\|([^|]+)\|\s*/,
+    full: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*\|([^|]+)\|\s*/
+  },
+  sequence: {
+    expr: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*(.*)/,
+    components: /\s*->\s*/
+  },
+  annotations: { // -a foo bar at the end of a let
+    suffix: /(\s+(-(a|p)\s+.*\s+.*))+/
+  },
+  quotes: /"/g,
+  trailingWhitespace: /\s+$/g
+}
+
 /**
  * Resolve the given url to a local file, even if it is remote.
  *
@@ -134,30 +158,6 @@ const fetchRemote = (location, mimeType): Promise<Remote> => new Promise((resolv
     })
   }
 })
-
-const patterns = {
-  action: {
-    expr: {
-      inline: /\s*([^=]+)\s*=>\s*(.+)/,
-      full: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*([^=]+\s*=>\s*.+)/,
-      fromFileWithExtension: /^.*(const|let)\s+([^=]+)(\.\w+)\s*=\s*(.*)/,
-      fromFile: /^.*(const|let)\s+([^=]+)(\.\w+)?\s*=\s*(.*)/
-    }
-  },
-  intention: {
-    inline: /\s*\|([^|]+)\|\s*/,
-    full: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*\|([^|]+)\|\s*/
-  },
-  sequence: {
-    expr: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*(.*)/,
-    components: /\s*->\s*/
-  },
-  annotations: { // -a foo bar at the end of a let
-    suffix: /(\s+(-(a|p)\s+.*\s+.*))+/
-  },
-  quotes: /"/g,
-  trailingWhitespace: /\s+$/g
-}
 
 const extensionToKind = {
   '.js': 'nodejs:default',

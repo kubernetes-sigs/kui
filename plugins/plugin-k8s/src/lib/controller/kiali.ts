@@ -73,6 +73,15 @@ const errorRatioToTextCss = (errorRatio: number): string => {
 }
 
 /**
+ *
+ * @return the ingress URL for the given istio application
+ *
+ */
+const ingressFor = (appName: string): Promise<string> => {
+  return $$(`istio ingress "${appName}"`)
+}
+
+/**
  * `kiali get apps` command handler
  *
  */
@@ -165,15 +174,6 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
       }
     ]
   })))
-}
-
-/**
- *
- * @return the ingress URL for the given istio application
- *
- */
-const ingressFor = (appName: string): Promise<string> => {
-  return $$(`istio ingress "${appName}"`)
 }
 
 /**

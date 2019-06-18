@@ -35,6 +35,15 @@ let amdRequire
  */
 let initDone
 
+/** from https://github.com/Microsoft/monaco-editor-samples/blob/master/sample-electron/index.html */
+function uriFromPath (_path) {
+  let pathName = path.resolve(_path).replace(/\\/g, '/')
+  if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+    pathName = '/' + pathName
+  }
+  return encodeURI('file://' + pathName)
+}
+
 export default (editorWrapper: HTMLElement, options) => {
   // Monaco uses a custom amd loader that over-rides node's require.
   // Keep a reference to node's require so we can restore it after executing the amd loader file.
@@ -115,13 +124,4 @@ export default (editorWrapper: HTMLElement, options) => {
   }) /* end of ready() */
 
   return ready()
-}
-
-/** from https://github.com/Microsoft/monaco-editor-samples/blob/master/sample-electron/index.html */
-function uriFromPath (_path) {
-  let pathName = path.resolve(_path).replace(/\\/g, '/')
-  if (pathName.length > 0 && pathName.charAt(0) !== '/') {
-    pathName = '/' + pathName
-  }
-  return encodeURI('file://' + pathName)
 }

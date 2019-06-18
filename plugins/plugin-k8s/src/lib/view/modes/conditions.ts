@@ -28,6 +28,21 @@ import { formatTable } from '../formatMultiTable'
 const debug = Debug('k8s/view/modes/conditions')
 
 /**
+ * Return a sidecar mode button model that shows a conditions table
+ * for the given resource
+ *
+ */
+export const conditionsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
+  mode: 'conditions',
+  direct: {
+    plugin: 'k8s',
+    module: 'lib/view/modes/conditions',
+    operation: 'renderAndViewConditions',
+    parameters: { command, resource }
+  }
+}, overrides || {})
+
+/**
  * Add a Conditions mode button to the given modes model, if called
  * for by the given resource.
  *
@@ -45,21 +60,6 @@ export const conditionsMode: ModeRegistration<KubeResource> = {
     }
   }
 }
-
-/**
- * Return a sidecar mode button model that shows a conditions table
- * for the given resource
- *
- */
-export const conditionsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
-  mode: 'conditions',
-  direct: {
-    plugin: 'k8s',
-    module: 'lib/view/modes/conditions',
-    operation: 'renderAndViewConditions',
-    parameters: { command, resource }
-  }
-}, overrides || {})
 
 /**
  * Format a timestamp field from the status.conditions model; these might be null

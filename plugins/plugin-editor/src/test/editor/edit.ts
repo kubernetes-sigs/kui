@@ -24,6 +24,12 @@ const { cli, sidecar } = ui
 const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
+/** grab focus for the editor */
+const grabFocus = async (app: Application) => {
+  const selector = `${ui.selectors.SIDECAR} .monaco-editor-wrapper .view-lines`
+  await app.client.click(selector).then(() => app.client.waitForEnabled(selector))
+}
+
 /** set the monaco editor text */
 const setValue = async (app: Application, text: string): Promise<void> => {
   await app.client.execute(text => {
@@ -47,12 +53,6 @@ const verifyTextExist = (selector: string, expectedText: string) => async (app: 
   })
 
   return app
-}
-
-/** grab focus for the editor */
-const grabFocus = async (app: Application) => {
-  const selector = `${ui.selectors.SIDECAR} .monaco-editor-wrapper .view-lines`
-  await app.client.click(selector).then(() => app.client.waitForEnabled(selector))
 }
 
 localDescribe('editor basics', function (this: ISuite) {

@@ -209,6 +209,36 @@ export const prepareEditorWithAction = ([action, updateFn]) => {
   return updateFn(action)
 }
 
+export const persisters = {
+  // persisters for regular actions
+  actions: {
+    getCode: entity => entity,
+    revert: (entity, { editor }) => {
+      debug('revert', entity)
+      const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
+
+      return repl.qexec(`wsk action get "${namespacePart}${entity.name}"`)
+        .then(persisters.actions.getCode)
+        .then(entity => {
+          entity.persister = persisters.actions
+          editor.updateText(entity)
+        })
+        .then(() => true)
+    },
+    save: (action) => {
+      debug('save', action)
+      const namespacePart = action.namespace ? `/${action.namespace}/` : ''
+
+      // odd: if we don't delete this, the backend will not perform its default version tagging behavior
+      // https://github.com/apache/incubator-openwhisk/issues/3237
+      delete action.version
+
+      return repl.qexec(`wsk action update "${namespacePart}${action.name}"`,
+        undefined, undefined, { entity: { action } })
+    }
+  }
+}
+
 /**
  * Command handler to create a new action or app
  *
@@ -251,36 +281,6 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
     .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
     .then(prepareEditorWithAction)
     .then(respondToRepl(undefined, ['is-modified']))
-}
-
-export const persisters = {
-  // persisters for regular actions
-  actions: {
-    getCode: entity => entity,
-    revert: (entity, { editor }) => {
-      debug('revert', entity)
-      const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
-
-      return repl.qexec(`wsk action get "${namespacePart}${entity.name}"`)
-        .then(persisters.actions.getCode)
-        .then(entity => {
-          entity.persister = persisters.actions
-          editor.updateText(entity)
-        })
-        .then(() => true)
-    },
-    save: (action) => {
-      debug('save', action)
-      const namespacePart = action.namespace ? `/${action.namespace}/` : ''
-
-      // odd: if we don't delete this, the backend will not perform its default version tagging behavior
-      // https://github.com/apache/incubator-openwhisk/issues/3237
-      delete action.version
-
-      return repl.qexec(`wsk action update "${namespacePart}${action.name}"`,
-        undefined, undefined, { entity: { action } })
-    }
-  }
 }
 
 export default async (commandTree: CommandRegistrar) => {

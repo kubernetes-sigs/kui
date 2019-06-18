@@ -128,6 +128,14 @@ const filterByLatencyBucket = options => activations => {
 }
 
 /**
+ * Is the given activation a successful one?
+ * @see https://github.com/apache/incubator-openwhisk/blob/master/common/scala/src/main/scala/whisk/core/entity/ActivationResult.scala#L58
+ *
+ */
+export const isSuccess = activation => activation.statusCode === 0
+export const isNotSuccess = activation => activation.statusCode !== 0
+
+/**
  * If requested, filter by success or failure
  *
  */
@@ -447,14 +455,6 @@ for (let idx = 0; idx < n7000; idx++) bucketRanges.push(range(6000, n7000, idx, 
 export const latencyBucketRange = bucket => {
   return bucketRanges[bucket]
 }
-
-/**
- * Is the given activation a successful one?
- * @see https://github.com/apache/incubator-openwhisk/blob/master/common/scala/src/main/scala/whisk/core/entity/ActivationResult.scala#L58
- *
- */
-export const isSuccess = activation => activation.statusCode === 0
-export const isNotSuccess = activation => activation.statusCode !== 0
 
 /**
  * Turn an options struct into a cli string

@@ -18,6 +18,12 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { getCurrentPrompt, getPromptFromTarget } from '@kui-shell/core/webapp/cli'
 
 /**
+ * Is no text currently selected?
+ *
+ */
+const noCurrentTextSelection = () => window.getSelection().toString().trim().length === 0
+
+/**
  * We want to focus the current "active" repl <input> element when the
  * user clicks in the repl zone. However, the logic for supporting
  * this behavior is a bit convoluted, due to the way mouse events are
@@ -124,9 +130,3 @@ export default () => {
     }
   })
 }
-
-/**
- * Is no text currently selected?
- *
- */
-const noCurrentTextSelection = () => window.getSelection().toString().trim().length === 0

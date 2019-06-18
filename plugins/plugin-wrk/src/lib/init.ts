@@ -59,6 +59,16 @@ const usage = {
 }
 
 /**
+ * Clean up our compiled binary artifacts
+ *
+ */
+const cleanWrk = async () => {
+  debug('cleaning out prior build')
+  await remove(wrkExec())
+  return true
+}
+
+/**
  * Compile the `wrk` executable
  *
  */
@@ -173,16 +183,6 @@ const checkWrk = async ({ parsedOptions }) => {
 
     return msg
   }
-}
-
-/**
- * Clean up our compiled binary artifacts
- *
- */
-const cleanWrk = async () => {
-  debug('cleaning out prior build')
-  await remove(wrkExec())
-  return true
 }
 
 export default (commandTree) => {

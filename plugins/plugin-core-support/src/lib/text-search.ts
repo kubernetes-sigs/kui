@@ -24,19 +24,6 @@ import * as path from 'path'
 const debug = Debug('plugins/core-support/text-search')
 
 /**
- * This plugin implements a simple in-page text search, using Chrome's findInPage API.
- *
- */
-export default () => {
-  try {
-    registerListener()
-  } catch (err) {
-    // console.error('Not running in electron environment')
-    debug('Not running in electron environment')
-  }
-}
-
-/**
  * Listen for control/command+F
  *
  */
@@ -66,6 +53,11 @@ async function registerListener () {
   const searchInput = document.getElementById('search-input') as HTMLInputElement
   const searchFoundText = document.getElementById('search-found-text') as HTMLElement
 
+  const stopSearch = (clear: boolean) => {
+    app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
+    if (clear) { setTimeout(() => { cli.getCurrentPrompt().focus() }, 300) } // focus repl text input
+  }
+
   /** close the search box and tell chrome to terminate the search highlighting stuff */
   const closeSearchBox = () => {
     searchBar.classList.remove('visible')
@@ -80,10 +72,6 @@ async function registerListener () {
   const searchText = (value: string) => {
     searchFoundText.classList.remove('no-search-yet')
     app.remote.getCurrentWebContents().findInPage(value) // findInPage handles highlighting matched text in page
-  }
-  const stopSearch = (clear: boolean) => {
-    app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
-    if (clear) { setTimeout(() => { cli.getCurrentPrompt().focus() }, 300) } // focus repl text input
   }
 
   app.remote.getCurrentWebContents().on('found-in-page', (event, result) => {
@@ -142,5 +130,18 @@ async function registerListener () {
   window.onbeforeunload = () => {
     stopSearch(false) // before reloading, clear all highlighted matched text
     app.remote.getCurrentWebContents().removeAllListeners('found-in-page') // remove listner
+  }
+}
+
+/**
+ * This plugin implements a simple in-page text search, using Chrome's findInPage API.
+ *
+ */
+export default () => {
+  try {
+    registerListener()
+  } catch (err) {
+    // console.error('Not running in electron environment')
+    debug('Not running in electron environment')
   }
 }

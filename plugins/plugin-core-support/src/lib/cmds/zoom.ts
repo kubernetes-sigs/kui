@@ -36,37 +36,6 @@ const keys = {
 }
 
 /**
- * onkeydown event listener
- *
- */
-const listener = (event: KeyboardEvent): void => {
-  const char = event.keyCode
-
-  if (event.shiftKey) {
-    // if the shift key include in the chord, then this does not
-    // represent a zoom event
-    debug('ignoring due to shift key', char)
-    return
-  }
-
-  if (char === keys.ZOOM_RESET && (event.ctrlKey || event.metaKey)) {
-    // zooming
-    debug('reset zoom')
-    event.preventDefault()
-    reset()
-    setTimeout(() => eventBus.emit('/zoom', 1), 100)
-  } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
-    // zooming
-    event.preventDefault()
-    const main = document.querySelector('body > .page')
-    const factor = char === keys.ZOOM_IN ? 1 : -1
-    const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
-    _set(newZoom)
-    setTimeout(() => eventBus.emit('/zoom', newZoom), 100)
-  }
-}
-
-/**
  * Command usage model
  *
  */
@@ -99,10 +68,6 @@ const usage = {
  * Command handler for zoom set
  *
  */
-const set = ({ argvNoOptions }: EvaluatorArgs) => {
-  const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
-  return _set(newZoom)
-}
 const _set = newZoom => {
   const main = document.querySelector('body > .page')
 
@@ -129,12 +94,46 @@ const _set = newZoom => {
 
   return true
 }
-
+const set = ({ argvNoOptions }: EvaluatorArgs) => {
+  const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
+  return _set(newZoom)
+}
 /**
  * Command handler for zoom reset
  *
  */
 const reset = () => _set(1)
+
+/**
+ * onkeydown event listener
+ *
+ */
+const listener = (event: KeyboardEvent): void => {
+  const char = event.keyCode
+
+  if (event.shiftKey) {
+    // if the shift key include in the chord, then this does not
+    // represent a zoom event
+    debug('ignoring due to shift key', char)
+    return
+  }
+
+  if (char === keys.ZOOM_RESET && (event.ctrlKey || event.metaKey)) {
+    // zooming
+    debug('reset zoom')
+    event.preventDefault()
+    reset()
+    setTimeout(() => eventBus.emit('/zoom', 1), 100)
+  } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
+    // zooming
+    event.preventDefault()
+    const main = document.querySelector('body > .page')
+    const factor = char === keys.ZOOM_IN ? 1 : -1
+    const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
+    _set(newZoom)
+    setTimeout(() => eventBus.emit('/zoom', newZoom), 100)
+  }
+}
 
 /**
  * Return the current zoom level

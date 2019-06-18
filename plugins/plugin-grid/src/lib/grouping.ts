@@ -265,6 +265,37 @@ const addToGroup = (options, totals, splitRequested = false, splitter?: Splitter
 }
 
 /**
+ * User asked to filter based on outlier-iness. This must have a
+ * grouping. the {activations,statData} is a group from grouping.js
+ *
+ */
+const filterByOutlieriness = options => ({ activations, statData }) => {
+  if (!options.outliers) {
+    return activations
+  } else {
+    const thresholdN = typeof options.outliers === 'number'
+      ? options.outliers < 1 ? 100 * options.outliers : options.outliers // --outliers 0.25 versus --outliers 25
+      : options.outliers === true ? '90' // if true, this means the user passed --outliers with no arg; use default
+        : options.outliers // some random string; we'll check for supported strings in the next if clause
+    const threshold = statData.n[thresholdN]
+
+    // check that the user passed a supported options.outliers parameter
+    if (!options.hasOwnProperty('outliers') && threshold === undefined) {
+      // then the user specified an undefined threhsold
+      throw new Error(`Unsupported threhsold. Supported threhsolds: ${Object.keys(statData.n)}`)
+    }
+
+    return activations.filter(activation => {
+      const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime')
+      const waitTime = (waitAnno && waitAnno.value) || 0
+      const executionTime = activation.end - activation.start
+      const duration = executionTime + waitTime
+      return duration >= threshold
+    })
+  }
+}
+
+/**
  * Turn an "action group" --- activations grouped by action, keyed by
  * the action's path --- into an array. The caller will take care of
  * sorting this array how it sees fit.
@@ -374,37 +405,6 @@ export const groupByAction = (activations, options) => {
     groups,
     summary: summarizeWhole(groups, options) // a "statData" object, for all activations
   })
-}
-
-/**
- * User asked to filter based on outlier-iness. This must have a
- * grouping. the {activations,statData} is a group from grouping.js
- *
- */
-const filterByOutlieriness = options => ({ activations, statData }) => {
-  if (!options.outliers) {
-    return activations
-  } else {
-    const thresholdN = typeof options.outliers === 'number'
-      ? options.outliers < 1 ? 100 * options.outliers : options.outliers // --outliers 0.25 versus --outliers 25
-      : options.outliers === true ? '90' // if true, this means the user passed --outliers with no arg; use default
-        : options.outliers // some random string; we'll check for supported strings in the next if clause
-    const threshold = statData.n[thresholdN]
-
-    // check that the user passed a supported options.outliers parameter
-    if (!options.hasOwnProperty('outliers') && threshold === undefined) {
-      // then the user specified an undefined threhsold
-      throw new Error(`Unsupported threhsold. Supported threhsolds: ${Object.keys(statData.n)}`)
-    }
-
-    return activations.filter(activation => {
-      const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime')
-      const waitTime = (waitAnno && waitAnno.value) || 0
-      const executionTime = activation.end - activation.start
-      const duration = executionTime + waitTime
-      return duration >= threshold
-    })
-  }
 }
 
 /**

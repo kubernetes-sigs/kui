@@ -58,10 +58,6 @@ function gitClone (tmpdir: string) {
   })
 }
 
-function makeBranch (branchName: string, tmpdir: string) {
-  return checkout(branchName, tmpdir, '-b')
-}
-
 function checkout (branchName: string, tmpdir: string, options = '') {
   return new Promise((resolve, reject) => {
     exec(`git checkout ${options} ${branchName}`, { cwd: join(tmpdir, testClone) }, (error, stdout, stderr) => {
@@ -75,6 +71,10 @@ function checkout (branchName: string, tmpdir: string, options = '') {
       }
     })
   })
+}
+
+function makeBranch (branchName: string, tmpdir: string) {
+  return checkout(branchName, tmpdir, '-b')
 }
 
 common.localDescribe('Tab completion for git branches', function (this: common.ISuite) {

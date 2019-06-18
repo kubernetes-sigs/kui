@@ -181,6 +181,11 @@ export const preprocessTable = (raw: string[]) => {
   })
 }
 
+/** normalize the status badge by capitalization */
+const capitalize = (str: string): string => {
+  return str[0].toUpperCase() + str.slice(1).toLowerCase()
+}
+
 export const formatTable = (command: string, verb: string, entityTypeFromCommandLine: string, options, preTable: Pair[][]): Table => {
   debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
@@ -289,9 +294,4 @@ export const formatTable = (command: string, verb: string, entityTypeFromCommand
     noSort: true,
     title: entityTypeFromRows || entityTypeFromCommandLine
   }
-}
-
-/** normalize the status badge by capitalization */
-const capitalize = (str: string): string => {
-  return str[0].toUpperCase() + str.slice(1).toLowerCase()
 }

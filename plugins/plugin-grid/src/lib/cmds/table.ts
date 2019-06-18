@@ -95,33 +95,6 @@ const showGridForActivationList = (tab: Tab, activations) => drilldownWith(tab, 
 })
 
 /**
- * Visualize the activation data
- *
- */
-const drawTable = (tab: Tab, options, header: Header, uuid: string) => activations => {
-  const eventBus = new events.EventEmitter()
-  const content = document.createElement('div')
-  content.className = 'activation-viz-plugin'
-
-  if (options.w) {
-    // user asked for the action name column to be wider
-    content.classList.add('wide-label')
-  } else if (options.ww) {
-    // user asked for the action name column to be wider
-    content.classList.add('extra-wide-label')
-  }
-
-  // add time range to the sidecar header
-  const groupData = groupByAction(activations, Object.assign({ groupBySuccess: true }, options))
-  displayTimeRange(groupData, header.leftHeader)
-
-  return _drawTable(tab, options, header, content,
-    groupData, eventBus, uuid,
-    options.split && versionSorter // if we were asked to split by version, then sort by name
-  )
-}
-
-/**
  * Helper method for drawTable. This was split out, to allow for
  * re-sorting.
  *
@@ -635,6 +608,33 @@ const _drawTable = (tab: Tab, options, header: Header, content: Element, groupDa
   })
 
   return state
+}
+
+/**
+ * Visualize the activation data
+ *
+ */
+const drawTable = (tab: Tab, options, header: Header, uuid: string) => activations => {
+  const eventBus = new events.EventEmitter()
+  const content = document.createElement('div')
+  content.className = 'activation-viz-plugin'
+
+  if (options.w) {
+    // user asked for the action name column to be wider
+    content.classList.add('wide-label')
+  } else if (options.ww) {
+    // user asked for the action name column to be wider
+    content.classList.add('extra-wide-label')
+  }
+
+  // add time range to the sidecar header
+  const groupData = groupByAction(activations, Object.assign({ groupBySuccess: true }, options))
+  displayTimeRange(groupData, header.leftHeader)
+
+  return _drawTable(tab, options, header, content,
+    groupData, eventBus, uuid,
+    options.split && versionSorter // if we were asked to split by version, then sort by name
+  )
 }
 
 /**

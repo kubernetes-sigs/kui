@@ -33,6 +33,27 @@ debug('loading')
 
 debug('finished module imports')
 
+/**
+ * Find the location of the npm executable
+ *
+ */
+const locateNpm = (): Promise<string> => new Promise<string>((resolve) => {
+  which('npm', { nothrow: true }, (err, resolved) => {
+    if (resolved) { return resolve(resolved) }
+
+    // Try standard locations
+    if (err) {
+      const os = require('os')
+      let path = (os.platform === 'win32') ? `C:\\Program Files\\nodejs` : '/usr/local/bin'
+      resolved = which.sync('npm', { path, nothrow: true })
+      if (resolved) { return resolve(resolved) }
+
+      // TODO: eventually install npm or remove dependency on npm
+      return resolve(null)
+    }
+  })
+})
+
 const doInstall = ({ argvNoOptions }: EvaluatorArgs) => {
   debug('command execution started')
 
@@ -131,27 +152,6 @@ const doInstall = ({ argvNoOptions }: EvaluatorArgs) => {
     })
   })
 }
-
-/**
- * Find the location of the npm executable
- *
- */
-const locateNpm = (): Promise<string> => new Promise<string>((resolve) => {
-  which('npm', { nothrow: true }, (err, resolved) => {
-    if (resolved) { return resolve(resolved) }
-
-    // Try standard locations
-    if (err) {
-      const os = require('os')
-      let path = (os.platform === 'win32') ? `C:\\Program Files\\nodejs` : '/usr/local/bin'
-      resolved = which.sync('npm', { path, nothrow: true })
-      if (resolved) { return resolve(resolved) }
-
-      // TODO: eventually install npm or remove dependency on npm
-      return resolve(null)
-    }
-  })
-})
 
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/plugin/install', doInstall, { usage })
