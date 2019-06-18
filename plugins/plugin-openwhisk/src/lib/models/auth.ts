@@ -20,14 +20,12 @@ import { inBrowser, getAuthValue, setHasAuth, inElectron } from '@kui-shell/core
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
 import { config } from '@kui-shell/core/core/settings'
 import store from '@kui-shell/core/models/store'
-
 import expandHomeDir from '@kui-shell/core/util/home'
-const debug = Debug('plugins/openwhisk/models/auth')
-debug('loading')
-
 import openwhisk = require('openwhisk')
 
-let wskprops
+const debug = Debug('plugins/openwhisk/models/auth')
+
+let wskprops: Record<string, string>
 try {
   const propertiesParser = require('properties-parser')
   if (!inBrowser()) {
@@ -70,19 +68,19 @@ function getDefaultApiHost () {
  *
  *
  */
-export let apihost = process.env.__OW_API_HOST || wskprops.APIHOST || store().getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost') || getDefaultApiHost()
+export let apihost: string = process.env.__OW_API_HOST || wskprops.APIHOST || store().getItem(localStorageKey.host) || getAuthValue('openwhisk', 'apihost') || getDefaultApiHost()
 
-let authKey = process.env.__OW_API_KEY || wskprops.AUTH || store().getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
+let authKey: string = process.env.__OW_API_KEY || wskprops.AUTH || store().getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 
-let apigw_token = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
+let apigwToken: string = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
 
-let apigw_space_guid = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
-export let ow
+let apigwSpaceGuid: string = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
+export let ow /* : openwhisk.Client */
 
 let userRequestedIgnoreCerts = store().getItem(localStorageKey.ignoreCerts) !== undefined
-let ignoreCerts = apiHost => userRequestedIgnoreCerts || apiHost.indexOf('localhost') >= 0 || apiHost.startsWith('192.') || apiHost.startsWith('172.') || process.env.IGNORE_CERTS || wskprops.INSECURE_SSL
+let ignoreCerts = (apiHost: string): boolean => !!(userRequestedIgnoreCerts || apiHost.indexOf('localhost') >= 0 || apiHost.startsWith('192.') || apiHost.startsWith('172.') || process.env.IGNORE_CERTS || wskprops.INSECURE_SSL)
 
-export const initOWFromConfig = (owConfig) => {
+export const initOWFromConfig = (owConfig: openwhisk.Options) /* : openwhisk.Client */ => {
   debug('initOWFromConfig', owConfig)
 
   if (owConfig.api_key !== 'unknown') {
@@ -110,8 +108,8 @@ export const initOW = () => {
   const owConfig = {
     apihost: apihost || 'unknown',
     api_key: authKey || 'unknown',
-    apigw_token,
-    apigw_space_guid,
+    apigw_token: apigwToken,
+    apigw_space_guid: apigwSpaceGuid,
     ignore_certs: ignoreCerts(apihost)
   }
 
@@ -123,9 +121,9 @@ if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] ===
 
 export const apiHost = {
   get: () => Promise.resolve(apihost),
-  set: (newHost, { ignoreCerts = false } = {}) => {
+  set: async (newHost: string, { ignoreCerts = false } = {}) => {
     // eslint-disable-next-line node/no-deprecated-api
-    const url = require('url').parse(newHost)
+    const url = (await import('url')).parse(newHost)
     if (!url.protocol) {
       if (newHost.indexOf('localhost') >= 0 || newHost.indexOf('192.168') >= 0) {
         newHost = `http://${newHost}`
@@ -140,7 +138,7 @@ export const apiHost = {
     authKey = undefined
     initOW() // re-initialize the openwhisk npm
     debug('apiHost::set', apihost)
-    return Promise.resolve(newHost)
+    return newHost
   }
 }
 
