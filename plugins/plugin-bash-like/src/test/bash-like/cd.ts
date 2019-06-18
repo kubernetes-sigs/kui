@@ -15,26 +15,25 @@
  */
 
 import expandHomeDir from '@kui-shell/core/util/home'
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
+
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
 import { existsSync } from 'fs'
 import { dirname, join, normalize } from 'path'
 
 const { cli } = ui
-const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = (dir: string) => join(ROOT, dir)
 
 localDescribe('Change local shell directory', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(localBefore(this))
+  after(localAfter(this))
 
   const previous = () => {
     it(`should execute 'cd -' to change to previous dir`, () => cli.do(`cd -`, this.app)
       .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
-      .catch(common.oops(this)))
+      .catch(oops(this)))
   }
 
   let offset = 0
@@ -45,68 +44,68 @@ localDescribe('Change local shell directory', function (this: ISuite) {
   const bar = `bar${offset}`
   it('should mkdir with spaces', () => cli.do(`mkdir /tmp/"foo ${bar}"`, this.app)
     .then(cli.expectOK)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it(`should execute 'cd /tmp/"foo ${bar}"'`, () => cli.do(`cd /tmp/"foo ${bar}"`, this.app)
     .then(cli.expectOKWithString('foo bar'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   previous()
 
   it(`should execute 'cd "/tmp/foo ${bar}"'`, () => cli.do(`cd "/tmp/foo ${bar}"`, this.app)
     .then(cli.expectOKWithString('foo bar'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   previous()
 
   it(`should execute 'cd /tmp/foo ${bar}'`, () => cli.do(`cd /tmp/foo\\ ${bar}`, this.app)
     .then(cli.expectOKWithString('foo bar'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   // ls with space and trailing slash; see https://github.com/IBM/kui/issues/1389
   it(`should execute 'ls /tmp/foo ${bar}/'`, () => cli.do(`ls /tmp/foo\\ ${bar}/`, this.app)
     .then(cli.expectOKWithAny)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
   it(`should execute 'ls /tmp/"foo ${bar}"/'`, () => cli.do(`ls /tmp/"foo ${bar}"/`, this.app)
     .then(cli.expectOKWithAny)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   previous()
 
   it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   previous()
 
   it(`should execute 'cd -' again to change to previous-previous dir`, () => cli.do(`cd -`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   previous()
 
   // now we should be able to change back to data
   it(`should execute 'cd data'`, () => cli.do(`cd ${ROOT}/data`, this.app)
     .then(cli.expectOKWithString(rootRelative('data')))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it(`should handle cd error`, () => cli.do(`cd notexist`, this.app)
     .then(cli.expectError(500, 'cd: no such file or directory: notexist'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it(`should handle cd error`, () => cli.do(`cd ../notexist`, this.app)
     .then(cli.expectError(500, 'cd: no such file or directory: ../notexist'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it(`should handle cd error`, () => cli.do(`cd -/..`, this.app)
     .then(cli.expectError(499, 'Unsupported optional parameter /'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it(`should execute cd without arguments`, () => cli.do('cd', this.app)
     .then(cli.expectOKWithString(expandHomeDir('~')))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it(`should execute cd ${ROOT}`, () => cli.do(`cd ${ROOT}`, this.app)
     .then(cli.expectOKWithString(ROOT))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 })

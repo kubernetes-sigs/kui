@@ -22,8 +22,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
 const { validateNamespace } = ui
@@ -42,9 +41,9 @@ const selectors = {
 }
 selectors.PROMPT = `${selectors.PROMPT_BLOCK} input`
 
-common.localDescribe('Basic Functionality', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+localDescribe('Basic Functionality', function (this: ISuite) {
+  before(localBefore(this))
+  after(localAfter(this))
 
   const openWindow = (app: Application) => app.client.getWindowCount()
     .then(count => assert.strictEqual(count, 1)) // Verify that one window is open
@@ -54,7 +53,7 @@ common.localDescribe('Basic Functionality', function (this: ISuite) {
     .then(title => assert.strictEqual(title, APP_TITLE)) // Verify the window's title
 
   it('shows an initial window', () => openWindow(this.app)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('has an initial focus on the CLI prompt', () =>
     assert.ok(this.app.client.hasFocus(selectors.PROMPT)))

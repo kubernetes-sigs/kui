@@ -15,13 +15,11 @@
  */
 
 import { Application } from 'spectron'
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
 import { dirname, join } from 'path'
 const { cli, sidecar } = ui
-const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
 /** set the monaco editor text */
@@ -56,38 +54,38 @@ const grabFocus = async (app: Application) => {
 }
 
 localDescribe('editor basics', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(localBefore(this))
+  after(localAfter(this))
 
   /* not yet implemented
      it('should create a new file when editing a non-existing file', () => cli.do('edit editNonExistTest.txt', this.app)
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
      .then(sidecar.expectShowing('editNonExistTest.txt'))
-     .catch(common.oops(this)))
+     .catch(oops(this)))
 
      it('should open editNonExistTest.txt', () => cli.do('open editNonExistTest.txt', this.app)
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
      .then(sidecar.expectShowing('editNonExistTest.txt'))
-     .catch(common.oops(this)))
+     .catch(oops(this)))
 
      it('should rm editNonExistTest.txt', () => cli.do('rm editNonExistTest.txt', this.app)
      .then(cli.expectJustOK)
-     .catch(common.oops(this)))
+     .catch(oops(this)))
 
      it('should edit and save the content of a non-existing file', () => cli.do('edit editNonExistTest.txt', this.app)
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
      .then(() => setValue(this.app.client, 'testing edit non-existing file'))
      .then(save(this.app))
-     .catch(common.oops(this)))
+     .catch(oops(this)))
 
      it('should open editNonExistTest.txt and see changed content', () => cli.do('open editNonExistTest.txt', this.app)
      .then(cli.expectJustOK)
      .then(sidecar.expectOpen)
      .then(verifyTextExist(`${ui.selectors.SIDECAR} .language-txt`, 'testing edit non-existing file'))
-     .catch(common.oops(this)))
+     .catch(oops(this)))
   */
 
   const TMP = '/tmp' // FIXME
@@ -100,20 +98,20 @@ localDescribe('editor basics', function (this: ISuite) {
 
   it('should copy the edit input', () => cli.do(`cp ${initialFilepath} ${tmpFilepath}`, this.app)
     .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should edit but not save the content of an existing file', () => cli.do(`edit ${tmpFilepath}`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
     .then(() => setValue(this.app, 'should not be saved'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should re-open the file and see the unchanged content', () => cli.do(`open ${tmpFilepath}`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should edit and save the content', () => cli.do('edit /tmp/edit-file.txt', this.app)
     .then(cli.expectJustOK)
@@ -121,19 +119,19 @@ localDescribe('editor basics', function (this: ISuite) {
     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
     .then(() => setValue(this.app, updatedText))
     .then(save(this.app))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should re-open the initial file and see the unchanged content', () => cli.do(`open ${initialFilepath}`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should re-open the edited file and see the updated content', () => cli.do(`open ${tmpFilepath}`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   /** reload the app, and wait for a repl prompt */
   const refresh = () => {
@@ -165,5 +163,5 @@ localDescribe('editor basics', function (this: ISuite) {
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 })

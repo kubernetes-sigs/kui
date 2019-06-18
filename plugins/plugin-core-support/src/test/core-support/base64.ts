@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, oops } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
 describe('base64 command', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(localBefore(this))
+  after(localAfter(this))
 
   it('should base64 decode variant 1', () => cli.do('base64 --decode ZGVHZkZBdFM0dA==', this.app)
     .then(cli.expectOKWithString('deGfFAtS4t'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should base64 decode variant 2', () => cli.do('base64 -d ZGVHZkZBdFM0dA==', this.app)
     .then(cli.expectOKWithString('deGfFAtS4t'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should base64 decode with break 1', () => cli.do('base64 -d ZGVHZkZBdFM0dA== --break 1', this.app)
     .then(cli.expectOKWithString(`d
@@ -42,7 +41,7 @@ t
 S
 4
 t`))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should base64 decode with break 2', () => cli.do('base64 -d ZGVHZkZBdFM0dA== -b 2', this.app)
     .then(cli.expectOKWithString(`de
@@ -50,22 +49,22 @@ Gf
 FA
 tS
 4t`))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should base64 decode with break 3', () => cli.do('base64 -d ZGVHZkZBdFM0dA== -b 3', this.app)
     .then(cli.expectOKWithString(`deG
 fFA
 tS4
 t`))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should base64 decode with break 4', () => cli.do('base64 -d ZGVHZkZBdFM0dA== -b 4', this.app)
     .then(cli.expectOKWithString(`deGf
 FAtS
 4t`))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should base64 decode with break 40', () => cli.do('base64 -d ZGVHZkZBdFM0dA== --break 40', this.app)
     .then(cli.expectOKWithString('deGfFAtS4t'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 })

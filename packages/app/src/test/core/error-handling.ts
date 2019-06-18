@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, oops } from '@kui-shell/core/tests/lib/common'
+
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 describe('Error handling', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(localBefore(this))
+  after(localAfter(this))
 
   it('bind with no args', () => cli.do('bind', this.app)
     .then(cli.expectError(497))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 })

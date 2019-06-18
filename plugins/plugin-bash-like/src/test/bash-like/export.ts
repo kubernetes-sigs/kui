@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
-const { localDescribe } = common
 
 /*
  * Report on export testcases
@@ -31,8 +29,8 @@ const { localDescribe } = common
  */
 
 localDescribe('export command', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(localBefore(this))
+  after(localAfter(this))
 
   it('should export foo bar', () =>
     cli
@@ -41,7 +39,7 @@ localDescribe('export command', function (this: ISuite) {
       .then(() =>
         cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar'))
       )
-      .catch(common.oops(this)))
+      .catch(oops(this)))
 
   it('should export foo bar baz with space in string', () =>
     cli
@@ -50,5 +48,5 @@ localDescribe('export command', function (this: ISuite) {
       .then(() =>
         cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar baz'))
       )
-      .catch(common.oops(this)))
+      .catch(oops(this)))
 })

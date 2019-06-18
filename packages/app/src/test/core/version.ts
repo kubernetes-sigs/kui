@@ -22,16 +22,15 @@
 import { join } from 'path'
 import * as assert from 'assert'
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, oops, expectedVersion } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 describe('Version command', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(localBefore(this))
+  after(localAfter(this))
 
   it('should report proper version', () => cli.do('version', this.app)
-    .then(cli.expectOKWithCustom({ expect: common.expectedVersion }))
-    .catch(common.oops(this)))
+    .then(cli.expectOKWithCustom({ expect: expectedVersion }))
+    .catch(oops(this)))
 })

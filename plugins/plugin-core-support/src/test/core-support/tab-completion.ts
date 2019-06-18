@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as localBefore, after as localAfter, localIt, remoteIt } from '@kui-shell/core/tests/lib/common'
+
 import { tabby, tabbyWithOptions, tabbyWithOptionsThenCancel, touch } from '@kui-shell/plugin-core-support/tests/lib/tab-completion-util'
 import { dirSync as tmpDirSync } from 'tmp'
 import { dirname, join } from 'path'
-const { localIt, remoteIt } = common
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
 describe('Tab completion core', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(localBefore(this))
+  after(localAfter(this))
 
   const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/']
 
