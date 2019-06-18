@@ -52,7 +52,7 @@ describe('Tab completion for kubectl get', function (this: ISuite) {
 
     it(`should tab complete namespaces not unique`, () => {
       return tabbyWithOptions(this.app,
-        `k get pods -n ${commonPrefix.charAt(0)}`,
+        `k get pods -n ${commonPrefix}`,
         [ns, ns2],
         `k get pods -n ${ns}`,
         {
