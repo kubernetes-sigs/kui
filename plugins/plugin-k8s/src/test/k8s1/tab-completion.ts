@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
+import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/tab-completion-util'
 import { dirname } from 'path'
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-import { selectors } from '@kui-shell/core/tests/lib/ui'
 
-const { cli } = ui
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 const synonyms = ['kubectl']
 
 describe('Tab completion for kubectl get', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(commonBefore(this))
+  after(commonAfter(this))
 
   synonyms.forEach(kubectl => {
     // use a common prefix, so that we can test tab completion of
@@ -66,21 +63,21 @@ describe('Tab completion for kubectl get', function (this: ISuite) {
       return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
-        .catch(common.oops(this))
+        .catch(oops(this))
     })
 
     it(`should create tab-completion pod via ${kubectl}`, async () => {
       return cli.do(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion.yaml -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('tab-completion-1') }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
-        .catch(common.oops(this))
+        .catch(oops(this))
     })
 
     it(`should create tab-completion2 pod via ${kubectl}`, async () => {
       return cli.do(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion-2.yaml -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('tab-completion-2') }))
         .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
-        .catch(common.oops(this))
+        .catch(oops(this))
     })
 
     it(`should tab complete pods`, () => {

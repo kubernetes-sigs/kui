@@ -14,53 +14,51 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
-const { localDescribe } = common
 
 localDescribe('echo command', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(commonBefore(this))
+  after(commonAfter(this))
 
   it('should echo nothing variant 1', () => cli.do('echo', this.app)
     .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo nothing variant 2', () => cli.do('echo ', this.app)
     .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo nothing variant 3', () => cli.do('echo                  ', this.app)
     .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo hi', () => cli.do('echo hi', this.app)
     .then(cli.expectOKWithString('hi'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo hi with surrounding whitespace', () => cli.do('echo   hi               ', this.app)
     .then(cli.expectOKWithString('hi'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo hi hi with surrounding whitespace', () => cli.do('echo   hi hi               ', this.app)
     .then(cli.expectOKWithString('hi hi'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo hi hi with intra-whitespaces', () => cli.do('echo   hi  hi               ', this.app)
     .then(cli.expectOKWithString('hi hi'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo "hi  hi"', () => cli.do('echo "hi  hi"', this.app)
     .then(cli.expectOKWithString('hi  hi'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo "hi  hi" with surrounding whitespace', () => cli.do('echo   "hi  hi"               ', this.app)
     .then(cli.expectOKWithString('hi  hi'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 
   it('should echo multi', () => cli.do('echo   "hi  hi" hi        "hi   hi"               ', this.app)
     .then(cli.expectOKWithString('hi  hi hi hi   hi'))
-    .catch(common.oops(this)))
+    .catch(oops(this)))
 })

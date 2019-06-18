@@ -19,15 +19,14 @@
  *
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, localIt } from '@kui-shell/core/tests/lib/common'
+
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
-const { localIt } = common
 
 describe('Comments and blank line handling', function (this: ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  before(commonBefore(this))
+  after(commonAfter(this))
 
   it('should handle blank lines', () => cli.do('', this.app)
     .then(cli.expectBlank))
