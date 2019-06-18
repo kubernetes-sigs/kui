@@ -60,7 +60,7 @@ function clone<T> (instance: T): T {
 }
 
 export class ElementMimic {
-  _isFakeDom = true
+  private readonly _isFakeDom = true
   value = ''
   innerText = ''
   innerHTML = ''
