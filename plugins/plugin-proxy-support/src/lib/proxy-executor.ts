@@ -22,9 +22,15 @@ import { getValidCredentials } from '@kui-shell/core/core/capabilities'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
 import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 
 import * as needle from 'needle'
 const debug = Debug('plugins/proxy-support/executor')
+
+interface ProxyServerConfig {
+  url: string
+  needleOptions: needle.NeedleOptions
+}
 
 /**
  * The proxy server configuration.
@@ -33,7 +39,7 @@ const debug = Debug('plugins/proxy-support/executor')
  *
  */
 import defaultProxyServerConfig = require('@kui-shell/proxy/lib/defaultProxyServerConfig.json')
-const proxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
+const proxyServerConfig: ProxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
 debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */
@@ -88,6 +94,23 @@ class ProxyEvaluator implements ReplEval {
           err['body'] = response.body
           throw err
         } else {
+          /*
+           * try to unwind the fakedom for now
+           * TODO: we need a type guard to prevent fakedom object being passed to the proxy executor
+           * see related issue: https://github.com/IBM/kui/issues/1687
+           *
+           */
+          if (ElementMimic.isFakeDom(response.body)) {
+            debug('catch a fakedom, try to unwind')
+            if (response.body.innerText) {
+              return response.body.innerText
+            } else {
+              const err = new Error('Internal Error: Fakedom objects are not accepted by proxy executor')
+              err['code'] = 500
+              throw err
+            }
+          }
+
           return response.body
         }
       } catch (err) {
