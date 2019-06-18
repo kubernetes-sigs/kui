@@ -22,11 +22,13 @@ import { Entity } from '@kui-shell/core/models/entity'
 
 export default () => {
   if (!isHeadless()) {
+    // eslint-disable-next-line @typescript-eslint/ban-types
     registerCLIEntityView('activations', async (tab: Tab, response: Entity, resultDom: Element, parsedOptions: Object, execOptions: Object) => {
       const showActivation = (await import('./lib/views/cli/activations/entity')).default as ViewHandler
       return showActivation(tab, response, resultDom, parsedOptions, execOptions)
     })
 
+    // eslint-disable-next-line @typescript-eslint/ban-types
     const doShow = async (tab: Tab, entity: Object, sidecar: Element, options: ShowOptions) => {
       const { showEntity } = (await import('./lib/views/sidecar/entity'))
       return showEntity(tab, entity, sidecar, options)

@@ -29,6 +29,7 @@ const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
  * Render an activation response in the CLI portion of the UI
  *
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default async (tab: Tab, response: Activation | EntitySpec, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<boolean> => {
   if (isAsyncActivationSpec(response)) {
     // probably non-blocking invoke

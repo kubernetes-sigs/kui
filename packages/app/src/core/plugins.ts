@@ -76,6 +76,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
           return doScan({ modules: fs.readdirSync(modulePath), moduleDir: modulePath })
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-types
         function lookFor (filename: string, destMap: Object, color: string) {
           const pluginPath = path.join(moduleDir, module, filename)
           debug('lookFor', filename, pluginPath)

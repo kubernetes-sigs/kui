@@ -145,6 +145,7 @@ export default async (commandTree: CommandRegistrar) => {
   })
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const doInvoke = async (tab: Tab, input: Object, argvWithoutOptions: string[], spinnerDiv: Element) => new Promise(async () => {
   try {
     debug('executing invoke command')
@@ -178,6 +179,7 @@ const doInvoke = async (tab: Tab, input: Object, argvWithoutOptions: string[], s
  * Local debug
  *
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 const doDebug = (tab: Tab, input: Object, argvWithoutOptions: string[], dashOptions, returnDiv: Element, spinnerDiv: Element) => new Promise(async (resolve) => {
   debug('executing debug command')
 
@@ -545,6 +547,7 @@ const init = async (kind, spinnerDiv) => {
 interface ProtoAction {
   name: string
   kind?: string
+  // eslint-disable-next-line @typescript-eslint/ban-types
   input: Object
 }
 const getActionNameAndInputFromActivations = async (actId, spinnerDiv): Promise<ProtoAction> => {
@@ -761,6 +764,7 @@ Promise.resolve(debugMainFunc(${JSON.stringify(input)}))
  * Run the given code inside a local debugging session
  *
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 const runActionDebugger = (actionName: string, functionCode: string, functionKind: string, functionInput: Object, isBinary: boolean, spinnerDiv: Element, returnDiv: Element) => new Promise((resolve, reject): ProtoActivation | void => {
   debug('runActionDebugger', actionName)
 

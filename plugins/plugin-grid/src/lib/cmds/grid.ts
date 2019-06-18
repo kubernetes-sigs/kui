@@ -167,6 +167,7 @@ interface Options {
   timeline?: boolean
   zoom?: number
 }
+// eslint-disable-next-line @typescript-eslint/ban-types
 const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redraw = false) => (activations: Object[]) => {
   debug('drawGrid', redraw)
 

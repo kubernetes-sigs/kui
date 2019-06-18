@@ -152,12 +152,14 @@ const scanModules = async (root: string): Promise<File[]> => {
 
 interface Node {
   route: string
+  // eslint-disable-next-line @typescript-eslint/ban-types
   usage?: Object
   docs?: string
   children?: { [key: string]: Node }
 }
 
 interface Prescan {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   commandToPlugin?: Object
 }
 
