@@ -256,8 +256,8 @@ body.os-darwin .left-tab-stripe {
     /* make not-selected tabs a bit more visible */
     color: var(--color-base02);
 
-    border-left: 1px inset transparent;
-    border-right: 1px inset transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
     transition: color 150ms ease-in-out;
 }
 body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label {
@@ -287,7 +287,7 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
 
 .left-tab-stripe-button-label {
     flex: 1;
-    padding: 0.375em 1.25em 0.375em 1em;
+    padding: 0.5em 1.25em 0.5em 1em;
     font-weight: 500;
     direction: unset;
     max-width: 25em;
