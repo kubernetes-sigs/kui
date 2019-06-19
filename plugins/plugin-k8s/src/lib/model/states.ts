@@ -205,7 +205,11 @@ const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: Fina
   } else {
     const readyCondition = kubeEntity.status &&
       kubeEntity.status.conditions &&
-      kubeEntity.status.conditions.find(({ reason }) => reason === 'MinimumReplicasAvailable')
+      kubeEntity.status.conditions.find(({ reason, type, status }) => {
+        return reason === 'MinimumReplicasAvailable' ||
+          type === 'Ready' || status === 'True'
+      })
+
     if (readyCondition) {
       return {
         state: desireIsOffline ? States.Pending : States.Online,
