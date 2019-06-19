@@ -134,7 +134,7 @@ interface File {
  *
  */
 const scanModules = async (root: string): Promise<File[]> => {
-  const { plugins: modules = {} } = await plugins.scanForModules(root, true) // eslint-disable-line
+  const { plugins: modules = {} } = await plugins.scanForModules(root, true)
 
   const files = []
 
