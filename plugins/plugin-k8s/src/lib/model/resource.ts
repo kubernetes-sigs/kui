@@ -92,11 +92,11 @@ interface RoleRef {
   name: string
 }
 
-export interface KubeResource extends MetadataBearing {
+export interface KubeResource<Status = KubeStatus> extends MetadataBearing {
   apiVersion: string
   kind: string
   metadata?: KubeMetadata
-  status?: KubeStatus
+  status?: Status
   spec?: any
   data?: object
 }

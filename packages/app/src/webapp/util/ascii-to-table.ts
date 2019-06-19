@@ -211,6 +211,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
       outerCSS: outerCSSForKey[key] +
         (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
       css: css +
+        (column.length > 20 ? ' pretty-wide' : '') +
         ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
       value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
     })).concat(fillTo(columns.length, maxColumns))

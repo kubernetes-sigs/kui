@@ -21,9 +21,9 @@ import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import { Resource, KubeResource } from '../../model/resource'
+import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
-const debug = Debug('k8s/view/modes/crds')
+const debug = Debug('plugin/operator-framework/view/modes/crds')
 
 /**
  * e.g. ClusterServiceVersion
@@ -74,8 +74,8 @@ export const crdsMode: ModeRegistration<KubeResource> = {
         mode: 'CRDs',
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'k8s',
-          module: 'lib/view/modes/crds',
+          plugin: 'operator-framework',
+          module: 'view/modes/crds',
           operation: 'renderAndView',
           parameters: { command, resource }
         }

@@ -172,9 +172,9 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     table-layout: fixed;
     width: 100%;
 }
-/* .result-table .cell-inner { see https://github.com/IBM/kui/issues/1653
+.result-table .cell-inner.pretty-wide { /* careful here, see https://github.com/IBM/kui/issues/1653 */
     white-space: pre-wrap;
-} */
+}
 .result-as-table .result-table-outer-wrapper {
     /* repl table */
     display: table-row;
@@ -1027,6 +1027,10 @@ sidecar .sidecar-content {
 sidecar .sidecar-content > div, sidecar .sidecar-content .activation-content > pre > code, sidecar .custom-content pre > code, sidecar .custom-content .padding-content {
     display: block;
     padding: 1.5em 1em;
+}
+sidecar .custom-content .padding-content.scrollable {
+    /* for scrollable padding-content, we want the scrollbar to be flush-right */
+    flex: 1;
 }
 sidecar .sidecar-content .hook-for-third-party-content.no-content {
     display: none;

@@ -19,10 +19,10 @@ import * as Debug from 'debug'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
-import { Resource, KubeResource } from '../../model/resource'
+import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import marked = require('marked')
 
-const debug = Debug('k8s/view/modes/description')
+const debug = Debug('plugin/operator-framework/view/modes/description')
 
 /**
  * e.g. ClusterServiceVersion
@@ -53,8 +53,8 @@ export const descriptionMode: ModeRegistration<KubeResource> = {
         mode: 'Description',
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'k8s',
-          module: 'lib/view/modes/description',
+          plugin: 'operator-framework',
+          module: 'view/modes/description',
           operation: 'renderAndView',
           parameters: { command, resource }
         }
