@@ -244,16 +244,12 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
 
             if (typeof view === 'string') {
               const dom = document.createElement('div')
-              dom.classList.add('padding-content')
-              dom.classList.add('scrollable')
-              dom.classList.add('scrollable-auto')
+              dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.innerText = view
               insertView(tab)(dom)
             } else if (view.nodeName) {
               const dom = document.createElement('div')
-              dom.classList.add('padding-content')
-              dom.classList.add('scrollable')
-              dom.classList.add('scrollable-auto')
+              dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.appendChild(view)
               insertView(tab)(dom)
             } else if (isCustomSpec(view)) {
@@ -262,8 +258,8 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
             } else if (isTable(view)) {
               const dom1 = document.createElement('div')
               const dom2 = document.createElement('div')
-              dom1.classList.add('padding-content')
-              dom2.classList.add('result-as-table', 'result-as-vertical', 'repl-result')
+              dom1.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+              dom2.classList.add('result-as-table', 'repl-result')
               dom1.appendChild(dom2)
               formatTable(tab, view, dom2, { usePip: true })
               insertView(tab)(dom1)
