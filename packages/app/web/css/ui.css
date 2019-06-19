@@ -2626,19 +2626,19 @@ badge.badge-as-fontawesome {
     color: var(--color-tag-beta-text);
     font-family: var(--font-sans-serif);
 }
-badge.green-background {
+badge.green-background:not(.badge-as-image) {
     background: var(--color-support-02);
     color: var(--color-ui-01);
 }
-badge.yellow-background, button.yellow-background {
+badge.yellow-background:not(.badge-as-image), button.yellow-background {
     background: var(--color-support-03-darker);
     color: var(--color-ui-01);
 }
-badge.red-background {
+badge.red-background:not(.badge-as-image) {
     background: var(--color-support-01);
     color: var(--color-ui-01);
 }
-badge.gray-background {
+badge.gray-background:not(.badge-as-image) {
     background: var(--color-ui-05);
     color: var(--color-ui-02);
 }
