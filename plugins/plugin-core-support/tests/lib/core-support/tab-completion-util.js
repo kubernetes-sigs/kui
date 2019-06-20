@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+const common = require('@kui-shell/core/tests/lib/common')
+const ui = require('@kui-shell/core/tests/lib/ui')
+const fs = require('fs')
 
-import { openSync, closeSync } from 'fs'
+const { openSync, closeSync } = fs
 const { cli, keys } = ui
 
 /** touch the given filepath */
-export const touch = (filepath: string) => {
+exports.touch = (filepath) => {
   closeSync(openSync(filepath, 'w'))
 }
 
 /** execute the given async task n times */
-export const doTimes = (n, task) => {
+exports.doTimes = (n, task) => {
   if (n > 0) {
-    return task().then(() => doTimes(n - 1, task))
+    return task().then(() => exports.doTimes(n - 1, task))
   } else {
     return Promise.resolve()
   }
 }
 
-export const tabby = (app, partial, full, expectOK = true) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
+exports.tabby = (app, partial, full, expectOK = true) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
   .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
   .then(count => parseInt(count, 10))
   .then(count => app.client.setValue(ui.selectors.CURRENT_PROMPT, partial)
@@ -52,7 +53,7 @@ export const tabby = (app, partial, full, expectOK = true) => app.client.waitFor
   })
   .catch(common.oops(app))
 
-export const tabbyWithOptions = (app, partial, expected?, full?, { click = undefined, nTabs = undefined, expectOK = true, expectedPromptAfterTab = undefined } = {}) => {
+exports.tabbyWithOptions = (app, partial, expected, full, { click = undefined, nTabs = undefined, expectOK = true, expectedPromptAfterTab = undefined } = {}) => {
   return app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
@@ -94,7 +95,7 @@ export const tabbyWithOptions = (app, partial, expected?, full?, { click = undef
         } else {
           // otherwise hit tab a number of times, to cycle to the desired entry
           // console.error('tabbing', nTabs)
-          return doTimes(nTabs, () => app.client.keys('Tab'))
+          return exports.doTimes(nTabs, () => app.client.keys('Tab'))
             .then(() => app.client.keys('Enter'))
         }
       })
@@ -112,7 +113,7 @@ export const tabbyWithOptions = (app, partial, expected?, full?, { click = undef
       .then(() => common.oops(app)(err)))
 }
 
-export const tabbyWithOptionsThenCancel = (app, partial, expected) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
+exports.tabbyWithOptionsThenCancel = (app, partial, expected) => app.client.waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
   .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
   .then(count => parseInt(count, 10))
   .then(count => app.client.setValue(ui.selectors.CURRENT_PROMPT, partial)

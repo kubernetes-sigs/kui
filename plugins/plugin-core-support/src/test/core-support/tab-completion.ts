@@ -16,7 +16,7 @@
 
 import { ISuite, before as commonBefore, after as commonAfter, localIt, remoteIt } from '@kui-shell/core/tests/lib/common'
 
-import { tabby, tabbyWithOptions, tabbyWithOptionsThenCancel, touch } from '@kui-shell/plugin-core-support/tests/lib/tab-completion-util'
+import { tabby, tabbyWithOptions, tabbyWithOptionsThenCancel, touch } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 import { dirSync as tmpDirSync } from 'tmp'
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
