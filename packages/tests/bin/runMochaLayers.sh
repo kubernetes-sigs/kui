@@ -40,7 +40,9 @@ if [ -z "$API_HOST" ]; then
     elif [ -z "$LAYERS" ]; then
         export EXCLUDE_OW_TEST=true
     fi
-else
+fi
+
+if [ ! -f ~/.wskprops ]; then
     echo "APIHOST=$API_HOST" > ~/.wskprops
     echo "INSECURE_SSL=true" >> ~/.wskprops
 fi

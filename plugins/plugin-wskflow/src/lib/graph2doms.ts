@@ -338,7 +338,7 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
           if (d.visited) {
             let failed = true // assumption: all fail is fail. if one succes, we count it as success
             d.visited.forEach(i => {
-              if (activations[i].response.success) { failed = false }
+              if (activations[i] && activations[i].response.success) { failed = false }
             })
             if (failed) {
               $(this).attr('failed', true)

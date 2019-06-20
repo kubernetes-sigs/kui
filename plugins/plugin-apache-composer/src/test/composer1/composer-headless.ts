@@ -206,12 +206,12 @@ class Validation {
   }
 }
 
-describe('Composer Headless Test :', function (this: common.ISuite) {
+describe('Composer Headless Test', function (this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
   describe('should create simple composition from @demos', function (this: common.ISuite) {
     it('app create test1 @demos/hello.js', () => cli.do('app create test1 @demos/hello.js')
-      .then(cli.expectOK('ok: updated composition test1\n', { exact: true }))
+      .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
       .catch(common.oops(this)))
     new Validation(this).do({ name: 'test1', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
   })
@@ -244,7 +244,7 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
       .catch(common.oops(this)))
 
     it('validate app create testing/subtest1 @demos/hello.js', () => cli.do('app create testing/subtest1 @demos/hello.js')
-      .then(cli.expectOK('ok: updated composition testing/subtest1\n', { exact: true }))
+      .then(cli.expectOK('ok: updated composition /_/testing/subtest1\n', { exact: true }))
       .catch(common.oops(this)))
 
     new Validation(this).do({ name: 'subtest1', packageName: 'testing', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
@@ -252,8 +252,12 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
 
   if (ui.expectedNamespace()) {
     describe('should create composition with namespace', function (this: common.ISuite) {
+      it('should create package first', () => cli.do('wsk package update testing')
+        .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
+        .catch(common.oops(this)))
+
       it('validate app create with namespace', () => cli.do(`app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`)
-        .then(cli.expectOK(`ok: updated composition testing/subtest2\n`, { exact: true }))
+        .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
         .catch(common.oops(this)))
       new Validation(this).do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
     })
@@ -267,7 +271,7 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
 
   describe('should create compostion and dependent actions with implicity entity', function (this: common.ISuite) {
     it('validate app create test2 @demos/if.js', () => cli.do('app create test2 @demos/if.js')
-      .then(cli.expectOK('ok: updated composition test2\n', { exact: true }))
+      .then(cli.expectOK('ok: updated composition /_/test2\n', { exact: true }))
       .catch(common.oops(this)))
 
     it('validate app invoke test2 fails', () => cli.do('app invoke test2')
@@ -277,22 +281,26 @@ describe('Composer Headless Test :', function (this: common.ISuite) {
 
   describe('should update simple composition', function (this: common.ISuite) {
     it('validate app update test1 @demos/let.js', () => cli.do('app update test1 @demos/let.js')
-      .then(cli.expectOK('ok: updated composition test1\n', { exact: true }))
+      .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
       .catch(common.oops(this)))
     new Validation(this).do({ name: 'test1', output: { ok: true } })
   })
 
   describe('should update simple composition with packageName', function (this: common.ISuite) {
     it('validate app update testing/subtest1 @demos/let.js', () => cli.do('app update testing/subtest1 @demos/let.js')
-      .then(cli.expectOK('ok: updated composition testing/subtest1\n', { exact: true }))
+      .then(cli.expectOK('ok: updated composition /_/testing/subtest1\n', { exact: true }))
       .catch(common.oops(this)))
     new Validation(this).do({ name: 'subtest1', packageName: 'testing', output: { ok: true } })
   })
 
   if (ui.expectedNamespace()) {
     describe('should update simple composition with namespace', function (this: common.ISuite) {
+      it('should create package first', () => cli.do('wsk package update testing')
+        .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
+        .catch(common.oops(this)))
+
       it(`validate app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`, () => cli.do(`app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`)
-        .then(cli.expectOK(`ok: updated composition testing/subtest2\n`, { exact: true }))
+        .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
         .catch(common.oops(this)))
       new Validation(this).do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { ok: true } })
     })

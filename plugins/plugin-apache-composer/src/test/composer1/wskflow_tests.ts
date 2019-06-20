@@ -37,7 +37,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/pa
  *
  */
 // test if the graph is by default zoom to fit
-describe('bring up the composer visualization when the sidecar is minimized', function (this: common.ISuite) {
+describe('wskflow test bring up the composer visualization when the sidecar is minimized', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -57,7 +57,7 @@ describe('bring up the composer visualization when the sidecar is minimized', fu
 })
 
 // test if app preview update a graph when the watched file gets updated
-describe('app preview should actively watching an external file', function (this: common.ISuite) {
+describe('wskflow test app preview should actively watching an external file', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -157,7 +157,7 @@ describe('app preview should actively watching an external file', function (this
 })
 
 // test if session flow highlighting is correct
-describe('create a if composition, invoke, verify session flow is shown correctly', function (this: common.ISuite) {
+describe('wskflow test create a if composition, invoke, verify session flow is shown correctly', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
   const appName = 'test-if'
@@ -205,7 +205,7 @@ describe('create a if composition, invoke, verify session flow is shown correctl
 })
 
 // click on node in wskflow and show action
-describe('drilldown to action from wskflow', function (this: common.ISuite) {
+describe('wskflow test drilldown to action from wskflow', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -236,7 +236,7 @@ describe('drilldown to action from wskflow', function (this: common.ISuite) {
 })
 
 // test if mousedown on a node, drag and release triggers the clicking behavior of the node (it shouldn't)
-describe('test if pressing a node, dragging and releasing triggers the clicking behavior of the node it should not', function (this: common.ISuite) {
+describe('wskflow test test if pressing a node, dragging and releasing triggers the clicking behavior of the node it should not', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

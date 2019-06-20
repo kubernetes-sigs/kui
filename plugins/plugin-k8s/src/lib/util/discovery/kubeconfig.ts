@@ -16,8 +16,10 @@
 
 import * as Debug from 'debug'
 
+import { exists } from 'fs-extra'
 import { delimiter } from 'path'
 import { execSync } from 'child_process'
+
 const debug = Debug('k8s/discovery/kubeconfig')
 
 /**
@@ -56,18 +58,20 @@ const maybeKUBECONFIG = (file: string): string | void => {
  * .profile (etc.) files prior to launch (for these launch modes).
  *
  */
-const fillInKUBECONFIG = (env) => {
+const fillInKUBECONFIG = async (env: Record<string, any>) => {
   if (env.KUBECONFIG === undefined) { // see https://github.com/IBM/kui/issues/1789
-    debug('attempting to find KUBECONFIG env var')
-    const kubeconfig = maybeKUBECONFIG('.bash_profile') ||
-      maybeKUBECONFIG('.profile') ||
-      maybeKUBECONFIG('.zshrc') ||
-      maybeKUBECONFIG('.zsh_profile') ||
-      maybeKUBECONFIG('.bashrc') // might not work, as these are usually no-ops for non-interactive shells; but let's try it
+    if (!(await exists(process.env.HOME + '/.kube/config'))) {
+      debug('attempting to find KUBECONFIG env var')
+      const kubeconfig = maybeKUBECONFIG('.bash_profile') ||
+        maybeKUBECONFIG('.profile') ||
+        maybeKUBECONFIG('.zshrc') ||
+        maybeKUBECONFIG('.zsh_profile') ||
+        maybeKUBECONFIG('.bashrc') // might not work, as these are usually no-ops for non-interactive shells; but let's try it
 
-    if (kubeconfig) {
-      process.env.KUBECONFIG = env.KUBECONFIG = kubeconfig
-      // ^^^ note how we remember this in process.env
+      if (kubeconfig) {
+        process.env.KUBECONFIG = env.KUBECONFIG = kubeconfig
+        // ^^^ note how we remember this in process.env
+      }
     }
   }
 }
@@ -82,7 +86,7 @@ const fillInKUBECONFIG = (env) => {
  * be updated.
  *
  */
-export const fillInTheBlanks = (env) => {
+export const fillInTheBlanks = async (env: Record<string, any>) => {
   try {
     fillInPATH(env)
   } catch (err) {
@@ -90,7 +94,7 @@ export const fillInTheBlanks = (env) => {
   }
 
   try {
-    fillInKUBECONFIG(env)
+    await fillInKUBECONFIG(env)
   } catch (err) {
     debug('giving up trying to fill in KUBECONFIG for kubectl', err)
   }
