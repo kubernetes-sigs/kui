@@ -57,7 +57,7 @@ const maybeKUBECONFIG = (file: string): string | void => {
  *
  */
 const fillInKUBECONFIG = (env) => {
-  if (!env.KUBECONFIG) {
+  if (env.KUBECONFIG === undefined) { // see https://github.com/IBM/kui/issues/1789
     debug('attempting to find KUBECONFIG env var')
     const kubeconfig = maybeKUBECONFIG('.bash_profile') ||
       maybeKUBECONFIG('.profile') ||
