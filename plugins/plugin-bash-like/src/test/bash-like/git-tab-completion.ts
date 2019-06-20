@@ -21,7 +21,7 @@ import { dir as createTemporaryDirectory } from 'tmp'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/tab-completion-util'
+import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 
 const { cli } = ui
 
