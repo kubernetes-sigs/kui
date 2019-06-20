@@ -21,7 +21,7 @@ import { safeDump, safeLoad as parseYAML } from 'js-yaml'
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 import path = require('path')
 import assert = require('assert')
 
@@ -43,7 +43,7 @@ describe('electron context switching', function (this: common.ISuite) {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
         return cli.do(`${kubectl} delete namespace ${name}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name), errOk }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+          .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
             if (!errOk) {
@@ -58,7 +58,7 @@ describe('electron context switching', function (this: common.ISuite) {
       it(`should create namespace ${name} via ${kubectl}`, () => {
         return cli.do(`${kubectl} create namespace ${name}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
     }
@@ -68,7 +68,7 @@ describe('electron context switching', function (this: common.ISuite) {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
         return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
 
@@ -78,8 +78,8 @@ describe('electron context switching', function (this: common.ISuite) {
           .then(sidecar.expectOpen)
           .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
           .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
-          .then(() => `${selectors.SIDECAR} .result-table .entity[data-name="nginx"] badge.green-background`)
-          .then(selector => this.app.client.waitForExist(selector))
+          .then(() => `${selectors.SIDECAR} .result-table .entity[data-name="nginx"]`)
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
     }
@@ -171,7 +171,7 @@ describe('electron context switching', function (this: common.ISuite) {
       it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'}`, () => {
         return cli.do(`${kubectl} get pods ${ns ? '-n ' + ns : ''}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
     }

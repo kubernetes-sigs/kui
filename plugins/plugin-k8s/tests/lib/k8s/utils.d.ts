@@ -50,3 +50,15 @@ declare function deleteNS (ctx: ISuite, ns: string, theCli?: headless | ui): voi
  *
  */
 declare function waitTillNone (kind: string, theCli?: headless | ui, name?: string, okToSurvive?: string, inNamespace?: string): (app: Application) => Promise<void>
+
+/**
+ * Wait for a green badge
+ *
+ */
+declare function waitForGreen (app: Application, selector: string): Promise<string>
+
+/**
+ * Wait for a red badge
+ *
+ */
+declare function waitForRed (app: Application, selector: string): Promise<string>

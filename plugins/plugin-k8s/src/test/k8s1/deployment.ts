@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import * as assert from 'assert'
 import { dirname } from 'path'
@@ -40,7 +40,7 @@ describe('electron deployment', function (this: common.ISuite) {
         await this.app.client.getText(`${selectorPrefix} .result-table-title`)
           .then(titles => assert.ok(titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS'))
 
-        await this.app.client.waitForExist(`${selector} badge.green-background`)
+        await waitForGreen(this.app, selector)
 
         await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
 

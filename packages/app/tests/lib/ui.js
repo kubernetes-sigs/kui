@@ -537,7 +537,7 @@ exports.expectValidActivationId = () => activationId => activationId.match(activ
  */
 exports.normalizeHTML = s => {
   const result = s.toString()
-    .replace(/https:\/\/[^/]+/g, '') // strip out any hostnames that may vary
+    .replace(/http(s?):\/\/[^/]+/g, '') // strip out any hostnames that may vary
     .replace(/>\s+</g, '><') // remove white-space between tags
     .replace(/"/g, '\'') // convert to single quotes
     .replace(/href=(['"])([^'"]+).css(['"])/, 'href=$1$2.http$3')

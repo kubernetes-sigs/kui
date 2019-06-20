@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, expectYAMLSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -88,7 +88,7 @@ describe('electron describe', function (this: common.ISuite) {
     it(`should create sample pod from URL via ${kubectl}`, () => {
       return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+        .then(selector => waitForGreen(this.app, selector))
         .catch(common.oops(this))
     })
 
@@ -123,8 +123,8 @@ describe('electron describe', function (this: common.ISuite) {
 
           // a deletion command should be issued
           const newResourceSelector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })({ app: res.app, count: res.count + 1 })
-          const expectOffline = `${newResourceSelector} span:not(.repeating-pulse) badge.red-background`
-          await this.app.client.waitForExist(expectOffline)
+          const expectOffline = `${newResourceSelector} span:not(.repeating-pulse)`
+          await waitForRed(this.app, expectOffline)
         })
         .catch(common.oops(this))
     })

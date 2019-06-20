@@ -33,8 +33,6 @@ interface Markdown {
 export default (tab: Tab, suffix: string, source: string, fullpath: string, hljs): Promise<Markdown> => {
   if (suffix === 'md') {
     return markdownify(tab, source, fullpath, hljs)
-  } else if (suffix === 'adoc') {
-    return asciidocify(tab, source, fullpath, hljs)
   }
 }
 
@@ -70,18 +68,6 @@ const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
   }
 
   link.classList.add('bx--link')
-}
-
-/**
- * Render an asciidoc file as HTML
- *
- */
-const asciidocify = async (tab: Tab, source: string, fullpath: string, hljs): Promise<Markdown> => {
-  const Asciidoctor = await import('asciidoctor.js')
-  const asciidoctor = Asciidoctor()
-
-  const htmlString = asciidoctor.convert(source)
-  return wrap(tab, htmlString, fullpath, hljs)
 }
 
 /**

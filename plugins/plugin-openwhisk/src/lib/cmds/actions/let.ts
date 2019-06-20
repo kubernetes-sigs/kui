@@ -161,8 +161,7 @@ const fetchRemote = (location, mimeType): Promise<Remote> => new Promise((resolv
 
 const extensionToKind = {
   '.js': 'nodejs:default',
-  '.py': 'python:default',
-  '.swift': 'swift:default'
+  '.py': 'python:default'
 }
 
 /** annotations */
@@ -638,7 +637,7 @@ export default async (commandTree, wsk) => {
       const code = `let main = ${actionMatch[4]}`
 
       /* if (!kind) {
-         throw new Error('Please use a name with an extension of .js, .py, or .swift')
+         throw new Error('Please use a name with an extension of .js, .py')
          } */
 
       const action = options.action || {}

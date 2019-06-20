@@ -670,7 +670,7 @@ export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElemen
     renderState.activations.forEach((a, index) => {
       if (a.logs) { // states recorded in logs
         a.logs.forEach(log => {
-          if (log.indexOf('stdout: Entering composition') !== -1) {
+          if (log.indexOf('Entering composition') !== -1) {
             // a conductor path log
             let path = log.substring(log.lastIndexOf(' ') + 1)
             // replace all [,],.in path to - to use as a id, as css selector cannot have those characters

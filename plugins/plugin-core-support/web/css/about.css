@@ -1,5 +1,6 @@
 .about-window {
     overflow: auto;
+    flex: 1;
 }
 
 .about-window-long-description {

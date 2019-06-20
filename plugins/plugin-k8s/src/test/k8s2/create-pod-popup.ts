@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { selectors } from '@kui-shell/core/tests/lib/ui'
-import { createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
 const ns2: string = createNS()
@@ -50,7 +50,7 @@ const waitForDelete = function (this: common.ISuite, { name, noExistOk = false }
           }
         })
       } else {
-        await this.app.client.waitForExist(`${selectors.BY_NAME(name)} badge.red-background`)
+        await waitForRed(this.app, selectors.BY_NAME(name))
       }
     } catch (err) {
       common.oops(this)(err)
@@ -106,11 +106,11 @@ const waitForCreate = function (this: common.ISuite, spec: CreateSpec) {
       /** see NOTE just below; we use the STATUS mode as the "clear the editor" intermission */
       const intermission = async () => {
         await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
-        await this.app.client.waitForExist(`${selectors.SIDECAR} ${selectors.BY_NAME(name)} badge.green-background`)
+        await waitForGreen(this.app, `${selectors.SIDECAR} ${selectors.BY_NAME(name)}`)
       }
 
       // first wait for the table entry to turn green
-      await this.app.client.waitForExist(`${selectors.BY_NAME(name)} badge.green-background`)
+      await waitForGreen(this.app, selectors.BY_NAME(name))
 
       // then click on the table row and switch back and forth between
       // raw and summary modes, each time ensuring that the editor

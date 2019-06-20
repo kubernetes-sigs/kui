@@ -63,11 +63,13 @@ const prepareElectron = (fuzz, popup = false) => {
   const opts = {
     env,
     chromeDriverArgs: [ '--no-sandbox' ],
-    waitTimeout: process.env.TIMEOUT || 60000
+    waitTimeout: process.env.TIMEOUT || 10000
   }
 
   if (process.env.PORT_OFFSET) {
-    opts.port = 9515 + parseInt(process.env.PORT_OFFSET)
+    opts.port = 9515 + parseInt(process.env.PORT_OFFSET, 10)
+
+    opts.chromeDriverArgs.push(`--user-data-dir=/tmp/kui-profile-${process.env.PORT_OFFSET}`)
   }
 
   if (process.env.MOCHA_RUN_TARGET === 'webpack') {
@@ -112,7 +114,7 @@ exports.prepareElectron = prepareElectron
  */
 exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
   if (process.env.TRAVIS_JOB_ID) {
-    ctx.retries(10) // don't retry the mocha.it in local testing
+    ctx.retries(2) // don't retry the mocha.it in local testing
   }
 
   return function () {

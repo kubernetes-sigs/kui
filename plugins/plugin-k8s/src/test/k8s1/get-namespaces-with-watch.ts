@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
-import { createNS as create } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS as create } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 /** name of the namespace */
 const nsName: string = create()
 
@@ -26,13 +26,15 @@ enum Status {
 }
 
 /** after a cli.do (res), wait for a table row with the given status */
-const waitForStatus = async function (this: common.ISuite, status: Status, res) {
+const waitForStatus = async function (this: common.ISuite, status: Status, res): Promise<string> {
   const selector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME(nsName) })(res)
-  const expectStatus = `${selector} span:not(.repeating-pulse) badge.${status}`
+  const expectStatus = `${selector} span:not(.repeating-pulse)`
 
-  await this.app.client.waitForExist(expectStatus)
-
-  return expectStatus
+  if (status === Status.Offline) {
+    return waitForRed(this.app, expectStatus)
+  } else {
+    return waitForGreen(this.app, expectStatus)
+  }
 }
 
 /** create namespace, and expect status eventually to be green */

@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar, getValueFromMonaco, expectYAML } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForRed, waitForGreen, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
@@ -40,7 +40,7 @@ describe('electron apply pod', function (this: common.ISuite) {
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
           // wait for the badge to become green
-          await this.app.client.waitForExist(`${selector} badge.green-background`)
+          await waitForGreen(this.app, selector)
 
           // now click on the table row
           this.app.client.click(`${selector} .clickable`)
@@ -67,7 +67,7 @@ describe('electron apply pod', function (this: common.ISuite) {
       it(`should delete the sample pod from URL via ${kubectl}`, () => {
         return cli.do(`${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+          .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })
 

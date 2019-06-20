@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
@@ -41,7 +41,7 @@ describe('electron create hpa HorizontalPodAutoscaler', function (this: common.I
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('travelapp-hpa') }))
 
         // wait for the badge to become green
-        await this.app.client.waitForExist(`${selector} badge.green-background`)
+        await waitForGreen(this.app, selector)
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
@@ -54,7 +54,7 @@ describe('electron create hpa HorizontalPodAutoscaler', function (this: common.I
     it(`should delete the HorizontalPodAutoscaler hpa from URL via ${kubectl}`, () => {
       return cli.do(`${kubectl} delete -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('travelapp-hpa') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+        .then(selector => waitForRed(this.app, selector))
         .catch(common.oops(this))
     })
 
