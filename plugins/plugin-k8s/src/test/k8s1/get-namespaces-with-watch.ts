@@ -86,39 +86,53 @@ const deleteNS = function (this: common.ISuite, kubectl: string, { noExistOk = f
 
 /** k get ns -w */
 const watchNS = function (this: common.ISuite, kubectl: string) {
-  it(`should watch namespaces via ${kubectl} get ns -w`, async () => {
-    try {
-      const waitForOnline = waitForStatus.bind(this, Status.Online)
-      const waitForOffline = waitForStatus.bind(this, Status.Offline)
+  const watchCmds = [`${kubectl} get ns -w`, `${kubectl} get ns ${nsName} -w`]
 
-      const selector1 = await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
-      const selector2 = await waitForOnline(await cli.do(`${kubectl} get ns -w`, this.app))
-      const selector2ButOffline = selector2.replace(Status.Online, Status.Offline)
-      const selector3 = await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
+  watchCmds.forEach(watchCmd => {
+    it(`should watch namespaces via ${watchCmd}`, async () => {
+      try {
+        const waitForOnline = waitForStatus.bind(this, Status.Online)
+        const waitForOffline = waitForStatus.bind(this, Status.Offline)
 
-      // the create and delete badges had better still exist
-      await this.app.client.waitForExist(selector1)
-      await this.app.client.waitForExist(selector3)
+        const selector1 = await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
+        const selector2 = await waitForOnline(await cli.do(watchCmd, this.app))
+        const selector2ButOffline = selector2.replace(Status.Online, Status.Offline)
+        const selector3 = await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
 
-      // the "online" badge from the watch had better *NOT* exist after the delete
-      // (i.e. we had better actually be watching!)
-      await this.app.client.waitForExist(selector2, 20000, true)
+        // the create and delete badges had better still exist
+        await this.app.client.waitForExist(selector1)
+        await this.app.client.waitForExist(selector3)
 
-      // and, conversely, that watch had better eventually show Offline
-      await this.app.client.waitForExist(selector2ButOffline)
+        // the "online" badge from the watch had better *NOT* exist after the delete
+        // (i.e. we had better actually be watching!)
+        await this.app.client.waitForExist(selector2, 20000, true)
 
-      // create again
-      await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
+        // and, conversely, that watch had better eventually show Offline
+        await this.app.client.waitForExist(selector2ButOffline)
 
-      // the "online" badge from the watch had better now exist again after the create
-      // (i.e. we had better actually be watching!)
-      await this.app.client.waitForExist(selector2)
+        // create again
+        await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
 
-      // and, conversely, that watch had better NOT show Offline
-      await this.app.client.waitForExist(selector2ButOffline, 20000, true)
-    } catch (err) {
-      common.oops(this)(err)
-    }
+        // the "online" badge from the watch had better now exist again after the create
+        // (i.e. we had better actually be watching!)
+        await this.app.client.waitForExist(selector2)
+
+        // and, conversely, that watch had better NOT show Offline
+        await this.app.client.waitForExist(selector2ButOffline, 20000, true)
+
+        // delete again
+        await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
+
+        // the "online" badge from the watch had better *NOT* exist after the delete
+        // (i.e. we had better actually be watching!)
+        await this.app.client.waitForExist(selector2, 20000, true)
+
+        // and, conversely, that watch had better eventually show Offline
+        await this.app.client.waitForExist(selector2ButOffline)
+      } catch (err) {
+        common.oops(this)(err)
+      }
+    })
   })
 }
 
@@ -140,6 +154,5 @@ describe('electron watch namespace', function (this: common.ISuite) {
     createIt()
     deleteIt()
     watchIt()
-    deleteIt()
   })
 })

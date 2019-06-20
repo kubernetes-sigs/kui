@@ -138,10 +138,13 @@ export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: 
             rows.map(row => tableDom.removeChild(row))
           }
         } catch (err) {
-          if (err.code === 404 && err.message.includes('No resources')) {
+          if (err.code === 404) {
             newPrepareRows = []
           } else {
-            rows.map(row => tableDom.removeChild(row))
+            while (resultDom.firstChild) {
+              resultDom.removeChild(resultDom.firstChild)
+            }
+            stopWatching()
             throw err
           }
         }
