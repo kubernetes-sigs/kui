@@ -673,6 +673,19 @@ export default async (commandTree: CommandRegistrar) => {
 
   await commandTree.listen('/k8s/helm', helm, { usage: usage('helm'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
 
+  // for debugging: read in a previously captured raw kubectl output from disk, and then pass it to the visualizations
+  await commandTree.listen('/k8s/kdebug', async ({ argvNoOptions, parsedOptions, execOptions }) => {
+    const file = argvNoOptions[argvNoOptions.length - 1]
+    const { readFile } = await import('fs-extra')
+    const out = (await readFile(file)).toString()
+
+    const command = parsedOptions.command || 'kubectl'
+    const verb = parsedOptions.verb || 'get'
+    const entityType = parsedOptions.entityType || 'pod'
+    const tableModel = table(out, '', command, verb, command === 'helm' ? '' : entityType, undefined, {}, execOptions)
+    return tableModel
+  }, { noAuthOk: true })
+
   //
   // register some of the common verbs so that the kubectl plugin works more gracefully:
   // e.g. kubectl kui get pods
