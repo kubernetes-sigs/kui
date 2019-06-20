@@ -183,7 +183,7 @@ export const preprocessTable = (raw: string[]) => {
 
 /** normalize the status badge by capitalization */
 const capitalize = (str: string): string => {
-  return str[0].toUpperCase() + str.slice(1).toLowerCase()
+  return !str ? 'Unknown' : str[0].toUpperCase() + str.slice(1).toLowerCase()
 }
 
 export const formatTable = (command: string, verb: string, entityTypeFromCommandLine: string, options, preTable: Pair[][]): Table => {
