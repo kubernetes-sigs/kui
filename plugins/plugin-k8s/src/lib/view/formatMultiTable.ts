@@ -91,7 +91,7 @@ export const formatTable = (tab: Tab, model: Table | Table[], { usePip = false, 
     resultDomOuter.appendChild(resultDom)
 
     resultDom.classList.add('result-as-table')
-    resultDom.classList.add('result-as-fixed-tables')
+    // resultDom.classList.add('result-as-fixed-tables')
     resultDom.classList.add('repl-result')
     resultDom.classList.add('monospace')
 

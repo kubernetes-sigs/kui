@@ -33,7 +33,7 @@ interface PackageBearerStatus {
  * e.g. OperatorSource
  *
  */
-type PackageBearer = KubeResource<PackageBearerStatus>
+export type PackageBearer = KubeResource<PackageBearerStatus>
 
 function isPackageBearer (resource: KubeResource<any>): resource is PackageBearer {
   const bearer = resource as PackageBearer

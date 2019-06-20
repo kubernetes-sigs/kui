@@ -109,8 +109,8 @@ export const renderConditions = async (tab: Tab, command: string, resource: Reso
   }
 
   const standardHeaderCells: Cell[] = [
-    { value: 'TRANSITION TIME', outerCSS: 'header-cell min-width-date-like' },
-    { value: 'STATUS', outerCSS: 'header-cell very-narrow text-center' }
+    { value: 'TRANSITION TIME' },
+    { value: 'STATUS', outerCSS: 'very-narrow text-center' }
   ]
 
   const headerModel: Row = {
@@ -142,16 +142,17 @@ export const renderConditions = async (tab: Tab, command: string, resource: Reso
       {
         key: 'status',
         value: (condition.status || condition.reason).toString(),
-        outerCSS: 'text-center larger-text',
+        outerCSS: 'text-center',
         fontawesome: success ? 'fas fa-check-circle'
           : failure ? 'fas fa-times-circle' : 'fas fa-question-circle',
-        css: success ? 'green-text' : failure ? 'red-text' : 'yellow-text'
+        css: 'larger-text ' + (success ? 'green-text' : failure ? 'red-text' : 'yellow-text')
       }
     ]
 
     return {
       type: 'condition',
       name: condition.type || condition.reason,
+      outerCSS: 'entity-name-group-narrow',
       onclick: false,
       attributes: probeBody(condition).concat(standardBodyCells).concat(messageBody(condition))
     }

@@ -35,7 +35,7 @@ import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
 const debug = Debug('plugins/bash-like/cmds/general')
 
-export const doExec = (cmdLine: string, execOptions: ExecOptions) => new Promise(async (resolve, reject) => {
+export const doExec = (cmdLine: string, execOptions: ExecOptions): Promise<string | boolean | Record<string, any>> => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
 
   const proc = exec(cmdLine, {
