@@ -21,10 +21,6 @@ export const javascript = `function main(params) {
 export const python = `def main(params):
    return { "python": "fun" }`
 
-export const swift = `func main(params: [String:Any]) -> [String:Any] {
-   return params
-}`
-
 export const php = `<?php
 function main(array $args) : array
 {

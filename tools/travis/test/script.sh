@@ -81,9 +81,10 @@ if [ -n "$LAYERS" ]; then
         # runMochaLayers.sh => runTest.sh process. Namespace Current tests will
         # fail if we don't have TEST_SPACE.
 
-        export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
-        export WSK_CONFIG_FILE=~/.wskprops_${KEY}
-        (cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
+        export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_1"
+        export WSK_CONFIG_FILE=~/.wskprops_${KEY}_1
+        . ${WSK_CONFIG_FILE}
+        #(cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
         (cd /tmp/kui && npm run test) # see ./install.sh for the /tmp/kui target
     fi
 fi

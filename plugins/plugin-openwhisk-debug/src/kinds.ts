@@ -17,6 +17,5 @@
 export const kindToExtension = {
   nodejs: '.js',
   python: '.py',
-  swift: '.swift',
   php: '.php'
 }

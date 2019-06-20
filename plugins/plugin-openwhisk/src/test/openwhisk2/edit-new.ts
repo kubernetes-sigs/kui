@@ -45,7 +45,7 @@ describe('create new actions in editor', function (this: common.ISuite) {
   /** deploy the new action */
   const deploy = (app, action) => () => {
     return app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))
-      .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR} .editor-status.is-new`, 10000, false))
+      .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR} .editor-status.is-new`, 10000, true))
       .catch(err => {
         console.error('Ouch, something bad happened, let us clean up the action before retrying')
         console.error(err)
@@ -138,29 +138,5 @@ describe('create new actions in editor', function (this: common.ISuite) {
        .then(cli.expectOK)
        .then(sidecar.expectOpen)
        .then(sidecar.expectShowing('foo3'))
-       .catch(common.oops(this))) */
-
-  it('should open a new swift', () => cli.do('new foo4 --kind swift', this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo4'))
-    .then(deploy(this.app, 'foo4'))
-    .catch(common.oops(this)))
-  /* it('should invoke the new swift action, with explicit entity', () => cli.do('invoke foo4', this.app)
-       .then(cli.expectOK)
-       .then(sidecar.expectOpen)
-       .then(sidecar.expectShowing('foo4'))
-       .catch(common.oops(this))) */
-
-  it('should open a new php', () => cli.do('new foo5 --kind php', this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo5'))
-    .then(deploy(this.app, 'foo5'))
-    .catch(common.oops(this)))
-  /* it('should invoke the new php action, with implicit entity', () => cli.do('invoke', this.app)
-       .then(cli.expectOK)
-       .then(sidecar.expectOpen)
-       .then(sidecar.expectShowing('foo5'))
        .catch(common.oops(this))) */
 })
