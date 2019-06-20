@@ -36,17 +36,6 @@
                 "deprecated": false
             }
         ],
-        "swift": [
-            {
-                "kind": "swift",
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "nodejs6action",
-                    "tag": "latest"
-                },
-                "deprecated": true
-            }
-        ],
         "java": [
             {
                 "kind": "java",

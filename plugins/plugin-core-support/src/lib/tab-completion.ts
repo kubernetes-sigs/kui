@@ -721,7 +721,7 @@ export default () => {
 
                 debug('maybe', args, commandIdx, lastIdx, nActuals, param, args[commandIdx + lastIdx])
 
-                if (commandIdx === args.length && !prompt.value.match(/\s+$/)) {
+                if (commandIdx === args.length - 1 && !prompt.value.match(/\s+$/)) {
                   // then the prompt has e.g. "wsk package" with no terminal whitespace; nothing to do yet
 
                 } else if (param) {
