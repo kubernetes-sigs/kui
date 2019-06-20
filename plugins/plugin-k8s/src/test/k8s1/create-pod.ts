@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
@@ -43,7 +43,7 @@ describe('electron create pod', function (this: common.ISuite) {
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
           // wait for the badge to become green
-          await this.app.client.waitForExist(`${selector} badge.green-background`)
+          await waitForGreen(this.app, selector)
 
           // now click on the table row
           this.app.client.click(`${selector} .clickable`)
@@ -56,21 +56,21 @@ describe('electron create pod', function (this: common.ISuite) {
       it(`should delete the sample pod from URL via ${kubectl}`, () => {
         return cli.do(`${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+          .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })
 
       it(`should create sample pod from local file via ${kubectl}`, () => {
         return cli.do(`${kubectl} create ${dashF} "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
 
       it(`should delete the sample pod by name via ${kubectl}`, () => {
         return cli.do(`${kubectl} delete pod nginx ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+          .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })
 

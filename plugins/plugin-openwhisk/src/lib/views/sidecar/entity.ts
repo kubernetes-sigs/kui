@@ -113,8 +113,7 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
             const indexEntry = indexEntryJavascript ||
               zip.getEntry('index.py') ||
               zip.getEntry('__main__.py') ||
-              zip.getEntry('index.php') ||
-              zip.getEntry('index.swift')
+              zip.getEntry('index.php')
 
             if (indexEntry) {
               const indexContent = zip.readAsText(indexEntry)

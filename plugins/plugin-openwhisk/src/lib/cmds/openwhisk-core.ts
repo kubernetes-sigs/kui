@@ -26,6 +26,7 @@ import { oopsMessage } from '@kui-shell/core/core/oops'
 import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
@@ -49,7 +50,7 @@ const isLinux = osType() === 'Linux'
 
 debug('modules loaded')
 
-export const getClient = (execOptions) => {
+export const getClient = (execOptions: ExecOptions) => {
   if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
     return initOWFromConfig(execOptions.credentials.openwhisk)
   } else {
@@ -326,7 +327,7 @@ const ignore = {
  *
  */
 const correctMissingBindingName = options => entity => {
-  let packageName
+  let packageName: string
 
   if (options.namespace) {
     //
@@ -457,8 +458,7 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
 const extensionToKind = {
   'jar': 'java:default',
   'js': 'nodejs:default',
-  'py': 'python:default',
-  'swift': 'swift:default'
+  'py': 'python:default'
 }
 
 /** return the fully qualified form of the given entity name */
@@ -513,7 +513,7 @@ const standardViewModes = (defaultMode, fn?) => {
   }
 
   if (fn) {
-    return (options, argv, verb, execOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: () => makeModes() })
+    return (options: Record<string, any>, argv: string[], verb: string, execOptions: ExecOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: () => makeModes() })
   } else {
     return () => ({ modes: () => makeModes() })
   }
@@ -950,7 +950,7 @@ export const parseOptions = (argvFull: string[], type: string) => {
   }
 }
 
-const agent = new (require('https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 })
+export const agent = isLinux ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 }) : undefined
 export const owOpts = (options = {}) => {
   if (isLinux) {
     // options.forever = true
@@ -1161,8 +1161,6 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
     if (!ow[entity][verb]) {
       return Promise.reject(new Error('Unknown OpenWhisk command'))
     } else {
-      // if (isLinux && (!execOptions || !execOptions.noRetry) && options.retry !== false) options.timeout = 5000 // linux bug
-
       owOpts(options)
 
       return Promise.resolve(options)

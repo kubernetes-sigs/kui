@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -56,7 +56,7 @@ describe('electron configmap', function (this: common.ISuite) {
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
 
           // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
-          // await this.app.client.waitForExist(`${selector} badge.green-background`)
+          // await waitForGreen(this.app, selector)
 
           // now click on the table row
           await this.app.client.click(`${selector} .clickable`)
@@ -88,7 +88,7 @@ describe('electron configmap', function (this: common.ISuite) {
       it(`should create a configmap ${name} via ${kubectl}`, () => {
         return cli.do(`${kubectl} create configmap ${name} ${literals} ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
     }

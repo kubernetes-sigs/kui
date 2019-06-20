@@ -27,7 +27,7 @@
   "dependencies": {
     "app-module-path": "2.2.0",
     "debug": "4.1.1",
-    "openwhisk-composer": "0.10.0"
+    "openwhisk-composer": "github:starpit/incubator-openwhisk-composer#agent"
   },
   "publishConfig": {
     "access": "public"

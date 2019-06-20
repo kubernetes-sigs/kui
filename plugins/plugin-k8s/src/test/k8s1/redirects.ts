@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -44,7 +44,7 @@ describe('electron apply deployment against URL that has redirects', function (t
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx-deployment') }))
 
         // wait for the badge to become green
-        await this.app.client.waitForExist(`${selector} badge.green-background`)
+        await waitForGreen(this.app, selector)
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
@@ -57,7 +57,7 @@ describe('electron apply deployment against URL that has redirects', function (t
     it(`should delete the deployment from redirecting URL via ${kubectl}`, () => {
       return cli.do(`${kubectl} delete -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx-deployment') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+        .then(selector => waitForRed(this.app, selector))
         .catch(common.oops(this))
     })
 

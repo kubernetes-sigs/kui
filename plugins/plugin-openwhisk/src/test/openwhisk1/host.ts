@@ -24,7 +24,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli } = ui
 
-describe('host tests', function (this: common.ISuite) {
+describe('openwhisk host tests', function (this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -41,9 +41,7 @@ describe('host tests', function (this: common.ISuite) {
   it('should auto-cancel when using prefilled content', () => cli.do(`wsk host set <your_api_host>`, this.app)
     .then(cli.expectError(0, 'Operation cancelled')))
 
-  const { apihostIsLocal } = openwhisk
-  const apihost = apihostIsLocal && process.env.MOCHA_RUN_TARGET !== 'webpack' ? 'local' : openwhisk.apihost // NOTE: 'wsk host set local' doesn't work in webpack for now
-  it(`should restore host to original setting: ${openwhisk.apihost}`, () => cli.do(`wsk host set ${apihost}`, this.app)
+  it(`should restore host to original setting: ${openwhisk.apihost}`, () => cli.do(`wsk host set ${openwhisk.apihost}`, this.app)
     .then(cli.expectOK)
     .then(() => cli.do('wsk host get', this.app))
     .then(cli.expectOKWithCustom({ expect: openwhisk.apihost }))

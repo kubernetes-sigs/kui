@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, keys, selectors, sidecar, sleep } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const kubectl = 'kubectl'
 
@@ -32,7 +32,7 @@ describe('electron kubectl edit', function (this: common.ISuite) {
     it(`should delete the pod ${name} via ${kubectl}`, () => {
       return cli.do(`${kubectl} delete pod ${name} ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+        .then(selector => waitForRed(this.app, selector))
         .then(() => waitTillNone('pod', undefined, name, undefined, inNamespace))
         .catch(err => {
           if (!errOk) {
@@ -49,7 +49,7 @@ describe('electron kubectl edit', function (this: common.ISuite) {
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
 
         // wait for the badge to become green
-        await this.app.client.waitForExist(`${selector} badge.green-background`)
+        await waitForGreen(this.app, selector)
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)

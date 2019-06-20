@@ -23,13 +23,34 @@ const { cli, selectors } = ui
 // the default tab we expect to see on "get"
 exports.defaultModeForGet = 'summary'
 
+
+/**
+ * Wait for a green badge
+ *
+ */
+exports.waitForGreen = async (app, selector) => {
+  const badge = `${selector} badge.green-background`
+  await app.client.waitForExist(badge, 60000)
+  return badge
+}
+
+/**
+ * Wait for a red badge
+ *
+ */
+exports.waitForRed = async (app, selector) => {
+  const badge = `${selector} badge.red-background`
+  await app.client.waitForExist(badge, 60000)
+  return badge
+}
+
 exports.createNS = (prefix = '') => `${prefix}${uuid()}`
 
 exports.allocateNS = (ctx, ns, theCli = cli) => {
   it(`should create a namespace ${ns} `, () => {
     return theCli.do(`kubectl create namespace ${ns}`, ctx.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
-      .then(selector => ctx.app.client.waitForExist(`${selector} badge.green-background`))
+      .then(selector => exports.waitForGreen(ctx.app, selector))
       .catch(common.oops(ctx))
   })
 }
@@ -39,7 +60,7 @@ exports.deleteNS = (ctx, ns, theCli = cli) => {
     it(`should delete the namespace ${ns}`, () => {
       return theCli.do(`kubectl delete namespace ${ns}`, ctx.app)
         .then(cli.expectOKWithCustom({ selector: ui.selectors.BY_NAME(ns) }))
-        .then(selector => ctx.app.client.waitForExist(`${selector} badge.red-background`))
+        .then(selector => exports.waitForRed(ctx.app, selector))
         .catch(common.oops(ctx))
     })
   }

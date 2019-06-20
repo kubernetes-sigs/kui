@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
-import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl', 'k']
 
@@ -33,7 +33,7 @@ describe('electron kubectl run', function (this: common.ISuite) {
     it(`should create deployment from ${kubectl} run`, () => {
       return cli.do(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`, 20000))
+        .then(selector => waitForGreen(this.app, selector))
         .catch(common.oops(this))
     })
 

@@ -55,6 +55,6 @@ export const extension = kind => {
     case 'javascript': return '.js'
     case 'typescript': return '.js'
     case 'python': return '.py'
-    default: return `.${lang}` // e.g. .swift, .php, .go
+    default: return `.${lang}` // e.g. .php, .go
   }
 }

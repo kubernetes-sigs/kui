@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
-import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 /** name of the pod */
 const podName = 'nginx'
@@ -32,10 +32,13 @@ enum Status {
 /** after a cli.do (res), wait for a table row with the given status */
 const waitForStatus = async function (this: common.ISuite, status: Status, res) {
   const selector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) })(res)
-  const expectStatus = `${selector} span:not(.repeating-pulse) badge.${status}`
-  await this.app.client.waitForExist(expectStatus)
+  const expectStatus = `${selector} span:not(.repeating-pulse)`
 
-  return expectStatus
+  if (status === Status.Offline) {
+    return waitForRed(this.app, expectStatus)
+  } else {
+    return waitForGreen(this.app, expectStatus)
+  }
 }
 
 /** create pod, and expect status eventually to be green */

@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { defaultModeForGet, createNS as create, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, defaultModeForGet, createNS as create, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -30,7 +30,7 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
       it(`should create namespace ${name} via ${kubectl}`, () => {
         return cli.do(`${kubectl} create namespace ${name}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
     }
@@ -40,7 +40,7 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
         return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+          .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
     }
@@ -53,7 +53,7 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
 
           // wait for the badge to become green
-          await this.app.client.waitForExist(`${selector} badge.green-background`)
+          await waitForGreen(this.app, selector)
 
           // make sure the NAME cell is clickable (as opposed to, say, the NAMESPACE cell)
           await this.app.client.waitForExist(`${selector} .clickable [data-key="NAME"]`)
@@ -74,7 +74,7 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
         return cli.do(`${kubectl} delete namespace ${name}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`))
+          .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
             if (!errOk) {
@@ -89,7 +89,7 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
       it(`should delete the pod in ns ${ns} by name via ${kubectl}`, () => {
         return cli.do(`${kubectl} delete pod nginx -n ${ns}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => this.app.client.waitForExist(`${selector} badge.red-background`, 20000))
+          .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })
     }

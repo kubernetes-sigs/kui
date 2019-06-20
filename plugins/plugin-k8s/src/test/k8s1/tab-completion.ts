@@ -18,7 +18,7 @@ import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 import { dirname } from 'path'
-import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 const synonyms = ['kubectl']
@@ -62,21 +62,21 @@ describe('Tab completion for kubectl get', function (this: ISuite) {
     it(`should create sample pod from URL via ${kubectl}`, () => {
       return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+        .then(selector => waitForGreen(this.app, selector))
         .catch(oops(this))
     })
 
     it(`should create tab-completion pod via ${kubectl}`, async () => {
       return cli.do(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion.yaml -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('tab-completion-1') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+        .then(selector => waitForGreen(this.app, selector))
         .catch(oops(this))
     })
 
     it(`should create tab-completion2 pod via ${kubectl}`, async () => {
       return cli.do(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion-2.yaml -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('tab-completion-2') }))
-        .then(selector => this.app.client.waitForExist(`${selector} badge.green-background`))
+        .then(selector => waitForGreen(this.app, selector))
         .catch(oops(this))
     })
 

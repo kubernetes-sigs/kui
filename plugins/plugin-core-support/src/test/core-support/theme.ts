@@ -55,10 +55,6 @@ const go = (theme: Theme) => (ctx: ISuite) => {
  *
  */
 const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
-  localIt(`should still be using ${theme.name} theme after an electron restart`, () => ctx.app.restart()
-    .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-    .catch(oops(ctx)))
-
   // refresh electron's current page rather than restart the app to prevent clearing browser's local storage
   remoteIt(`should still be using ${theme.name} theme after a browser restart`, () => ctx.app.client.refresh()
     .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
@@ -84,14 +80,14 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nCl
   it(`should click on theme button and present theme list, then click on ${clickOn.name}`, async () => {
     try {
       ctx.app.client.click('#help-button')
-      await ctx.app.client.waitForExist('#tutorialPane .tutorial-content-command[data-command="themes"]')
+      await ctx.app.client.waitForVisible('#tutorialPane .tutorial-content-command[data-command="themes"]')
       ctx.app.client.click('#tutorialPane .tutorial-content-command[data-command="themes"]')
 
       const checkMarkCell = `.entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
       const nameCell = `.entity.theme[data-name="${clickOn.name}"] > div > .clickable`
 
-      await ctx.app.client.waitForExist(checkMarkCell)
-      await ctx.app.client.waitForExist(nameCell)
+      await ctx.app.client.waitForVisible(checkMarkCell)
+      await ctx.app.client.waitForVisible(nameCell)
 
       for (let idx = 0; idx < nClicks; idx++) {
         if (idx === 0) {

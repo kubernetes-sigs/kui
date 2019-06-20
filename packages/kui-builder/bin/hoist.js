@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,5 @@
  * limitations under the License.
  */
 
-export const javascript = `function main(params) {
-   return params
-}`
-
-export const python = `def main(params):
-   return { "python": "fun" }`
-
-export const php = `<?php
-function main(array $args) : array
-{
-    $name = $args["name"] ?? "stranger";
-    $greeting = "Hello $name!";
-    echo $greeting;
-    return ["greeting" => $greeting];
-}`
+const argv = { _: ['bootstrap'], 'ignore-prepublish': true, hoist: true }
+require('@lerna/bootstrap')(argv)
