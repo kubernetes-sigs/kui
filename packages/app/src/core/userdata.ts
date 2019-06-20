@@ -57,7 +57,7 @@ const preferencesFilepath = () => join(userDataDir(), 'prefs.json')
  * Read the preference model
  *
  */
-const preferences = (): Preferences => {
+const preferences = async (): Promise<Preferences> => {
   if (inBrowser()) {
     debug('reading preferences from browser localStorage')
 
@@ -76,11 +76,11 @@ const preferences = (): Preferences => {
   }
 
   try {
-    const { readFileSync } = require('fs-extra')
+    const { readFile } = await import('fs-extra')
 
     const filepath = preferencesFilepath()
     debug('reading persisted preference model', filepath)
-    const raw = readFileSync(filepath).toString()
+    const raw = (await readFile(filepath)).toString()
     try {
       return JSON.parse(raw)
     } catch (err) {
@@ -103,13 +103,13 @@ const preferences = (): Preferences => {
  * @return passes through the preference model
  *
  */
-const fsyncPreferences = (prefs: Preferences): Preferences => {
+const fsyncPreferences = async (prefs: Preferences): Promise<Preferences> => {
   if (inBrowser()) {
     store().setItem('kui.userprefs', JSON.stringify(prefs))
   } else {
-    const { mkdirp, writeFileSync } = require('fs-extra')
-    mkdirp(userDataDir())
-    writeFileSync(preferencesFilepath(), JSON.stringify(prefs))
+    const { mkdirp, writeFile } = await import('fs-extra')
+    await mkdirp(userDataDir())
+    await writeFile(preferencesFilepath(), JSON.stringify(prefs))
   }
 
   return prefs
@@ -119,14 +119,14 @@ const fsyncPreferences = (prefs: Preferences): Preferences => {
  * Purge the preference model
  *
  */
-const purgePreferences = (): void => {
+const purgePreferences = async (): Promise<void> => {
   debug('purgePreferences')
 
   if (inBrowser()) {
     store().removeItem('kui.userprefs')
   } else {
-    const { unlinkSync } = require('fs-extra')
-    unlinkSync(preferencesFilepath())
+    const { unlink } = await import('fs-extra')
+    await unlink(preferencesFilepath())
   }
 }
 
@@ -136,12 +136,12 @@ const purgePreferences = (): void => {
  * @return the prior value
  *
  */
-export const clearPreference = (key: string): string => {
+export const clearPreference = async (key: string): Promise<string> => {
   debug('clearPreference', key)
-  const prefs = preferences()
+  const prefs = await preferences()
   const value = prefs[key]
   delete prefs[key]
-  fsyncPreferences(prefs)
+  await fsyncPreferences(prefs)
   return value
 }
 
@@ -151,8 +151,8 @@ export const clearPreference = (key: string): string => {
  * @return the preference value
  *
  */
-export const getPreference = (key: string): string => {
-  const prefs = preferences()
+export const getPreference = async (key: string): Promise<string> => {
+  const prefs = await preferences()
   const value = prefs[key]
   debug('getPreference', key, value)
   return value
@@ -164,10 +164,10 @@ export const getPreference = (key: string): string => {
  * @return the preference value
  *
  */
-export const setPreference = (key: string, value: string): string => {
+export const setPreference = async (key: string, value: string): Promise<string> => {
   debug('setPreference', key, value)
-  const prefs = preferences()
+  const prefs = await preferences()
   prefs[key] = value
-  fsyncPreferences(prefs)
+  await fsyncPreferences(prefs)
   return value
 }

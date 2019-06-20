@@ -35,13 +35,23 @@ export const dispatchToShell = async ({ tab, block, command, argvNoOptions, exec
     throw err
   }
 
-  if (isHeadless()) {
+  const eOptions = execOptions.raw ? execOptions : Object.assign({}, { stdout: createOutputStream() }, execOptions)
+
+  if (isHeadless() || execOptions.raw) {
     const { doExec } = await import('./bash-like')
-    return doExec(command, Object.assign({}, { stdout: createOutputStream() }, execOptions))
+    const response = await doExec(command, eOptions)
       .catch(cleanUpError)
+    if (execOptions.raw && typeof response === 'string') {
+      try {
+        return JSON.parse(response)
+      } catch (err) {
+        debug('response maybe is not JSON', response)
+      }
+    }
+    return response
   } else {
     const { doExec } = await import('../../pty/client')
-    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), argvNoOptions, parsedOptions, Object.assign({}, { stdout: createOutputStream() }, execOptions))
+    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), argvNoOptions, parsedOptions, eOptions)
       .catch(cleanUpError)
   }
 }

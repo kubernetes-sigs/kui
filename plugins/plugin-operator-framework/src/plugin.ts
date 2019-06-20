@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/util/json')
+import olm from './controller/olm'
 
-export const extractJSON = (str: string): Record<string, any> => {
-  const trimmed = str.substring(str.indexOf('{'))
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-  if (trimmed.length > 0) {
-    try {
-      const json = JSON.parse(trimmed)
-      debug('successfully parsed out json', json)
-      return json
-    } catch (err) {
-      // oh well, we tried!
-    }
-  }
+export default async (commandTree: CommandRegistrar) => {
+  return Promise.all([
+    olm(commandTree)
+  ])
 }

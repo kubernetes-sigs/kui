@@ -39,7 +39,7 @@ const persistedThemePreferenceKey = 'kui.theme.current'
  * Return the previously selected (and persisted) choice of theme
  *
  */
-const getPersistedThemeChoice = (): string => {
+const getPersistedThemeChoice = (): Promise<string> => {
   return getPreference(persistedThemePreferenceKey)
 }
 
@@ -77,7 +77,7 @@ const usage = {
  * List themes
  *
  */
-const list = (): Table => {
+const list = async (): Promise<Table> => {
   const header: Row = {
     type: 'theme',
     outerCSS: 'header-cell very-narrow',
@@ -89,7 +89,8 @@ const list = (): Table => {
     ]
   }
 
-  const currentTheme = getPersistedThemeChoice() || getDefaultTheme()
+  const currentTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
+  debug('currentTheme', currentTheme)
 
   const body: Row[] = (settings.themes || []).map((theme): Row => {
     const row = {
@@ -144,7 +145,7 @@ const getDefaultTheme = () => {
  *
  */
 export const switchToPersistedThemeChoice = async (webContents?: WebContents): Promise<void> => {
-  const theme = getPersistedThemeChoice()
+  const theme = await getPersistedThemeChoice()
   if (theme) {
     debug('switching to persisted theme choice')
     switchTo(theme, webContents)
@@ -167,8 +168,8 @@ const getCssFilepathForGivenTheme = (themeModel): string => {
  * @return the path to the currently selected theme's css
  *
  */
-export const getCssFilepathForCurrentTheme = (): string => {
-  const theme = getPersistedThemeChoice() || getDefaultTheme()
+export const getCssFilepathForCurrentTheme = async (): Promise<string> => {
+  const theme = (await getPersistedThemeChoice()) || getDefaultTheme()
   const themeModel = (settings.themes || []).find(_ => _.name === theme)
   return getCssFilepathForGivenTheme(themeModel)
 }
@@ -234,7 +235,7 @@ const set = async ({ argvNoOptions }: EvaluatorArgs) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
   await switchTo(theme)
-  setPreference(persistedThemePreferenceKey, theme)
+  await setPreference(persistedThemePreferenceKey, theme)
   return true
 }
 
@@ -244,7 +245,7 @@ const set = async ({ argvNoOptions }: EvaluatorArgs) => {
  */
 const resetToDefault = async () => {
   debug('reset')
-  clearPreference(persistedThemePreferenceKey)
+  await clearPreference(persistedThemePreferenceKey)
   await switchTo(getDefaultTheme())
   return true
 }
@@ -262,7 +263,7 @@ export const plugin = (commandTree: CommandRegistrar) => {
   commandTree.listen('/theme/set', set, { usage: usage.set, noAuthOk: true, inBrowserOk: true })
 
   // returns the current persisted theme choice; helpful for debugging
-  commandTree.listen('/theme/current', () => getPersistedThemeChoice() || 'You are using the default theme', { noAuthOk: true, inBrowserOk: true, hidden: true }) // for debugging
+  commandTree.listen('/theme/current', async () => (await getPersistedThemeChoice()) || 'You are using the default theme', { noAuthOk: true, inBrowserOk: true, hidden: true }) // for debugging
 
   commandTree.listen('/theme/reset', resetToDefault, { usage: usage.reset, noAuthOk: true, inBrowserOk: true })
 }
