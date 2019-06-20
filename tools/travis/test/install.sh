@@ -62,25 +62,31 @@ if [ -n "$LAYERS" ]; then
     # we are running mocha test suites (which suites as indicated by $LAYERS)
     #
 
+    children=()
+
     # if tests need the `ibmcloud` CLI, install it for them
     if [ -n "$NEEDS_IBMCLOUD_CLI" ]; then
         ./tools/travis/installers/ibmcloud.sh &
+        children+=("$!")
+        echo "ibmcloud PID $!"
     fi
 
-    children=()
     if [ "$NEEDS_KUBERNETES" == "true" ]; then
         # install kubectl: no longer needed, as we are getting it from kubeadm-dind
         # ./tools/travis/installers/kubectl.sh &
 
         # set up a local cluster, using kubeadm-dind
-        ./tools/travis/installers/kubeadm-dind/start-cluster.sh &
+        ./tools/travis/installers/microk8s/start-cluster.sh &
         children+=("$!")
+        echo "microk8s PID $!"
     fi
 
     if [ "$NEEDS_OPENWHISK" == "true" ]; then
         # install the openwhisk runtime
+        echo "Installing openwhisk"
         ./tools/travis/installers/openwhisk.sh &
         children+=("$!")
+        echo "openwhisk PID $!"
     fi
 
     # npm install
@@ -99,7 +105,10 @@ if [ -n "$LAYERS" ]; then
     if [ -n "$MOCHA_TARGETS" ]; then
         # create mocha targets to test aginst
         for MOCHA_TARGET in $MOCHA_TARGETS; do
-          ./tools/travis/test/target.d/$MOCHA_TARGET.sh # DO NOT DO WEBPACK and ELECTRON BUILD IN PARALLEL; link:init updates the client directory
+            # we aren't yet ready to build these in parallel; TODO we
+            # will need to call link:init first for each in sequence,
+            # then we can build the clients in parallel
+            ./tools/travis/test/target.d/$MOCHA_TARGET.sh
         done
     fi
 

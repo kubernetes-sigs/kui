@@ -49,6 +49,26 @@ if [ -n "$LAYERS" ]; then
     # in the else clause below
     NON_HEADLESS_LAYERS=${LAYERS#HEADLESS}
 
+    # is "HEADLESS" on the LAYERS list?
+    if [ "$NON_HEADLESS_LAYERS" != "$LAYERS" ]; then
+        #
+        # for now, the headless test suite (which is also a mocha suite)
+        # is a bit of a special case
+        #
+        echo "running HEADLESS layer"
+
+        # When testing against build headless, we set TEST_SPACE manually
+        # since we can't get the env var TEST_SPACE from the previous
+        # runMochaLayers.sh => runTest.sh process. Namespace Current tests will
+        # fail if we don't have TEST_SPACE.
+
+        export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_1"
+        export WSK_CONFIG_FILE=~/.wskprops_${KEY}_1
+        . ${WSK_CONFIG_FILE}
+        #(cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
+        (cd /tmp/kui && npm run test) & # see ./install.sh for the /tmp/kui target
+    fi
+
     if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
         for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
           echo "mocha target: $MOCHA_RUN_TARGET"
@@ -68,22 +88,5 @@ if [ -n "$LAYERS" ]; then
         done
     fi
 
-    # is "HEADLESS" on the LAYERS list?
-    if [ "$NON_HEADLESS_LAYERS" != "$LAYERS" ]; then
-        #
-        # for now, the headless test suite (which is also a mocha suite)
-        # is a bit of a special case
-        #
-        echo "running HEADLESS layer"
-
-        # When testing against build headless, we set TEST_SPACE manually
-        # since we can't get the env var TEST_SPACE from the previous
-        # runMochaLayers.sh => runTest.sh process. Namespace Current tests will
-        # fail if we don't have TEST_SPACE.
-
-        export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}"
-        export WSK_CONFIG_FILE=~/.wskprops_${KEY}
-        (cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
-        (cd /tmp/kui && npm run test) # see ./install.sh for the /tmp/kui target
-    fi
+    wait
 fi

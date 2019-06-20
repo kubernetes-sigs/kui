@@ -74,7 +74,7 @@ export const newUsage = {
   header: 'For quick prototyping of actions, this command opens an editor in the sidecar.',
   example: 'new <actionName>',
   required: [{ name: '<actionName>', docs: 'The name of your new action' }],
-  optional: optional(['nodejs', 'python', 'php', 'swift']),
+  optional: optional(['nodejs', 'python', 'php']),
   parents: [{ command: 'editor' }]
 }
 

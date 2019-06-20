@@ -21,6 +21,11 @@ const { cli, sidecar } = ui
 const { rp } = common
 
 describe('Create api gateway', function (this: common.ISuite) {
+  if (process.env.NO_OPENWHISK_API_MGMT) {
+    console.log('Skipping OpenWhisk API management tests')
+    return
+  }
+
   before(openwhisk.before(this))
   after(common.after(this))
 
