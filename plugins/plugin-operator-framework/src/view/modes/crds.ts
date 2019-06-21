@@ -113,7 +113,7 @@ function toTable (resource: CRDBearer): Table {
       ]
     },
     body: resource.spec.customresourcedefinitions.owned.map(spec => ({
-      name: spec.displayName,
+      name: spec.name,
       outerCSS: outerCSSForKey.NAME,
       css: cssForKey.NAME,
       attributes: [
