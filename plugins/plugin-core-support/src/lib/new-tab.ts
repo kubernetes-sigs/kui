@@ -275,7 +275,8 @@ const perTabInit = (tab: Tab, doListen = true) => {
   // maximize button
   sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
     debug('toggle sidecar maximization')
-    toggleMaximization(tab)
+    // indicate that the user requested maximization
+    toggleMaximization(tab, 'user')
   }
 
   // close button
