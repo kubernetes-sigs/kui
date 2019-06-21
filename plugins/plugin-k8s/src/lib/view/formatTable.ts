@@ -186,9 +186,6 @@ const capitalize = (str: string): string => {
   return !str ? 'Unknown' : str[0].toUpperCase() + str.slice(1).toLowerCase()
 }
 
-/** split word by camel case */
-const camelCaseSplit = (str: string) => !str ? [] : str.split(/(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])/)
-
 export const formatTable = (command: string, verb: string, entityTypeFromCommandLine: string, options, preTable: Pair[][]): Table => {
   debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
@@ -295,6 +292,6 @@ export const formatTable = (command: string, verb: string, entityTypeFromCommand
     header: rows[0],
     body: rows.slice(1),
     noSort: true,
-    title: camelCaseSplit(entityTypeFromRows || entityTypeFromCommandLine).join(' ')
+    title: entityTypeFromRows || entityTypeFromCommandLine
   }
 }

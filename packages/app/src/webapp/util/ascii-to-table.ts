@@ -124,9 +124,6 @@ const capitalize = (str: string): string => {
 const kubelike = /kubectl|oc/
 const isKubeLike = (command: string): boolean => kubelike.test(command)
 
-/** split word by camel case */
-const camelCaseSplit = (str: string) => !str ? [] : str.split(/(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])/)
-
 /**
  * Turn an IPair[][], i.e. a table of key-value pairs into a Table,
  * i.e. kui Table model. IPair is defined below, it is internal just
@@ -239,7 +236,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const body = hasHeader ? allRows.slice(1) : allRows
 
   return {
-    title: camelCaseSplit(entityType).join(' '),
+    title: entityType,
     header,
     body,
     noSort: true
