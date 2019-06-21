@@ -86,7 +86,7 @@ jobs:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
       deploy:
           - provider: script
-            script: npm install && npx lerna publish preminor --no-git-tag-version --no-push --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            script: npm install && npx lerna publish preminor --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
