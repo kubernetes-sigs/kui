@@ -43,7 +43,7 @@ fi
 
 for pluginPath in plugins/* packages/app; do
     plugin=`basename "$pluginPath"`
-    for subdir in bin tests samples templates vendor web package.json; do
+    for subdir in bin plugin tests samples templates vendor web package.json; do
         if [ "$subdir" == "package.json" ] && [ "$plugin" == "app" ]; then continue; fi
 
         if [ -e "$pluginPath/$subdir" ]; then
