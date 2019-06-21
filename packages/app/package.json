@@ -49,7 +49,7 @@
     "pretty-ms": "5.0.0",
     "properties-parser": "0.3.1",
     "tmp": "0.1.0",
-    "yargs-parser": "13.1.0"
+    "yargs-parser": "13.1.1"
   },
   "devDependencies": {
     "request-promise": "4.2.4"

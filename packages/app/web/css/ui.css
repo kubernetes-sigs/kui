@@ -500,6 +500,10 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .entity:first-child .entity-attributes > span {
     border-top: none;
 }
+.result-table[kui-table-style="Light"] .entity-attributes > span {
+    padding-top: 0;
+    padding-bottom: 0;
+}
 .entity-attributes > span {
     display: table-cell;
     vertical-align: middle;
