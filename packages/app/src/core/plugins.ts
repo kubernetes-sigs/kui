@@ -83,6 +83,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
 
           if (fs.existsSync(pluginPath)) {
             if (!quiet) {
+              debug('found')
               console.log(colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module))
             }
             destMap[module] = pluginPath
@@ -92,11 +93,23 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
 
             if (fs.existsSync(backupPluginPath)) {
               if (!quiet) {
+                debug('found2')
                 console.log(colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module))
               }
               destMap[module] = backupPluginPath
             } else {
-              // console.error('Skipping plugin, because it does not have a plugin.js', module)
+              // support for javascript-coded plugins
+              const backupPluginPath = path.join(modulePath, 'src/plugin', filename)
+              debug('lookFor3', filename, backupPluginPath)
+
+              if (fs.existsSync(backupPluginPath)) {
+                if (!quiet) {
+                  debug('found3')
+                  console.log(colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module))
+                }
+                destMap[module] = backupPluginPath
+                // console.error('Skipping plugin, because it does not have a plugin.js', module)
+              }
             }
           }
         }
