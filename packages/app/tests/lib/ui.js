@@ -44,13 +44,13 @@ exports.aliases = {
 const selectors = {
   APIHOST: '#openwhisk-api-host',
   NAMESPACE: '#openwhisk-namespace',
-  CURENT_TAB: 'tab.visible',
-  TAB_N: N => `tab[data-tab-index="${N}"]`,
-  SIDECAR_BASE: 'tab.visible sidecar',
-  SIDECAR_FULLSCREEN: 'tab.visible.sidecar-full-screen sidecar.visible',
-  PROMPT_BLOCK: 'tab.visible .repl .repl-block',
-  OOPS: 'tab.visible .repl .repl-block .oops'
+  CURRENT_TAB: 'tab.visible',
+  TAB_N: N => `tab[data-tab-index="${N}"]`
 }
+selectors.SIDECAR_BASE = `${selectors.CURRENT_TAB} sidecar`
+selectors.SIDECAR_FULLSCREEN = `${selectors.CURRENT_TAB}.sidecar-full-screen sidecar.visible`
+selectors.PROMPT_BLOCK = `${selectors.CURRENT_TAB} .repl .repl-block`
+selectors.OOPS = `${selectors.CURRENT_TAB} .repl .repl-block .oops`
 selectors.SIDECAR = `${selectors.SIDECAR_BASE}.visible`
 selectors.SIDECAR_WITH_FAILURE = `${selectors.SIDECAR_BASE}.visible.activation-success-false`
 selectors.SIDECAR_HIDDEN = `${selectors.SIDECAR_BASE}:not(.visible)`
@@ -75,6 +75,7 @@ selectors.SIDECAR_CUSTOM_CONTENT = `${selectors.SIDECAR} .custom-content`
 selectors.SIDECAR_MODE_BUTTONS = `${selectors.SIDECAR} .sidecar-bottom-stripe .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 selectors.SIDECAR_MODE_BUTTON = mode => `${selectors.SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
 selectors.SIDECAR_BACK_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
+selectors.SIDECAR_MAXIMIZE_BUTTON = `${selectors.SIDECAR} .toggle-sidecar-maximization-button` // maximize button in the bottom stripe
 selectors.SIDECAR_CLOSE_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-close` // close button in the bottom stripe
 selectors.PROCESSING_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`
 selectors.CURRENT_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`

@@ -928,7 +928,7 @@ export const isFullscreen = (tab: Tab) => {
 export const presentAs = (tab: Tab, presentation?: Presentation) => {
   if (presentation || presentation === Presentation.Default) {
     document.body.setAttribute('data-presentation', Presentation[presentation].toString())
-    if (!isPopup() && presentation === Presentation.Default) {
+    if (!isPopup() && presentation === Presentation.Default && tab.getAttribute('maximization-cause') !== 'user') {
       setMaximization(tab, 'remove')
     }
   } else {
@@ -936,11 +936,14 @@ export const presentAs = (tab: Tab, presentation?: Presentation) => {
   }
 }
 
+/** was maximization changed by user request, or by normal default processes? */
+type MaximizationCause = 'default' | 'user'
+
 /**
  * Ensure that we are in sidecar maximization mode
  *
  */
-export const setMaximization = (tab: Tab, op = 'add') => {
+export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause = 'default') => {
   if (document.body.classList.contains('subwindow')) {
     document.body.classList[op]('sidecar-full-screen')
     document.body.classList[op]('sidecar-visible')
@@ -948,14 +951,22 @@ export const setMaximization = (tab: Tab, op = 'add') => {
 
   tab.classList[op]('sidecar-full-screen')
   setTimeout(() => eventBus.emit('/sidecar/maximize'), 600)
+
+  if (tab.classList.contains('sidecar-full-screen')) {
+    // if we entered full screen mode, remember if the user caused it,
+    // so that we don't undo it during our normal flow
+    tab.setAttribute('maximization-cause', cause)
+  } else {
+    tab.removeAttribute('maximization-cause')
+  }
 }
 
 /**
  * Toggle sidecar maximization
  *
  */
-export const toggleMaximization = (tab: Tab) => {
-  setMaximization(tab, 'toggle')
+export const toggleMaximization = (tab: Tab, cause?: MaximizationCause) => {
+  setMaximization(tab, 'toggle', cause)
 }
 
 /**

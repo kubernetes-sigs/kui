@@ -126,11 +126,23 @@ describe('electron get pod', function (this: common.ISuite) {
       }
     })
 
+    it('should click on the sidecar maximize button', async () => {
+      try {
+        this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
+        await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN)
+      } catch (err) {
+        common.oops(this)(err)
+      }
+    })
+
     it(`should click on conditions sidecar tab and show conditions table`, async () => {
       this.app.client.click(selectors.SIDECAR_MODE_BUTTON('conditions'))
 
       const table = `${selectors.SIDECAR} [k8s-table="Conditions"]`
       await this.app.client.waitForExist(table)
+
+      // the sidecar should still be full screen https://github.com/IBM/kui/issues/1794
+      await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN)
 
       const tableTitle = await this.app.client.getText(`${table} .result-table-title`)
       assert.strictEqual(tableTitle.toLowerCase(), 'conditions')
@@ -142,6 +154,15 @@ describe('electron get pod', function (this: common.ISuite) {
         this.app.client.waitForExist(`${table} .entity[data-name="Ready"] [data-key="status"][data-value="True"]`),
         this.app.client.waitForExist(`${table} .entity[data-name="ContainersReady"] [data-key="status"][data-value="True"]`)
       ])
+    })
+
+    it('should click on the sidecar maximize button to restore split screen', async () => {
+      try {
+        this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
+        await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN, 5000, true)
+      } catch (err) {
+        common.oops(this)(err)
+      }
     })
 
     it(`should click on containers sidecar tab and show containers table`, testContainersTab)
