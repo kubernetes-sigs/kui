@@ -71,7 +71,7 @@ export default async (commandTree: CommandRegistrar) => {
     await remember(parsedOptions)
 
     const namespace = parsedOptions.n || parsedOptions.namespace
-    const getSources = `oc get opsrc ${namespace ? `-n ${namespace}` : '--all-namespaces'} -o=custom-columns=NAME:.metadata.name,PACKAGES:.status.packages ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''}`
+    const getSources = `oc get OperatorSources ${namespace ? `-n ${namespace}` : '--all-namespaces'} -o=custom-columns=NAME:.metadata.name,PACKAGES:.status.packages ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''}`
 
     return $(getSources, block, undefined, execOptions)
   }, {
@@ -83,7 +83,7 @@ export default async (commandTree: CommandRegistrar) => {
     await remember(parsedOptions)
 
     const namespace = parsedOptions.n || parsedOptions.namespace
-    const getSources = `oc get csvs -n ${namespace || 'default'} ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''} -o=custom-columns=NAME:.metadata.name,DISPLAY:.spec.displayName,VERSION:.spec.version,STATUS:.status.phase`
+    const getSources = `oc get ClusterServiceVersions -n ${namespace || 'default'} ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''} -o=custom-columns=NAME:.metadata.name,DISPLAY:.spec.displayName,VERSION:.spec.version,STATUS:.status.phase`
 
     return $(getSources, block, undefined, execOptions)
   }, {
