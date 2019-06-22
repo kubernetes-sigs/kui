@@ -19,8 +19,11 @@
 set -e
 set -o pipefail
 
+# accepted environment variables
+KUBE_VERSION=${KUBE_VERSION-v1.13.2}
+
 if [ "$KUI_USE_HTTP" == "true" ]; then
-  docker build . -t kui-proxy -f Dockerfile.http
+  docker build . -t kui-proxy -f Dockerfile.http --build-arg KUBE_VERSION=$KUBE_VERSION
 else
-  docker build . -t kui-proxy
+  docker build . -t kui-proxy --build-arg KUBE_VERSION=$KUBE_VERSION
 fi
