@@ -31,9 +31,12 @@ will be refined in the near future.
 
 ## Building the Proxy
 
-The proxy is built into a docker image via:
+The proxy is built into a docker image via the following commands. You
+may choose to override the default version of kubectl via the
+`KUBE_VERSION` environment variable.
 
 ```bash
+export KUBE_VERSON=v1.13.2
 npm install
 ./build.sh
 ```

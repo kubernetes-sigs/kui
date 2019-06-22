@@ -29,17 +29,18 @@ WORKDIR /kui-proxy/kui
 ###########
 # Note: Latest version of kubectl may be found at:
 # https://aur.archlinux.org/packages/kubectl-bin/
-ENV KUBE_LATEST_VERSION="v1.13.2"
+ARG KUBE_VERSION
+ENV KUBE_VERSION=$KUBE_VERSION
 # Note: Latest version of helm may be found at:
 # https://github.com/kubernetes/helm/releases
 
 # we will download a gamut of helm clients and place them here
 # see plugins/plugin-k8s/src/lib/util/discovery/helm-client.ts
-ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
-ENV HELM_LATEST_VERSION="${KUI_HELM_CLIENTS_DIR}"/helm-2.12
+#ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
+#ENV HELM_LATEST_VERSION="${KUI_HELM_CLIENTS_DIR}"/helm-2.12
 
 RUN apk add --no-cache ca-certificates bash git \
-    && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
+    && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.9 \
     && chmod +x /usr/local/bin/helm-2.9 \
@@ -48,7 +49,11 @@ RUN apk add --no-cache ca-certificates bash git \
     && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.11 \
     && chmod +x /usr/local/bin/helm-2.11 \
     && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.12.2-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.12 \
-    && chmod +x /usr/local/bin/helm-2.12
+    && chmod +x /usr/local/bin/helm-2.12 \
+    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.13.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.13 \
+    && chmod +x /usr/local/bin/helm-2.13 \
+    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.14 \
+    && chmod +x /usr/local/bin/helm-2.14
 ###########
 
 COPY . /kui-proxy
