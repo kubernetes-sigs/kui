@@ -16,7 +16,6 @@
 
 import * as Debug from 'debug'
 
-import { exists } from 'fs-extra'
 import { delimiter } from 'path'
 import { execSync } from 'child_process'
 
@@ -28,7 +27,7 @@ const debug = Debug('k8s/discovery/kubeconfig')
  * of kubectl and helm.
  *
  */
-const fillInPATH = (env) => {
+const fillInPATH = (env: Record<string, any>) => {
   if (!env.PATH.match(/\/usr\/local\/bin/)) {
     debug('adding /usr/local/bin to PATH')
     process.env.PATH = env.PATH = `${env.PATH}${delimiter}/usr/local/bin`
@@ -60,6 +59,7 @@ const maybeKUBECONFIG = (file: string): string | void => {
  */
 const fillInKUBECONFIG = async (env: Record<string, any>) => {
   if (env.KUBECONFIG === undefined) { // see https://github.com/IBM/kui/issues/1789
+    const { exists } = await import('fs-extra')
     if (!(await exists(process.env.HOME + '/.kube/config'))) {
       debug('attempting to find KUBECONFIG env var')
       const kubeconfig = maybeKUBECONFIG('.bash_profile') ||
