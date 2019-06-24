@@ -81,6 +81,7 @@ after_success: ./tools/travis/publishers/cos.sh
 jobs:
   include:
     - stage: npm release
+      env: ""
       node_js: "8"
       script: 
         - echo "NPM Deploying Started ..."
