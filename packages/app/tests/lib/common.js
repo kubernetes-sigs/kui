@@ -69,7 +69,11 @@ const prepareElectron = (fuzz, popup = false) => {
   if (process.env.PORT_OFFSET) {
     opts.port = 9515 + parseInt(process.env.PORT_OFFSET, 10)
 
-    opts.chromeDriverArgs.push(`--user-data-dir=/tmp/kui-profile-${process.env.PORT_OFFSET}`)
+    const userDataDir = `/tmp/kui-profile-${process.env.PORT_OFFSET}`
+    opts.chromeDriverArgs.push(`--user-data-dir=${userDataDir}`)
+
+    console.log(`Using chromedriver port ${opts.port}`)
+    console.log(`Using chromedriver user-data-dir ${userDataDir}`)
   }
 
   if (process.env.MOCHA_RUN_TARGET === 'webpack') {
