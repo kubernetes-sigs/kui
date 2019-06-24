@@ -51,6 +51,14 @@ function wait_and_get_exit_codes() {
    done
 }
 
+function count {
+    cnt=0
+    for i in $1; do
+        cnt=$((cnt+1))
+    done
+    echo $cnt
+}
+
 #
 # On linux, we will need to have multiple xvfb DISPLAYs, so that we
 # can run tests in parallel. TODO: what about mac and windows?
@@ -58,12 +66,14 @@ function wait_and_get_exit_codes() {
 function spawnXvfb {
     # start Xvfb to allow for electron to do its thing
     # careful: make sure this comes after the "wait" just above
-    idx=1
-    for i in $LAYERS; do
+    NLAYERS=$(count "$LAYERS")
+    NTARGETS=$(count "$MOCHA_TARGETS")
+    NDISPLAYS=$((NLAYERS*NTARGETS))
+    echo "NLAYERS=$NLAYERS NTARGETS=$NTARGETS NDISPLAYS=$NDISPLAYS"
+    for ((idx=1;idx<=$NDISPLAYS;idx++)); do
         DISPLAY=":$idx"
         echo "spawning Xvfb on DISPLAY=$DISPLAY"
         Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac >& /dev/null &
-        idx=$((idx+1))
     done
 }
 
