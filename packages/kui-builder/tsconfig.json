@@ -31,7 +31,6 @@
       "@kui-shell/plugin-manager/*": ["plugins/plugin-manager/src/*"],
       "@kui-shell/plugin-openwhisk/tests/*": ["plugins/plugin-openwhisk/tests/*"],
       "@kui-shell/plugin-openwhisk/*": ["plugins/plugin-openwhisk/src/*"],
-      "@kui-shell/plugin-openwhisk-debug/*": ["plugins/plugin-openwhisk-debug/src/*"],
       "@kui-shell/plugin-proxy-support/*": ["plugins/plugin-proxy-support/src/*"],
       "@kui-shell/plugin-tutorials/*": ["plugins/plugin-tutorials/src/*"],
       "@kui-shell/plugin-wskflow/*": ["plugins/plugin-wskflow/src/*"],
