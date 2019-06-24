@@ -11,7 +11,7 @@ WHISKDIR="$ROOTDIR/openwhisk"
 WHISKPORT=9953
 WHISK_APIHOST=http://localhost:$WHISKPORT
 
-KEY=$TRAVIS_JOB_NUMBER
+KEY=${TRAVIS_JOB_NUMBER}
 
 echo "installing openwhisk"
 
@@ -50,8 +50,19 @@ whisk {
   users {
 EOF
 
-idx=1
-for i in $LAYERS; do
+function count {
+    cnt=0
+    for i in $1; do
+        cnt=$((cnt+1))
+    done
+    echo $cnt
+}
+
+NLAYERS=$(count "$LAYERS")
+NTARGETS=$(count "$MOCHA_TARGETS")
+NDISPLAYS=$((NLAYERS*NTARGETS))
+
+for ((idx=1;idx<=$NDISPLAYS;idx++)); do
     PORT_OFFSET=$idx
     SPACE=${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}
 
@@ -80,8 +91,6 @@ for i in $LAYERS; do
 
     # it doesn't matter which, but move at least one of the wskprops into ~/.wskprops
     cp $F ~/.wskprops
-
-    idx=$((idx+1))
 done
 
 cat <<EOF >> /tmp/whisk.conf

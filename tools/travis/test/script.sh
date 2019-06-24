@@ -26,15 +26,40 @@ fi
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+children=()
+
 if [ -n "$SCRIPTS" ]; then
     #
     # then we were asked to run one or more test.d/ scripts
     #
     for script in $SCRIPTS; do
         echo "spawning test script: $script"
-        "$SCRIPTDIR"/test.d/$script
+        "$SCRIPTDIR"/test.d/$script &
+        children+=("$!")
     done
 fi
+
+function wait_and_get_exit_codes() {
+    children=("$@")
+    EXIT_CODE=0
+    for job in "${children[@]}"; do
+       echo "waiting on ${job}"
+       CODE=0;
+       wait ${job} || CODE=$?
+       if [[ "${CODE}" != "0" ]]; then
+           echo "At least one install step failed with a non-zero exit code ${CODE}"
+           EXIT_CODE=1;
+       fi
+   done
+}
+
+function count {
+    cnt=0
+    for i in $1; do
+        cnt=$((cnt+1))
+    done
+    echo $cnt
+}
 
 if [ -n "$LAYERS" ]; then
     #
@@ -42,7 +67,7 @@ if [ -n "$LAYERS" ]; then
     # as indicated by $LAYERS)
     #
 
-    export KEY=$TRAVIS_JOB_NUMBER
+    export KEY=${TRAVIS_JOB_NUMBER}
     echo "Using KEY=$KEY"
 
     # remove HEADLESS from the list, as we are handling in specially
@@ -67,26 +92,35 @@ if [ -n "$LAYERS" ]; then
         . ${WSK_CONFIG_FILE}
         #(cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
         (cd /tmp/kui && npm run test) & # see ./install.sh for the /tmp/kui target
+        children+=("$!")
     fi
 
     if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
+        PORT_OFFSET_BASE=1
         for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
           echo "mocha target: $MOCHA_RUN_TARGET"
           if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
             echo "skip travis osx Webpack test since travis doesn't support docker on osx"
           else
+            echo "PORT_OFFSET_BASE=$PORT_OFFSET_BASE"
             export MOCHA_RUN_TARGET
+            export PORT_OFFSET_BASE
 
             if [ -n "$WAIT_LAYERS" ]; then
-              echo "running these non-headless layers and wait: $WAIT_LAYERS"
-              (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
+                echo "running these non-headless layers and wait: $WAIT_LAYERS"
+                (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
             fi
 
             echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
-            (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS)
+            (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS) &
+            children+=("$!")
           fi
+
+          NLAYERS=$(count "$LAYERS")
+          PORT_OFFSET_BASE=$((PORT_OFFSET_BASE+NLAYERS))
         done
     fi
-
-    wait
 fi
+
+wait_and_get_exit_codes "${children[@]}"
+if [ $EXIT_CODE != 0 ]; then exit $EXIT_CODE; fi

@@ -49,12 +49,6 @@ fi
 
 export PATH=./node_modules/.bin:$PATH
 
-if [ ! -d logs ]; then
-    mkdir logs
-fi
-
-rm -f logs/* 2> /dev/null
-
 # which tests to run; the default is every test
 if [ $# -ne 0 ]; then
     # one or more layers, specified on command line
@@ -81,12 +75,12 @@ function kill_them_all() {
 }
 trap kill_them_all INT
 
-idx=1
+idx=${PORT_OFFSET_BASE-1}
 children=()
 for i in $WHICH; do
     LAYER=`basename $i`
-    echo "spawning mocha layer $LAYER"
-    (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1 | tee logs/$LAYER.out) &
+    echo "spawning mocha layer $LAYER PORT_OFFSET=$idx"
+    (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1) &
     children+=("$!")
     idx=$((idx+1))
 done
