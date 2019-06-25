@@ -117,7 +117,7 @@ exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
     ctx.retries(2) // don't retry the mocha.it in local testing
   }
 
-  return function () {
+  return async function () {
     if (!noApp) {
       ctx.app = prepareElectron(fuzz, popup)
     }
@@ -126,12 +126,13 @@ exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
     const start = noApp ? () => Promise.resolve() : () => {
       return ctx.app.start() // this will launch electron
       // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
-        // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
+      // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
         .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
         .then(() => ui.cli.waitForRepl(ctx.app)) // should have an active repl
     }
 
-    return start()
+    await start()
+    ctx.timeout(process.env.TIMEOUT || 60000)
   }
 }
 
