@@ -40,7 +40,7 @@ export interface EntitySpec {
   version?: string
   duration?: number
   namespace?: string
-  annotations?: { key: string; value: any }[]
+  annotations?: { key: string; value: any }[] // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface MessageBearingEntity {
@@ -92,4 +92,5 @@ export type SimpleEntity = Error | string | number | HTMLElement | MessageBearin
  * Note: Array<any> will go away once we have fully typed tables
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Entity = SimpleEntity | EntitySpec | CustomSpec | boolean | any[] | Table

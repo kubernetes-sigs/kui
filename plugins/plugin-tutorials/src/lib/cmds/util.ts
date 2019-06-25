@@ -25,6 +25,7 @@ export const contentDir = join(top, 'samples/@tutorials')
 /** enclosing directory for a given tutorial */
 export const projectHome = projectName => join(contentDir, projectName)
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const readJSON = (projectHome: string, fileName: string): Promise<any> => new Promise((resolve, reject) => {
   debug('readJSON')
 

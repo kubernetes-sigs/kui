@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/util/json')
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const extractJSON = (str: string): Record<string, any> => {
   const trimmed = str.substring(str.indexOf('{'))
 

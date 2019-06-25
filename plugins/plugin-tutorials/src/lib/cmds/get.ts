@@ -77,7 +77,7 @@ const setup = (args: string[]) => {
 interface Paragraph {
   title: string
   text?: string
-  content?: any
+  content?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 /**

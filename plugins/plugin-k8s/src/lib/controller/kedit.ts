@@ -152,6 +152,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
  * Render the resources as a REPL table
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const showAsTable = (yamls: any[], filepathAsGiven: string, parsedOptions): Table => {
   debug('showing as table', yamls)
 

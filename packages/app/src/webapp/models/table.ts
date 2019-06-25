@@ -23,12 +23,12 @@ export class Row {
   type?: string
   packageName?: string
   prettyType?: string
-  watch?: any
+  watch?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   fontawesome?: string
   fontawesomeCSS?: string
   setSelected?: () => void
   setUnselected?: () => void
-  nameCss?: any
+  nameCss?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   key?: string
   prettyName?: string
   fullName?: string
@@ -39,7 +39,7 @@ export class Row {
   prettyVersion?: string
   beforeAttributes?: Cell[]
   rowCSS?: string | string[]
-  onclick?: any
+  onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   css?: string
   outerCSS?: string
 
@@ -53,9 +53,9 @@ export class Cell {
   valueDom?: Node[] | Node
   css?: string
   outerCSS?: string
-  onclick?: any
+  onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   key?: string
-  watch?: any
+  watch?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   watchLimit?: number
   fontawesome?: string[] | string
   tag?: string
@@ -108,10 +108,12 @@ export class Table {
 
 export interface WatchableTable extends Table, Watchable {}
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isTable (model: any): model is Table {
   return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isMultiTable (model: any): model is Table[] {
   return model !== undefined && Array.isArray(model) && model.length > 0 && model.filter(m => !isTable(m)).length === 0
 }

@@ -27,11 +27,11 @@ export interface ExecOptions {
 
   leaveBottomStripeAlone?: boolean
 
-  filter?: any
+  filter?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   contextChangeOK?: boolean
-  credentials?: Record<string, any>
+  credentials?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  custom?: any
+  custom?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   rawResponse?: boolean
   isDrilldown?: boolean
   block?: HTMLElement
@@ -41,8 +41,8 @@ export interface ExecOptions {
   quiet?: boolean
   intentional?: boolean
   noHistory?: boolean
-  pip?: any
-  history?: any
+  pip?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  history?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   echo?: boolean
   nested?: boolean
   failWithUsage?: boolean
@@ -63,12 +63,12 @@ export interface ExecOptions {
   showHeader?: boolean
   alreadyWatching?: boolean
 
-  createOutputStream?: any
-  stdout?: (str: Streamable) => any
-  stderr?: (str: string) => any
+  createOutputStream?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  stdout?: (str: Streamable) => any // eslint-disable-line @typescript-eslint/no-explicit-any
+  stderr?: (str: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  parameters?: any
-  entity?: any
+  parameters?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export class DefaultExecOptions implements ExecOptions {
@@ -90,5 +90,5 @@ export class DefaultExecOptionsForTab extends DefaultExecOptions {
 
 /** command line options */
 export interface ParsedOptions {
-  [ key: string ]: any
+  [ key: string ]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }

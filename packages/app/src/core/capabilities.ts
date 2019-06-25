@@ -30,7 +30,7 @@ export enum Media {
 
 /** map from provider to credentials */
 interface CredentialsMap {
-  [key: string]: any
+  [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 /**

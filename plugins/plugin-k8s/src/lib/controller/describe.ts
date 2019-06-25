@@ -33,6 +33,7 @@ import { deleteResourceButton } from '../view/modes/crud'
 const debug = Debug('k8s/controller/describe')
 
 /** conditionally add a field, if it exists */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function addField (label: string, value: any) {
   if (value || value === 0) {
     if (!Array.isArray(value) || value.length > 0) {

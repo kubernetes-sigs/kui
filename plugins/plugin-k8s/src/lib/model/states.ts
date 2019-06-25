@@ -340,7 +340,7 @@ interface Watch {
   fqn: string
   namespace?: string
   context?: string
-  labels?: any
+  labels?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 /**

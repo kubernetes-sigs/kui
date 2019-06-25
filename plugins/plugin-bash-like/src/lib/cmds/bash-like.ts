@@ -35,6 +35,7 @@ import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
 const debug = Debug('plugins/bash-like/cmds/general')
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const doExec = (cmdLine: string, execOptions: ExecOptions): Promise<string | boolean | Record<string, any>> => new Promise(async (resolve, reject) => {
   // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
 

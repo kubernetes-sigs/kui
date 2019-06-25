@@ -866,6 +866,7 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return exec(command, Object.assign({
     block: block,
@@ -876,10 +877,12 @@ export const qexec = (command: string, block?: HTMLElement | boolean, contextCha
     type: ExecType.Nested
   }))
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: ExecOptions): Promise<any> => {
   // context change ok, final exec in a chain of nested execs
   return qexec(command, block, true, execOptions, nextBlock)
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
   return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }

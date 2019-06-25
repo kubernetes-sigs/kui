@@ -97,6 +97,7 @@ const fillIn = (path, value) => {
  * and splices in (or out) as directed.
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateMapping = (op: string, attr: string, key: string, value: any) => entity => {
   if (!entity[attr]) {
     entity[attr] = []

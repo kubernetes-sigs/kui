@@ -54,6 +54,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
 
   const kindForDisplay = masqueradeKind || kind
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const kindAttr: any[] = [{ key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }]
   const contextAttr = parsedOptions.multi || !context ? []
     : formatContextAttr(context)
@@ -110,6 +111,7 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
     }
   ]
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const attributes: any[] = kindAttr.concat(contextAttr)
     .concat(namespaceAttrs)
     .concat(statusAttrs)

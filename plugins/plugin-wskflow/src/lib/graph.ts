@@ -35,8 +35,8 @@ export interface Node {
   retryCount?: string
   width?: number
   height?: number
-  layoutOptions?: Record<string, any>
-  properties?: Record<string, any>
+  layoutOptions?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+  properties?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   ports?: Port[]
   visited?: number[]
   children?: Node[]
@@ -59,6 +59,6 @@ export interface Edge {
   sourcePort: string
   target: string
   targetPort: string
-  properties?: Record<string, any>
+  properties?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   visited?: boolean
 }

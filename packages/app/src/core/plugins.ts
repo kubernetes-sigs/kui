@@ -564,6 +564,7 @@ export type PrescanCommandDefinitions = PrescanCommandDefinition[]
 export interface PrescanDocs {
   [key: string]: string
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PrescanUsage = any // FIXME something like: { [key: string]: ICommandOptions }
 export interface PrescanModel {
   docs: PrescanDocs

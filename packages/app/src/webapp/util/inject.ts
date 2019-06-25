@@ -103,6 +103,7 @@ export const uninjectCSS = ({ key }): void => {
  * Inject a script
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const injectScript = (url: any): Promise<any> => new Promise((resolve) => {
   const type = 'script'
   const id = `injected-${type}-${url.key || url}`
@@ -137,6 +138,7 @@ export const injectScript = (url: any): Promise<any> => new Promise((resolve) =>
  * Inject HTML stored in the given local file
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const loadHTML = (file: any): Promise<string> => new Promise(async (resolve, reject) => {
   if (file.html) {
     // then we have the raw content already

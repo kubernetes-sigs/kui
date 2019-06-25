@@ -21,7 +21,7 @@ export interface Node {
 }
 
 export interface ValueBearing extends Node {
-  value: any
+  value: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface Literal extends ValueBearing {

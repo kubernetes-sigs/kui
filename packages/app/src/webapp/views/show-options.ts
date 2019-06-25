@@ -19,7 +19,7 @@ export interface ShowOptions {
   echo?: boolean
   leaveBottomStripeAlone?: boolean
   preserveBackButton?: boolean
-  modes?: any[]
+  modes?: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export class DefaultShowOptions implements ShowOptions {

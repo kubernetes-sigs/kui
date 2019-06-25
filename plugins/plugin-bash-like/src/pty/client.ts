@@ -441,6 +441,7 @@ const getOrCreateChannel = async (cmdline: string, channelFactory: ChannelFactor
  * safeLoad from js-yaml, but protected with try/catch
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function safeLoadWithCatch (raw: string): Record<string, any> {
   try {
     return safeLoad(raw)

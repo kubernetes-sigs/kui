@@ -21,7 +21,7 @@ interface ActivationLike {
   statusCode?: number
   response: {
     success: boolean
-    result?: Record<string, any>
+    result?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 

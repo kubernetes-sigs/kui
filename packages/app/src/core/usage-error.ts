@@ -740,7 +740,7 @@ export interface IUsageRow {
   header?: string
   docs?: string
   partial?: boolean
-  defaultValue?: any
+  defaultValue?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   available?: IUsageRow[]
 
   // allow users to provide a prefix substring of an `allowed` value
@@ -819,7 +819,7 @@ interface MessageWithUsageModel extends MessageWithCode {
   usage?: UsageModel
 
   // allow for arbitrary attachments to help with error reporting
-  extra?: any
+  extra?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 function isMessageWithCode (msg: UsageLike): msg is MessageWithCode {

@@ -35,6 +35,7 @@ interface PackageBearerStatus {
  */
 export type PackageBearer = KubeResource<PackageBearerStatus>
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isPackageBearer (resource: KubeResource<any>): resource is PackageBearer {
   const bearer = resource as PackageBearer
   return bearer !== undefined &&

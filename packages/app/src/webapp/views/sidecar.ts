@@ -135,6 +135,7 @@ export const renderField = async (container: HTMLElement, entity: EntitySpec, fi
     } else {
       // too big to beautify; try to elide the code bits and
       // then we'll re-check
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const raw = JSON.stringify(value, (key: string, value: any) => {
         if (key === 'code' && JSON.stringify(value).length > 1024) {
           // maybe this is why we're too big??
@@ -260,6 +261,7 @@ export const renderField = async (container: HTMLElement, entity: EntitySpec, fi
  * Show custom content in the sidecar
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CustomContent = string | Record<string, any> | HTMLElement | Promise<HTMLElement>
 export interface CustomSpec extends EntitySpec, MetadataBearing {
   isREPL?: boolean

@@ -294,6 +294,7 @@ const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: EvaluatorA
      *      auth switch [auth] --save (=> options.save is true)
      *      auth switch [auth] --no-save (=> options.save is false)
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const options = (parsedOptions as any) as UseOptions
     if (options.save === false) {
       return namespace.use(auth)

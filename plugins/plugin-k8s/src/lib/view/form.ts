@@ -26,7 +26,7 @@ import * as Resources from '../model/resource'
 const debug = Debug('plugin-k8s/view/form')
 
 interface FormElement {
-  parent: Record<string, any>
+  parent: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   path: string[]
   key: string
   value: string | boolean | number
@@ -43,6 +43,7 @@ interface FormGroup {
  * Update the given path in the given yaml to have the given value
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const update = (parent: Record<string, any>, path: string[], value: string | number | boolean) => {
   const key = path[path.length - 1]
   debug('update', key, parent)
@@ -54,6 +55,7 @@ const update = (parent: Record<string, any>, path: string[], value: string | num
 interface FormAmendments extends HTMLElement {
   value: string
   __kuiPath: string[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   __kuiParent: Record<string, any>
 }
 
@@ -64,6 +66,7 @@ type ChoiceTextArea = HTMLTextAreaElement & FormAmendments
  * Save the current form choices
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const doSave = (tab: Tab, form: HTMLFormElement, yaml: Resources.KubeResource, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
   if (button) {
     button.classList.add('yellow-background')
@@ -105,6 +108,7 @@ const doSave = (tab: Tab, form: HTMLFormElement, yaml: Resources.KubeResource, f
 const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
   const groups: FormGroup[] = []
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const push = (group: string, key: string | number, { parent = yaml, path = [key.toString()], skip = {} }: { parent?: Record<string, any>; path?: string[]; skip?: Record<string, boolean> } = {}) => {
     const formGroup = groups.find(({ title }) => title === group) ||
       { title: group, choices: [] as FormElement[] }
@@ -195,6 +199,7 @@ const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
  * Present a form view over a resource
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const generateForm = (tab: Tab) => (yaml: Resources.KubeResource, filepath: string, name: string, kind: string, onSave: (rawText: string) => any) => {
   const formElements = formGroups(yaml)
   debug('generate form', formElements)

@@ -64,9 +64,11 @@ interface Option {
 const sourceFile: Option[] = [{ name: 'sourceFile', positional: true, file: true, docs: 'a local path to the action source' }]
 
 /** required activationId parameter */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const activationID: any[] = [{ name: 'activationId', docs: 'an activation ID', entity: 'activation' }]
 
 /** optional parameters having to do with parameter bindings */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const params: any[] = [{ name: '--param', alias: '-p', example: 'key value', docs: 'bind a variable to a value', narg: 2, key: 'parameters' },
   { name: '--param-file', alias: '-P', advanced: true, docs: 'a local path to a bindings file', file: true }]
 
@@ -84,6 +86,7 @@ const shared = [{ name: '--shared', docs: 'package visibility', allowed: [ 'yes'
 const feed = [{ name: '--feed', alias: '-f', docs: 'create a feed from a given provider', entity: 'action' }]
 
 /** timeout parameter */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const timeout: any[] = [{ name: '--timeout', alias: '-t', docs: 'max milliseconds to wait for blocking invoke', defaultValue: 60000 }]
 
 /** resource limit parameters */
@@ -104,6 +107,7 @@ const actionMix = params.concat(annotations).concat(limits).concat([
 ])
 
 /** optional skip and limit parameters */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const skipAndLimit: any[] = [{ name: '--limit', alias: '-l', numeric: true, docs: 'show at most N' },
   { name: '--skip', alias: '-s', numeric: true, docs: 'start from N' },
   { name: '--count', boolean: true, docs: 'return a count, rather than the records' }]

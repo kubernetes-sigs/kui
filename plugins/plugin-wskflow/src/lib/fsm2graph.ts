@@ -658,6 +658,7 @@ const isSimpleComposition = ir => {
   return isShort && atMostOneNonFunction
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElement?: HTMLElement, acts?: ActivationLike[], options?, rule?): Promise<any> {
   // console.log(ir, containerElement, acts);
 

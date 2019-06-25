@@ -52,7 +52,7 @@ class DefaultViewOptions implements ViewOptions {
 }
 
 interface CompositionWithCode {
-  ast?: any
+  ast?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   code?: string
 }
 

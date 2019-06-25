@@ -266,6 +266,7 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
 }
 
 /** plugins can register view handlers for a given type: string */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ViewHandler = (tab: Tab, response: Entity, resultDom: Element, parsedOptions: ParsedOptions, execOptions: ExecOptions) => Promise<any> | void
 interface ViewRegistrar { [key: string]: ViewHandler }
 
@@ -1203,7 +1204,7 @@ function isRequestingReprompt (spec: PromptCompleter): spec is RepromptSpec {
 }
 
 interface PromptCompletionData {
-  field: any
+  field: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export type PromptCompletionHandler = (data: PromptCompletionData) => PromptCompleter

@@ -305,7 +305,7 @@ const listenForEscape = () => {
 
 interface Match {
   match: string
-  completion: any
+  completion: any // eslint-disable-line @typescript-eslint/no-explicit-any
   option: HTMLElement
 }
 
