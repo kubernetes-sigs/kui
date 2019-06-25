@@ -345,30 +345,6 @@ const resolveFromLocalFilesystem = async (opts: LocalOptions = {}) => {
  * Load the prescan model, in preparation for loading the shell
  *
  */
-export const init = async () => {
-  debug('init')
-
-  // global
-  prescan = (await loadPrescan(pluginRoot)) as PrescanModel
-
-  // disabled: userData plugins
-  /* .then(builtins => loadPrescan(path.join(app.getPath('userData'), 'plugins'))
-      .catch(err => {
-        debug('no user-installed plugins, due to %s', err)
-        return {}
-      })
-      .then(unify(builtins)) // merge builtin plugins with user-installed plugins
-  */
-
-  commandTree.setPluginResolver(makeResolver(prescan))
-
-  debug('init done')
-}
-
-/**
- * Load the prescan model, in preparation for loading the shell
- *
- */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const loadPrescan = async (userDataDir: string): Promise<PrescanModel> => {
   try {
@@ -379,35 +355,45 @@ const loadPrescan = async (userDataDir: string): Promise<PrescanModel> => {
   }
 }
 
-/**
- * Unify two prescan models
- *
- */
-/* const unify = m1 => m2 => {
-  debug('unify')
+/** export the prequire function */
+const prequire = async (route: string, options?: object) => {
+  debug('prequire %s', route)
 
-  const unified = {}
+  try {
+    if (!registrar.hasOwnProperty(route)) {
+      // note how we stash a promise in the registrar immediately, to
+      // avoid race conditions with multiple threads trying to prequire
+      // the same plugin
+      registrar[route] = new Promise(async (resolve, reject) => {
+        const module = prescan.flat.find(_ => _.route === route)
+        if (module) {
+          try {
+            // NOTE ON @kui-shell relativization: this is important so that
+            // webpack can be isntructed to pull in the plugins into the build
+            // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
+            const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
+            const registration: PluginRegistration = registrationRef.default || registrationRef
+            const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 
-  for (let key in m1) {
-    const v1 = m1[key]
-    const v2 = m2[key]
-
-    unified[key] = v1
-
-    if (v2) {
-      debug('unifying user-installed model for %s', key)
-      if (Array.isArray(v1)) {
-        unified[key] = v1.concat(v2)
-      } else {
-        for (let kk in v2) {
-          v1[kk] = v2[kk]
+            resolve(registration(commandTree.proxy(route), combinedOptions))
+            debug('prequire success %s', route)
+          } catch (err) {
+            console.error(`prequire error ${route}`, err)
+            reject(err)
+          }
         }
-      }
+      })
     }
+
+    debug('prequire success', route)
+  } catch (err) {
+    debug('prequire failure', route)
+    console.error(err)
   }
 
-  return unified
-} */
+  return registrar[route]
+}
+export const preload = () => preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
 
 /**
  * Make a plugin resolver from a given prescan model
@@ -516,6 +502,60 @@ const makeResolver = (prescan: PrescanModel) => {
   return resolver
 } /* makeResolver */
 
+/**
+ * Load the prescan model, in preparation for loading the shell
+ *
+ */
+export const init = async () => {
+  debug('init')
+
+  // global
+  prescan = (await loadPrescan(pluginRoot)) as PrescanModel
+
+  // disabled: userData plugins
+  /* .then(builtins => loadPrescan(path.join(app.getPath('userData'), 'plugins'))
+      .catch(err => {
+        debug('no user-installed plugins, due to %s', err)
+        return {}
+      })
+      .then(unify(builtins)) // merge builtin plugins with user-installed plugins
+  */
+
+  commandTree.setPluginResolver(makeResolver(prescan))
+
+  debug('init done')
+}
+
+/**
+ * Unify two prescan models
+ *
+ */
+/* const unify = m1 => m2 => {
+  debug('unify')
+
+  const unified = {}
+
+  for (let key in m1) {
+    const v1 = m1[key]
+    const v2 = m2[key]
+
+    unified[key] = v1
+
+    if (v2) {
+      debug('unifying user-installed model for %s', key)
+      if (Array.isArray(v1)) {
+        unified[key] = v1.concat(v2)
+      } else {
+        for (let kk in v2) {
+          v1[kk] = v2[kk]
+        }
+      }
+    }
+  }
+
+  return unified
+} */
+
 interface PrescanCommandDefinition {
   route: string
   path: string
@@ -601,46 +641,6 @@ export const generatePrescanModel = async (opts: PrescanOptions): Promise<Presca
 export const assemble = (opts: PrescanOptions): Promise<PrescanModel> => {
   return generatePrescanModel(Object.assign({ assembly: true }, opts))
 }
-
-/** export the prequire function */
-const prequire = async (route: string, options?: object) => {
-  debug('prequire %s', route)
-
-  try {
-    if (!registrar.hasOwnProperty(route)) {
-      // note how we stash a promise in the registrar immediately, to
-      // avoid race conditions with multiple threads trying to prequire
-      // the same plugin
-      registrar[route] = new Promise(async (resolve, reject) => {
-        const module = prescan.flat.find(_ => _.route === route)
-        if (module) {
-          try {
-            // NOTE ON @kui-shell relativization: this is important so that
-            // webpack can be isntructed to pull in the plugins into the build
-            // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
-            const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
-            const registration: PluginRegistration = registrationRef.default || registrationRef
-            const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
-
-            resolve(registration(commandTree.proxy(route), combinedOptions))
-            debug('prequire success %s', route)
-          } catch (err) {
-            console.error(`prequire error ${route}`, err)
-            reject(err)
-          }
-        }
-      })
-    }
-
-    debug('prequire success', route)
-  } catch (err) {
-    debug('prequire failure', route)
-    console.error(err)
-  }
-
-  return registrar[route]
-}
-export const preload = () => preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
 
 /** print to the javascript console the registered plugins */
 // export const debug = () => console.log('Installed plugins', registrar)

@@ -92,13 +92,6 @@ interface Parameters {
   resource: Resource<CRDBearer>
 }
 
-export const renderAndView = (tab: Tab, parameters: Parameters) => {
-  const { command, resource } = parameters
-  debug('renderAndView', command, resource)
-
-  return toTable(resource.resource)
-}
-
 function toTable (resource: CRDBearer): Table {
   return {
     title: 'CRDs',
@@ -123,4 +116,11 @@ function toTable (resource: CRDBearer): Table {
       ]
     }))
   }
+}
+
+export const renderAndView = (tab: Tab, parameters: Parameters) => {
+  const { command, resource } = parameters
+  debug('renderAndView', command, resource)
+
+  return toTable(resource.resource)
 }

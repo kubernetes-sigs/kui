@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+function polyfillGetUrlParameter (name: string): string {
+  name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]')
+  const regex = new RegExp('[\\?&]' + name + '=([^&#]*)')
+  const results = regex.exec(location.search)
+  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '))
+}
+
 /**
  * Extract the value associated with the given window.location.search key
  *
@@ -24,11 +31,4 @@ export const extractSearchKey = (key: string): string => {
   } else {
     return polyfillGetUrlParameter(key)
   }
-}
-
-function polyfillGetUrlParameter (name: string): string {
-  name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]')
-  const regex = new RegExp('[\\?&]' + name + '=([^&#]*)')
-  const results = regex.exec(location.search)
-  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '))
 }

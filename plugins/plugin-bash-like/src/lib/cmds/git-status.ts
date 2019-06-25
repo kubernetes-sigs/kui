@@ -29,6 +29,58 @@ import { onbranch, injectCSS } from '../util/git-support'
 const debug = Debug('plugins/bash-like/cmds/git-status')
 
 /**
+ * git diff --numstat row; we will consume these numbers as strings, so no need to parseInt them
+ *
+ */
+interface Stat {
+  added: string
+  deleted: string
+}
+interface Stats {
+  [key: string]: Stat
+}
+const numstat = (): Promise<Stats> => new Promise<Stats>((resolve, reject) => {
+  const child = spawn('git', ['diff', '--numstat']) // `--relative=${path.basename(process.cwd())}`])
+
+  let rawOut = ''
+  child.stdout.on('data', data => {
+    rawOut += data.toString()
+  })
+
+  let rawErr = ''
+  child.stderr.on('data', data => {
+    rawErr += data.toString()
+  })
+
+  child.on('close', exitCode => {
+    if (exitCode !== 0) {
+      reject(rawErr)
+    } else {
+      /* e.g., where the columns are Added and Deleted
+        18      7       app/content/css/ui.css
+        16      16      app/plugins/modules/bash-like/src/lib/cmds/git-diff.ts
+        14      6       app/plugins/modules/bash-like/src/lib/cmds/git-status.ts
+        30      2       app/src/core/usage-error.ts
+        7       5       app/src/webapp/util/ascii-to-usage.ts
+      */
+      resolve(rawOut
+        .split(/\n/)
+        .reduce((M, line) => {
+          const [ added, deleted, file ] = line.split(/\s+/)
+          M[file] = { added, deleted } // no need to parseInt; we will use these as strings
+          return M
+        }, {}))
+    }
+  })
+})
+
+/**
+ * Is no text currently selected?
+ *
+ */
+const noCurrentTextSelection = () => window.getSelection().toString().trim().length === 0
+
+/**
  * Look for modified: and turn them into git diff links
  *
  */
@@ -110,12 +162,6 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
 }
 
 /**
- * Is no text currently selected?
- *
- */
-const noCurrentTextSelection = () => window.getSelection().toString().trim().length === 0
-
-/**
  * git status command handler
  *
  */
@@ -151,52 +197,6 @@ const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) => new Pro
       } catch (err) {
         reject(err)
       }
-    }
-  })
-})
-
-/**
- * git diff --numstat row; we will consume these numbers as strings, so no need to parseInt them
- *
- */
-interface Stat {
-  added: string
-  deleted: string
-}
-interface Stats {
-  [key: string]: Stat
-}
-const numstat = (): Promise<Stats> => new Promise<Stats>((resolve, reject) => {
-  const child = spawn('git', ['diff', '--numstat']) // `--relative=${path.basename(process.cwd())}`])
-
-  let rawOut = ''
-  child.stdout.on('data', data => {
-    rawOut += data.toString()
-  })
-
-  let rawErr = ''
-  child.stderr.on('data', data => {
-    rawErr += data.toString()
-  })
-
-  child.on('close', exitCode => {
-    if (exitCode !== 0) {
-      reject(rawErr)
-    } else {
-      /* e.g., where the columns are Added and Deleted
-        18      7       app/content/css/ui.css
-        16      16      app/plugins/modules/bash-like/src/lib/cmds/git-diff.ts
-        14      6       app/plugins/modules/bash-like/src/lib/cmds/git-status.ts
-        30      2       app/src/core/usage-error.ts
-        7       5       app/src/webapp/util/ascii-to-usage.ts
-      */
-      resolve(rawOut
-        .split(/\n/)
-        .reduce((M, line) => {
-          const [ added, deleted, file ] = line.split(/\s+/)
-          M[file] = { added, deleted } // no need to parseInt; we will use these as strings
-          return M
-        }, {}))
     }
   })
 })

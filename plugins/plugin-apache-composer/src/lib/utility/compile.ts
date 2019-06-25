@@ -34,25 +34,6 @@ import { create } from './usage'
 import * as messages from './messages'
 const debug = Debug('plugins/apache-composer/utility/compile')
 
-export const sourceToComposition = ({ inputFile, name = '' }: { inputFile: string; name?: string }) => new Promise(async (resolve, reject) => {
-  debug('validating source file', inputFile)
-  const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
-  if (extension === 'json' || extension === 'ast') { // we were given the AST directly
-    debug('input is composer AST')
-  } else if (extension === 'js' || extension === 'py') {
-    debug('input is composer library client', extension)
-  } else {
-    return reject(new UsageError({ message: messages.unknownInput, usage: create('create'), code: 497 }))
-  }
-
-  const localCodePath = findFile(expandHomeDir(inputFile))
-
-  return loadSourceCode(inputFile, localCodePath) // check inputfile extension and existence and then return the source code
-    .then(sourceCode => loadComposition(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input
-    .then(composition => resolve(compileComposition(composition, name))) // parse and compile composition and get {composition, ast, version} object
-    .catch(reject)
-})
-
 const loadSourceCode = (inputFile: string, localCodePath: string): Promise<string> => new Promise(async (resolve, reject) => {
   if (!inBrowser()) {
     debug('readFile in headless mode or for electron')
@@ -74,75 +55,24 @@ const loadSourceCode = (inputFile: string, localCodePath: string): Promise<strin
   }
 })
 
-export const loadComposition = (inputFile: string, originalCode?: string, localCodePath?: string) => {
-  if (inBrowser() && originalCode) {
-    debug('loadComposition for webpack', originalCode)
-    return originalCode
-  }
+/*
+ * parse source file to composition using Composer library
+ *
+ */
+export const compileComposition = (composition, name) => {
+  debug('compileComposition', composition)
 
-  const localSourcePath = localCodePath || findFile(expandHomeDir(inputFile))
-
-  debug('load source code from', localSourcePath)
-
+  let result
   try {
-    let errorMessage = ''
-    let logMessage = ''
-    debug('using require to process composition', localSourcePath)
-    // we'll override these temporarily
-    const log = console.log
-    const err = console.error
-    const exit = process.exit
-
-    let composition
-
-    try {
-      // temporarily override (restored in the finally block)
-      console.log = msg => { logMessage += msg + '\n' }
-      console.error = function () {
-        err(...arguments)
-        for (let idx = 0; idx < arguments.length; idx++) {
-          errorMessage += arguments[idx].toString() + ' '
-        }
-        errorMessage += '\n'
-      }
-      process.exit = () => {
-        let error = new Error(errorMessage)
-        error['statusCode'] = 'ENOPARSE'
-        error['ast'] = errorMessage
-        // error[code] = originalCode
-        throw error
-      }
-
-      composition = require(localSourcePath)
-      // Note the use of requireUncached: this allows
-      // users to edit and see updates of their
-      // compositions, without having to reload or
-      // restart the shell
-      delete require.cache[require.resolve(localSourcePath)]
-    } finally {
-      // restore our temporary overrides
-      console.log = log
-      console.error = err
-      process.exit = exit
-
-      if (logMessage) {
-        console.log(logMessage)
-      }
-      if (errorMessage) {
-        console.error(errorMessage)
-      }
-    }
-
-    debug('got composition', typeof composition, composition)
-
-    composition = allowSourceVariation(composition, logMessage, errorMessage)
-
-    return composition
+    result = Composer.parse(composition)
+    result = result.compile()
+    result.name = fqn(name)
   } catch (error) {
-    // error handler
-    const filename = localSourcePath && path.basename(localSourcePath)
-    throw sourceErrHandler(error, originalCode, filename)
+    error.statusCode = 422 // composition error
+    throw error
   }
+  debug('compiled source to composition', result)
+  return result
 }
 
 // give style freedom for users to write composition source
@@ -230,22 +160,92 @@ export const implicitInputFile = (tab: Tab, inputFile?: string, name?: string) =
   return { inputFile, name }
 }
 
-/*
- * parse source file to composition using Composer library
- *
- */
-export const compileComposition = (composition, name) => {
-  debug('compileComposition', composition)
-
-  let result
-  try {
-    result = Composer.parse(composition)
-    result = result.compile()
-    result.name = fqn(name)
-  } catch (error) {
-    error.statusCode = 422 // composition error
-    throw error
+export const loadComposition = (inputFile: string, originalCode?: string, localCodePath?: string) => {
+  if (inBrowser() && originalCode) {
+    debug('loadComposition for webpack', originalCode)
+    return originalCode
   }
-  debug('compiled source to composition', result)
-  return result
+
+  const localSourcePath = localCodePath || findFile(expandHomeDir(inputFile))
+
+  debug('load source code from', localSourcePath)
+
+  try {
+    let errorMessage = ''
+    let logMessage = ''
+    debug('using require to process composition', localSourcePath)
+    // we'll override these temporarily
+    const log = console.log
+    const err = console.error
+    const exit = process.exit
+
+    let composition
+
+    try {
+      // temporarily override (restored in the finally block)
+      console.log = msg => { logMessage += msg + '\n' }
+      console.error = function () {
+        err(...arguments)
+        for (let idx = 0; idx < arguments.length; idx++) {
+          errorMessage += arguments[idx].toString() + ' '
+        }
+        errorMessage += '\n'
+      }
+      process.exit = () => {
+        let error = new Error(errorMessage)
+        error['statusCode'] = 'ENOPARSE'
+        error['ast'] = errorMessage
+        // error[code] = originalCode
+        throw error
+      }
+
+      composition = require(localSourcePath)
+      // Note the use of requireUncached: this allows
+      // users to edit and see updates of their
+      // compositions, without having to reload or
+      // restart the shell
+      delete require.cache[require.resolve(localSourcePath)]
+    } finally {
+      // restore our temporary overrides
+      console.log = log
+      console.error = err
+      process.exit = exit
+
+      if (logMessage) {
+        console.log(logMessage)
+      }
+      if (errorMessage) {
+        console.error(errorMessage)
+      }
+    }
+
+    debug('got composition', typeof composition, composition)
+
+    composition = allowSourceVariation(composition, logMessage, errorMessage)
+
+    return composition
+  } catch (error) {
+    // error handler
+    const filename = localSourcePath && path.basename(localSourcePath)
+    throw sourceErrHandler(error, originalCode, filename)
+  }
 }
+
+export const sourceToComposition = ({ inputFile, name = '' }: { inputFile: string; name?: string }) => new Promise(async (resolve, reject) => {
+  debug('validating source file', inputFile)
+  const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)
+  if (extension === 'json' || extension === 'ast') { // we were given the AST directly
+    debug('input is composer AST')
+  } else if (extension === 'js' || extension === 'py') {
+    debug('input is composer library client', extension)
+  } else {
+    return reject(new UsageError({ message: messages.unknownInput, usage: create('create'), code: 497 }))
+  }
+
+  const localCodePath = findFile(expandHomeDir(inputFile))
+
+  return loadSourceCode(inputFile, localCodePath) // check inputfile extension and existence and then return the source code
+    .then(sourceCode => loadComposition(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input
+    .then(composition => resolve(compileComposition(composition, name))) // parse and compile composition and get {composition, ast, version} object
+    .catch(reject)
+})

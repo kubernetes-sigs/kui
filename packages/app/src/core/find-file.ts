@@ -56,32 +56,6 @@ const withMatchingTrailingSlash = (original: string, resolved: string): string =
 export const isSpecialDirectory = (filepath: string) => basename(filepath).charAt(0) === '@'
 
 /**
- * Resolve @ and ~ files
- *
- * @param safe throw and exception if the file is not found
- * @param keepRelative don't expand ~
- */
-export const findFile = (filepath: string, { safe = false, keepRelative = false } = {}): string => {
-  return findFileWithViewer(filepath, { safe, keepRelative }).resolved
-}
-
-/**
- * Does the given special have an associated command prefix that is
- * used to view files in that special directory?
- *
- * @param special a registered prefix of an `ISpecialPath`
- * @return the registered command prefix used to view files in this special directory, if any
- */
-export const viewer = (prefix: string): string | never => {
-  const special = specialPaths.find(_ => _.prefix === prefix)
-  if (!special) {
-    throw new Error('bad special prefix')
-  } else {
-    return special.command || undefined
-  }
-}
-
-/**
  * Behaves like `findFile` with an extra call to `commandPrefix`
  *
  */
@@ -113,6 +87,32 @@ export const findFileWithViewer = (filepath: string, { safe = false, keepRelativ
   } else {
     debug('resolving normal file', filepath)
     return { resolved: withMatchingTrailingSlash(filepath, resolve(expandHomeDir(filepath))) }
+  }
+}
+
+/**
+ * Resolve @ and ~ files
+ *
+ * @param safe throw and exception if the file is not found
+ * @param keepRelative don't expand ~
+ */
+export const findFile = (filepath: string, { safe = false, keepRelative = false } = {}): string => {
+  return findFileWithViewer(filepath, { safe, keepRelative }).resolved
+}
+
+/**
+ * Does the given special have an associated command prefix that is
+ * used to view files in that special directory?
+ *
+ * @param special a registered prefix of an `ISpecialPath`
+ * @return the registered command prefix used to view files in this special directory, if any
+ */
+export const viewer = (prefix: string): string | never => {
+  const special = specialPaths.find(_ => _.prefix === prefix)
+  if (!special) {
+    throw new Error('bad special prefix')
+  } else {
+    return special.command || undefined
   }
 }
 

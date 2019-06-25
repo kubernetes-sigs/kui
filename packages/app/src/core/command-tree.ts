@@ -156,6 +156,57 @@ const match = (path: string[], readonly: boolean): Command => {
   return treeMatch(model, path, readonly)
 }
 
+class DefaultCommandOptions implements CommandOptions {
+}
+
+/**
+ * Register a command handler on the given route
+ *
+ */
+const _listen = (model: CommandTree, route: string, handler: CommandHandler, options: CommandOptions = new DefaultCommandOptions()) => {
+  const path = route.split('/').splice(1)
+  const leaf = treeMatch(model, path, false, options.hide)
+
+  if (leaf) {
+    const prevOptions = leaf.options
+    if (options) {
+      leaf.options = options
+    }
+
+    if (leaf.$) {
+      // then we're overriding an existing command
+      if (!leaf.options) leaf.options = {}
+
+      if (prevOptions) {
+        for (let key in prevOptions) {
+          leaf.options[key] = prevOptions[key]
+        }
+      }
+
+      leaf.options.override = leaf.$
+    }
+
+    leaf.$ = handler
+    leaf.route = route
+
+    // update the disambiguator map
+    if (/*! (options && options.synonymFor) && */ // leaf is NOT a synonym
+      !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
+      let resolutions = disambiguator[leaf.key]
+      if (!resolutions) {
+        resolutions = disambiguator[leaf.key] = []
+      }
+
+      if (!resolutions.find(resolution => resolution.route === leaf.route)) {
+        resolutions.push(leaf)
+      }
+    }
+
+    return leaf
+  }
+}
+export const listen = (route: string, handler: CommandHandler, options: CommandOptions) => _listen(model, route, handler, options)
+
 /**
  * Register a subtree in the command tree
  *
@@ -211,57 +262,6 @@ export const subtreeSynonym = (route: string, master: Command, options = master.
   }
 }
 
-class DefaultCommandOptions implements CommandOptions {
-}
-
-/**
- * Register a command handler on the given route
- *
- */
-const _listen = (model: CommandTree, route: string, handler: CommandHandler, options: CommandOptions = new DefaultCommandOptions()) => {
-  const path = route.split('/').splice(1)
-  const leaf = treeMatch(model, path, false, options.hide)
-
-  if (leaf) {
-    const prevOptions = leaf.options
-    if (options) {
-      leaf.options = options
-    }
-
-    if (leaf.$) {
-      // then we're overriding an existing command
-      if (!leaf.options) leaf.options = {}
-
-      if (prevOptions) {
-        for (let key in prevOptions) {
-          leaf.options[key] = prevOptions[key]
-        }
-      }
-
-      leaf.options.override = leaf.$
-    }
-
-    leaf.$ = handler
-    leaf.route = route
-
-    // update the disambiguator map
-    if (/*! (options && options.synonymFor) && */ // leaf is NOT a synonym
-      !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)) { // tree is NOT a synonym
-      let resolutions = disambiguator[leaf.key]
-      if (!resolutions) {
-        resolutions = disambiguator[leaf.key] = []
-      }
-
-      if (!resolutions.find(resolution => resolution.route === leaf.route)) {
-        resolutions.push(leaf)
-      }
-    }
-
-    return leaf
-  }
-}
-export const listen = (route: string, handler: CommandHandler, options: CommandOptions) => _listen(model, route, handler, options)
-
 /**
  * Register a command handler on the given route, as a synonym of the given master handler
  *    master is the return value of `listen`
@@ -283,6 +283,59 @@ export const synonym = (route: string, handler: CommandHandler, master: Command,
  *
  */
 export const intention = (route: string, handler: CommandHandler, options: CommandOptions) => _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
+
+/**
+ * Oops, we couldn't resolve the given command. But maybe we found
+ * some partial matches that might be helpful to the user.
+ *
+ */
+const commandNotFoundMessage = 'Command not found'
+const commandNotFoundMessageWithPartialMatches = 'The following commands are partial matches for your request.'
+
+/**
+ * Help the user with some partial matches for a command not found
+ * condition. Here, we reuse the usage-error formatter, to present the
+ * user with a list of possible completions to their (mistyped or
+ * otherwise) command.
+ *
+ * We use the `available` list to present the list of available
+ * command completions to what they typed.
+ *
+ */
+const formatPartialMatches = (partialMatches: Command[]): UsageError => {
+  return new UsageError({
+    message: commandNotFoundMessage,
+    usage: {
+      header: commandNotFoundMessageWithPartialMatches,
+      available: partialMatches.map(({ options }) => options.usage)
+    }
+  }, { noBreadcrumb: true, noHide: true })
+}
+
+export const suggestPartialMatches = (partialMatches?: Command[], noThrow = false, hide = false): CodedError => {
+  debug('suggestPartialMatches', partialMatches)
+
+  // filter out any partial matches without usage info
+  const availablePartials = (partialMatches || []).filter(({ options }) => options.usage)
+  const anyPartials = availablePartials.length > 0
+
+  const error: CodedError = anyPartials ? formatPartialMatches(availablePartials) : new Error(commandNotFoundMessage)
+  error.code = 404
+
+  // to allow for programmatic use of the partial matches, e.g. for tab completion
+  if (anyPartials) {
+    error['partialMatches'] = availablePartials.map(_ => ({ command: _.route.split('/').slice(1).join(' '),
+      usage: _.options && _.options.usage }))
+  } else {
+    error['hide'] = hide
+  }
+
+  if (noThrow) {
+    return error
+  } else {
+    throw error
+  }
+}
 
 /**
  *
@@ -346,6 +399,18 @@ const withEvents = (evaluator: CommandHandler, leaf: CommandBase, partialMatches
     }
   }
 }
+
+/**
+ * The default command execution context. For example, if the
+ * execution context is /foo/bar, and there is a command /foo/bar/baz,
+ * then the issuance of a command "baz" will resolve to /foo/bar/baz.
+ *
+ * The default can be overridden either by changing the next line, or
+ * by calling `setDefaultCommandContext`.
+ *
+ */
+let _defaultContext: string[] = ['wsk', 'action'] // TODO take this from the site config
+export const getDefaultCommandContext = () => _defaultContext
 
 /**
  * Parse the given argv, and return an evaluator or throw an Error
@@ -424,18 +489,6 @@ const _read = async (model: CommandTree, argv: string[], contextRetry: string[],
     return withEvents(evaluator, leaf)
   }
 }
-
-/**
- * The default command execution context. For example, if the
- * execution context is /foo/bar, and there is a command /foo/bar/baz,
- * then the issuance of a command "baz" will resolve to /foo/bar/baz.
- *
- * The default can be overridden either by changing the next line, or
- * by calling `setDefaultCommandContext`.
- *
- */
-let _defaultContext: string[] = ['wsk', 'action'] // TODO take this from the site config
-export const getDefaultCommandContext = () => _defaultContext
 
 /**
  * The command context model, defaulting to the _defaultContext, which
@@ -542,14 +595,6 @@ const disambiguate = async (argv: string[], noRetry = false) => {
 }
 
 /**
- * Oops, we couldn't resolve the given command. But maybe we found
- * some partial matches that might be helpful to the user.
- *
- */
-const commandNotFoundMessage = 'Command not found'
-const commandNotFoundMessageWithPartialMatches = 'The following commands are partial matches for your request.'
-
-/**
  * We could not find a registered command handler
  *
  */
@@ -575,51 +620,6 @@ const commandNotFound = async (argv: string[], partialMatches?: Command[], execO
   }
 
   return suggestPartialMatches(partialMatches)
-}
-
-export const suggestPartialMatches = (partialMatches?: Command[], noThrow = false, hide = false): CodedError => {
-  debug('suggestPartialMatches', partialMatches)
-
-  // filter out any partial matches without usage info
-  const availablePartials = (partialMatches || []).filter(({ options }) => options.usage)
-  const anyPartials = availablePartials.length > 0
-
-  const error: CodedError = anyPartials ? formatPartialMatches(availablePartials) : new Error(commandNotFoundMessage)
-  error.code = 404
-
-  // to allow for programmatic use of the partial matches, e.g. for tab completion
-  if (anyPartials) {
-    error['partialMatches'] = availablePartials.map(_ => ({ command: _.route.split('/').slice(1).join(' '),
-      usage: _.options && _.options.usage }))
-  } else {
-    error['hide'] = hide
-  }
-
-  if (noThrow) {
-    return error
-  } else {
-    throw error
-  }
-}
-
-/**
- * Help the user with some partial matches for a command not found
- * condition. Here, we reuse the usage-error formatter, to present the
- * user with a list of possible completions to their (mistyped or
- * otherwise) command.
- *
- * We use the `available` list to present the list of available
- * command completions to what they typed.
- *
- */
-const formatPartialMatches = (partialMatches: Command[]): UsageError => {
-  return new UsageError({
-    message: commandNotFoundMessage,
-    usage: {
-      header: commandNotFoundMessageWithPartialMatches,
-      available: partialMatches.map(({ options }) => options.usage)
-    }
-  }, { noBreadcrumb: true, noHide: true })
 }
 
 /**
@@ -671,6 +671,23 @@ const removeDuplicates = async (arr: Route[]): Promise<Route[]> => {
 
 export function isSuccessfulCommandResolution (resolution: CommandTreeResolution): resolution is CommandHandlerWithEvents {
   return (resolution as CommandHandlerWithEvents).eval !== undefined
+}
+/** here, we don't use any implicit context resolutions */
+export const readIntention = async (argv: string[], noRetry = false): Promise<CommandTreeResolution> => {
+  const cmd = _read(intentions, argv, undefined, argv)
+
+  if (!cmd) {
+    if (!noRetry) {
+      await resolver.resolve(`/${argv.join('/')}`)
+      return readIntention(argv, true)
+    }
+  }
+
+  if (!cmd) {
+    return disambiguate(argv) || commandNotFound(argv)
+  } else {
+    return cmd
+  }
 }
 
 /** here, we will use implicit context resolutions */
@@ -738,23 +755,6 @@ export const read = async (argv: string[], noRetry = false, noSubtreeRetry = fal
     }
 
     return commandNotFound(argv, matches, execOptions)
-  } else {
-    return cmd
-  }
-}
-/** here, we don't use any implicit context resolutions */
-export const readIntention = async (argv: string[], noRetry = false): Promise<CommandTreeResolution> => {
-  const cmd = _read(intentions, argv, undefined, argv)
-
-  if (!cmd) {
-    if (!noRetry) {
-      await resolver.resolve(`/${argv.join('/')}`)
-      return readIntention(argv, true)
-    }
-  }
-
-  if (!cmd) {
-    return disambiguate(argv) || commandNotFound(argv)
   } else {
     return cmd
   }

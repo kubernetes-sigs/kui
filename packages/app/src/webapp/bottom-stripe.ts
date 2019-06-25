@@ -29,6 +29,60 @@ import repl = require('../core/repl')
 const debug = Debug('webapp/picture-in-picture')
 
 /**
+ * A mode button provider can, via direct, as to take charge of view
+ * insertion (otherwise, the button stripe will use the normal REPL
+ * view dispatching logic, e.g. opening entities in sidecar, tuples as
+ * tables, etc.)
+ *
+ * A direct view controller is either a function from entity to view,
+ * or a specification of such; the latter allows for serialization
+ * across remote proxies, and thus is preferable to the former.
+ *
+ */
+type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
+type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
+
+interface DirectViewEntity extends CustomSpec {
+  isEntity: boolean
+}
+
+function isDirectViewEntity (direct: DirectViewController): direct is DirectViewEntity {
+  const entity = direct as DirectViewEntity
+  return entity.isEntity !== undefined
+}
+
+interface DirectViewControllerSpec {
+  plugin: string
+  module: string
+  operation: string
+  parameters: object
+}
+
+/**
+ * Call a "direct" impl
+ *
+ */
+const callDirect = async (tab: Tab, makeView: DirectViewController, entity, execOptions: ExecOptions) => {
+  if (typeof makeView === 'string') {
+    debug('makeView as string')
+    if (execOptions && execOptions.exec === 'pexec') {
+      return repl.pexec(makeView, execOptions)
+    } else {
+      return repl.qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
+    }
+  } else if (typeof makeView === 'function') {
+    debug('makeView as function')
+    return Promise.resolve(makeView(tab, entity) as any)
+  } else if (isDirectViewEntity(makeView)) {
+    const combined = Object.assign({}, entity, makeView)
+    return combined
+  } else {
+    const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
+    return provider[makeView.operation](tab, makeView.parameters)
+  }
+}
+
+/**
  * Bottom stripe button specification
  *
  */
@@ -298,60 +352,6 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
   }
 
   return button
-}
-
-/**
- * A mode button provider can, via direct, as to take charge of view
- * insertion (otherwise, the button stripe will use the normal REPL
- * view dispatching logic, e.g. opening entities in sidecar, tuples as
- * tables, etc.)
- *
- * A direct view controller is either a function from entity to view,
- * or a specification of such; the latter allows for serialization
- * across remote proxies, and thus is preferable to the former.
- *
- */
-type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
-type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
-
-interface DirectViewEntity extends CustomSpec {
-  isEntity: boolean
-}
-
-function isDirectViewEntity (direct: DirectViewController): direct is DirectViewEntity {
-  const entity = direct as DirectViewEntity
-  return entity.isEntity !== undefined
-}
-
-interface DirectViewControllerSpec {
-  plugin: string
-  module: string
-  operation: string
-  parameters: object
-}
-
-/**
- * Call a "direct" impl
- *
- */
-const callDirect = async (tab: Tab, makeView: DirectViewController, entity, execOptions: ExecOptions) => {
-  if (typeof makeView === 'string') {
-    debug('makeView as string')
-    if (execOptions && execOptions.exec === 'pexec') {
-      return repl.pexec(makeView, execOptions)
-    } else {
-      return repl.qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
-    }
-  } else if (typeof makeView === 'function') {
-    debug('makeView as function')
-    return Promise.resolve(makeView(tab, entity) as any)
-  } else if (isDirectViewEntity(makeView)) {
-    const combined = Object.assign({}, entity, makeView)
-    return combined
-  } else {
-    const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
-    return provider[makeView.operation](tab, makeView.parameters)
-  }
 }
 
 export const addModeButton = (tab: Tab, mode: SidecarMode, entity: Record<string, any>) => {

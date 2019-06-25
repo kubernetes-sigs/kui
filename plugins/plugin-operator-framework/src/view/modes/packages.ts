@@ -73,13 +73,6 @@ interface Parameters {
   resource: Resource<PackageBearer>
 }
 
-export const renderAndView = (tab: Tab, parameters: Parameters): Table => {
-  const { command, resource } = parameters
-  debug('renderAndView', command, resource)
-
-  return toTable(resource.resource)
-}
-
 function toTable (resource: PackageBearer): Table {
   return {
     title: 'Packages',
@@ -94,4 +87,11 @@ function toTable (resource: PackageBearer): Table {
       css: cssForKey.NAME
     }))
   }
+}
+
+export const renderAndView = (tab: Tab, parameters: Parameters): Table => {
+  const { command, resource } = parameters
+  debug('renderAndView', command, resource)
+
+  return toTable(resource.resource)
 }

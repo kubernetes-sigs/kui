@@ -32,6 +32,93 @@ import { language } from './file-types'
 const debug = Debug('plugins/editor/open')
 
 /**
+ * Update the code in the editor to use the given text
+ *
+ */
+const setText = (editor, options, execOptions?) => ({ code, kind }) => {
+  // options is --language yaml command line
+  // execOptions is side channel progmmatic information passed via repl.exec
+  const lang = (options && options.language) || (execOptions && execOptions.language) || language(kind)
+  debug('setText language', kind, lang)
+  debug('setText code', code.substring(0, 20))
+
+  const oldModel = editor.getModel()
+  const newModel = global['monaco'].editor.createModel(code, lang)
+
+  editor.setModel(newModel)
+
+  if (!execOptions || !execOptions.cursorPosition || execOptions.cursorPosition === 'end') {
+    editor.setPosition(editor.getModel().getPositionAt((code && code.length) || 0))
+  }
+
+  if (oldModel) {
+    oldModel.dispose()
+  }
+
+  // see https://github.com/Microsoft/monaco-editor/issues/194 we need
+  // to re-grab focus after a model update; but don't bother if we are
+  // in readOnly mode
+  //  if (!options.readOnly) {
+  // setTimeout(() => editor.focus(), 500)
+  //  }
+
+  return code
+}
+
+let pre = false
+let pre2 = false
+
+/**
+ * Inject the current theme into the editor
+ *
+ * @param editorWrapper null allows for pre-injecting of CSS (performance optimization)
+ */
+const injectTheme = (editorWrapper?: Element, force = false) => {
+  if (pre && !force) {
+    return
+  }
+
+  const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
+  const currentTheme = document.querySelector('body').getAttribute('kui-theme')
+
+  const previousKey = editorWrapper && editorWrapper.getAttribute('kui-theme-key')
+  const key = `editor.theme-${currentTheme}`
+  if (editorWrapper) editorWrapper.setAttribute('kui-theme-key', key)
+
+  // dangit: in webpack we can require the CSS; but in plain nodejs,
+  // we cannot, so have to use filesystem operations to acquire the
+  // CSS content
+  try {
+    // try webpack style
+    if (isDark) {
+      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/dark.css').toString(), key })
+    } else {
+      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(), key })
+    }
+  } catch (err) {
+    // oh well, try filesystem style
+    const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
+    if (isDark) {
+      injectCSS({ key, path: path.join(ourRoot, 'web/css/dark.css') })
+    } else {
+      injectCSS({ key, path: path.join(ourRoot, 'web/css/mono-blue.css') })
+    }
+  }
+
+  // remove previous theme; for some reason, if we don't do this as an
+  // async, chrome flashes as we change themes!
+  if (editorWrapper) {
+    setTimeout(() => uninjectCSS({ key: previousKey }), 0)
+    pre = false
+  }
+}
+
+export const preload = () => {
+  injectTheme()
+  pre = true
+}
+
+/**
  * Open the code editor
  *
  * @return a function that can be passed an entity to display in the
@@ -262,89 +349,3 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
   // once the editor is ready, return a function that can populate it
   return initEditor(editorWrapper, options).then(updater)
 } /* end of openEditor */
-
-/**
- * Update the code in the editor to use the given text
- *
- */
-const setText = (editor, options, execOptions?) => ({ code, kind }) => {
-  // options is --language yaml command line
-  // execOptions is side channel progmmatic information passed via repl.exec
-  const lang = (options && options.language) || (execOptions && execOptions.language) || language(kind)
-  debug('setText language', kind, lang)
-  debug('setText code', code.substring(0, 20))
-
-  const oldModel = editor.getModel()
-  const newModel = global['monaco'].editor.createModel(code, lang)
-
-  editor.setModel(newModel)
-
-  if (!execOptions || !execOptions.cursorPosition || execOptions.cursorPosition === 'end') {
-    editor.setPosition(editor.getModel().getPositionAt((code && code.length) || 0))
-  }
-
-  if (oldModel) {
-    oldModel.dispose()
-  }
-
-  // see https://github.com/Microsoft/monaco-editor/issues/194 we need
-  // to re-grab focus after a model update; but don't bother if we are
-  // in readOnly mode
-  //  if (!options.readOnly) {
-  // setTimeout(() => editor.focus(), 500)
-  //  }
-
-  return code
-}
-
-let pre = false
-let pre2 = false
-export const preload = () => {
-  injectTheme()
-  pre = true
-}
-
-/**
- * Inject the current theme into the editor
- *
- * @param editorWrapper null allows for pre-injecting of CSS (performance optimization)
- */
-const injectTheme = (editorWrapper?: Element, force = false) => {
-  if (pre && !force) {
-    return
-  }
-
-  const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
-  const currentTheme = document.querySelector('body').getAttribute('kui-theme')
-
-  const previousKey = editorWrapper && editorWrapper.getAttribute('kui-theme-key')
-  const key = `editor.theme-${currentTheme}`
-  if (editorWrapper) editorWrapper.setAttribute('kui-theme-key', key)
-
-  // dangit: in webpack we can require the CSS; but in plain nodejs,
-  // we cannot, so have to use filesystem operations to acquire the
-  // CSS content
-  try {
-    // try webpack style
-    if (isDark) {
-      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/dark.css').toString(), key })
-    } else {
-      injectCSS({ css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(), key })
-    }
-  } catch (err) {
-    // oh well, try filesystem style
-    const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-    if (isDark) {
-      injectCSS({ key, path: path.join(ourRoot, 'web/css/dark.css') })
-    } else {
-      injectCSS({ key, path: path.join(ourRoot, 'web/css/mono-blue.css') })
-    }
-  }
-
-  // remove previous theme; for some reason, if we don't do this as an
-  // async, chrome flashes as we change themes!
-  if (editorWrapper) {
-    setTimeout(() => uninjectCSS({ key: previousKey }), 0)
-    pre = false
-  }
-}

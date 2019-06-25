@@ -38,262 +38,6 @@ let nWindows = 0
 let electron
 let app
 
-/**
- * Spawn electron
- *
- */
-export async function initElectron (command: string[] = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
-  debug('initElectron', command, subwindowPlease, subwindowPrefs)
-
-  let promise: Promise<void>
-
-  // handle squirrel install and update events
-  try {
-    if (require('electron-squirrel-startup')) return
-  } catch (err) {
-    debug('electron components not directly installed')
-
-    const spawnGraphics = () => {
-      debug('waiting for graphics')
-      return app.graphics.wait().then(async graphics => {
-        const argv = command.slice(command.indexOf('--') + 1)
-          .concat(forceUI ? ['--ui'] : [])
-
-        debug('spawning graphics', graphics, argv)
-        try {
-          const { spawn } = await import('child_process')
-          const child = spawn(graphics, argv, {
-            detached: !debug.enabled,
-            env: Object.assign({}, process.env, {
-              KUI_HEADLESS: true, subwindowPlease, subwindowPrefs: JSON.stringify(subwindowPrefs)
-            })
-          })
-          child.stdout.on('data', data => {
-            if (data.toString().indexOf('WARNING: Textured window') < 0) {
-              debug(data.toString())
-            }
-          })
-          child.stderr.on('data', data => {
-            debug(data.toString())
-          })
-
-          if (!debug.enabled) {
-            child.unref()
-          }
-        } catch (err) {
-          debug('error spawning graphics', err)
-        }
-
-        debug('done with spawning graphics')
-        if (!debug.enabled) {
-          process.exit(0)
-        }
-      })
-    }
-
-    /**
-     * We seem to be running with a headless.zip build; now determine
-     * the best course of action
-     */
-    const maybeSpawnGraphics = async () => {
-      if (!forceUI && !app) {
-        await initHeadless(process.argv, true)
-      } else {
-        const { fetch, watch } = await import('../webapp/util/fetch-ui')
-        const { userDataDir } = await import('../core/userdata')
-        const stagingArea = userDataDir()
-        debug('initiating UI fetcher', stagingArea)
-
-        fetch(stagingArea)
-        app = {
-          graphics: watch(stagingArea)
-        }
-      }
-      if (app.graphics) {
-        promise = spawnGraphics()
-      } else {
-        console.log(colors.red('Graphical components are not installed.'))
-        process.exit(126)
-      }
-    }
-
-    try {
-      const { _location, name } = require('../../package.json')
-
-      if (!_location || name !== 'kui-shell') {
-        // then this is probably an unrelated package.json file
-        // _location will only be present for npm install'd assets
-        // and the name is there to match our top-level package.json
-        await maybeSpawnGraphics()
-      } else {
-        console.log('Graphical components are not installed.')
-        process.exit(126)
-      }
-    } catch (err) {
-      // we couldn't find ../package.json; we're probably using a
-      // headless.zip installation
-      debug(err)
-
-      await maybeSpawnGraphics()
-    }
-  }
-
-  if (promise) {
-    return promise
-  } else if (!electron) {
-    debug('loading electron')
-    electron = await import('electron')
-    app = electron.app
-
-    if (!app) {
-      // then we're still in pure headless mode; we'll need to fork ourselves to spawn electron
-      const path = await import('path')
-      const { spawn } = await import('child_process')
-      const appHome = path.resolve(path.join(__dirname, 'main'))
-
-      const args = [appHome, '--', ...command]
-      debug('spawning electron', appHome, args)
-
-      // pass through any window options, originating from the command's usage model, on to the subprocess
-      const windowOptions = {}
-      if (subwindowPlease) {
-        debug('passing through subwindowPlease', subwindowPlease)
-        windowOptions['subwindowPlease'] = subwindowPlease
-      }
-      if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
-        debug('passing through subwindowPrefs', subwindowPrefs)
-        windowOptions['subwindowPrefs'] = JSON.stringify(subwindowPrefs)
-      }
-
-      // note how we ignore the subprocess's stdio if debug mode
-      // is not enabled this allows you (as a developer) to
-      // debug issues with spawning the subprocess by passing
-      // DEBUG=* or DEBUG=main
-      const env = Object.assign({},
-        process.env,
-        windowOptions)
-      delete env.KUI_HEADLESS
-      const child = spawn(electron, args, { stdio: debug.enabled ? 'inherit' : 'ignore',
-        env })
-
-      if (!debug.enabled) {
-        // as with the "ignore stdio" comment immediately
-        // above: unless we're in DEBUG mode, let's disown
-        // ("unref" in nodejs terms) the subprocess
-        child.unref()
-      }
-
-      debug('spawning electron done, this process will soon exit')
-      process.exit(0)
-    } else {
-      debug('loading electron done')
-    }
-  }
-
-  // linux oddities; you may see this, and disabling hardware acceleration
-  // used to address it:
-  //   "context mismatch in svga_sampler_view_destroy"
-  /* if (process.platform === 'linux') {
-        app.disableHardwareAcceleration()
-    } */
-
-  // deal with multiple processes
-  if (!process.env.RUNNING_SHELL_TEST) {
-    app.on('second-instance', (event, commandLine: string[]) => {
-      // Someone tried to run a second instance, open a new window
-      // to handle it
-      const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
-      debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
-      createWindow(true, argv, subwindowPlease, subwindowPrefs)
-    })
-    if (!app.requestSingleInstanceLock()) { // The primary instance of app failed to optain the lock, which means another instance of app is already running with the lock
-      debug('exiting, since we are not the first instance')
-      return app.exit(0)
-    }
-  }
-
-  // This method will be called when Electron has finished
-  // initialization and is ready to create browser windows.
-  // Some APIs can only be used after this event occurs.
-  app.once('ready', () => {
-    debug('opening primary window', command)
-    createWindow(true, command.length > 0 && command, subwindowPlease, subwindowPrefs)
-  })
-
-  if (process.env.RUNNING_SHELL_TEST) {
-    /* app.on('before-quit', function () {
-      const config = { tempDirectory: require('path').join(__dirname, '../tests/.nyc_output') }
-      const nyc = new (require('nyc'))(config) // create the nyc instance
-
-      nyc.createTempDirectory() // in case we are the first to the line
-      nyc.writeCoverageFile() // write out the coverage data for the renderer code
-
-      mainWindow.webContents.send('/coverage/dump', config)
-    }) */
-  }
-
-  // Quit when all windows are closed.
-  app.on('window-all-closed', function () {
-    // On OS X it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin' || isRunningHeadless) {
-      // if we're running headless, then quit on window closed, no matter which platform we're on
-      app.quit()
-    } else {
-      app.hide()
-    }
-  })
-
-  app.on('activate', function () {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (nWindows === 0) {
-      createWindow()
-    }
-  })
-} /* initElectron */
-
-/**
- * Bootstrap headless mode
- *
- */
-export async function initHeadless (argv: string[], force = false, isRunningHeadless = false, execOptions?: ExecOptions) {
-  if (/* noHeadless !== true && */ force || isRunningHeadless) {
-    debug('initHeadless')
-
-    app = {
-      quit: () => process.exit(0)
-    }
-
-    //
-    // HEADLESS MODE
-    //
-    try {
-      return (await import('./headless')).main(app, {
-        createWindow: (executeThisArgvPlease: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
-          // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
-          // because this will be called for cases where we want a headless -> GUI transition
-          return createWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
-        }
-      }, argv, execOptions)
-    } catch (err) {
-      // oof, something real bad happened
-      console.error('Internal Error, please report this bug:')
-      console.error(err)
-      if (!process.env.KUI_REPL_MODE) {
-        process.exit(1)
-      } else {
-        throw err
-      }
-    }
-  } else {
-    // in case the second argument isn't undefined...
-    /* if (noHeadless !== true) {
-      executeThisArgvPlease = undefined
-    } */
-  }
-} /* initHeadless */
-
 function createWindow (noHeadless = false, executeThisArgvPlease?: string[], subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
   debug('createWindow', executeThisArgvPlease)
 
@@ -324,6 +68,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
   if (!electron) {
     debug('we need to spawn electron', subwindowPlease, subwindowPrefs)
     delete subwindowPrefs.synonymFor // circular JSON
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     promise = initElectron(['--'].concat(executeThisArgvPlease), {}, subwindowPlease, subwindowPrefs)
       .then(async () => {
         electron = await import('electron')
@@ -619,3 +364,259 @@ export const getCommand = (argv: string[]): Command => {
   debug('using args', argv, subwindowPrefs)
   return { argv, subwindowPlease, subwindowPrefs }
 }
+
+/**
+ * Bootstrap headless mode
+ *
+ */
+export async function initHeadless (argv: string[], force = false, isRunningHeadless = false, execOptions?: ExecOptions) {
+  if (/* noHeadless !== true && */ force || isRunningHeadless) {
+    debug('initHeadless')
+
+    app = {
+      quit: () => process.exit(0)
+    }
+
+    //
+    // HEADLESS MODE
+    //
+    try {
+      return (await import('./headless')).main(app, {
+        createWindow: (executeThisArgvPlease: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
+          // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
+          // because this will be called for cases where we want a headless -> GUI transition
+          return createWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
+        }
+      }, argv, execOptions)
+    } catch (err) {
+      // oof, something real bad happened
+      console.error('Internal Error, please report this bug:')
+      console.error(err)
+      if (!process.env.KUI_REPL_MODE) {
+        process.exit(1)
+      } else {
+        throw err
+      }
+    }
+  } else {
+    // in case the second argument isn't undefined...
+    /* if (noHeadless !== true) {
+      executeThisArgvPlease = undefined
+    } */
+  }
+} /* initHeadless */
+
+/**
+ * Spawn electron
+ *
+ */
+export async function initElectron (command: string[] = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
+  debug('initElectron', command, subwindowPlease, subwindowPrefs)
+
+  let promise: Promise<void>
+
+  // handle squirrel install and update events
+  try {
+    if (require('electron-squirrel-startup')) return
+  } catch (err) {
+    debug('electron components not directly installed')
+
+    const spawnGraphics = () => {
+      debug('waiting for graphics')
+      return app.graphics.wait().then(async graphics => {
+        const argv = command.slice(command.indexOf('--') + 1)
+          .concat(forceUI ? ['--ui'] : [])
+
+        debug('spawning graphics', graphics, argv)
+        try {
+          const { spawn } = await import('child_process')
+          const child = spawn(graphics, argv, {
+            detached: !debug.enabled,
+            env: Object.assign({}, process.env, {
+              KUI_HEADLESS: true, subwindowPlease, subwindowPrefs: JSON.stringify(subwindowPrefs)
+            })
+          })
+          child.stdout.on('data', data => {
+            if (data.toString().indexOf('WARNING: Textured window') < 0) {
+              debug(data.toString())
+            }
+          })
+          child.stderr.on('data', data => {
+            debug(data.toString())
+          })
+
+          if (!debug.enabled) {
+            child.unref()
+          }
+        } catch (err) {
+          debug('error spawning graphics', err)
+        }
+
+        debug('done with spawning graphics')
+        if (!debug.enabled) {
+          process.exit(0)
+        }
+      })
+    }
+
+    /**
+     * We seem to be running with a headless.zip build; now determine
+     * the best course of action
+     */
+    const maybeSpawnGraphics = async () => {
+      if (!forceUI && !app) {
+        await initHeadless(process.argv, true)
+      } else {
+        const { fetch, watch } = await import('../webapp/util/fetch-ui')
+        const { userDataDir } = await import('../core/userdata')
+        const stagingArea = userDataDir()
+        debug('initiating UI fetcher', stagingArea)
+
+        fetch(stagingArea)
+        app = {
+          graphics: watch(stagingArea)
+        }
+      }
+      if (app.graphics) {
+        promise = spawnGraphics()
+      } else {
+        console.log(colors.red('Graphical components are not installed.'))
+        process.exit(126)
+      }
+    }
+
+    try {
+      const { _location, name } = require('../../package.json')
+
+      if (!_location || name !== 'kui-shell') {
+        // then this is probably an unrelated package.json file
+        // _location will only be present for npm install'd assets
+        // and the name is there to match our top-level package.json
+        await maybeSpawnGraphics()
+      } else {
+        console.log('Graphical components are not installed.')
+        process.exit(126)
+      }
+    } catch (err) {
+      // we couldn't find ../package.json; we're probably using a
+      // headless.zip installation
+      debug(err)
+
+      await maybeSpawnGraphics()
+    }
+  }
+
+  if (promise) {
+    return promise
+  } else if (!electron) {
+    debug('loading electron')
+    electron = await import('electron')
+    app = electron.app
+
+    if (!app) {
+      // then we're still in pure headless mode; we'll need to fork ourselves to spawn electron
+      const path = await import('path')
+      const { spawn } = await import('child_process')
+      const appHome = path.resolve(path.join(__dirname, 'main'))
+
+      const args = [appHome, '--', ...command]
+      debug('spawning electron', appHome, args)
+
+      // pass through any window options, originating from the command's usage model, on to the subprocess
+      const windowOptions = {}
+      if (subwindowPlease) {
+        debug('passing through subwindowPlease', subwindowPlease)
+        windowOptions['subwindowPlease'] = subwindowPlease
+      }
+      if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
+        debug('passing through subwindowPrefs', subwindowPrefs)
+        windowOptions['subwindowPrefs'] = JSON.stringify(subwindowPrefs)
+      }
+
+      // note how we ignore the subprocess's stdio if debug mode
+      // is not enabled this allows you (as a developer) to
+      // debug issues with spawning the subprocess by passing
+      // DEBUG=* or DEBUG=main
+      const env = Object.assign({},
+        process.env,
+        windowOptions)
+      delete env.KUI_HEADLESS
+      const child = spawn(electron, args, { stdio: debug.enabled ? 'inherit' : 'ignore',
+        env })
+
+      if (!debug.enabled) {
+        // as with the "ignore stdio" comment immediately
+        // above: unless we're in DEBUG mode, let's disown
+        // ("unref" in nodejs terms) the subprocess
+        child.unref()
+      }
+
+      debug('spawning electron done, this process will soon exit')
+      process.exit(0)
+    } else {
+      debug('loading electron done')
+    }
+  }
+
+  // linux oddities; you may see this, and disabling hardware acceleration
+  // used to address it:
+  //   "context mismatch in svga_sampler_view_destroy"
+  /* if (process.platform === 'linux') {
+        app.disableHardwareAcceleration()
+    } */
+
+  // deal with multiple processes
+  if (!process.env.RUNNING_SHELL_TEST) {
+    app.on('second-instance', (event, commandLine: string[]) => {
+      // Someone tried to run a second instance, open a new window
+      // to handle it
+      const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
+      debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
+      createWindow(true, argv, subwindowPlease, subwindowPrefs)
+    })
+    if (!app.requestSingleInstanceLock()) { // The primary instance of app failed to optain the lock, which means another instance of app is already running with the lock
+      debug('exiting, since we are not the first instance')
+      return app.exit(0)
+    }
+  }
+
+  // This method will be called when Electron has finished
+  // initialization and is ready to create browser windows.
+  // Some APIs can only be used after this event occurs.
+  app.once('ready', () => {
+    debug('opening primary window', command)
+    createWindow(true, command.length > 0 && command, subwindowPlease, subwindowPrefs)
+  })
+
+  if (process.env.RUNNING_SHELL_TEST) {
+    /* app.on('before-quit', function () {
+      const config = { tempDirectory: require('path').join(__dirname, '../tests/.nyc_output') }
+      const nyc = new (require('nyc'))(config) // create the nyc instance
+
+      nyc.createTempDirectory() // in case we are the first to the line
+      nyc.writeCoverageFile() // write out the coverage data for the renderer code
+
+      mainWindow.webContents.send('/coverage/dump', config)
+    }) */
+  }
+
+  // Quit when all windows are closed.
+  app.on('window-all-closed', function () {
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin' || isRunningHeadless) {
+      // if we're running headless, then quit on window closed, no matter which platform we're on
+      app.quit()
+    } else {
+      app.hide()
+    }
+  })
+
+  app.on('activate', function () {
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (nWindows === 0) {
+      createWindow()
+    }
+  })
+} /* initElectron */
