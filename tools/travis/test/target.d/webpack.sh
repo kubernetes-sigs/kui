@@ -23,8 +23,32 @@ echo "testing webpack build from $(pwd)"
 
 cd clients/default
 
-if [ "$KUI_USE_PROXY" == "true" ]; then
-  npm run build:proxy
+if [ "$KUI_USE_PROXY" == "true" ] && [ "$KUI_USE_HTTP" == "true" ]; then
+  CLIENT_HOME=$(pwd)
+  STAGING_DIR=/tmp/kui-proxy-tmp
+
+  # configure proxy server to use HTTP and port 3000
+  cat <<EOF > theme/config.json
+  {
+    "proxyServer": {
+      "url": "http://localhost:3000/exec",
+      "needleOptions": {
+          "rejectUnauthorized": false
+      }
+    }
+  }
+EOF
+
+  # use NO_CLEAN=true to keep the staging area of proxy build
+  NO_CLEAN=true npm run build:proxy
+
+  # pick up the dependencies of proxy server
+  cd ${STAGING_DIR}/app && npm install
+
+  # the docker image should be built successfully, but we don't use docker to start proxy for k8s tests
+  echo "run proxy"
+  cd ../kui && ../app/bin/www &
+  cd ${CLIENT_HOME}
 fi
 
 #
