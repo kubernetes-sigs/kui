@@ -98,7 +98,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
               }
               destMap[module] = backupPluginPath
             } else {
-              // support for javascript-coded plugins
+              // support for javascript-coded plugins (monorepo)
               const backupPluginPath = path.join(modulePath, 'src/plugin', filename)
               debug('lookFor3', filename, backupPluginPath)
 
@@ -108,7 +108,19 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
                   console.log(colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module))
                 }
                 destMap[module] = backupPluginPath
-                // console.error('Skipping plugin, because it does not have a plugin.js', module)
+              } else {
+                // support for javascript-coded plugins (external client)
+                const backupPluginPath = path.join(modulePath, 'plugin', filename)
+                debug('lookFor4', filename, backupPluginPath)
+
+                if (fs.existsSync(backupPluginPath)) {
+                  if (!quiet) {
+                    debug('found4')
+                    console.log(colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module))
+                  }
+                  destMap[module] = backupPluginPath
+                  // console.error('Skipping plugin, because it does not have a plugin.js', module)
+                }
               }
             }
           }
