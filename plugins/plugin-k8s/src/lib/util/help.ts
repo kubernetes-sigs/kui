@@ -52,7 +52,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
   })
 
   // for the remaining sections, form a [{ title, content }] model
-  const _allSections = rawSections.slice(1).reduce((S, _, idx, sections) => {
+  const _allSections: Section[] = rawSections.slice(1).reduce((S, _, idx, sections) => {
     if (idx % 2 === 0) {
       S.push({
         title: sections[idx],
@@ -138,16 +138,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
 
           const secondPartIsMultiLine = secondPart.split(/[\n\r]/).length > 1
 
-          const clickable = (str: string): Element => {
-            const clicky = document.createElement('span')
-            clicky.innerText = str
-            clicky.classList.add('clickable')
-            const repl = require('@kui-shell/core/core/repl')
-            clicky.onclick = () => repl.pexec(str)
-            return clicky
-          }
-
-          const command = secondPartIsMultiLine ? firstPart : clickable(secondPart)
+          const command = secondPartIsMultiLine ? firstPart : secondPart
           const docs = secondPartIsMultiLine ? secondPart : firstPart
 
           return {
