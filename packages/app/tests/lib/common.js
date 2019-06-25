@@ -123,7 +123,7 @@ exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
     }
 
     // start the app, if requested
-    const start = noApp ? x => x : () => {
+    const start = noApp ? () => Promise.resolve() : () => {
       return ctx.app.start() // this will launch electron
       // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
         // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
