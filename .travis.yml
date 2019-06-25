@@ -86,6 +86,7 @@ jobs:
         - echo "NPM Deploying Started ..."
         - echo "Repo name:$TRAVIS_REPO_SLUG"
         - echo "Branch name:$TRAVIS_BRANCH"
+        - echo "TRAVIS EVENT TYPE:$TRAVIS_EVENT_TYPE"
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
       deploy:
@@ -96,6 +97,14 @@ jobs:
             on:
               branch: master
               repo: IBM/kui
+          - provider: script
+            script: npm install && npx lerna publish preminor --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
+            skip_cleanup: true
+            keep_history: true
+            on:
+              branch: master
+              repo: IBM/kui
+              condition: $TRAVIS_EVENT_TYPE = cron
 
 notifications:
   webhooks:
