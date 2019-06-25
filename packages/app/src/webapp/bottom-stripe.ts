@@ -72,6 +72,7 @@ const callDirect = async (tab: Tab, makeView: DirectViewController, entity, exec
     }
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return Promise.resolve(makeView(tab, entity) as any)
   } else if (isDirectViewEntity(makeView)) {
     const combined = Object.assign({}, entity, makeView)
@@ -99,8 +100,8 @@ export interface SidecarMode {
   flush?: 'right' | 'weak'
 
   selected?: boolean
-  selectionController?: any
-  visibleWhen?: any
+  selectionController?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  visibleWhen?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   leaveBottomStripeAlone?: boolean
 
   // icon label?
@@ -113,9 +114,9 @@ export interface SidecarMode {
   balloon?: string
   balloonLength?: string
 
-  data?: any
+  data?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  command?: any
+  command?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   direct?: DirectViewController
 
   execOptions?: ExecOptions
@@ -354,6 +355,7 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
   return button
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const addModeButton = (tab: Tab, mode: SidecarMode, entity: Record<string, any>) => {
   const bottomStripe = css.modeContainer(tab)
   return _addModeButton(tab, bottomStripe, mode, entity, undefined)

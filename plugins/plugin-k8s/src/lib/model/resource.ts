@@ -32,7 +32,7 @@ interface KubeContainerStatus {
   containerID: string
   restartCount: number
   ready: boolean
-  state: any
+  state: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface KubeLoadBalancer {
@@ -97,7 +97,7 @@ export interface KubeResource<Status = KubeStatus> extends MetadataBearing {
   kind: string
   metadata?: KubeMetadata
   status?: Status
-  spec?: any
+  spec?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   data?: object
 }
 
@@ -147,7 +147,7 @@ export interface Pod extends KubeResource {
       image: string
       imagePullPolicy: string
       name: string
-      resource: Record<string, any>
+      resource: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
       terminationMessagePath: string
       terminationMessagePolicy: string
       volumneMounts: { mountPath: string; name: string }[]

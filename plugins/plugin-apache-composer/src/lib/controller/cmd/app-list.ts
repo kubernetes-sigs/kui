@@ -43,7 +43,7 @@ interface ListOptions {
  */
 export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(`/wsk/app/list`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
-    const parsedOptions = (options as any) as ListOptions
+    const parsedOptions = (options as any) as ListOptions // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const limit = parsedOptions.limit || 10 // limit 10 sessions in session list if users didn't specify --limit
 

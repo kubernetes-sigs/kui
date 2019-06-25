@@ -62,6 +62,7 @@ export const hasUnknownOptions = (options: Options, expected: string[]) => {
  * Error reporting
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handleError = (err: Error, reject?: (reason: any) => void) => {
   console.error(err)
   if (reject) {

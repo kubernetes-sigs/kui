@@ -71,6 +71,7 @@ export const codeViewMode = (source: string, contentType = 'javascript') => ({
  * Entity view modes
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode = 'visualization', input: string, ast: Record<string, any>, options) => {
   const modes = [
     {
@@ -189,6 +190,7 @@ export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = '
 
   if (doVisualize) {
     // pass through cli options for the wskflow renderer
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const viewOptions: { [propName: string]: any } = {}
     if (options.functions) {
       // note we must be careful not to pass false; only undefined

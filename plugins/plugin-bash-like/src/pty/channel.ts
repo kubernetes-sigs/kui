@@ -24,7 +24,9 @@ const debug = Debug('plugins/bash-like/pty/channel')
 
 export interface Channel {
   send: (msg: string) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on: (eventType: string, handler: any) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   removeEventListener: (eventType: string, handler: any) => void
   readyState: number
 }
@@ -74,6 +76,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   removeEventListener (eventType: string, handler: any) {
     this.off(eventType, handler)
   }
@@ -113,6 +116,7 @@ export class WebViewChannelRendererSide extends EventEmitter implements Channel 
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   removeEventListener (eventType: string, handler: any) {
     this.off(eventType, handler)
   }

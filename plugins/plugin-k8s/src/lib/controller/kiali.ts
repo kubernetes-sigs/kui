@@ -91,6 +91,7 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
 
   const rateInterval = parsedOptions.interval
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headerRows: any[] = [{
     type: 'application',
     noSort: true,
@@ -192,5 +193,6 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.synonym('/k/get/app', getApps, getAppsCmd2, { noAuthOk: true })
 
   commandTree.listen('/kiali/console', () => client.consoleView(), { noAuthOk: true })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   commandTree.listen('/kiali/graph', ({ parsedOptions }) => client.graphView((parsedOptions as any) as client.KialiOptions), { noAuthOk: true })
 }

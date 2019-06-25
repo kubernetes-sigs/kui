@@ -536,6 +536,7 @@ const statusTable = (entities) => {
  * k status command handler
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const status = (command: string) => async (args: EvaluatorArgs): Promise<any> => {
   debug('constructing status', args)
 

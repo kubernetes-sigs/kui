@@ -29,6 +29,7 @@ class WebSocketChannel extends WebSocket implements Channel {
     super(url, undefined /*, { rejectUnauthorized: false } */)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on (eventType: string, handler: any) {
     switch (eventType) {
       case 'open':

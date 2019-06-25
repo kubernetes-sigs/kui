@@ -27,6 +27,7 @@ const debug = Debug('core/main/headless-support')
  *
  */
 export const streamTo = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return async (response: any) => {
     debug('streaming response', response)
     print(response)

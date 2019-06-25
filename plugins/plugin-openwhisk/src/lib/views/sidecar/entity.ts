@@ -43,6 +43,7 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
  * A small shim on top of the wskflow renderer
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)

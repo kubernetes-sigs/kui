@@ -44,6 +44,7 @@ const costFns = {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const formatOneGroup = (name: string, data: any[], costFn) => {
   if (data.length === 0) {
     return document.createTextNode('No activity')
@@ -165,6 +166,7 @@ const makeValidator = (template, { numThreads, numIters }) => {
  */
 const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv, parsedOptions, execOptions }: EvaluatorArgs) => {
   const pair = parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const options: Record<string, any> = Object.assign({}, parsedOptions, pair.kvOptions)
 
   const action = argv[argv.indexOf(verb) + 1]

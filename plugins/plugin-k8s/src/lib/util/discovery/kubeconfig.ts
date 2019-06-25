@@ -27,6 +27,7 @@ const debug = Debug('k8s/discovery/kubeconfig')
  * of kubectl and helm.
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fillInPATH = (env: Record<string, any>) => {
   if (!env.PATH.match(/\/usr\/local\/bin/)) {
     debug('adding /usr/local/bin to PATH')
@@ -57,6 +58,7 @@ const maybeKUBECONFIG = (file: string): string | void => {
  * .profile (etc.) files prior to launch (for these launch modes).
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fillInKUBECONFIG = async (env: Record<string, any>) => {
   if (env.KUBECONFIG === undefined) { // see https://github.com/IBM/kui/issues/1789
     const { exists } = await import('fs-extra')
@@ -86,6 +88,7 @@ const fillInKUBECONFIG = async (env: Record<string, any>) => {
  * be updated.
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const fillInTheBlanks = async (env: Record<string, any>) => {
   try {
     fillInPATH(env)

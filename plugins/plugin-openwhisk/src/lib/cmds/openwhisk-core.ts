@@ -356,6 +356,7 @@ const correctMissingBindingName = options => entity => {
   return entity
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Special {
   get?: any
   bind?: any
@@ -364,6 +365,7 @@ interface Special {
   create?: any
   update?: any
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 const BlankSpecial: Special = { create: false, update: false }
 const specials = {
   api: BlankSpecial,
@@ -493,6 +495,7 @@ const fqn = (name: string): string => {
 /** for parametrizable entity types, e.g. actions, packages, the standard view modes */
 const standardViewModes = (defaultMode, fn?) => {
   const makeModes = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let modes: any[] = [{ mode: 'parameters', label: 'params', command: () => 'parameters' },
       { mode: 'annotations', command: () => 'annotations' },
       { mode: 'raw', command: () => 'raw' }]
@@ -513,6 +516,7 @@ const standardViewModes = (defaultMode, fn?) => {
   }
 
   if (fn) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (options: Record<string, any>, argv: string[], verb: string, execOptions: ExecOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: () => makeModes() })
   } else {
     return () => ({ modes: () => makeModes() })
@@ -1007,6 +1011,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
   })
   const argv = regularOptions._
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let options: Record<string, any> = Object.assign({}, regularOptions, pair.kvOptions)
   delete options._
 

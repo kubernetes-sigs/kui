@@ -59,11 +59,12 @@ export interface CommandOptions extends CapabilityRequirements {
   // show this placeholder text when executing the command in popup mode (instead of the command line)
   placeholder?: string
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   listen?: any // FIXME
   docs?: string
   synonymFor?: Command
   hide?: boolean
-  override?: any
+  override?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   plugin?: string
   okOptions?: string[]
   isIntention?: boolean
@@ -78,7 +79,7 @@ export interface Event {
   plugin?: string
   isIntention?: boolean
   error?: string
-  options?: any
+  options?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   execType?: ExecType
   isDrilldown?: boolean
 }
@@ -153,7 +154,7 @@ export interface EvaluatorArgs extends CommandLine {
 }
 
 // TODO
-export type CommandResponse = any
+export type CommandResponse = any // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** base command handler */
 export type CommandHandler = (args: EvaluatorArgs) => CommandResponse | Promise<CommandResponse>
@@ -204,6 +205,7 @@ export interface CommandHandlerWithEvents extends Evaluator {
   subtree: CommandBase
   route: string
   options: CommandOptions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   success: (args: { tab: Tab; type: ExecType; command: string; isDrilldown: boolean; parsedOptions: { [ key: string ]: any } }) => void
   error: (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError
 }

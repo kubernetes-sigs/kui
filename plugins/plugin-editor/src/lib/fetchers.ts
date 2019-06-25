@@ -28,7 +28,7 @@ const debug = Debug('plugins/editor/fetchers')
 
 /** allows us to reassign a string code to a numeric one */
 interface ErrorWithAnyCode extends Error {
-  code: any
+  code: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 interface ExecSpec {
@@ -50,11 +50,12 @@ export interface Entity extends MetadataBearing {
   name: string
   viewName?: string
   extractName?: (raw: string) => string // re-extract name from raw source, e.g. after a save or revert
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   lock?: any // set to false if you don't want a lock icon
   filepath?: string
   exec: ExecSpec
-  persister: any
-  gotoReadonlyView?: (Getter) => any
+  persister: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  gotoReadonlyView?: (Getter) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   annotations: KeyValuePair[]
 }
 

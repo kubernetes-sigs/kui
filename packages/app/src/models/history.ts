@@ -23,7 +23,7 @@ const key = 'openwhisk.history'
 export interface HistoryLine {
   entityType?: string
   verb?: string
-  response?: any
+  response?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   raw?: string
 }
 

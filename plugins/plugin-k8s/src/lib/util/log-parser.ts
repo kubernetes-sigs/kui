@@ -186,6 +186,7 @@ const parseZapr = (raw: string): ZaprEntry[] => {
  * @return undefined if we don't have any log entries
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseCloudLens = (raw: string, options: Options): any[] => {
   const pattern = /^(?=[IEF][0-9]+)/m
   const linesByCloudLens = raw.split(pattern)

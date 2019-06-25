@@ -193,6 +193,7 @@ const minTimestamp = activations => {
  * Render the grid as a timeline
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const drawAsTimeline = (tab: Tab, timelineData: { activations: Record<string, any>; nBuckets: number }, content: HTMLElement, gridGrid: HTMLElement, zoomLevelForDisplay: number, options) => {
   debug('drawAsTimeline', zoomLevelForDisplay)
 

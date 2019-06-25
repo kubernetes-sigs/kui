@@ -23,6 +23,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
  * Draw the given activation in the given cell (a dom)
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const renderCell = (tab: Tab, returnTo: string, cell: HTMLElement, activation: Record<string, any>, isFailure: boolean = !activation.response.success, duration: number = activation.end - activation.start, latBucket: number = isFailure ? -1 : latencyBucket(duration), options) => {
   let returnValue = cell
   if (!cell) {

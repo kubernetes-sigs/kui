@@ -23,6 +23,7 @@ const debug = Debug('k8s/view/helm-status')
  * Approximate character width of the given table
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const width = (table: any[]): number => {
   return table.reduce((max, { name, attributes }) => {
     return Math.max(max,

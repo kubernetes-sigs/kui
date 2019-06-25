@@ -81,6 +81,7 @@ export const redactYAML = (str: string): string => {
  *
  */
 // export const redactJSON = (obj: any, options?): any => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const redactJSON = (obj: any): any => {
   // FIXME
   return obj

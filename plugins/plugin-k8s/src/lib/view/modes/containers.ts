@@ -127,6 +127,7 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
     const stateKey = Object.keys(status.state)[0]
     const stateBody = status.state[stateKey]
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const statusAttrs: any[] = !status ? [] : [
       {
         key: 'restartCount',
