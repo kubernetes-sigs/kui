@@ -198,7 +198,9 @@ exports.cli = {
 
   /** wait for the repl to be active */
   waitForRepl: async (app) => {
-    await app.client.waitForEnabled(selectors.CURRENT_PROMPT, timeout)
+    // if it takes more than 10 seconds to have an active prompt,
+    // treat that as a failure
+    await app.client.waitForEnabled(selectors.CURRENT_PROMPT, 10000)
     return app
   },
 
