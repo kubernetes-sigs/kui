@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localIt, remoteIt } from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, remoteIt } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
