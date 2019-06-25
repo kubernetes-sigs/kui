@@ -105,24 +105,6 @@ const injectHTML = () => {
 }
 
 /**
- * Command handler for tutorial play
- *
- */
-const use = cmd => ({ argvNoOptions, tab }) => {
-  injectOurCSS()
-
-  // inject the HTML if needed
-  const ready = document.querySelector('#tutorialPane')
-    ? Promise.resolve()
-    : injectHTML()
-
-  const filepath = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
-
-  return Promise.all([readProject(findFile(filepath)), ready])
-    .then(([{ config, tutorial }]) => showTutorial(tab, config.name, tutorial || config.tutorial))
-}
-
-/**
  * Cancel any background tasks associated with the tutorial obj
  *
  */
@@ -144,6 +126,18 @@ const sidecarManager = {
   exitFullscreen: (tab: cli.Tab) => {
     clearSelection(tab)
     toggleMaximization(tab)
+  }
+}
+
+/**
+ * Remove any existing highlights
+ *
+ */
+const clearHighlights = () => {
+  const elements = document.querySelectorAll('.lightbox')
+  for (let idx = 0; idx < elements.length; idx++) {
+    elements[idx].classList.remove('lightbox')
+    elements[idx].classList.remove('lightbox-visible')
   }
 }
 
@@ -192,194 +186,62 @@ const close = (tab: cli.Tab, pane: Element, obj, delay = 500) => () => new Promi
 const isOnePageFullscreenTutorial = obj => obj.steps && obj.steps.length === 1 && obj.fullscreen
 
 /**
- * Launches the specified tutorial
+ * If a tutorial step specifies to highlight a region, this method
+ * will help in positioning the highlight overlay.
  *
  */
-const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
-  debug('showTutorial', obj)
-
-  // remove the sidecar, if it's open
-  clearSelection(tab)
-
-  // clear the repl
-  if (!isOnePageFullscreenTutorial(obj)) {
-    setTimeout(() => repl.pexec('clear'), 1000)
-  }
-
-  const pane = document.querySelector('#tutorialPane')
-  pane.classList.remove('minimized')
-  pane.removeAttribute('tutorial-has-showcase')
-
-  // remember which tutorial we're currently playing
-  pane.setAttribute('now-playing', tutorialName)
-
-  // is this a fullscreen tutorial?
-  if (obj.fullscreen) {
-    pane.setAttribute('tutorial-is-fullscreen', 'tutorial-is-fullscreen')
-    document.body.classList.add('tutorial-is-fullscreen')
+const setHighlightPosition = ({ selector }) => {
+  const element = document.querySelector(selector)
+  if (!element) {
+    console.error('highlight element not found')
   } else {
-    pane.removeAttribute('tutorial-is-fullscreen')
-    document.body.classList.remove('tutorial-is-fullscreen')
-  }
-
-  // tutorial name
-  const tutorialNameDom = pane.querySelector('.tutorial-header-tutorial-name') as HTMLElement
-  tutorialNameDom.classList.remove('zoom-in')
-  setTimeout(() => tutorialNameDom.classList.add('zoom-in'), 0)
-  tutorialNameDom.innerText = tutorialName.replace(/-/g, ' ');
-
-  // next click handler
-  (pane.querySelector('.tNext') as HTMLElement).onclick = () => {
-    $(pane).prop('step', $(pane).prop('step') + 1)
-    transitionSteps(tab, $(pane).prop('step'), obj, pane)
-  }
-
-  // back click handler
-  (pane.querySelector('.tBack') as HTMLElement).onclick = () => {
-    $(pane).prop('step', $(pane).prop('step') - 1)
-    transitionSteps(tab, $(pane).prop('step'), obj, pane)
-  }
-
-  // close click handler
-  (pane.querySelector('.tCloseButton') as HTMLElement).onclick = close(tab, pane, obj);
-
-  // restore click handler
-  (pane.querySelector('.tRestoreButton') as HTMLElement).onclick = () => {
-    // cancel any background tasks
-    cancelAsyncs(pane)
-
-    // restore fullscreen mode, if that's where we came from
-    if (pane.hasAttribute('tutorial-was-fullscreen')) {
-      const stack = parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10) - 1
-      if (stack === 0) {
-        pane.removeAttribute('tutorial-was-fullscreen')
-        pane.setAttribute('tutorial-is-fullscreen', 'tutorial-is-fullscreen')
-        document.body.classList.add('tutorial-is-fullscreen')
-      } else {
-        pane.setAttribute('tutorial-was-fullscreen', stack.toString())
-      }
-    }
-
-    hideSidecar(tab)
-    pane.classList.remove('minimized')
-  }
-
-  // in case we need some async setup logic in the future
-  const ready = Promise.resolve(true)
-
-  return ready.then(() => {
-    // make the new one visible after some delay
-    debug('ready')
-
-    // make it visible; async this so we can get an animation effect
-    setTimeout(() => pane.classList.add('visible'), 100)
-
-    // set pane styling css. provide some default values, while the user can overwrite them using the style object in pane
-    $(pane).prop('step', 0)
-
-    // Open links in new tab or browser
-    // From StackOverflow
-    // https://stackoverflow.com/questions/31749625/make-a-link-from-electron-open-in-browser/34503175
-    const shell = require('electron').shell
-    $(document).on('click', 'a[href^="http"]', function (event) {
-      event.preventDefault()
-      shell.openExternal(this.href)
-    })
-
-    // insert pane
-    document.querySelector('body').classList.add('tutorial-in-progress')
-
-    // skills badges
-    const headerExtrasContainer = pane.querySelector('.tutorial-header-extras') as HTMLElement
-    const skillsContainer = headerExtrasContainer.querySelector('.tutorial-skills')
-    removeAllDomChildren(skillsContainer)
-    if (obj.skills) {
-      obj.skills.forEach(skill => {
-        const skillBadge = document.createElement('badge')
-        skillBadge.innerText = skill
-
-        skillsContainer.appendChild(skillBadge)
-      })
-    }
-
-    // blocks to represent steps
-    const stepBlocksContainer = pane.querySelector('.tutorial-header-blocks') as HTMLElement
-    removeAllDomChildren(stepBlocksContainer)
-
-    // if we want a square aspect ratio:
-    // const dim = closestSquare(obj.steps.length);
-    // stepBlocksContainer.style.width = `calc(${dim} * 2em)`;
-
-    // render the step "blocks", shown in the upper right with yellow/gray squares
-    pane.setAttribute('num-steps', obj.steps.length)
-    if (obj.steps.length > 1) {
-      for (let idx = 0; idx < obj.steps.length; idx++) {
-        (function (idx) {
-          const block = document.createElement('div')
-          const blockInner = document.createElement('div')
-          blockInner.classList.add('tutorial-step-block')
-          blockInner.setAttribute('step', idx.toString())
-          block.setAttribute('data-balloon', obj.steps[idx].heading)
-          block.setAttribute('data-balloon-pos', idx > obj.steps.length / 2 ? 'down-right' : 'down')// square: idx % dim > Math.floor(dim/2) ? 'down-right' : 'down')
-          block.setAttribute('data-balloon-length', 'small')
-          block.onclick = () => {
-            $(pane).prop('step', idx)
-            transitionSteps(tab, idx, obj, pane)
-          }
-
-          block.appendChild(blockInner)
-          stepBlocksContainer.appendChild(block)
-        })(idx)
-      }
-    }
-
-    // initiate the first step
-    transitionSteps(tab, 0, obj, pane)
-
-    // we'll be bumping up from the bottom; make sure the active repl prompt is visible
-    cli.scrollIntoView({ when: 800 })
-
-    // so that the user can immediately arrow and pageup/pagedown in the biggest scrollable
-    setTimeout(focusOnBiggestScrollable, 800)
-
-    // tell the repl we're OK
-    return true
-  })
-} /* showTutorial */
-
-/**
- * Find the biggest scrollable region and focus on it, so that the
- * user can use the arrow and pageup/pagedown keys to navigate around
- * the scroll region.
- *
- */
-const focusOnBiggestScrollable = () => {
-  const allScrollables = document.querySelectorAll('#tutorialPane .scrollable')
-  let biggest
-  for (let idx = 0; idx < allScrollables.length; idx++) {
-    const rect = allScrollables[idx].getBoundingClientRect()
-    if (!biggest || (rect.height > biggest.rect.height)) {
-      biggest = { element: allScrollables[idx], rect }
-    }
-  }
-  if (biggest) {
-    debug('focus', biggest.element)
-    biggest.element.focus()
+    element.classList.add('lightbox')
+    setTimeout(() => element.classList.add('lightbox-visible'), 0)
+    document.addEventListener('click', clearHighlights, true) /* true means invoke at most once */
   }
 }
 
-/** this is useful if we want to display the step "blocks" as a square */
-/* const closestSquare = n => {
-  const root = Math.sqrt(n),
-  integralPart = ~~root,
-  decimalPart = root - integralPart
+/**
+ * Execute a command, handling the fullscreen toggle
+ *
+ */
+const commandFromFullscreen = (pane, command, display = command) => () => {
+  const go = () => {
+    repl.pexec(command)
 
-  if (decimalPart === 0) {
-  return integralPart
-  } else {
-  return integralPart + 1
+    if (command.startsWith('preview')) {
+      // start a cycle of hover effects
+      const cancellable = setTimeout(() => wskflowCycle(pane), 2000)
+      pane.cancellables.push(() => clearTimeout(cancellable))
+    }
   }
-  } */
+
+  if (pane.hasAttribute('tutorial-is-fullscreen')) {
+    pane.setAttribute('tutorial-was-fullscreen', '1')
+    pane.removeAttribute('tutorial-is-fullscreen')
+    document.body.classList.remove('tutorial-is-fullscreen')
+  } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
+    pane.setAttribute('tutorial-was-fullscreen', 1 + parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10))
+  }
+
+  // switch to minimized mode, unless this is a tutorial play
+  // command; in that case, there's no sense in switching to
+  // minimize mode, as we'll just immediately switch back to the
+  // primary view mode, and it'll look weird
+  if (!(command.startsWith('play') || command.startsWith('tutorial play'))) {
+    pane.classList.add('minimized')
+    pane.querySelector('.tutorial-minimized-message').innerHTML = `Tutorial paused while we execute the command <span class='monospace bx--link clickable clickable-blatant' onclick='repl.pexec("${command}"})'>${display}</span>.`
+  } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
+    // if we are in fullscreen mode, and this isn't a tutorial
+    // play command, then wait a bit, to give time for the
+    // fullscreen-to-minimize transition to finish
+    setTimeout(go, 1000)
+    return
+  }
+
+  // otherwise, start right away
+  go()
+} /* commandFromFullscreen */
 
 /**
  * Render a table as a structured list
@@ -458,48 +320,6 @@ const renderOneTable = (parent, pane) => table => {
       })
   }
 } /* renderOneTable */
-
-/**
- * Execute a command, handling the fullscreen toggle
- *
- */
-const commandFromFullscreen = (pane, command, display = command) => () => {
-  const go = () => {
-    repl.pexec(command)
-
-    if (command.startsWith('preview')) {
-      // start a cycle of hover effects
-      const cancellable = setTimeout(() => wskflowCycle(pane), 2000)
-      pane.cancellables.push(() => clearTimeout(cancellable))
-    }
-  }
-
-  if (pane.hasAttribute('tutorial-is-fullscreen')) {
-    pane.setAttribute('tutorial-was-fullscreen', '1')
-    pane.removeAttribute('tutorial-is-fullscreen')
-    document.body.classList.remove('tutorial-is-fullscreen')
-  } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
-    pane.setAttribute('tutorial-was-fullscreen', 1 + parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10))
-  }
-
-  // switch to minimized mode, unless this is a tutorial play
-  // command; in that case, there's no sense in switching to
-  // minimize mode, as we'll just immediately switch back to the
-  // primary view mode, and it'll look weird
-  if (!(command.startsWith('play') || command.startsWith('tutorial play'))) {
-    pane.classList.add('minimized')
-    pane.querySelector('.tutorial-minimized-message').innerHTML = `Tutorial paused while we execute the command <span class='monospace bx--link clickable clickable-blatant' onclick='repl.pexec("${command}"})'>${display}</span>.`
-  } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
-    // if we are in fullscreen mode, and this isn't a tutorial
-    // play command, then wait a bit, to give time for the
-    // fullscreen-to-minimize transition to finish
-    setTimeout(go, 1000)
-    return
-  }
-
-  // otherwise, start right away
-  go()
-} /* commandFromFullscreen */
 
 /**
  * Handle transitions between steps
@@ -790,32 +610,212 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
 }
 
 /**
- * If a tutorial step specifies to highlight a region, this method
- * will help in positioning the highlight overlay.
+ * Find the biggest scrollable region and focus on it, so that the
+ * user can use the arrow and pageup/pagedown keys to navigate around
+ * the scroll region.
  *
  */
-const setHighlightPosition = ({ selector }) => {
-  const element = document.querySelector(selector)
-  if (!element) {
-    console.error('highlight element not found')
-  } else {
-    element.classList.add('lightbox')
-    setTimeout(() => element.classList.add('lightbox-visible'), 0)
-    document.addEventListener('click', clearHighlights, true) /* true means invoke at most once */
+const focusOnBiggestScrollable = () => {
+  const allScrollables = document.querySelectorAll('#tutorialPane .scrollable')
+  let biggest
+  for (let idx = 0; idx < allScrollables.length; idx++) {
+    const rect = allScrollables[idx].getBoundingClientRect()
+    if (!biggest || (rect.height > biggest.rect.height)) {
+      biggest = { element: allScrollables[idx], rect }
+    }
+  }
+  if (biggest) {
+    debug('focus', biggest.element)
+    biggest.element.focus()
   }
 }
 
 /**
- * Remove any existing highlights
+ * Launches the specified tutorial
  *
  */
-const clearHighlights = () => {
-  const elements = document.querySelectorAll('.lightbox')
-  for (let idx = 0; idx < elements.length; idx++) {
-    elements[idx].classList.remove('lightbox')
-    elements[idx].classList.remove('lightbox-visible')
+const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
+  debug('showTutorial', obj)
+
+  // remove the sidecar, if it's open
+  clearSelection(tab)
+
+  // clear the repl
+  if (!isOnePageFullscreenTutorial(obj)) {
+    setTimeout(() => repl.pexec('clear'), 1000)
   }
+
+  const pane = document.querySelector('#tutorialPane')
+  pane.classList.remove('minimized')
+  pane.removeAttribute('tutorial-has-showcase')
+
+  // remember which tutorial we're currently playing
+  pane.setAttribute('now-playing', tutorialName)
+
+  // is this a fullscreen tutorial?
+  if (obj.fullscreen) {
+    pane.setAttribute('tutorial-is-fullscreen', 'tutorial-is-fullscreen')
+    document.body.classList.add('tutorial-is-fullscreen')
+  } else {
+    pane.removeAttribute('tutorial-is-fullscreen')
+    document.body.classList.remove('tutorial-is-fullscreen')
+  }
+
+  // tutorial name
+  const tutorialNameDom = pane.querySelector('.tutorial-header-tutorial-name') as HTMLElement
+  tutorialNameDom.classList.remove('zoom-in')
+  setTimeout(() => tutorialNameDom.classList.add('zoom-in'), 0)
+  tutorialNameDom.innerText = tutorialName.replace(/-/g, ' ');
+
+  // next click handler
+  (pane.querySelector('.tNext') as HTMLElement).onclick = () => {
+    $(pane).prop('step', $(pane).prop('step') + 1)
+    transitionSteps(tab, $(pane).prop('step'), obj, pane)
+  }
+
+  // back click handler
+  (pane.querySelector('.tBack') as HTMLElement).onclick = () => {
+    $(pane).prop('step', $(pane).prop('step') - 1)
+    transitionSteps(tab, $(pane).prop('step'), obj, pane)
+  }
+
+  // close click handler
+  (pane.querySelector('.tCloseButton') as HTMLElement).onclick = close(tab, pane, obj);
+
+  // restore click handler
+  (pane.querySelector('.tRestoreButton') as HTMLElement).onclick = () => {
+    // cancel any background tasks
+    cancelAsyncs(pane)
+
+    // restore fullscreen mode, if that's where we came from
+    if (pane.hasAttribute('tutorial-was-fullscreen')) {
+      const stack = parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10) - 1
+      if (stack === 0) {
+        pane.removeAttribute('tutorial-was-fullscreen')
+        pane.setAttribute('tutorial-is-fullscreen', 'tutorial-is-fullscreen')
+        document.body.classList.add('tutorial-is-fullscreen')
+      } else {
+        pane.setAttribute('tutorial-was-fullscreen', stack.toString())
+      }
+    }
+
+    hideSidecar(tab)
+    pane.classList.remove('minimized')
+  }
+
+  // in case we need some async setup logic in the future
+  const ready = Promise.resolve(true)
+
+  return ready.then(() => {
+    // make the new one visible after some delay
+    debug('ready')
+
+    // make it visible; async this so we can get an animation effect
+    setTimeout(() => pane.classList.add('visible'), 100)
+
+    // set pane styling css. provide some default values, while the user can overwrite them using the style object in pane
+    $(pane).prop('step', 0)
+
+    // Open links in new tab or browser
+    // From StackOverflow
+    // https://stackoverflow.com/questions/31749625/make-a-link-from-electron-open-in-browser/34503175
+    const shell = require('electron').shell
+    $(document).on('click', 'a[href^="http"]', function (event) {
+      event.preventDefault()
+      shell.openExternal(this.href)
+    })
+
+    // insert pane
+    document.querySelector('body').classList.add('tutorial-in-progress')
+
+    // skills badges
+    const headerExtrasContainer = pane.querySelector('.tutorial-header-extras') as HTMLElement
+    const skillsContainer = headerExtrasContainer.querySelector('.tutorial-skills')
+    removeAllDomChildren(skillsContainer)
+    if (obj.skills) {
+      obj.skills.forEach(skill => {
+        const skillBadge = document.createElement('badge')
+        skillBadge.innerText = skill
+
+        skillsContainer.appendChild(skillBadge)
+      })
+    }
+
+    // blocks to represent steps
+    const stepBlocksContainer = pane.querySelector('.tutorial-header-blocks') as HTMLElement
+    removeAllDomChildren(stepBlocksContainer)
+
+    // if we want a square aspect ratio:
+    // const dim = closestSquare(obj.steps.length);
+    // stepBlocksContainer.style.width = `calc(${dim} * 2em)`;
+
+    // render the step "blocks", shown in the upper right with yellow/gray squares
+    pane.setAttribute('num-steps', obj.steps.length)
+    if (obj.steps.length > 1) {
+      for (let idx = 0; idx < obj.steps.length; idx++) {
+        (function (idx) {
+          const block = document.createElement('div')
+          const blockInner = document.createElement('div')
+          blockInner.classList.add('tutorial-step-block')
+          blockInner.setAttribute('step', idx.toString())
+          block.setAttribute('data-balloon', obj.steps[idx].heading)
+          block.setAttribute('data-balloon-pos', idx > obj.steps.length / 2 ? 'down-right' : 'down')// square: idx % dim > Math.floor(dim/2) ? 'down-right' : 'down')
+          block.setAttribute('data-balloon-length', 'small')
+          block.onclick = () => {
+            $(pane).prop('step', idx)
+            transitionSteps(tab, idx, obj, pane)
+          }
+
+          block.appendChild(blockInner)
+          stepBlocksContainer.appendChild(block)
+        })(idx)
+      }
+    }
+
+    // initiate the first step
+    transitionSteps(tab, 0, obj, pane)
+
+    // we'll be bumping up from the bottom; make sure the active repl prompt is visible
+    cli.scrollIntoView({ when: 800 })
+
+    // so that the user can immediately arrow and pageup/pagedown in the biggest scrollable
+    setTimeout(focusOnBiggestScrollable, 800)
+
+    // tell the repl we're OK
+    return true
+  })
+} /* showTutorial */
+
+/**
+ * Command handler for tutorial play
+ *
+ */
+const use = cmd => ({ argvNoOptions, tab }) => {
+  injectOurCSS()
+
+  // inject the HTML if needed
+  const ready = document.querySelector('#tutorialPane')
+    ? Promise.resolve()
+    : injectHTML()
+
+  const filepath = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
+
+  return Promise.all([readProject(findFile(filepath)), ready])
+    .then(([{ config, tutorial }]) => showTutorial(tab, config.name, tutorial || config.tutorial))
 }
+
+/** this is useful if we want to display the step "blocks" as a square */
+/* const closestSquare = n => {
+  const root = Math.sqrt(n),
+  integralPart = ~~root,
+  decimalPart = root - integralPart
+
+  if (decimalPart === 0) {
+  return integralPart
+  } else {
+  return integralPart + 1
+  }
+  } */
 
 /**
  * tutorial play usage model

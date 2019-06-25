@@ -48,7 +48,7 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 
   let zoom = d3.behavior.zoom()
-    .on('zoom', redraw)
+    .on('zoom', redraw) // eslint-disable-line @typescript-eslint/no-use-before-define
 
   const containerElement: HTMLElement = ifReuseContainer || $(`<div id="${containerId}"></div>`)
   const wskflowContainer: HTMLElement = $('<div id="wskflowContainer"></div>')
@@ -155,113 +155,36 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
 
   const root = svg.append('g')
   let elkData
-  const elk = new ELK()
-  const doneRendering = elk.layout(JSONgraph, {
-    layoutOptions: Object.assign({
-      'elk.algorithm': 'org.eclipse.elk.layered',
-      'org.eclipse.elk.direction': 'DOWN',
-      'org.eclipse.elk.edgeRouting': 'ORTHOGONAL',
-      'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
-      'elk.layered.spacing.nodeNodeBetweenLayers': 15, // org.eclipse. prefix doesn't work (elk bug???)
-      // 'org.eclipse.elk.layered.cycleBreaking.strategy': "DEPTH_FIRST",
-      'org.eclipse.elk.insideSelfLoops.activate': true
-    }, layoutOptions)
-  })
-    .then(data => {
-      elkData = data
 
-      // By default, the graph resizes to fit the size
-      // of the container i.e. zoom-to-contain, showing
-      // the entire graph. This renders larger graphs
-      // with tiny nodes on initial load; this check
-      // introduces a heuristic to avoid tiny nodes on
-      // initial display. This solves #582.
-      const sidecar = getSidecar(tab)
-      if ($(sidecar).height() > 400 && elkData.height * 2 > $(sidecar).height()) {
-        resizeToCover()
-      } else {
-        resizeToContain()
-      }
+  //
+  // After many tests, this is the right way to manually adjust values
+  // for `transform` without introducing unwanted behavior when
+  // zooming by mouse scrolling using d3's zoom feature.
+  //
+  // We have to set d3's zoom variable to have the same values as the
+  // values we'd like for `transform`. So when d3 calculates the
+  // values for event.translate/scale, it takes our manual adjustments
+  // into account.
+  //
+  let applyAutoScale = true // if resizing the window will resize the graph. true by default.
+  let customZoom = false
 
-      let getNodes = function (graph) {
-        const queue = [graph]
-        const nodes = []
-        let parent
-        // note that svg z-index is document order, literally
-        while ((parent = queue.pop()) != null) {
-          nodes.push(parent);
-
-          (parent.children || []).forEach(function (c) {
-            c.x += parent.x; c.y += parent.y
-            if (c.edges) {
-              for (let i = 0; i < c.edges.length; i++) {
-                c.edges[i].sections[0].startPoint.x += c.x
-                c.edges[i].sections[0].startPoint.y += c.y
-                c.edges[i].sections[0].endPoint.x += c.x
-                c.edges[i].sections[0].endPoint.y += c.y
-
-                if (c.edges[i].sections[0].bendPoints) {
-                  for (let j = 0; j < c.edges[i].sections[0].bendPoints.length; j++) {
-                    c.edges[i].sections[0].bendPoints[j].x += c.x
-                    c.edges[i].sections[0].bendPoints[j].y += c.y
-                  }
-                }
-              }
-            }
-
-            queue.push(c)
-          })
-        }
-        return nodes
-      }
-
-      const getLinks = function (nodes) {
-        return d3.merge(nodes.map(function (n) {
-          return n.edges || []
-        }))
-      }
-      const nodes = getNodes(data)
-      const links = getLinks(nodes)
-      const edges = []
-      links.forEach(link => {
-        // convert new elk edge format into old klay edge format to work with the d3 drawing code
-        // TODO: update the d3 drawing code to work with the elk edge format
-        // new format doc: http://www.eclipse.org/elk/documentation/tooldevelopers/graphdatastructure/jsonformat.html
-        let o = {
-          id: link.id,
-          labels: link.labels,
-          visited: link.visited,
-          source: link.source,
-          sourcePort: link.sourcePort,
-          target: link.target,
-          targetPort: link.targetPort,
-          sourcePoint: {
-            x: link.sections[0].startPoint.x,
-            y: link.sections[0].startPoint.y
-          },
-          targetPoint: {
-            x: link.sections[0].endPoint.x,
-            y: link.sections[0].endPoint.y
-          },
-          properties: link.properties,
-          bendPoints: []
-        }
-
-        if (link.sections[0].bendPoints) {
-          link.sections[0].bendPoints.forEach(bp => o.bendPoints.push(bp))
-        }
-
-        edges.push(o)
-      })
-
-      // console.log(nodes);
-      // console.log(links);
-      // console.log(edges);
-      drawGraph(nodes, edges)
-    })
-    .catch(err => {
-      console.error('[wskflow] error: ', err)
-    }) /* end of doneRendering */
+  function resizeToFit (meetOrSlice) {
+    // resizeToFit implements a zoom-to-fit behavior using viewBox.
+    // it no longer requires knowing the size of the container
+    // disadventage is we cannot decide the max zoom level: it will always zoom to fit the entire container
+    ssvg.attr('viewBox', `0 0 ${elkData.width} ${elkData.height}`)
+    ssvg.attr('preserveAspectRatio', `xMidYMin ${meetOrSlice}`)
+    container.attr('transform', '')
+    $('#wskflowSVG').removeAttr('transform')
+    zoom.translate([0, 0])
+    zoom.scale(1)
+  }
+  const resizeToContain = () => resizeToFit('meet')
+  const resizeToCover = () => {
+    resizeToFit('slice')
+    applyAutoScale = false
+  }
 
   function drawGraph (nodes, links) {
     debug('drawGraph')
@@ -976,35 +899,113 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
     setTimeout(addEdgeLabels, 0)
   } /* drawGraph */
 
-  //
-  // After many tests, this is the right way to manually adjust values
-  // for `transform` without introducing unwanted behavior when
-  // zooming by mouse scrolling using d3's zoom feature.
-  //
-  // We have to set d3's zoom variable to have the same values as the
-  // values we'd like for `transform`. So when d3 calculates the
-  // values for event.translate/scale, it takes our manual adjustments
-  // into account.
-  //
-  let applyAutoScale = true // if resizing the window will resize the graph. true by default.
-  let customZoom = false
+  const elk = new ELK()
+  const doneRendering = elk.layout(JSONgraph, {
+    layoutOptions: Object.assign({
+      'elk.algorithm': 'org.eclipse.elk.layered',
+      'org.eclipse.elk.direction': 'DOWN',
+      'org.eclipse.elk.edgeRouting': 'ORTHOGONAL',
+      'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
+      'elk.layered.spacing.nodeNodeBetweenLayers': 15, // org.eclipse. prefix doesn't work (elk bug???)
+      // 'org.eclipse.elk.layered.cycleBreaking.strategy': "DEPTH_FIRST",
+      'org.eclipse.elk.insideSelfLoops.activate': true
+    }, layoutOptions)
+  })
+    .then(data => {
+      elkData = data
 
-  function resizeToFit (meetOrSlice) {
-    // resizeToFit implements a zoom-to-fit behavior using viewBox.
-    // it no longer requires knowing the size of the container
-    // disadventage is we cannot decide the max zoom level: it will always zoom to fit the entire container
-    ssvg.attr('viewBox', `0 0 ${elkData.width} ${elkData.height}`)
-    ssvg.attr('preserveAspectRatio', `xMidYMin ${meetOrSlice}`)
-    container.attr('transform', '')
-    $('#wskflowSVG').removeAttr('transform')
-    zoom.translate([0, 0])
-    zoom.scale(1)
-  }
-  const resizeToContain = () => resizeToFit('meet')
-  const resizeToCover = () => {
-    resizeToFit('slice')
-    applyAutoScale = false
-  }
+      // By default, the graph resizes to fit the size
+      // of the container i.e. zoom-to-contain, showing
+      // the entire graph. This renders larger graphs
+      // with tiny nodes on initial load; this check
+      // introduces a heuristic to avoid tiny nodes on
+      // initial display. This solves #582.
+      const sidecar = getSidecar(tab)
+      if ($(sidecar).height() > 400 && elkData.height * 2 > $(sidecar).height()) {
+        resizeToCover()
+      } else {
+        resizeToContain()
+      }
+
+      let getNodes = function (graph) {
+        const queue = [graph]
+        const nodes = []
+        let parent
+        // note that svg z-index is document order, literally
+        while ((parent = queue.pop()) != null) {
+          nodes.push(parent);
+
+          (parent.children || []).forEach(function (c) {
+            c.x += parent.x; c.y += parent.y
+            if (c.edges) {
+              for (let i = 0; i < c.edges.length; i++) {
+                c.edges[i].sections[0].startPoint.x += c.x
+                c.edges[i].sections[0].startPoint.y += c.y
+                c.edges[i].sections[0].endPoint.x += c.x
+                c.edges[i].sections[0].endPoint.y += c.y
+
+                if (c.edges[i].sections[0].bendPoints) {
+                  for (let j = 0; j < c.edges[i].sections[0].bendPoints.length; j++) {
+                    c.edges[i].sections[0].bendPoints[j].x += c.x
+                    c.edges[i].sections[0].bendPoints[j].y += c.y
+                  }
+                }
+              }
+            }
+
+            queue.push(c)
+          })
+        }
+        return nodes
+      }
+
+      const getLinks = function (nodes) {
+        return d3.merge(nodes.map(function (n) {
+          return n.edges || []
+        }))
+      }
+      const nodes = getNodes(data)
+      const links = getLinks(nodes)
+      const edges = []
+      links.forEach(link => {
+        // convert new elk edge format into old klay edge format to work with the d3 drawing code
+        // TODO: update the d3 drawing code to work with the elk edge format
+        // new format doc: http://www.eclipse.org/elk/documentation/tooldevelopers/graphdatastructure/jsonformat.html
+        let o = {
+          id: link.id,
+          labels: link.labels,
+          visited: link.visited,
+          source: link.source,
+          sourcePort: link.sourcePort,
+          target: link.target,
+          targetPort: link.targetPort,
+          sourcePoint: {
+            x: link.sections[0].startPoint.x,
+            y: link.sections[0].startPoint.y
+          },
+          targetPoint: {
+            x: link.sections[0].endPoint.x,
+            y: link.sections[0].endPoint.y
+          },
+          properties: link.properties,
+          bendPoints: []
+        }
+
+        if (link.sections[0].bendPoints) {
+          link.sections[0].bendPoints.forEach(bp => o.bendPoints.push(bp))
+        }
+
+        edges.push(o)
+      })
+
+      // console.log(nodes);
+      // console.log(links);
+      // console.log(edges);
+      drawGraph(nodes, edges)
+    })
+    .catch(err => {
+      console.error('[wskflow] error: ', err)
+    }) /* end of doneRendering */
 
   // any interested parties for zoom events
   // and notify interested parties that we entered custom mode

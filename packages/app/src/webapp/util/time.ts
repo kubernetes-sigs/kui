@@ -20,6 +20,13 @@ function isDate (object: Date | string | number): object is Date {
   return object && typeof object !== 'string' && typeof object !== 'number' && 'getMonth' in object
 }
 
+/** due to td styling issues, some CSS attrs are on td > span */
+const span = (text: string): HTMLElement => {
+  const inner = document.createElement('span')
+  inner.innerText = text
+  return inner
+}
+
 /**
  * Pretty print a timestamp
  *
@@ -89,11 +96,4 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
     // different year or different month: print the long form
     return span(then.toLocaleString())
   }
-}
-
-/** due to td styling issues, some CSS attrs are on td > span */
-const span = (text: string): HTMLElement => {
-  const inner = document.createElement('span')
-  inner.innerText = text
-  return inner
 }

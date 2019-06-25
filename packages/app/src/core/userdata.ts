@@ -54,6 +54,24 @@ export const userDataDir = (): string => {
 const preferencesFilepath = () => join(userDataDir(), 'prefs.json')
 
 /**
+ * Sync the preferences to disk
+ *
+ * @return passes through the preference model
+ *
+ */
+const fsyncPreferences = async (prefs: Preferences): Promise<Preferences> => {
+  if (inBrowser()) {
+    store().setItem('kui.userprefs', JSON.stringify(prefs))
+  } else {
+    const { mkdirp, writeFile } = await import('fs-extra')
+    await mkdirp(userDataDir())
+    await writeFile(preferencesFilepath(), JSON.stringify(prefs))
+  }
+
+  return prefs
+}
+
+/**
  * Read the preference model
  *
  */
@@ -95,24 +113,6 @@ const preferences = async (): Promise<Preferences> => {
       throw err
     }
   }
-}
-
-/**
- * Sync the preferences to disk
- *
- * @return passes through the preference model
- *
- */
-const fsyncPreferences = async (prefs: Preferences): Promise<Preferences> => {
-  if (inBrowser()) {
-    store().setItem('kui.userprefs', JSON.stringify(prefs))
-  } else {
-    const { mkdirp, writeFile } = await import('fs-extra')
-    await mkdirp(userDataDir())
-    await writeFile(preferencesFilepath(), JSON.stringify(prefs))
-  }
-
-  return prefs
 }
 
 /**

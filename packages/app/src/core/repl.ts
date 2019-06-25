@@ -111,60 +111,6 @@ export const init = (prefs = {}) => {
   return cli.init(prefs)
 }
 
-/**
- * User hit enter in the REPL
- *
- */
-export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(block) } = {}) => {
-  const command = prompt.value.trim()
-
-  if (block['completion']) {
-    // then this is a follow-up to prompt
-    block['completion'](prompt.value)
-  } else {
-    // otherwise, this is a plain old eval, resulting from the user hitting Enter
-    return exec(command, new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt)))
-  }
-}
-
-/**
- * If, while evaluating a command, it needs to evaluate a sub-command...
- *
- */
-export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: ExecOptions): Promise<any> => {
-  // context change ok, final exec in a chain of nested execs
-  return qexec(command, block, true, execOptions, nextBlock)
-}
-export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
-  return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
-}
-export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
-  return exec(command, Object.assign({
-    block: block,
-    nextBlock: nextBlock,
-    noHistory: true,
-    contextChangeOK
-  }, execOptions, {
-    type: ExecType.Nested
-  }))
-}
-
-/**
- * "raw" exec, where we want the data model back directly
- *
- */
-export const rexec = (command: string, execOptions = emptyExecOptions()) => {
-  return qexec(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
-}
-
-/**
- * Programmatic exec, as opposed to human typing and hitting enter
- *
- */
-export const pexec = (command: string, execOptions?: ExecOptions) => {
-  return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions))
-}
-
 const patterns = {
   commentLine: /\s*#.*$/,
   dash: /-([^\s]*)/,
@@ -305,6 +251,28 @@ const stripTrailer = (str: string) => str && str.replace(/\s+.*$/, '')
 
 /** turn --foo into foo and -f into f */
 const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
+
+/**
+ * How to handle errors in command execution? Headless might want to
+ * override the graphical default
+ *
+ */
+type OopsHandler = (block: HTMLElement, nextBlock: HTMLElement) => (err: Error) => void
+let oopsHandler: OopsHandler
+export const installOopsHandler = (fn: OopsHandler) => {
+  debug('installing oops handler')
+  oopsHandler = fn
+}
+const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err: Error) => {
+  if (oopsHandler) {
+    debug('invoking registered oops handler')
+    return oopsHandler(block, nextBlock)(err)
+  } else {
+    return cli.oops(command, block, nextBlock)(err)
+  }
+}
+
+const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
 
 /**
  * Execute the given command-line directly in this process
@@ -868,8 +836,6 @@ class InProcessExecutor implements Executor {
   }
 } /* InProcessExecutor */
 
-const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
-
 /**
  * Execute the given command-line. This function operates by
  * delegation to the IExecutor impl.
@@ -878,6 +844,60 @@ const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
 let currentExecutorImpl: Executor = new InProcessExecutor()
 export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions()) => {
   return currentExecutorImpl.exec(commandUntrimmed, execOptions)
+}
+
+/**
+ * User hit enter in the REPL
+ *
+ */
+export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(block) } = {}) => {
+  const command = prompt.value.trim()
+
+  if (block['completion']) {
+    // then this is a follow-up to prompt
+    block['completion'](prompt.value)
+  } else {
+    // otherwise, this is a plain old eval, resulting from the user hitting Enter
+    return exec(command, new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt)))
+  }
+}
+
+/**
+ * If, while evaluating a command, it needs to evaluate a sub-command...
+ *
+ */
+export const qexec = (command: string, block?: HTMLElement | boolean, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
+  return exec(command, Object.assign({
+    block: block,
+    nextBlock: nextBlock,
+    noHistory: true,
+    contextChangeOK
+  }, execOptions, {
+    type: ExecType.Nested
+  }))
+}
+export const qfexec = (command: string, block?: HTMLElement, nextBlock?: HTMLElement, execOptions?: ExecOptions): Promise<any> => {
+  // context change ok, final exec in a chain of nested execs
+  return qexec(command, block, true, execOptions, nextBlock)
+}
+export const iexec = (command: string, block?: HTMLElement, contextChangeOK?: boolean, execOptions?: ExecOptions, nextBlock?: HTMLElement): Promise<any> => {
+  return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
+}
+
+/**
+ * "raw" exec, where we want the data model back directly
+ *
+ */
+export const rexec = (command: string, execOptions = emptyExecOptions()) => {
+  return qexec(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
+}
+
+/**
+ * Programmatic exec, as opposed to human typing and hitting enter
+ *
+ */
+export const pexec = (command: string, execOptions?: ExecOptions) => {
+  return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions))
 }
 
 /**
@@ -903,26 +923,6 @@ export const encodeComponent = (component: string, quote = '"') => {
     return `${quote}${component}${quote}`
   } else {
     return component
-  }
-}
-
-/**
- * How to handle errors in command execution? Headless might want to
- * override the graphical default
- *
- */
-type OopsHandler = (block: HTMLElement, nextBlock: HTMLElement) => (err: Error) => void
-let oopsHandler: OopsHandler
-export const installOopsHandler = (fn: OopsHandler) => {
-  debug('installing oops handler')
-  oopsHandler = fn
-}
-const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err: Error) => {
-  if (oopsHandler) {
-    debug('invoking registered oops handler')
-    return oopsHandler(block, nextBlock)(err)
-  } else {
-    return cli.oops(command, block, nextBlock)(err)
   }
 }
 

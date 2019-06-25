@@ -626,6 +626,14 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
 
       terminal.element.classList.add('fullscreen')
 
+      let pendingUsage = false
+      let definitelyNotUsage = false
+      let pendingTable: Table
+      let raw = ''
+
+      let definitelyNotTable = expectingSemiStructuredOutput ||
+        argvNoOptions[0] === 'grep' // short-term hack until we fix up ascii-to-table
+
       const onMessage = async (data: string) => {
         const msg = JSON.parse(data)
 
@@ -806,14 +814,6 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
           }
         }
       }
-
-      let pendingUsage = false
-      let definitelyNotUsage = false
-      let pendingTable: Table
-      let raw = ''
-
-      let definitelyNotTable = expectingSemiStructuredOutput ||
-        argvNoOptions[0] === 'grep' // short-term hack until we fix up ascii-to-table
 
       ws.on('message', onMessage)
     } catch (err) {

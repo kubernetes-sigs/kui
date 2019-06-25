@@ -31,19 +31,6 @@ const strings = {
   prompt: '(reverse-i-search$1):`$2\' '
 }
 
-/**
- * Listen for ctrl+R, with a fail-safe try/catch
- *
- */
-export default () => {
-  try {
-    registerListener()
-  } catch (err) {
-    // console.error('Not running in electron environment')
-    debug('Not running in electron environment')
-  }
-}
-
 /** state of the reverse-i-search */
 class ActiveISearch {
   private isSearchActive = true
@@ -248,4 +235,17 @@ function registerListener () {
       }
     }
   })
+}
+
+/**
+ * Listen for ctrl+R, with a fail-safe try/catch
+ *
+ */
+export default () => {
+  try {
+    registerListener()
+  } catch (err) {
+    // console.error('Not running in electron environment')
+    debug('Not running in electron environment')
+  }
 }

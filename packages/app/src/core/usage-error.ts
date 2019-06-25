@@ -104,6 +104,24 @@ const wrap = (div: HTMLElement): HTMLElement => {
   return div
 }
 
+interface BreadcrumbWithClickCommand {
+  label: string
+  command: string
+}
+interface BreadcrumbWithLabelProvider {
+  command: string
+}
+type BreadcrumbLabel = string | BreadcrumbWithLabelProvider | BreadcrumbWithClickCommand
+function isBreadcrumbWithClickCommand (crumb: BreadcrumbLabel): crumb is BreadcrumbWithClickCommand {
+  const breadcrumb = (crumb as BreadcrumbWithClickCommand)
+  return !!(breadcrumb.label && breadcrumb.command)
+}
+
+function isMessageWithUsageModel (msg: UsageLike): msg is MessageWithUsageModel {
+  const message = msg as MessageWithUsageModel
+  return !!message.usage
+}
+
 /**
  * Invoke a given command, and extract the breadcrumb title from the resulting usage model
  *
@@ -163,6 +181,15 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
 
       return item
     })
+}
+
+interface Generator {
+  command: string
+  fn: (command: string) => IUsageRow
+}
+
+function isGenerator (row: UsageRow): row is Generator {
+  return !!(row as Generator).fn
 }
 
 /**
@@ -723,15 +750,6 @@ export interface IUsageRow {
   allowed?: (number | string | boolean)[]
 }
 
-interface Generator {
-  command: string
-  fn: (command: string) => IUsageRow
-}
-
-function isGenerator (row: UsageRow): row is Generator {
-  return !!(row as Generator).fn
-}
-
 type UsageRow = IUsageRow | Generator
 
 interface UsageSection {
@@ -743,19 +761,6 @@ interface UsageSection {
 interface TitledContent {
   title: string
   content: string
-}
-
-interface BreadcrumbWithClickCommand {
-  label: string
-  command: string
-}
-interface BreadcrumbWithLabelProvider {
-  command: string
-}
-type BreadcrumbLabel = string | BreadcrumbWithLabelProvider | BreadcrumbWithClickCommand
-function isBreadcrumbWithClickCommand (crumb: BreadcrumbLabel): crumb is BreadcrumbWithClickCommand {
-  const breadcrumb = (crumb as BreadcrumbWithClickCommand)
-  return !!(breadcrumb.label && breadcrumb.command)
 }
 
 export interface UsageModel {
@@ -820,11 +825,6 @@ interface MessageWithUsageModel extends MessageWithCode {
 function isMessageWithCode (msg: UsageLike): msg is MessageWithCode {
   const message = msg as MessageWithCode
   return !!(message.message && (message.code || message.statusCode || message.exitCode))
-}
-
-function isMessageWithUsageModel (msg: UsageLike): msg is MessageWithUsageModel {
-  const message = msg as MessageWithUsageModel
-  return !!message.usage
 }
 
 type MessageLike = string | HTMLElement

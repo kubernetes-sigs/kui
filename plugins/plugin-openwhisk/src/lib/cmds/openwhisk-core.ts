@@ -356,6 +356,24 @@ const correctMissingBindingName = options => entity => {
   return entity
 }
 
+interface Special {
+  get?: any
+  bind?: any
+  list?: any
+  invoke?: any
+  create?: any
+  update?: any
+}
+const BlankSpecial: Special = { create: false, update: false }
+const specials = {
+  api: BlankSpecial,
+  actions: BlankSpecial,
+  triggers: BlankSpecial,
+  rules: BlankSpecial,
+  packages: BlankSpecial,
+  activations: BlankSpecial
+}
+
 export const addPrettyType = (entityType: string, verb: string, entityName: string) => async entity => {
   if (typeof entity === 'string') {
     return {
@@ -472,24 +490,6 @@ const fqn = (name: string): string => {
   }
 }
 
-interface Special {
-  get?: any
-  bind?: any
-  list?: any
-  invoke?: any
-  create?: any
-  update?: any
-}
-const BlankSpecial: Special = { create: false, update: false }
-const specials = {
-  api: BlankSpecial,
-  actions: BlankSpecial,
-  triggers: BlankSpecial,
-  rules: BlankSpecial,
-  packages: BlankSpecial,
-  activations: BlankSpecial
-}
-
 /** for parametrizable entity types, e.g. actions, packages, the standard view modes */
 const standardViewModes = (defaultMode, fn?) => {
   const makeModes = () => {
@@ -522,6 +522,27 @@ const standardViewModes = (defaultMode, fn?) => {
 /** flatten an array of arrays */
 function flatten<T> (arrays: T[][]): T[] {
   return [].concat.apply([], arrays)
+}
+
+export const agent = isLinux ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 }) : undefined
+export const owOpts = (options = {}) => {
+  if (isLinux) {
+    // options.forever = true
+    options['timeout'] = 5000
+    options['agent'] = agent
+  }
+
+  if (settings.userAgent && !process.env.TEST_SPACE && !process.env.TRAVIS) {
+    // install a User-Agent header, except when running tests
+    debug('setting User-Agent', settings.userAgent)
+    options['User-Agent'] = settings.userAgent
+  }
+
+  if (inBrowser()) {
+    options['noUserAgent'] = true
+  }
+
+  return options
 }
 
 /** api gateway actions */
@@ -950,27 +971,6 @@ export const parseOptions = (argvFull: string[], type: string) => {
   }
 }
 
-export const agent = isLinux ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 }) : undefined
-export const owOpts = (options = {}) => {
-  if (isLinux) {
-    // options.forever = true
-    options['timeout'] = 5000
-    options['agent'] = agent
-  }
-
-  if (settings.userAgent && !process.env.TEST_SPACE && !process.env.TRAVIS) {
-    // install a User-Agent header, except when running tests
-    debug('setting User-Agent', settings.userAgent)
-    options['User-Agent'] = settings.userAgent
-  }
-
-  if (inBrowser()) {
-    options['noUserAgent'] = true
-  }
-
-  return options
-}
-
 /**
  * Handle 204 No-Content responses; e.g. for trigger fire
  *
@@ -1220,6 +1220,10 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
   })
 }
 
+/** these are the module's exported functions */
+let self = {}
+let initSelf
+
 /**
  * Update an entity
  *
@@ -1264,9 +1268,6 @@ export const fillInActionDetails = (Package, type = 'actions') => actionSummary 
     onclick: `wsk action get ${repl.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
   })
 }
-
-/** these are the module's exported functions */
-let self = {}
 
 const makeInit = (commandTree) => async (isReinit = false) => {
   debug('init')
@@ -1566,7 +1567,6 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   return self
 }
 
-let initSelf
 export default function (commandTree) {
   initSelf = makeInit(commandTree)
   return initSelf(false)
