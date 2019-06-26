@@ -27,153 +27,32 @@ interface TableFormatOptions {
   usePip?: boolean
 }
 
-export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: HTMLElement, options: TableFormatOptions = {}): void => {
-  const tableDom = document.createElement('div')
-  tableDom.classList.add('result-table')
-
-  let container: HTMLElement
-  if (table.title) {
-    const tableOuterWrapper = document.createElement('div')
-    const tableOuter = document.createElement('div')
-    const titleOuter = document.createElement('div')
-    const titleInner = document.createElement('div')
-
-    tableOuterWrapper.classList.add('result-table-outer-wrapper')
-    tableOuter.appendChild(titleOuter)
-    titleOuter.appendChild(titleInner)
-    tableOuterWrapper.appendChild(tableOuter)
-    resultDom.appendChild(tableOuterWrapper)
-
-    if (table.flexWrap) {
-      const tableScroll = document.createElement('div')
-      tableScroll.classList.add('scrollable')
-      tableScroll.classList.add('scrollable-auto')
-      tableScroll.setAttribute('data-table-max-rows', typeof table.flexWrap === 'number' ? table.flexWrap.toString() : '8')
-      tableScroll.appendChild(tableDom)
-      tableOuter.appendChild(tableScroll)
-    } else {
-      tableOuter.appendChild(tableDom)
-    }
-
-    tableOuter.classList.add('result-table-outer')
-    titleOuter.classList.add('result-table-title-outer')
-    titleInner.classList.add('result-table-title')
-    titleInner.innerText = table.title
-
-    if (table.tableCSS) {
-      tableOuterWrapper.classList.add(table.tableCSS)
-    }
-
-    if (table.fontawesome) {
-      const awesomeWrapper = document.createElement('div')
-      const awesome = document.createElement('i')
-      awesomeWrapper.appendChild(awesome)
-      titleOuter.appendChild(awesomeWrapper)
-
-      awesome.className = table.fontawesome
-
-      if (table.fontawesomeCSS) {
-        awesomeWrapper.classList.add(table.fontawesomeCSS)
-        delete table.fontawesomeCSS
-      }
-
-      if (table.fontawesomeBalloon) {
-        awesomeWrapper.setAttribute('data-balloon', table.fontawesomeBalloon)
-        awesomeWrapper.setAttribute('data-balloon-pos', 'left')
-        delete table.fontawesomeBalloon
-      }
-
-      // otherwise, the header row renderer will pick this up
-      delete table.fontawesome
-    }
-
-    container = tableOuterWrapper
-  } else {
-    resultDom.appendChild(tableDom)
-    container = tableDom
-  }
-
-  container.classList.add('big-top-pad')
-
-  let prepareRows = prepareTable(tab, table)
-  let rows = prepareRows.map(formatOneRowResult(tab, options))
-  rows.map(row => tableDom.appendChild(row))
-
-  if (table.style !== undefined) {
-    tableDom.setAttribute('kui-table-style', TableStyle[table.style].toString())
-  }
-
-  const rowSelection = tableDom.querySelector('.selected-row')
-  if (rowSelection) {
-    tableDom.classList.add('has-row-selection')
-  }
-
-  if (isWatchableTable(table)) {
-    if (table.watchByDefault) { // TODO: register a button?
-      // we'll ping the watcher at most watchLimit times
-      let count = table.watchLimit ? table.watchLimit : 100000
-
-      // the current watch interval; used for clear/reset/stop
-      let interval: NodeJS.Timeout
-
-      const stopWatching = () => {
-        debug('stopWatching')
-        clearInterval(interval)
-      }
-
-      const refreshTable = async () => {
-        debug(`refresh with ${table.refreshCommand}`)
-
-        let newPrepareRows: Row[]
-
-        try {
-          const response = await qexec(table.refreshCommand)
-          if (isTable(response)) {
-            newPrepareRows = prepareTable(tab, response)
-          } else {
-            console.error('refresh result is not a table', response)
-            rows.map(row => tableDom.removeChild(row))
-          }
-        } catch (err) {
-          if (err.code === 404) {
-            newPrepareRows = []
-          } else {
-            while (resultDom.firstChild) {
-              resultDom.removeChild(resultDom.firstChild)
-            }
-            stopWatching()
-            throw err
-          }
-        }
-
-        const diffs = diffTableRows(prepareRows, newPrepareRows)
-        // debug('diff table rows', diffs)
-        applyDiffTable(diffs, tab, tableDom, rows, prepareRows)
-      }
-
-      const watchIt = () => {
-        if (--count < 0) {
-          debug('watchLimit exceeded')
-          stopWatching()
-          return
-        }
-
-        try {
-          Promise.resolve(refreshTable())
-        } catch (err) {
-          console.error('Error refreshing table', err)
-          clearInterval(interval)
-        }
-      }
-
-      // establish the initial watch interval
-      interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
-    }
-  }
+// sort the body of table
+export const sortBody = (rows: Row[]): Row[] => {
+  return rows.sort((a, b) =>
+    (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
+    (a.packageName || '').localeCompare(b.packageName || '') ||
+    a.name.localeCompare(b.name))
 }
 
-interface RowFormatOptions extends TableFormatOptions {
-  excludePackageName?: boolean
+/**
+ * get an array of row models
+ *
+ */
+
+const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
+  const { header, body, noSort } = response
+
+  if (header) {
+    header.outerCSS = `${header.outerCSS || ''} header-cell`
+
+    if (header.attributes) {
+      header.attributes.forEach(cell => { cell.outerCSS = `${cell.outerCSS || ''} header-cell` })
+    }
+  }
+  // sort the list, then format each element, then add the results to the resultDom
+  // (don't sort lists of activations. i wish there were a better way to do this)
+  return [ header ].concat(noSort ? body : sortBody(body)).filter(x => x)
 }
 
 /**
@@ -212,6 +91,85 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       entity.rowCSS.forEach(_ => _ && entityName.classList.add(_))
     } else {
       entityName.classList.add(entity.rowCSS)
+    }
+  }
+
+  // now add the clickable name
+  const entityNameGroup = document.createElement('span')
+  entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
+  if (entityNameGroup.classList.contains('header-cell')) {
+    entityName.classList.add('header-row');
+    (entityName.parentNode as HTMLElement).classList.add('header-row')
+  }
+  if ((!options || !options.excludePackageName) && entity.packageName) {
+    const packagePrefix = document.createElement('span')
+    packagePrefix.className = 'package-prefix lighter-text smaller-text'
+    packagePrefix.innerText = entity.packageName + '/'
+    entityNameGroup.appendChild(packagePrefix)
+  }
+  const entityNameClickable = document.createElement('span')
+  entityNameClickable.className = 'entity-name'
+  if (!entityNameGroup.classList.contains('header-cell')) {
+    entityNameClickable.classList.add('clickable')
+  }
+  if (entity.nameCss) {
+    if (Array.isArray(entity.nameCss)) {
+      entity.nameCss.forEach(_ => entityNameClickable.classList.add(_))
+    } else {
+      entityNameClickable.classList.add(entity.nameCss)
+    }
+  }
+  entityNameGroup.appendChild(entityNameClickable)
+  entityName.appendChild(entityNameGroup)
+
+  if (entity.key) {
+    entityNameClickable.setAttribute('data-key', entity.key)
+  } else {
+    // if we have no key field, and this is the first column, let us
+    // use NAME as the default key; e.g. we style NAME columns
+    // slightly differently
+    entityNameClickable.setAttribute('data-key', 'NAME')
+  }
+
+  // name of the entity
+  let name = entity.prettyName || entity.name
+
+  // click handler for the list result
+  if (entity.fontawesome) {
+    const icon = document.createElement('i')
+    entityNameClickable.appendChild(icon)
+    icon.className = entity.fontawesome
+    icon.classList.add('cell-inner')
+  } else if (typeof name === 'string') {
+    entityNameClickable.innerText = name
+  } else {
+    entityNameClickable.appendChild(name)
+  }
+
+  entityNameClickable.setAttribute('data-value', name) // in case tests need the actual value, not the icon
+  if (entity.fullName) {
+    entityNameClickable.setAttribute('title', entity.fullName)
+  }
+
+  if (entity.css) {
+    if (Array.isArray(entity.css)) {
+      entity.css.forEach(_ => entityNameClickable.classList.add(_))
+    } else {
+      entityNameClickable.classList.add(entity.css)
+    }
+  }
+  if (!entity.onclick) {
+    // the provider has told us the entity name is not clickable
+    entityNameClickable.classList.remove('clickable')
+  } else {
+    if (isPopup() || options.usePip) {
+      entityNameClickable.onclick = evt => {
+        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+      }
+    } else if (typeof entity.onclick === 'string') {
+      entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
+    } else {
+      entityNameClickable.onclick = entity.onclick
     }
   }
 
@@ -455,6 +413,247 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     entity.beforeAttributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome }) => addCellToRow({ className: outerCSS, value, innerClassName: css, onclick, key, fontawesome }))
   }
 
+  //
+  // case-specific cells
+  //
+  if (entity.attributes) {
+    // the entity provider wants to take complete control
+    entity.attributes.forEach(({ key, value, css = '', outerCSS = '', watch, watchLimit, onclick, fontawesome, tag }) => {
+      addCellToRow({ className: outerCSS, value, innerClassName: css, onclick, watch, key, fontawesome, watchLimit, tag })
+    })
+  } else {
+    // otherwise, we have some generic attribute handlers, here
+    const addKind = () => {
+      if (entity.kind || entity.prettyKind) {
+        addCellToRow({ className: 'entity-kind', value: entity.prettyKind || entity.kind })
+      }
+    }
+    const addStatus = () => {
+      if (entity.status) {
+        const cell = addCellToRow({ className: `entity-rule-status`,
+          value: 'Pending', // delay status display
+          innerClassName: 'repeating-pulse', // css
+          tag: 'badge',
+          tagClass: 'gray-background' })
+
+        /** normalize the status badge by capitalization */
+        const capitalize = (str: string): string => {
+          return str[0].toUpperCase() + str.slice(1).toLowerCase()
+        }
+
+        Promise.resolve(entity.status).then(status => {
+          const badge = cell.querySelector('badge') as HTMLElement
+          badge.innerText = capitalize(status)
+          badge.classList.remove('gray-background')
+          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
+          badge.classList.remove('repeating-pulse')
+        })
+      }
+    }
+    const addVersion = () => {
+      if (entity.version || entity.prettyVersion) {
+        addCellToRow({ className: 'entity-version hide-with-sidecar',
+          value: entity.prettyVersion || entity.version,
+          innerClassName: 'slightly-deemphasize' })
+      }
+    }
+
+    addKind()
+    addStatus()
+    addVersion()
+  }
+
+  return dom
+}
+
+export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: HTMLElement, options: TableFormatOptions = {}): void => {
+  const tableDom = document.createElement('div')
+  tableDom.classList.add('result-table')
+
+  let container: HTMLElement
+  if (table.title) {
+    const tableOuterWrapper = document.createElement('div')
+    const tableOuter = document.createElement('div')
+    const titleOuter = document.createElement('div')
+    const titleInner = document.createElement('div')
+
+    tableOuterWrapper.classList.add('result-table-outer-wrapper')
+    tableOuter.appendChild(titleOuter)
+    titleOuter.appendChild(titleInner)
+    tableOuterWrapper.appendChild(tableOuter)
+    resultDom.appendChild(tableOuterWrapper)
+
+    if (table.flexWrap) {
+      const tableScroll = document.createElement('div')
+      tableScroll.classList.add('scrollable')
+      tableScroll.classList.add('scrollable-auto')
+      tableScroll.setAttribute('data-table-max-rows', typeof table.flexWrap === 'number' ? table.flexWrap.toString() : '8')
+      tableScroll.appendChild(tableDom)
+      tableOuter.appendChild(tableScroll)
+    } else {
+      tableOuter.appendChild(tableDom)
+    }
+
+    tableOuter.classList.add('result-table-outer')
+    titleOuter.classList.add('result-table-title-outer')
+    titleInner.classList.add('result-table-title')
+    titleInner.innerText = table.title
+
+    if (table.tableCSS) {
+      tableOuterWrapper.classList.add(table.tableCSS)
+    }
+
+    if (table.fontawesome) {
+      const awesomeWrapper = document.createElement('div')
+      const awesome = document.createElement('i')
+      awesomeWrapper.appendChild(awesome)
+      titleOuter.appendChild(awesomeWrapper)
+
+      awesome.className = table.fontawesome
+
+      if (table.fontawesomeCSS) {
+        awesomeWrapper.classList.add(table.fontawesomeCSS)
+        delete table.fontawesomeCSS
+      }
+
+      if (table.fontawesomeBalloon) {
+        awesomeWrapper.setAttribute('data-balloon', table.fontawesomeBalloon)
+        awesomeWrapper.setAttribute('data-balloon-pos', 'left')
+        delete table.fontawesomeBalloon
+      }
+
+      // otherwise, the header row renderer will pick this up
+      delete table.fontawesome
+    }
+
+    container = tableOuterWrapper
+  } else {
+    resultDom.appendChild(tableDom)
+    container = tableDom
+  }
+
+  container.classList.add('big-top-pad')
+
+  let prepareRows = prepareTable(tab, table)
+  let rows = prepareRows.map(formatOneRowResult(tab, options))
+  rows.map(row => tableDom.appendChild(row))
+
+  if (table.style !== undefined) {
+    tableDom.setAttribute('kui-table-style', TableStyle[table.style].toString())
+  }
+
+  const rowSelection = tableDom.querySelector('.selected-row')
+  if (rowSelection) {
+    tableDom.classList.add('has-row-selection')
+  }
+
+  if (isWatchableTable(table)) {
+    if (table.watchByDefault) { // TODO: register a button?
+      // we'll ping the watcher at most watchLimit times
+      let count = table.watchLimit ? table.watchLimit : 100000
+
+      // the current watch interval; used for clear/reset/stop
+      let interval: NodeJS.Timeout
+
+      const stopWatching = () => {
+        debug('stopWatching')
+        clearInterval(interval)
+      }
+
+      const refreshTable = async () => {
+        debug(`refresh with ${table.refreshCommand}`)
+
+        let newPrepareRows: Row[]
+
+        try {
+          const response = await qexec(table.refreshCommand)
+          if (isTable(response)) {
+            newPrepareRows = prepareTable(tab, response)
+          } else {
+            console.error('refresh result is not a table', response)
+            rows.map(row => tableDom.removeChild(row))
+          }
+        } catch (err) {
+          if (err.code === 404) {
+            newPrepareRows = []
+          } else {
+            while (resultDom.firstChild) {
+              resultDom.removeChild(resultDom.firstChild)
+            }
+            stopWatching()
+            throw err
+          }
+        }
+
+        const diffs = diffTableRows(prepareRows, newPrepareRows)
+        // debug('diff table rows', diffs)
+        applyDiffTable(diffs, tab, tableDom, rows, prepareRows)
+      }
+
+      const watchIt = () => {
+        if (--count < 0) {
+          debug('watchLimit exceeded')
+          stopWatching()
+          return
+        }
+
+        try {
+          Promise.resolve(refreshTable())
+        } catch (err) {
+          console.error('Error refreshing table', err)
+          clearInterval(interval)
+        }
+      }
+
+      // establish the initial watch interval
+      interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+    }
+  }
+}
+
+interface RowFormatOptions extends TableFormatOptions {
+  excludePackageName?: boolean
+}
+
+/**
+ * Format one row in the table
+ * @deprecated in favor of new formatOneRowResult()
+ *
+ */
+export const formatOneListResult = (tab: Tab, options?) => entity => {
+  const dom = document.createElement('div')
+  dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
+  dom.setAttribute('data-name', entity.name)
+
+  // row selection
+  entity.setSelected = () => {
+    const currentSelection = dom.parentNode.querySelector('.selected-row') as HTMLElement
+    if (currentSelection) {
+      currentSelection.classList.remove('selected-row')
+    }
+    dom.querySelector('.row-selection-context').classList.add('selected-row')
+    getCurrentPrompt().focus()
+  }
+  entity.setUnselected = () => {
+    dom.querySelector('.row-selection-context').classList.remove('selected-row')
+  }
+
+  if (entity.packageName) {
+    dom.setAttribute('data-package-name', entity.packageName)
+  }
+
+  const entityName = document.createElement('div')
+  entityName.className = 'entity-attributes row-selection-context'
+  dom.appendChild(entityName)
+
+  if (entity.rowCSS) {
+    if (Array.isArray(entity.rowCSS)) {
+      entity.rowCSS.forEach(_ => _ && entityName.classList.add(_))
+    } else {
+      entityName.classList.add(entity.rowCSS)
+    }
+  }
+
   // now add the clickable name
   const entityNameGroup = document.createElement('span')
   entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
@@ -519,11 +718,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       entityNameClickable.classList.add(entity.css)
     }
   }
-  if (!entity.onclick) {
+  if (entity.onclick === false) {
     // the provider has told us the entity name is not clickable
     entityNameClickable.classList.remove('clickable')
   } else {
-    if (isPopup() || options.usePip) {
+    if (isPopup()) {
       entityNameClickable.onclick = evt => {
         return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
@@ -531,98 +730,6 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
     } else {
       entityNameClickable.onclick = entity.onclick
-    }
-  }
-
-  //
-  // case-specific cells
-  //
-  if (entity.attributes) {
-    // the entity provider wants to take complete control
-    entity.attributes.forEach(({ key, value, css = '', outerCSS = '', watch, watchLimit, onclick, fontawesome, tag }) => {
-      addCellToRow({ className: outerCSS, value, innerClassName: css, onclick, watch, key, fontawesome, watchLimit, tag })
-    })
-  } else {
-    // otherwise, we have some generic attribute handlers, here
-    const addKind = () => {
-      if (entity.kind || entity.prettyKind) {
-        addCellToRow({ className: 'entity-kind', value: entity.prettyKind || entity.kind })
-      }
-    }
-    const addStatus = () => {
-      if (entity.status) {
-        const cell = addCellToRow({ className: `entity-rule-status`,
-          value: 'Pending', // delay status display
-          innerClassName: 'repeating-pulse', // css
-          tag: 'badge',
-          tagClass: 'gray-background' })
-
-        /** normalize the status badge by capitalization */
-        const capitalize = (str: string): string => {
-          return str[0].toUpperCase() + str.slice(1).toLowerCase()
-        }
-
-        Promise.resolve(entity.status).then(status => {
-          const badge = cell.querySelector('badge') as HTMLElement
-          badge.innerText = capitalize(status)
-          badge.classList.remove('gray-background')
-          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
-          badge.classList.remove('repeating-pulse')
-        })
-      }
-    }
-    const addVersion = () => {
-      if (entity.version || entity.prettyVersion) {
-        addCellToRow({ className: 'entity-version hide-with-sidecar',
-          value: entity.prettyVersion || entity.version,
-          innerClassName: 'slightly-deemphasize' })
-      }
-    }
-
-    addKind()
-    addStatus()
-    addVersion()
-  }
-
-  return dom
-}
-
-/**
- * Format one row in the table
- * @deprecated in favor of new formatOneRowResult()
- *
- */
-export const formatOneListResult = (tab: Tab, options?) => entity => {
-  const dom = document.createElement('div')
-  dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
-  dom.setAttribute('data-name', entity.name)
-
-  // row selection
-  entity.setSelected = () => {
-    const currentSelection = dom.parentNode.querySelector('.selected-row') as HTMLElement
-    if (currentSelection) {
-      currentSelection.classList.remove('selected-row')
-    }
-    dom.querySelector('.row-selection-context').classList.add('selected-row')
-    getCurrentPrompt().focus()
-  }
-  entity.setUnselected = () => {
-    dom.querySelector('.row-selection-context').classList.remove('selected-row')
-  }
-
-  if (entity.packageName) {
-    dom.setAttribute('data-package-name', entity.packageName)
-  }
-
-  const entityName = document.createElement('div')
-  entityName.className = 'entity-attributes row-selection-context'
-  dom.appendChild(entityName)
-
-  if (entity.rowCSS) {
-    if (Array.isArray(entity.rowCSS)) {
-      entity.rowCSS.forEach(_ => _ && entityName.classList.add(_))
-    } else {
-      entityName.classList.add(entity.rowCSS)
     }
   }
 
@@ -856,85 +963,6 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     entity.beforeAttributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome }) => addCell(outerCSS, value, css, undefined, onclick, undefined, key, fontawesome))
   }
 
-  // now add the clickable name
-  const entityNameGroup = document.createElement('span')
-  entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
-  if (entityNameGroup.classList.contains('header-cell')) {
-    entityName.classList.add('header-row');
-    (entityName.parentNode as HTMLElement).classList.add('header-row')
-  }
-  if ((!options || !options.excludePackageName) && entity.packageName) {
-    const packagePrefix = document.createElement('span')
-    packagePrefix.className = 'package-prefix lighter-text smaller-text'
-    packagePrefix.innerText = entity.packageName + '/'
-    entityNameGroup.appendChild(packagePrefix)
-  }
-  const entityNameClickable = document.createElement('span')
-  entityNameClickable.className = 'entity-name'
-  if (!entityNameGroup.classList.contains('header-cell')) {
-    entityNameClickable.classList.add('clickable')
-  }
-  if (entity.nameCss) {
-    if (Array.isArray(entity.nameCss)) {
-      entity.nameCss.forEach(_ => entityNameClickable.classList.add(_))
-    } else {
-      entityNameClickable.classList.add(entity.nameCss)
-    }
-  }
-  entityNameGroup.appendChild(entityNameClickable)
-  entityName.appendChild(entityNameGroup)
-
-  if (entity.key) {
-    entityNameClickable.setAttribute('data-key', entity.key)
-  } else {
-    // if we have no key field, and this is the first column, let us
-    // use NAME as the default key; e.g. we style NAME columns
-    // slightly differently
-    entityNameClickable.setAttribute('data-key', 'NAME')
-  }
-
-  // name of the entity
-  let name = entity.prettyName || entity.name
-
-  // click handler for the list result
-  if (entity.fontawesome) {
-    const icon = document.createElement('i')
-    entityNameClickable.appendChild(icon)
-    icon.className = entity.fontawesome
-    icon.classList.add('cell-inner')
-  } else if (typeof name === 'string') {
-    entityNameClickable.innerText = name
-  } else {
-    entityNameClickable.appendChild(name)
-  }
-
-  entityNameClickable.setAttribute('data-value', name) // in case tests need the actual value, not the icon
-  if (entity.fullName) {
-    entityNameClickable.setAttribute('title', entity.fullName)
-  }
-
-  if (entity.css) {
-    if (Array.isArray(entity.css)) {
-      entity.css.forEach(_ => entityNameClickable.classList.add(_))
-    } else {
-      entityNameClickable.classList.add(entity.css)
-    }
-  }
-  if (entity.onclick === false) {
-    // the provider has told us the entity name is not clickable
-    entityNameClickable.classList.remove('clickable')
-  } else {
-    if (isPopup()) {
-      entityNameClickable.onclick = evt => {
-        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
-      }
-    } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
-    } else {
-      entityNameClickable.onclick = entity.onclick
-    }
-  }
-
   //
   // case-specific cells
   //
@@ -986,34 +1014,6 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   }
 
   return dom
-}
-
-// sort the body of table
-export const sortBody = (rows: Row[]): Row[] => {
-  return rows.sort((a, b) =>
-    (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
-    (a.packageName || '').localeCompare(b.packageName || '') ||
-    a.name.localeCompare(b.name))
-}
-
-/**
- * get an array of row models
- *
- */
-
-const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
-  const { header, body, noSort } = response
-
-  if (header) {
-    header.outerCSS = `${header.outerCSS || ''} header-cell`
-
-    if (header.attributes) {
-      header.attributes.forEach(cell => { cell.outerCSS = `${cell.outerCSS || ''} header-cell` })
-    }
-  }
-  // sort the list, then format each element, then add the results to the resultDom
-  // (don't sort lists of activations. i wish there were a better way to do this)
-  return [ header ].concat(noSort ? body : sortBody(body)).filter(x => x)
 }
 
 /**

@@ -56,24 +56,164 @@ async function applyEnumerator (commandLine: CommandLine, spec: TabCompletionSpe
   const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
   return lists.flatMap(x => x).filter(x => x)
 }
+
 /**
- * Given a list of entities, filter them and present options
+ * Install keyboard up-arrow and down-arrow handlers in the given REPL
+ * prompt. This needs to be installed in the prompt, as ui.js installs
+ * the equivalent handlers in the prompt as well.
  *
  */
-const presentEnumeratorSuggestions = (block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number, last: string) => (filteredList: string[]) => {
-  debug('presentEnumeratorSuggestions', filteredList)
-  if (filteredList.length === 1) {
-    complete(filteredList[0], prompt, { partial: last, dirname: false })
-  } else if (filteredList.length > 0) {
-    const partial = last
-    const dirname = undefined
-    if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+const listenForUpDown = (prompt: HTMLInputElement) => {
+  const moveTo = (nextOp: string, evt: Event) => {
+    const block = cli.getCurrentBlock()
+    let temporaryContainer = block && block.querySelector('.tab-completion-temporary')
+
+    if (temporaryContainer) {
+      const current = temporaryContainer.querySelector('.selected')
+      if (current) {
+        const next = current[nextOp]
+
+        if (next) {
+          current.classList.remove('selected')
+          next.classList.add('selected')
+          next.scrollIntoViewIfNeeded(false)
+          evt.preventDefault() // prevent REPL processing
+        }
+      }
+    }
+  }
+
+  const previousKeyDown = prompt.onkeydown
+  prompt.onkeydown = evt => { // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
+    const char = evt.keyCode
+
+    if (char === keys.DOWN) {
+      moveTo('nextSibling', evt)
+    } else if (char === keys.UP) {
+      moveTo('previousSibling', evt)
+    } else if (char === keys.C && evt.ctrlKey) {
+      // Ctrl+C, cancel
+      cli.doCancel()
+    }
+  }
+
+  // cleanup routine
+  return () => { prompt.onkeydown = previousKeyDown }
+}
+
+/**
+ * Listen for escape key, and remove tab completion popup, if it is
+ * visible
+ *
+ */
+const listenForEscape = () => {
+  // listen for escape key
+  const previousKeyup = document.onkeyup
+  const cleanup = () => { document.onkeyup = previousKeyup }
+
+  document.onkeyup = evt => {
+    if (evt.keyCode === keys.ESCAPE) {
+      const block = cli.getCurrentBlock()
+      let temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+
+      if (temporaryContainer) {
+        evt.preventDefault()
+        temporaryContainer.cleanup()
+      }
+    }
+  }
+
+  return cleanup
+}
+
+/**
+ * Install keyboard event handlers into the given REPL prompt.
+ *
+ */
+const installKeyHandlers = (prompt: HTMLInputElement) => {
+  if (prompt) {
+    return [ listenForUpDown(prompt),
+      listenForEscape()
+    ]
+  } else {
+    return []
+  }
+}
+
+/**
+ * Make a container UI for tab completions
+ *
+ */
+const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, partial: string, dirname?: string, lastIdx?: number) => {
+  const temporaryContainer = document.createElement('div') as TemporaryContainer
+  temporaryContainer.className = 'tab-completion-temporary repl-temporary'
+
+  const scrollContainer = document.createElement('div')
+  scrollContainer.className = 'tab-completion-scroll-container'
+  temporaryContainer.appendChild(scrollContainer)
+  temporaryContainer.scrollContainer = scrollContainer
+
+  if (!process.env.RUNNING_SHELL_TEST) {
+    // see shell issue #699; chrome seems not to play the fade-in
+    // animation when the window is offscreen
+    temporaryContainer.classList.add('fade-in')
+  }
+
+  // for later completion
+  temporaryContainer.partial = partial
+  temporaryContainer.dirname = dirname
+  temporaryContainer.lastIdx = lastIdx
+  temporaryContainer.currentMatches = []
+
+  block.appendChild(temporaryContainer)
+  const handlers = installKeyHandlers(prompt)
+
+  /** respond to change of prompt value */
+  const onChange = () => {
+    if (!prompt.value.endsWith(partial)) {
+      // oof! then the prompt changed substantially; get out of
+      // here quickly
+      return temporaryContainer.cleanup()
     }
 
-    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
-    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+    const args = repl.split(prompt.value)
+    const currentText = args[temporaryContainer.lastIdx]
+    const prevMatches = temporaryContainer.currentMatches
+    const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
+    const removedMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) !== 0)
+
+    temporaryContainer.currentMatches = newMatches
+    removedMatches.forEach(({ option }) => temporaryContainer.removeChild(option))
+
+    temporaryContainer['partial'] = currentText
+
+    if (temporaryContainer.currentMatches.length === 0) {
+      // no more matches, so remove the temporary container
+      temporaryContainer.cleanup()
+    }
   }
+  prompt.addEventListener('input', onChange)
+
+  temporaryContainer.cleanup = () => {
+    try {
+      block.removeChild(temporaryContainer)
+    } catch (err) {
+      // already removed
+    }
+    try {
+      handlers.forEach(cleanup => cleanup())
+    } catch (err) {
+      // just in case
+    }
+    prompt.removeEventListener('input', onChange)
+  }
+
+  // in case the container scrolls off the bottom TODO we should
+  // probably have it positioned above, so as not to introduce
+  // scrolling?
+  setTimeout(cli.scrollIntoView, 0)
+
+  return temporaryContainer
 }
 
 /**
@@ -177,225 +317,6 @@ const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer 
 }
 
 /**
- * Install keyboard event handlers into the given REPL prompt.
- *
- */
-const installKeyHandlers = (prompt: HTMLInputElement) => {
-  if (prompt) {
-    return [ listenForUpDown(prompt),
-      listenForEscape()
-    ]
-  } else {
-    return []
-  }
-}
-
-/**
- * Given a list of matches to the partial that is in the
- * prompt.value, update prompt.value so that it contains the longest
- * common prefix of the matches
- *
- */
-const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: string[], temporaryContainer: TemporaryContainer, partial = temporaryContainer.partial) => {
-  if (matches.length > 0) {
-    const shortest = matches.reduce((minLength: false | number, match) => !minLength ? match.length : Math.min(minLength, match.length), false)
-    let idx = 0
-
-    const partialComplete = (idx: number) => {
-      // debug('partial complete', idx)
-      const completion = completeWith(partial, matches[0].substring(0, idx), true)
-      temporaryContainer.partial = temporaryContainer.partial + completion
-      prompt.value = prompt.value + completion
-      return temporaryContainer.partial
-    }
-
-    for (idx = 0; idx < shortest; idx++) {
-      const char = matches[0].charAt(idx)
-
-      for (let jdx = 1; jdx < matches.length; jdx++) {
-        const other = matches[jdx].charAt(idx)
-        if (char !== other) {
-          if (idx > 0) {
-            // then we found some common prefix
-            // debug('partial complete midway')
-            return partialComplete(idx)
-          } else {
-            // debug('no partial completion :(')
-            return
-          }
-        }
-      }
-    }
-
-    if (idx > 0) {
-      // debug('partial complete at end')
-      return partialComplete(idx)
-    }
-  }
-}
-
-/**
- * Install keyboard up-arrow and down-arrow handlers in the given REPL
- * prompt. This needs to be installed in the prompt, as ui.js installs
- * the equivalent handlers in the prompt as well.
- *
- */
-const listenForUpDown = (prompt: HTMLInputElement) => {
-  const moveTo = (nextOp: string, evt: Event) => {
-    const block = cli.getCurrentBlock()
-    let temporaryContainer = block && block.querySelector('.tab-completion-temporary')
-
-    if (temporaryContainer) {
-      const current = temporaryContainer.querySelector('.selected')
-      if (current) {
-        const next = current[nextOp]
-
-        if (next) {
-          current.classList.remove('selected')
-          next.classList.add('selected')
-          next.scrollIntoViewIfNeeded(false)
-          evt.preventDefault() // prevent REPL processing
-        }
-      }
-    }
-  }
-
-  const previousKeyDown = prompt.onkeydown
-  prompt.onkeydown = evt => { // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
-    const char = evt.keyCode
-
-    if (char === keys.DOWN) {
-      moveTo('nextSibling', evt)
-    } else if (char === keys.UP) {
-      moveTo('previousSibling', evt)
-    } else if (char === keys.C && evt.ctrlKey) {
-      // Ctrl+C, cancel
-      cli.doCancel()
-    }
-  }
-
-  // cleanup routine
-  return () => { prompt.onkeydown = previousKeyDown }
-}
-
-/**
- * Listen for escape key, and remove tab completion popup, if it is
- * visible
- *
- */
-const listenForEscape = () => {
-  // listen for escape key
-  const previousKeyup = document.onkeyup
-  const cleanup = () => { document.onkeyup = previousKeyup }
-
-  document.onkeyup = evt => {
-    if (evt.keyCode === keys.ESCAPE) {
-      const block = cli.getCurrentBlock()
-      let temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
-
-      if (temporaryContainer) {
-        evt.preventDefault()
-        temporaryContainer.cleanup()
-      }
-    }
-  }
-
-  return cleanup
-}
-
-interface Match {
-  match: string
-  completion: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  option: HTMLElement
-}
-
-/** declaration-merge on HTMLDivElement */
-interface TemporaryContainer extends HTMLDivElement {
-  scrollContainer: HTMLElement
-  lastIdx?: number
-  partial?: string
-  dirname?: string
-  cleanup?: () => void
-  currentMatches?: Match[]
-}
-
-/**
- * Make a container UI for tab completions
- *
- */
-const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, partial: string, dirname?: string, lastIdx?: number) => {
-  const temporaryContainer = document.createElement('div') as TemporaryContainer
-  temporaryContainer.className = 'tab-completion-temporary repl-temporary'
-
-  const scrollContainer = document.createElement('div')
-  scrollContainer.className = 'tab-completion-scroll-container'
-  temporaryContainer.appendChild(scrollContainer)
-  temporaryContainer.scrollContainer = scrollContainer
-
-  if (!process.env.RUNNING_SHELL_TEST) {
-    // see shell issue #699; chrome seems not to play the fade-in
-    // animation when the window is offscreen
-    temporaryContainer.classList.add('fade-in')
-  }
-
-  // for later completion
-  temporaryContainer.partial = partial
-  temporaryContainer.dirname = dirname
-  temporaryContainer.lastIdx = lastIdx
-  temporaryContainer.currentMatches = []
-
-  block.appendChild(temporaryContainer)
-  const handlers = installKeyHandlers(prompt)
-
-  /** respond to change of prompt value */
-  const onChange = () => {
-    if (!prompt.value.endsWith(partial)) {
-      // oof! then the prompt changed substantially; get out of
-      // here quickly
-      return temporaryContainer.cleanup()
-    }
-
-    const args = repl.split(prompt.value)
-    const currentText = args[temporaryContainer.lastIdx]
-    const prevMatches = temporaryContainer.currentMatches
-    const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
-    const removedMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) !== 0)
-
-    temporaryContainer.currentMatches = newMatches
-    removedMatches.forEach(({ option }) => temporaryContainer.removeChild(option))
-
-    temporaryContainer['partial'] = currentText
-
-    if (temporaryContainer.currentMatches.length === 0) {
-      // no more matches, so remove the temporary container
-      temporaryContainer.cleanup()
-    }
-  }
-  prompt.addEventListener('input', onChange)
-
-  temporaryContainer.cleanup = () => {
-    try {
-      block.removeChild(temporaryContainer)
-    } catch (err) {
-      // already removed
-    }
-    try {
-      handlers.forEach(cleanup => cleanup())
-    } catch (err) {
-      // just in case
-    }
-    prompt.removeEventListener('input', onChange)
-  }
-
-  // in case the container scrolls off the bottom TODO we should
-  // probably have it positioned above, so as not to introduce
-  // scrolling?
-  setTimeout(cli.scrollIntoView, 0)
-
-  return temporaryContainer
-}
-
-/**
  * Add a suggestion to the suggestion container
  *
  */
@@ -455,6 +376,86 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, prefix: string, d
   temporaryContainer.currentMatches.push({ match: matchLabel, completion: matchCompletion, option })
 
   return { option, optionInner, innerPost }
+}
+
+/**
+ * Given a list of matches to the partial that is in the
+ * prompt.value, update prompt.value so that it contains the longest
+ * common prefix of the matches
+ *
+ */
+const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: string[], temporaryContainer: TemporaryContainer, partial = temporaryContainer.partial) => {
+  if (matches.length > 0) {
+    const shortest = matches.reduce((minLength: false | number, match) => !minLength ? match.length : Math.min(minLength, match.length), false)
+    let idx = 0
+
+    const partialComplete = (idx: number) => {
+      // debug('partial complete', idx)
+      const completion = completeWith(partial, matches[0].substring(0, idx), true)
+      temporaryContainer.partial = temporaryContainer.partial + completion
+      prompt.value = prompt.value + completion
+      return temporaryContainer.partial
+    }
+
+    for (idx = 0; idx < shortest; idx++) {
+      const char = matches[0].charAt(idx)
+
+      for (let jdx = 1; jdx < matches.length; jdx++) {
+        const other = matches[jdx].charAt(idx)
+        if (char !== other) {
+          if (idx > 0) {
+            // then we found some common prefix
+            // debug('partial complete midway')
+            return partialComplete(idx)
+          } else {
+            // debug('no partial completion :(')
+            return
+          }
+        }
+      }
+    }
+
+    if (idx > 0) {
+      // debug('partial complete at end')
+      return partialComplete(idx)
+    }
+  }
+}
+
+/**
+ * Given a list of entities, filter them and present options
+ *
+ */
+const presentEnumeratorSuggestions = (block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number, last: string) => (filteredList: string[]) => {
+  debug('presentEnumeratorSuggestions', filteredList)
+  if (filteredList.length === 1) {
+    complete(filteredList[0], prompt, { partial: last, dirname: false })
+  } else if (filteredList.length > 0) {
+    const partial = last
+    const dirname = undefined
+    if (!temporaryContainer) {
+      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+    }
+
+    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+  }
+}
+
+interface Match {
+  match: string
+  completion: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  option: HTMLElement
+}
+
+/** declaration-merge on HTMLDivElement */
+interface TemporaryContainer extends HTMLDivElement {
+  scrollContainer: HTMLElement
+  lastIdx?: number
+  partial?: string
+  dirname?: string
+  cleanup?: () => void
+  currentMatches?: Match[]
 }
 
 /**

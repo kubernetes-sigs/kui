@@ -83,6 +83,36 @@ export const currentSelection = (tab: Tab): EntitySpec | CustomSpec => {
   const sidecar = getSidecar(tab)
   return sidecar && sidecar.entity
 }
+
+export const hide = (tab: Tab, clearSelectionToo = false) => {
+  debug('hide')
+
+  const sidecar = getSidecar(tab)
+  sidecar.classList.remove('visible')
+
+  if (!clearSelectionToo) {
+    // only minimize if we weren't asked to clear the selection
+    sidecar.classList.add('minimized')
+    tab.classList.add('sidecar-is-minimized')
+  } else {
+    document.body.classList.remove('sidecar-visible')
+  }
+
+  const replView = tab.querySelector('.repl')
+  replView.classList.remove('sidecar-visible')
+
+  // we just hid the sidecar. make sure the current prompt is active for text input
+  // cli.getCurrentPrompt().focus()
+
+  // were we asked also to clear the selection?
+  if (clearSelectionToo && sidecar.entity) {
+    delete sidecar.entity
+  }
+
+  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 300)
+  return true
+}
+
 export const clearSelection = async (tab: Tab) => {
   // true means also clear selection model
   return hide(tab, true)
@@ -259,6 +289,39 @@ export const renderField = async (container: HTMLElement, entity: EntitySpec, fi
 }
 
 /**
+ * Sidecar badges
+ *
+ */
+/**
+ * This is the most complete form of a badge specification, allowing
+ * the caller to provide a title, an onclick handler, and an optional
+ * fontawesome icon representation.
+ *
+ */
+export interface BadgeSpec {
+  title: string
+  fontawesome?: string
+  image?: HTMLImageElement
+  css?: string
+  onclick?: (evt: MouseEvent) => boolean
+}
+
+export type Badge = string | BadgeSpec | Element
+
+export interface BadgeOptions {
+  css?: string
+  onclick?
+  badgesDom: Element
+}
+class DefaultBadgeOptions implements BadgeOptions {
+  readonly badgesDom: HTMLElement
+
+  constructor (tab: Tab) {
+    this.badgesDom = getSidecar(tab).querySelector('.sidecar-header .badges')
+  }
+}
+
+/**
  * Show custom content in the sidecar
  *
  */
@@ -299,6 +362,295 @@ function isPromise<T> (content: CustomContent): content is Promise<T> {
 function isHTML (content: CustomContent): content is HTMLElement {
   return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
 }
+
+/**
+ * Ensure that we are in sidecar maximization mode
+ *
+ */
+export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause = 'default') => {
+  if (document.body.classList.contains('subwindow')) {
+    document.body.classList[op]('sidecar-full-screen')
+    document.body.classList[op]('sidecar-visible')
+  }
+
+  tab.classList[op]('sidecar-full-screen')
+  setTimeout(() => eventBus.emit('/sidecar/maximize'), 600)
+
+  if (tab.classList.contains('sidecar-full-screen')) {
+    // if we entered full screen mode, remember if the user caused it,
+    // so that we don't undo it during our normal flow
+    tab.setAttribute('maximization-cause', cause)
+  } else {
+    tab.removeAttribute('maximization-cause')
+  }
+}
+
+/**
+ * Find and format links in the given dom tree
+ *
+ */
+export const linkify = (dom: Element): void => {
+  const attrs = dom.querySelectorAll('.hljs-attr')
+  for (let idx = 0; idx < attrs.length; idx++) {
+    const attr = attrs[idx] as HTMLElement
+    if (attr.innerText.indexOf('http') === 0) {
+      const link = document.createElement('a')
+      link.href = attr.innerText
+      link.innerText = attr.innerText.substring(attr.innerText.lastIndexOf('/') + 1)
+      link.target = '_blank'
+      attr.innerText = ''
+      attr.appendChild(link)
+    }
+  }
+}
+
+export const presentAs = (tab: Tab, presentation?: Presentation) => {
+  if (presentation || presentation === Presentation.Default) {
+    document.body.setAttribute('data-presentation', Presentation[presentation].toString())
+    if (!isPopup() && presentation === Presentation.Default && tab.getAttribute('maximization-cause') !== 'user') {
+      setMaximization(tab, 'remove')
+    }
+  } else {
+    document.body.removeAttribute('data-presentation')
+  }
+}
+
+export const addBadge = (tab: Tab, badgeText: Badge, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: BadgeOptions = new DefaultBadgeOptions(tab)) => {
+  debug('addBadge', badgeText, badgesDom)
+
+  const badge = document.createElement('badge') as HTMLElement
+  badgesDom.appendChild(badge)
+
+  if (typeof badgeText === 'string') {
+    badge.innerText = badgeText as string
+  } else if (badgeText instanceof Element) {
+    badge.appendChild(badgeText as Element)
+  } else {
+    // otherwise, badge is an IBadgeSpec
+    if (badgeText.image) {
+      // badge is an HTMLImageElement
+      badgeText.image.alt = badgeText.title
+      badge.appendChild(badgeText.image)
+      badge.classList.add('badge-as-image')
+    } else if (badgeText.fontawesome) {
+      // badge is a named fontawesome icon
+      const awesome = document.createElement('i')
+      awesome.className = badgeText.fontawesome
+      badge.classList.add('badge-as-fontawesome')
+      badge.appendChild(awesome)
+    } else {
+      badge.innerText = badgeText.title
+
+      if (badgeText.css) {
+        badge.classList.add(badgeText.css)
+      }
+    }
+
+    if (badgeText.onclick) {
+      badge.classList.add('clickable')
+      badge.onclick = badgeText.onclick
+    }
+  }
+
+  if (css) {
+    badge.classList.add(css)
+  }
+
+  if (onclick) {
+    badge.classList.add('clickable')
+    badge.onclick = onclick
+  }
+
+  return badge
+}
+
+export const clearBadges = (tab: Tab) => {
+  const sidecar = getSidecar(tab)
+  const header = sidecar.querySelector('.sidecar-header')
+  removeAllDomChildren(header.querySelector('.badges'))
+}
+
+/**
+ * If the entity has a version attribute, then render it
+ *
+ */
+export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, badgesDom = undefined } = {}) => {
+  if (clear) {
+    clearBadges(tab)
+  }
+  if (entity.version) {
+    addBadge(tab, /^v/.test(entity.version) ? entity.version : `v${entity.version}`, { badgesDom }).classList.add('version')
+  }
+}
+
+/**
+ * Call a formatter
+ *
+ */
+export type Formattable = Formatter | string | Promise<string> | HTMLElement
+export interface Formatter {
+  plugin: string
+  module: string
+  operation: string
+  parameters: object
+}
+function isFormatter (spec: Formattable): spec is Formatter {
+  return typeof spec !== 'string' &&
+    !isHTML(spec) &&
+    !(spec instanceof Promise) &&
+    spec.plugin !== undefined &&
+    spec.module !== undefined &&
+    spec.operation !== undefined &&
+    spec.parameters !== undefined
+}
+const call = async (spec: Formattable): Promise<string | HTMLElement> => {
+  if (isPromise(spec)) {
+    return spec
+  } else if (!isFormatter(spec)) {
+    return Promise.resolve(spec)
+  } else {
+    const provider = await import(`@kui-shell/plugin-${spec.plugin}/${spec.module}`)
+    return provider[spec.operation](spec.parameters)
+  }
+}
+
+/**
+ * Add view name to the sidecar header "icon text"
+ *
+ */
+export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement) => {
+  debug('addSidecarHeaderIconText', viewName)
+  const iconDom = element('.sidecar-header-icon', sidecar)
+
+  if (viewName) {
+    let iconText = viewName.replace(/s$/, '')
+
+    const A = iconText.split(/(?=[A-Z])/).filter(x => x)
+    if (iconText.length > 12 && A.length > 1) {
+      iconText = A.map(_ => _.charAt(0)).join('')
+    }
+
+    iconDom.innerText = iconText
+  } else {
+    // no viewName, make sure it appears blank in the UI
+    iconDom.innerText = ''
+  }
+}
+
+/** format the creation time of a resource */
+const createdOn = (resource: MetadataBearing): HTMLElement => {
+  const startTime = /* resource.status && resource.status.startTime || */ resource.metadata.creationTimestamp
+  const prefixText = /* resource.status && resource.status.startTime ? 'Started on ' : */ 'Created on '
+
+  if (!startTime) {
+    return
+  }
+
+  const message = document.createElement('div')
+  const datePart = document.createElement('strong')
+
+  message.appendChild(document.createTextNode(prefixText))
+  message.appendChild(datePart)
+  try {
+    datePart.appendChild(prettyPrintTime(Date.parse(startTime)))
+  } catch (err) {
+    debug('error trying to parse this creationTimestamp', resource)
+    console.error('error parsing creationTimestamp', err)
+    datePart.innerText = resource.metadata.creationTimestamp
+  }
+
+  return message
+}
+
+/**
+ * Given an entity name and an optional packageName, decorate the sidecar header
+ *
+ */
+export const addNameToSidecarHeader = async (sidecar: Sidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?: EntitySpec | CustomSpec) => {
+  debug('addNameToSidecarHeader', name, isMetadataBearingByReference(entity), entity)
+
+  // maybe entity.content is a metadat-bearing entity that we can
+  // mine for identifying characteristics
+  const metadataBearer = isMetadataBearingByReference(entity) ? entity.resource
+    : isMetadataBearing(entity) && entity
+  if (metadataBearer) {
+    const maybeName = metadataBearer.spec && (metadataBearer.spec.displayName || metadataBearer.metadata.name)
+    if (maybeName) {
+      name = maybeName
+    }
+    if (metadataBearer.metadata.namespace) {
+      packageName = metadataBearer.metadata.namespace
+    }
+    if (metadataBearer.kind) {
+      viewName = metadataBearer.kind
+    }
+
+    if (!subtext) {
+      // if we weren't given a "subtext", and we find legitimate
+      // "created on" metadata, then show that as the subtext
+      const maybe = createdOn(metadataBearer)
+      if (maybe) {
+        subtext = maybe
+      }
+    }
+  }
+
+  const nameDom = sidecar.querySelector('.sidecar-header-name-content')
+  nameDom.className = nameDom.getAttribute('data-base-class')
+  element('.package-prefix', nameDom).innerText = packageName
+
+  if (isCustomSpec(entity) && entity.isREPL) {
+    sidecar.querySelector('.sidecar-header-text').classList.add('is-repl-like')
+  } else {
+    sidecar.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
+  }
+
+  if (typeof name === 'string') {
+    if (isCustomSpec(entity) && entity.isREPL) {
+      /* const nameContainer = nameDom.querySelector('.sidecar-header-input') as HTMLInputElement
+      nameContainer.value = name
+      cli.listen(nameContainer) */
+    } else {
+      const nameContainer = element('.entity-name', nameDom)
+      nameContainer.innerText = name
+    }
+  } else {
+    const nameContainer = nameDom.querySelector('.entity-name')
+    removeAllDomChildren(nameContainer)
+    nameContainer.appendChild(name)
+  }
+
+  if (onclick) {
+    const clickable = element('.entity-name', nameDom)
+    clickable.classList.add('clickable')
+    clickable.onclick = onclick
+  }
+
+  addSidecarHeaderIconText(viewName, sidecar)
+
+  if (subtext) {
+    const sub = element('.sidecar-header-secondary-content .custom-header-content', sidecar)
+    removeAllDomChildren(sub)
+
+    const text = await Promise.resolve(call(subtext))
+    if (text instanceof Element) {
+      sub.appendChild(text)
+    } else {
+      sub.innerText = text
+    }
+  }
+
+  return nameDom
+}
+
+const setVisibleClass = (sidecar: Sidecar) => {
+  sidecar.classList.add('visible')
+}
+
+export const isFullscreen = (tab: Tab) => {
+  return tab.classList.contains('sidecar-full-screen')
+}
+
 export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
   if (!custom || !custom.content) return
   debug('showCustom', custom, options, resultDom)
@@ -513,29 +865,6 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
 } /* showCustom */
 
 /**
- * Add view name to the sidecar header "icon text"
- *
- */
-export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement) => {
-  debug('addSidecarHeaderIconText', viewName)
-  const iconDom = element('.sidecar-header-icon', sidecar)
-
-  if (viewName) {
-    let iconText = viewName.replace(/s$/, '')
-
-    const A = iconText.split(/(?=[A-Z])/).filter(x => x)
-    if (iconText.length > 12 && A.length > 1) {
-      iconText = A.map(_ => _.charAt(0)).join('')
-    }
-
-    iconDom.innerText = iconText
-  } else {
-    // no viewName, make sure it appears blank in the UI
-    iconDom.innerText = ''
-  }
-}
-
-/**
  * Update sidecar header
  *
  */
@@ -556,302 +885,12 @@ export const updateSidecarHeader = (tab: Tab, update: HeaderUpdate, sidecar = ge
   }
 }
 
-/** format the creation time of a resource */
-const createdOn = (resource: MetadataBearing): HTMLElement => {
-  const startTime = /* resource.status && resource.status.startTime || */ resource.metadata.creationTimestamp
-  const prefixText = /* resource.status && resource.status.startTime ? 'Started on ' : */ 'Created on '
-
-  if (!startTime) {
-    return
-  }
-
-  const message = document.createElement('div')
-  const datePart = document.createElement('strong')
-
-  message.appendChild(document.createTextNode(prefixText))
-  message.appendChild(datePart)
-  try {
-    datePart.appendChild(prettyPrintTime(Date.parse(startTime)))
-  } catch (err) {
-    debug('error trying to parse this creationTimestamp', resource)
-    console.error('error parsing creationTimestamp', err)
-    datePart.innerText = resource.metadata.creationTimestamp
-  }
-
-  return message
-}
-
-/**
- * Given an entity name and an optional packageName, decorate the sidecar header
- *
- */
-export const addNameToSidecarHeader = async (sidecar: Sidecar, name: string | Element, packageName = '', onclick?, viewName?: string, subtext?: Formattable, entity?: EntitySpec | CustomSpec) => {
-  debug('addNameToSidecarHeader', name, isMetadataBearingByReference(entity), entity)
-
-  // maybe entity.content is a metadat-bearing entity that we can
-  // mine for identifying characteristics
-  const metadataBearer = isMetadataBearingByReference(entity) ? entity.resource
-    : isMetadataBearing(entity) && entity
-  if (metadataBearer) {
-    const maybeName = metadataBearer.spec && (metadataBearer.spec.displayName || metadataBearer.metadata.name)
-    if (maybeName) {
-      name = maybeName
-    }
-    if (metadataBearer.metadata.namespace) {
-      packageName = metadataBearer.metadata.namespace
-    }
-    if (metadataBearer.kind) {
-      viewName = metadataBearer.kind
-    }
-
-    if (!subtext) {
-      // if we weren't given a "subtext", and we find legitimate
-      // "created on" metadata, then show that as the subtext
-      const maybe = createdOn(metadataBearer)
-      if (maybe) {
-        subtext = maybe
-      }
-    }
-  }
-
-  const nameDom = sidecar.querySelector('.sidecar-header-name-content')
-  nameDom.className = nameDom.getAttribute('data-base-class')
-  element('.package-prefix', nameDom).innerText = packageName
-
-  if (isCustomSpec(entity) && entity.isREPL) {
-    sidecar.querySelector('.sidecar-header-text').classList.add('is-repl-like')
-  } else {
-    sidecar.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
-  }
-
-  if (typeof name === 'string') {
-    if (isCustomSpec(entity) && entity.isREPL) {
-      /* const nameContainer = nameDom.querySelector('.sidecar-header-input') as HTMLInputElement
-      nameContainer.value = name
-      cli.listen(nameContainer) */
-    } else {
-      const nameContainer = element('.entity-name', nameDom)
-      nameContainer.innerText = name
-    }
-  } else {
-    const nameContainer = nameDom.querySelector('.entity-name')
-    removeAllDomChildren(nameContainer)
-    nameContainer.appendChild(name)
-  }
-
-  if (onclick) {
-    const clickable = element('.entity-name', nameDom)
-    clickable.classList.add('clickable')
-    clickable.onclick = onclick
-  }
-
-  addSidecarHeaderIconText(viewName, sidecar)
-
-  if (subtext) {
-    const sub = element('.sidecar-header-secondary-content .custom-header-content', sidecar)
-    removeAllDomChildren(sub)
-
-    const text = await Promise.resolve(call(subtext))
-    if (text instanceof Element) {
-      sub.appendChild(text)
-    } else {
-      sub.innerText = text
-    }
-  }
-
-  return nameDom
-}
-
-/**
- * Call a formatter
- *
- */
-export type Formattable = Formatter | string | Promise<string> | HTMLElement
-export interface Formatter {
-  plugin: string
-  module: string
-  operation: string
-  parameters: object
-}
-function isFormatter (spec: Formattable): spec is Formatter {
-  return typeof spec !== 'string' &&
-    !isHTML(spec) &&
-    !(spec instanceof Promise) &&
-    spec.plugin !== undefined &&
-    spec.module !== undefined &&
-    spec.operation !== undefined &&
-    spec.parameters !== undefined
-}
-const call = async (spec: Formattable): Promise<string | HTMLElement> => {
-  if (isPromise(spec)) {
-    return spec
-  } else if (!isFormatter(spec)) {
-    return Promise.resolve(spec)
-  } else {
-    const provider = await import(`@kui-shell/plugin-${spec.plugin}/${spec.module}`)
-    return provider[spec.operation](spec.parameters)
-  }
-}
-
-/**
- * Find and format links in the given dom tree
- *
- */
-export const linkify = (dom: Element): void => {
-  const attrs = dom.querySelectorAll('.hljs-attr')
-  for (let idx = 0; idx < attrs.length; idx++) {
-    const attr = attrs[idx] as HTMLElement
-    if (attr.innerText.indexOf('http') === 0) {
-      const link = document.createElement('a')
-      link.href = attr.innerText
-      link.innerText = attr.innerText.substring(attr.innerText.lastIndexOf('/') + 1)
-      link.target = '_blank'
-      attr.innerText = ''
-      attr.appendChild(link)
-    }
-  }
-}
-
-/**
- * Sidecar badges
- *
- */
-/**
- * This is the most complete form of a badge specification, allowing
- * the caller to provide a title, an onclick handler, and an optional
- * fontawesome icon representation.
- *
- */
-export interface BadgeSpec {
-  title: string
-  fontawesome?: string
-  image?: HTMLImageElement
-  css?: string
-  onclick?: (evt: MouseEvent) => boolean
-}
-
-export type Badge = string | BadgeSpec | Element
-
-export interface BadgeOptions {
-  css?: string
-  onclick?
-  badgesDom: Element
-}
-class DefaultBadgeOptions implements BadgeOptions {
-  readonly badgesDom: HTMLElement
-
-  constructor (tab: Tab) {
-    this.badgesDom = getSidecar(tab).querySelector('.sidecar-header .badges')
-  }
-}
-
-export const addBadge = (tab: Tab, badgeText: Badge, { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: BadgeOptions = new DefaultBadgeOptions(tab)) => {
-  debug('addBadge', badgeText, badgesDom)
-
-  const badge = document.createElement('badge') as HTMLElement
-  badgesDom.appendChild(badge)
-
-  if (typeof badgeText === 'string') {
-    badge.innerText = badgeText as string
-  } else if (badgeText instanceof Element) {
-    badge.appendChild(badgeText as Element)
-  } else {
-    // otherwise, badge is an IBadgeSpec
-    if (badgeText.image) {
-      // badge is an HTMLImageElement
-      badgeText.image.alt = badgeText.title
-      badge.appendChild(badgeText.image)
-      badge.classList.add('badge-as-image')
-    } else if (badgeText.fontawesome) {
-      // badge is a named fontawesome icon
-      const awesome = document.createElement('i')
-      awesome.className = badgeText.fontawesome
-      badge.classList.add('badge-as-fontawesome')
-      badge.appendChild(awesome)
-    } else {
-      badge.innerText = badgeText.title
-
-      if (badgeText.css) {
-        badge.classList.add(badgeText.css)
-      }
-    }
-
-    if (badgeText.onclick) {
-      badge.classList.add('clickable')
-      badge.onclick = badgeText.onclick
-    }
-  }
-
-  if (css) {
-    badge.classList.add(css)
-  }
-
-  if (onclick) {
-    badge.classList.add('clickable')
-    badge.onclick = onclick
-  }
-
-  return badge
-}
-
-/**
- * If the entity has a version attribute, then render it
- *
- */
-export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, badgesDom = undefined } = {}) => {
-  if (clear) {
-    clearBadges(tab)
-  }
-  if (entity.version) {
-    addBadge(tab, /^v/.test(entity.version) ? entity.version : `v${entity.version}`, { badgesDom }).classList.add('version')
-  }
-}
-
-export const clearBadges = (tab: Tab) => {
-  const sidecar = getSidecar(tab)
-  const header = sidecar.querySelector('.sidecar-header')
-  removeAllDomChildren(header.querySelector('.badges'))
-}
-
 /**
  * @return the enclosing tab for the given sidecar
  *
  */
 export const getEnclosingTab = (sidecar: Sidecar): Tab => {
   return getTabFromTarget(sidecar)
-}
-
-export const hide = (tab: Tab, clearSelectionToo = false) => {
-  debug('hide')
-
-  const sidecar = getSidecar(tab)
-  sidecar.classList.remove('visible')
-
-  if (!clearSelectionToo) {
-    // only minimize if we weren't asked to clear the selection
-    sidecar.classList.add('minimized')
-    tab.classList.add('sidecar-is-minimized')
-  } else {
-    document.body.classList.remove('sidecar-visible')
-  }
-
-  const replView = tab.querySelector('.repl')
-  replView.classList.remove('sidecar-visible')
-
-  // we just hid the sidecar. make sure the current prompt is active for text input
-  // cli.getCurrentPrompt().focus()
-
-  // were we asked also to clear the selection?
-  if (clearSelectionToo && sidecar.entity) {
-    delete sidecar.entity
-  }
-
-  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 300)
-  return true
-}
-
-const setVisibleClass = (sidecar: Sidecar) => {
-  sidecar.classList.add('visible')
 }
 
 const setVisible = (sidecar: Sidecar) => {
@@ -915,45 +954,8 @@ export const isVisible = (tab: Tab): boolean => {
   return !!(sidecar.classList.contains('visible') && sidecar)
 }
 
-export const isFullscreen = (tab: Tab) => {
-  return tab.classList.contains('sidecar-full-screen')
-}
-
-export const presentAs = (tab: Tab, presentation?: Presentation) => {
-  if (presentation || presentation === Presentation.Default) {
-    document.body.setAttribute('data-presentation', Presentation[presentation].toString())
-    if (!isPopup() && presentation === Presentation.Default && tab.getAttribute('maximization-cause') !== 'user') {
-      setMaximization(tab, 'remove')
-    }
-  } else {
-    document.body.removeAttribute('data-presentation')
-  }
-}
-
 /** was maximization changed by user request, or by normal default processes? */
 type MaximizationCause = 'default' | 'user'
-
-/**
- * Ensure that we are in sidecar maximization mode
- *
- */
-export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause = 'default') => {
-  if (document.body.classList.contains('subwindow')) {
-    document.body.classList[op]('sidecar-full-screen')
-    document.body.classList[op]('sidecar-visible')
-  }
-
-  tab.classList[op]('sidecar-full-screen')
-  setTimeout(() => eventBus.emit('/sidecar/maximize'), 600)
-
-  if (tab.classList.contains('sidecar-full-screen')) {
-    // if we entered full screen mode, remember if the user caused it,
-    // so that we don't undo it during our normal flow
-    tab.setAttribute('maximization-cause', cause)
-  } else {
-    tab.removeAttribute('maximization-cause')
-  }
-}
 
 /**
  * Toggle sidecar maximization

@@ -74,6 +74,24 @@ const usage = {
 }
 
 /**
+ * @return the name of the default theme
+ *
+ */
+const getDefaultTheme = () => {
+  let defaultTheme = settings.defaultTheme
+  if (!defaultTheme) {
+    console.error('theme bug: the theme does not set a default theme')
+    defaultTheme = settings.themes[0] && settings.themes[0].name
+    if (!defaultTheme) {
+      throw new Error('SEVERE theme bug: no theme found')
+    }
+  }
+
+  debug('using default theme %s', defaultTheme)
+  return defaultTheme
+}
+
+/**
  * List themes
  *
  */
@@ -120,39 +138,6 @@ const list = async (): Promise<Table> => {
   })
 
   return new Table({ type: 'theme', noSort: true, header, body })
-}
-
-/**
- * @return the name of the default theme
- *
- */
-const getDefaultTheme = () => {
-  let defaultTheme = settings.defaultTheme
-  if (!defaultTheme) {
-    console.error('theme bug: the theme does not set a default theme')
-    defaultTheme = settings.themes[0] && settings.themes[0].name
-    if (!defaultTheme) {
-      throw new Error('SEVERE theme bug: no theme found')
-    }
-  }
-
-  debug('using default theme %s', defaultTheme)
-  return defaultTheme
-}
-
-/**
- * Switch to the last user choice, if the user so indicated
- *
- */
-export const switchToPersistedThemeChoice = async (webContents?: WebContents): Promise<void> => {
-  const theme = await getPersistedThemeChoice()
-  if (theme) {
-    debug('switching to persisted theme choice')
-    switchTo(theme, webContents)
-  } else {
-    debug('no persisted theme choice')
-    switchTo(getDefaultTheme(), webContents)
-  }
 }
 
 /**
@@ -224,6 +209,21 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
     debug('error loading theme')
     console.error(err)
     throw err
+  }
+}
+
+/**
+ * Switch to the last user choice, if the user so indicated
+ *
+ */
+export const switchToPersistedThemeChoice = async (webContents?: WebContents): Promise<void> => {
+  const theme = await getPersistedThemeChoice()
+  if (theme) {
+    debug('switching to persisted theme choice')
+    switchTo(theme, webContents)
+  } else {
+    debug('no persisted theme choice')
+    switchTo(getDefaultTheme(), webContents)
   }
 }
 

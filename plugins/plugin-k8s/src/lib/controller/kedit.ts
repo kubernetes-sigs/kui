@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import * as Debug from 'debug'
 
 import { basename, dirname, join } from 'path'

@@ -20,6 +20,31 @@ import { CommandLine } from '@kui-shell/core/models/command'
 import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/lib/tab-completion'
 
 /**
+ * Invoke an enumeration command and return the filtered list of matching strings
+ *
+ */
+async function getMatchingStrings (cmd: string, spec: TabCompletionSpec): Promise<string[]> {
+  const list: string[] = (await $$(cmd)).split(/[\n\r]/)
+    .map(_ => _.replace(/^\w+\//, ''))
+
+  return list.filter(name => name.startsWith(spec.toBeCompleted))
+}
+
+/**
+ * Strip off the ParsedOptions in a way that lets us make an enumeration query safely
+ *
+ */
+function optionals (commandLine: CommandLine, filter: (key: string) => boolean = () => true) {
+  const { parsedOptions: options } = commandLine
+
+  return Object.keys(options)
+    .filter(filter)
+    .filter(_ => !/^(-o|--output)/.test(_)) // remove any existing -o, because we want to use -o name
+    .map(key => `${key.length === 1 ? `-${key}` : `--${key}`} ${options[key]}`)
+    .join(' ')
+}
+
+/**
  * Tab completion of kube resource names
  *
  */
@@ -48,31 +73,6 @@ async function completeResourceNames (commandLine: CommandLine, spec: TabComplet
     const cmd = `kubectl get ${entityType} ${optionals(commandLine)} -o name`
     return getMatchingStrings(cmd, spec)
   }
-}
-
-/**
- * Invoke an enumeration command and return the filtered list of matching strings
- *
- */
-async function getMatchingStrings (cmd: string, spec: TabCompletionSpec): Promise<string[]> {
-  const list: string[] = (await $$(cmd)).split(/[\n\r]/)
-    .map(_ => _.replace(/^\w+\//, ''))
-
-  return list.filter(name => name.startsWith(spec.toBeCompleted))
-}
-
-/**
- * Strip off the ParsedOptions in a way that lets us make an enumeration query safely
- *
- */
-function optionals (commandLine: CommandLine, filter: (key: string) => boolean = () => true) {
-  const { parsedOptions: options } = commandLine
-
-  return Object.keys(options)
-    .filter(filter)
-    .filter(_ => !/^(-o|--output)/.test(_)) // remove any existing -o, because we want to use -o name
-    .map(key => `${key.length === 1 ? `-${key}` : `--${key}`} ${options[key]}`)
-    .join(' ')
 }
 
 /**

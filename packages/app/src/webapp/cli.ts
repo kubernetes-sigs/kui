@@ -131,6 +131,142 @@ export const pasteQueuedInput = (value: string) => {
   invisibleHand.value = value
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Tab extends HTMLElement { }
+const tabTagPattern = /tab/i
+export function isTab (node: Element): node is Tab {
+  return tabTagPattern.test(node.tagName)
+}
+export const getTabIndex = (tab: Tab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
+export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
+  return getTabIndex(tab1) === getTabIndex(tab2)
+}
+export const getTabFromTarget = (target: EventTarget): Tab => {
+  if (target) {
+    let iter = target as Element
+
+    while (iter && !isTab(iter)) {
+      iter = iter.parentElement
+    }
+
+    if (iter && isTab(iter)) {
+      return iter
+    }
+
+    debug('current tab fallthrough', target)
+  }
+
+  // fallthrough
+  return document.querySelector('tab.visible')
+}
+export const getCurrentTab = (): Tab => {
+  return getTabFromTarget(document.activeElement)
+}
+
+const getInitialBlock = (tab: Tab): HTMLElement => {
+  return tab.querySelector('.repl .repl-block.repl-initial')
+}
+export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
+  return tab.querySelector('.repl-active')
+}
+export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
+  return tab.querySelector('.repl .repl-block.processing')
+}
+export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
+  return prompt.parentElement.parentElement
+}
+export const getPrompt = (block: HTMLElement): HTMLInputElement => {
+  return (block && block.querySelector && block.querySelector('input'))
+}
+const getInitialPrompt = (tab: Tab): HTMLInputElement => {
+  return getPrompt(getInitialBlock(tab))
+}
+/** are we operating in popup mode? */
+export const isPopup = () => document.body.classList.contains('subwindow')
+export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
+  if (isPopup()) {
+    return getSidecar(tab).querySelector('input')
+  } else {
+    return getPrompt(getCurrentBlock(tab))
+  }
+}
+export const getPromptFromTarget = (target: EventTarget): HTMLInputElement => {
+  return getCurrentPrompt(getTabFromTarget(target))
+}
+export const getPromptLeft = (block: Element) => {
+  return block.querySelector('.repl-prompt-righty')
+}
+export const getCurrentPromptLeft = (tab: Tab) => {
+  return getPromptLeft(getCurrentBlock(tab))
+}
+
+const doPaste = (text: string) => {
+  // const prompt = event.currentTarget
+  const lines = text.split(/[\n\r]/)
+
+  const pasteLooper = async (idx: number) => {
+    if (idx === lines.length) {
+      // all done...
+      return Promise.resolve()
+    /* } else if (lines[idx] === '') {
+      // then this is a blank line, so skip it
+      return pasteLooper(idx + 1) */
+    } else if (idx <= lines.length - 2) {
+      // then this is a command line with a trailing newline
+      const prompt = getCurrentPrompt()
+      const repl = await import('../core/repl')
+      return repl.pexec(prompt.value + lines[idx])
+        .then(() => pasteLooper(idx + 1))
+    } else {
+      // then this is the last line, but without a trailing newline.
+      // here, we add this command line to the current prompt, without executing it
+
+      // paste the line with respect to the current prompt's
+      // selection range; if there is no selection range, then
+      // prompt.selectionStart will be the current caret position
+      // (which is precisely what we want, i.e. to paste the given
+      // text at the current caret position); if there is a
+      // selectionEnd, then we will *also* replace the selection
+      // range
+
+      // and, then, when we are done, will position the caret just
+      // after the pasted text:
+      const prompt = getCurrentPrompt()
+      const newCaretPosition = prompt.selectionStart + lines[idx].length
+
+      // note how this will either place the new text at the caret
+      // position, or replace the selected text (if selectionEnd !==
+      // selectionStart)
+      prompt.value = prompt.value.substring(0, prompt.selectionStart) +
+        lines[idx] +
+        prompt.value.substring(prompt.selectionEnd)
+
+      // restore the caret position
+      prompt.setSelectionRange(newCaretPosition, newCaretPosition)
+
+      return Promise.resolve()
+    }
+  }
+
+  return pasteLooper(0)
+}
+
+/**
+ * User has requested that we paste something from the clipboard
+ *
+ */
+export const paste = (event: ClipboardEvent) => {
+  debug('got paste', event)
+
+  const text = event.clipboardData.getData('text')
+  if (text) {
+    // we'll handle it from here!
+    event.preventDefault()
+
+    return doPaste(text)
+  }
+}
+
 /**
  * Handle any input that queued up during command processing
  *
@@ -150,7 +286,7 @@ const handleQueuedInput = async (nextBlock: HTMLElement) => {
 
       // handle prefix newlines
       for (let idx = 0; idx < nPrefixNewlines; idx++) {
-        await doCancel()
+        await doCancel() // eslint-disable-line @typescript-eslint/no-use-before-define
 
         nextBlock = getCurrentBlock()
         nextPrompt = getCurrentPrompt()
@@ -286,6 +422,29 @@ export const registerListView = (kind: string, handler: ViewHandler) => {
 const registeredEntityViews: ViewRegistrar = {}
 export const registerEntityView = (kind: string, handler: ViewHandler) => {
   registeredEntityViews[kind] = handler
+}
+
+/**
+ * Standard handling of Table responses
+ *
+ */
+const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement, execOptions?: ExecOptions, parsedOptions?: ParsedOptions) => {
+  //
+  // some sort of list response; format as a table
+  //
+  const registeredListView = registeredListViews[response.type]
+  if (registeredListView) {
+    await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
+    return resultDom.children.length === 0
+  }
+
+  (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
+
+  if (response.noEntityColors) { // client wants control over entity-cell coloring
+    resultDom.classList.add('result-table-with-custom-entity-colors')
+  }
+
+  formatTable(tab, response, resultDom)
 }
 
 /**
@@ -427,30 +586,185 @@ const renderPopupContent = (command: string, container: Element, execOptions: Ex
   }
 }
 
-/** are we operating in popup mode? */
-export const isPopup = () => document.body.classList.contains('subwindow')
-
 /**
- * Standard handling of Table responses
+ * Remove any .repl-temporary structures from the given dom
  *
  */
-const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement, execOptions?: ExecOptions, parsedOptions?: ParsedOptions) => {
-  //
-  // some sort of list response; format as a table
-  //
-  const registeredListView = registeredListViews[response.type]
-  if (registeredListView) {
-    await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
-    return resultDom.children.length === 0
+export const removeAnyTemps = (block: HTMLElement): HTMLElement => {
+  const temps = block.querySelectorAll('.repl-temporary')
+
+  for (let idx = 0; idx < temps.length; idx++) {
+    const temp = temps[idx]
+    if (temp.parentNode) {
+      temp.parentNode.removeChild(temp)
+    }
   }
 
-  (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
+  block.classList.remove('using-custom-prompt')
 
-  if (response.noEntityColors) { // client wants control over entity-cell coloring
-    resultDom.classList.add('result-table-with-custom-entity-colors')
+  return block
+}
+
+/**
+ * Clear current text selection
+ *
+ */
+export const clearTextSelection = () => {
+  try {
+    window.getSelection().removeAllRanges()
+  } catch (err) {
+    debug('unable to clear text selection', err)
+  }
+}
+
+/**
+ * Allow for plugins to self-manage text selection
+ *
+ */
+let pendingTextSelection
+export const clearPendingTextSelection = () => {
+  pendingTextSelection = undefined
+}
+export const setPendingTextSelection = (str: string) => {
+  pendingTextSelection = str
+  if (!document.oncopy) {
+    document.addEventListener('select', () => {
+      pendingTextSelection = undefined
+    })
+    document.addEventListener('copy', (evt: ClipboardEvent) => {
+      if (pendingTextSelection) {
+        evt.clipboardData.setData('text', pendingTextSelection)
+        evt.preventDefault()
+      }
+    })
+  }
+}
+
+/**
+ * Update the caret position in an html INPUT field
+ *
+ */
+const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
+  if (ctrl.setSelectionRange) {
+    ctrl.focus()
+    ctrl.setSelectionRange(pos, pos)
+  } else if (ctrl['createTextRange']) {
+    let range = ctrl['createTextRange']()
+    range.collapse(true)
+    range.moveEnd('character', pos)
+    range.moveStart('character', pos)
+    range.select()
+  }
+}
+const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
+const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string) => {
+  input.value = newValue
+  setTimeout(() => setCaretPositionToEnd(input), 0)
+}
+
+export const unlisten = (prompt: HTMLElement) => {
+  if (prompt && !prompt.classList.contains('sidecar-header-input')) {
+    prompt.onkeypress = null
+  }
+}
+export const listen = (prompt: HTMLInputElement) => {
+  debug('listen', prompt, document.activeElement)
+  prompt.readOnly = false
+
+  if (!prompt.classList.contains('sidecar-header-input') && !document.activeElement.classList.contains('grab-focus')) {
+    prompt.focus()
   }
 
-  formatTable(tab, response, resultDom)
+  const grandparent = prompt.parentNode.parentNode as Element
+  grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
+
+  prompt.onkeypress = async (event: KeyboardEvent) => {
+    const char = event.keyCode
+    if (char === keys.ENTER) {
+      // user typed Enter; we've finished Reading, now Evalute
+      const repl = await import('../core/repl')
+      repl.doEval({ prompt })
+    }
+  }
+
+  prompt.onkeydown = async (event) => {
+    const char = event.keyCode
+
+    if (char === keys.UP || (char === keys.P && event.ctrlKey)) {
+      // go to previous command in history
+      const newValue = (historyModel.previous() || { raw: '' }).raw
+      if (newValue) {
+        updateInputAndMoveCaretToEOL(prompt, newValue)
+      }
+    } else if (char === keys.PAGEUP) {
+      if (inBrowser()) {
+        debug('pageup')
+        const { height } = document.body.getBoundingClientRect()
+        document.querySelector('tab.visible .repl-inner').scrollBy(0, -height)
+      }
+    } else if (char === keys.PAGEDOWN) {
+      if (inBrowser()) {
+        debug('pagedown')
+        const { height } = document.body.getBoundingClientRect()
+        document.querySelector('tab.visible .repl-inner').scrollBy(0, +height)
+      }
+    } else if (char === keys.C && event.ctrlKey) {
+      // Ctrl+C, cancel
+      doCancel() // eslint-disable-line @typescript-eslint/no-use-before-define
+    } else if (char === keys.U && event.ctrlKey) {
+      // clear line
+      prompt.value = ''
+    } else if ((char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
+               (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
+      // clear screen; capture and restore the current
+      // prompt value, in keeping with unix terminal
+      // behavior
+      if (isPopup()) {
+        // see init() below; in popup mode, cmd/ctrl+L does something different
+      } else {
+        const current = getCurrentPrompt().value
+        const repl = await import('../core/repl')
+        const currentCursorPosition = getCurrentPrompt().selectionStart // also restore the cursor position
+        repl.pexec('clear')
+          .then(() => {
+            if (current) {
+              // restore the prompt value
+              getCurrentPrompt().value = current
+
+              // restore the prompt cursor position
+              debug('restoring cursor position', currentCursorPosition)
+              getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
+            }
+          })
+      }
+    } else if (char === keys.HOME) {
+      // go to first command in history
+      const newValue = historyModel.first().raw
+      if (newValue) {
+        updateInputAndMoveCaretToEOL(prompt, newValue)
+      }
+    } else if (char === keys.END) {
+      // go to last command in history
+      const newValue = (historyModel.last() || { raw: '' }).raw
+      updateInputAndMoveCaretToEOL(prompt, newValue)
+    } else if (char === keys.DOWN || (char === keys.N && event.ctrlKey)) {
+      // going DOWN past the last history item will result in '', i.e. a blank line
+      const newValue = (historyModel.next() || { raw: '' }).raw
+      updateInputAndMoveCaretToEOL(prompt, newValue)
+    }
+  }
+
+  prompt.onpaste = paste
+}
+export const popupListen = (text = getSidecar(getCurrentTab()).querySelector('.sidecar-header-text'), previousCommand?: string) => {
+  if (previousCommand) {
+    // emit the previous command on the repl
+    const nameContainer = getSidecar(getCurrentTab()).querySelector('.sidecar-header-input') as HTMLInputElement
+    nameContainer.value = previousCommand
+  }
+
+  const input = text.querySelector('.sidecar-header-input') as HTMLInputElement
+  listen(input)
 }
 
 /**
@@ -716,254 +1030,6 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
   return Promise.resolve()
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Tab extends HTMLElement { }
-const tabTagPattern = /tab/i
-export function isTab (node: Element): node is Tab {
-  return tabTagPattern.test(node.tagName)
-}
-export const getTabIndex = (tab: Tab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
-export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
-  return getTabIndex(tab1) === getTabIndex(tab2)
-}
-export const getTabFromTarget = (target: EventTarget): Tab => {
-  if (target) {
-    let iter = target as Element
-
-    while (iter && !isTab(iter)) {
-      iter = iter.parentElement
-    }
-
-    if (iter && isTab(iter)) {
-      return iter
-    }
-
-    debug('current tab fallthrough', target)
-  }
-
-  // fallthrough
-  return document.querySelector('tab.visible')
-}
-export const getCurrentTab = (): Tab => {
-  return getTabFromTarget(document.activeElement)
-}
-
-const getInitialBlock = (tab: Tab): HTMLElement => {
-  return tab.querySelector('.repl .repl-block.repl-initial')
-}
-export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
-  return tab.querySelector('.repl-active')
-}
-export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
-  return tab.querySelector('.repl .repl-block.processing')
-}
-export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
-  return prompt.parentElement.parentElement
-}
-export const getPrompt = (block: HTMLElement): HTMLInputElement => {
-  return (block && block.querySelector && block.querySelector('input'))
-}
-const getInitialPrompt = (tab: Tab): HTMLInputElement => {
-  return getPrompt(getInitialBlock(tab))
-}
-export const getPromptFromTarget = (target: EventTarget): HTMLInputElement => {
-  return getCurrentPrompt(getTabFromTarget(target))
-}
-export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
-  if (isPopup()) {
-    return getSidecar(tab).querySelector('input')
-  } else {
-    return getPrompt(getCurrentBlock(tab))
-  }
-}
-export const getPromptLeft = (block: Element) => {
-  return block.querySelector('.repl-prompt-righty')
-}
-export const getCurrentPromptLeft = (tab: Tab) => {
-  return getPromptLeft(getCurrentBlock(tab))
-}
-
-/**
- * Remove any .repl-temporary structures from the given dom
- *
- */
-export const removeAnyTemps = (block: HTMLElement): HTMLElement => {
-  const temps = block.querySelectorAll('.repl-temporary')
-
-  for (let idx = 0; idx < temps.length; idx++) {
-    const temp = temps[idx]
-    if (temp.parentNode) {
-      temp.parentNode.removeChild(temp)
-    }
-  }
-
-  block.classList.remove('using-custom-prompt')
-
-  return block
-}
-
-/**
- * Clear current text selection
- *
- */
-export const clearTextSelection = () => {
-  try {
-    window.getSelection().removeAllRanges()
-  } catch (err) {
-    debug('unable to clear text selection', err)
-  }
-}
-
-/**
- * Allow for plugins to self-manage text selection
- *
- */
-let pendingTextSelection
-export const clearPendingTextSelection = () => {
-  pendingTextSelection = undefined
-}
-export const setPendingTextSelection = (str: string) => {
-  pendingTextSelection = str
-  if (!document.oncopy) {
-    document.addEventListener('select', () => {
-      pendingTextSelection = undefined
-    })
-    document.addEventListener('copy', (evt: ClipboardEvent) => {
-      if (pendingTextSelection) {
-        evt.clipboardData.setData('text', pendingTextSelection)
-        evt.preventDefault()
-      }
-    })
-  }
-}
-
-/**
- * Update the caret position in an html INPUT field
- *
- */
-const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
-  if (ctrl.setSelectionRange) {
-    ctrl.focus()
-    ctrl.setSelectionRange(pos, pos)
-  } else if (ctrl['createTextRange']) {
-    let range = ctrl['createTextRange']()
-    range.collapse(true)
-    range.moveEnd('character', pos)
-    range.moveStart('character', pos)
-    range.select()
-  }
-}
-const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
-const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string) => {
-  input.value = newValue
-  setTimeout(() => setCaretPositionToEnd(input), 0)
-}
-
-export const unlisten = (prompt: HTMLElement) => {
-  if (prompt && !prompt.classList.contains('sidecar-header-input')) {
-    prompt.onkeypress = null
-  }
-}
-export const popupListen = (text = getSidecar(getCurrentTab()).querySelector('.sidecar-header-text'), previousCommand?: string) => {
-  if (previousCommand) {
-    // emit the previous command on the repl
-    const nameContainer = getSidecar(getCurrentTab()).querySelector('.sidecar-header-input') as HTMLInputElement
-    nameContainer.value = previousCommand
-  }
-
-  const input = text.querySelector('.sidecar-header-input') as HTMLInputElement
-  listen(input)
-}
-export const listen = (prompt: HTMLInputElement) => {
-  debug('listen', prompt, document.activeElement)
-  prompt.readOnly = false
-
-  if (!prompt.classList.contains('sidecar-header-input') && !document.activeElement.classList.contains('grab-focus')) {
-    prompt.focus()
-  }
-
-  const grandparent = prompt.parentNode.parentNode as Element
-  grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
-
-  prompt.onkeypress = async (event: KeyboardEvent) => {
-    const char = event.keyCode
-    if (char === keys.ENTER) {
-      // user typed Enter; we've finished Reading, now Evalute
-      const repl = await import('../core/repl')
-      repl.doEval({ prompt })
-    }
-  }
-
-  prompt.onkeydown = async (event) => {
-    const char = event.keyCode
-
-    if (char === keys.UP || (char === keys.P && event.ctrlKey)) {
-      // go to previous command in history
-      const newValue = (historyModel.previous() || { raw: '' }).raw
-      if (newValue) {
-        updateInputAndMoveCaretToEOL(prompt, newValue)
-      }
-    } else if (char === keys.PAGEUP) {
-      if (inBrowser()) {
-        debug('pageup')
-        const { height } = document.body.getBoundingClientRect()
-        document.querySelector('tab.visible .repl-inner').scrollBy(0, -height)
-      }
-    } else if (char === keys.PAGEDOWN) {
-      if (inBrowser()) {
-        debug('pagedown')
-        const { height } = document.body.getBoundingClientRect()
-        document.querySelector('tab.visible .repl-inner').scrollBy(0, +height)
-      }
-    } else if (char === keys.C && event.ctrlKey) {
-      // Ctrl+C, cancel
-      doCancel()
-    } else if (char === keys.U && event.ctrlKey) {
-      // clear line
-      prompt.value = ''
-    } else if ((char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
-               (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
-      // clear screen; capture and restore the current
-      // prompt value, in keeping with unix terminal
-      // behavior
-      if (isPopup()) {
-        // see init() below; in popup mode, cmd/ctrl+L does something different
-      } else {
-        const current = getCurrentPrompt().value
-        const repl = await import('../core/repl')
-        const currentCursorPosition = getCurrentPrompt().selectionStart // also restore the cursor position
-        repl.pexec('clear')
-          .then(() => {
-            if (current) {
-              // restore the prompt value
-              getCurrentPrompt().value = current
-
-              // restore the prompt cursor position
-              debug('restoring cursor position', currentCursorPosition)
-              getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
-            }
-          })
-      }
-    } else if (char === keys.HOME) {
-      // go to first command in history
-      const newValue = historyModel.first().raw
-      if (newValue) {
-        updateInputAndMoveCaretToEOL(prompt, newValue)
-      }
-    } else if (char === keys.END) {
-      // go to last command in history
-      const newValue = (historyModel.last() || { raw: '' }).raw
-      updateInputAndMoveCaretToEOL(prompt, newValue)
-    } else if (char === keys.DOWN || (char === keys.N && event.ctrlKey)) {
-      // going DOWN past the last history item will result in '', i.e. a blank line
-      const newValue = (historyModel.next() || { raw: '' }).raw
-      updateInputAndMoveCaretToEOL(prompt, newValue)
-    }
-  }
-
-  prompt.onpaste = paste
-}
-
 export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBlock: HTMLElement) => async () => {
   if (!nextBlock) return // error cases
 
@@ -985,73 +1051,6 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
   eventBus.emit('/core/cli/install-block')
 
   await handleQueuedInput(nextBlock)
-}
-
-/**
- * User has requested that we paste something from the clipboard
- *
- */
-export const paste = (event: ClipboardEvent) => {
-  debug('got paste', event)
-
-  const text = event.clipboardData.getData('text')
-  if (text) {
-    // we'll handle it from here!
-    event.preventDefault()
-
-    return doPaste(text)
-  }
-}
-
-const doPaste = (text: string) => {
-  // const prompt = event.currentTarget
-  const lines = text.split(/[\n\r]/)
-
-  const pasteLooper = async (idx: number) => {
-    if (idx === lines.length) {
-      // all done...
-      return Promise.resolve()
-    /* } else if (lines[idx] === '') {
-      // then this is a blank line, so skip it
-      return pasteLooper(idx + 1) */
-    } else if (idx <= lines.length - 2) {
-      // then this is a command line with a trailing newline
-      const prompt = getCurrentPrompt()
-      const repl = await import('../core/repl')
-      return repl.pexec(prompt.value + lines[idx])
-        .then(() => pasteLooper(idx + 1))
-    } else {
-      // then this is the last line, but without a trailing newline.
-      // here, we add this command line to the current prompt, without executing it
-
-      // paste the line with respect to the current prompt's
-      // selection range; if there is no selection range, then
-      // prompt.selectionStart will be the current caret position
-      // (which is precisely what we want, i.e. to paste the given
-      // text at the current caret position); if there is a
-      // selectionEnd, then we will *also* replace the selection
-      // range
-
-      // and, then, when we are done, will position the caret just
-      // after the pasted text:
-      const prompt = getCurrentPrompt()
-      const newCaretPosition = prompt.selectionStart + lines[idx].length
-
-      // note how this will either place the new text at the caret
-      // position, or replace the selected text (if selectionEnd !==
-      // selectionStart)
-      prompt.value = prompt.value.substring(0, prompt.selectionStart) +
-        lines[idx] +
-        prompt.value.substring(prompt.selectionEnd)
-
-      // restore the caret position
-      prompt.setSelectionRange(newCaretPosition, newCaretPosition)
-
-      return Promise.resolve()
-    }
-  }
-
-  return pasteLooper(0)
 }
 
 /**

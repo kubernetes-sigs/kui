@@ -25,47 +25,28 @@ const defaults = {
   INTERVAL_IN_MILLIS: 12 * 60 * 60 * 1000 // then check once every 12 hours
 }
 
-/**
- * The updater impl
- *
- */
-class Updater {
-  constructor (initialDelay, updateCheckIntervalInMillis) {
-    setTimeout(checkForUpdatesThenNotifyVisually, initialDelay) // check for updates soon after startup
-    setInterval(checkForUpdatesThenNotifyVisually, updateCheckIntervalInMillis) // then poll infrequently for updates
-  }
-}
+const npmProcessResponse = (exec = 'npm', name, stdout) => {
+  // npm5 reports code=1 for "updates available"
+  // then updates are available; `stdout` will be something
+  // like this. strip off the last column, and any blank lines
+  //
+  // Package               Current   Wanted   Latest  Location
+  // kui-shell  1.3.137  1.3.140  1.3.140
+  //
+  const lines = stdout.split(/\r?\n/)
+  const header = lines[0]
+  const Current = header.indexOf('Current')
+  const Wanted = header.indexOf('Wanted')
+  const Location = header.indexOf(' Location')
 
-/**
- * Chain an update check with a visual notifier
- *
- */
-const checkForUpdatesThenNotifyVisually = () => checkForUpdatesQuietly().then(notifyOfAvailableUpdatesVisually)
-
-/**
- * Inform the user of the updater status, via the UI
- *
- */
-const notifyOfAvailableUpdatesVisually = changes => {
-  if (changes !== messages.error && changes !== true) {
-    console.log('Updates available')
-
-    const notificationArea = document.querySelector('#notification-area')
-    let notificationWidget = notificationArea.querySelector('.updates-available-widget') as HTMLElement
-    if (!notificationWidget) {
-      notificationWidget = document.createElement('div')
-      notificationWidget.className = 'updates-available-widget green-text graphical-clickable'
-      notificationWidget.style.fontSize = '1.75em'
-      notificationWidget.innerText = '\u2B06'
-      notificationWidget.setAttribute('title', 'Updates available, click here to get update')
-      notificationArea.appendChild(notificationWidget)
-
-      // click handler for notification widget
-      notificationWidget.onclick = () => repl.pexec('updater check')
-    }
-  }
-
-  return changes
+  return lines
+    .filter(_ => _) // strip blank lines
+    .map(line => line.substring(0, Location)) // strip last column
+    .map(line => line.substring(0, Current + 'Current'.length) +
+                 line.substring(Wanted + 'Wanted'.length)) // strip Wanted column
+    .concat(' ')
+    .concat('To update, run the following command from the terminal:')
+    .concat(`${exec} update ${name} -g`)
 }
 
 /**
@@ -140,31 +121,50 @@ const checkForUpdates = (quiet = false, exec = 'npm', opts = {}, backupPlans = d
   }
 })
 
-const npmProcessResponse = (exec = 'npm', name, stdout) => {
-  // npm5 reports code=1 for "updates available"
-  // then updates are available; `stdout` will be something
-  // like this. strip off the last column, and any blank lines
-  //
-  // Package               Current   Wanted   Latest  Location
-  // kui-shell  1.3.137  1.3.140  1.3.140
-  //
-  const lines = stdout.split(/\r?\n/)
-  const header = lines[0]
-  const Current = header.indexOf('Current')
-  const Wanted = header.indexOf('Wanted')
-  const Location = header.indexOf(' Location')
+/**
+ * Inform the user of the updater status, via the UI
+ *
+ */
+const notifyOfAvailableUpdatesVisually = changes => {
+  if (changes !== messages.error && changes !== true) {
+    console.log('Updates available')
 
-  return lines
-    .filter(_ => _) // strip blank lines
-    .map(line => line.substring(0, Location)) // strip last column
-    .map(line => line.substring(0, Current + 'Current'.length) +
-                 line.substring(Wanted + 'Wanted'.length)) // strip Wanted column
-    .concat(' ')
-    .concat('To update, run the following command from the terminal:')
-    .concat(`${exec} update ${name} -g`)
+    const notificationArea = document.querySelector('#notification-area')
+    let notificationWidget = notificationArea.querySelector('.updates-available-widget') as HTMLElement
+    if (!notificationWidget) {
+      notificationWidget = document.createElement('div')
+      notificationWidget.className = 'updates-available-widget green-text graphical-clickable'
+      notificationWidget.style.fontSize = '1.75em'
+      notificationWidget.innerText = '\u2B06'
+      notificationWidget.setAttribute('title', 'Updates available, click here to get update')
+      notificationArea.appendChild(notificationWidget)
+
+      // click handler for notification widget
+      notificationWidget.onclick = () => repl.pexec('updater check')
+    }
+  }
+
+  return changes
 }
 
 const checkForUpdatesQuietly = () => checkForUpdates(true)
+
+/**
+ * Chain an update check with a visual notifier
+ *
+ */
+const checkForUpdatesThenNotifyVisually = () => checkForUpdatesQuietly().then(notifyOfAvailableUpdatesVisually)
+
+/**
+ * The updater impl
+ *
+ */
+class Updater {
+  constructor (initialDelay, updateCheckIntervalInMillis) {
+    setTimeout(checkForUpdatesThenNotifyVisually, initialDelay) // check for updates soon after startup
+    setInterval(checkForUpdatesThenNotifyVisually, updateCheckIntervalInMillis) // then poll infrequently for updates
+  }
+}
 
 /**
  * Install the command handlers and background checker
