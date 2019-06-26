@@ -18,10 +18,12 @@
 // as it conflicts with the kui-builder kui-link-source-assets.sh
 // the typescript compiler moves the json files into the builddir, if we use import
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { name: gettingStartedDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json')
 const { name: kubernetesBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/kubernetes-basics/package.json')
 const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/coding-basics/package.json')
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 import repl = require('@kui-shell/core/core/repl')
 

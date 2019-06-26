@@ -39,6 +39,7 @@ const nope = (filepath: string) => {
  */
 const fuzzies = {
   noAuth: () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const fs = require('fs')
     const rf = fs.readFile
     const rfs = fs.readFileSync

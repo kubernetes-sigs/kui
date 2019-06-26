@@ -27,6 +27,7 @@ const debug = Debug('plugins/openwhisk/models/auth')
 
 let wskprops: Record<string, string>
 try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const propertiesParser = require('properties-parser')
   if (!inBrowser()) {
     wskprops = propertiesParser.read(expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))

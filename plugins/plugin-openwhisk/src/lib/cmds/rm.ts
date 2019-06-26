@@ -31,6 +31,7 @@ import minimist = require('yargs-parser')
 
 import repl = require('@kui-shell/core/core/repl')
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isAnonymousLet } = require('./actions/let-core')
 
 /** sum of numbers in an array */

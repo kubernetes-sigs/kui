@@ -167,6 +167,7 @@ const notifyOfHostChange = (host) => async () => {
  */
 const readFromLocalWskProps = (auth?: string, subject?: string) => apiHost.get().then(apiHost => new Promise((resolve, reject) => {
   // read from ~/.wskprops
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const propertiesParser = require('properties-parser')
   propertiesParser.read(wskpropsFile(), (err, wskprops) => {
     if (err) {

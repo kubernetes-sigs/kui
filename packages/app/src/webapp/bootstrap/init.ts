@@ -80,6 +80,7 @@ export const init = (prefs = {}) => {
     eventBus.once('/init/done', async () => {
       debug('got /init/done')
 
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { remote } = require('electron')
       const electronWindow = remote.getCurrentWindow()
       const prefs = electronWindow['subwindow']
@@ -131,6 +132,7 @@ export const preinit = () => {
   document.body.classList.add(`os-${process.platform}`)
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { remote } = require('electron')
     const subwindow = remote && remote.getCurrentWindow()['subwindow']
     debug('subwindow', subwindow)

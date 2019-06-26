@@ -20,6 +20,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 
 import { dirname } from 'path'
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const assert = require('assert')
 const cli = ui.cli
 const sidecar = ui.sidecar

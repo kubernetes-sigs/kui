@@ -26,6 +26,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const paramsFileContent = require('@kui-shell/plugin-openwhisk/tests/data/openwhisk/params.json')
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 

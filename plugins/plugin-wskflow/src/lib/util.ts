@@ -126,6 +126,7 @@ export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewO
  */
 export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): SidecarMode[] => {
   if (controller && controller.register) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require('events')
     const zoom1to1Bus = new events.EventEmitter()
     const zoomToFitBus = new events.EventEmitter()

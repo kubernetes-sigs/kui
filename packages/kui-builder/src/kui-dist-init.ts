@@ -85,6 +85,7 @@ export const main = async (argv: string[]) => {
   copyDirectory('@kui-shell/builder/examples/build-configs/default/theme/theme.json', 'theme', force)
 
   creating('main entry in package.json')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const pjson = require(join(__dirname, '../../../package.json'))
   pjson.main = 'node_modules/@kui-shell/core/main/main.js'
   writeFile('package.json', JSON.stringify(pjson, undefined, 2))

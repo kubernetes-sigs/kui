@@ -130,6 +130,7 @@ const fetchRemote = (location, mimeType): Promise<Remote> => new Promise((resolv
     return rp(locationWithoutQuotes).then(data => {
       debug(`fetchRemote done`)
       const extension = mimeType || locationWithoutQuotes.substring(locationWithoutQuotes.lastIndexOf('.'))
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const tmp = require('tmp')
       tmp.tmpName({ postfix: extension }, (err, tmpFilePath) => {
         if (err) {
@@ -304,7 +305,9 @@ const makeZipAction = (wsk, name: string, location: string, options, execOptions
         const npmInstallTask = !needsNpmInstall ? Promise.resolve(true) : doNpmInstall(location)
 
         npmInstallTask.then(() => {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
           const archiver = require('archiver')
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
           const tmp = require('tmp')
           const archive = archiver('zip')
 
