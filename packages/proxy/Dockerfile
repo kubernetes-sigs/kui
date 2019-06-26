@@ -35,25 +35,22 @@ ENV KUBE_VERSION=$KUBE_VERSION
 # https://github.com/kubernetes/helm/releases
 
 # we will download a gamut of helm clients and place them here
-# see plugins/plugin-k8s/src/lib/util/discovery/helm-client.ts
-#ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
-#ENV HELM_LATEST_VERSION="${KUI_HELM_CLIENTS_DIR}"/helm-2.12
+# @see plugins/plugin-k8s/src/lib/util/discovery/helm-client.ts
+#
+# Note that HELM_LATEST_VERSION does not mean which version we will
+# present to the user; rather, we just need at least one working
+# version in order to determine what version actually to use, for the
+# user (based on `helm --short --server version`)
+ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
+ENV HELM_LATEST_VERSION="${KUI_HELM_CLIENTS_DIR}"/helm-2.14
 
-RUN apk add --no-cache ca-certificates bash git \
-    && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
-    && chmod +x /usr/local/bin/kubectl \
-    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.9 \
-    && chmod +x /usr/local/bin/helm-2.9 \
-    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.10 \
-    && chmod +x /usr/local/bin/helm-2.10 \
-    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.11 \
-    && chmod +x /usr/local/bin/helm-2.11 \
-    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.12.2-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.12 \
-    && chmod +x /usr/local/bin/helm-2.12 \
-    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.13.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.13 \
-    && chmod +x /usr/local/bin/helm-2.13 \
-    && wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.14 \
-    && chmod +x /usr/local/bin/helm-2.14
+RUN (apk add --no-cache ca-certificates bash git python make g++ && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl) & \
+    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.9 && chmod +x /usr/local/bin/helm-2.9) & \
+    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.10 && chmod +x /usr/local/bin/helm-2.10) & \
+    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.11 && chmod +x /usr/local/bin/helm-2.11) & \
+    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.12.2-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.12 && chmod +x /usr/local/bin/helm-2.12) & \
+    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.13.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.13 && chmod +x /usr/local/bin/helm-2.13) & \
+    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.14 && chmod +x /usr/local/bin/helm-2.14); wait
 ###########
 
 COPY . /kui-proxy
@@ -62,7 +59,7 @@ COPY .bluemix /root/.bluemix
 
 # hmm.. sometimes the npm link command hangs without this extra npm config set
 RUN npm config set registry https://registry.npmjs.org
-RUN cd /kui-proxy/kui && apk add python make g++ && npm rebuild node-pty --update-binary && apk del python make g++
+RUN cd /kui-proxy/kui && npm rebuild node-pty --update-binary && apk del python make g++
 RUN cd /kui-proxy/kui && npm link ../app --no-package-lock
 
 CMD [ "npx", "start-proxy" ]
