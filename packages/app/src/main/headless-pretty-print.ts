@@ -192,6 +192,7 @@ const prettyJSON = (msg, logger = log) => {
     return logger(serialized)
   } else {
     debug('prettyJSON using json-colorizer')
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const colorize = require('json-colorizer')
     return logger(colorize(serialized))
   }

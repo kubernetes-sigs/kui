@@ -128,6 +128,7 @@ export const addPath = (filepath: string, { prefix = basename(filepath), command
     debug('addPath', filepath)
     try {
       // use app-module-path to augment the node module require path
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const appModulePath = require('app-module-path')
       appModulePath.addPath(resolve(filepath))
     } catch (err) {

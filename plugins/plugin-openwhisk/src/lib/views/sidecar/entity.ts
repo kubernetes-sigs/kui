@@ -108,6 +108,7 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
 
           if (annotation.badge === 'zip') {
             const code = Buffer.from(entity.exec.code, 'base64')
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const Zip = require('adm-zip')
             const zip = Zip(code)
             const indexEntryJavascript = zip.getEntry('index.js')

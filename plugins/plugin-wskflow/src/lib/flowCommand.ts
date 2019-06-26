@@ -71,6 +71,7 @@ const generatePromises = activation => function * () { // generator function
 // by default, PromisePool does not return any arguments in then, causing activations to always be undefined
 // use event listeners here to access return data as described in the docs
 const fetchTrace = activation => new Promise((resolve) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const PromisePool = require('es6-promise-pool')
 
   const data = []

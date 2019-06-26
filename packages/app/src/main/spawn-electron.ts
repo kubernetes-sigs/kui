@@ -486,6 +486,7 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { _location, name } = require('../../package.json')
 
       if (!_location || name !== 'kui-shell') {

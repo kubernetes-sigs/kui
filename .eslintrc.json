@@ -52,7 +52,6 @@
       "multiline": {
         "delimiter": "none"
       }
-    }],
-    "@typescript-eslint/no-var-requires": "off"
+    }]
   }
 }

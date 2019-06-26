@@ -43,6 +43,7 @@ const locateNpm = (): Promise<string> => new Promise<string>((resolve) => {
 
     // Try standard locations
     if (err) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const os = require('os')
       let path = (os.platform === 'win32') ? `C:\\Program Files\\nodejs` : '/usr/local/bin'
       resolved = which.sync('npm', { path, nothrow: true })

@@ -47,6 +47,7 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
       //
       debug('got kubeconfig', kubeconfigString)
       try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { safeLoad: parseYAML } = require('js-yaml')
 
         const kubeconfig = parseYAML(kubeconfigString)

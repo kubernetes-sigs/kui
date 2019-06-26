@@ -100,7 +100,9 @@ export const persister = {
     }
   }),
   save: (app, editor) => new Promise((resolve, reject) => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const fs = require('fs')
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const tmp = require('tmp')
 
     tmp.file({ prefix: 'shell-', postfix: extension(app.exec.kind) }, (err, filepath, fd, cleanup) => {

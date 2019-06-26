@@ -23,6 +23,7 @@
  *
  */
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const parse = require('parse-duration')
 
 import repl = require('@kui-shell/core/core/repl')

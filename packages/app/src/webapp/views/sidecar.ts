@@ -48,6 +48,7 @@ const logPatterns = {
  *
  */
 export const prettyJSON = (raw: string, container: HTMLElement) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const beautify = require('js-beautify')
   container.innerText = beautify(raw, { wrap_line_length: 80, indent_size: 2 })
   setTimeout(() => hljs.highlightBlock(container), 0)
@@ -480,6 +481,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
       if (typeof projection === 'string') {
         code.innerText = projection
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const beautify = require('js-beautify')
         code.innerText = beautify(JSON.stringify(projection), { wrap_line_length: 80, indent_size: 2 })
       }

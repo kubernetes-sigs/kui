@@ -27,6 +27,7 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { parseOptions, getClient, owOpts } from './openwhisk-core'
 const debug = Debug('plugins/openwhisk/cmds/load-test')
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const prettyPrintDuration = require('pretty-ms')
 
 /**

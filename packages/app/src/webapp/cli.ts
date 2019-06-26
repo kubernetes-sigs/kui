@@ -475,7 +475,9 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
     // we were asked to tee the output to the system console
     debug('teeing output to file', process.env.KUI_TEE_TO_FILE)
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { print } = require('../main/headless-pretty-print')
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { createWriteStream } = require('fs')
       const stream = createWriteStream(process.env.KUI_TEE_TO_FILE)
       const logger = (data: string | Buffer) => stream.write(data)

@@ -23,6 +23,7 @@
  *
  */
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const minimist = require('yargs-parser')
 
 import repl = require('@kui-shell/core/core/repl')

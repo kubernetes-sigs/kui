@@ -34,6 +34,7 @@ interface ISuite extends Suite {
 const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 export const { version: expectedVersion } = require('@kui-shell/settings/package.json')
 
 interface Response {
