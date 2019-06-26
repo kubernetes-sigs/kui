@@ -20,6 +20,7 @@ import * as colors from 'colors/safe'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
@@ -77,7 +78,7 @@ const aboutWindow = async () => {
     badges.push(license)
   }
 
-  const subtext = description
+  const subtext = settings.byline || description
   /* subtext.appendChild(document.createTextNode('Distributed under an '))
   const licenseDom = document.createElement('strong')
   licenseDom.innerText = license
@@ -111,10 +112,6 @@ const aboutWindow = async () => {
       logo.appendChild(longDescription)
     }
   }
-
-  const insideContent = document.createElement('div')
-  insideContent.classList.add('about-window-inside-content')
-  flexContent.appendChild(insideContent)
 
   const bottomContent = document.createElement('div')
   bottomContent.classList.add('about-window-bottom-content')
@@ -152,21 +149,6 @@ const aboutWindow = async () => {
     return wrapper
   }
 
-  insideContent.appendChild(iconify('fab fa-readme', 'View tutorials', () => repl.pexec('getting started')))
-
-  if (bugs) {
-    insideContent.appendChild(iconify('fas fa-bug', 'Report an issue', bugs.url))
-  }
-
-  if (homepage) {
-    /* badges.push({
-      title: 'homepage',
-      fontawesome: 'fab fa-github',
-      onclick: openHome
-      }) */
-    insideContent.appendChild(iconify('fab fa-github', 'Clone on GitHub', homepage))
-  }
-
   if (showVersionInfo) {
     const table = document.createElement('table')
     table.classList.add('log-lines')
@@ -181,10 +163,10 @@ const aboutWindow = async () => {
     const headerRow = table.insertRow(-1)
     headerRow.className = 'log-line header-row'
     const column1 = headerRow.insertCell(-1)
-    column1.innerText = 'COMPONENT'
+    column1.innerText = 'component'
     column1.className = 'header-cell log-field'
     const column2 = headerRow.insertCell(-1)
-    column2.innerText = 'VERSION'
+    column2.innerText = 'version'
     column2.className = 'header-cell log-field'
 
     for (const component of [name, 'build', 'electron', 'chrome', 'node', 'v8']) {
@@ -215,11 +197,18 @@ const aboutWindow = async () => {
     }
   }
 
+  const modes: SidecarMode[] = [
+    { mode: 'tutorials', label: 'Tutorials', flush: 'right', direct: settings.gettingStarted || 'getting started' },
+    { mode: 'bugs', label: 'Bugs', flush: 'right', url: bugs.url },
+    { mode: 'github', label: 'GitHub', flush: 'right', url: homepage }
+  ]
+
   return {
     type: 'custom',
     isEntity: true,
     prettyType: 'about',
     presentation: document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen,
+    modes,
     name,
     badges,
     version,

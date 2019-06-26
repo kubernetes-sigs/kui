@@ -31,6 +31,9 @@ interface Theme {
   gettingStarted?: string
   ogDescription?: string
 
+  /** a short description of the product */
+  byline?: string
+
   tableStyle?: keyof typeof TableStyle
 
   largeIcon: string
