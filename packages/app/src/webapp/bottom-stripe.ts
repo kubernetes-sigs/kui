@@ -118,6 +118,7 @@ export interface SidecarMode {
 
   command?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   direct?: DirectViewController
+  url?: string
 
   execOptions?: ExecOptions
 
@@ -188,6 +189,7 @@ const _addModeButton = (
     data,
     command = () => mode,
     direct,
+    url,
     execOptions,
     defaultMode,
     actAsButton,
@@ -331,8 +333,15 @@ const _addModeButton = (
     getSidecar(tab).entity = entity
   }
 
-  // insert the command handler
-  if (command || direct) {
+  if (url) {
+    //
+    // onclick, open a new page
+    //
+    button.onclick = () => window.open(url)
+  } else if (command || direct) {
+    //
+    // insert the command handler
+    //
     button.onclick = async () => {
       // change the active button
       const changeActiveButton = () => {
