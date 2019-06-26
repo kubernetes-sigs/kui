@@ -11,18 +11,6 @@
   "plugins": [
     "@typescript-eslint/eslint-plugin"
   ],
-  "overrides": [
-    {
-      "files": [
-        "packages/app/src/webapp/**/*.ts",
-        "plugins/plugin-core-support/src/lib/**/*.ts",
-        "plugins/plugin-k8s/src/lib/**/*.ts"
-      ],
-      "rules": {
-        "@typescript-eslint/no-use-before-define": "off"
-      }
-    }
-  ],
   "rules": {
     "no-undef": "off",
     "@typescript-eslint/camelcase": ["error", {

@@ -35,6 +35,21 @@ import repl = require('@kui-shell/core/core/repl')
 const viewName = 'Containers'
 
 /**
+ * Return a sidecar mode button model that shows a containers table
+ * for the given resource
+ *
+ */
+export const containersButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
+  mode: 'containers',
+  direct: {
+    plugin: 'k8s',
+    module: 'lib/view/modes/containers',
+    operation: 'renderAndViewContainers',
+    parameters: { command, resource }
+  }
+}, overrides || {})
+
+/**
  * Add a Containers mode button to the given modes model, if called
  * for by the given resource.
  *
@@ -54,33 +69,23 @@ export const containersMode: ModeRegistration<KubeResource> = {
 }
 
 /**
- * Return a sidecar mode button model that shows a containers table
- * for the given resource
+ * Return a drilldown function that shows container logs
  *
  */
-export const containersButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
-  mode: 'containers',
-  direct: {
-    plugin: 'k8s',
-    module: 'lib/view/modes/containers',
-    operation: 'renderAndViewContainers',
-    parameters: { command, resource }
+const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
+  const podName = repl.encodeComponent(pod.metadata.name)
+  const containerName = repl.encodeComponent(container.name)
+  const ns = repl.encodeComponent(pod.metadata.namespace)
+
+  // a bit convoluted, so we can delay the call to getActiveView
+  return (evt: Event) => {
+    return drilldown(tab,
+      `kubectl logs ${podName} ${containerName} -n ${ns}`,
+      undefined,
+      getActiveView(tab),
+      viewName,
+      { exec })(evt)
   }
-}, overrides || {})
-
-/**
- * Render the tabular containers view
- *
- */
-export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
-  debug('renderContainers', command, resource)
-
-  return formatTable(tab, {
-    header: headerModel(resource),
-    body: bodyModel(tab, resource),
-    noSort: true,
-    title: 'Containers'
-  })
 }
 
 /**
@@ -208,23 +213,18 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
 }
 
 /**
- * Return a drilldown function that shows container logs
+ * Render the tabular containers view
  *
  */
-const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
-  const podName = repl.encodeComponent(pod.metadata.name)
-  const containerName = repl.encodeComponent(container.name)
-  const ns = repl.encodeComponent(pod.metadata.namespace)
+export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
+  debug('renderContainers', command, resource)
 
-  // a bit convoluted, so we can delay the call to getActiveView
-  return (evt: Event) => {
-    return drilldown(tab,
-      `kubectl logs ${podName} ${containerName} -n ${ns}`,
-      undefined,
-      getActiveView(tab),
-      viewName,
-      { exec })(evt)
-  }
+  return formatTable(tab, {
+    header: headerModel(resource),
+    body: bodyModel(tab, resource),
+    noSort: true,
+    title: 'Containers'
+  })
 }
 
 /**

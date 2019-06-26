@@ -234,9 +234,16 @@ export default async (commandTree: CommandRegistrar) => {
             return reject(new Error('Internal Error'))
           }
 
+          const img = nativeImage.createFromBuffer(buf)
+          const snapDom = document.createElement('div')
+          const snapFooter = document.createElement('div')
+          const snapImg = document.createElement('div')
+          const message = document.createElement('div')
+          const check = document.createElement('div')
+
           // when we're done, re-enable the things we messed with and hide the snapDom
           const finish = () => {
-            cleanupMouseEvents()
+            cleanupMouseEvents() // eslint-disable-line @typescript-eslint/no-use-before-define
 
             snapDom.classList.add('go-away')
             setTimeout(() => {
@@ -282,13 +289,6 @@ export default async (commandTree: CommandRegistrar) => {
             document.querySelector('.page').addEventListener('mouseup', blurryMouseUp)
           }
           initMouseEvents()
-
-          const img = nativeImage.createFromBuffer(buf)
-          const snapDom = document.createElement('div')
-          const snapFooter = document.createElement('div')
-          const snapImg = document.createElement('div')
-          const message = document.createElement('div')
-          const check = document.createElement('div')
 
           const windowSize = document.body.getBoundingClientRect()
           const imgSize = img.getSize()

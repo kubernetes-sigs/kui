@@ -22,6 +22,23 @@ import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
 const debug = Debug('core/webapp/util/ascii-to-table')
 
 /**
+ * Split the given string at the given split indices
+ *
+ */
+interface Pair {
+  key: string
+  value: string
+}
+const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
+  return splits.map((splitIndex, idx) => {
+    return {
+      key: headerCells && headerCells[idx],
+      value: str.substring(splitIndex, splits[idx + 1] || str.length).trim()
+    }
+  })
+}
+
+/**
  * Find the column splits
  *
  */
@@ -121,6 +138,136 @@ const capitalize = (str: string): string => {
  */
 const kubelike = /kubectl|oc/
 const isKubeLike = (command: string): boolean => kubelike.test(command)
+
+/** decorate certain columns specially */
+export const outerCSSForKey = {
+  NAME: 'entity-name-group',
+  READY: 'a-few-numbers-wide',
+  STATE: 'badge-width',
+  STATUS: 'badge-width',
+  KIND: 'max-width-id-like entity-kind',
+
+  NAMESPACE: 'entity-name-group entity-name-group-narrow',
+
+  DISPLAY: 'hide-with-sidecar',
+  TYPE: 'hide-with-sidecar',
+  ENDPOINT: 'hide-with-sidecar',
+
+  CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
+  AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
+  REFERENCE: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // istio autoscaler
+
+  'CREATED': 'hide-with-sidecar',
+  'CREATED AT': 'hide-with-sidecar',
+
+  ID: 'max-width-id-like',
+
+  // kubectl get deployment
+  CURRENT: 'entity-name-group entity-name-group-extra-narrow text-center',
+  DESIRED: 'entity-name-group entity-name-group-extra-narrow text-center',
+
+  RESTARTS: 'very-narrow',
+
+  'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
+  'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
+
+  UPDATED: 'min-width-date-like', // helm ls
+  REVISION: 'hide-with-sidecar', // helm ls
+  AGE: 'very-narrow', // e.g. helm status and kubectl get svc
+  'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
+  SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
+}
+
+/**
+ * Return an array with at least maxColumns entries
+ *
+ */
+const fillTo = (length, maxColumns) => {
+  if (length >= maxColumns) {
+    return []
+  } else {
+    return new Array(maxColumns - length).fill('')
+  }
+}
+
+export const cssForKey = {
+  // kubectl get events
+  NAME: 'entity-name',
+  SOURCE: 'lighter-text smaller-text',
+  SUBOBJECT: 'lighter-text smaller-text',
+  'CREATED AT': 'lighter-text smaller-text',
+
+  AGE: 'slightly-deemphasize',
+
+  'APP VERSION': 'pre-wrap slightly-deemphasize', // helm ls
+  UPDATED: 'slightly-deemphasize somewhat-smaller-text'
+}
+
+const tagForKey = {
+  PHASE: 'badge',
+  STATE: 'badge',
+  STATUS: 'badge'
+}
+
+const cssForKeyValue = {
+}
+
+/** decorate certain values specially */
+export const cssForValue = {
+  // generic
+  NORMAL: 'green-background',
+  Normal: 'green-background',
+  normal: 'green-background',
+
+  // helm lifecycle
+  UNKNOWN: '',
+  DEPLOYED: 'green-background',
+  DELETED: '',
+  SUPERSEDED: 'yellow-background',
+  FAILED: 'red-background',
+  DELETING: 'yellow-background',
+
+  // pod lifecycle
+  'Init:0/1': 'yellow-background',
+  PodScheduled: 'yellow-background',
+  PodInitializing: 'yellow-background',
+  Initialized: 'yellow-background',
+  Terminating: 'yellow-background',
+
+  // kube lifecycle
+  CrashLoopBackOff: 'red-background',
+  Error: 'red-background',
+  Failed: 'red-background',
+  Running: 'green-background',
+  Pending: 'yellow-background',
+  Completed: 'gray-background', // successfully terminated; don't use a color
+  Unknown: '',
+
+  // AWS events
+  Ready: 'green-background',
+  ProvisionedSuccessfully: 'green-background',
+
+  // kube events
+  Active: 'green-background',
+  Online: 'green-background',
+  NodeReady: 'green-background',
+  Pulled: 'green-background',
+  Rebooted: 'green-background',
+  Started: 'green-background',
+  Created: 'green-background',
+  Succeeded: 'green-background',
+  SuccessfulCreate: 'green-background',
+  SuccessfulMountVol: 'green-background',
+  ContainerCreating: 'yellow-background',
+  Starting: 'yellow-background',
+  NodeNotReady: 'yellow-background',
+  Killing: 'yellow-background',
+  Deleting: 'yellow-background',
+  Pulling: 'yellow-background',
+  BackOff: 'yellow-background',
+  FailedScheduling: 'red-background',
+  FailedKillPod: 'red-background'
+}
 
 /**
  * Turn an IPair[][], i.e. a table of key-value pairs into a Table,
@@ -239,151 +386,4 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     body,
     noSort: true
   }
-}
-
-/**
- * Split the given string at the given split indices
- *
- */
-interface Pair {
-  key: string
-  value: string
-}
-const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
-  return splits.map((splitIndex, idx) => {
-    return {
-      key: headerCells && headerCells[idx],
-      value: str.substring(splitIndex, splits[idx + 1] || str.length).trim()
-    }
-  })
-}
-
-/**
- * Return an array with at least maxColumns entries
- *
- */
-const fillTo = (length, maxColumns) => {
-  if (length >= maxColumns) {
-    return []
-  } else {
-    return new Array(maxColumns - length).fill('')
-  }
-}
-
-/** decorate certain columns specially */
-export const outerCSSForKey = {
-  NAME: 'entity-name-group',
-  READY: 'a-few-numbers-wide',
-  STATE: 'badge-width',
-  STATUS: 'badge-width',
-  KIND: 'max-width-id-like entity-kind',
-
-  NAMESPACE: 'entity-name-group entity-name-group-narrow',
-
-  DISPLAY: 'hide-with-sidecar',
-  TYPE: 'hide-with-sidecar',
-  ENDPOINT: 'hide-with-sidecar',
-
-  CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
-  AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
-  REFERENCE: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // istio autoscaler
-
-  'CREATED': 'hide-with-sidecar',
-  'CREATED AT': 'hide-with-sidecar',
-
-  ID: 'max-width-id-like',
-
-  // kubectl get deployment
-  CURRENT: 'entity-name-group entity-name-group-extra-narrow text-center',
-  DESIRED: 'entity-name-group entity-name-group-extra-narrow text-center',
-
-  RESTARTS: 'very-narrow',
-
-  'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
-  'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
-
-  UPDATED: 'min-width-date-like', // helm ls
-  REVISION: 'hide-with-sidecar', // helm ls
-  AGE: 'very-narrow', // e.g. helm status and kubectl get svc
-  'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
-  SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
-}
-
-export const cssForKey = {
-  // kubectl get events
-  NAME: 'entity-name',
-  SOURCE: 'lighter-text smaller-text',
-  SUBOBJECT: 'lighter-text smaller-text',
-  'CREATED AT': 'lighter-text smaller-text',
-
-  AGE: 'slightly-deemphasize',
-
-  'APP VERSION': 'pre-wrap slightly-deemphasize', // helm ls
-  UPDATED: 'slightly-deemphasize somewhat-smaller-text'
-}
-
-const tagForKey = {
-  PHASE: 'badge',
-  STATE: 'badge',
-  STATUS: 'badge'
-}
-
-const cssForKeyValue = {
-}
-
-/** decorate certain values specially */
-export const cssForValue = {
-  // generic
-  NORMAL: 'green-background',
-  Normal: 'green-background',
-  normal: 'green-background',
-
-  // helm lifecycle
-  UNKNOWN: '',
-  DEPLOYED: 'green-background',
-  DELETED: '',
-  SUPERSEDED: 'yellow-background',
-  FAILED: 'red-background',
-  DELETING: 'yellow-background',
-
-  // pod lifecycle
-  'Init:0/1': 'yellow-background',
-  PodScheduled: 'yellow-background',
-  PodInitializing: 'yellow-background',
-  Initialized: 'yellow-background',
-  Terminating: 'yellow-background',
-
-  // kube lifecycle
-  CrashLoopBackOff: 'red-background',
-  Error: 'red-background',
-  Failed: 'red-background',
-  Running: 'green-background',
-  Pending: 'yellow-background',
-  Completed: 'gray-background', // successfully terminated; don't use a color
-  Unknown: '',
-
-  // AWS events
-  Ready: 'green-background',
-  ProvisionedSuccessfully: 'green-background',
-
-  // kube events
-  Active: 'green-background',
-  Online: 'green-background',
-  NodeReady: 'green-background',
-  Pulled: 'green-background',
-  Rebooted: 'green-background',
-  Started: 'green-background',
-  Created: 'green-background',
-  Succeeded: 'green-background',
-  SuccessfulCreate: 'green-background',
-  SuccessfulMountVol: 'green-background',
-  ContainerCreating: 'yellow-background',
-  Starting: 'yellow-background',
-  NodeNotReady: 'yellow-background',
-  Killing: 'yellow-background',
-  Deleting: 'yellow-background',
-  Pulling: 'yellow-background',
-  BackOff: 'yellow-background',
-  FailedScheduling: 'red-background',
-  FailedKillPod: 'red-background'
 }

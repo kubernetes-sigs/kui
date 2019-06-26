@@ -170,33 +170,99 @@ const addCommandEvaluationListeners = (): void => {
 }
 
 /**
- * This will be called once, when the application loads. For the
- * per-tab init logic, look at perTabInit()
+ * Ensure the tabs have ids in consecutive order.
  *
  */
-const oneTimeInit = (): void => {
-  // focus the current prompt no matter where the user clicks in the left tab stripe
-  (document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
-    getCurrentPrompt().focus()
+const reindexTabs = () => {
+  const tabs = document.querySelectorAll('.main > .tab-container > tab')
+  for (let idx = 0; idx < tabs.length; idx++) {
+    const id = idx + 1 // indexed from 1
+    tabs[idx].setAttribute('data-tab-index', id.toString())
   }
 
-  const initialTabButton = getCurrentTabButton()
-  const initialTabId = initialTabButton.getAttribute('data-tab-button-index')
-  initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
+  const tabButtons = document.querySelectorAll('.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button')
+  for (let idx = 0; idx < tabButtons.length; idx++) {
+    const id = idx + 1 // also indexed from 1
+    const button = tabButtons[idx] as HTMLElement
 
-  if (document.body.classList.contains('subwindow')) {
-    element('#new-tab-button > i').onclick = () => window.open(window.location.href, '_blank')
-  } else {
-    element('#new-tab-button > i').onclick = () => newTab()
+    button.setAttribute('data-tab-button-index', id.toString())
+    button.onclick = () => qexec(`tab switch ${id}`)
+  }
+}
+
+/**
+ * Close the current tab
+ *
+ */
+const closeTab = (tab = getCurrentTab()) => {
+  const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
+  if (nTabs <= 1) {
+    debug('closing window')
+    qexec('window close')
+    return true
   }
 
-  addKeyboardListeners()
-  addCommandEvaluationListeners()
+  const tabButton = getTabButton(tab)
+  const tabId = parseInt(tabButton.getAttribute('data-tab-button-index'), 10)
 
-  // initialize the first tab
-  perTabInit(getCurrentTab(), false)
+  tab.parentNode.removeChild(tab)
+  tabButton.parentNode.removeChild(tabButton)
 
-  getTabButtonLabel(getCurrentTab()).innerText = theme['productName']
+  // true means we only want to activate the given tab
+  switchTab(tabId === 1 ? 2 : tabId - 1, true)
+
+  getCurrentPrompt().focus()
+
+  reindexTabs()
+
+  return true
+}
+
+/**
+ * Initialize events for a new tab
+ *
+ */
+const perTabInit = (tab: Tab, doListen = true) => {
+  if (doListen) {
+    listen(getCurrentPrompt(tab))
+  }
+
+  // we want to focus the current repl input when the user clicks, but
+  // the logic here is a bit complicated; so we'll push the logic out
+  // to a separate source file
+  installReplFocusHandlers()
+
+  // tab close button
+  getTabCloser(tab).onclick = () => closeTab(tab)
+
+  // maximize button
+  sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
+    debug('toggle sidecar maximization')
+    // indicate that the user requested maximization
+    toggleMaximization(tab, 'user')
+  }
+
+  // close button
+  sidecarSelector(tab, '.toggle-sidecar-button').onclick = () => {
+    debug('toggle sidecar visibility')
+    toggle(tab)
+  }
+
+  // quit button
+  sidecarSelector(tab, '.sidecar-bottom-stripe-quit').onclick = () => {
+    debug('quit button')
+    try {
+      window.close()
+    } catch (err) {
+      console.error('error handling quit button click', err)
+    }
+  }
+
+  // screenshot button
+  sidecarSelector(tab, '.sidecar-screenshot-button').onclick = () => {
+    debug('sidecar screenshot')
+    pexec('screenshot sidecar')
+  }
 }
 
 /**
@@ -256,50 +322,33 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 }
 
 /**
- * Initialize events for a new tab
+ * This will be called once, when the application loads. For the
+ * per-tab init logic, look at perTabInit()
  *
  */
-const perTabInit = (tab: Tab, doListen = true) => {
-  if (doListen) {
-    listen(getCurrentPrompt(tab))
+const oneTimeInit = (): void => {
+  // focus the current prompt no matter where the user clicks in the left tab stripe
+  (document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
+    getCurrentPrompt().focus()
   }
 
-  // we want to focus the current repl input when the user clicks, but
-  // the logic here is a bit complicated; so we'll push the logic out
-  // to a separate source file
-  installReplFocusHandlers()
+  const initialTabButton = getCurrentTabButton()
+  const initialTabId = initialTabButton.getAttribute('data-tab-button-index')
+  initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
 
-  // tab close button
-  getTabCloser(tab).onclick = () => closeTab(tab)
-
-  // maximize button
-  sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
-    debug('toggle sidecar maximization')
-    // indicate that the user requested maximization
-    toggleMaximization(tab, 'user')
+  if (document.body.classList.contains('subwindow')) {
+    element('#new-tab-button > i').onclick = () => window.open(window.location.href, '_blank')
+  } else {
+    element('#new-tab-button > i').onclick = () => newTab()
   }
 
-  // close button
-  sidecarSelector(tab, '.toggle-sidecar-button').onclick = () => {
-    debug('toggle sidecar visibility')
-    toggle(tab)
-  }
+  addKeyboardListeners()
+  addCommandEvaluationListeners()
 
-  // quit button
-  sidecarSelector(tab, '.sidecar-bottom-stripe-quit').onclick = () => {
-    debug('quit button')
-    try {
-      window.close()
-    } catch (err) {
-      console.error('error handling quit button click', err)
-    }
-  }
+  // initialize the first tab
+  perTabInit(getCurrentTab(), false)
 
-  // screenshot button
-  sidecarSelector(tab, '.sidecar-screenshot-button').onclick = () => {
-    debug('sidecar screenshot')
-    pexec('screenshot sidecar')
-  }
+  getTabButtonLabel(getCurrentTab()).innerText = theme['productName']
 }
 
 /**
@@ -317,55 +366,6 @@ const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
     // tell the REPL we're done, so it can get busy installing the next block!
     return true
   }
-}
-
-/**
- * Ensure the tabs have ids in consecutive order.
- *
- */
-const reindexTabs = () => {
-  const tabs = document.querySelectorAll('.main > .tab-container > tab')
-  for (let idx = 0; idx < tabs.length; idx++) {
-    const id = idx + 1 // indexed from 1
-    tabs[idx].setAttribute('data-tab-index', id.toString())
-  }
-
-  const tabButtons = document.querySelectorAll('.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button')
-  for (let idx = 0; idx < tabButtons.length; idx++) {
-    const id = idx + 1 // also indexed from 1
-    const button = tabButtons[idx] as HTMLElement
-
-    button.setAttribute('data-tab-button-index', id.toString())
-    button.onclick = () => qexec(`tab switch ${id}`)
-  }
-}
-
-/**
- * Close the current tab
- *
- */
-const closeTab = (tab = getCurrentTab()) => {
-  const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
-  if (nTabs <= 1) {
-    debug('closing window')
-    qexec('window close')
-    return true
-  }
-
-  const tabButton = getTabButton(tab)
-  const tabId = parseInt(tabButton.getAttribute('data-tab-button-index'), 10)
-
-  tab.parentNode.removeChild(tab)
-  tabButton.parentNode.removeChild(tabButton)
-
-  // true means we only want to activate the given tab
-  switchTab(tabId === 1 ? 2 : tabId - 1, true)
-
-  getCurrentPrompt().focus()
-
-  reindexTabs()
-
-  return true
 }
 
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
