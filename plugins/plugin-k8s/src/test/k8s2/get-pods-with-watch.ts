@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 /** name of the pod */
@@ -44,7 +44,7 @@ const waitForStatus = async function (this: common.ISuite, status: Status, res) 
 /** create pod, and expect status eventually to be green */
 const createPod = async function (this: common.ISuite, kubectl: string, ns: string) {
   it(`should create sample pod from URL via ${kubectl}`, async () => {
-    const waitForOnline = waitForStatus.bind(this, Status.Online)
+    const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
 
     try {
       await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
@@ -58,8 +58,8 @@ const createPod = async function (this: common.ISuite, kubectl: string, ns: stri
 const createAndDeletePod = function (this: common.ISuite, kubectl: string, ns: string) {
   it(`should create then delete sample pod from URL via ${kubectl}`, async () => {
     try {
-      const waitForOnline = waitForStatus.bind(this, Status.Online)
-      const waitForOffline = waitForStatus.bind(this, Status.Offline)
+      const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
+      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
       const selector1 = await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
       const selector2 = await waitForOffline(await cli.do(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
@@ -85,36 +85,16 @@ const createAndDeletePod = function (this: common.ISuite, kubectl: string, ns: s
   })
 }
 
-/** delete pod, and expect status eventually to be green; or (if noExistOk=true) eventually to get a 404 */
-const deletePod = function (this: common.ISuite, kubectl: string, ns: string, { noExistOk = false } = {}) {
-  it(`should delete the sample pod from URL via ${kubectl} with noExistOk=${noExistOk}`, async () => {
+/** delete pod, and expect status eventually to be red */
+const deletePod = function (this: common.ISuite, kubectl: string, ns: string) {
+  it(`should delete the sample pod from URL via ${kubectl}`, async () => {
     try {
-      const waitForOffline = waitForStatus.bind(this, Status.Offline)
+      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
       const res = await cli.do(`${kubectl} delete -f ${url} -n ${ns}`, this.app)
 
-      if (noExistOk) {
-        return this.app.client.waitUntil(async () => {
-          try {
-            const maybe404 = `${selectors.OUTPUT_N(res.count)} .oops[data-status-code="404"]`
-            const elt = await this.app.client.element(maybe404)
-            if (elt.state === 'failure') {
-              // no 404? then we'd better eventuallly see that the pod is offline
-              await waitForOffline(res)
-              return true
-            } else {
-              // 404? that's ok! (noExistOk=true)
-              return true
-            }
-          } catch (err) {
-            return false
-          }
-        })
-      } else {
-        // noExistOk=false, then we'd better eventually see that the pod is offline
-        await waitForOffline(res)
-        return
-      }
+      await waitForOffline(res)
+      return
     } catch (err) {
       common.oops(this)(err)
     }
@@ -125,8 +105,8 @@ const deletePod = function (this: common.ISuite, kubectl: string, ns: string, { 
 const watchPods = function (this: common.ISuite, kubectl: string, ns: string) {
   it(`should watch pods via ${kubectl} get pods -w`, async () => {
     try {
-      const waitForOnline = waitForStatus.bind(this, Status.Online)
-      const waitForOffline = waitForStatus.bind(this, Status.Offline)
+      const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
+      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
       const selector1 = await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
       const selector2 = await waitForOnline(await cli.do(`${kubectl} get pods -w -n ${ns}`, this.app))
@@ -167,16 +147,15 @@ describe('electron watch pod', function (this: common.ISuite) {
 
   synonyms.forEach(kubectl => {
     const ns: string = createNS()
-    const createIt = createPod.bind(this, kubectl, ns)
-    const deleteIt = deletePod.bind(this, kubectl, ns)
-    const createAndDeleteIt = createAndDeletePod.bind(this, kubectl, ns)
-    const watchIt = watchPods.bind(this, kubectl, ns)
+    const createIt: () => Promise<void> = createPod.bind(this, kubectl, ns)
+    const deleteIt: () => void = deletePod.bind(this, kubectl, ns)
+    const createAndDeleteIt: () => void = createAndDeletePod.bind(this, kubectl, ns)
+    const watchIt: () => void = watchPods.bind(this, kubectl, ns)
 
     //
     // here come the tests
     //
     allocateNS(this, ns)
-    deleteIt({ noExistOk: true }) // delete the pod, but it's ok if it doesn't exist
     createIt()
     deleteIt()
     createAndDeleteIt()

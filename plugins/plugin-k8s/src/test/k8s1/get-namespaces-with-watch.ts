@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, waitForRed, createNS as create } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 /** name of the namespace */
 const nsName: string = create()
@@ -40,7 +40,7 @@ const waitForStatus = async function (this: common.ISuite, status: Status, res):
 /** create namespace, and expect status eventually to be green */
 const createNS = async function (this: common.ISuite, kubectl: string) {
   it(`should create namespace from URL via ${kubectl}`, async () => {
-    const waitForOnline = waitForStatus.bind(this, Status.Online)
+    const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
 
     try {
       await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
@@ -50,36 +50,15 @@ const createNS = async function (this: common.ISuite, kubectl: string) {
   })
 }
 
-/** delete namespace, and expect status eventually to be green; or (if noExistOk=true) eventually to get a 404 */
-const deleteNS = function (this: common.ISuite, kubectl: string, { noExistOk = false } = {}) {
-  it(`should delete the namespace ${nsName} from URL via ${kubectl} with noExistOk=${noExistOk}`, async () => {
+/** delete namespace, and expect status eventually to be red; */
+const deleteNS = function (this: common.ISuite, kubectl: string) {
+  it(`should delete the namespace ${nsName} from URL via ${kubectl}`, async () => {
     try {
-      const waitForOffline = waitForStatus.bind(this, Status.Offline)
+      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
       const res = await cli.do(`${kubectl} delete ns ${nsName}`, this.app)
 
-      if (noExistOk) {
-        return this.app.client.waitUntil(async () => {
-          try {
-            const maybe404 = `${selectors.OUTPUT_N(res.count)} .oops[data-status-code="404"]`
-            const elt = await this.app.client.element(maybe404)
-            if (elt.state === 'failure') {
-              // no 404? then we'd better eventuallly see that the namespace is offline
-              await waitForOffline(res)
-              return true
-            } else {
-              // 404? that's ok! (noExistOk=true)
-              return true
-            }
-          } catch (err) {
-            return false
-          }
-        })
-      } else {
-        // noExistOk=false, then we'd better eventually see that the namespace is offline
-        await waitForOffline(res)
-        return
-      }
+      await waitForOffline(res)
     } catch (err) {
       common.oops(this)(err)
     }
@@ -146,13 +125,11 @@ describe('electron watch namespace', function (this: common.ISuite) {
 
   synonyms.forEach(kubectl => {
     const createIt: () => Promise<void> = createNS.bind(this, kubectl)
-    const deleteIt: ({ noExistOk }?: { noExistOk: boolean }) => void = deleteNS.bind(this, kubectl)
+    const deleteIt: () => void = deleteNS.bind(this, kubectl)
     const watchIt: () => void = watchNS.bind(this, kubectl)
     //
     // here come the tests
     //
-
-    deleteIt({ noExistOk: true }) // delete the namespace, but it's ok if it doesn't exist
     createIt()
     deleteIt()
     watchIt()

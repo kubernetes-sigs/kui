@@ -24,34 +24,10 @@ const ns2: string = createNS()
 const kubectl = 'kubectl'
 
 /** wait for a deletion to complete */
-const waitForDelete = function (this: common.ISuite, { name, noExistOk = false }) {
+const waitForDelete = function (this: common.ISuite, { name }: { name: string }) {
   it(`should wait for deletion of resource named ${name}`, async () => {
     try {
-      if (noExistOk) {
-        await this.app.client.waitUntil(async () => {
-          try {
-            const elt = await this.app.client.element('.repl-result .oops[data-status-code="404"]')
-            if (elt.state === 'failure') {
-              throw new Error('NoSuchElement')
-            } else {
-              return true
-            }
-          } catch (err) {
-            try {
-              const elt = await this.app.client.element(`${selectors.BY_NAME(name)} badge.red-background`)
-              if (elt.state === 'failure') {
-                throw new Error('NoSuchElement')
-              } else {
-                return true
-              }
-            } catch (err) {
-              return false
-            }
-          }
-        })
-      } else {
-        await waitForRed(this.app, selectors.BY_NAME(name))
-      }
+      await waitForRed(this.app, selectors.BY_NAME(name))
     } catch (err) {
       common.oops(this)(err)
     }
@@ -59,8 +35,8 @@ const waitForDelete = function (this: common.ISuite, { name, noExistOk = false }
 }
 
 /** verify that the monaco editor component contains the given substring */
-const verifyTextExists = function (this: common.ISuite, expectedSubstring: string) {
-  return this.app.client.waitUntil(async () => {
+const verifyTextExists = async function (this: common.ISuite, expectedSubstring: string) {
+  await this.app.client.waitUntil(async () => {
     const actualText = await this.app.client.getText(`${selectors.SIDECAR} .monaco-editor .view-lines`)
     return actualText.indexOf(expectedSubstring) >= 0
   })
@@ -78,8 +54,8 @@ const waitForCreate = function (this: common.ISuite, spec: CreateSpec) {
 
   it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {
     const textExists = verifyTextExists.bind(this)
-    const waitForIcon = () => {
-      return this.app.client.waitUntil(async () => {
+    const waitForIcon = async () => {
+      await this.app.client.waitUntil(async () => {
         const iconText = await this.app.client.getText(`${selectors.SIDECAR} .sidecar-header-icon`)
         return new RegExp(kind, 'i').test(iconText)
       })
@@ -174,26 +150,26 @@ describe('popup delete pod', function (this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns1] }))
   after(common.after(this))
 
-  waitForDelete.bind(this)({ name: pod, ns: ns1 })
+  waitForDelete.bind(this)({ name: pod })
 })
 
 describe(`popup delete pod in ${ns2}`, function (this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns2] }))
   after(common.after(this))
 
-  waitForDelete.bind(this)({ name: pod, ns: ns2 })
+  waitForDelete.bind(this)({ name: pod })
 })
 
 describe(`popup delete namespace ${ns1}`, function (this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'ns', ns1] }))
   after(common.after(this))
 
-  waitForDelete.bind(this)({ name: ns1, ns: ns1 })
+  waitForDelete.bind(this)({ name: ns1 })
 })
 
 describe(`popup delete namespace ${ns2}`, function (this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'ns', ns2] }))
   after(common.after(this))
 
-  waitForDelete.bind(this)({ name: ns2, ns: ns2 })
+  waitForDelete.bind(this)({ name: ns2 })
 })
