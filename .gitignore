@@ -44,3 +44,5 @@ keys
 
 # we will copy this file out of packages/kui-builder for local dev
 .npmrc
+
+nohup.out

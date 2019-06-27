@@ -30,6 +30,7 @@ import * as needle from 'needle'
 const debug = Debug('plugins/proxy-support/executor')
 
 interface ProxyServerConfig {
+  enabled?: boolean
   url: string
   needleOptions: needle.NeedleOptions
 }
@@ -57,7 +58,7 @@ class ProxyEvaluator implements ReplEval {
   async apply (command: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     debug('apply', evaluator)
 
-    if (isCommandHandlerWithEvents(evaluator) && evaluator.options && (evaluator.options.inBrowserOk || evaluator.options.needsUI)) {
+    if (proxyServerConfig.enabled === false || (isCommandHandlerWithEvents(evaluator) && evaluator.options && (evaluator.options.inBrowserOk || evaluator.options.needsUI))) {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
@@ -82,7 +83,7 @@ class ProxyEvaluator implements ReplEval {
             Object.assign({ json: true }, proxyServerConfig.needleOptions))
         }
 
-        const response = await (window['webview-proxy']
+        const response: needle.NeedleResponse = await (window['webview-proxy']
           ? window['webview-proxy'](body)
           : invokeRemote())
 

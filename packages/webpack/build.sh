@@ -182,6 +182,18 @@ function clean {
     fi
 }
 
+# were we asked to enter watch mode?
+function watch {
+    if [ -z "$WATCH" ]; then
+        echo "no watch"
+        exit 1
+    else
+        echo "watching"
+        CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --watch --progress
+        exit 0
+    fi
+}
+
 # this is the main routine
 function build {
     prereq
@@ -191,8 +203,7 @@ function build {
     configure
     webpack
     assembleHTMLPieces
-    docker
-    clean
+    watch || docker && clean
 }
 
 build

@@ -55,7 +55,8 @@ if [ $COMPARO == 0 ]; then
     TOTAL_DELTA=$(( MASTER_TOTAL - BRANCH_TOTAL ))
 
     if [[ $KNOWN_DELTA != $TOTAL_DELTA ]]; then
-        echo "failed: type coverage regression"
+        # the tput bits set this to use red text
+        echo "$(tput setaf 1)failed: type coverage regression$(tput sgr0)"
         exit 1
     else
         #

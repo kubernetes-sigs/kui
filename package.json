@@ -13,7 +13,8 @@
     "build:electron-for-development": "npm run build:configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done",
     "build:hoist": "node ./packages/kui-builder/bin/hoist.js",
     "postinstall": "npm run build:hoist && npm run build:electron-for-development",
-    "start": "node bin/kui shell"
+    "start": "node bin/kui shell",
+    "watch:webpack": "rm -rf clients/default/dist/webpack && mkdir -p clients/default/dist/webpack/css && (cd clients/default/dist/webpack/css && for i in ../../../../../packages/app/web/css/*; do ln -s $i; done && for i in ../../../theme/css/*; do ln -s $i; done && ln -s ../../../theme/icons && ln -s ../../../theme/images); if [ -f clients/default/theme/config.json ]; then echo \"linking config-dev.json\"; (cd node_modules/@kui-shell/settings && rm -f config-dev.json && cp ../../../clients/default/theme/config.json config-dev.json); fi && export KUI_MONO_HOME=$(cd ./ && pwd); webpack-dev-server --progress --config packages/webpack/webpack.config.js"
   },
   "dependencies": {},
   "devDependencies": {
