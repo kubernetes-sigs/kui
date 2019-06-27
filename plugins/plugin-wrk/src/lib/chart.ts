@@ -33,7 +33,7 @@ interface Options {
 }
 
 class DefaultOptions implements Options {
-  noListen = false
+  noListen = false // eslint-disable-line @typescript-eslint/explicit-member-accessibility
 }
 
 export const init = (graphics, options: Options = new DefaultOptions()) => {

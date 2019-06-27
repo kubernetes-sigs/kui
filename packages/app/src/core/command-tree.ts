@@ -765,6 +765,7 @@ class CommandModel {
    * Call the given callback function `fn` for each node in the command tree
    *
    */
+  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   forEachNode (fn: (command: Command) => void) {
     const iter = (root: Command) => {
       if (root) {

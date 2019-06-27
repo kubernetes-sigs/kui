@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import { Watchable } from './basicModels'
 import { sortBody } from '../views/table'
 

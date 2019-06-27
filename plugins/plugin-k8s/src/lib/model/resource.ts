@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 
 export interface KubeStatusCondition {

@@ -31,7 +31,7 @@ interface Options {
 }
 
 class DefaultOptions implements Options {
-  noTable = false
+  noTable = false // eslint-disable-line @typescript-eslint/explicit-member-accessibility
 }
 
 /**
