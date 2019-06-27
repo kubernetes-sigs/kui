@@ -132,7 +132,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   }
 
   // name of the entity
-  let name = entity.prettyName || entity.name
+  const name = entity.prettyName || entity.name
 
   // click handler for the list result
   if (entity.fontawesome) {
@@ -534,8 +534,8 @@ export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: 
 
   container.classList.add('big-top-pad')
 
-  let prepareRows = prepareTable(tab, table)
-  let rows = prepareRows.map(formatOneRowResult(tab, options))
+  const prepareRows = prepareTable(tab, table)
+  const rows = prepareRows.map(formatOneRowResult(tab, options))
   rows.map(row => tableDom.appendChild(row))
 
   if (table.style !== undefined) {
@@ -553,7 +553,7 @@ export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: 
       let count = table.watchLimit ? table.watchLimit : 100000
 
       // the current watch interval; used for clear/reset/stop
-      let interval: NodeJS.Timeout
+      let interval: NodeJS.Timeout // eslint-disable-line prefer-const
 
       const stopWatching = () => {
         debug('stopWatching')
@@ -692,7 +692,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   }
 
   // name of the entity
-  let name = entity.prettyName || entity.name
+  const name = entity.prettyName || entity.name
 
   // click handler for the list result
   if (entity.fontawesome) {

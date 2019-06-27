@@ -35,7 +35,7 @@ debug('finished loading modules')
 // Include start button for modules with accompanying tutorials
 const startButton = (args) => {
   // Create button that says 'Try a guided tutorial'
-  let start = document.createElement('button')
+  const start = document.createElement('button')
   start.setAttribute('id', 'start')
   start.setAttribute('type', 'button')
   // Same styling as configure button

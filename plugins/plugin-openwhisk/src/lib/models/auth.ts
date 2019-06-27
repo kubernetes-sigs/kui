@@ -73,13 +73,13 @@ export let apihost: string = process.env.__OW_API_HOST || wskprops.APIHOST || st
 
 let authKey: string = process.env.__OW_API_KEY || wskprops.AUTH || store().getItem(localStorageKey.auth) || getAuthValue('openwhisk', 'api_key')
 
-let apigwToken: string = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
+const apigwToken: string = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
 
-let apigwSpaceGuid: string = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
+const apigwSpaceGuid: string = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
 export let ow /* : openwhisk.Client */
 
 let userRequestedIgnoreCerts = store().getItem(localStorageKey.ignoreCerts) !== undefined
-let ignoreCerts = (apiHost: string): boolean => !!(userRequestedIgnoreCerts || apiHost.indexOf('localhost') >= 0 || apiHost.startsWith('192.') || apiHost.startsWith('172.') || process.env.IGNORE_CERTS || wskprops.INSECURE_SSL)
+const ignoreCerts = (apiHost: string): boolean => !!(userRequestedIgnoreCerts || apiHost.indexOf('localhost') >= 0 || apiHost.startsWith('192.') || apiHost.startsWith('172.') || process.env.IGNORE_CERTS || wskprops.INSECURE_SSL)
 
 export const initOWFromConfig = (owConfig: openwhisk.Options) /* : openwhisk.Client */ => {
   debug('initOWFromConfig', owConfig)

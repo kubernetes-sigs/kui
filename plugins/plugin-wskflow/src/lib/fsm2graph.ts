@@ -69,7 +69,7 @@ class RenderState {
   }
 
   addDummy (sources = [], targets, obj, options?, directionS?: string, directionT?: string) {
-    let dummyId = 'dummy_' + this.dummyCount
+    const dummyId = 'dummy_' + this.dummyCount
     let o
     let port
     this.dummyCount++
@@ -96,7 +96,7 @@ class RenderState {
 
   drawNodeNew (id: string, label: string, type?: string, properties?, options?: NodeOptions): Node {
     // console.log(id)
-    let o: Node = {
+    const o: Node = {
       id,
       label,
       type,
@@ -120,7 +120,7 @@ class RenderState {
         }
         o.visited = this.visited[id]
       } else {
-        let iid = id2log(id)
+        const iid = id2log(id)
         if (this.visited[iid]) {
           if (type === 'action') {
             this.visited[iid].forEach((v, i) => { this.visited[iid][i]++ }) // for actions, increase all index by one to point to the next activation in the array.
@@ -383,10 +383,10 @@ class RenderState {
         if (prevId) { prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, id, gm))) }
         return [id]
       } else if (AST.isConditional(ir)) {
-        let firstTestId = gm.children.length
-        let lastTestId = this.ir2graph(ir.test, gm, `${id}-test`, undefined, options)
-        let firstConsId = gm.children.length
-        let lastConsId = this.ir2graph(ir.consequent, gm, `${id}-consequent`, undefined, options)
+        const firstTestId = gm.children.length
+        const lastTestId = this.ir2graph(ir.test, gm, `${id}-test`, undefined, options)
+        const firstConsId = gm.children.length
+        const lastConsId = this.ir2graph(ir.consequent, gm, `${id}-consequent`, undefined, options)
 
         // the if may not have an "else", i.e. "alternate"
         let firstAltId
@@ -491,7 +491,7 @@ class RenderState {
         if (prevId) {
           prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, `${id}__origin`, gm)))
         }
-        let lastNodes = this.ir2graph(ir.components, gm, id, [`${id}__origin`], options)
+        const lastNodes = this.ir2graph(ir.components, gm, id, [`${id}__origin`], options)
         gm.children.push(this.drawNodeNew(`${id}__terminus`, '', ir.type, undefined, options))
         if (lastNodes) {
           lastNodes.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, `${id}__terminus`, gm)))
@@ -514,7 +514,7 @@ class RenderState {
         return [gm.children[gm.children.length - 1].id]
       } else if (AST.isLet(ir)) {
         // regular let
-        let s = JSON.stringify(ir.declarations, undefined, 4)
+        const s = JSON.stringify(ir.declarations, undefined, 4)
         gm.children.push(this.drawNodeNew(id, s, ir.type, undefined, Object.assign(options, { value: ir.declarations })))
         if (prevId) { prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, id, gm))) }
 
@@ -526,7 +526,7 @@ class RenderState {
 
         return [id]
       } else if (AST.isFinally(ir)) {
-        let lastBodyNode = this.ir2graph(ir.body, gm, `${id}-body`, prevId, /* undefined, */ options)
+        const lastBodyNode = this.ir2graph(ir.body, gm, `${id}-body`, prevId, /* undefined, */ options)
         return this.ir2graph(ir.finalizer, gm, `${id}-finalizer`, lastBodyNode, /* undefined, */ options)
       } else if (AST.isParallelLike(ir)) {
         // par and map
@@ -636,7 +636,7 @@ const numNonFunctions = composition => {
   } else if (composition.type) {
     // then this is a compound node of some type
     let sum = 0
-    for (let key in composition) {
+    for (const key in composition) {
       sum += numNonFunctions(composition[key])
     }
     return sum + 1
@@ -686,9 +686,9 @@ export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElemen
     })
     Object.keys(renderState.visited).forEach(k => {
       // make sure the compound node, if any, is included in visited too.
-      let seg = k.split('-')
+      const seg = k.split('-')
       seg.pop() // kick out the last element == get the compound node id
-      let path = seg.join('-')
+      const path = seg.join('-')
       if (renderState.visited[path] === undefined) renderState.visited[path] = []
       renderState.visited[path] = renderState.visited[path].concat(renderState.visited[k]) // join it back, value is all the items in the child arrays (not sure if it's necessary)
     })
@@ -728,8 +728,8 @@ export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElemen
   debug('graphData', renderState.graphData)
   if (renderState.actions) {
     debug('actions', renderState.actions)
-    let array = []
-    let names = Object.keys(renderState.actions)
+    const array = []
+    const names = Object.keys(renderState.actions)
     names.forEach(name => {
       array.push(repl.qexec(`wsk action get "${name}"`))
     })
@@ -772,7 +772,7 @@ export default async function fsm2graph (tab: Tab, ir: AST.Node, containerElemen
               examples: 'wskflow-undeployed-action-warning-examples',
               examplesExtra: [ 'deemphasize', 'deemphasize-partial', 'left-pad' ]
             }
-            let message = container.querySelector(`.${css.message}`)
+            const message = container.querySelector(`.${css.message}`)
             let text
             let examples
 

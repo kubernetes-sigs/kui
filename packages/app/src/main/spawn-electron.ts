@@ -135,7 +135,7 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
 
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...
-    let fixedWindows = {}
+    const fixedWindows = {}
     const openFixedWindow = (opts) => {
       const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
 

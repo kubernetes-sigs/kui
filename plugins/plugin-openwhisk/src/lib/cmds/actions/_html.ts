@@ -46,7 +46,7 @@ const link = (dir, file) => new Promise((resolve, reject) => {
  */
 const mapToString = map => {
   let str = ''
-  for (let key in map) {
+  for (const key in map) {
     str += ` ${key}="${map[key]}"`
   }
   return str

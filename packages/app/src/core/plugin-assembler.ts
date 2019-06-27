@@ -86,7 +86,7 @@ const diff = (beforeModel: Prescan, afterModel: Prescan, reverseDiff = false): P
   const B = (reverseDiff ? before : after) || []
 
   const changes = []
-  for (let key in B) {
+  for (const key in B) {
     if (!(key in A)) {
       changes.push(key.replace(/^\//, '').replace('/', ' '))
     }

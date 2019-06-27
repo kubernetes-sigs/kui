@@ -46,7 +46,7 @@ const doList = ({ argvNoOptions }: EvaluatorArgs) => {
         throw err
       }
 
-      for (let command in commandToPlugin) {
+      for (const command in commandToPlugin) {
         const hostingPlugin = commandToPlugin[command]
         if (hostingPlugin === plugin) {
           commands.push(command)

@@ -74,7 +74,7 @@ export const doExec = (cmdLine: string, execOptions: ExecOptions): Promise<strin
         try {
           resolve(JSON.parse(rawOut))
         } catch (err) {
-          let error = new Error('unexpected non-JSON')
+          const error = new Error('unexpected non-JSON')
           error['value'] = rawOut
           reject(error)
         }

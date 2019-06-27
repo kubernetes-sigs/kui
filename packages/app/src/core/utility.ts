@@ -27,7 +27,7 @@ interface Options {
  */
 export const optionsToString = (options: Options) => {
   let str = ''
-  for (let key in options) {
+  for (const key in options) {
     // underscore comes from minimist
     if (key !== '_' && options[key] !== undefined && key !== 'name' && key !== 'theme' && typeof options[key] !== 'object') {
       const dash = key.length === 1 ? '-' : '--'
@@ -50,7 +50,7 @@ export const optionsToString = (options: Options) => {
  */
 export const hasUnknownOptions = (options: Options, expected: string[]) => {
   const M = expected.reduce((M, key) => { M[key] = true; return M }, {})
-  for (let opt in options) {
+  for (const opt in options) {
     // underscore comes from minimist
     if (opt !== '_' && !M[opt]) {
       throw new Error(`Unexpected option ${opt}`)

@@ -46,8 +46,8 @@ export default async (commandTree: CommandRegistrar) => {
       // degenerate cases for options
       if (limit === 0 || scanLimit === 0) return []
 
-      let nameOption = parsedOptions.name // e.g. session list --name [session name]
-      let nameSpecify = argvNoOptions.indexOf('list') === argvNoOptions.length - 2 ? argvNoOptions[argvNoOptions.length - 1] : '' // e.g. session list [session name]
+      const nameOption = parsedOptions.name // e.g. session list --name [session name]
+      const nameSpecify = argvNoOptions.indexOf('list') === argvNoOptions.length - 2 ? argvNoOptions[argvNoOptions.length - 1] : '' // e.g. session list [session name]
 
       if (nameOption && nameSpecify && (nameOption !== nameSpecify)) {
         debug('inconsistent name:', nameSpecify, nameSpecify)

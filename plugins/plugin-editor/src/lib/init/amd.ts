@@ -21,7 +21,7 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'
 
-declare var AMDLoader: any // eslint-disable-line @typescript-eslint/no-explicit-any
+declare let AMDLoader: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
  * the monaco editor uses the AMD module loader, and smashes the global.require; we need to finagle it a bit

@@ -32,7 +32,7 @@ debug('finished module imports')
  * Flatten an array of arrays
  *
  */
-const flatten = arrays => [].concat.apply([], arrays)
+const flatten = arrays => [].concat(...arrays)
 
 /**
  * Pull out the sub-directories in the given directory, if it is an @-style npm group

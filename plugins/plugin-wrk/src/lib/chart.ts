@@ -26,7 +26,7 @@ import theme from './theme'
 const debug = Debug('wrk/chart')
 
 // from injectScript Chart below
-declare var Chart
+declare let Chart
 
 interface Options {
   noListen: boolean

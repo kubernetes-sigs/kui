@@ -307,7 +307,7 @@ const toArray = (map, options) => {
   const groups = []
   const outlierFilter = filterByOutlieriness(options)
 
-  for (let x in map) {
+  for (const x in map) {
     const group = groups[groups.push(map[x]) - 1]
 
     group.statData = summarizePerformance(group.successes && group.successes.length > 0

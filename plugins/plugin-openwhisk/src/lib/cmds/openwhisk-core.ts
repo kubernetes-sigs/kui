@@ -71,7 +71,7 @@ const isCRUDable = {
   triggers: true
 }
 const crudableTypes = [] // array form of isCRUDable
-for (let type in isCRUDable) crudableTypes.push(type)
+for (const type in isCRUDable) crudableTypes.push(type)
 
 // some verbs not directly exposed by the openwhisk npm (hidden in super-prototypes)
 const alreadyHaveGet = { namespaces: true, activations: true }
@@ -112,7 +112,7 @@ const aliases = {
 /** turn a key-value map into an array of {key:, value:} objects */
 const toArray = (map: Record<string, string>) => {
   const A = []
-  for (let key in map) {
+  for (const key in map) {
     A.push({ key: key, value: map[key] })
   }
   return A
@@ -525,7 +525,7 @@ const standardViewModes = (defaultMode, fn?) => {
 
 /** flatten an array of arrays */
 function flatten<T> (arrays: T[][]): T[] {
-  return [].concat.apply([], arrays)
+  return [].concat(...arrays)
 }
 
 export const agent = isLinux ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 }) : undefined
@@ -1076,7 +1076,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       }
 
       const params = details[paramVar]
-      for (let key in execOptions[paramVar]) {
+      for (const key in execOptions[paramVar]) {
         const value = execOptions[paramVar][key]
         params.push({ key, value })
       }
@@ -1352,7 +1352,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   // and methods, not to make authenticated requests against its
   // methods
   //
-  for (let api in globalOW) {
+  for (const api in globalOW) {
     const clazz = globalOW[api].constructor
     const props = Object.getOwnPropertyNames(clazz.prototype).concat(extraVerbs(api) || [])
     // alsoInstallAtRoot = api === 'actions'
@@ -1376,7 +1376,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
     const apiMaster = commandTree.subtree(`/wsk/${api}`, { usage: docs(api) })
 
     // find the verbs of this entity type
-    for (let idx in props) {
+    for (const idx in props) {
       const verb = props[idx]
       if (!ignore[verb] && (!ignore[api] || !ignore[api][verb])) {
         // install the route handler for the main /entity/verb
@@ -1547,7 +1547,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   })
 
   // count APIs
-  for (let entityType in synonymsTable.entities) {
+  for (const entityType in synonymsTable.entities) {
     synonymsTable.entities[entityType].forEach(syn => {
       commandTree.listen(`/wsk/${syn}/count`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
         const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]

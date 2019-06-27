@@ -143,7 +143,7 @@ export const list = async () => {
   const namespaces = model.namespaces
   const A = []
 
-  for (let namespace in namespaces) {
+  for (const namespace in namespaces) {
     A.push({
       namespace: namespace,
       auth: namespaces[namespace]

@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
-declare var hljs
+declare let hljs
 const debug = Debug('k8s/util/log-parser')
 
 /**
@@ -235,7 +235,7 @@ const parseIstio = (raw: string): ZaprEntry[] => {
         // 2019-02-22T15:22:52.837196Z     info    Monitored certs: []envoy.CertSource{envoy.CertSource{Directory:"/etc/certs/", Files:[]string{"cert-chain.pem", "key.pem", "root-cert.pem"}}}
         const pattern1 = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s+([^\s]+)\s+([\s\S]*)$/
         let match = line.split(pattern1)
-        let timestampIndex = 1
+        const timestampIndex = 1
         let logTypeIndex = 2
         let restIndex = 3
         let originIndex: number // none

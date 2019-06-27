@@ -41,7 +41,7 @@ import { SidecarMode } from './bottom-stripe'
 
 const debug = Debug('webapp/cli')
 
-declare var hljs
+declare let hljs
 
 /**
  * Make sure that the given repl block is visible.
@@ -649,7 +649,7 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
     ctrl.focus()
     ctrl.setSelectionRange(pos, pos)
   } else if (ctrl['createTextRange']) {
-    let range = ctrl['createTextRange']()
+    const range = ctrl['createTextRange']()
     range.collapse(true)
     range.moveEnd('character', pos)
     range.moveStart('character', pos)

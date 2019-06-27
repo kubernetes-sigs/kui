@@ -202,7 +202,7 @@ const readFromLocalWskProps = (auth?: string, subject?: string) => apiHost.get()
  */
 const writeToLocalWskProps = (wskprops): Promise<string> => new Promise((resolve, reject) => {
   let props = ''
-  for (let key in wskprops) {
+  for (const key in wskprops) {
     props += `${key}=${wskprops[key]}\n`
   }
   console.error('writing wskprops file to %s %s', wskpropsFile(), wskprops.AUTH)

@@ -64,12 +64,12 @@ const expect = {
     if (expectedKeys) {
       debug('expected', expectedKeys)
       debug('actual', actualOutput)
-      for (let key in actualOutput) {
+      for (const key in actualOutput) {
         debug(`checking if ${key} is in expectedKeys`)
         assert(expectedKeys.includes(key))
       }
       debug('expected keys have all keys in acutal output')
-      for (let key in expectedKeys) {
+      for (const key in expectedKeys) {
         debug(`checking if ${expectedKeys[key]} is in actualOutput`)
         assert(actualOutput[expectedKeys[key]] !== 'undefined')
       }
@@ -191,7 +191,7 @@ class Validation {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
-    let expectedKeys = ['annotations', 'limits', 'name', 'namespace', 'parameters', 'kind']
+    const expectedKeys = ['annotations', 'limits', 'name', 'namespace', 'parameters', 'kind']
     if (packageName !== '') expectedKeys.push('packageName')
 
     it(`validate app get ${name}`, () => cli.do(`app get ${name}`)

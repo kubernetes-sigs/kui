@@ -29,7 +29,7 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
 
-declare var hljs
+declare let hljs
 const debug = Debug('plugins/bash-like/cmds/open')
 
 /**

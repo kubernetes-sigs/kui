@@ -185,14 +185,16 @@ export const loadComposition = (inputFile: string, originalCode?: string, localC
       // temporarily override (restored in the finally block)
       console.log = msg => { logMessage += msg + '\n' }
       console.error = function () {
+        // eslint-disable-next-line prefer-rest-params
         err(...arguments)
         for (let idx = 0; idx < arguments.length; idx++) {
+          // eslint-disable-next-line prefer-rest-params
           errorMessage += arguments[idx].toString() + ' '
         }
         errorMessage += '\n'
       }
       process.exit = () => {
-        let error = new Error(errorMessage)
+        const error = new Error(errorMessage)
         error['statusCode'] = 'ENOPARSE'
         error['ast'] = errorMessage
         // error[code] = originalCode

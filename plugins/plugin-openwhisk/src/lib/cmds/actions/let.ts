@@ -344,12 +344,12 @@ const makeZipAction = (wsk, name: string, location: string, options, execOptions
  */
 const webAssetTransformer = (location, text, extension) => {
   let headers = ''
-  let extensionWithoutDot = extension.substring(1)
+  const extensionWithoutDot = extension.substring(1)
   let contentType = extensionWithoutDot
 
   // any base64 or whatever
-  let identity = x => x
-  let base64 = x => Buffer.from(x).toString('base64')
+  const identity = x => x
+  const base64 = x => Buffer.from(x).toString('base64')
   let xform = identity
 
   if (extension === '.css') {
@@ -678,8 +678,8 @@ export default async (commandTree, wsk) => {
           return furl(components, name)
             .then(componentEntities => {
               let extraArgs = ''
-              let last = componentEntities[componentEntities.length - 1]
-              let components = componentEntities.map(C => C.namespace ? '/' + C.namespace + '/' + C.name : C.name)
+              const last = componentEntities[componentEntities.length - 1]
+              const components = componentEntities.map(C => C.namespace ? '/' + C.namespace + '/' + C.name : C.name)
 
               if (execOptions.dryRun) {
                 // caller is just asking for the details, not for us to create something

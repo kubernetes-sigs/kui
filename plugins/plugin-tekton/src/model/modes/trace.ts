@@ -67,8 +67,8 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
   const maxEnd = activations.reduce((max, activation) => Math.max(max, activation.end || (activation.start + 1)), 0) // the last one in the list might not have the highest end
   const dur = Math.max(1, maxEnd - start, maxEnd - start)
 
-  let tgap = 0
-  let gaps: number[] = new Array(activations.length).fill(0)
+  const tgap = 0
+  const gaps: number[] = new Array(activations.length).fill(0)
   const normalize = (value, idx) => {
     // console.error(value, value-start, gaps[idx], value-start-gaps[idx], dur-tgap, (value - start - gaps[idx]) / (dur - tgap))
     return (value - start - gaps[idx]) / (dur - tgap)

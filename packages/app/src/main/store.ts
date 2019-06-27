@@ -38,7 +38,7 @@ export default () => {
 
   let data
   try {
-    let raw = readFileSync(userData).toString()
+    const raw = readFileSync(userData).toString()
     try {
       data = JSON.parse(raw)
     } catch (err) {

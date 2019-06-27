@@ -67,7 +67,7 @@ const Latency = {
           // to find the markers that explain most of the
           // disparity between fast and slow activations
           const explanation = []
-          for (let key in slowest) {
+          for (const key in slowest) {
             const fast = fastest[key] || 0 // fastest might not have an entry
             const slow = slowest[key] // slow does, because that's what we're iterating over
             const delta = slow - fast // the average spread between slow and fast
@@ -109,7 +109,7 @@ const Latency = {
    */
   sum: breakdown => {
     let sum = 0
-    for (let key in breakdown) {
+    for (const key in breakdown) {
       sum += breakdown[key]
     }
     return sum

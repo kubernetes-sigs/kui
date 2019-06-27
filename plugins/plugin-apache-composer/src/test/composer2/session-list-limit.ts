@@ -29,7 +29,7 @@ describe('session list --limit --skip', function (this: common.ISuite) {
   after(common.after(this))
 
   const getUniqueName = () => {
-    let nums = new Date().getTime().toString()
+    const nums = new Date().getTime().toString()
     const chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
     return [...nums].map(num => chars[num]).join('')
   }
@@ -45,7 +45,7 @@ describe('session list --limit --skip', function (this: common.ISuite) {
   }
 
   const createSessionArray = (name, count) => {
-    let sessionArray = []
+    const sessionArray = []
     for (let index = 0; index < count; index++) {
       sessionArray.push(name)
     }

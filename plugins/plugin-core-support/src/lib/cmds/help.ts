@@ -50,7 +50,7 @@ const help = (usage) => ({ argvNoOptions: args }: EvaluatorArgs) => {
     }
 
     // traverse the top-level usage documents, populating topLevelUsage.available
-    for (let key in usage) {
+    for (const key in usage) {
       const { route, usage: model } = usage[key]
       if (model &&
           !model.synonymFor &&

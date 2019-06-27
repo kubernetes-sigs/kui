@@ -66,7 +66,7 @@ async function applyEnumerator (commandLine: CommandLine, spec: TabCompletionSpe
 const listenForUpDown = (prompt: HTMLInputElement) => {
   const moveTo = (nextOp: string, evt: Event) => {
     const block = cli.getCurrentBlock()
-    let temporaryContainer = block && block.querySelector('.tab-completion-temporary')
+    const temporaryContainer = block && block.querySelector('.tab-completion-temporary')
 
     if (temporaryContainer) {
       const current = temporaryContainer.querySelector('.selected')
@@ -114,7 +114,7 @@ const listenForEscape = () => {
   document.onkeyup = evt => {
     if (evt.keyCode === keys.ESCAPE) {
       const block = cli.getCurrentBlock()
-      let temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+      const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
       if (temporaryContainer) {
         evt.preventDefault()
@@ -636,7 +636,7 @@ export default () => {
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
   document.addEventListener('keydown', async (evt: KeyboardEvent) => {
     const block = cli.getCurrentBlock()
-    let temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+    const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
     if (evt.keyCode === keys.ENTER) {
       if (temporaryContainer) {

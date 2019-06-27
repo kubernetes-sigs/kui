@@ -47,7 +47,7 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 
-  let zoom = d3.behavior.zoom()
+  const zoom = d3.behavior.zoom()
     .on('zoom', redraw) // eslint-disable-line @typescript-eslint/no-use-before-define
 
   const containerElement: HTMLElement = ifReuseContainer || $(`<div id="${containerId}"></div>`)
@@ -58,16 +58,16 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
 
   $(wskflowContainer).addClass('grabbable') // we want to use grab/grabbing cursor
 
-  let ssvg = d3.select($(wskflowContainer)[0])
+  const ssvg = d3.select($(wskflowContainer)[0])
     .append('svg')
     .attr('id', 'wskflowSVG')
     .attr('data-is-session-flow', !!activations)
     .call(zoom)
 
-  let container = ssvg.append('g')
+  const container = ssvg.append('g')
     .on('dblclick.zoom', null)
 
-  let svg = container
+  const svg = container
     .append('g')
     .attr('id', 'wskflowMainG')
 
@@ -319,8 +319,8 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
               let date
               d.visited.forEach(i => {
                 // first part: time
-                let a = activations[i]
-                let start = new Date(a.start)
+                const a = activations[i]
+                const start = new Date(a.start)
                 let timeString = ''
 
                 if (date === undefined || date !== (start.getMonth() + 1) + '/' + start.getDate()) {
@@ -526,8 +526,8 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
                 let date
                 d.visited.forEach((n) => {
                   // first part: time
-                  let a = activations[n]
-                  let start = new Date(a.start)
+                  const a = activations[n]
+                  const start = new Date(a.start)
                   let timeString = ''
                   let lis = ''
                   if (date === undefined || date !== (start.getMonth() + 1) + '/' + start.getDate()) {
@@ -737,7 +737,7 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
         }
 
         if (d.properties) {
-          for (let key in d.properties) {
+          for (const key in d.properties) {
             s += ` ${key}`
           }
         }
@@ -760,8 +760,8 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
           $('#qtip').addClass('visible')
 
           const rect = $(this)[0].getBoundingClientRect()
-          let qtipX = rect.left + rect.width
-          let qtipY = rect.top + rect.height / 2 - $('#qtip').height() / 2
+          const qtipX = rect.left + rect.width
+          const qtipY = rect.top + rect.height / 2 - $('#qtip').height() / 2
           $('#qtip').css({
             'left': qtipX,
             'top': qtipY
@@ -927,7 +927,7 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
         resizeToContain()
       }
 
-      let getNodes = function (graph) {
+      const getNodes = function (graph) {
         const queue = [graph]
         const nodes = []
         let parent
@@ -971,7 +971,7 @@ export default function graph2doms (tab: Tab, JSONgraph: Node, ifReuseContainer?
         // convert new elk edge format into old klay edge format to work with the d3 drawing code
         // TODO: update the d3 drawing code to work with the elk edge format
         // new format doc: http://www.eclipse.org/elk/documentation/tooldevelopers/graphdatastructure/jsonformat.html
-        let o = {
+        const o = {
           id: link.id,
           labels: link.labels,
           visited: link.visited,
