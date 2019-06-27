@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable prefer-rest-params, prefer-spread */
+
 import * as Debug from 'debug'
 
 import * as colors from 'colors/safe'
@@ -71,7 +73,7 @@ let graphicalShellIsOpen = false
  * Are we in the middle of a hasty retreat?
  *
  */
-let noAuth = false
+const noAuth = false
 
 /** completion handlers for success and failure */
 const success = quit => async out => {

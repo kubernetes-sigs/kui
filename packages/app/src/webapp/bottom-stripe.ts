@@ -201,7 +201,7 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
 
   if (data) {
     // we were asked to add some data attributes
-    for (let attr in data) {
+    for (const attr in data) {
       button.setAttribute(attr, data[attr])
     }
   }

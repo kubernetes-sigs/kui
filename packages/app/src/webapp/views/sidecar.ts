@@ -33,7 +33,7 @@ import { apply as addRelevantBadges } from './registrar/badges'
 
 const debug = Debug('webapp/views/sidecar')
 
-declare var hljs
+declare let hljs
 
 /**
  * e.g. 2017-06-15T14:41:15.60027911Z  stdout:

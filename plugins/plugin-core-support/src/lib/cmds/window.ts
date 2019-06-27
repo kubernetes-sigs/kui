@@ -36,7 +36,7 @@ export default (commandTree: CommandRegistrar) => {
       throw new Error('Unsupported operation')
     } else {
       const remote = require('electron').remote
-      let w = remote.getCurrentWindow()
+      const w = remote.getCurrentWindow()
       w.close()
     }
   }, { noAuthOk: true })

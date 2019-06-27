@@ -22,7 +22,7 @@ import { update } from './openwhisk-core'
 import { synonyms } from '../models/synonyms'
 import { currentSelection } from '../models/openwhisk-entity'
 
-declare var hljs
+declare let hljs
 
 /**
  * A just for fun plugin: beautify the source code of the selected action

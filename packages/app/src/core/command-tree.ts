@@ -53,7 +53,7 @@ export const startScan = (): Disambiguator => {
 export const endScan = (state: Disambiguator): Disambiguator => {
   debug('finishing up')
   const map: Disambiguator = {}
-  for (let command in disambiguator) {
+  for (const command in disambiguator) {
     map[command] = disambiguator[command].map(({ route, options }) => ({
       route, plugin: options && options.plugin
     }))
@@ -178,7 +178,7 @@ const _listen = (model: CommandTree, route: string, handler: CommandHandler, opt
       if (!leaf.options) leaf.options = {}
 
       if (prevOptions) {
-        for (let key in prevOptions) {
+        for (const key in prevOptions) {
           leaf.options[key] = prevOptions[key]
         }
       }
@@ -575,7 +575,7 @@ const disambiguate = async (argv: string[], noRetry = false) => {
       // then the match is indeed a subtree
       debug('validating disambiguation')
       const next = argv[argv.length - 1]
-      for (let cmd in leaf.children) {
+      for (const cmd in leaf.children) {
         if (cmd === next) {
           debug('found child', cmd, leaf.children[cmd])
           return withEvents(leaf.children[cmd].$, leaf.children[cmd])
@@ -634,7 +634,7 @@ const findPartialMatchesAt = (subtree: Command, partial: string): Command[] => {
   const matches = []
 
   if (subtree && subtree.children && partial) {
-    for (let cmd in subtree.children) {
+    for (const cmd in subtree.children) {
       if (cmd.indexOf(partial) === 0) {
         const match = subtree.children[cmd]
         if (!match.options || (!match.options.synonymFor && !match.options.hide)) {
@@ -770,7 +770,7 @@ class CommandModel {
       if (root) {
         fn(root)
         if (root.children) {
-          for (let cmd in root.children) {
+          for (const cmd in root.children) {
             iter(root.children[cmd])
           }
         }

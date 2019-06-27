@@ -15,7 +15,7 @@
  */
 
 // sigh. this global comes from the injectScript of ChartJs in ./chart.ts
-declare var Color
+declare let Color
 
 /**
  * Turn a given color transparent.

@@ -44,7 +44,7 @@ class State {
   media = Media.Unknown
   validCredentials: CredentialsMap = {} // map to the credentials
 }
-let state: State = new State()
+const state: State = new State()
 
 /**
  * What is our presentation media?

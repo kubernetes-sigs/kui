@@ -567,6 +567,7 @@ export default async (commandTree: CommandRegistrar, options?) => {
   // this if for the tray-launched scenario
   commandTree.listen('/loading/activity/grid/...', function () {
     return /* repl.qexec('mirror poll') */Promise.resolve(true)
+      // eslint-disable-next-line prefer-rest-params, prefer-spread
       .then(() => pollingGrid.apply(undefined, arguments))
   }, { hide: true })
 

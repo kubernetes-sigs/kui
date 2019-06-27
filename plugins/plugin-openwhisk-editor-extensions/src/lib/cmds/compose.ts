@@ -73,7 +73,7 @@ const differentASTs = (ast1, ast2) => {
   } else if (Array.isArray(ast1) && ast1.length !== ast2.length) {
     return true
   } else {
-    for (let key in ast1) {
+    for (const key in ast1) {
       if (key.charAt(0) === '.') continue
       else if (differentASTs(ast1[key], ast2[key])) {
         return true

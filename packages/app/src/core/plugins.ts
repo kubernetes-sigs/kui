@@ -142,7 +142,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
       const packageJsonDeps = require(packageJsonPath)['dependencies']
       const packageJsonDepsArray = []
 
-      for (let module in packageJsonDeps) {
+      for (const module in packageJsonDeps) {
         if (module.startsWith('shell-')) {
           packageJsonDepsArray.push(module)
         }
@@ -165,7 +165,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
  */
 function toArray<T> (M: { [key: string]: T }): string[] {
   const A: string[] = []
-  for (let key in M) {
+  for (const key in M) {
     A.push(key)
   }
   return A
@@ -198,6 +198,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
   }
   ctree.listen = function (commandRoute) {
     cmdToPlugin[commandRoute] = route
+    // eslint-disable-next-line prefer-rest-params, prefer-spread
     return listen.apply(undefined, arguments)
   }
   ctree.subtree = function (route, options) {
@@ -205,11 +206,13 @@ const loadPlugin = async (route: string, pluginPath: string) => {
   }
   ctree.intention = function (commandRoute) {
     cmdToPlugin[commandRoute] = route
+    // eslint-disable-next-line prefer-rest-params, prefer-spread
     return intention.apply(undefined, arguments)
   }
   ctree.synonym = function (commandRoute) {
     cmdToPlugin[commandRoute] = route
     isSynonym[commandRoute] = true
+    // eslint-disable-next-line prefer-rest-params, prefer-spread
     return synonym.apply(undefined, arguments)
   }
 
@@ -231,7 +234,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
     // generate a mapping from commands (e.g. "/git/status" which is
     // hosted by the bash-like plugin) to plugin (e.g. "bash-like"),
     // which services that command
-    for (let k in cmdToPlugin) {
+    for (const k in cmdToPlugin) {
       if (commandToPlugin[k]) {
         debug('override', k, cmdToPlugin[k], commandToPlugin[k])
         overrides[k] = cmdToPlugin[k]
@@ -265,7 +268,7 @@ const topologicalSortForScan = async (pluginPaths: string[], iter: number, lastE
 
   let nUnresolved = 0
   const unresolved = []
-  for (let route in pluginPaths) {
+  for (const route in pluginPaths) {
     debug('resolving %s', route)
     try {
       const module = { route: route, path: pluginPaths[route] }
@@ -471,7 +474,7 @@ const makeResolver = (prescan: PrescanModel) => {
       debug('attempting to disambiguate partial', partial)
       const matches = []
       if (prescan.disambiguator) {
-        for (let command in prescan.disambiguator) {
+        for (const command in prescan.disambiguator) {
           if (command.indexOf(partial) === 0) {
             // const { route, plugin } = prescan.disambiguator[command]
             matches.push(command)
@@ -489,7 +492,7 @@ const makeResolver = (prescan: PrescanModel) => {
 
       let plugin
       let matchLen
-      for (let route in prescan.commandToPlugin) {
+      for (const route in prescan.commandToPlugin) {
         if (route === command) {
           plugin = prescan.commandToPlugin[route]
           break
@@ -606,7 +609,7 @@ export const generatePrescanModel = async (opts: PrescanOptions): Promise<Presca
   const preloads = await resolveFromLocalFilesystem(opts)
 
   const disambiguator = {}
-  for (let route in commandToPlugin) {
+  for (const route in commandToPlugin) {
     const A = route.split('/')
     for (let idx = 1; idx < A.length; idx++) {
       const cmd = `/${A.slice(idx).join('/')}`

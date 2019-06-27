@@ -159,7 +159,7 @@ export const _split = (str: string, removeOuterQuotes = true, returnIndices = fa
     return false
   }
 
-  let removedLastOpenQuote: boolean[] = []
+  const removedLastOpenQuote: boolean[] = []
   let escapeActive = false
   for (let idx = 0; idx < str.length; idx++) {
     const char = str.charAt(idx)
@@ -484,7 +484,7 @@ class InProcessExecutor implements Executor {
           const nActualArgs = args.length - cmdArgsStart - 1 + nOptLikeActuals
 
           // did the user pass an unsupported optional parameter?
-          for (let optionalArg in parsedOptions) {
+          for (const optionalArg in parsedOptions) {
             // skip over minimist's _
             if (optionalArg === '_' ||
                 parsedOptions[optionalArg] === false) { // minimist nonsense

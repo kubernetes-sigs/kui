@@ -31,7 +31,7 @@ const debug = Debug('plugins/bash-like/cmds/ls')
 
 /** flatten an array of arrays */
 function flatten<T> (arrays: T[][]): T[] {
-  return [].concat.apply([], arrays)
+  return [].concat(...arrays)
 }
 
 /**

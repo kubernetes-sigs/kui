@@ -57,7 +57,7 @@ export const titleWhenNothingSelected = 'Recent Activity'
  * Flatten an array of arrays
  *
  */
-const flatten = arrays => [].concat.apply([], arrays)
+const flatten = arrays => [].concat(...arrays)
 
 /** return the path attribute of the given activation */
 export const pathOf = activation => `/${activation.annotations.find(({ key }) => key === 'path').value}`
@@ -164,7 +164,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
 
   // name queries can only specify package/action or action; let's check for conformance
   const nameStr = '' + name // in case name is an number or boolean; yargs-parser converts them
-  let nameSplit = nameStr.split(/\//)
+  const nameSplit = nameStr.split(/\//)
   if (nameSplit.length === 4 && nameSplit[0].length === 0) {
     // then the pattern is /a/b/c, which split will return as ['', 'a', 'b', 'c']
     // the backend doesn't yet support namespace filters, so strip that off, too
@@ -465,7 +465,7 @@ export const latencyBucketRange = bucket => {
  */
 export const optionsToString = (options, except?) => {
   let str = ''
-  for (let key in options) {
+  for (const key in options) {
     // underscore comes from minimist
     if (key !== '_' && options[key] !== undefined && key !== 'name' && key !== 'theme' && key !== 'timeline' && key !== 't' &&
             (!except || !except.find(_ => _ === key))) {

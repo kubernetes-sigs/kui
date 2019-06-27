@@ -1,6 +1,7 @@
 {
   "extends": [
     "standard",
+    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
   "parser": "@typescript-eslint/parser",
@@ -9,7 +10,7 @@
     "sourceType": "module"
   },
   "plugins": [
-    "@typescript-eslint/eslint-plugin"
+    "@typescript-eslint"
   ],
   "rules": {
     "no-undef": "off",

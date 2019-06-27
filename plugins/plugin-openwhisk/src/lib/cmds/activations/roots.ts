@@ -36,7 +36,7 @@ const defaultOptions = {
 /** i know i know... we're serializing something that the repl interpreter will just turn around and parse... */
 const serialize = options => {
   let S = ''
-  for (let key in options) {
+  for (const key in options) {
     if (key.length > 1) { // ignore single-letter alias keys
       if (options[key] === true) {
         S += ` --${key}`

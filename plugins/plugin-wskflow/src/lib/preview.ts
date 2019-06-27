@@ -303,7 +303,7 @@ export default (commandTree: CommandRegistrar) => {
         render(tab, input, options, execOptions, mode).then(resolve, reject)
       } finally {
         // restore any env vars we smashed
-        for (let key in backupEnv) {
+        for (const key in backupEnv) {
           debug('restoring env var', key)
           process.env[key] = backupEnv[key]
         }

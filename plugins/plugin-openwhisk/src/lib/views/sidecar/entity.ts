@@ -30,7 +30,7 @@ import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'
 import { fillInActionDetails } from '../../cmds/openwhisk-core'
 
-declare var hljs
+declare let hljs
 const debug = Debug('plugins/openwhisk/views/sidecar/entity')
 
 // the naming convention of highlight.js sometimes differs from that of openwhisk

@@ -61,7 +61,7 @@ describe('wskflow test app preview should actively watching an external file', f
   before(openwhisk.before(this))
   after(common.after(this))
 
-  let tempFileName = 'testtemp.js'
+  const tempFileName = 'testtemp.js'
 
   it('should write composer.sequence("a", "b") to a temp file', () => {
     return new Promise((resolve, reject) => {

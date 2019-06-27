@@ -126,7 +126,7 @@ const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
     //
     const struct = parent[key]
 
-    for (let key in struct) {
+    for (const key in struct) {
       if (!skip[key]) {
         const value = struct[key]
         const next = path.concat([key]) // path to this leaf or subtree

@@ -117,7 +117,7 @@ const formatResultForRepl = (costFn, name: string) => (groups, numErrors) => {
   result.appendChild(table)
   table.style.display = 'flex'
   table.style.flexWrap = 'wrap'
-  for (let version in groups) {
+  for (const version in groups) {
     const cell = document.createElement('div')
     table.appendChild(cell)
 

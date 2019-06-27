@@ -169,7 +169,7 @@ const _render = args => {
       const dur = Math.max(1, entity ? entity.end - entity.start : maxEnd - start, maxEnd - start)
 
       let tgap = 0
-      let gaps
+      let gaps // eslint-disable-line prefer-const
       const normalize = (value, idx) => {
         // console.error(value, value-start, gaps[idx], value-start-gaps[idx], dur-tgap, (value - start - gaps[idx]) / (dur - tgap))
         return (value - start - gaps[idx]) / (dur - tgap)
@@ -504,7 +504,7 @@ const _render = args => {
 
         // pagination click handlers
         const goto = skip => () => {
-          let listCommand = activations.every(activation => activation.sessionId !== undefined) ? 'session list' : 'wsk activation list'
+          const listCommand = activations.every(activation => activation.sessionId !== undefined) ? 'session list' : 'wsk activation list'
           return repl.qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
             .then(activationIds => {
               if (activationIds.length === 0) {

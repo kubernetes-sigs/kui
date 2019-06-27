@@ -98,7 +98,7 @@ const doRun = ({ argv }) => new Promise((resolve, reject) => {
         debug('lines', lines)
 
         // done status for each row
-        let status = lines.map(() => ({
+        const status = lines.map(() => ({
           value: 'Pending',
           css: 'yellow-background even-smaller-text'
         }))

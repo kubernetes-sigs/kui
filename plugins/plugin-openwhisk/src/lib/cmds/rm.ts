@@ -36,7 +36,7 @@ const { isAnonymousLet } = require('./actions/let-core')
 
 /** sum of numbers in an array */
 // const arraySum = A => A.reduce((sum, c) => sum + c, 0)
-const flatten = A => [].concat.apply([], A)
+const flatten = A => [].concat(...A)
 
 /**
  * Report an error, then return the given value

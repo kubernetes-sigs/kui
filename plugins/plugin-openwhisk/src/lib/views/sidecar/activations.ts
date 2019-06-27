@@ -29,7 +29,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
 
-declare var hljs
+declare let hljs
 const debug = Debug('plugins/openwhisk/views/sidecar/activation')
 
 export default (tab: Tab, entity, options: ShowOptions) => {
