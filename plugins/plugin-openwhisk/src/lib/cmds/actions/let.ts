@@ -174,6 +174,7 @@ const extensionToKind = {
 }
 
 interface Options {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   annotations?: { key: string; value: any }[]
 }
 
@@ -596,6 +597,7 @@ export default async (commandTree: CommandRegistrar) => {
     const argvWithOptions = fullArgv
     const pair = parseOptions(argvWithOptions.slice(), 'action')
     const regularOptions = minimist(pair.argv, { configuration: { 'camel-case-expansion': false } })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const options: Record<string, any> = Object.assign({}, regularOptions, pair.kvOptions)
     const argv: string[] = options._
 

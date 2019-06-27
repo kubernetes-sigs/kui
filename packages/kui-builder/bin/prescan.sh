@@ -45,8 +45,13 @@ if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
 
     mkdir -p ./packages/app/build
     (cd node_modules/@kui-shell && rm -f settings && ln -s ../../packages/app/build settings)
-    echo '{}' > ./packages/app/build/package.json
-    echo '{}' > ./packages/app/build/config.json
+
+    if [ ! -f ./packages/app/build/package.json ]; then                         
+        echo '{}' > ./packages/app/build/package.json                           
+    fi                                                                          
+    if [ ! -f ./packages/app/build/config.json ]; then                          
+        echo '{}' > ./packages/app/build/config.json                            
+    fi
 
     node ./node_modules/@kui-shell/builder/dist/bin/compile.js
 else

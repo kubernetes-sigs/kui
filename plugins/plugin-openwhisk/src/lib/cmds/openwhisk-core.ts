@@ -531,6 +531,7 @@ function flatten<T> (arrays: T[][]): T[] {
 export const agent = isLinux ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 }) : undefined
 interface WskOpts {
   action?: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     annotations: { key: string; value: any }[]
   }
 }

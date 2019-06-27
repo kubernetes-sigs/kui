@@ -21,14 +21,34 @@ set -o pipefail
 
 echo "testing webpack build from $(pwd)"
 
-cd clients/default
+if [ "$1" == "wait" ]; then
+    echo -n "waiting for webpack dev server to come up"
+    set +e
+    while true; do
+        curl http://localhost:9080
+        if [ $? == 0 ]; then
+            echo "webpack dev server is ready for e-business"
+            break
+        else
+            echo "still waiting for webpack to come up"
+            sleep 1
+        fi
+    done
+    set -e
+    echo " [SUCCESS]"
+    exit
+fi
 
-if [ "$KUI_USE_PROXY" == "true" ] && [ "$KUI_USE_HTTP" == "true" ]; then
-  CLIENT_HOME=$(pwd)
-  STAGING_DIR=/tmp/kui-proxy-tmp
+pushd clients/default
 
-  # configure proxy server to use HTTP and port 3000
-  cat <<EOF > theme/config.json
+if [ "$KUI_USE_PROXY" == "true" ]; then
+    echo "building proxy"
+    CLIENT_HOME=$(pwd)
+    STAGING_DIR=/tmp/kui-proxy-tmp
+
+    if [ "$KUI_USE_HTTP" == "true" ]; then
+        # configure proxy server to use HTTP and port 3000
+        cat <<EOF > theme/config.json
   {
     "proxyServer": {
       "url": "http://localhost:3000/exec",
@@ -38,24 +58,34 @@ if [ "$KUI_USE_PROXY" == "true" ] && [ "$KUI_USE_HTTP" == "true" ]; then
     }
   }
 EOF
+    fi
 
-  # use NO_CLEAN=true to keep the staging area of proxy build
-  NO_CLEAN=true npm run build:proxy
+    # use NO_CLEAN=true to keep the staging area of proxy build
+    NO_CLEAN=true npm run build:proxy
 
-  # pick up the dependencies of proxy server
-  cd ${STAGING_DIR}/app && npm install
+    # pick up the dependencies of proxy server
+    cd ${STAGING_DIR}/app && npm install
 
-  # the docker image should be built successfully, but we don't use docker to start proxy for k8s tests
-  echo "run proxy"
-  cd ../kui && ../app/bin/www &
-  cd ${CLIENT_HOME}
+    # the docker image should be built successfully, but we don't use docker to start proxy for k8s tests
+    echo "run proxy"
+    cd ../kui && ../app/bin/www &
+else
+    # we aren't using the proxy; make sure to set this in the client config
+    echo "not using proxy for webpack client"
+    cat <<EOF > theme/config.json
+{
+  "proxyServer": {
+    "enabled": false
+  }
+}
+EOF
 fi
+
+popd
 
 #
 # we expect "docker not found" error on travis osx
 # we still want to test the webpack build logic before building docker image
 #
-npm run build:webpack
-
-echo "run webpack"
-nohup npx kui-run-webpack >/dev/null 2>&1  &
+echo "starting webpack dev server"
+nohup npm run watch:webpack 2>&1 | tee nohup.out &

@@ -380,10 +380,15 @@ type ChannelFactory = () => Promise<Channel>
  *
  */
 const remoteChannelFactory: ChannelFactory = async () => {
-  const url: string = await $('bash websocket open')
-  debug('websocket url', url)
-  const WebSocketChannel = (await import('./websocket-channel')).default
-  return new WebSocketChannel(url)
+  try {
+    const url: string = await $('bash websocket open', undefined, undefined, { rethrowErrors: true })
+    debug('websocket url', url)
+    const WebSocketChannel = (await import('./websocket-channel')).default
+    return new WebSocketChannel(url)
+  } catch (err) {
+    console.error('error opening websocket', err)
+    throw err
+  }
 }
 
 const electronChannelFactory: ChannelFactory = async () => {
@@ -534,8 +539,27 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
       terminal.element.classList.add('xterm-empty-row-heuristic')
       setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
+      const cleanUpTerminal = () => {
+        terminal.blur()
+
+        cleanupEventHandlers()
+        resizer.exitAltBufferMode()
+        resizer.exitApplicationMode()
+        resizer.reflowLineWraps()
+        resizer.hideTrailingEmptyBlanks(true)
+        resizer.hideCursorOnlyRow()
+
+        resizer.destroy()
+        xtermContainer.classList.add('xterm-terminated')
+      }
+
       const channelFactory = inBrowser() ? window['webview-proxy'] !== undefined ? webviewChannelFactory : remoteChannelFactory : electronChannelFactory
       const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal)
+        .catch(err => {
+          console.error('error creating channel', err)
+          cleanUpTerminal()
+          throw err
+        })
       resizer.ws = ws
 
       let currentScrollAsync
@@ -727,17 +751,7 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
 
           const finishUp = async () => {
             ws.removeEventListener('message', onMessage)
-            terminal.blur()
-
-            cleanupEventHandlers()
-            resizer.exitAltBufferMode()
-            resizer.exitApplicationMode()
-            resizer.reflowLineWraps()
-            resizer.hideTrailingEmptyBlanks(true)
-            resizer.hideCursorOnlyRow()
-
-            resizer.destroy()
-            xtermContainer.classList.add('xterm-terminated')
+            cleanUpTerminal()
 
             if (pendingUsage) {
               execOptions.stdout(formatUsage(cmdline, stripClean(raw), { drilldownWithPip: true }))
@@ -820,6 +834,7 @@ export const doExec = (tab: Tab, block: HTMLElement, cmdline: string, argvNoOpti
 
       ws.on('message', onMessage)
     } catch (err) {
+      console.error('error in pty/client', err)
       if (err['code'] === 127 || err['code'] === 404) {
         err['code'] = 127
         reject(err)

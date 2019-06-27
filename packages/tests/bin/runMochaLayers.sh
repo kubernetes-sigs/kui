@@ -65,6 +65,9 @@ fi
 
 echo "Running these layers: $# $WHICH"
 
+children=()
+childrenNames=()
+
 function kill_them_all() {
     children=("$@")
     for job in "${children[@]}"; do
@@ -76,27 +79,30 @@ function kill_them_all() {
 trap kill_them_all INT
 
 idx=${PORT_OFFSET_BASE-1}
-children=()
 for i in $WHICH; do
     LAYER=`basename $i`
     echo "spawning mocha layer $LAYER PORT_OFFSET=$idx"
     (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1) &
     children+=("$!")
+    childrenNames+=("$LAYER")
     idx=$((idx+1))
 done
 
 function wait_and_get_exit_codes() {
     children=("$@")
     EXIT_CODE=0
-    for job in "${children[@]}"; do
-       echo "waiting on ${job}"
+    # the ! gives us indices
+    for jobIdx in "${!children[@]}"; do
+       job="${children[$jobIdx]}"
+       jobName="${childrenNames[$jobIdx]}"
+       echo "$(tput setaf 3)waiting on ${jobName} with PID ${job}$(tput sgr0)" # yellow text
        CODE=0;
        wait ${job} || CODE=$?
        if [[ "${CODE}" != "0" ]]; then
-           echo "At least one test failed with a non-zero exit code ${CODE}"
+           echo "$(tput setaf 1)failing: job ${jobName} exited with a non-zero code ${CODE}$(tput sgr0)" # red text
            EXIT_CODE=1;
        else
-           echo "job ${job} finished successfully"
+           echo "$(tput setaf 2)ok: mocha job ${jobName} exited with success$(tput sgr0)" # red text
        fi
    done
 }

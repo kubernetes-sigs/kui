@@ -17,8 +17,8 @@
 const ui = require('./ui')
 require('colors')
 
-/** when we are running travis tests, we have a fixed version string */
-exports.expectedVersion = process.env.MOCHA_RUN_TARGET === undefined ? require('@kui-shell/settings/package.json').version : '0.0.1'
+/** electron targets in travis use the clients/default version */
+exports.expectedVersion = process.env.MOCHA_RUN_TARGET === 'electron' ? '0.0.1' : require('@kui-shell/settings/package.json').version
 
 /**
  * Mimic the request-promise functionality, but with retry
@@ -29,7 +29,7 @@ exports.rp = opts => {
   const withRetry = require('promise-retry')
 
   return withRetry((retry, iter) => {
-    return rp(Object.assign({ timeout: 10000 }, typeof opts === 'string' ? { url: opts } : opts))
+    return rp(Object.assign({ timeout: 20000 }, typeof opts === 'string' ? { url: opts } : opts))
       .catch(err => {
         const isNormalError = err && (err.statusCode === 400 || err.statusCode === 404 || err.statusCode === 409)
         if (!isNormalError && (iter < 10)) {
@@ -63,7 +63,7 @@ const prepareElectron = (fuzz, popup = false) => {
   const opts = {
     env,
     chromeDriverArgs: [ '--no-sandbox' ],
-    waitTimeout: process.env.TIMEOUT || 10000
+    waitTimeout: process.env.TIMEOUT || 20000
   }
 
   if (process.env.PORT_OFFSET) {

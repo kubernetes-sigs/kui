@@ -18,11 +18,12 @@
 
 import { join, dirname } from 'path'
 import * as colors from 'colors/safe'
+import { exec } from 'child_process'
 import { copy, exists, mkdir, mkdirp, writeFile } from 'fs-extra'
 
 /** simple message notifying the user that we are creating an asset */
-const creating = (what: string): void => {
-  console.log(colors.green('✓') + ' creating ' + what)
+const creating = (what: string, how = 'creating'): void => {
+  console.log(colors.green('✓') + ` ${how} ${what}`)
 }
 
 /** simple message notifying the user that we are NOT creating an asset */
@@ -84,11 +85,32 @@ export const main = async (argv: string[]) => {
   copyDirectory('@kui-shell/builder/examples/plugin-sample/package.json', 'plugins/plugin-sample', force)
   copyDirectory('@kui-shell/builder/examples/build-configs/default/theme/theme.json', 'theme', force)
 
-  creating('main entry in package.json')
+  creating('reconfiguring package.json')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const pjson = require(join(__dirname, '../../../package.json'))
   pjson.main = 'node_modules/@kui-shell/core/main/main.js'
-  writeFile('package.json', JSON.stringify(pjson, undefined, 2))
+  if (!pjson.devDependencies) {
+    pjson.devDependencies = {}
+  }
+  pjson.devDependencies.mocha = '6.1.4'
+  pjson.devDependencies['@types/mocha'] = '5.2.7'
+  pjson.devDependencies['@types/node'] = '12.0.10'
+  pjson.devDependencies.electron = '5.0.6'
+  pjson.devDependencies.spectron = '7.0.0'
+  pjson.devDependencies.typescript = '3.5.2'
+  await writeFile('package.json', JSON.stringify(pjson, undefined, 2))
+
+  creating('npm install', 'running')
+  await new Promise((resolve, reject) => {
+    exec('npm install', (err, stdout, stderr) => {
+      if (err) {
+        console.error(err)
+        reject(stderr)
+      } else {
+        resolve()
+      }
+    })
+  })
 }
 
 main(process.argv)

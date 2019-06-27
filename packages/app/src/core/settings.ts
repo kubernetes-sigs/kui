@@ -16,6 +16,14 @@
 
 import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let devOverrides: Record<string, any>
+try {
+  devOverrides = require('@kui-shell/settings/config-dev.json')
+} catch (err) {
+  // no dev overrides
+}
+
 interface Theme {
   productName: string
   gettingStarted?: string
@@ -31,4 +39,4 @@ interface Theme {
 
 export const theme: Theme = t
 export const env = e
-export const config = c
+export const config = Object.assign({}, c, devOverrides)

@@ -66,4 +66,4 @@ echo ""
 echo "compiling source $TSCONFIG_HOME"
 $TSC --build "$TSCONFIG"
 
-"$SCRIPTDIR"/prescan.sh
+"$TSCONFIG_HOME"/bin/prescan.sh
