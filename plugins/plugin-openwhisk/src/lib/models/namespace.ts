@@ -270,7 +270,7 @@ interface CurrentOptions {
   noNamespaceOk: boolean
 }
 class DefaultCurrentOptions implements CurrentOptions {
-  noNamespaceOk = false
+  noNamespaceOk = false // eslint-disable-line @typescript-eslint/explicit-member-accessibility
 }
 export const current = async (opts: CurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
   const ns = currentNS

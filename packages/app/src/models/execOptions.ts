@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import { ExecType } from './command'
 import { Tab, Streamable } from '../webapp/cli'
 

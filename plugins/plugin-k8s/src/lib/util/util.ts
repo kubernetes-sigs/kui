@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 
 export interface TypedEntityName {

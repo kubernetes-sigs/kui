@@ -19,6 +19,8 @@
  *
  */
 
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import * as Debug from 'debug'
 
 import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserFlags } from '../models/command'

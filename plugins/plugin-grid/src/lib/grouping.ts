@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import { isSuccess, pathOf, latencyBucket, nLatencyBuckets } from './util'
 
 const durationOf = _ => {

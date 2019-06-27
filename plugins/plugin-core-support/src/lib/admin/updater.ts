@@ -160,6 +160,7 @@ const checkForUpdatesThenNotifyVisually = () => checkForUpdatesQuietly().then(no
  *
  */
 class Updater {
+  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor (initialDelay, updateCheckIntervalInMillis) {
     setTimeout(checkForUpdatesThenNotifyVisually, initialDelay) // check for updates soon after startup
     setInterval(checkForUpdatesThenNotifyVisually, updateCheckIntervalInMillis) // then poll infrequently for updates

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import * as Debug from 'debug'
 
 import * as repl from '@kui-shell/core/core/repl'
