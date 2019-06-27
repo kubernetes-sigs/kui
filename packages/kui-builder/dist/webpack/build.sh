@@ -100,7 +100,7 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they should eventually be identical
 function configure {
-    UGLIFY=true npx --no-install kui-compile
+    UGLIFY=true npx --no-install kui-prescan
 
     # note that we will do this again in webpack.config.js; we need to
     # wait until we have the webpack build hash but, for now, we need

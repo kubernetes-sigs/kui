@@ -33,6 +33,10 @@
     "tmp": "0.1.0",
     "wrk": "https://github.com/starpit/node-wrk#latency_stacks"
   },
+  "kui": {
+    "headless": false,
+    "proxy": false
+  },
   "publishConfig": {
     "access": "public"
   }

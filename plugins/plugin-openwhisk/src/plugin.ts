@@ -57,7 +57,7 @@ export default async (commandTree: CommandRegistrar) => {
   await beautify(commandTree)
 
   // action extensions
-  await letCommand(commandTree, wsk)
+  await letCommand(commandTree)
   await invoke(commandTree)
   await webbify(commandTree)
 

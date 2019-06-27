@@ -23,7 +23,8 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "kui": {
-    "headless": false
+    "headless": false,
+    "proxy": false
   },
   "publishConfig": {
     "access": "public"

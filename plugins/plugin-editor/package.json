@@ -35,6 +35,7 @@
   },
   "kui": {
     "headless": false,
+    "proxy": false,
     "webpack": {
       "entry": {
         "editor.worker": "./node_modules/monaco-editor/esm/vs/editor/editor.worker.js",

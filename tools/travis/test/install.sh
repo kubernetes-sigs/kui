@@ -126,6 +126,7 @@ if [ -n "$LAYERS" ]; then
         # create a headless dist to test against
         # note that we target the headless build to /tmp/kui; see ./script.sh for the use of it
         # DO NOT DO IN PARALLEL with the electron build; link:init currently updates the client directory
+        export NO_ZIPS=true
         (cd clients/default && npm run build:headless && tar -C /tmp -jxf dist/headless/Kui-headless.tar.bz2)
         #children+=("$!")
     fi

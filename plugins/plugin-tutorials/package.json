@@ -35,7 +35,8 @@
     "@types/marked": "^0.6.5"
   },
   "kui": {
-    "headless": false
+    "headless": false,
+    "proxy": false
   },
   "publishConfig": {
     "access": "public"

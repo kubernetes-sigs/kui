@@ -47,8 +47,8 @@ done
 wait
 
 # npm install those npm packs
-npm install --save --no-package-lock "$target"/!(*builder*)
-npm install --save-dev --no-package-lock "$target"/*builder*
+npm install --production --save --no-package-lock "$target"/!(*builder*)
+npm install --production --save-dev --no-package-lock "$target"/*builder*
 
 #
 # make absolute path refs to the npm packs we just created (in the for pkg loop above)

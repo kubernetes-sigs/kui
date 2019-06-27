@@ -106,7 +106,7 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they are identical
 function configure {
-    UGLIFY=true npx --no-install kui-compile
+    UGLIFY=true npx --no-install kui-prescan
     CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
 
     # we need to get @kui-shell/settings into the package
@@ -134,10 +134,12 @@ function prereq {
 }
 
 function assembleHTMLPieces {
-        export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "package.json")).dependencies.electron).replace(/^[~^]/, ""))')
+    export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "dist/electron/package.json")).devDependencies.electron).replace(/^[~^]/, ""))')
+    echo "ELECTRON_VERSION=$ELECTRON_VERSION"
 
     # product name
     export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
+    echo "PRODUCT_NAME=$PRODUCT_NAME"
 
     # filesystem icons
     THEME="$CLIENT_HOME"/theme

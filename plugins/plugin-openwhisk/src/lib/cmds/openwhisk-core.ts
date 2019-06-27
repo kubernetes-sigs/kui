@@ -279,7 +279,7 @@ const keyValueParams = {
   '-t': limits('timeout'),
   '--timeout': limits('timeout')
 }
-const extractKeyValuePairs = (argv: string[], type: string) => {
+const extractKeyValuePairs = (argv: string[], type: string): { action?: Record<string, string>; trigger?: Record<string, string>; package?: Record<string, string>; rule?: Record<string, string> } => {
   const options = {}
   for (let idx = 0; idx < argv.length;) {
     const handler = keyValueParams[argv[idx]]
@@ -529,7 +529,12 @@ function flatten<T> (arrays: T[][]): T[] {
 }
 
 export const agent = isLinux ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 }) : undefined
-export const owOpts = (options = {}) => {
+interface WskOpts {
+  action?: {
+    annotations: { key: string; value: any }[]
+  }
+}
+export const owOpts = (options = {}): WskOpts => {
   if (isLinux) {
     // options.forever = true
     options['timeout'] = 5000
