@@ -26,9 +26,6 @@ import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
-import injectCSS from '@kui-shell/plugin-wskflow/lib/inject'
-import { zoomToFitButtons } from '@kui-shell/plugin-wskflow/lib/util'
-
 import runMode from '../model/modes/run'
 import flowMode from '../model/modes/flow'
 import { PipelineRun } from '../model/resource'
@@ -40,12 +37,14 @@ const debug = Debug('plugins/tekton/view/flow')
  *
  */
 export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: string = safeDump(jsons), filepath?: string) => {
-  const [graph, graph2doms] = await Promise.all([
+  const [graph, graph2doms, injectCSS] = await Promise.all([
     tekton2graph(jsons, filepath, run), // generate the graph model
     import('@kui-shell/plugin-wskflow/lib/graph2doms'), // overlap that work with importing the graph renderer
-    injectCSS() // and also with injecting the graph css
+    import('@kui-shell/plugin-wskflow/lib/inject') // and also with injecting the graph css
   ])
   debug('graph', graph)
+
+  injectCSS.default()
 
   const content = document.createElement('div')
   content.classList.add('padding-content')
@@ -95,6 +94,8 @@ export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: s
   const startTime = run && run.status && run.status.startTime && new Date(run.status.startTime)
   const endTime = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
   const duration = startTime && endTime && (endTime.getTime() - startTime.getTime())
+
+  const { zoomToFitButtons } = await import('@kui-shell/plugin-wskflow/lib/util')
 
   return {
     type: 'custom',

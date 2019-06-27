@@ -31,6 +31,8 @@
  *
  */
 
+import * as Debug from 'debug'
+
 import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
 import { basename, join } from 'path'
 
@@ -38,11 +40,15 @@ import expandHomeDir from '@kui-shell/core/util/home'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { current as currentNamespace } from '../../models/namespace'
 import { findFile } from '@kui-shell/core/core/find-file'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { deployHTMLViaOpenWhisk } from './_html'
 import { ANON_KEY, ANON_KEY_FQN, ANON_CODE, isAnonymousLet, isAnonymousLetFor } from './let-core'
-const debug = require('debug')('let')
-debug('loading')
+import { synonyms } from '../../models/synonyms'
+import { addPrettyType, getClient, owOpts as wskOpts, parseOptions } from '../openwhisk-core'
+
+const debug = Debug('plugin/openwhisk/cmds/actions/let')
 
 const baseName = process.env.BASE_NAME || 'anon'
 
@@ -51,14 +57,16 @@ import needle = require('needle')
 import withRetry = require('promise-retry')
 import repl = require('@kui-shell/core/core/repl')
 
-debug('finished loading modules')
+interface StatusCodeError extends Error {
+  statusCode: number
+}
 
 /**
  * Mimic the request-promise functionality, but with retry
  *
  */
-const rp = url => {
-  return withRetry((retry, iter) => {
+const rp = (url: string) => {
+  return withRetry((retry: () => void, iter: number) => {
     const method = 'get'
     const timeout = 10000
 
@@ -68,7 +76,7 @@ const rp = url => {
       follow_max: 5
     })
       .then(_ => _.body)
-      .catch(err => {
+      .catch((err: StatusCodeError) => {
         const isNormalError = err && (err.statusCode === 400 || err.statusCode === 404 || err.statusCode === 409)
         if (!isNormalError && (iter < 10)) {
           console.error(err)
@@ -85,7 +93,7 @@ const rp = url => {
  * Take the output of url.parse, and determine whether it refers to a remote resource
  *
  */
-const isRemote = location => location.includes('https:') || location.includes('http:')
+const isRemote = (location: string) => location.includes('https:') || location.includes('http:')
 
 const patterns = {
   action: {
@@ -119,7 +127,7 @@ interface Remote {
   location: string
   removeWhenDone: boolean
 }
-const fetchRemote = (location, mimeType): Promise<Remote> => new Promise((resolve, reject) => {
+const fetchRemote = (location: string, mimeType: string): Promise<Remote> => new Promise((resolve, reject) => {
   const locationWithoutQuotes = location.replace(patterns.quotes, '')
   debug(`fetchRemote? ${locationWithoutQuotes}`)
 
@@ -127,12 +135,12 @@ const fetchRemote = (location, mimeType): Promise<Remote> => new Promise((resolv
     // then fetch it
     debug('fetching remote', locationWithoutQuotes)
 
-    return rp(locationWithoutQuotes).then(data => {
+    return rp(locationWithoutQuotes).then(async (data: string | Buffer) => {
       debug(`fetchRemote done`)
       const extension = mimeType || locationWithoutQuotes.substring(locationWithoutQuotes.lastIndexOf('.'))
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const tmp = require('tmp')
-      tmp.tmpName({ postfix: extension }, (err, tmpFilePath) => {
+      const tmp = await import('tmp')
+      tmp.tmpName({ postfix: extension }, (err: Error, tmpFilePath: string) => {
         if (err) {
           reject(err)
         } else {
@@ -165,16 +173,20 @@ const extensionToKind = {
   '.py': 'python:default'
 }
 
+interface Options {
+  annotations?: { key: string; value: any }[]
+}
+
 /** annotations */
-const annotations = options => {
+const annotations = (options: Options) => {
   if (!options.annotations) {
     options.annotations = []
   }
   return options.annotations
 }
-const boolean = key => options => annotations(options).push({ key: key, value: true })
-const string = (key, value) => options => annotations(options).push({ key: key, value: value })
-const web = extension => [ boolean('web-export'), string('content-type-extension', extension) ]
+const boolean = (key: string) => (options: Options) => annotations(options).push({ key: key, value: true })
+const string = (key: string, value: string) => options => annotations(options).push({ key: key, value: value })
+const web = (extension: string) => [ boolean('web-export'), string('content-type-extension', extension) ]
 const annotators = {
   'const': [ boolean('final') ],
   '.json': web('json'),
@@ -196,7 +208,7 @@ const quotes = /^"(.*)"$/g
 const trim = (str: string) => str.trim().replace(quotes, '$1')
 
 /** is the given extension (with dot) a valid one? */
-const isValidExtension = extension => !!annotators[extension] || extension === '.zip'
+const isValidExtension = (extension: string) => !!annotators[extension] || extension === '.zip'
 
 /** is it foo.bar or foo with a .jpg mime type? */
 const figureName = (baseName: string, possibleMimeType = '') => {
@@ -204,13 +216,13 @@ const figureName = (baseName: string, possibleMimeType = '') => {
 }
 
 /** is this a web asset, or managed web asset? */
-const isWebAsset = action => action.annotations && action.annotations.find(kv => kv.key === 'web-export')
+const isWebAsset = (action: Options) => action.annotations && action.annotations.find(kv => kv.key === 'web-export')
 
 /**
  * Create a zip action, given the location of a zip file
  *
  */
-const makeZipActionFromZipFile = (wsk, name: string, location: string, options, execOptions) => new Promise((resolve, reject) => {
+const makeZipActionFromZipFile = (name: string, location: string, options, execOptions: ExecOptions) => new Promise((resolve, reject) => {
   try {
     debug('makeZipActionFromZipFile', name, location, options)
 
@@ -234,7 +246,7 @@ const makeZipActionFromZipFile = (wsk, name: string, location: string, options, 
             }
             debug('body', action)
 
-            const owOpts = wsk.owOpts({
+            const owOpts = wskOpts({
               name,
               // options.action may be defined, if the command has e.g. -a or -p
               action
@@ -256,8 +268,8 @@ const makeZipActionFromZipFile = (wsk, name: string, location: string, options, 
             // broadcast that this is a binary action
             owOpts.action.annotations.push({ key: 'binary', value: true })
 
-            return wsk.client(execOptions).actions.update(owOpts)
-              .then(wsk.addPrettyType('actions', 'update', name))
+            return getClient(execOptions).actions.update(owOpts)
+              .then(addPrettyType('actions', 'update', name))
               .then(resolve)
               .catch(reject)
           }
@@ -292,7 +304,7 @@ const doNpmInstall = (dir: string) => new Promise((resolve, reject) => {
  * the directory
  *
  */
-const makeZipAction = (wsk, name: string, location: string, options, execOptions) => new Promise((resolve, reject) => {
+const makeZipAction = (name: string, location: string, options, execOptions: ExecOptions) => new Promise((resolve, reject) => {
   try {
     debug('makeZipAction', location)
     stat(location, (err, stats) => {
@@ -319,7 +331,7 @@ const makeZipAction = (wsk, name: string, location: string, options, execOptions
 
               // when the zip archiver completes, and closes the output file...
               output.on('close', () => {
-                makeZipActionFromZipFile(wsk, name, path, options, execOptions)
+                makeZipActionFromZipFile(name, path, options, execOptions)
                   .then(resolve, reject)
               })
 
@@ -384,7 +396,7 @@ const webAssetTransformer = (location, text, extension) => {
  * Create an HTML, CSS, script-js, etc. action
  *
  */
-const makeWebAsset = (wsk, name, extension, location, text, options, execOptions) => {
+const makeWebAsset = (name: string, extension: string, location: string, text: string, options, execOptions: ExecOptions) => {
   const extensionWithoutDot = extension.substring(1)
   const action = Object.assign({}, options.action, {
     exec: { kind: 'nodejs:default' }
@@ -410,27 +422,27 @@ const makeWebAsset = (wsk, name, extension, location, text, options, execOptions
 
   action.exec.code = webAssetTransformer(location, text, extension)
 
-  const owOpts = wsk.owOpts({ name, action })
-  return wsk.client(execOptions).actions.update(owOpts)
-    .then(wsk.addPrettyType('actions', 'update', name))
+  const owOpts = wskOpts({ name, action })
+  return getClient(execOptions).actions.update(owOpts)
+    .then(addPrettyType('actions', 'update', name))
 }
 
 /** here is the module */
-export default async (commandTree, wsk) => {
+export default async (commandTree: CommandRegistrar) => {
   /**
    * Create an OpenWhisk action from a given file
    *
    * @param letType let or const?
    *
    */
-  const createFromFile = (name, mimeType, location, letType, options, execOptions) => {
+  const createFromFile = (name: string, mimeType: string, location: string, letType: string, options, execOptions: ExecOptions) => {
     const extension = location.substring(location.lastIndexOf('.'))
     const kind = options.kind || extensionToKind[extension]
 
     if (extension === '.zip') {
-      return makeZipActionFromZipFile(wsk, name, location, options, execOptions)
+      return makeZipActionFromZipFile(name, location, options, execOptions)
     } else if (mimeType === '.zip') {
-      return makeZipAction(wsk, name, location, options, execOptions)
+      return makeZipAction(name, location, options, execOptions)
     } else if (kind && mimeType !== '.webjs') {
       //
       // then this is a built-in type
@@ -445,13 +457,13 @@ export default async (commandTree, wsk) => {
             action.parameters = options.action.parameters
             action.limits = options.action.limits
           }
-          const owOpts = wsk.owOpts({
+          const owOpts = wskOpts({
             name: name,
             action: action
           })
-          return wsk.client(execOptions).actions.update(owOpts)
+          return getClient(execOptions).actions.update(owOpts)
         })
-        .then(wsk.addPrettyType('actions', 'update', name))
+        .then(addPrettyType('actions', 'update', name))
     } else {
       //
       // otherwise, assume this is a web action for now
@@ -460,14 +472,14 @@ export default async (commandTree, wsk) => {
         ? deployHTMLViaOpenWhisk(location)
         : Promise.resolve({ location })
       return extra.then(({ location, text }) => {
-        return makeWebAsset(wsk, name, mimeType || extension, location, text,
+        return makeWebAsset(name, mimeType || extension, location, text,
           options, execOptions)
       })
     }
   }
 
   let currentIter = 0 // optimization
-  const createWithRetryOnName = (code: string, parentActionName: string, execOptions, idx: number, iter: number, desiredName?: string) => wsk.client(execOptions).actions.create(wsk.owOpts({
+  const createWithRetryOnName = (code: string, parentActionName: string, execOptions: ExecOptions, idx: number, iter: number, desiredName?: string) => getClient(execOptions).actions.create(wskOpts({
     name: desiredName || `${baseName}-${idx}-${iter}`,
     action: {
       exec: {
@@ -481,7 +493,7 @@ export default async (commandTree, wsk) => {
   })).then(action => {
     currentIter++ // optimization
     return action
-  }).catch(err => {
+  }).catch((err: StatusCodeError) => {
     if (err.statusCode === 409) {
       // name conflict
       if (!desiredName) currentIter++ // optimization
@@ -491,21 +503,22 @@ export default async (commandTree, wsk) => {
     }
   })
 
-  const doCreate = ({ block: retryOK, argv: fullArgv, modules, command: fullCommand, execOptions }) => {
+  const doCreate = (args: EvaluatorArgs) => {
+    const { block: retryOK, argv: fullArgv, command: fullCommand, execOptions } = args
     const update = execOptions.createOnly ? 'create' : 'update'
 
     /**
      * If the create failed, maybe this is because the package does not exist?
      *
      */
-    const packageAutoCreate = name => err => {
+    const packageAutoCreate = (name: string) => (err: StatusCodeError) => {
       if (err.statusCode === 404 && retryOK) {
         // create failure with 404, maybe package not found?
         const path = name.split('/')
         const packageName = path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
         if (packageName) {
           return repl.qexec(`wsk package update "${packageName}"`)
-            .then(() => doCreate({ block: false, argv: fullArgv, modules, command: fullCommand, execOptions }))
+            .then(() => doCreate(Object.assign({}, args, { block: false })))
         }
       }
 
@@ -513,7 +526,7 @@ export default async (commandTree, wsk) => {
       throw err
     }
 
-    const maybeComponentIsFile = (name, mimeType, location, letType = 'let', options = {}, execOptions = {}) => {
+    const maybeComponentIsFile = (name: string, mimeType: string, location: string, letType = 'let', options = {}, execOptions: ExecOptions = {}) => {
       return fetchRemote(location, mimeType)
         .then(location => {
           return createFromFile(name, mimeType, location.location, letType, options, execOptions)
@@ -581,10 +594,10 @@ export default async (commandTree, wsk) => {
     }
 
     const argvWithOptions = fullArgv
-    const pair = wsk.parseOptions(argvWithOptions.slice(), 'action')
+    const pair = parseOptions(argvWithOptions.slice(), 'action')
     const regularOptions = minimist(pair.argv, { configuration: { 'camel-case-expansion': false } })
-    const options = Object.assign({}, regularOptions, pair.kvOptions)
-    const argv = options._
+    const options: Record<string, any> = Object.assign({}, regularOptions, pair.kvOptions)
+    const argv: string[] = options._
 
     // remove the minimist bits
     delete options._
@@ -614,13 +627,13 @@ export default async (commandTree, wsk) => {
             action.limits = options.action.limits
           }
 
-          const owOpts = wsk.owOpts({
+          const owOpts = wskOpts({
             name: action.name,
             namespace: action.namespace,
             action: action
           })
-          return wsk.client(execOptions).actions[update](owOpts)
-            .then(wsk.addPrettyType('actions', 'update'))
+          return getClient(execOptions).actions[update](owOpts)
+            .then(addPrettyType('actions', 'update', action.name))
         })
         .catch(packageAutoCreate(name))
     } else if (actionMatch && !isSequenceMatch) {
@@ -681,7 +694,7 @@ export default async (commandTree, wsk) => {
               const last = componentEntities[componentEntities.length - 1]
               const components = componentEntities.map(C => C.namespace ? '/' + C.namespace + '/' + C.name : C.name)
 
-              if (execOptions.dryRun) {
+              if (execOptions['dryRun']) {
                 // caller is just asking for the details, not for us to create something
                 const action = options.action || {}
                 return {
@@ -721,7 +734,7 @@ export default async (commandTree, wsk) => {
 
                   if (annoMatch) {
                     // e.g. let seq = a->b (-a foo bar)   <-- the parenthesized last part
-                    const commandLineOptions = wsk.parseOptions(annoMatch[2].split(/\s+/), 'action')
+                    const { kvOptions: commandLineOptions } = parseOptions(annoMatch[2].split(/\s+/), 'action')
                     if (commandLineOptions && commandLineOptions.action) {
                       if (commandLineOptions.action.annotations) {
                         action.annotations = action.annotations.concat(commandLineOptions.action.annotations)
@@ -732,13 +745,13 @@ export default async (commandTree, wsk) => {
                     }
                   }
 
-                  const owOpts = wsk.owOpts({
+                  const owOpts = wskOpts({
                     name: action.name,
                     namespace: action.namespace,
                     action: action
                   })
-                  return wsk.client(execOptions).actions[update](owOpts)
-                    .then(wsk.addPrettyType('actions', 'update'))
+                  return getClient(execOptions).actions[update](owOpts)
+                    .then(addPrettyType('actions', 'update', action.name))
                 })
             })
             .catch(packageAutoCreate(name))
@@ -766,9 +779,9 @@ export default async (commandTree, wsk) => {
   } /* doCreate */
 
   // Install the routes
-  wsk.synonyms('actions').forEach(async syn => {
+  synonyms('actions').forEach(async syn => {
     const cmd = commandTree.listen(`/wsk/${syn}/let`, doCreate, { docs: 'Create an OpenWhisk action' })
-    commandTree.synonym(`/wsk/${syn}/const`, doCreate, cmd)
+    commandTree.synonym(`/wsk/${syn}/const`, doCreate, cmd, {})
 
     try {
       const createCmd = await commandTree.find(`/wsk/${syn}/create`)
@@ -787,12 +800,12 @@ export default async (commandTree, wsk) => {
 
     // resolve the given expression to an action
     //   e.g. is "a" the name of an action, or the name of a file
-    resolve: (expr, parentActionName, execOptions, idx) => repl.qexec(`wsk actions get ${expr}`, undefined, undefined, { noRetry: true })
-      .catch(err => {
+    resolve: (expr: string, parentActionName: string, execOptions: ExecOptions, idx: number) => repl.qexec(`wsk actions get ${expr}`, undefined, undefined, { noRetry: true })
+      .catch((err: StatusCodeError) => {
         if (err.statusCode === 404 || err.statusCode === 400) {
           // then this isn't an action (yet)
 
-          const commandFn = (iter, baseName = parentActionName) => `let ${baseName}-anon${iter === 0 ? '' : '-' + iter} = ${expr}`
+          const commandFn = (iter: number, baseName = parentActionName) => `let ${baseName}-anon${iter === 0 ? '' : '-' + iter} = ${expr}`
           const command = commandFn(0)
           const actionMatch = command.match(patterns.action.expr.full)
           const intentionMatch = command.match(patterns.intention.full)
@@ -809,15 +822,15 @@ export default async (commandTree, wsk) => {
             return repl.iexec(`${intentionMatch[4]} --name ${baseName}-anon-${idx}`)
           } else {
             const actionFromFileMatch = command.match(patterns.action.expr.fromFile)
-            let baseName
+            let baseName: string
 
             if (actionFromFileMatch) {
               // try to pull an action name from the file name
               baseName = basename(actionFromFileMatch[4])
             }
 
-            const once = iter => repl.qexec(commandFn(iter, baseName), undefined, undefined, { createOnly: true })
-              .catch(err => {
+            const once = (iter: number) => repl.qexec(commandFn(iter, baseName), undefined, undefined, { createOnly: true })
+              .catch((err: StatusCodeError) => {
                 if (err.statusCode === 409) {
                   return once(iter + 1)
                 }

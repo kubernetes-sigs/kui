@@ -26,7 +26,8 @@
     "uuid": "3.3.2"
   },
   "kui": {
-    "headless": false
+    "headless": false,
+    "proxy": false
   },
   "publishConfig": {
     "access": "public"

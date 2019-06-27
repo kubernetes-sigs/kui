@@ -10,11 +10,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "debug": "4.1.1",
-    "electron-installer-debian": "1.1.1",
-    "electron-installer-dmg": "2.0.0",
-    "electron-packager": "13.1.1",
-    "electron-wix-msi": "2.1.1",
-    "glob": "7.1.3",
+    "electron": "5.0.6",
+    "electron-installer-debian": "2.0.0",
+    "electron-installer-dmg": "3.0.0",
+    "electron-packager": "14.0.0",
+    "glob": "7.1.4",
     "minifier": "0.8.1"
   }
 }

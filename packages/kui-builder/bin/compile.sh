@@ -28,10 +28,6 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR=.
 BUILDDIR="${TOPDIR}/build"
 
-# for compile.js below; give it an absolute path
-export CLIENT_HOME=${CLIENT_HOME-`pwd`}
-export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/build/plugins"
-
 if [ ! -d "$BUILDDIR" ]; then
     mkdir "$BUILDDIR"
     if [ $? != 0 ]; then exit $?; fi
@@ -70,32 +66,4 @@ echo ""
 echo "compiling source $TSCONFIG_HOME"
 $TSC --build "$TSCONFIG"
 
-# make typescript happy, until we have the real prescan model ready
-# (produced by kui-builder/lib/configure.js, but which cannot be run
-# until after we've compiled the source)
-mkdir -p ./node_modules/@kui-shell
-rm -f ./node_modules/@kui-shell/prescan.json
-touch ./node_modules/@kui-shell/prescan.json
-
-# pre-compile plugin registry
-if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
-    for i in build/plugins/*; do
-        if [ -d "$i"/src ]; then
-            echo "linking in plugin $(basename $i)"
-            npm install "$i"/src
-        fi
-    done
-
-    echo "compiling plugin registry $CLIENT_HOME"
-
-    mkdir -p ./packages/app/build
-    (cd node_modules/@kui-shell && rm -f settings && ln -s ../../packages/app/build settings)
-    echo '{}' > ./packages/app/build/package.json
-    echo '{}' > ./packages/app/build/config.json
-
-    node ./node_modules/@kui-shell/builder/dist/bin/compile.js
-else
-    echo "compiling plugin registry (monorepo mode)"
-    "$SCRIPTDIR"/link-build-assets.sh
-    node ./packages/kui-builder/dist/bin/compile.js
-fi
+"$SCRIPTDIR"/prescan.sh

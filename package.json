@@ -17,7 +17,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@lerna/bootstrap": "^3.15.0"
+    "@lerna/bootstrap": "^3.15.0",
+    "electron": "5.0.6"
   },
   "husky": {
     "hooks": {
