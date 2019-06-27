@@ -27,28 +27,41 @@ fi
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 children=()
+childrenNames=()
+childrenStartTimes=()
 
 if [ -n "$SCRIPTS" ]; then
     #
     # then we were asked to run one or more test.d/ scripts
     #
     for script in $SCRIPTS; do
-        echo "spawning test script: $script"
         "$SCRIPTDIR"/test.d/$script &
-        children+=("$!")
+        PID=$!
+        echo "spawning test script $script with PID $PID"
+        children+=("$PID")
+        childrenNames+=("$script")
+        childrenStartTimes+=("$(date +%s)")
     done
 fi
 
 function wait_and_get_exit_codes() {
     children=("$@")
     EXIT_CODE=0
-    for job in "${children[@]}"; do
-       echo "waiting on ${job}"
+    # the ! gives us indices
+    for jobIdx in "${!children[@]}"; do
+       job="${children[$jobIdx]}"
+       jobName="${childrenNames[$jobIdx]}"
+       echo "$(tput setaf 3)waiting on ${jobName} with PID ${job}$(tput sgr0)" # yellow text
        CODE=0;
        wait ${job} || CODE=$?
        if [[ "${CODE}" != "0" ]]; then
-           echo "At least one install step failed with a non-zero exit code ${CODE}"
+           echo "$(tput setaf 1)failing: job ${jobName} exited with a non-zero code ${CODE}$(tput sgr0)" # red text
            EXIT_CODE=1;
+       else
+           then="${childrenStartTimes[$jobIdx]}"
+           now=$(date +%s)
+           delta=$((now-then))
+           echo "$(tput setaf 2)ok: travis job ${jobName} exited with success in <=${delta} seconds$(tput sgr0)" # red text
        fi
    done
 }
@@ -93,6 +106,8 @@ if [ -n "$LAYERS" ]; then
         #(cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
         (cd /tmp/kui && npm run test) & # see ./install.sh for the /tmp/kui target
         children+=("$!")
+        childrenNames+=("headless layer")
+        childrenStartTimes+=("$(date +%s)")
     fi
 
     if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
@@ -121,6 +136,8 @@ if [ -n "$LAYERS" ]; then
             fi
 
             children+=("$!")
+            childrenNames+=("mocha layers")
+            childrenStartTimes+=("$(date +%s)")
           fi
 
           NLAYERS=$(count "$LAYERS")

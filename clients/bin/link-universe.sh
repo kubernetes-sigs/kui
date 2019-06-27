@@ -30,7 +30,7 @@ rm -rf node_modules
 cp package.json bak.json
 
 # create npm packs
-for pkg in ../../packages/{app,kui-builder,proxy,tests} ../../plugins/*; do
+for pkg in ../../packages/{app,kui-builder,proxy,webpack,tests} ../../plugins/*; do
     # check for inclusion constraints; e.g. package.json -> .kui.headless == false
     if [ -n "$1" ]; then
         OK=$(cat $pkg/package.json | jq --raw-output .kui.$1)

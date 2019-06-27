@@ -29,10 +29,21 @@ import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 import * as needle from 'needle'
 const debug = Debug('plugins/proxy-support/executor')
 
-interface ProxyServerConfig {
+interface ActualProxyServerConfig {
   url: string
-  needleOptions: needle.NeedleOptions
+  needleOptions?: needle.NeedleOptions
 }
+
+interface DisabledProxyServerConfig {
+  enabled: boolean
+}
+
+function isDisabled (_config: ProxyServerConfig): _config is DisabledProxyServerConfig {
+  const config = _config as DisabledProxyServerConfig
+  return config && config.enabled === false
+}
+
+type ProxyServerConfig = DisabledProxyServerConfig | ActualProxyServerConfig
 
 /**
  * The proxy server configuration.
@@ -57,7 +68,7 @@ class ProxyEvaluator implements ReplEval {
   async apply (command: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     debug('apply', evaluator)
 
-    if (isCommandHandlerWithEvents(evaluator) && evaluator.options && (evaluator.options.inBrowserOk || evaluator.options.needsUI)) {
+    if (isDisabled(proxyServerConfig) || (isCommandHandlerWithEvents(evaluator) && evaluator.options && (evaluator.options.inBrowserOk || evaluator.options.needsUI))) {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
@@ -82,7 +93,7 @@ class ProxyEvaluator implements ReplEval {
             Object.assign({ json: true }, proxyServerConfig.needleOptions))
         }
 
-        const response = await (window['webview-proxy']
+        const response: needle.NeedleResponse = await (window['webview-proxy']
           ? window['webview-proxy'](body)
           : invokeRemote())
 

@@ -19,7 +19,7 @@
 set -e
 set -o pipefail
 
-if [ $(uname) = Darwin ]; then
+if [ $TRAVIS_OS_NAME = "osx" ]; then
     echo "skipping typecov test on mac; we will cover this in the linux builds"
     exit 0
 fi
@@ -55,7 +55,8 @@ if [ $COMPARO == 0 ]; then
     TOTAL_DELTA=$(( MASTER_TOTAL - BRANCH_TOTAL ))
 
     if [[ $KNOWN_DELTA != $TOTAL_DELTA ]]; then
-        echo "failed: type coverage regression"
+        # the tput bits set this to use red text
+        echo "$(tput setaf 1)failing: type coverage regression$(tput sgr0)"
         exit 1
     else
         #
@@ -75,5 +76,5 @@ if [ $COMPARO == 0 ]; then
         echo "warning: type coverage change; you probably removed some well-typed code"
     fi
 else
-    echo "ok: type coverage looks good"
+    echo "$(tput setaf 2)ok: type coverage looks good$(tput sgr0)"
 fi

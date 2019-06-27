@@ -14,8 +14,6 @@
   "bin": {
     "kui-build-headless": "./dist/headless/build.sh",
     "kui-build-electron": "./dist/electron/build.sh",
-    "kui-build-webpack": "./dist/webpack/build.sh",
-    "kui-run-webpack": "./dist/webpack/bin/webpack-client.sh",
     "kui-init": "./kui-dist-init.js",
     "kui-compile": "./bin/compile.sh",
     "kui-prescan": "./bin/prescan.sh",

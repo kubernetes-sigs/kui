@@ -14,23 +14,46 @@
  * limitations under the License.
  */
 
+const fs = require('fs')
 const path = require('path')
-const TerserPlugin = require('terser-webpack-plugin')
 
+const isWatching = !!process.argv.find(_ => /--watch/.test(_) || /webpack-dev-server/.test(_))
 const webCompress = process.env.WEB_COMPRESS
-console.log('compression', webCompress)
-const noCompression = webCompress === 'none'
+const noCompression = webCompress === 'none' || isWatching
 const useGzip = webCompress === 'gzip'
-console.log('useGzip', useGzip)
 const CompressionPlugin = !noCompression && require(useGzip ? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
+
+console.log('watching?', isWatching)
+console.log('explicit compression option?', webCompress || '<not set>')
+console.log('bundle compression disabled?', noCompression)
+console.log('bundle compression useGzip?', useGzip)
+
+const isMonorepo = process.env.KUI_MONO_HOME !== undefined
+if (isMonorepo) {
+  console.log('monorepo mode', process.env.KUI_MONO_HOME)
+} else {
+  console.log('external client mode')
+}
 
 // const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
-const stageDir = process.env.KUI_STAGE
+const stageDir = process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd()
+console.log('stageDir', stageDir)
 
 /** point webpack to the output directory */
-const buildDir = process.env.KUI_BUILDDIR
+const buildDir = process.env.KUI_BUILDDIR || (process.env.KUI_MONO_HOME && path.join(process.env.KUI_MONO_HOME, 'clients/default/dist/webpack')) || path.join(stageDir, 'dist/webpack')
+console.log('buildDir', buildDir)
+
+const builderHome = process.env.KUI_BUILDER_HOME || process.env.KUI_MONO_HOME ? path.join(process.env.KUI_MONO_HOME, 'packages/kui-builder') : path.join(stageDir, 'node_modules/@kui-shell/builder')
+console.log('builderHome', builderHome)
+
+if (!process.env.CLIENT_HOME && process.env.KUI_MONO_HOME) {
+  process.env.CLIENT_HOME = path.join(process.env.KUI_MONO_HOME, 'clients/default')
+} else {
+  process.env.CLIENT_HOME = stageDir
+}
+console.log('clientHome', process.env.CLIENT_HOME)
 
 /**
  * Define the set of bundle entry points; there is one default entry
@@ -42,7 +65,9 @@ const buildDir = process.env.KUI_BUILDDIR
  */
 const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/webpack')
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
-const pluginEntries = require('fs').readdirSync(pluginBase).map(dir => {
+console.log('main', main)
+console.log('pluginBase', pluginBase)
+const pluginEntries = fs.readdirSync(pluginBase).map(dir => {
   try {
     const pjson = path.join(pluginBase, dir, 'package.json')
     const { kui } = require(pjson)
@@ -58,6 +83,10 @@ const plugins = [ ]
 // any compression plugins?
 if (CompressionPlugin) {
   plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
+}
+
+const optimization = {
+  usedExports: true
 }
 
 // for debugging, webpack stats plugin
@@ -78,9 +107,13 @@ plugins.push({
           env: { main, hash }
         }
 
+        if (isWatching) {
+          overrides.build.buildDir = buildDir
+        }
+
         // and this will inject it
-        const Builder = require(path.join(process.env.KUI_BUILDER_HOME, 'lib/configure'))
-        new Builder().build('webpack', overrides)
+        const Builder = require(path.join(builderHome, 'lib/configure'))
+        new Builder().build(isWatching ? 'webpack-watch' : 'webpack', overrides)
       })
     })
   }
@@ -131,52 +164,18 @@ module.exports = {
     'electron'
   ],
   devServer: {
-    headers: { 'Access-Control-Allow-Origin': '*' }
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    compress: true,
+    liveReload: false,
+    overlay: { errors: true },
+    watchOptions: {
+      poll: 1000,
+      ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']
+    },
+    contentBase: buildDir,
+    port: process.env.KUI_PORT || 9080
   },
-  optimization: {
-    /* splitChunks: {
-      // maxAsyncRequests: 6
-      // minSize: 1000000
-    }, */
-    /* splitChunks: {
-      chunks: 'all',
-      cacheGroups: {
-        default: false,
-        vendors: false,
-        editor: {
-          priority: 10,
-          test: /modules\/editor/
-        },
-        composer: {
-          priority: 10,
-          test: /modules\/composer/
-        },
-        'misc-modules': {
-          priority: 5,
-          test: /app\/plugins\/modules\//
-        },
-        'core-plugins': {
-          priority: 1,
-          test: /app\/plugins\//
-        },
-        'activation-visualizations': {
-          priority: 10,
-          test: /modules\/activation-visualizations/
-        },
-        'wskflow': {
-          priority: 10,
-          test: /modules\/wskflow/
-        }
-      }
-    }, */
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          compress: {}
-        }
-      })
-    ]
-  },
+  optimization,
   module: {
     rules: [
       //
@@ -231,6 +230,7 @@ module.exports = {
       { test: /~$/, use: 'ignore-loader' },
       { test: /\.tsx?$/, use: 'ignore-loader' },
       { test: /Dockerfile$/, use: 'ignore-loader' },
+      { test: /flycheck*\.js/, use: 'ignore-loader' },
       // end of ignore-loader
       //
       // { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
@@ -255,7 +255,8 @@ module.exports = {
   plugins,
   output: {
     globalObject: 'self', // for monaco
-    path: buildDir,
-    filename: '[name].[hash].bundle.js'
+    filename: '[name].[hash].bundle.js',
+    publicPath: '/',
+    path: buildDir
   }
 }

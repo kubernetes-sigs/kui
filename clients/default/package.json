@@ -8,7 +8,7 @@
     "build:headless": "npm run link:init -- headless && npx --no-install kui-build-headless /tmp ../../node_modules/@kui-shell/prescan.json; npm run link:done",
     "build:electron": "build() { npm run link:init -- electron && npx --no-install kui-build-electron /tmp $1; npm run link:done; }; build",
     "build:proxy": "npm run link:init -- proxy headless && npx --no-install kui-build-proxy /tmp; npm run link:done",
-    "build:webpack": "npm run link:init -- webpack && npx --no-install kui-build-webpack /tmp; npm run link:done"
+    "build:webpack": "npm run link:init -- webpack && KUI_MONO_HOME=$(cd ../../ && pwd) npx --no-install kui-build-webpack /tmp; npm run link:done"
   },
   "author": "Nick Mitchell",
   "license": "Apache-2.0",

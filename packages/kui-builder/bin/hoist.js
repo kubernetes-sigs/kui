@@ -15,4 +15,9 @@
  */
 
 const argv = { _: ['bootstrap'], 'ignore-prepublish': true, hoist: true }
+
+if (!process.env.WEBPACK && !/webpack/.test(process.env.MOCHA_TARGETS)) {
+  argv.ignore = ['@kui-shell/webpack']
+}
+
 require('@lerna/bootstrap')(argv)

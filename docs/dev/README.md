@@ -23,6 +23,7 @@ credentials.
   - [Coding Strategy](#coding-strategy)
   - [Packaging](packaging.md)
   - [Running Tests](#local-testing)
+  - [Live Webpack Development](live-webpack-development.md)
 
 ## Coding Strategy
 
