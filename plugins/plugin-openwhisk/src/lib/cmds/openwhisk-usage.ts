@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-const all = [ 'wsk action', 'wsk activation', 'wsk package', 'wsk rule', 'wsk trigger' ]
+const all = [
+  'wsk action',
+  'wsk activation',
+  'wsk package',
+  'wsk rule',
+  'wsk trigger'
+]
 const except = str => all.filter(_ => _ !== str)
 
 const aliases = {
@@ -31,12 +37,18 @@ const configuration = {
 const context = type => [{ command: 'wsk' }, { command: `wsk ${type}` }]
 
 /** deployed variant of an entity name */
-const deployed = entity => [ Object.assign({}, entity[0], { entity: entity[0].name }) ]
+const deployed = entity => [
+  Object.assign({}, entity[0], { entity: entity[0].name })
+]
 
 /** required action parameter */
 const action = [{ name: 'action', docs: 'an action name' }]
 const deployedAction = deployed(action)
-const actionImplicitOK = [ Object.assign({}, deployedAction[0], { implicitOK: ['actions', 'activations'] }) ]
+const actionImplicitOK = [
+  Object.assign({}, deployedAction[0], {
+    implicitOK: ['actions', 'activations']
+  })
+]
 
 /** required package parameter */
 const Package = [{ name: 'package', docs: 'a package name' }]
@@ -61,56 +73,152 @@ interface Option {
   file?: boolean
   docs: string
 }
-const sourceFile: Option[] = [{ name: 'sourceFile', positional: true, file: true, docs: 'a local path to the action source' }]
+const sourceFile: Option[] = [
+  {
+    name: 'sourceFile',
+    positional: true,
+    file: true,
+    docs: 'a local path to the action source'
+  }
+]
 
 /** required activationId parameter */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const activationID: any[] = [{ name: 'activationId', docs: 'an activation ID', entity: 'activation' }]
+const activationID: any[] = [
+  { name: 'activationId', docs: 'an activation ID', entity: 'activation' }
+]
 
 /** optional parameters having to do with parameter bindings */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const params: any[] = [{ name: '--param', alias: '-p', example: 'key value', docs: 'bind a variable to a value', narg: 2, key: 'parameters' },
-  { name: '--param-file', alias: '-P', advanced: true, docs: 'a local path to a bindings file', file: true }]
+export const params: any[] = [
+  {
+    name: '--param',
+    alias: '-p',
+    example: 'key value',
+    docs: 'bind a variable to a value',
+    narg: 2,
+    key: 'parameters'
+  },
+  {
+    name: '--param-file',
+    alias: '-P',
+    advanced: true,
+    docs: 'a local path to a bindings file',
+    file: true
+  }
+]
 
 /** optional parameters having to do with annotations */
-const annotations = [{ name: '--annotation', alias: '-a', example: 'key value', docs: 'annotate a variable with a value', narg: 2, key: 'annotations' },
-  { name: '--annotation-file', alias: '-A', advanced: true, docs: 'a local path to a bindings file' }]
+const annotations = [
+  {
+    name: '--annotation',
+    alias: '-a',
+    example: 'key value',
+    docs: 'annotate a variable with a value',
+    narg: 2,
+    key: 'annotations'
+  },
+  {
+    name: '--annotation-file',
+    alias: '-A',
+    advanced: true,
+    docs: 'a local path to a bindings file'
+  }
+]
 
 /** optional parameters and annotations */
 const paramsAndAnnotations = params.concat(annotations)
 
 /** package sharing scope parameter */
-const shared = [{ name: '--shared', docs: 'package visibility', allowed: [ 'yes', 'no' ] }]
+const shared = [
+  { name: '--shared', docs: 'package visibility', allowed: ['yes', 'no'] }
+]
 
 /** feed annotation for triggers */
-const feed = [{ name: '--feed', alias: '-f', docs: 'create a feed from a given provider', entity: 'action' }]
+const feed = [
+  {
+    name: '--feed',
+    alias: '-f',
+    docs: 'create a feed from a given provider',
+    entity: 'action'
+  }
+]
 
 /** timeout parameter */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const timeout: any[] = [{ name: '--timeout', alias: '-t', docs: 'max milliseconds to wait for blocking invoke', defaultValue: 60000 }]
+const timeout: any[] = [
+  {
+    name: '--timeout',
+    alias: '-t',
+    docs: 'max milliseconds to wait for blocking invoke',
+    defaultValue: 60000
+  }
+]
 
 /** resource limit parameters */
 const limits = timeout.concat([
-  { name: '--memory', alias: '-m', numeric: true, docs: 'the maximum memory in MB', defaultValue: 256 },
-  { name: '--logsize', alias: '-l', numeric: true, docs: 'the maximum log size in MB', defaultValue: 10 }
+  {
+    name: '--memory',
+    alias: '-m',
+    numeric: true,
+    docs: 'the maximum memory in MB',
+    defaultValue: 256
+  },
+  {
+    name: '--logsize',
+    alias: '-l',
+    numeric: true,
+    docs: 'the maximum log size in MB',
+    defaultValue: 10
+  }
 ])
 
 /** common action parameters */
-const actionMix = params.concat(annotations).concat(limits).concat([
-  { name: '--kind', allowed: ['nodejs', 'python', 'php'], allowedIsPrefixMatch: true, defaultValue: 'nodejs', docs: 'the action runtime' },
-  { name: '--sequence', boolean: true, example: 'a1,a2,a3', docs: 'create a sequence of the given actions' },
-  { name: '--copy', boolean: true, advanced: true, docs: 'copy the action named by the second parameter to a new action named by the first' },
-  { name: '--native', boolean: true, docs: 'use a shell script or Linux binary for the action' },
-  { name: '--web', boolean: true, docs: 'web export the action' },
-  { name: '--main', docs: 'specify the main method for Java actions' },
-  { name: '--content-type', hidden: true }
-])
+const actionMix = params
+  .concat(annotations)
+  .concat(limits)
+  .concat([
+    {
+      name: '--kind',
+      allowed: ['nodejs', 'python', 'php'],
+      allowedIsPrefixMatch: true,
+      defaultValue: 'nodejs',
+      docs: 'the action runtime'
+    },
+    {
+      name: '--sequence',
+      boolean: true,
+      example: 'a1,a2,a3',
+      docs: 'create a sequence of the given actions'
+    },
+    {
+      name: '--copy',
+      boolean: true,
+      advanced: true,
+      docs:
+        'copy the action named by the second parameter to a new action named by the first'
+    },
+    {
+      name: '--native',
+      boolean: true,
+      docs: 'use a shell script or Linux binary for the action'
+    },
+    { name: '--web', boolean: true, docs: 'web export the action' },
+    { name: '--main', docs: 'specify the main method for Java actions' },
+    { name: '--content-type', hidden: true }
+  ])
 
 /** optional skip and limit parameters */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const skipAndLimit: any[] = [{ name: '--limit', alias: '-l', numeric: true, docs: 'show at most N' },
+export const skipAndLimit: any[] = [
+  { name: '--limit', alias: '-l', numeric: true, docs: 'show at most N' },
   { name: '--skip', alias: '-s', numeric: true, docs: 'start from N' },
-  { name: '--count', boolean: true, docs: 'return a count, rather than the records' }]
+  {
+    name: '--count',
+    boolean: true,
+    docs: 'return a count, rather than the records'
+  }
+]
 
 export const wsk = {
   breadcrumb: 'OpenWhisk',
@@ -120,13 +228,44 @@ export const wsk = {
   example: 'wsk <command>',
   nRowsInViewport: 6, // list all six, since we have a short list
   available: [
-    { command: 'action', docs: 'work with actions', dir: true, commandPrefix: 'wsk' },
-    { command: 'activation', docs: 'work with activations', dir: true, aliases: ['$'], commandPrefix: 'wsk' },
+    {
+      command: 'action',
+      docs: 'work with actions',
+      dir: true,
+      commandPrefix: 'wsk'
+    },
+    {
+      command: 'activation',
+      docs: 'work with activations',
+      dir: true,
+      aliases: ['$'],
+      commandPrefix: 'wsk'
+    },
     { command: 'api', docs: 'work with APIs', dir: true, commandPrefix: 'wsk' },
-    { command: 'package', docs: 'work with packages', dir: true, commandPrefix: 'wsk' },
-    { command: 'rule', docs: 'work with rules', dir: true, commandPrefix: 'wsk' },
-    { command: 'trigger', docs: 'work with triggers', dir: true, commandPrefix: 'wsk' },
-    { command: 'list', docs: 'list all entities in the current namespace', aliases: aliases.list, commandPrefix: 'wsk' }
+    {
+      command: 'package',
+      docs: 'work with packages',
+      dir: true,
+      commandPrefix: 'wsk'
+    },
+    {
+      command: 'rule',
+      docs: 'work with rules',
+      dir: true,
+      commandPrefix: 'wsk'
+    },
+    {
+      command: 'trigger',
+      docs: 'work with triggers',
+      dir: true,
+      commandPrefix: 'wsk'
+    },
+    {
+      command: 'list',
+      docs: 'list all entities in the current namespace',
+      aliases: aliases.list,
+      commandPrefix: 'wsk'
+    }
   ]
 }
 
@@ -140,18 +279,22 @@ export const actions = {
   commandPrefix: 'wsk action',
   available: [
     // ACTION CREATE
-    { command: 'create',
+    {
+      command: 'create',
       docs: 'create a new action',
       strict: 'create',
       example: 'wsk action create <action> <sourceFile>',
       required: [{ name: 'name', docs: 'the name of your new action' }],
-      optional: sourceFile.concat([
-        { name: '--docker', docs: 'use a dockerhub image for the action' }
-      ]).concat(actionMix),
+      optional: sourceFile
+        .concat([
+          { name: '--docker', docs: 'use a dockerhub image for the action' }
+        ])
+        .concat(actionMix),
       parents: context('action')
     },
     // ACTION UPDATE
-    { command: 'update',
+    {
+      command: 'update',
       docs: 'update an existing action, or create one if it does not exist',
       strict: 'update',
       example: 'wsk action update <action> [sourceFile]',
@@ -160,18 +303,33 @@ export const actions = {
       parents: context('action')
     },
     // ACTION INVOKE
-    { command: 'invoke',
+    {
+      command: 'invoke',
       docs: 'invoke a given action',
       strict: 'invoke',
       example: 'wsk action invoke <action>',
       required: actionImplicitOK,
-      optional: params.concat([
-        { name: '--blocking', alias: '-b', boolean: true, docs: 'blocking invocation' },
-        { name: '--result', alias: '-r', boolean: true, docs: 'return only the activation result' }].concat(timeout)),
+      optional: params.concat(
+        [
+          {
+            name: '--blocking',
+            alias: '-b',
+            boolean: true,
+            docs: 'blocking invocation'
+          },
+          {
+            name: '--result',
+            alias: '-r',
+            boolean: true,
+            docs: 'return only the activation result'
+          }
+        ].concat(timeout)
+      ),
       parents: context('action')
     },
     // ACTION GET
-    { command: 'get',
+    {
+      command: 'get',
       fn: (command, syn = 'action') => ({
         strict: command,
         breadcrumb: 'get',
@@ -181,9 +339,11 @@ export const actions = {
         example: `wsk ${syn} ${command} <action>`,
         required: deployedAction,
         parents: context('action')
-      }) },
+      })
+    },
     // ACTION DELETE
-    { command: 'delete',
+    {
+      command: 'delete',
       docs: 'delete a given action',
       strict: 'delete',
       example: 'wsk action delete <action>',
@@ -191,7 +351,8 @@ export const actions = {
       parents: context('action')
     },
     // ACTION LIST
-    { command: 'list',
+    {
+      command: 'list',
       fn: (command, syn = 'action') => ({
         breadcrumb: 'list',
         command,
@@ -199,11 +360,14 @@ export const actions = {
         aliases: aliases.list,
         strict: command,
         example: `wsk ${syn} ${command}`,
-        optional: [{
-          name: 'package',
-          positional: true,
-          entity: 'package',
-          docs: 'list all actions in a given package' }].concat(skipAndLimit),
+        optional: [
+          {
+            name: 'package',
+            positional: true,
+            entity: 'package',
+            docs: 'list all actions in a given package'
+          }
+        ].concat(skipAndLimit),
         parents: context('action')
       })
     }
@@ -255,7 +419,9 @@ export const rules = {
       strict: 'update',
       docs: 'update an existing rule, or create one if it does not exist',
       example: 'wsk rule update <rule> <trigger> <action>',
-      required: maybeDeployedRule.concat(deployedTrigger).concat(deployedAction),
+      required: maybeDeployedRule
+        .concat(deployedTrigger)
+        .concat(deployedAction),
       parents: context('rule')
     },
     {
@@ -285,14 +451,16 @@ export const rules = {
         optional: skipAndLimit,
         parents: context('rule')
       })
-    }],
+    }
+  ],
   parents: [{ command: 'wsk' }],
   related: except('wsk rule')
 }
 
 export const api = {
   title: 'API Gateway operations',
-  header: 'These commands will help you to work with routes and the API Gateway.',
+  header:
+    'These commands will help you to work with routes and the API Gateway.',
   example: 'wsk api <command>',
   commandPrefix: 'wsk api',
   nRowsInViewport: 4, // list all four, since we have a short list
@@ -316,11 +484,17 @@ export const api = {
       ],
       optional: [
         { name: 'verb', positional: true, docs: 'the verb to show' },
-        { name: '--format',
+        {
+          name: '--format',
           docs: 'specify the API output TYPE, either json or yaml',
           allowed: ['json', 'yaml'],
-          defaultValue: 'json' },
-        { name: '--full', alias: '-f', docs: 'display full API configuration details' }
+          defaultValue: 'json'
+        },
+        {
+          name: '--full',
+          alias: '-f',
+          docs: 'display full API configuration details'
+        }
       ],
       parents: context('api')
     },
@@ -329,9 +503,7 @@ export const api = {
       strict: 'delete',
       docs: 'delete an API',
       example: 'wsk api delete <api>',
-      required: [
-        { name: 'api', docs: 'the name of an API' }
-      ],
+      required: [{ name: 'api', docs: 'the name of an API' }],
       optional: [
         { name: 'path', positional: true, docs: 'the path of the API' },
         { name: 'verb', positional: true, docs: 'the verb of the API' }
@@ -351,11 +523,17 @@ export const api = {
       optional: [
         { name: 'base', positional: true, docs: 'base path for the API' },
         { name: '--apiname', alias: '-n', docs: 'friendly name of the API' },
-        { name: '--config-file', alias: '-c', docs: 'file containing API configuration in swagger JSON format' },
-        { name: '--response-type',
+        {
+          name: '--config-file',
+          alias: '-c',
+          docs: 'file containing API configuration in swagger JSON format'
+        },
+        {
+          name: '--response-type',
           docs: 'set the web action response type',
           allowed: ['http', 'json', 'text', 'svg'],
-          defaultValue: 'json' }
+          defaultValue: 'json'
+        }
       ],
       parents: context('api')
     }
@@ -423,7 +601,8 @@ export const triggers = {
         optional: skipAndLimit,
         parents: context('trigger')
       })
-    }],
+    }
+  ],
   parents: [{ command: 'wsk' }],
   related: except('wsk trigger')
 }
@@ -487,8 +666,13 @@ export const packages = {
         example: `wsk ${syn} ${command}`,
         docs: 'list all packages',
         aliases: aliases.list,
-        optional: [{ name: 'namespace', docs: 'list all packages in a given namespace', positional: true }]
-          .concat(skipAndLimit),
+        optional: [
+          {
+            name: 'namespace',
+            docs: 'list all packages in a given namespace',
+            positional: true
+          }
+        ].concat(skipAndLimit),
         parents: context('package')
       })
     }
@@ -504,7 +688,8 @@ export const activations = alias => ({
   example: `wsk ${alias} <command>`,
   commandPrefix: `wsk ${alias}`,
   available: [
-    { command: 'get',
+    {
+      command: 'get',
       fn: (command, syn = 'activation') => ({
         command,
         docs: 'get the full details of an activation',
@@ -518,22 +703,51 @@ export const activations = alias => ({
         parents: [{ command: 'wsk' }, { command: 'wsk activation' }]
       })
     },
-    { command: 'list',
+    {
+      command: 'list',
       docs: 'list recent activations',
       aliases: aliases.list,
       strict: 'list',
       configuration,
       optional: [
-        { name: 'name', positional: true, docs: 'filter by a given action name' },
+        {
+          name: 'name',
+          positional: true,
+          docs: 'filter by a given action name'
+        },
         { name: '--name', docs: 'filter by a given action name' },
-        { name: '--limit', alias: '-l', docs: 'only return LIMIT number of activations' },
-        { name: '--since', docs: 'return activations with timestamps later than SINCE; measured in milliseconds since epoch' },
-        { name: '--skip', alias: '-s', docs: 'exclude the first SKIP number of activations from the result' },
-        { name: '--upto', docs: 'return activations with timestamps earlier than UPTO; measured in milliseconds since epoch' }
+        {
+          name: '--limit',
+          alias: '-l',
+          docs: 'only return LIMIT number of activations'
+        },
+        {
+          name: '--since',
+          docs:
+            'return activations with timestamps later than SINCE; measured in milliseconds since epoch'
+        },
+        {
+          name: '--skip',
+          alias: '-s',
+          docs: 'exclude the first SKIP number of activations from the result'
+        },
+        {
+          name: '--upto',
+          docs:
+            'return activations with timestamps earlier than UPTO; measured in milliseconds since epoch'
+        }
       ]
     },
-    { command: 'logs', docs: 'get the logs of an activation', partial: '<activationId>' },
-    { command: 'result', docs: 'get the result, i.e. return value, of an activation', partial: '<activationId>' }
+    {
+      command: 'logs',
+      docs: 'get the logs of an activation',
+      partial: '<activationId>'
+    },
+    {
+      command: 'result',
+      docs: 'get the result, i.e. return value, of an activation',
+      partial: '<activationId>'
+    }
     // { command: 'poll', docs: 'poll continuously for log messages from currently running actions' },
   ],
   parents: [{ command: 'wsk' }],

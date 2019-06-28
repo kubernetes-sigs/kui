@@ -8,7 +8,9 @@ const composer = require('openwhisk-composer')
  */
 module.exports = composer.dowhile(
   params => params.n % 2 === 0, // condition
-  params => { params.n /= 2 } // body
+  params => {
+    params.n /= 2
+  } // body
 )
 
 /**

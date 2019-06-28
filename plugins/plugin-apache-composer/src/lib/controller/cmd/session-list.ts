@@ -36,58 +36,86 @@ export default async (commandTree: CommandRegistrar) => {
 
   /* command handler for session list */
   sessionSyns.forEach(noun => {
-    commandTree.listen(`/wsk/${noun}/list`, async ({ argvNoOptions, parsedOptions: options }) => {
-      const parsedOptions = (options as any) as ListOptions // eslint-disable-line @typescript-eslint/no-explicit-any
+    commandTree.listen(
+      `/wsk/${noun}/list`,
+      async ({ argvNoOptions, parsedOptions: options }) => {
+        const parsedOptions = (options as any) as ListOptions // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      const limit = parsedOptions.limit === undefined ? 10 : parsedOptions.limit // limit 10 sessions in session list if users didn't specify --limit
-      const skip = parsedOptions.skip || 0 // skip 0 sessions in session list by default if users didn't specify --skip
-      const scanLimit = parsedOptions['scan-limit']
+        const limit =
+          parsedOptions.limit === undefined ? 10 : parsedOptions.limit // limit 10 sessions in session list if users didn't specify --limit
+        const skip = parsedOptions.skip || 0 // skip 0 sessions in session list by default if users didn't specify --skip
+        const scanLimit = parsedOptions['scan-limit']
 
-      // degenerate cases for options
-      if (limit === 0 || scanLimit === 0) return []
+        // degenerate cases for options
+        if (limit === 0 || scanLimit === 0) return []
 
-      const nameOption = parsedOptions.name // e.g. session list --name [session name]
-      const nameSpecify = argvNoOptions.indexOf('list') === argvNoOptions.length - 2 ? argvNoOptions[argvNoOptions.length - 1] : '' // e.g. session list [session name]
+        const nameOption = parsedOptions.name // e.g. session list --name [session name]
+        const nameSpecify =
+          argvNoOptions.indexOf('list') === argvNoOptions.length - 2
+            ? argvNoOptions[argvNoOptions.length - 1]
+            : '' // e.g. session list [session name]
 
-      if (nameOption && nameSpecify && (nameOption !== nameSpecify)) {
-        debug('inconsistent name:', nameSpecify, nameSpecify)
-        throw new UsageError('You provided two different session names')
-      }
-
-      const name = nameOption || nameSpecify || ''
-
-      // find sessions in activation list
-      const findSessions = (skip = 0, name = '', limit = 20) => {
-        return repl.qfexec(`activation list ${name} --skip ${skip} --limit ${limit}`)
-          .then(activations => { // filter activations to find session
-            debug('finding sessions in activation list', activations)
-            return activations.filter(activation => {
-              if (activation && activation.annotations && activation.annotations.find(({ key, value }) => key === 'conductor' && value)) {
-                debug('found a session', activation)
-                activation.sessionId = activation.activationId // indicate the entity is session
-                return activation
-              }
-            })
-          })
-          .catch(err => err)
-      }
-
-      if (scanLimit) {
-        const max: number = await repl.qexec('wsk activation count') // get the number of total activations
-        let foundSessions = []
-        for (let scanned = 0; scanned < max && foundSessions.length < scanLimit; scanned += 200) {
-          try {
-            foundSessions = foundSessions.concat(await findSessions(scanned, name, 200))
-          } catch (err) {
-            throw err
-          }
+        if (nameOption && nameSpecify && nameOption !== nameSpecify) {
+          debug('inconsistent name:', nameSpecify, nameSpecify)
+          throw new UsageError('You provided two different session names')
         }
-        return parsedOptions.count ? foundSessions.slice(skip, scanLimit + skip).length : foundSessions.slice(skip, scanLimit + skip)
-      } else {
-        return findSessions(0, name, 200) // always trying to find sessions in the latest 20 activations
-          .then(foundSessions => parsedOptions.count ? foundSessions.slice(skip, limit + skip).length : foundSessions.slice(skip, limit + skip))
-          .catch(err => err)
-      }
-    }, { usage: sessionList })
+
+        const name = nameOption || nameSpecify || ''
+
+        // find sessions in activation list
+        const findSessions = (skip = 0, name = '', limit = 20) => {
+          return repl
+            .qfexec(`activation list ${name} --skip ${skip} --limit ${limit}`)
+            .then(activations => {
+              // filter activations to find session
+              debug('finding sessions in activation list', activations)
+              return activations.filter(activation => {
+                if (
+                  activation &&
+                  activation.annotations &&
+                  activation.annotations.find(
+                    ({ key, value }) => key === 'conductor' && value
+                  )
+                ) {
+                  debug('found a session', activation)
+                  activation.sessionId = activation.activationId // indicate the entity is session
+                  return activation
+                }
+              })
+            })
+            .catch(err => err)
+        }
+
+        if (scanLimit) {
+          const max: number = await repl.qexec('wsk activation count') // get the number of total activations
+          let foundSessions = []
+          for (
+            let scanned = 0;
+            scanned < max && foundSessions.length < scanLimit;
+            scanned += 200
+          ) {
+            try {
+              foundSessions = foundSessions.concat(
+                await findSessions(scanned, name, 200)
+              )
+            } catch (err) {
+              throw err
+            }
+          }
+          return parsedOptions.count
+            ? foundSessions.slice(skip, scanLimit + skip).length
+            : foundSessions.slice(skip, scanLimit + skip)
+        } else {
+          return findSessions(0, name, 200) // always trying to find sessions in the latest 20 activations
+            .then(foundSessions =>
+              parsedOptions.count
+                ? foundSessions.slice(skip, limit + skip).length
+                : foundSessions.slice(skip, limit + skip)
+            )
+            .catch(err => err)
+        }
+      },
+      { usage: sessionList }
+    )
   })
 }

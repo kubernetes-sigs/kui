@@ -15,7 +15,10 @@
  */
 
 import { Tab } from '@kui-shell/core/webapp/cli'
-import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import {
+  addNameToSidecarHeader,
+  getSidecar
+} from '@kui-shell/core/webapp/views/sidecar'
 
 import * as chart from './chart'
 import { prettyUrl } from './util'
@@ -32,7 +35,11 @@ export interface Graphics {
  * Initialize the UI
  *
  */
-export const initUI = ({ noTable = false, noChart = false, container = document.createElement('div') } = {}): Graphics => {
+export const initUI = ({
+  noTable = false,
+  noChart = false,
+  container = document.createElement('div')
+} = {}): Graphics => {
   const graphics: Graphics = { container, table: undefined }
 
   container.style.flex = '1'
@@ -41,7 +48,7 @@ export const initUI = ({ noTable = false, noChart = false, container = document.
   container.style.flexDirection = 'column'
 
   if (!noChart) {
-    const chart = graphics['chart'] = document.createElement('div')
+    const chart = (graphics['chart'] = document.createElement('div'))
     container.appendChild(chart)
     chart.style.flex = '3'
     chart.style.marginTop = '2em'
@@ -59,18 +66,39 @@ export const initUI = ({ noTable = false, noChart = false, container = document.
  * Form the response to the REPL
  *
  */
-export const response = (tab: Tab, graphics, { url, testName, defaultMode = 'last', label = 'Last Run' }) => {
+export const response = (
+  tab: Tab,
+  graphics,
+  { url, testName, defaultMode = 'last', label = 'Last Run' }
+) => {
   setTimeout(() => chart.init(graphics), 650)
 
-  addNameToSidecarHeader(getSidecar(tab), viewName, `${testName} on ${prettyUrl(url)}`)
+  addNameToSidecarHeader(
+    getSidecar(tab),
+    viewName,
+    `${testName} on ${prettyUrl(url)}`
+  )
 
   return {
     type: 'custom',
     graphics: graphics,
     content: graphics.container,
     modes: [
-      { mode: 'last', label, defaultMode: defaultMode === 'last', command: () => 'wrk last', echo: true, noHistory: false },
-      { mode: 'history', defaultMode: defaultMode === 'history', command: () => 'wrk history', echo: true, noHistory: false }
+      {
+        mode: 'last',
+        label,
+        defaultMode: defaultMode === 'last',
+        command: () => 'wrk last',
+        echo: true,
+        noHistory: false
+      },
+      {
+        mode: 'history',
+        defaultMode: defaultMode === 'history',
+        command: () => 'wrk history',
+        echo: true,
+        noHistory: false
+      }
     ]
   }
 }

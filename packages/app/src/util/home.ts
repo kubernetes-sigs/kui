@@ -19,7 +19,7 @@ import { homedir as home } from 'os'
 
 const homedir = home()
 
-export default function (path: string): string {
+export default function(path: string): string {
   if (!path) {
     return path
   } else if (path === '~') {

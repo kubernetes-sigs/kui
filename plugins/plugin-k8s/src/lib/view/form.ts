@@ -43,8 +43,11 @@ interface FormGroup {
  * Update the given path in the given yaml to have the given value
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const update = (parent: Record<string, any>, path: string[], value: string | number | boolean) => {
+const update = (
+  parent: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  path: string[],
+  value: string | number | boolean
+) => {
   const key = path[path.length - 1]
   debug('update', key, parent)
   if (parent) {
@@ -66,8 +69,14 @@ type ChoiceTextArea = HTMLTextAreaElement & FormAmendments
  * Save the current form choices
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const doSave = (tab: Tab, form: HTMLFormElement, yaml: Resources.KubeResource, filepath: string, onSave: (rawText: string) => any, button?: HTMLButtonElement) => () => {
+const doSave = (
+  tab: Tab,
+  form: HTMLFormElement,
+  yaml: Resources.KubeResource,
+  filepath: string,
+  onSave: (rawText: string) => any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  button?: HTMLButtonElement
+) => () => {
   if (button) {
     button.classList.add('yellow-background')
     button.classList.add('repeating-pulse')
@@ -108,10 +117,23 @@ const doSave = (tab: Tab, form: HTMLFormElement, yaml: Resources.KubeResource, f
 const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
   const groups: FormGroup[] = []
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const push = (group: string, key: string | number, { parent = yaml, path = [key.toString()], skip = {} }: { parent?: Record<string, any>; path?: string[]; skip?: Record<string, boolean> } = {}) => {
-    const formGroup = groups.find(({ title }) => title === group) ||
-      { title: group, choices: [] as FormElement[] }
+  const push = (
+    group: string,
+    key: string | number,
+    {
+      parent = yaml,
+      path = [key.toString()],
+      skip = {}
+    }: {
+      parent?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+      path?: string[]
+      skip?: Record<string, boolean>
+    } = {}
+  ) => {
+    const formGroup = groups.find(({ title }) => title === group) || {
+      title: group,
+      choices: [] as FormElement[]
+    }
 
     const { choices } = formGroup
 
@@ -131,15 +153,28 @@ const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
         const value = struct[key]
         const next = path.concat([key]) // path to this leaf or subtree
 
-        if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
+        if (
+          typeof value === 'string' ||
+          typeof value === 'boolean' ||
+          typeof value === 'number'
+        ) {
           // leaf node
           choices.push({ key, value, path: next, parent: struct })
         } else if (Array.isArray(value)) {
           // not sure what to do with arrays, yet
           if (value.length > 0) {
-            if (typeof value[0] === 'string' || typeof value[0] === 'number' || typeof value[0] === 'boolean') {
+            if (
+              typeof value[0] === 'string' ||
+              typeof value[0] === 'number' ||
+              typeof value[0] === 'boolean'
+            ) {
               // array of strings
-              choices.push({ key, value: value.join(','), path: next, parent: struct })
+              choices.push({
+                key,
+                value: value.join(','),
+                path: next,
+                parent: struct
+              })
             } else {
               // array of structs
             }
@@ -199,8 +234,13 @@ const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
  * Present a form view over a resource
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const generateForm = (tab: Tab) => (yaml: Resources.KubeResource, filepath: string, name: string, kind: string, onSave: (rawText: string) => any) => {
+export const generateForm = (tab: Tab) => (
+  yaml: Resources.KubeResource,
+  filepath: string,
+  name: string,
+  kind: string,
+  onSave: (rawText: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
+) => {
   const formElements = formGroups(yaml)
   debug('generate form', formElements)
 
@@ -278,11 +318,15 @@ export const generateForm = (tab: Tab) => (yaml: Resources.KubeResource, filepat
       }
 
       const inputType = typeof element.value
-      const inputPart = element.key === 'description'
-        ? document.createElement('textarea') as ChoiceTextArea
-        : document.createElement('input') as ChoiceInput
+      const inputPart =
+        element.key === 'description'
+          ? (document.createElement('textarea') as ChoiceTextArea)
+          : (document.createElement('input') as ChoiceInput)
       inputPart.className = 'bx--text-input'
-      inputPart.setAttribute('type', inputType === 'string' ? 'text' : inputType)
+      inputPart.setAttribute(
+        'type',
+        inputType === 'string' ? 'text' : inputType
+      )
       inputPart.value = element.value.toString()
       inputPart.setAttribute('defaultValue', inputPart.value)
       inputPart.setAttribute('placeholder', element.placeholder || element.key)
@@ -297,18 +341,39 @@ export const generateForm = (tab: Tab) => (yaml: Resources.KubeResource, filepat
     // shorter ones can pack more densely onto lines
     const isLongPattern = /(description|ur[il])/i
     const isKeyLike = /key|name/i
-    const { shortChoices, longChoices } = element.choices.length === 2 && isKeyLike.test(element.choices[0].key) && element.choices[1].key === 'value' && isLongPattern.test(element.choices[0].value.toString())
-      ? { shortChoices: [element.choices[0]], longChoices: [element.choices[1]] }
-      : element.choices.reduce((groups, choice) => {
-        if (isLongPattern.test(choice.key)) {
-          groups.longChoices.push(choice)
-        } else {
-          groups.shortChoices.push(choice)
-        }
-        return groups
-      }, { shortChoices: [] as FormElement[], longChoices: [] as FormElement[] })
+    const { shortChoices, longChoices } =
+      element.choices.length === 2 &&
+      isKeyLike.test(element.choices[0].key) &&
+      element.choices[1].key === 'value' &&
+      isLongPattern.test(element.choices[0].value.toString())
+        ? {
+            shortChoices: [element.choices[0]],
+            longChoices: [element.choices[1]]
+          }
+        : element.choices.reduce(
+            (groups, choice) => {
+              if (isLongPattern.test(choice.key)) {
+                groups.longChoices.push(choice)
+              } else {
+                groups.shortChoices.push(choice)
+              }
+              return groups
+            },
+            {
+              shortChoices: [] as FormElement[],
+              longChoices: [] as FormElement[]
+            }
+          )
 
-    console.error('!!!!!!', element.choices.length === 2 && isKeyLike.test(element.choices[0].key) && element.choices[1].key === 'value' && isLongPattern.test(element.choices[0].value.toString()), shortChoices, longChoices)
+    console.error(
+      '!!!!!!',
+      element.choices.length === 2 &&
+        isKeyLike.test(element.choices[0].key) &&
+        element.choices[1].key === 'value' &&
+        isLongPattern.test(element.choices[0].value.toString()),
+      shortChoices,
+      longChoices
+    )
 
     shortChoices.forEach(formatChoice())
     longChoices.forEach(formatChoice('bx--form-item-wide'))
@@ -319,8 +384,20 @@ export const generateForm = (tab: Tab) => (yaml: Resources.KubeResource, filepat
   })
 
   const modes: SidecarMode[] = [
-    { mode: 'save', flush: 'right', actAsButton: true, direct: doSave(tab, form, yaml, filepath, onSave), visibleWhen: 'edit' },
-    { mode: 'revert', flush: 'right', actAsButton: true, direct: () => form.reset(), visibleWhen: 'edit' }
+    {
+      mode: 'save',
+      flush: 'right',
+      actAsButton: true,
+      direct: doSave(tab, form, yaml, filepath, onSave),
+      visibleWhen: 'edit'
+    },
+    {
+      mode: 'revert',
+      flush: 'right',
+      actAsButton: true,
+      direct: () => form.reset(),
+      visibleWhen: 'edit'
+    }
   ]
 
   const subtext = document.createElement('span')

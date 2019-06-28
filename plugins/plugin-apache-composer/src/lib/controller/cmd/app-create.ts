@@ -27,45 +27,79 @@ const debug = Debug('plugins/apache-composer/cmd/app-create')
 
 export default async (commandTree: CommandRegistrar) => {
   /* command handler for app create */
-  commandTree.listen(`/wsk/app/create`, async ({ tab, argvNoOptions, execOptions }) => {
-    // load and parse the source file to JSON-encoded composition and then deploy
-    let inputFile = argvNoOptions[argvNoOptions.indexOf('create') + 2]
-    let name = argvNoOptions[argvNoOptions.indexOf('create') + 1]
-    if (!inputFile) {
-      const implicitEntity = compileUtil.implicitInputFile(tab, inputFile, name)
-      inputFile = implicitEntity.inputFile
-      name = implicitEntity.name
+  commandTree.listen(
+    `/wsk/app/create`,
+    async ({ tab, argvNoOptions, execOptions }) => {
+      // load and parse the source file to JSON-encoded composition and then deploy
+      let inputFile = argvNoOptions[argvNoOptions.indexOf('create') + 2]
+      let name = argvNoOptions[argvNoOptions.indexOf('create') + 1]
+      if (!inputFile) {
+        const implicitEntity = compileUtil.implicitInputFile(
+          tab,
+          inputFile,
+          name
+        )
+        inputFile = implicitEntity.inputFile
+        name = implicitEntity.name
 
-      if (!name || !inputFile) {
-        debug('insufficient inputs')
-        throw new UsageError({ message: 'Insufficient inputs', usage: create('create'), code: 497 })
+        if (!name || !inputFile) {
+          debug('insufficient inputs')
+          throw new UsageError({
+            message: 'Insufficient inputs',
+            usage: create('create'),
+            code: 497
+          })
+        }
       }
-    }
 
-    return compileUtil.sourceToComposition({ inputFile, name })
-      .then(source => client.deploy({ composition: source, overwrite: false })
-        .then(view.formatCompositionEntity(execOptions)))
-      .catch(err => { throw err })
-  }, { usage: create('create') })
+      return compileUtil
+        .sourceToComposition({ inputFile, name })
+        .then(source =>
+          client
+            .deploy({ composition: source, overwrite: false })
+            .then(view.formatCompositionEntity(execOptions))
+        )
+        .catch(err => {
+          throw err
+        })
+    },
+    { usage: create('create') }
+  )
 
   /* command handler for app update */
-  commandTree.listen(`/wsk/app/update`, async ({ tab, argvNoOptions, execOptions }) => {
-    // load and parse the source file to JSON-encoded composition and then deploy
-    let inputFile = argvNoOptions[argvNoOptions.indexOf('update') + 2]
-    let name = argvNoOptions[argvNoOptions.indexOf('update') + 1]
-    if (!inputFile) {
-      const implicitEntity = compileUtil.implicitInputFile(tab, inputFile, name)
-      inputFile = implicitEntity.inputFile
-      name = implicitEntity.name
+  commandTree.listen(
+    `/wsk/app/update`,
+    async ({ tab, argvNoOptions, execOptions }) => {
+      // load and parse the source file to JSON-encoded composition and then deploy
+      let inputFile = argvNoOptions[argvNoOptions.indexOf('update') + 2]
+      let name = argvNoOptions[argvNoOptions.indexOf('update') + 1]
+      if (!inputFile) {
+        const implicitEntity = compileUtil.implicitInputFile(
+          tab,
+          inputFile,
+          name
+        )
+        inputFile = implicitEntity.inputFile
+        name = implicitEntity.name
 
-      if (!name || !inputFile) {
-        debug('insufficient inputs')
-        throw new UsageError({ message: 'Insufficient inputs', usage: create('update'), code: 497 })
+        if (!name || !inputFile) {
+          debug('insufficient inputs')
+          throw new UsageError({
+            message: 'Insufficient inputs',
+            usage: create('update'),
+            code: 497
+          })
+        }
       }
-    }
 
-    return compileUtil.sourceToComposition({ inputFile, name })
-      .then(composition => client.deploy({ composition, overwrite: true })
-        .then(view.formatCompositionEntity(execOptions)))
-  }, { usage: create('update') })
+      return compileUtil
+        .sourceToComposition({ inputFile, name })
+        .then(composition =>
+          client
+            .deploy({ composition, overwrite: true })
+            .then(view.formatCompositionEntity(execOptions))
+        )
+    },
+    { usage: create('update') }
+  )
 }

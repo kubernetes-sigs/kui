@@ -24,37 +24,61 @@ export const composer = {
   header: 'These commands will help you work with Composer applications.',
   example: 'composer <command>',
   commandPrefix: 'composer',
-  available: [{ command: 'app', docs: 'create and invoke compositions', dir: true },
-    { command: 'session', docs: 'inspect the results of composition activations', dir: true },
-    { command: 'config', docs: 'print the details of your configuration' }],
+  available: [
+    { command: 'app', docs: 'create and invoke compositions', dir: true },
+    {
+      command: 'session',
+      docs: 'inspect the results of composition activations',
+      dir: true
+    },
+    { command: 'config', docs: 'print the details of your configuration' }
+  ],
   related: ['help', 'wsk']
 }
 
 export const app = {
   title: 'CRUD Operations',
-  header: 'These commands will help you create and invoke Composer applications.',
+  header:
+    'These commands will help you create and invoke Composer applications.',
   example: 'wsk app <command> or app <command>',
   commandPrefix: 'wsk app',
-  available: [{ command: 'create', docs: 'create and deploy a new composition' },
+  available: [
+    { command: 'create', docs: 'create and deploy a new composition' },
     { command: 'update', docs: 'update and deploy a new composition' },
     { command: 'get', docs: 'get the details of a given composition' },
-    { command: 'invoke', docs: 'invoke a given app and wait for its completion' },
-    { command: 'async', docs: 'invoke a given app asynchronously, and return a session id' },
-    { command: 'preview', docs: 'visualize a composition, without deploying it' },
+    {
+      command: 'invoke',
+      docs: 'invoke a given app and wait for its completion'
+    },
+    {
+      command: 'async',
+      docs: 'invoke a given app asynchronously, and return a session id'
+    },
+    {
+      command: 'preview',
+      docs: 'visualize a composition, without deploying it'
+    },
     { command: 'list', docs: 'list all compositions' },
     { command: 'delete', docs: 'delete a compositions' },
-    { command: 'config', docs: 'Print out the details of your composer configuration' }],
+    {
+      command: 'config',
+      docs: 'Print out the details of your composer configuration'
+    }
+  ],
   parents: ['composer'],
   related: ['composer session']
 }
 
 export const session = {
   title: 'Inspecting Sessions',
-  header: 'These commands will help you inspect the activation results of Composer applications.',
+  header:
+    'These commands will help you inspect the activation results of Composer applications.',
   example: 'wsk session <command>',
   commandPrefix: 'session',
-  available: [{ command: 'get', docs: 'get the details of a given Composer activation' },
-    { command: 'list', docs: 'list recent Composer activations' }],
+  available: [
+    { command: 'get', docs: 'get the details of a given Composer activation' },
+    { command: 'list', docs: 'list recent Composer activations' }
+  ],
   parents: ['composer'],
   related: ['composer app']
 }

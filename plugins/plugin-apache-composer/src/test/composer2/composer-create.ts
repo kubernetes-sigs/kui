@@ -27,7 +27,9 @@ import {
 } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
 const actionName1 = 'foo1'
 const actionName2 = 'foo2'
@@ -35,7 +37,7 @@ const actionName3 = 'foo3'
 const seqName1 = 'seq1'
 const packageName1 = 'ppp1'
 
-describe('app create and sessions', function (this: common.ISuite) {
+describe('app create and sessions', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -51,157 +53,214 @@ describe('app create and sessions', function (this: common.ISuite) {
   }
 
   /** invoke a composition */
-  const invoke = (_name, key, value, extraExpect, expectIsIt = false, cmd = 'app invoke') => {
+  const invoke = (
+    _name,
+    key,
+    value,
+    extraExpect,
+    expectIsIt = false,
+    cmd = 'app invoke'
+  ) => {
     const name = typeof _name === 'string' ? _name : _name.action
     const packageName = _name.package
     const fullName = packageName ? `${packageName}/${name}` : name
 
-    it(`should invoke via ${cmd} the composition ${fullName} with ${key}=${value}`, () => cli.do(`${cmd} ${fullName} -p ${key} ${value}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName1))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct(expect(key, value, extraExpect, expectIsIt)))
-      .then(() => this.app.client.click(ui.selectors.SIDECAR_TITLE)) // click on the name part in the sidecar header
-      .then(() => this.app)
-      .then(sidecar.expectShowing(seqName1, undefined, undefined, packageName))
-      .catch(common.oops(this)))
+    it(`should invoke via ${cmd} the composition ${fullName} with ${key}=${value}`, () =>
+      cli
+        .do(`${cmd} ${fullName} -p ${key} ${value}`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(seqName1))
+        .then(() =>
+          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
+        )
+        .then(ui.expectStruct(expect(key, value, extraExpect, expectIsIt)))
+        .then(() => this.app.client.click(ui.selectors.SIDECAR_TITLE)) // click on the name part in the sidecar header
+        .then(() => this.app)
+        .then(
+          sidecar.expectShowing(seqName1, undefined, undefined, packageName)
+        )
+        .catch(common.oops(this)))
   }
 
   /** make a plain openwhisk action */
   const makeAction = (name, key, value, body = 'x=>x') => {
-    it('should create an action via let', () => cli.do(`let ${name} = ${body} -p ${key} ${value}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .catch(common.oops(this)))
+    it('should create an action via let', () =>
+      cli
+        .do(`let ${name} = ${body} -p ${key} ${value}`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(name))
+        .catch(common.oops(this)))
 
-    it('should switch to parameters mode', () => cli.do('parameters', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct(expect(key, value, undefined, undefined)))
-      .catch(common.oops(this)))
+    it('should switch to parameters mode', () =>
+      cli
+        .do('parameters', this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(name))
+        .then(app =>
+          app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
+        )
+        .then(ui.expectStruct(expect(key, value, undefined, undefined)))
+        .catch(common.oops(this)))
   }
 
   /** regular action get */
-  const getAction = name => it(`should get regular action ${name}`, () => cli.do(`wsk action get ${name}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(name))
-    .catch(common.oops(this)))
+  const getAction = name =>
+    it(`should get regular action ${name}`, () =>
+      cli
+        .do(`wsk action get ${name}`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(name))
+        .catch(common.oops(this)))
 
   /** sessions */
   const doGetSessions = (cmd, nLive, nDone) => {
-    const once = iter => cli.do(cmd, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(async (N: number) => {
-        const isLiveGood = async (): Promise<boolean> => {
-          const list = await this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="live"]`)
+    const once = iter =>
+      cli
+        .do(cmd, this.app)
+        .then(cli.expectOKWithCustom({ passthrough: true }))
+        .then(async (N: number) => {
+          const isLiveGood = async (): Promise<boolean> => {
+            const list = await this.app.client.elements(
+              `${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="live"]`
+            )
 
-          if (list.value.length !== nLive) {
-            console.error('live does not match ' + list.value.length + ' != ' + nLive)
-            if (list.value.length < nLive) {
-              // we'll retry
-              return false
+            if (list.value.length !== nLive) {
+              console.error(
+                'live does not match ' + list.value.length + ' != ' + nLive
+              )
+              if (list.value.length < nLive) {
+                // we'll retry
+                return false
+              } else {
+                // if actual live > expected live, then fail fast
+                assert.strictEqual(list.value.length, nLive)
+              }
             } else {
-              // if actual live > expected live, then fail fast
-              assert.strictEqual(list.value.length, nLive)
+              // actual live === expected live, good!
+              return true
+            }
+          }
+
+          const liveGood = await isLiveGood()
+          const list = await this.app.client.elements(
+            `${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="done"]`
+          )
+          if (!liveGood || list.value.length < nDone) {
+            if (iter < 3) {
+              // let's retry
+              setTimeout(() => once(iter + 1), 5000)
+            } else {
+              // fail fast
+              assert.ok(liveGood)
+              assert.strictEqual(list.value.length, nDone)
+            }
+          } else if (list.value.length !== nDone) {
+            console.error(
+              'done does not match ' + list.value.length + ' != ' + nDone
+            )
+            if (list.value.length < nDone && iter < 3) {
+              // then let's retry
+              setTimeout(() => once(iter + 1), 5000)
+            } else {
+              // fail fast
+              assert.strictEqual(list.value.length, nDone)
             }
           } else {
-            // actual live === expected live, good!
+            // then both match
             return true
           }
-        }
-
-        const liveGood = await isLiveGood()
-        const list = await this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="done"]`)
-        if (!liveGood || list.value.length < nDone) {
-          if (iter < 3) {
-            // let's retry
-            setTimeout(() => once(iter + 1), 5000)
-          } else {
-            // fail fast
-            assert.ok(liveGood)
-            assert.strictEqual(list.value.length, nDone)
-          }
-        } else if (list.value.length !== nDone) {
-          console.error('done does not match ' + list.value.length + ' != ' + nDone)
-          if (list.value.length < nDone && iter < 3) {
-            // then let's retry
-            setTimeout(() => once(iter + 1), 5000)
-          } else {
-            // fail fast
-            assert.strictEqual(list.value.length, nDone)
-          }
-        } else {
-          // then both match
-          return true
-        }
-      })
+        })
 
     return once(0).catch(common.oops(this))
   }
 
-  const getSessions = (cmd, nLive, nDone) => it(`should list sessions via "${cmd}" nLive=${nLive} nDone=${nDone}`, () => doGetSessions(cmd, nLive, nDone))
+  const getSessions = (cmd, nLive, nDone) =>
+    it(`should list sessions via "${cmd}" nLive=${nLive} nDone=${nDone}`, () =>
+      doGetSessions(cmd, nLive, nDone))
 
   //
   // start of test suite
   //
   makeAction(actionName1, 'aa', 11, 'x=>x')
   makeAction(actionName2, 'bb', 22, 'x=>x')
-  makeAction(actionName3, 'cc', 22, 'x=>x')// "x=>new Promise(resolve => setTimeout(() => resolve(x), 20000))") // sleep, so we can get async and "live" session list
+  makeAction(actionName3, 'cc', 22, 'x=>x') // "x=>new Promise(resolve => setTimeout(() => resolve(x), 20000))") // sleep, so we can get async and "live" session list
 
   /* it('should initialize composer', () => cli.do(`app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
         .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
        .catch(common.oops(this))) */
 
-  it('should throw a usage message for incomplete app create', () => cli.do(`app create ${seqName1}`, this.app)
-    .then(cli.expectError(497)) // 497 insufficient required parameters
-    .catch(common.oops(this)))
+  it('should throw a usage message for incomplete app create', () =>
+    cli
+      .do(`app create ${seqName1}`, this.app)
+      .then(cli.expectError(497)) // 497 insufficient required parameters
+      .catch(common.oops(this)))
 
-  it('should throw a usage message for incomplete app create v2', () => cli.do(`app create`, this.app)
-    .then(cli.expectError(497)) // 497 insufficient required parameters
-    .catch(common.oops(this)))
+  it('should throw a usage message for incomplete app create v2', () =>
+    cli
+      .do(`app create`, this.app)
+      .then(cli.expectError(497)) // 497 insufficient required parameters
+      .catch(common.oops(this)))
 
-  it('should throw a usage message for incomplete app create v3', () => cli.do(`app create ${ROOT}/data/composer/fsm.json`, this.app)
-    .then(cli.expectError(497)) // 497 insufficient required parameters
-    .catch(common.oops(this)))
+  it('should throw a usage message for incomplete app create v3', () =>
+    cli
+      .do(`app create ${ROOT}/data/composer/fsm.json`, this.app)
+      .then(cli.expectError(497)) // 497 insufficient required parameters
+      .catch(common.oops(this)))
 
-  it('should create a composer sequence', () => cli.do(`app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    .catch(common.oops(this)))
+  it('should create a composer sequence', () =>
+    cli
+      .do(`app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      .catch(common.oops(this)))
 
-  it('should create a package', () => cli.do(`wsk package create ${packageName1}`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should create a package', () =>
+    cli
+      .do(`wsk package create ${packageName1}`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
 
-  it('should create a packaged composer sequence', () => cli.do(`app create ${packageName1}/${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1, undefined, undefined, packageName1))
-    .catch(common.oops(this)))
-  invoke({ package: packageName1, action: seqName1 }, 'x', 3, { aa: 11, bb: 22, cc: 22 })
+  it('should create a packaged composer sequence', () =>
+    cli
+      .do(
+        `app create ${packageName1}/${seqName1} ${ROOT}/data/composer/fsm.json`,
+        this.app
+      )
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1, undefined, undefined, packageName1))
+      .catch(common.oops(this)))
+  invoke({ package: packageName1, action: seqName1 }, 'x', 3, {
+    aa: 11,
+    bb: 22,
+    cc: 22
+  })
 
-  it('should create a composer sequence via app update', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    .catch(common.oops(this)))
+  it('should create a composer sequence via app update', () =>
+    cli
+      .do(`app update ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      .catch(common.oops(this)))
 
-  it(`should create wookiechat and dependent actions with implicit entity`, () => cli.do('app update wookie @demos/wookie/app.js', this.app)
-    .then(verifyTheBasicStuff('wookie'))
-    .then(verifyNodeExists('swapi', false)) // expect not to be deployed
-    .then(verifyNodeExists('stapi', false)) // expect not to be deployed
-    .then(verifyNodeExists('validate-swapi', false)) // expect not to be deployed
-    .then(verifyNodeExists('validate-stapi', false)) // expect not to be deployed
-    .then(verifyNodeExists('report-swapi', false)) // expect not to be deployed
-    .then(verifyNodeExists('report-stapi', false)) // expect not to be deployed
-    .then(verifyNodeExists('report-empty', false)) // expect not to be deployed
-    .catch(common.oops(this)))
+  it(`should create wookiechat and dependent actions with implicit entity`, () =>
+    cli
+      .do('app update wookie @demos/wookie/app.js', this.app)
+      .then(verifyTheBasicStuff('wookie'))
+      .then(verifyNodeExists('swapi', false)) // expect not to be deployed
+      .then(verifyNodeExists('stapi', false)) // expect not to be deployed
+      .then(verifyNodeExists('validate-swapi', false)) // expect not to be deployed
+      .then(verifyNodeExists('validate-stapi', false)) // expect not to be deployed
+      .then(verifyNodeExists('report-swapi', false)) // expect not to be deployed
+      .then(verifyNodeExists('report-stapi', false)) // expect not to be deployed
+      .then(verifyNodeExists('report-empty', false)) // expect not to be deployed
+      .catch(common.oops(this)))
 
   getSessions('sessions list', 0, 0) // no sessions, yet
   // diable pagination tests
@@ -214,35 +273,55 @@ describe('app create and sessions', function (this: common.ISuite) {
   // get some regular action, so we can test switching back to the composer action
   getAction(actionName1)
 
-  it('should get the composer sequence via "app get"', () => cli.do(`app get ${seqName1}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_MODE_BUTTONS}`))
-    .then((buttons: string | string[]) => Array.isArray(buttons) && buttons.length > 0 && buttons.filter(x => x).reduce((M, button) => { // filter removes blanks due to image icons
-      if (M[button]) {
-        // duplicate button!!
-        assert.fail('Duplicate mode button ' + button)
-      } else {
-        M[button] = true
-      }
-      return M
-    }, {}))
-    .catch(common.oops(this)))
+  it('should get the composer sequence via "app get"', () =>
+    cli
+      .do(`app get ${seqName1}`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      .then(() =>
+        this.app.client.getText(`${ui.selectors.SIDECAR_MODE_BUTTONS}`)
+      )
+      .then(
+        (buttons: string | string[]) =>
+          Array.isArray(buttons) &&
+          buttons.length > 0 &&
+          buttons
+            .filter(x => x)
+            .reduce((M, button) => {
+              // filter removes blanks due to image icons
+              if (M[button]) {
+                // duplicate button!!
+                assert.fail('Duplicate mode button ' + button)
+              } else {
+                M[button] = true
+              }
+              return M
+            }, {})
+      )
+      .catch(common.oops(this)))
 
-  it('should get the composer sequence via "action get"', () => cli.do(`action get ${seqName1}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON('visualization')}`))
-    .catch(common.oops(this)))
+  it('should get the composer sequence via "action get"', () =>
+    cli
+      .do(`action get ${seqName1}`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      .then(() =>
+        this.app.client.waitForVisible(
+          `${ui.selectors.SIDECAR_MODE_BUTTON('visualization')}`
+        )
+      )
+      .catch(common.oops(this)))
 
   // get some regular action, so we can test switching back to the composer action
   getAction(actionName1)
 
-  it('should throw a usage message for incomplete app get', () => cli.do(`app get`, this.app)
-    .then(cli.expectError(497)) // 497 insufficient required parameters
-    .catch(common.oops(this)))
+  it('should throw a usage message for incomplete app get', () =>
+    cli
+      .do(`app get`, this.app)
+      .then(cli.expectError(497)) // 497 insufficient required parameters
+      .catch(common.oops(this)))
 
   invoke(seqName1, 'x', 3, { aa: 11, bb: 22, cc: 22 })
   getSessions('session list', 0, 1) // 1 "done" session

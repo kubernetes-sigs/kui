@@ -16,7 +16,12 @@
 
 import * as assert from 'assert'
 
-import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops
+} from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
 
@@ -30,74 +35,99 @@ const { cli, sidecar } = ui
  *                   or: expect the sidecar icon to be "sidecar"
  *
  */
-export const expectSuggestionsFor = function (cmd: string, expectedAvailable: string[], { click = undefined, expectedBreadcrumb = undefined, sidecar: expectedIcon = undefined, expectedString = undefined } = {}) {
-  return cli.do(cmd, this.app)
+export const expectSuggestionsFor = function(
+  cmd: string,
+  expectedAvailable: string[],
+  {
+    click = undefined,
+    expectedBreadcrumb = undefined,
+    sidecar: expectedIcon = undefined,
+    expectedString = undefined
+  } = {}
+) {
+  return cli
+    .do(cmd, this.app)
     .then(cli.expectErrorWithPassthrough(404, 'Command not found'))
     .then(N => {
-      const base = `${ui.selectors.OUTPUT_N(N)} .user-error-available-commands .log-line`
+      const base = `${ui.selectors.OUTPUT_N(
+        N
+      )} .user-error-available-commands .log-line`
       const availableItems = `${base} .clickable`
 
-      return this.app.client.getText(availableItems)
+      return this.app.client
+        .getText(availableItems)
         .then(ui.expectArray(expectedAvailable))
         .then(() => {
           if (click !== undefined) {
             // then click on the given index; note that nth-child is 1-indexed, hence the + 1 part
             const clickOn = `${base}:nth-child(${click + 1}) .clickable`
 
-            return this.app.client.click(clickOn)
-              .then(() => {
-                if (expectedBreadcrumb) {
-                  //
-                  // then expect the next command to have the given terminal breadcrumb
-                  //
-                  const breadcrumb = `${ui.selectors.OUTPUT_N(N + 1)} .bx--breadcrumb-item:last-child .bx--no-link`
-                  return this.app.client.getText(breadcrumb)
-                    .then(actualBreadcrumb => assert.strictEqual(actualBreadcrumb, expectedBreadcrumb))
-                } else if (expectedIcon) {
-                  //
-                  // then wait for the sidecar to be open and showing the expected sidecar icon text
-                  //
-                  const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
-                  return sidecar.expectOpen(this.app)
-                    .then(() => this.app.client.getText(icon))
-                    .then(actualIcon => actualIcon.toLowerCase())
-                    .then(actualIcon => assert.strictEqual(actualIcon, expectedIcon))
-                } else if (expectedString) {
-                  //
-                  // then wait for the given command output
-                  //
-                  return this.app.client.waitUntil(async () => {
-                    const text = await this.app.client.getText(ui.selectors.OUTPUT_N(N + 1))
-                    return text === expectedString
-                  })
-                }
-              })
+            return this.app.client.click(clickOn).then(() => {
+              if (expectedBreadcrumb) {
+                //
+                // then expect the next command to have the given terminal breadcrumb
+                //
+                const breadcrumb = `${ui.selectors.OUTPUT_N(
+                  N + 1
+                )} .bx--breadcrumb-item:last-child .bx--no-link`
+                return this.app.client
+                  .getText(breadcrumb)
+                  .then(actualBreadcrumb =>
+                    assert.strictEqual(actualBreadcrumb, expectedBreadcrumb)
+                  )
+              } else if (expectedIcon) {
+                //
+                // then wait for the sidecar to be open and showing the expected sidecar icon text
+                //
+                const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
+                return sidecar
+                  .expectOpen(this.app)
+                  .then(() => this.app.client.getText(icon))
+                  .then(actualIcon => actualIcon.toLowerCase())
+                  .then(actualIcon =>
+                    assert.strictEqual(actualIcon, expectedIcon)
+                  )
+              } else if (expectedString) {
+                //
+                // then wait for the given command output
+                //
+                return this.app.client.waitUntil(async () => {
+                  const text = await this.app.client.getText(
+                    ui.selectors.OUTPUT_N(N + 1)
+                  )
+                  return text === expectedString
+                })
+              }
+            })
           }
         })
     })
     .catch(oops(this))
 }
 
-describe('Suggestions for command not found', function (this: ISuite) {
+describe('Suggestions for command not found', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
   it('should present suggestions for "ne" -> new', () => {
-    return expectSuggestionsFor.call(this,
+    return expectSuggestionsFor.call(
+      this,
       'ne', // type this
       ['new'] // expect these completions
     )
   })
 
   it('should present suggestions for "edi" -> edit', () => {
-    return expectSuggestionsFor.call(this,
+    return expectSuggestionsFor.call(
+      this,
       'edi', // type this
       ['edit'] // expect these completions
     )
   })
 
   it('should present suggestions for "versio" -> version', () => {
-    return expectSuggestionsFor.call(this,
+    return expectSuggestionsFor.call(
+      this,
       'versio', // type this
       ['version'] // expect these completions
     )

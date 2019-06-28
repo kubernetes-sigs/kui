@@ -28,14 +28,19 @@ debug('loading')
  * Respond with a top-level usage document
  *
  */
-const help = (usage) => ({ argvNoOptions: args }: EvaluatorArgs) => {
+const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 
   if (rest.length > 0) {
     // then the user asked e.g. "help foo"; interpret this as "foo help"
     debug('reversal')
-    return repl.qexec(rest.concat('help').map(val => repl.encodeComponent(val)).join(' '))
+    return repl.qexec(
+      rest
+        .concat('help')
+        .map(val => repl.encodeComponent(val))
+        .join(' ')
+    )
 
     // } else if (args.length !== 1) {
   } else if (usage) {
@@ -52,10 +57,11 @@ const help = (usage) => ({ argvNoOptions: args }: EvaluatorArgs) => {
     // traverse the top-level usage documents, populating topLevelUsage.available
     for (const key in usage) {
       const { route, usage: model } = usage[key]
-      if (model &&
-          !model.synonymFor &&
-          (isHeadless() || !model.headlessOnly) &&
-          (!inBrowser() || !model.requiresLocal)
+      if (
+        model &&
+        !model.synonymFor &&
+        (isHeadless() || !model.headlessOnly) &&
+        (!inBrowser() || !model.requiresLocal)
       ) {
         topLevelUsage.available.push({
           label: route.substring(1),
@@ -84,6 +90,12 @@ const help = (usage) => ({ argvNoOptions: args }: EvaluatorArgs) => {
  *
  */
 export default async (commandTree: CommandRegistrar, { usage }) => {
-  const helpCmd = commandTree.listen('/help', help(usage), { noAuthOk: true, inBrowserOk: true })
-  commandTree.synonym('/?', help(usage), helpCmd, { noAuthOk: true, inBrowserOk: true })
+  const helpCmd = commandTree.listen('/help', help(usage), {
+    noAuthOk: true,
+    inBrowserOk: true
+  })
+  commandTree.synonym('/?', help(usage), helpCmd, {
+    noAuthOk: true,
+    inBrowserOk: true
+  })
 }

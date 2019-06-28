@@ -22,13 +22,15 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli } = ui
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const HTML_WITH_JS_INPUT = `${ROOT}/data/openwhisk/hello-with-script.html`
 
 const actionName = 'foo'
 
-describe('Create a javascript web action via let', function (this: common.ISuite) {
+describe('Create a javascript web action via let', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -49,11 +51,13 @@ describe('Create a javascript web action via let', function (this: common.ISuite
        .then(sidecar.expectBadge('web'))
        .catch(common.oops(this))) */
 
-  it('should create an HTML web action that uses a JS web action, via let', () => cli.do(`let ${actionName} = ${HTML_WITH_JS_INPUT}`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
-    .then(selector => this.app.client.getText(selector))
-    .then(href => this.app.client.url(href))
-    .then(() => this.app.client.getText('#hello'))
-    .then(content => assert.strictEqual(content, 'hello'))
-    .catch(common.oops(this)))
+  it('should create an HTML web action that uses a JS web action, via let', () =>
+    cli
+      .do(`let ${actionName} = ${HTML_WITH_JS_INPUT}`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
+      .then(selector => this.app.client.getText(selector))
+      .then(href => this.app.client.url(href))
+      .then(() => this.app.client.getText('#hello'))
+      .then(content => assert.strictEqual(content, 'hello'))
+      .catch(common.oops(this)))
 })

@@ -3,10 +3,10 @@
 The Kui commands are implemented via plugins. This repository
 includes a suite of plugins, located in the `plugins/` directory.
 
-   - [Sample Plugin](../../packages/kui-builder/examples/plugin-sample/)
-   - [Code Layout](#code-layout)
-   - [Activating a New Plugin](#activating-a-new-plugin)
-   - [Plugin API](#plugin-api)
+- [Sample Plugin](../../packages/kui-builder/examples/plugin-sample/)
+- [Code Layout](#code-layout)
+- [Activating a New Plugin](#activating-a-new-plugin)
+- [Plugin API](#plugin-api)
 
 If, in the process of development, you add, remove, or otherwise
 change the way a command will map to plugins, you **must** re-execute
@@ -18,15 +18,15 @@ Plugins must be named as `plugin-` followed by any name you like. The prefix `pl
 
 Plugins must have a top-level file:
 
-  - a `package.json`, which can also be used to import any npm dependencies required by the plugin.
+- a `package.json`, which can also be used to import any npm dependencies required by the plugin.
 
 Plugins must have a top-level directory:
 
-  - `src/`, which has all the TypeScript source code of the plugin.
+- `src/`, which has all the TypeScript source code of the plugin.
 
 Tests of the plugin must be placed in:
 
-  - `src/test/{customized-test-unit-name}/` directory.
+- `src/test/{customized-test-unit-name}/` directory.
 
 Any non-TypeScript code should be placed outside of `src/` directory.
 
@@ -42,9 +42,9 @@ plugin-sample/
 │   │   └── sample-test2/
 │   │       └── test-command3.ts
 │   └── lib/
-│       ├── command1.ts  
-│       ├── command2.ts  
-│       └── command3.ts  
+│       ├── command1.ts
+│       ├── command2.ts
+│       └── command3.ts
 │
 ├── tests/
 │   ├── lib/
@@ -68,21 +68,21 @@ the `plugins/` directory. Then, execute `npm run compile` and reload or relaunch
 
 A plugin consists of three parts, some optional.
 
-  1. Registering as a listener for commands. This is done by calling
+1. Registering as a listener for commands. This is done by calling
 
 ```typescript
 commandTree.listen('/sample/echo', sayHello, { docs: 'Say hello!' })
 ```
 
-  As a result of this registration, the Kui REPL will respond to `sample echo` with the return value of the `sayHello` handler.
+As a result of this registration, the Kui REPL will respond to `sample echo` with the return value of the `sayHello` handler.
 
-  2. Command handlers. Handlers can return plain strings, which will
- then be printed in the CLI portion of the UI.
+2. Command handlers. Handlers can return plain strings, which will
+   then be printed in the CLI portion of the UI.
 
-  More sophisticated examples can return Promises of values. If the
-  value, or promise thereof, evaluates to a openwhisk entity, then the
-  sidecar will be opened to show it.
+More sophisticated examples can return Promises of values. If the
+value, or promise thereof, evaluates to a openwhisk entity, then the
+sidecar will be opened to show it.
 
-  If you want the REPL only to print "ok", then `return true`. Lastly,
-  if you want the REPL to print an error string in red text, then
-  `throw new Error("error message")`
+If you want the REPL only to print "ok", then `return true`. Lastly,
+if you want the REPL to print an error string in red text, then
+`throw new Error("error message")`

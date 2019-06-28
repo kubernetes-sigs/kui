@@ -52,12 +52,22 @@ export const formatSessionResponse = activation => {
 }
 
 export const formatCompositionEntity = execOptions => response => {
-  return isHeadless() ? response : repl.qfexec(`app get "${response.name}"`, undefined, undefined, execOptions)
+  return isHeadless()
+    ? response
+    : repl.qfexec(
+        `app get "${response.name}"`,
+        undefined,
+        undefined,
+        execOptions
+      )
 }
 
 export const formatCompositionResult = (result, options) => {
   if (options.result || options.r) return result
-  else return isHeadless() ? result.response.result : repl.qfexec(`activation get ${result.activationId}`)
+  else
+    return isHeadless()
+      ? result.response.result
+      : repl.qfexec(`activation get ${result.activationId}`)
 }
 
 export const formatDeleteResult = response => {
@@ -67,7 +77,11 @@ export const formatDeleteResult = response => {
 
 export const formatSessionGet = response => {
   debug('session get response', response)
-  if (response && response.annotations && response.annotations.find(({ key, value }) => key === 'conductor' && value)) {
+  if (
+    response &&
+    response.annotations &&
+    response.annotations.find(({ key, value }) => key === 'conductor' && value)
+  ) {
     debug('activation is session')
     return formatSessionResponse(response)
   } else {
@@ -90,7 +104,12 @@ export const visualizeComposition = async (tab: Tab, response, execOptions) => {
     // use require rather than import here to prevent from prequiring wskflow module in headless mode
     const { decorateAsApp } = await import('@kui-shell/plugin-wskflow/lib/util')
     const input = `/${response.namespace}/${response.name}`
-    const content = await decorateAsApp(tab, { action, input, doVisualize, options: Object.assign({}, execOptions, options) })
+    const content = await decorateAsApp(tab, {
+      action,
+      input,
+      doVisualize,
+      options: Object.assign({}, execOptions, options)
+    })
 
     if (doVisualize) {
       debug('visualze composition')
@@ -112,6 +131,11 @@ export const visualizeComposition = async (tab: Tab, response, execOptions) => {
 }
 
 // TODO format a list view?
-export const formatSessionList = (result) => {
-  return { sessionId: result.activationId, name: result.name, status: result.response.status, duration: result.duration }
+export const formatSessionList = result => {
+  return {
+    sessionId: result.activationId,
+    name: result.name,
+    status: result.response.status,
+    duration: result.duration
+  }
 }

@@ -26,13 +26,13 @@ const debug = Debug('plugins/bash-like/pty/channel')
  *
  */
 class WebSocketChannel extends WebSocket implements Channel {
-  constructor (url: string) {
+  constructor(url: string) {
     debug('WebSocketChannel init', url)
     super(url, undefined /*, { rejectUnauthorized: false } */)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  on (eventType: string, handler: any) {
+  on(eventType: string, handler: any) {
     switch (eventType) {
       case 'open':
         debug('WebSocketChannel: installing onopen handler')

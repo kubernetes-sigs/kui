@@ -1,0 +1,5 @@
+build/
+node_modules/
+*.d.ts
+package-lock.json
+plugins/plugin-apache-composer/tests/data/composer/composer-source-expect-errors/if-bad.js

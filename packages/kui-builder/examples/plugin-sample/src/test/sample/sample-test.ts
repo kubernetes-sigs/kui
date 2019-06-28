@@ -23,23 +23,29 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
 
-describe('sample plugin', function (this: common.ISuite) {
+describe('sample plugin', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should open sidecar', () => cli.do(`sample sidecar`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .catch(common.oops(this)))
+  it('should open sidecar', () =>
+    cli
+      .do(`sample sidecar`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .catch(common.oops(this)))
 
-  it('should show hello', () => cli.do(`sample hello`, this.app)
-    .then(cli.expectOKWithString('hello world'))
-    .then(sidecar.expectOpen)
-    .catch(common.oops(this)))
+  it('should show hello', () =>
+    cli
+      .do(`sample hello`, this.app)
+      .then(cli.expectOKWithString('hello world'))
+      .then(sidecar.expectOpen)
+      .catch(common.oops(this)))
 
-  it('should create an echo action', () => cli.do(`sample create action`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('echo'))
-    .catch(common.oops(this)))
+  it('should create an echo action', () =>
+    cli
+      .do(`sample create action`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('echo'))
+      .catch(common.oops(this)))
 })

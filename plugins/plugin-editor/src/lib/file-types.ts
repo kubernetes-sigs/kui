@@ -25,10 +25,12 @@ export const language = kind => {
   const base = kind.substring(0, kind.indexOf(':')) || kind
   debug('language', kind, base)
 
-  if (base === 'nodejs' ||
-      base === 'app' ||
-      base === 'composition' ||
-      base === 'sequence') {
+  if (
+    base === 'nodejs' ||
+    base === 'app' ||
+    base === 'composition' ||
+    base === 'sequence'
+  ) {
     return 'javascript'
   } else if (base === 'ts') {
     return 'typescript'
@@ -52,9 +54,13 @@ export const extension = kind => {
   debug('extension', kind, lang)
 
   switch (lang) {
-    case 'javascript': return '.js'
-    case 'typescript': return '.js'
-    case 'python': return '.py'
-    default: return `.${lang}` // e.g. .php, .go
+    case 'javascript':
+      return '.js'
+    case 'typescript':
+      return '.js'
+    case 'python':
+      return '.py'
+    default:
+      return `.${lang}` // e.g. .php, .go
   }
 }

@@ -42,9 +42,14 @@ export default (str: string): Pair[] | void => {
     const matches = []
 
     do {
-      const value = { name: 'value', onclick: false, value: match[2], css: 'normal-wrap break-all' }
-      matches.push({ type: 'key-value', name: match[1], attributes: [ value ] })
-    } while (match = kvPattern.exec(str)) // eslint-disable-line no-cond-assign
+      const value = {
+        name: 'value',
+        onclick: false,
+        value: match[2],
+        css: 'normal-wrap break-all'
+      }
+      matches.push({ type: 'key-value', name: match[1], attributes: [value] })
+    } while ((match = kvPattern.exec(str))) // eslint-disable-line no-cond-assign
 
     // make sure we've captured all of the rows
     const nLines = str.split(/\n/).filter(x => x).length

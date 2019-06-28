@@ -24,7 +24,13 @@ import { wskflowCycle } from './wskflow'
 import { injectCSS, loadHTML } from '@kui-shell/core/webapp/util/inject'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { clearSelection, isFullscreen as isSidecarFullscreen, hide as hideSidecar, show as showSidecar, toggleMaximization } from '@kui-shell/core/webapp/views/sidecar'
+import {
+  clearSelection,
+  isFullscreen as isSidecarFullscreen,
+  hide as hideSidecar,
+  show as showSidecar,
+  toggleMaximization
+} from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/tutorials/play')
 
@@ -37,7 +43,11 @@ declare const hljs
 import Marked = require('marked')
 const renderer = new Marked.Renderer()
 renderer.link = (href: string, title: string, text: string) => {
-  return `<a class='bx--link' href='${href}'` + (title ? ' title="' + title + '"' : '') + `}>${text}</a>`
+  return (
+    `<a class='bx--link' href='${href}'` +
+    (title ? ' title="' + title + '"' : '') +
+    `}>${text}</a>`
+  )
 }
 const marked = _ => Marked(_, { renderer })
 import cli = require('@kui-shell/core/webapp/cli')
@@ -71,11 +81,19 @@ const rowFilters = {
 const injectOurCSS = () => {
   try {
     // webpack style
-    injectCSS({ css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(), key: 'tutorial.main' })
-    injectCSS({ css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css'), key: 'tutorial.tutorials' })
+    injectCSS({
+      css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(),
+      key: 'tutorial.main'
+    })
+    injectCSS({
+      css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css'),
+      key: 'tutorial.tutorials'
+    })
   } catch {
     // local file style
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
+    const ourRoot = dirname(
+      require.resolve('@kui-shell/plugin-tutorials/package.json')
+    )
     injectCSS(join(ourRoot, 'web/css/main.css'))
     injectCSS(join(ourRoot, 'web/css/tutorials.css'))
   }
@@ -89,10 +107,14 @@ const injectHTML = () => {
   let loader
 
   try {
-    loader = Promise.resolve(require('@kui-shell/plugin-tutorials/web/html/index.html').default)
+    loader = Promise.resolve(
+      require('@kui-shell/plugin-tutorials/web/html/index.html').default
+    )
     debug('webpack html inject')
   } catch {
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
+    const ourRoot = dirname(
+      require.resolve('@kui-shell/plugin-tutorials/package.json')
+    )
     loader = loadHTML(join(ourRoot, 'web/html/index.html'))
     debug('local file html inject')
   }
@@ -100,7 +122,9 @@ const injectHTML = () => {
   return loader.then(html => {
     const wrapper = document.createElement('div')
     wrapper.innerHTML = html
-    document.querySelector('body .page .main .tab-container').appendChild(wrapper.children[0])
+    document
+      .querySelector('body .page .main .tab-container')
+      .appendChild(wrapper.children[0])
   })
 }
 
@@ -145,45 +169,47 @@ const clearHighlights = () => {
  * Close the current tutorial
  *
  */
-const close = (tab: cli.Tab, pane: Element, obj, delay = 500) => () => new Promise<boolean>(resolve => {
-  debug('close')
+const close = (tab: cli.Tab, pane: Element, obj, delay = 500) => () =>
+  new Promise<boolean>(resolve => {
+    debug('close')
 
-  // cancel any background tasks
-  cancelAsyncs(pane)
+    // cancel any background tasks
+    cancelAsyncs(pane)
 
-  // if we were resopnsible for having the sidecar fullscreen, remove that
-  if (pane.hasAttribute('remember-to-remove-sidecar-fullscreen')) {
-    pane.removeAttribute('remember-to-remove-sidecar-fullscreen')
-    sidecarManager.exitFullscreen(tab)
-  }
+    // if we were resopnsible for having the sidecar fullscreen, remove that
+    if (pane.hasAttribute('remember-to-remove-sidecar-fullscreen')) {
+      pane.removeAttribute('remember-to-remove-sidecar-fullscreen')
+      sidecarManager.exitFullscreen(tab)
+    }
 
-  // remove pane
-  pane.classList.remove('visible')
-  setTimeout(() => pane.parentNode.removeChild(pane), delay)
-  document.querySelector('body').classList.remove('tutorial-in-progress')
-  clearHighlights()
-  // $(window).unbind("resize", resizeHandler);
+    // remove pane
+    pane.classList.remove('visible')
+    setTimeout(() => pane.parentNode.removeChild(pane), delay)
+    document.querySelector('body').classList.remove('tutorial-in-progress')
+    clearHighlights()
+    // $(window).unbind("resize", resizeHandler);
 
-  // allow for the close transition to do its magic
-  if (delay === 0) {
-    // $(pane).remove();
-    resolve(true)
-  } else {
-    setTimeout(() => {
+    // allow for the close transition to do its magic
+    if (delay === 0) {
       // $(pane).remove();
       resolve(true)
-    }, delay)
-  }
+    } else {
+      setTimeout(() => {
+        // $(pane).remove();
+        resolve(true)
+      }, delay)
+    }
 
-  // make sure the repl has focus when we're done
-  cli.getCurrentPrompt().focus()
-})
+    // make sure the repl has focus when we're done
+    cli.getCurrentPrompt().focus()
+  })
 
 /**
  * Is this tutorial a one-page full-screener?
  *
  */
-const isOnePageFullscreenTutorial = obj => obj.steps && obj.steps.length === 1 && obj.fullscreen
+const isOnePageFullscreenTutorial = obj =>
+  obj.steps && obj.steps.length === 1 && obj.fullscreen
 
 /**
  * If a tutorial step specifies to highlight a region, this method
@@ -197,7 +223,11 @@ const setHighlightPosition = ({ selector }) => {
   } else {
     element.classList.add('lightbox')
     setTimeout(() => element.classList.add('lightbox-visible'), 0)
-    document.addEventListener('click', clearHighlights, true) /* true means invoke at most once */
+    document.addEventListener(
+      'click',
+      clearHighlights,
+      true
+    ) /* true means invoke at most once */
   }
 }
 
@@ -221,7 +251,10 @@ const commandFromFullscreen = (pane, command, display = command) => () => {
     pane.removeAttribute('tutorial-is-fullscreen')
     document.body.classList.remove('tutorial-is-fullscreen')
   } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
-    pane.setAttribute('tutorial-was-fullscreen', 1 + parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10))
+    pane.setAttribute(
+      'tutorial-was-fullscreen',
+      1 + parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10)
+    )
   }
 
   // switch to minimized mode, unless this is a tutorial play
@@ -230,7 +263,9 @@ const commandFromFullscreen = (pane, command, display = command) => () => {
   // primary view mode, and it'll look weird
   if (!(command.startsWith('play') || command.startsWith('tutorial play'))) {
     pane.classList.add('minimized')
-    pane.querySelector('.tutorial-minimized-message').innerHTML = `Tutorial paused while we execute the command <span class='monospace bx--link clickable clickable-blatant' onclick='repl.pexec("${command}"})'>${display}</span>.`
+    pane.querySelector(
+      '.tutorial-minimized-message'
+    ).innerHTML = `Tutorial paused while we execute the command <span class='monospace bx--link clickable clickable-blatant' onclick='repl.pexec("${command}"})'>${display}</span>.`
   } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
     // if we are in fullscreen mode, and this isn't a tutorial
     // play command, then wait a bit, to give time for the
@@ -260,7 +295,9 @@ const renderOneTable = (parent, pane) => table => {
   tableDom.classList.remove('tutorial-template')
   tableDom.removeAttribute('id')
 
-  const titleDom = tableDom.querySelector('.tutorial-content-extras-title') as HTMLElement
+  const titleDom = tableDom.querySelector(
+    '.tutorial-content-extras-title'
+  ) as HTMLElement
   if (table.title) {
     titleDom.innerText = table.title
     titleDom.classList.remove('hidden')
@@ -273,7 +310,9 @@ const renderOneTable = (parent, pane) => table => {
 
   // column headers
   if (table.columns) {
-    const headerRow = tableDom.querySelector('.bx--structured-list-row.bx--structured-list-row--header-row')
+    const headerRow = tableDom.querySelector(
+      '.bx--structured-list-row.bx--structured-list-row--header-row'
+    )
     // removeAllDomChildren(headerRow);
     table.columns.forEach(column => {
       const headerDom = document.createElement('div')
@@ -294,7 +333,10 @@ const renderOneTable = (parent, pane) => table => {
 
         row.forEach((cell, idx) => {
           const value = typeof cell === 'string' ? cell : cell.value
-          const onclick = cell.onclick || (cell.command && commandFromFullscreen(pane, cell.command, cell.display))
+          const onclick =
+            cell.onclick ||
+            (cell.command &&
+              commandFromFullscreen(pane, cell.command, cell.display))
 
           debug('cell', value)
           const cellDom = document.createElement('div')
@@ -304,7 +346,8 @@ const renderOneTable = (parent, pane) => table => {
           cellDomClickable.innerHTML = idx === 1 ? marked(value) : value
           cellDom.appendChild(cellDomClickable)
           if (onclick) {
-            cellDomClickable.className = 'tutorial-content-command clickable clickable-blatant bx--link'
+            cellDomClickable.className =
+              'tutorial-content-command clickable clickable-blatant bx--link'
             cellDomClickable.setAttribute('data-command', cell.value)
             cellDom.onclick = onclick
           }
@@ -332,14 +375,27 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
   cancelAsyncs(pane)
 
   // extract the fields of the step model
-  const { heading, content, transition, input, extras, fontawesome,
-    highlight, autocomplete, execute, preview, sidecar } = obj.steps[stepNum]
+  const {
+    heading,
+    content,
+    transition,
+    input,
+    extras,
+    fontawesome,
+    highlight,
+    autocomplete,
+    execute,
+    preview,
+    sidecar
+  } = obj.steps[stepNum]
 
   // heading text
   pane.querySelector('.tutorial-heading').innerText = heading
 
   // render the description
-  pane.querySelector('.tutorial-content .tutorial-paragraphs').innerHTML = marked(content)
+  pane.querySelector(
+    '.tutorial-content .tutorial-paragraphs'
+  ).innerHTML = marked(content)
 
   const fontGraphics = pane.querySelector('.tutorial-font-graphics')
   removeAllDomChildren(fontGraphics)
@@ -393,7 +449,9 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
       const titleDom = learnMore.querySelector('.tutorial-content-extras-title')
       titleDom.innerText = extras.learnMore.title || 'Notes'
       learnMore.classList.add('has-learn-more')
-      learnMore.querySelector('.tutorial-learn-more-content').innerHTML = marked(extras.learnMore.doc)
+      learnMore.querySelector(
+        '.tutorial-learn-more-content'
+      ).innerHTML = marked(extras.learnMore.doc)
     }
 
     //
@@ -417,17 +475,23 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
       table = {
         title: extras.alternate ? 'Alternate Adventures' : 'Next Steps',
         columns: ['Command', 'Description'],
-        rows: nextSteps.filter(_ => !_.hidden).map(({ command, display = command, doc, when }) => [
-          { value: display,
-            when,
-            onclick: commandFromFullscreen(pane, command, display) },
-          doc
-        ])
+        rows: nextSteps
+          .filter(_ => !_.hidden)
+          .map(({ command, display = command, doc, when }) => [
+            {
+              value: display,
+              when,
+              onclick: commandFromFullscreen(pane, command, display)
+            },
+            doc
+          ])
       }
     }
 
     // remove any previous tables
-    const tables = extrasPart.querySelectorAll('.tutorial-content-extras-as-structured-list:not(.tutorial-template)')
+    const tables = extrasPart.querySelectorAll(
+      '.tutorial-content-extras-as-structured-list:not(.tutorial-template)'
+    )
     for (let idx = 0; idx < tables.length; idx++) {
       tables[idx].parentNode.removeChild(tables[idx])
     }
@@ -449,53 +513,63 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
 
       pane.setAttribute('tutorial-has-showcase', 'tutorial-has-showcase')
 
-      extras.showcase.forEach(({ title, command, display = command, description, image, groupWith }) => {
-        const element = document.createElement('div')
-        element.className = 'tutorial-showcase-element'
+      extras.showcase.forEach(
+        ({
+          title,
+          command,
+          display = command,
+          description,
+          image,
+          groupWith
+        }) => {
+          const element = document.createElement('div')
+          element.className = 'tutorial-showcase-element'
 
-        if (command) {
-          element.onclick = commandFromFullscreen(pane, command, display)
-        }
+          if (command) {
+            element.onclick = commandFromFullscreen(pane, command, display)
+          }
 
-        const imagePart = document.createElement('img')
-        imagePart.className = 'clickable'
-        imagePart.setAttribute('src', image)
-        element.appendChild(imagePart)
+          const imagePart = document.createElement('img')
+          imagePart.className = 'clickable'
+          imagePart.setAttribute('src', image)
+          element.appendChild(imagePart)
 
-        const overlayPart = document.createElement('div')
-        const titlePart = document.createElement('h2')
-        const descriptionPart = document.createElement('div')
-        overlayPart.className = 'tutorial-showcase-element-overlay bx--tile'
-        titlePart.className = 'tutorial-showcase-element-overlay-title'
-        descriptionPart.className = 'tutorial-showcase-element-overlay-description smaller-text'
-        overlayPart.appendChild(titlePart)
-        overlayPart.appendChild(descriptionPart)
-        titlePart.innerText = title
-        descriptionPart.innerHTML = marked(description)
-        element.appendChild(overlayPart)
+          const overlayPart = document.createElement('div')
+          const titlePart = document.createElement('h2')
+          const descriptionPart = document.createElement('div')
+          overlayPart.className = 'tutorial-showcase-element-overlay bx--tile'
+          titlePart.className = 'tutorial-showcase-element-overlay-title'
+          descriptionPart.className =
+            'tutorial-showcase-element-overlay-description smaller-text'
+          overlayPart.appendChild(titlePart)
+          overlayPart.appendChild(descriptionPart)
+          titlePart.innerText = title
+          descriptionPart.innerHTML = marked(description)
+          element.appendChild(overlayPart)
 
-        const newGroup = () => {
-          const group = document.createElement('div')
-          group.className = 'tutorial-showcase-group'
-          group.appendChild(element)
-          container.appendChild(group)
-        }
-
-        if (!groupWith) {
-          newGroup()
-        } else {
-          try {
-            // eslint-disable-next-line no-eval
-            const fn = eval(groupWith)
-            const group = fn(container.children)
+          const newGroup = () => {
+            const group = document.createElement('div')
+            group.className = 'tutorial-showcase-group'
             group.appendChild(element)
-          } catch (err) {
-            debug('error in groupWith', groupWith)
-            console.error(err)
+            container.appendChild(group)
+          }
+
+          if (!groupWith) {
             newGroup()
+          } else {
+            try {
+              // eslint-disable-next-line no-eval
+              const fn = eval(groupWith)
+              const group = fn(container.children)
+              group.appendChild(element)
+            } catch (err) {
+              debug('error in groupWith', groupWith)
+              console.error(err)
+              newGroup()
+            }
           }
         }
-      })
+      )
     }
   }
 
@@ -504,17 +578,25 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
 
   // no back button for the first step
   if (stepNum === 0) {
-    $(pane).find('.tBack').hide()
+    $(pane)
+      .find('.tBack')
+      .hide()
   } else {
-    $(pane).find('.tBack').show()
+    $(pane)
+      .find('.tBack')
+      .show()
   }
 
   // manage the step "blocks", shown in the upper right with yellow/gray squares
-  const prevStepBlock = pane.querySelector(`.tutorial-header-right .tutorial-step-block.active`)
+  const prevStepBlock = pane.querySelector(
+    `.tutorial-header-right .tutorial-step-block.active`
+  )
   if (prevStepBlock) {
     prevStepBlock.classList.remove('active')
   }
-  const stepBlock = pane.querySelector(`.tutorial-header-right .tutorial-step-block[step="${stepNum}"]`)
+  const stepBlock = pane.querySelector(
+    `.tutorial-header-right .tutorial-step-block[step="${stepNum}"]`
+  )
   if (stepBlock) {
     stepBlock.classList.add('active')
   }
@@ -534,9 +616,14 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
     //
     const { selector, value } = input
 
-    const handler = function (event) {
-      if (event.keyCode === 13) { // 13 is the keycode for Enter
-        if ($(selector).val().trim() === value) {
+    const handler = function(event) {
+      if (event.keyCode === 13) {
+        // 13 is the keycode for Enter
+        if (
+          $(selector)
+            .val()
+            .trim() === value
+        ) {
           // unbind, move to the next step;
           $(document).unbind('keydown', handler)
           $(pane).prop('step', stepNum + 1)
@@ -549,8 +636,10 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
     //
     // Handle transition via the user hitting 'enter' on their keyboard
     //
-    $(pane).find('.tBack').css('display', 'inline-block')
-    const handler = function (event) {
+    $(pane)
+      .find('.tBack')
+      .css('display', 'inline-block')
+    const handler = function(event) {
       if (event.keyCode === 13) {
         $(document).unbind('keydown', handler)
         $(pane).prop('step', stepNum + 1)
@@ -565,8 +654,10 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
     const { selector } = input
 
     // Show back button
-    $(pane).find('.tBack').css('display', 'inline-block')
-    const handler = function () {
+    $(pane)
+      .find('.tBack')
+      .css('display', 'inline-block')
+    const handler = function() {
       $(this).unbind('click', handler)
       $(pane).prop('step', stepNum + 1)
       transitionSteps(tab, stepNum + 1, obj, pane)
@@ -620,7 +711,7 @@ const focusOnBiggestScrollable = () => {
   let biggest
   for (let idx = 0; idx < allScrollables.length; idx++) {
     const rect = allScrollables[idx].getBoundingClientRect()
-    if (!biggest || (rect.height > biggest.rect.height)) {
+    if (!biggest || rect.height > biggest.rect.height) {
       biggest = { element: allScrollables[idx], rect }
     }
   }
@@ -662,34 +753,41 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
   }
 
   // tutorial name
-  const tutorialNameDom = pane.querySelector('.tutorial-header-tutorial-name') as HTMLElement
+  const tutorialNameDom = pane.querySelector(
+    '.tutorial-header-tutorial-name'
+  ) as HTMLElement
   tutorialNameDom.classList.remove('zoom-in')
   setTimeout(() => tutorialNameDom.classList.add('zoom-in'), 0)
-  tutorialNameDom.innerText = tutorialName.replace(/-/g, ' ');
+  tutorialNameDom.innerText = tutorialName.replace(/-/g, ' ')
 
   // next click handler
-  (pane.querySelector('.tNext') as HTMLElement).onclick = () => {
+  ;(pane.querySelector('.tNext') as HTMLElement).onclick = () => {
     $(pane).prop('step', $(pane).prop('step') + 1)
     transitionSteps(tab, $(pane).prop('step'), obj, pane)
   }
 
   // back click handler
-  (pane.querySelector('.tBack') as HTMLElement).onclick = () => {
+  ;(pane.querySelector('.tBack') as HTMLElement).onclick = () => {
     $(pane).prop('step', $(pane).prop('step') - 1)
     transitionSteps(tab, $(pane).prop('step'), obj, pane)
   }
 
   // close click handler
-  (pane.querySelector('.tCloseButton') as HTMLElement).onclick = close(tab, pane, obj);
+  ;(pane.querySelector('.tCloseButton') as HTMLElement).onclick = close(
+    tab,
+    pane,
+    obj
+  )
 
   // restore click handler
-  (pane.querySelector('.tRestoreButton') as HTMLElement).onclick = () => {
+  ;(pane.querySelector('.tRestoreButton') as HTMLElement).onclick = () => {
     // cancel any background tasks
     cancelAsyncs(pane)
 
     // restore fullscreen mode, if that's where we came from
     if (pane.hasAttribute('tutorial-was-fullscreen')) {
-      const stack = parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10) - 1
+      const stack =
+        parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10) - 1
       if (stack === 0) {
         pane.removeAttribute('tutorial-was-fullscreen')
         pane.setAttribute('tutorial-is-fullscreen', 'tutorial-is-fullscreen')
@@ -720,7 +818,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
     // From StackOverflow
     // https://stackoverflow.com/questions/31749625/make-a-link-from-electron-open-in-browser/34503175
     const shell = require('electron').shell
-    $(document).on('click', 'a[href^="http"]', function (event) {
+    $(document).on('click', 'a[href^="http"]', function(event) {
       event.preventDefault()
       shell.openExternal(this.href)
     })
@@ -729,8 +827,12 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
     document.querySelector('body').classList.add('tutorial-in-progress')
 
     // skills badges
-    const headerExtrasContainer = pane.querySelector('.tutorial-header-extras') as HTMLElement
-    const skillsContainer = headerExtrasContainer.querySelector('.tutorial-skills')
+    const headerExtrasContainer = pane.querySelector(
+      '.tutorial-header-extras'
+    ) as HTMLElement
+    const skillsContainer = headerExtrasContainer.querySelector(
+      '.tutorial-skills'
+    )
     removeAllDomChildren(skillsContainer)
     if (obj.skills) {
       obj.skills.forEach(skill => {
@@ -742,7 +844,9 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
     }
 
     // blocks to represent steps
-    const stepBlocksContainer = pane.querySelector('.tutorial-header-blocks') as HTMLElement
+    const stepBlocksContainer = pane.querySelector(
+      '.tutorial-header-blocks'
+    ) as HTMLElement
     removeAllDomChildren(stepBlocksContainer)
 
     // if we want a square aspect ratio:
@@ -753,13 +857,16 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
     pane.setAttribute('num-steps', obj.steps.length)
     if (obj.steps.length > 1) {
       for (let idx = 0; idx < obj.steps.length; idx++) {
-        (function (idx) {
+        ;(function(idx) {
           const block = document.createElement('div')
           const blockInner = document.createElement('div')
           blockInner.classList.add('tutorial-step-block')
           blockInner.setAttribute('step', idx.toString())
           block.setAttribute('data-balloon', obj.steps[idx].heading)
-          block.setAttribute('data-balloon-pos', idx > obj.steps.length / 2 ? 'down-right' : 'down')// square: idx % dim > Math.floor(dim/2) ? 'down-right' : 'down')
+          block.setAttribute(
+            'data-balloon-pos',
+            idx > obj.steps.length / 2 ? 'down-right' : 'down'
+          ) // square: idx % dim > Math.floor(dim/2) ? 'down-right' : 'down')
           block.setAttribute('data-balloon-length', 'small')
           block.onclick = () => {
             $(pane).prop('step', idx)
@@ -800,8 +907,10 @@ const use = cmd => ({ argvNoOptions, tab }) => {
 
   const filepath = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
 
-  return Promise.all([readProject(findFile(filepath)), ready])
-    .then(([{ config, tutorial }]) => showTutorial(tab, config.name, tutorial || config.tutorial))
+  return Promise.all([readProject(findFile(filepath)), ready]).then(
+    ([{ config, tutorial }]) =>
+      showTutorial(tab, config.name, tutorial || config.tutorial)
+  )
 }
 
 /** this is useful if we want to display the step "blocks" as a square */
@@ -838,7 +947,19 @@ const usage = cmd => ({
  */
 export default async (commandTree: CommandRegistrar) => {
   // synonyms for playing a tutorial
-  const cmd = commandTree.listen('/tutorial/play', use('play'), { usage: usage('play'), needsUI: true, noAuthOk: true })
-  commandTree.synonym('/tutorial/use', use('use'), cmd, { usage: usage('use'), needsUI: true, noAuthOk: true })
-  commandTree.synonym('/tutorial/start', use('start'), cmd, { usage: usage('start'), needsUI: true, noAuthOk: true })
+  const cmd = commandTree.listen('/tutorial/play', use('play'), {
+    usage: usage('play'),
+    needsUI: true,
+    noAuthOk: true
+  })
+  commandTree.synonym('/tutorial/use', use('use'), cmd, {
+    usage: usage('use'),
+    needsUI: true,
+    noAuthOk: true
+  })
+  commandTree.synonym('/tutorial/start', use('start'), cmd, {
+    usage: usage('start'),
+    needsUI: true,
+    noAuthOk: true
+  })
 }

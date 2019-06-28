@@ -27,7 +27,16 @@ import { optionsToString } from './util'
  */
 const mode = mode => options => ({
   mode,
-  direct: entity => repl.qexec(`${mode} ${optionsToString(options)}${entity && entity.name ? ' ' + entity.name : options.name ? ' ' + options.name : ''}`)
+  direct: entity =>
+    repl.qexec(
+      `${mode} ${optionsToString(options)}${
+        entity && entity.name
+          ? ' ' + entity.name
+          : options.name
+          ? ' ' + options.name
+          : ''
+      }`
+    )
 })
 
 /**
@@ -45,10 +54,13 @@ const _modes = [
  * any command line options the user might have passed in.
  *
  */
-export const modes = (defaultMode, options) => _modes.map(_ => _(options)).map(_ => {
-  if (_.mode === defaultMode) {
-    return Object.assign({ defaultMode: true }, _)
-  } else {
-    return _
-  }
-})
+export const modes = (defaultMode, options) =>
+  _modes
+    .map(_ => _(options))
+    .map(_ => {
+      if (_.mode === defaultMode) {
+        return Object.assign({ defaultMode: true }, _)
+      } else {
+        return _
+      }
+    })

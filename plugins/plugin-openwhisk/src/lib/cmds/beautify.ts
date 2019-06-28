@@ -29,36 +29,44 @@ declare let hljs
  *
  */
 export default async (commandTree: CommandRegistrar) => {
-  synonyms('actions').forEach(syn => commandTree.listen(`/wsk/${syn}/beautify`, ({ execOptions, tab }) => {
-    if (isHeadless()) {
-      throw new Error('beautify not supported in headless mode')
-    }
+  synonyms('actions').forEach(syn =>
+    commandTree.listen(
+      `/wsk/${syn}/beautify`,
+      ({ execOptions, tab }) => {
+        if (isHeadless()) {
+          throw new Error('beautify not supported in headless mode')
+        }
 
-    const selection = currentSelection(tab)
-    if (!selection) {
-      throw new Error('You have not yet selected an entity')
-    } else if (!(selection && selection.exec && selection.exec.code)) {
-      throw new Error('no action code selected')
-    } else {
-      // beautify
-      const beautify = require('js-beautify').js_beautify
+        const selection = currentSelection(tab)
+        if (!selection) {
+          throw new Error('You have not yet selected an entity')
+        } else if (!(selection && selection.exec && selection.exec.code)) {
+          throw new Error('no action code selected')
+        } else {
+          // beautify
+          const beautify = require('js-beautify').js_beautify
 
-      selection.exec.code = beautify(selection.exec.code)
-      const code = getSidecar(tab).querySelector('.action-content .action-source') as HTMLElement
-      code.innerText = selection.exec.code
+          selection.exec.code = beautify(selection.exec.code)
+          const code = getSidecar(tab).querySelector(
+            '.action-content .action-source'
+          ) as HTMLElement
+          code.innerText = selection.exec.code
 
-      // re-highlight
-      setTimeout(() => hljs.highlightBlock(code), 0)
+          // re-highlight
+          setTimeout(() => hljs.highlightBlock(code), 0)
 
-      // save
-      return update(execOptions)(selection)
-    }
-  }, {
-    usage: {
-      command: 'beautify',
-      docs: 'Reformat the source code of an action'
-    }
-    // requireSelection: true,
-    // filter: selection => selection.type === 'actions'
-  }))
+          // save
+          return update(execOptions)(selection)
+        }
+      },
+      {
+        usage: {
+          command: 'beautify',
+          docs: 'Reformat the source code of an action'
+        }
+        // requireSelection: true,
+        // filter: selection => selection.type === 'actions'
+      }
+    )
+  )
 }

@@ -21,7 +21,7 @@
 //
 
 export default () => {
-/*  commandTree.listen('/echo', ({ argvNoOptions }) => {
+  /*  commandTree.listen('/echo', ({ argvNoOptions }) => {
     return argvNoOptions.slice(1).join(' ') || true
   }) */
 }

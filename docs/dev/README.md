@@ -20,10 +20,10 @@ concerned. Otherwise, consult the [Kui installation
 guide](../installation.md) for more information on setting up
 credentials.
 
-  - [Coding Strategy](#coding-strategy)
-  - [Packaging](packaging.md)
-  - [Running Tests](#local-testing)
-  - [Live Webpack Development](live-webpack-development.md)
+- [Coding Strategy](#coding-strategy)
+- [Packaging](packaging.md)
+- [Running Tests](#local-testing)
+- [Live Webpack Development](live-webpack-development.md)
 
 ## Coding Strategy
 
@@ -54,7 +54,7 @@ from edit to use, is usually on the order of a few seconds.
 There are several cases where a simple reload will not suffice to
 realize your changes.
 
- 1. **Adding new commands** For efficiency, Kui relies on a
+1.  **Adding new commands** For efficiency, Kui relies on a
     precompiled model of the command tree. This allows Kui to load
     plugin code lazily. If you add a new command, or move a command
     from one plugin to another, you must therefore recompile the
@@ -64,7 +64,7 @@ realize your changes.
     > npm run compile
     ```
 
- 2. **Changing code in the main process** Electron applications
+2.  **Changing code in the main process** Electron applications
     consist of two groups of processes: the renderer processes
     (e.g. one per window, web view, web worker, etc.), and the "main"
     or server-side processes. The javascript code under the
@@ -72,7 +72,7 @@ realize your changes.
     run in the main/server process. Thus, changes to these files
     require a full quit and relaunch of the Electron application.
 
- 3. **Changing the HTML templates** Changes to files under the
+3.  **Changing the HTML templates** Changes to files under the
     `packages/app/templates/` directory, such as `packages/app/templates/index.html` require a
     rebuild, accomplished via
 
@@ -83,15 +83,20 @@ realize your changes.
 ## Local Testing
 
 ### Setup:
-* To install Kubernetes on your local machine, consult the official [Kubernetes Local Machine Solutions](https://kubernetes.io/docs/setup/pick-right-solution/#local-machine-solutions) .  
+
+- To install Kubernetes on your local machine, consult the official [Kubernetes Local Machine Solutions](https://kubernetes.io/docs/setup/pick-right-solution/#local-machine-solutions) .
 
 ### Testing:
-* Go to the root of the project folder
-* Run all the test suites
+
+- Go to the root of the project folder
+- Run all the test suites
+
 ```bash
 > npm test
 ```
-* Filter test execution
+
+- Filter test execution
+
 ```bash
 > TEST_FILTER='About command' npm test # Only run test suites containing 'About command' in suite titles
 ```

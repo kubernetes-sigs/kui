@@ -22,7 +22,13 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  localDescribe
+} from '@kui-shell/core/tests/lib/common'
 
 const APP_TITLE = process.env.APP_TITLE || 'Kui Shell'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
@@ -35,19 +41,20 @@ const selectors = {
 }
 selectors.PROMPT = `${selectors.PROMPT_BLOCK} input`
 
-localDescribe('Basic Functionality', function (this: ISuite) {
+localDescribe('Basic Functionality', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
-  const openWindow = (app: Application) => app.client.getWindowCount()
-    .then(count => assert.strictEqual(count, 1)) // Verify that one window is open
-    .then(() => app.browserWindow.isVisible()) // Check if the window is visible
-    .then(isVisible => assert.strictEqual(isVisible, true)) // Verify the window is visible
-    .then(() => app.client.getTitle()) // Get the window's title
-    .then(title => assert.strictEqual(title, APP_TITLE)) // Verify the window's title
+  const openWindow = (app: Application) =>
+    app.client
+      .getWindowCount()
+      .then(count => assert.strictEqual(count, 1)) // Verify that one window is open
+      .then(() => app.browserWindow.isVisible()) // Check if the window is visible
+      .then(isVisible => assert.strictEqual(isVisible, true)) // Verify the window is visible
+      .then(() => app.client.getTitle()) // Get the window's title
+      .then(title => assert.strictEqual(title, APP_TITLE)) // Verify the window's title
 
-  it('shows an initial window', () => openWindow(this.app)
-    .catch(oops(this)))
+  it('shows an initial window', () => openWindow(this.app).catch(oops(this)))
 
   it('has an initial focus on the CLI prompt', () =>
     assert.ok(this.app.client.hasFocus(selectors.PROMPT)))

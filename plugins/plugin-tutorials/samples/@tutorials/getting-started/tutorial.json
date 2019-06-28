@@ -14,36 +14,68 @@
           "doc": "All of the CRUD, and many of the view commands, are accessible **directly from your favorite terminal**. You can gracefully flip between the terminal and these visualizations, without having to switch to your browser, log in, wait for pages to load, and so on."
         },
         "nextSteps": [
-          { "command": "auth", "display": "authentication", "doc": "To create and invoke, you will need to be authenticated", "when": "no-auth" },
-          { "command": "themes", "doc": "Choose a Theme"},
-          { "command": "tutorial kubernetes starter", "display": "kubernetes basics", "doc": "An **interactive tutorial** that shows some Kubernetes starter material" },
-          { "command": "tutorials", "doc": "Choose from the **full list of tutorials**" },
-          { "command": "combinators", "doc": "A **reference guide** to Apache Composer programming" },
-          { "command": "composer help", "doc": "Explore the Composition Service **CLI commands**", "when": "auth", "hidden": true },
-          { "command": "wsk help", "doc": "Explore the **Cloud Function** commands", "hidden": true }
+          {
+            "command": "auth",
+            "display": "authentication",
+            "doc": "To create and invoke, you will need to be authenticated",
+            "when": "no-auth"
+          },
+          { "command": "themes", "doc": "Choose a Theme" },
+          {
+            "command": "tutorial kubernetes starter",
+            "display": "kubernetes basics",
+            "doc": "An **interactive tutorial** that shows some Kubernetes starter material"
+          },
+          {
+            "command": "tutorials",
+            "doc": "Choose from the **full list of tutorials**"
+          },
+          {
+            "command": "combinators",
+            "doc": "A **reference guide** to Apache Composer programming"
+          },
+          {
+            "command": "composer help",
+            "doc": "Explore the Composition Service **CLI commands**",
+            "when": "auth",
+            "hidden": true
+          },
+          {
+            "command": "wsk help",
+            "doc": "Explore the **Cloud Function** commands",
+            "hidden": true
+          }
         ],
 
         "showcase": [
-          { "title": "Preview",
+          {
+            "title": "Preview",
             "command": "preview @demos/looper.js",
             "description": "Validate a composition's structure while you edit its source code",
-            "image": "https://ibm.box.com/shared/static/xantjhxwwm0zmp31kckh8s0fe07gawew.png" },
+            "image": "https://ibm.box.com/shared/static/xantjhxwwm0zmp31kckh8s0fe07gawew.png"
+          },
 
-          { "title": "Activation Grid",
+          {
+            "title": "Activation Grid",
             "command": "grid",
             "description": "View recent activations to identify errors or slow executions",
-            "image": "https://ibm.box.com/shared/static/kzgsbdeou04twohdlbzp20fsdqhzb334.gif" },
+            "image": "https://ibm.box.com/shared/static/kzgsbdeou04twohdlbzp20fsdqhzb334.gif"
+          },
 
-          { "title": "Activation Trace",
+          {
+            "title": "Activation Trace",
             "command": "activation logs",
             "description": "A trace of the execution of a composition",
-            "image": "https://ibm.box.com/shared/static/1gga6iqforftnn3zdnz3dyj4875cp539.png" },
+            "image": "https://ibm.box.com/shared/static/1gga6iqforftnn3zdnz3dyj4875cp539.png"
+          },
 
-          { "title": "Activation Statistics",
+          {
+            "title": "Activation Statistics",
             "command": "summary",
             "groupWith": "L => L[L.length - 1]",
             "description": "A statistical summary of recent executions",
-            "image": "https://ibm.box.com/shared/static/zisacj7inozq2pamjun3suf8qxi6dvd2.png" }
+            "image": "https://ibm.box.com/shared/static/zisacj7inozq2pamjun3suf8qxi6dvd2.png"
+          }
         ]
       }
     }

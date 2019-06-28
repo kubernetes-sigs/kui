@@ -47,12 +47,18 @@ export interface TabCompletionSpec {
    */
   toBeCompletedIdx: number
 }
-type Enumerator = (commandLine: CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
+type Enumerator = (
+  commandLine: CommandLine,
+  spec: TabCompletionSpec
+) => string[] | Promise<string[]>
 const enumerators: Enumerator[] = []
-export function registerEnumerator (enumerator: Enumerator) {
+export function registerEnumerator(enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
-async function applyEnumerator (commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+async function applyEnumerator(
+  commandLine: CommandLine,
+  spec: TabCompletionSpec
+): Promise<string[]> {
   const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
   return lists.flatMap(x => x).filter(x => x)
 }
@@ -66,7 +72,8 @@ async function applyEnumerator (commandLine: CommandLine, spec: TabCompletionSpe
 const listenForUpDown = (prompt: HTMLInputElement) => {
   const moveTo = (nextOp: string, evt: Event) => {
     const block = cli.getCurrentBlock()
-    const temporaryContainer = block && block.querySelector('.tab-completion-temporary')
+    const temporaryContainer =
+      block && block.querySelector('.tab-completion-temporary')
 
     if (temporaryContainer) {
       const current = temporaryContainer.querySelector('.selected')
@@ -84,7 +91,8 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
   }
 
   const previousKeyDown = prompt.onkeydown
-  prompt.onkeydown = evt => { // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
+  prompt.onkeydown = evt => {
+    // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
     const char = evt.keyCode
 
     if (char === keys.DOWN) {
@@ -98,7 +106,9 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
   }
 
   // cleanup routine
-  return () => { prompt.onkeydown = previousKeyDown }
+  return () => {
+    prompt.onkeydown = previousKeyDown
+  }
 }
 
 /**
@@ -109,12 +119,16 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
 const listenForEscape = () => {
   // listen for escape key
   const previousKeyup = document.onkeyup
-  const cleanup = () => { document.onkeyup = previousKeyup }
+  const cleanup = () => {
+    document.onkeyup = previousKeyup
+  }
 
   document.onkeyup = evt => {
     if (evt.keyCode === keys.ESCAPE) {
       const block = cli.getCurrentBlock()
-      const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+      const temporaryContainer =
+        block &&
+        (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
       if (temporaryContainer) {
         evt.preventDefault()
@@ -132,9 +146,7 @@ const listenForEscape = () => {
  */
 const installKeyHandlers = (prompt: HTMLInputElement) => {
   if (prompt) {
-    return [ listenForUpDown(prompt),
-      listenForEscape()
-    ]
+    return [listenForUpDown(prompt), listenForEscape()]
   } else {
     return []
   }
@@ -144,7 +156,13 @@ const installKeyHandlers = (prompt: HTMLInputElement) => {
  * Make a container UI for tab completions
  *
  */
-const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, partial: string, dirname?: string, lastIdx?: number) => {
+const makeCompletionContainer = (
+  block: HTMLElement,
+  prompt: HTMLInputElement,
+  partial: string,
+  dirname?: string,
+  lastIdx?: number
+) => {
   const temporaryContainer = document.createElement('div') as TemporaryContainer
   temporaryContainer.className = 'tab-completion-temporary repl-temporary'
 
@@ -179,11 +197,17 @@ const makeCompletionContainer = (block: HTMLElement, prompt: HTMLInputElement, p
     const args = repl.split(prompt.value)
     const currentText = args[temporaryContainer.lastIdx]
     const prevMatches = temporaryContainer.currentMatches
-    const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
-    const removedMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) !== 0)
+    const newMatches = prevMatches.filter(
+      ({ match }) => match.indexOf(currentText) === 0
+    )
+    const removedMatches = prevMatches.filter(
+      ({ match }) => match.indexOf(currentText) !== 0
+    )
 
     temporaryContainer.currentMatches = newMatches
-    removedMatches.forEach(({ option }) => temporaryContainer.removeChild(option))
+    removedMatches.forEach(({ option }) =>
+      temporaryContainer.removeChild(option)
+    )
 
     temporaryContainer['partial'] = currentText
 
@@ -229,10 +253,18 @@ const shellescape = (str: string): string => {
  * overlap at the beginning.
  *
  */
-const completeWith = (partial: string, match: string, doEscape = false, addSpace = false): string => {
+const completeWith = (
+  partial: string,
+  match: string,
+  doEscape = false,
+  addSpace = false
+): string => {
   const escapedMatch = !doEscape ? match : shellescape(match) // partial is escaped already, so escape the match, too
   const partialIdx = escapedMatch.indexOf(partial)
-  const remainder = (partialIdx >= 0 ? escapedMatch.substring(partialIdx + partial.length) : escapedMatch)
+  const remainder =
+    partialIdx >= 0
+      ? escapedMatch.substring(partialIdx + partial.length)
+      : escapedMatch
   return remainder + (addSpace ? ' ' : '')
 }
 
@@ -240,29 +272,30 @@ const completeWith = (partial: string, match: string, doEscape = false, addSpace
  * Is the given filepath a directory?
  *
  */
-const isDirectory = (filepath: string): Promise<boolean> => new Promise((resolve, reject) => {
-  fs.lstat(filepath, (err, stats) => {
-    if (err) {
-      reject(err)
-    } else {
-      if (stats.isSymbolicLink()) {
-        debug('following symlink')
-        // TODO: consider turning these into the better async calls?
-        return fs.realpath(filepath, (err, realpath) => {
-          if (err) {
-            reject(err)
-          } else {
-            return isDirectory(realpath)
-              .then(resolve)
-              .catch(reject)
-          }
-        })
-      }
+const isDirectory = (filepath: string): Promise<boolean> =>
+  new Promise((resolve, reject) => {
+    fs.lstat(filepath, (err, stats) => {
+      if (err) {
+        reject(err)
+      } else {
+        if (stats.isSymbolicLink()) {
+          debug('following symlink')
+          // TODO: consider turning these into the better async calls?
+          return fs.realpath(filepath, (err, realpath) => {
+            if (err) {
+              reject(err)
+            } else {
+              return isDirectory(realpath)
+                .then(resolve)
+                .catch(reject)
+            }
+          })
+        }
 
-      resolve(stats.isDirectory())
-    }
+        resolve(stats.isDirectory())
+      }
+    })
   })
-})
 
 /**
  * We've found a match. Add this match to the given partial match,
@@ -270,7 +303,23 @@ const isDirectory = (filepath: string): Promise<boolean> => new Promise((resolve
  * prompt, which is an <input>.
  *
  */
-const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer = undefined, partial = temporaryContainer.partial, dirname = temporaryContainer.dirname, doEscape = false, addSpace = false }: { temporaryContainer?: TemporaryContainer; partial?: string; dirname?: false | string; doEscape?: boolean; addSpace?: boolean }) => {
+const complete = (
+  match: string,
+  prompt: HTMLInputElement,
+  {
+    temporaryContainer = undefined,
+    partial = temporaryContainer.partial,
+    dirname = temporaryContainer.dirname,
+    doEscape = false,
+    addSpace = false
+  }: {
+    temporaryContainer?: TemporaryContainer
+    partial?: string
+    dirname?: false | string
+    doEscape?: boolean
+    addSpace?: boolean
+  }
+) => {
   debug('completion', match, partial, dirname)
 
   // in case match includes partial as a prefix
@@ -282,14 +331,18 @@ const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer 
 
   const addToPrompt = (extra: string): void => {
     const pos = prompt.selectionStart + extra.length
-    prompt.value = prompt.value.substring(0, prompt.selectionStart) +
+    prompt.value =
+      prompt.value.substring(0, prompt.selectionStart) +
       extra +
       prompt.value.substring(prompt.selectionStart)
     prompt.setSelectionRange(pos, pos)
 
     // make sure the new text is visible
     // see https://github.com/IBM/kui/issues/1367
-    prompt.scrollLeft = prompt.scrollWidth * Math.max(0, (pos - partial.length - extra.length - 1)) / prompt.value.length
+    prompt.scrollLeft =
+      (prompt.scrollWidth *
+        Math.max(0, pos - partial.length - extra.length - 1)) /
+      prompt.value.length
   }
 
   if (dirname) {
@@ -306,7 +359,8 @@ const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer 
           debug('complete as scalar')
           addToPrompt(completion)
         }
-      }).catch(err => {
+      })
+      .catch(err => {
         console.error(err)
       })
   } else {
@@ -320,7 +374,13 @@ const complete = (match: string, prompt: HTMLInputElement, { temporaryContainer 
  * Add a suggestion to the suggestion container
  *
  */
-const addSuggestion = (temporaryContainer: TemporaryContainer, prefix: string, dirname: string, prompt: HTMLInputElement, doEscape = false) => (match, idx: number) => {
+const addSuggestion = (
+  temporaryContainer: TemporaryContainer,
+  prefix: string,
+  dirname: string,
+  prompt: HTMLInputElement,
+  doEscape = false
+) => (match, idx: number) => {
   const matchLabel = match.label || match
   const matchCompletion = match.completion || matchLabel
 
@@ -363,7 +423,12 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, prefix: string, d
 
   // onclick, use this match as the completion
   option.addEventListener('click', () => {
-    complete(matchCompletion, prompt, { temporaryContainer, dirname, doEscape, addSpace: match.addSpace })
+    complete(matchCompletion, prompt, {
+      temporaryContainer,
+      dirname,
+      doEscape,
+      addSpace: match.addSpace
+    })
   })
 
   option.setAttribute('data-match', matchLabel)
@@ -373,7 +438,11 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, prefix: string, d
   option.setAttribute('data-value', optionInner.innerText)
 
   // for incremental completion; see onChange handler above
-  temporaryContainer.currentMatches.push({ match: matchLabel, completion: matchCompletion, option })
+  temporaryContainer.currentMatches.push({
+    match: matchLabel,
+    completion: matchCompletion,
+    option
+  })
 
   return { option, optionInner, innerPost }
 }
@@ -384,14 +453,27 @@ const addSuggestion = (temporaryContainer: TemporaryContainer, prefix: string, d
  * common prefix of the matches
  *
  */
-const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: string[], temporaryContainer: TemporaryContainer, partial = temporaryContainer.partial) => {
+const updateReplToReflectLongestPrefix = (
+  prompt: HTMLInputElement,
+  matches: string[],
+  temporaryContainer: TemporaryContainer,
+  partial = temporaryContainer.partial
+) => {
   if (matches.length > 0) {
-    const shortest = matches.reduce((minLength: false | number, match) => !minLength ? match.length : Math.min(minLength, match.length), false)
+    const shortest = matches.reduce(
+      (minLength: false | number, match) =>
+        !minLength ? match.length : Math.min(minLength, match.length),
+      false
+    )
     let idx = 0
 
     const partialComplete = (idx: number) => {
       // debug('partial complete', idx)
-      const completion = completeWith(partial, matches[0].substring(0, idx), true)
+      const completion = completeWith(
+        partial,
+        matches[0].substring(0, idx),
+        true
+      )
       temporaryContainer.partial = temporaryContainer.partial + completion
       prompt.value = prompt.value + completion
       return temporaryContainer.partial
@@ -426,7 +508,13 @@ const updateReplToReflectLongestPrefix = (prompt: HTMLInputElement, matches: str
  * Given a list of entities, filter them and present options
  *
  */
-const presentEnumeratorSuggestions = (block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number, last: string) => (filteredList: string[]) => {
+const presentEnumeratorSuggestions = (
+  block: HTMLElement,
+  prompt: HTMLInputElement,
+  temporaryContainer: TemporaryContainer,
+  lastIdx: number,
+  last: string
+) => (filteredList: string[]) => {
   debug('presentEnumeratorSuggestions', filteredList)
   if (filteredList.length === 1) {
     complete(filteredList[0], prompt, { partial: last, dirname: false })
@@ -434,11 +522,23 @@ const presentEnumeratorSuggestions = (block: HTMLElement, prompt: HTMLInputEleme
     const partial = last
     const dirname = undefined
     if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+      temporaryContainer = makeCompletionContainer(
+        block,
+        prompt,
+        partial,
+        dirname,
+        lastIdx
+      )
     }
 
-    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
-    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+    const prefix = updateReplToReflectLongestPrefix(
+      prompt,
+      filteredList,
+      temporaryContainer
+    )
+    filteredList.forEach(
+      addSuggestion(temporaryContainer, prefix || last, dirname, prompt)
+    )
   }
 }
 
@@ -462,7 +562,13 @@ interface TemporaryContainer extends HTMLDivElement {
  * Suggest completions for a local file
  *
  */
-const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number) => {
+const suggestLocalFile = (
+  last: string,
+  block: HTMLElement,
+  prompt: HTMLInputElement,
+  temporaryContainer: TemporaryContainer,
+  lastIdx: number
+) => {
   // dirname will "foo" in the above example; it
   // could also be that last is itself the name
   // of a directory
@@ -478,12 +584,15 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
         debug('fs.readdir error', err)
       } else {
         const partial = path.basename(last)
-        const matches: string[] = files
-          .filter(_f => {
-            const f = shellescape(_f)
-            return (lastIsDir || f.indexOf(partial) === 0) &&
-              !f.endsWith('~') && f !== '.' && f !== '..'
-          })
+        const matches: string[] = files.filter(_f => {
+          const f = shellescape(_f)
+          return (
+            (lastIsDir || f.indexOf(partial) === 0) &&
+            !f.endsWith('~') &&
+            f !== '.' &&
+            f !== '..'
+          )
+        })
 
         debug('fs.readdir success', partial, matches)
 
@@ -493,7 +602,12 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
           // completion will be the bit we have to append to the current prompt.value
           //
           debug('singleton file completion', matches[0])
-          complete(matches[0], prompt, { temporaryContainer, doEscape: true, partial, dirname })
+          complete(matches[0], prompt, {
+            temporaryContainer,
+            doEscape: true,
+            partial,
+            dirname
+          })
         } else if (matches.length > 1) {
           //
           // then there are multiple matches, present the choices
@@ -503,14 +617,30 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
           // make a temporary div to house the completion options,
           // and attach it to the block that encloses the current prompt
           if (!temporaryContainer) {
-            temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+            temporaryContainer = makeCompletionContainer(
+              block,
+              prompt,
+              partial,
+              dirname,
+              lastIdx
+            )
           }
 
-          const prefix = updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
+          const prefix = updateReplToReflectLongestPrefix(
+            prompt,
+            matches,
+            temporaryContainer
+          )
 
           // add each match to that temporary div
           matches.forEach((match, idx) => {
-            const { option, optionInner, innerPost } = addSuggestion(temporaryContainer, prefix || '', dirname, prompt, true)(match, idx)
+            const { option, optionInner, innerPost } = addSuggestion(
+              temporaryContainer,
+              prefix || '',
+              dirname,
+              prompt,
+              true
+            )(match, idx)
 
             // see if the match is a directory, so that we add a trailing slash
             const filepath = path.join(dirname, match)
@@ -520,7 +650,8 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
                   innerPost.innerText = innerPost.innerText + '/'
                 }
                 option.setAttribute('data-value', optionInner.innerText)
-              }).catch(err => {
+              })
+              .catch(err => {
                 console.error(err)
               })
           })
@@ -534,20 +665,30 @@ const suggestLocalFile = (last: string, block: HTMLElement, prompt: HTMLInputEle
  * Given a list of entities, filter them and present options
  *
  */
-const filterAndPresentEntitySuggestions = (last: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number) => entities => {
+const filterAndPresentEntitySuggestions = (
+  last: string,
+  block: HTMLElement,
+  prompt: HTMLInputElement,
+  temporaryContainer: TemporaryContainer,
+  lastIdx: number
+) => entities => {
   debug('filtering these entities', entities)
   debug('against this filter', last)
 
   // find matches, given the current prompt contents
-  const filteredList = entities.map(({ name, packageName, namespace }) => {
-    const packageNamePart = packageName ? `${packageName}/` : ''
-    const actionWithPackage = `${packageNamePart}${name}`
-    const fqn = `/${namespace}/${actionWithPackage}`
+  const filteredList = entities
+    .map(({ name, packageName, namespace }) => {
+      const packageNamePart = packageName ? `${packageName}/` : ''
+      const actionWithPackage = `${packageNamePart}${name}`
+      const fqn = `/${namespace}/${actionWithPackage}`
 
-    return (name.indexOf(last) === 0 && actionWithPackage) ||
-            (actionWithPackage.indexOf(last) === 0 && actionWithPackage) ||
-            (fqn.indexOf(last) === 0 && fqn)
-  }).filter(x => x)
+      return (
+        (name.indexOf(last) === 0 && actionWithPackage) ||
+        (actionWithPackage.indexOf(last) === 0 && actionWithPackage) ||
+        (fqn.indexOf(last) === 0 && fqn)
+      )
+    })
+    .filter(x => x)
 
   debug('filtered list', filteredList)
 
@@ -563,12 +704,24 @@ const filterAndPresentEntitySuggestions = (last: string, block: HTMLElement, pro
     const dirname = undefined
 
     if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+      temporaryContainer = makeCompletionContainer(
+        block,
+        prompt,
+        partial,
+        dirname,
+        lastIdx
+      )
     }
 
-    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    const prefix = updateReplToReflectLongestPrefix(
+      prompt,
+      filteredList,
+      temporaryContainer
+    )
 
-    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+    filteredList.forEach(
+      addSuggestion(temporaryContainer, prefix || last, dirname, prompt)
+    )
   }
 }
 
@@ -576,16 +729,35 @@ const filterAndPresentEntitySuggestions = (last: string, block: HTMLElement, pro
  * Command not found, but we have command completions to offer the user
  *
  */
-const suggestCommandCompletions = (matches, partial: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer) => {
+const suggestCommandCompletions = (
+  matches,
+  partial: string,
+  block: HTMLElement,
+  prompt: HTMLInputElement,
+  temporaryContainer: TemporaryContainer
+) => {
   // don't suggest anything without a usage model, and then align to
   // the addSuggestion model
-  matches = matches.filter(({ usage, docs }) => usage || docs)
-    .map(({ command, docs, usage = { command, docs, commandPrefix: undefined, title: undefined, header: undefined } }) => ({
-      label: usage.command || usage.commandPrefix,
-      completion: command,
-      addSpace: true,
-      docs: usage.title || usage.header || usage.docs // favoring shortest first
-    }))
+  matches = matches
+    .filter(({ usage, docs }) => usage || docs)
+    .map(
+      ({
+        command,
+        docs,
+        usage = {
+          command,
+          docs,
+          commandPrefix: undefined,
+          title: undefined,
+          header: undefined
+        }
+      }) => ({
+        label: usage.command || usage.commandPrefix,
+        completion: command,
+        addSpace: true,
+        docs: usage.title || usage.header || usage.docs // favoring shortest first
+      })
+    )
 
   if (matches.length === 1) {
     debug('singleton command completion', matches[0])
@@ -598,7 +770,9 @@ const suggestCommandCompletions = (matches, partial: string, block: HTMLElement,
     }
 
     // add suggestions to the container
-    matches.forEach(addSuggestion(temporaryContainer, partial, undefined, prompt))
+    matches.forEach(
+      addSuggestion(temporaryContainer, partial, undefined, prompt)
+    )
   }
 }
 
@@ -606,7 +780,14 @@ const suggestCommandCompletions = (matches, partial: string, block: HTMLElement,
  * Suggest options
  *
  */
-const suggest = (param, last: string, block: HTMLElement, prompt: HTMLInputElement, temporaryContainer: TemporaryContainer, lastIdx: number) => {
+const suggest = (
+  param,
+  last: string,
+  block: HTMLElement,
+  prompt: HTMLInputElement,
+  temporaryContainer: TemporaryContainer,
+  lastIdx: number
+) => {
   if (param.file) {
     // then the expected parameter is a file; we can auto-complete
     // based on the contents of the local filesystem
@@ -614,8 +795,17 @@ const suggest = (param, last: string, block: HTMLElement, prompt: HTMLInputEleme
   } else if (param.entity) {
     // then the expected parameter is an existing entity; so we
     // can enumerate the entities of the specified type
-    return repl.qexec(`${param.entity} list --limit 200`)
-      .then(filterAndPresentEntitySuggestions(path.basename(last), block, prompt, temporaryContainer, lastIdx))
+    return repl
+      .qexec(`${param.entity} list --limit 200`)
+      .then(
+        filterAndPresentEntitySuggestions(
+          path.basename(last),
+          block,
+          prompt,
+          temporaryContainer,
+          lastIdx
+        )
+      )
   }
 }
 
@@ -627,16 +817,23 @@ export default () => {
   if (typeof document === 'undefined') return
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'), key: 'tab-completion.css' })
+    injectCSS({
+      css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
+      key: 'tab-completion.css'
+    })
   } else {
-    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+    const root = path.dirname(
+      require.resolve('@kui-shell/plugin-core-support/package.json')
+    )
     injectCSS(path.join(root, 'web/css/tab-completion.css'))
   }
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
   document.addEventListener('keydown', async (evt: KeyboardEvent) => {
     const block = cli.getCurrentBlock()
-    const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+    const temporaryContainer =
+      block &&
+      (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
     if (evt.keyCode === keys.ENTER) {
       if (temporaryContainer) {
@@ -652,7 +849,11 @@ export default () => {
           const addSpace = current.hasAttribute('data-add-space')
           const prompt = cli.getCurrentPrompt()
 
-          complete(completion, prompt, { temporaryContainer, doEscape, addSpace })
+          complete(completion, prompt, {
+            temporaryContainer,
+            doEscape,
+            addSpace
+          })
         }
 
         // prevent the REPL from evaluating the expr
@@ -678,7 +879,10 @@ export default () => {
             // attached to the block, so tab means cycle
             // through the options
             const current = temporaryContainer.querySelector('.selected')
-            const next = (current.nextSibling || temporaryContainer.querySelector('.tab-completion-option:first-child')) as HTMLElement
+            const next = (current.nextSibling ||
+              temporaryContainer.querySelector(
+                '.tab-completion-option:first-child'
+              )) as HTMLElement
             if (next) {
               current.classList.remove('selected')
               next.classList.add('selected')
@@ -688,7 +892,9 @@ export default () => {
           }
 
           const handleUsage = usageError => {
-            const usage = usageError.raw ? usageError.raw.usage || usageError.raw : usageError.usage || usageError
+            const usage = usageError.raw
+              ? usageError.raw.usage || usageError.raw
+              : usageError.usage || usageError
             debug('usage', usage, usageError)
 
             if (usage.fn) {
@@ -698,19 +904,26 @@ export default () => {
             } else if (usageError.partialMatches || usageError.available) {
               // command not found, with partial matches that we can offer the user
 
-              suggestCommandCompletions(usageError.partialMatches || usageError.available,
+              suggestCommandCompletions(
+                usageError.partialMatches || usageError.available,
                 prompt.value,
-                block, prompt,
-                temporaryContainer)
+                block,
+                prompt,
+                temporaryContainer
+              )
             } else if (usage && usage.command) {
               // so we have a usage model; let's
               // determine what parameters we might be
               // able to help with
               const required = usage.required || []
-              const optionalPositionals = (usage.optional || []).filter(({ positional }) => positional)
+              const optionalPositionals = (usage.optional || []).filter(
+                ({ positional }) => positional
+              )
 
               const oneofs = usage.oneof ? [usage.oneof[0]] : []
-              const positionals = required.concat(oneofs).concat(optionalPositionals)
+              const positionals = required
+                .concat(oneofs)
+                .concat(optionalPositionals)
 
               debug('positionals', positionals)
               if (positionals.length > 0) {
@@ -720,32 +933,60 @@ export default () => {
                 const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
                 const param = positionals[lastIdx]
 
-                debug('maybe', args, commandIdx, lastIdx, nActuals, param, args[commandIdx + lastIdx])
+                debug(
+                  'maybe',
+                  args,
+                  commandIdx,
+                  lastIdx,
+                  nActuals,
+                  param,
+                  args[commandIdx + lastIdx]
+                )
 
-                if (commandIdx === args.length - 1 && !prompt.value.match(/\s+$/)) {
+                if (
+                  commandIdx === args.length - 1 &&
+                  !prompt.value.match(/\s+$/)
+                ) {
                   // then the prompt has e.g. "wsk package" with no terminal whitespace; nothing to do yet
-
                 } else if (param) {
                   // great, there is a positional we can help with
                   try {
                     // we found a required positional parameter, now suggest values for this parameter
-                    suggest(param, findFile(args[commandIdx + lastIdx + 1], { safe: true }),
-                      block, prompt, temporaryContainer, commandIdx + lastIdx)
+                    suggest(
+                      param,
+                      findFile(args[commandIdx + lastIdx + 1], { safe: true }),
+                      block,
+                      prompt,
+                      temporaryContainer,
+                      commandIdx + lastIdx
+                    )
                   } catch (err) {
                     console.error(err)
                   }
                 }
               }
             } else if (!inBrowser()) {
-              const { A: args, endIndices } = repl._split(prompt.value, true, true) as repl.Split
+              const { A: args, endIndices } = repl._split(
+                prompt.value,
+                true,
+                true
+              ) as repl.Split
               const lastIdx = prompt.selectionStart
               debug('falling back on local file completion', args, lastIdx)
 
               for (let ii = 0; ii < endIndices.length; ii++) {
                 if (endIndices[ii] >= lastIdx) {
                   // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
-                  const last = prompt.value.substring(endIndices[ii - 1], lastIdx).replace(/^\s+/, '')
-                  suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
+                  const last = prompt.value
+                    .substring(endIndices[ii - 1], lastIdx)
+                    .replace(/^\s+/, '')
+                  suggestLocalFile(
+                    last,
+                    block,
+                    prompt,
+                    temporaryContainer,
+                    lastIdx
+                  )
                   break
                 }
               }
@@ -753,15 +994,22 @@ export default () => {
           }
 
           const lastIdx = prompt.selectionStart
-          const { A: argv, endIndices } = repl._split(prompt.value, true, true) as repl.Split
+          const { A: argv, endIndices } = repl._split(
+            prompt.value,
+            true,
+            true
+          ) as repl.Split
           const options = minimist(argv)
           const toBeCompletedIdx = endIndices.findIndex(idx => idx >= lastIdx) // e.g. git branch f<tab>
-          const completingTrailingEmpty = lastIdx > endIndices[endIndices.length - 1] // e.g. git branch <tab>
+          const completingTrailingEmpty =
+            lastIdx > endIndices[endIndices.length - 1] // e.g. git branch <tab>
           if (toBeCompletedIdx >= 0 || completingTrailingEmpty) {
             // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
             const last = completingTrailingEmpty
               ? ''
-              : prompt.value.substring(endIndices[toBeCompletedIdx - 1], lastIdx).replace(/^\s+/, '')
+              : prompt.value
+                  .substring(endIndices[toBeCompletedIdx - 1], lastIdx)
+                  .replace(/^\s+/, '')
 
             // argvNoOptions is argv without the options; we can get
             // this directly from yargs-parser's '_'
@@ -784,7 +1032,13 @@ export default () => {
 
             const completions = await applyEnumerator(commandLine, spec)
             if (completions && completions.length > 0) {
-              return presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
+              return presentEnumeratorSuggestions(
+                block,
+                prompt,
+                temporaryContainer,
+                lastIdx,
+                last
+              )(completions)
             }
 
             // intentional fallthrough
@@ -792,7 +1046,9 @@ export default () => {
 
           try {
             debug('fetching usage', value)
-            const usage = repl.qexec(`${value} --help`, undefined, undefined, { failWithUsage: true })
+            const usage = repl.qexec(`${value} --help`, undefined, undefined, {
+              failWithUsage: true
+            })
             if (usage.then) {
               usage.then(handleUsage, handleUsage)
             } else {

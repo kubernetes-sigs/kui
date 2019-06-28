@@ -31,7 +31,7 @@ let initDone
 // to instruct the editor how you named the
 // bundles that contain the web workers.
 self['MonacoEnvironment'] = {
-  getWorkerUrl: function (moduleId, label) {
+  getWorkerUrl: function(moduleId, label) {
     const hash: string = window['_kuiWebpackHash']
     const root: string = window['_kuiWebpackResourceRoot'] || '.'
 
@@ -57,46 +57,63 @@ export default (editorWrapper: HTMLElement, options) => {
   // widget
   //
   let editor
-  const ready = () => new Promise((resolve) => {
-    injectCSS({ css: require('monaco-editor/min/vs/editor/editor.main.css').toString(), key: 'editor.monaco.core' })
+  const ready = () =>
+    new Promise(resolve => {
+      injectCSS({
+        css: require('monaco-editor/min/vs/editor/editor.main.css').toString(),
+        key: 'editor.monaco.core'
+      })
 
-    /**
-     *
-     */
-    const initEditor = () => {
-      if (!initDone) {
-        // for now, try to disable the built-in Javascript-specific completion helper thingies
-        monaco.languages.typescript.javascriptDefaults.setCompilerOptions({ noLib: true, allowNonTsExtensions: true })
+      /**
+       *
+       */
+      const initEditor = () => {
+        if (!initDone) {
+          // for now, try to disable the built-in Javascript-specific completion helper thingies
+          monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+            noLib: true,
+            allowNonTsExtensions: true
+          })
 
-        // install any custom languages we might have
-        languages(monaco).forEach(({ language, provider }) => {
-          monaco.languages.registerCompletionItemProvider(language, provider)
-        })
+          // install any custom languages we might have
+          languages(monaco).forEach(({ language, provider }) => {
+            monaco.languages.registerCompletionItemProvider(language, provider)
+          })
 
-        initDone = true
-      }
+          initDone = true
+        }
 
-      // see if we are in dark mode
-      const theme = {
-        theme: document.querySelector('body').getAttribute('kui-theme-style') === 'dark' ? 'vs-dark' : 'vs'
-      }
+        // see if we are in dark mode
+        const theme = {
+          theme:
+            document.querySelector('body').getAttribute('kui-theme-style') ===
+            'dark'
+              ? 'vs-dark'
+              : 'vs'
+        }
 
-      // here we instantiate an editor widget
-      editor = monaco.editor.create(editorWrapper, Object.assign(defaultMonacoOptions(options), theme, options))
+        // here we instantiate an editor widget
+        editor = monaco.editor.create(
+          editorWrapper,
+          Object.assign(defaultMonacoOptions(options), theme, options)
+        )
 
-      editor.clearDecorations = () => {
-        debug('clearing decorations', editor.__cloudshell_decorations)
-        const none = [{ range: new monaco.Range(1, 1, 1, 1), options: { } }]
-        editor.__cloudshell_decorations = editor.deltaDecorations(editor.__cloudshell_decorations || [], none)
-      }
+        editor.clearDecorations = () => {
+          debug('clearing decorations', editor.__cloudshell_decorations)
+          const none = [{ range: new monaco.Range(1, 1, 1, 1), options: {} }]
+          editor.__cloudshell_decorations = editor.deltaDecorations(
+            editor.__cloudshell_decorations || [],
+            none
+          )
+        }
 
-      editorWrapper['editor'] = editor
+        editorWrapper['editor'] = editor
 
-      resolve(editor)
-    } /* initEditor */
+        resolve(editor)
+      } /* initEditor */
 
-    initEditor()
-  }) /* end of ready() */
+      initEditor()
+    }) /* end of ready() */
 
   return ready()
 }

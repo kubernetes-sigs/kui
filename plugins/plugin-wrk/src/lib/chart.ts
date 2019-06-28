@@ -43,7 +43,9 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
   }
 
   if (typeof Chart === 'undefined') {
-    injectScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js')
+    injectScript(
+      'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js'
+    )
 
     return setTimeout(() => init(graphics, options), 100)
   }
@@ -60,8 +62,15 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
   const pointRadius = 0
   const lineTension = 0
 
-  const gridLines = { zeroLineWidth: 3, zeroLineColor: '#4C4C4C', drawTicks: false, color: '#D8D8D8' }
-  const gridLinesTransparent = Object.assign({}, gridLines, { color: 'transparent' })
+  const gridLines = {
+    zeroLineWidth: 3,
+    zeroLineColor: '#4C4C4C',
+    drawTicks: false,
+    color: '#D8D8D8'
+  }
+  const gridLinesTransparent = Object.assign({}, gridLines, {
+    color: 'transparent'
+  })
   const ticks = { beginAtZero: true, padding: 10, fontStyle: 'bold' }
 
   /** create a ChartJS chart configuration object */
@@ -73,13 +82,45 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
     const chartData = {
       labels: [],
       datasets: [
-        { type, fill, label: 'Requests/sec', data: [], yAxisID: 'rps', backgroundColor: 'transparent', pointStyle: 'rectRot', lineTension },
-        { type, fill, label: '99% Latency', data: [], yAxisID, lineTension, borderDash: [4, 2], pointBackgroundColor: 'transparent' },
+        {
+          type,
+          fill,
+          label: 'Requests/sec',
+          data: [],
+          yAxisID: 'rps',
+          backgroundColor: 'transparent',
+          pointStyle: 'rectRot',
+          lineTension
+        },
+        {
+          type,
+          fill,
+          label: '99% Latency',
+          data: [],
+          yAxisID,
+          lineTension,
+          borderDash: [4, 2],
+          pointBackgroundColor: 'transparent'
+        },
         { type, fill, label: 'Median Latency', data: [], yAxisID, lineTension },
         { type, fill: '+1', label: 'skip', data: [], yAxisID, lineTension },
-        { type, fill: '-1', label: '25-75% Band', data: [], yAxisID, lineTension },
+        {
+          type,
+          fill: '-1',
+          label: '25-75% Band',
+          data: [],
+          yAxisID,
+          lineTension
+        },
         { type, fill: '+1', label: 'skip', data: [], yAxisID, lineTension },
-        { type, fill: '-1', label: 'Min-Max Band', data: [], yAxisID, lineTension }
+        {
+          type,
+          fill: '-1',
+          label: 'Min-Max Band',
+          data: [],
+          yAxisID,
+          lineTension
+        }
         // { type, fill: '+1', label: 'skip', data: [], backgroundColor: transparent(area,0.025), borderColor: 'transparent', yAxisID: 'rps', pointRadius, lineTension },
         // { type, fill: '-1', label: 'skip', data: [], backgroundColor: transparent(area,0.025), borderColor: 'transparent', yAxisID: 'rps', pointRadius, lineTension }
       ]
@@ -107,45 +148,73 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
           labels: {
             fontFamily,
             usePointStyle: true,
-            filter: (item) => {
+            filter: item => {
               return item.text !== 'skip'
             }
           }
         },
         scales: {
-          xAxes: [{
-            type: 'time',
-            display: true,
-            // stacked: true,
-            ticks: {
-              fontFamily,
-              padding: 10,
-              maxTicksLimit: 4
-            },
-            gridLines: gridLinesTransparent,
-            maxBarThickness: 30,
-            time: {
-              format: timeFormat
-              // round: 'day'
-            },
-            scaleLabel: {
+          xAxes: [
+            {
+              type: 'time',
               display: true,
-              fontStyle: 'bold',
-              fontFamily,
-              fontSize: 13,
-              labelString: 'Time'
+              // stacked: true,
+              ticks: {
+                fontFamily,
+                padding: 10,
+                maxTicksLimit: 4
+              },
+              gridLines: gridLinesTransparent,
+              maxBarThickness: 30,
+              time: {
+                format: timeFormat
+                // round: 'day'
+              },
+              scaleLabel: {
+                display: true,
+                fontStyle: 'bold',
+                fontFamily,
+                fontSize: 13,
+                labelString: 'Time'
+              }
             }
-          }],
+          ],
           yAxes: [
-            { id: 'rps', position: 'left', type: 'linear', scaleLabel: { display: true, fontStyle: 'bold', fontFamily, fontSize: 13, labelString: 'Requests per Second' }, ticks, gridLines },
-            { id: 'latency', position: 'right', type: 'linear', scaleLabel: { display: true, fontStyle: 'bold', fontFamily, fontSize: 13, labelString: 'Latency' }, ticks, gridLines: gridLinesTransparent }
+            {
+              id: 'rps',
+              position: 'left',
+              type: 'linear',
+              scaleLabel: {
+                display: true,
+                fontStyle: 'bold',
+                fontFamily,
+                fontSize: 13,
+                labelString: 'Requests per Second'
+              },
+              ticks,
+              gridLines
+            },
+            {
+              id: 'latency',
+              position: 'right',
+              type: 'linear',
+              scaleLabel: {
+                display: true,
+                fontStyle: 'bold',
+                fontFamily,
+                fontSize: 13,
+                labelString: 'Latency'
+              },
+              ticks,
+              gridLines: gridLinesTransparent
+            }
           ]
         }
       }
     }
   }
 
-  const chart = graphics.container.chart = new Chart(ctx, makeChartConfig())
+  const chart = (graphics.container.chart = new Chart(ctx, makeChartConfig()))
 
   const labels = chart.data.labels
   const l99 = chart.data.datasets[1]
@@ -161,7 +230,13 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
   /** inject the current theme into the chart canvas */
   const injectTheme = (doUpdate = true) => {
     // pick up the theme choices
-    const { fontFamily, bar, area, borderWidth = 1, chart: chartStyle } = theme()
+    const {
+      fontFamily,
+      bar,
+      area,
+      borderWidth = 1,
+      chart: chartStyle
+    } = theme()
     debug('theme', fontFamily, bar)
 
     if (chartStyle && chartStyle.backgroundColor) {
@@ -199,7 +274,9 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
 
   injectTheme(false)
 
-  const right = document.querySelector('#sidecar .header-right-bits .custom-header-content')
+  const right = document.querySelector(
+    '#sidecar .header-right-bits .custom-header-content'
+  )
   const label = document.createElement('div')
   const max = document.createElement('div')
 
@@ -226,7 +303,15 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
     // register as a listener for load test updates, for the chart
     //
     eventBus.on('/wrk/iter', row => {
-      const { requestsPerSec, /* rpsMin, rpsMax, */ latency25, latency50, latency75, latency99, latencyMax, latencyMin } = row
+      const {
+        requestsPerSec,
+        /* rpsMin, rpsMax, */ latency25,
+        latency50,
+        latency75,
+        latency99,
+        latencyMax,
+        latencyMin
+      } = row
 
       try {
         // const N = labels.length - 1

@@ -25,10 +25,11 @@ import { PreloadRegistration } from '@kui-shell/core/models/plugin'
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree: CommandRegistrar, options?) => {
-  await Promise.all([
-    help(commandTree, options)
-  ])
+const registration: PreloadRegistration = async (
+  commandTree: CommandRegistrar,
+  options?
+) => {
+  await Promise.all([help(commandTree, options)])
 
   if (!isHeadless()) {
     await Promise.all([
@@ -41,7 +42,8 @@ const registration: PreloadRegistration = async (commandTree: CommandRegistrar, 
     ])
   }
 
-  if (!isHeadless() && !inBrowser()) await import('./lib/text-search').then(_ => _.default()) // in webpack, use the default text-search bar of browser
+  if (!isHeadless() && !inBrowser())
+    await import('./lib/text-search').then(_ => _.default()) // in webpack, use the default text-search bar of browser
 }
 
 export default registration

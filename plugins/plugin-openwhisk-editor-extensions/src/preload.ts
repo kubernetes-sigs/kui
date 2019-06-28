@@ -33,8 +33,12 @@ export default async () => {
   debug('initializing')
 
   if (!isHeadless()) {
-    const { lockIcon, edit } = await import('@kui-shell/plugin-editor/lib/readonly')
-    const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
+    const { lockIcon, edit } = await import(
+      '@kui-shell/plugin-editor/lib/readonly'
+    )
+    const { currentSelection } = await import(
+      '@kui-shell/core/webapp/views/sidecar'
+    )
 
     const getEntity = (tab: Tab) => {
       const entity = currentSelection(tab)
@@ -43,9 +47,13 @@ export default async () => {
       return entity
     }
 
-    const { registerFetcher } = await import('@kui-shell/plugin-editor/lib/fetchers')
+    const { registerFetcher } = await import(
+      '@kui-shell/plugin-editor/lib/fetchers'
+    )
 
-    const { addActionMode } = await import('@kui-shell/plugin-openwhisk/lib/models/modes')
+    const { addActionMode } = await import(
+      '@kui-shell/plugin-openwhisk/lib/models/modes'
+    )
     const { gotoReadonlyView, fetchAction } = await import('./lib/cmds/new')
 
     registerFetcher(fetchAction())
@@ -55,7 +63,11 @@ export default async () => {
       mode: 'unlock',
       icon: 'fas fa-lock',
       tooltip: 'You are in read-only mode.\u000aClick to edit.', // TODO externalize string
-      direct: edit({ getEntity, lock: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) }) })
+      direct: edit({
+        getEntity,
+        lock: ({ getEntity }) =>
+          lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+      })
     })
 
     addActionMode(unlock, 'unshift')

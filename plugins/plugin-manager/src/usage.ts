@@ -18,7 +18,9 @@
 const parents = [{ command: 'plugin' }]
 
 /** required parameter: name of installed plugin */
-const installedPlugin = [{ name: 'plugin', docs: 'the name of an installed plugin', entity: 'plugin' }]
+const installedPlugin = [
+  { name: 'plugin', docs: 'the name of an installed plugin', entity: 'plugin' }
+]
 
 /**
  * Usage model for plugin commands

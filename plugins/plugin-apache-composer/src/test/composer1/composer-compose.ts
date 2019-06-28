@@ -21,11 +21,13 @@ const cli = ui.cli
 const expectedError = `Usage: This command is intended for use from the CLI, to launch this graphical Shell.
 You are already here. Welcome!`
 
-describe('try using "shell" to open the graphical shell, when already in the graphical shell', function (this: common.ISuite) {
+describe('try using "shell" to open the graphical shell, when already in the graphical shell', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should fail when executing "shell"', () => cli.do('shell', this.app)
-    .then(cli.expectError(0, expectedError))
-    .catch(common.oops(this)))
+  it('should fail when executing "shell"', () =>
+    cli
+      .do('shell', this.app)
+      .then(cli.expectError(0, expectedError))
+      .catch(common.oops(this)))
 })

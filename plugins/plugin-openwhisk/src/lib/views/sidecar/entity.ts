@@ -21,9 +21,17 @@ import * as repl from '@kui-shell/core/core/repl'
 
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { formatOneListResult } from '@kui-shell/core/webapp/views/table'
-import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
+import {
+  addBadge,
+  beautify,
+  getSidecar,
+  renderField
+} from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
+import {
+  ShowOptions,
+  DefaultShowOptions
+} from '@kui-shell/core/webapp/views/show-options'
 
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
@@ -47,13 +55,23 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
 const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)
-  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
+  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize'))
+    .default
 
   sidecar.classList.add('custom-content')
   const container = sidecarSelector(tab, '.custom-content')
   removeAllDomChildren(container)
 
-  const { view } = await visualize(tab, ast, undefined, undefined, undefined, undefined, undefined, rule)
+  const { view } = await visualize(
+    tab,
+    ast,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    rule
+  )
   container.appendChild(view)
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 }
@@ -62,7 +80,12 @@ const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
  * Load the given entity into the sidecar UI
  *
  */
-export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options: ShowOptions = new DefaultShowOptions()) => {
+export const showEntity = async (
+  tab: cli.Tab,
+  entity,
+  sidecar: Element,
+  options: ShowOptions = new DefaultShowOptions()
+) => {
   debug('showEntity', entity, sidecar, options)
 
   // this return value will show up in the repl; true would be only "ok" appears
@@ -83,15 +106,21 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
     }
   }
 
-  const thirdPartyBodyContent = sidecar.querySelector('.sidecar-content .hook-for-third-party-content')
+  const thirdPartyBodyContent = sidecar.querySelector(
+    '.sidecar-content .hook-for-third-party-content'
+  )
   thirdPartyBodyContent.className = 'hook-for-third-party-content no-content'
   // removeAllDomChildren(thirdPartyBodyContent)
 
   // TODO move this piece into the redactor plugin, once we figure out how to support third party view mods
   const renderThirdParty = entity => {
-    const combinatorArtifacts = entity.annotations && entity.annotations.find(({ key }) => key === 'wskng.combinators')
+    const combinatorArtifacts =
+      entity.annotations &&
+      entity.annotations.find(({ key }) => key === 'wskng.combinators')
     if (combinatorArtifacts) {
-      const annotations = Array.isArray(combinatorArtifacts.value) ? combinatorArtifacts.value : [combinatorArtifacts.value]
+      const annotations = Array.isArray(combinatorArtifacts.value)
+        ? combinatorArtifacts.value
+        : [combinatorArtifacts.value]
       return annotations.reduce((renderingTakenCareOf, annotation) => {
         if (annotation.role === 'replacement') {
           //
@@ -112,7 +141,8 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
             const Zip = require('adm-zip')
             const zip = Zip(code)
             const indexEntryJavascript = zip.getEntry('index.js')
-            const indexEntry = indexEntryJavascript ||
+            const indexEntry =
+              indexEntryJavascript ||
               zip.getEntry('index.py') ||
               zip.getEntry('__main__.py') ||
               zip.getEntry('index.php')
@@ -121,10 +151,15 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
               const indexContent = zip.readAsText(indexEntry)
               const src = element('.action-source', sidecar)
 
-              src.innerText = beautify(indexEntryJavascript ? 'nodejs' : 'other', indexContent.toString())
+              src.innerText = beautify(
+                indexEntryJavascript ? 'nodejs' : 'other',
+                indexContent.toString()
+              )
               setTimeout(() => hljs.highlightBlock(src), 0)
             } else {
-              addThirdPartyMessage('Unable to locate the index.js file in the zip file')
+              addThirdPartyMessage(
+                'Unable to locate the index.js file in the zip file'
+              )
             }
           } else if (annotation.contentType === 'html') {
             const frame = document.createElement('iframe')
@@ -138,7 +173,9 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
             container.appendChild(frame)
             frame.setAttribute('src', formatWebActionURL(entity))
           } else {
-            addThirdPartyMessage('This is machine-generated code, wrapping around your original code.')
+            addThirdPartyMessage(
+              'This is machine-generated code, wrapping around your original code.'
+            )
           }
 
           if (annotation.original) {
@@ -224,29 +261,41 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
         // then the third party rendering took care of it
       } else {
         // to show the sequence graph
-        const extraCss = entity.exec.components.length < 5 ? 'small-node-count-canvas' : ''
-        sequence.className = `${sequence.getAttribute('data-base-class')} ${extraCss}`
+        const extraCss =
+          entity.exec.components.length < 5 ? 'small-node-count-canvas' : ''
+        sequence.className = `${sequence.getAttribute(
+          'data-base-class'
+        )} ${extraCss}`
 
         // form a fake AST, so we can use the wskflow visualization
         // wskflw now use the IR, so we have to fake a IR instead of a AST
         // const key = idx => `action_${idx}`
-        Promise.all(entity.exec.components.map((actionName) => repl.qexec(`wsk action get "${actionName}"`)
-          .then(action => {
-            const anonymousCode = isAnonymousLet(action)
-            if (anonymousCode) {
-              return anonymousCode.replace(/\s/g, '')
-            } else {
-              return action.name
-            }
-            // on 404:
-          }).catch(() => actionName)
-          .then(name => {
-            return {
-              type: 'action',
-              name: actionName.indexOf('/') === -1 ? `/_/${actionName}` : actionName,
-              displayLabel: name
-            }
-          })))
+        Promise.all(
+          entity.exec.components.map(actionName =>
+            repl
+              .qexec(`wsk action get "${actionName}"`)
+              .then(action => {
+                const anonymousCode = isAnonymousLet(action)
+                if (anonymousCode) {
+                  return anonymousCode.replace(/\s/g, '')
+                } else {
+                  return action.name
+                }
+                // on 404:
+              })
+              .catch(() => actionName)
+              .then(name => {
+                return {
+                  type: 'action',
+                  name:
+                    actionName.indexOf('/') === -1
+                      ? `/_/${actionName}`
+                      : actionName,
+                  displayLabel: name
+                }
+              })
+          )
+        )
           .then(actions => ({ type: 'sequence', components: actions }))
           .then(ast => wskflow(tab, ast))
       }
@@ -281,7 +330,10 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
                 code.appendChild(document.createTextNode('dockerhub image: '))
                 code.appendChild(clicky)
                 clicky.innerText = entity.exec.image
-                clicky.setAttribute('href', `https://hub.docker.com/r/${entity.exec.image}`)
+                clicky.setAttribute(
+                  'href',
+                  `https://hub.docker.com/r/${entity.exec.image}`
+                )
                 clicky.setAttribute('target', '_blank')
               }
             } else {
@@ -293,12 +345,20 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
             // show the action's code
             //
 
-            if (!entity.exec.binary && !(entity.annotations && entity.annotations.find(({ key }) => key === 'binary'))) {
+            if (
+              !entity.exec.binary &&
+              !(
+                entity.annotations &&
+                entity.annotations.find(({ key }) => key === 'binary')
+              )
+            ) {
               //
               // render the textual source code
               //
 
-              const lang = uiNameForKind(entity.exec.kind.substring(0, entity.exec.kind.indexOf(':')))
+              const lang = uiNameForKind(
+                entity.exec.kind.substring(0, entity.exec.kind.indexOf(':'))
+              )
               const codeText = beautify(entity.exec.kind, entity.exec.code)
 
               // apply the syntax highlighter to the code; there is some but in higlightjs w.r.t. comments;
@@ -330,18 +390,23 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
     // const key = idx => `action_${idx}`
     const ast = {
       type: 'sequence',
-      components: [{
-        type: 'action',
-        name: `/${entity.action.path}/${entity.action.name}`,
-        displayLabel: entity.action.name
-      }]
+      components: [
+        {
+          type: 'action',
+          name: `/${entity.action.path}/${entity.action.name}`,
+          displayLabel: entity.action.name
+        }
+      ]
     }
     const rule = entity
     wskflow(tab, ast, rule)
   } else if (entity.type === 'packages') {
     const actionCountDom = sidecar.querySelector('.package-action-count')
     const actionCount = (entity.actions && entity.actions.length) || 0
-    actionCountDom.setAttribute('data-is-plural', (actionCount !== 1).toString())
+    actionCountDom.setAttribute(
+      'data-is-plural',
+      (actionCount !== 1).toString()
+    )
     element('.package-content-count', actionCountDom).innerText = actionCount
 
     const feedCountDom = element('.package-feed-count', sidecar)
@@ -363,20 +428,33 @@ export const showEntity = async (tab: cli.Tab, entity, sidecar: Element, options
       renderField(source, entity, options.show)
     } else {
       if (entity.actions) {
-        entity.actions.map(fillInActionDetails(entity))
-          .map(formatOneListResult(tab, { excludePackageName: true, alwaysShowType: true }))
+        entity.actions
+          .map(fillInActionDetails(entity))
+          .map(
+            formatOneListResult(tab, {
+              excludePackageName: true,
+              alwaysShowType: true
+            })
+          )
           .forEach(dom => actions.appendChild(dom))
       }
       if (entity.feeds) {
-        entity.feeds.map(fillInActionDetails(entity, 'feeds'))
-          .map(formatOneListResult(tab, { excludePackageName: true, alwaysShowType: true }))
+        entity.feeds
+          .map(fillInActionDetails(entity, 'feeds'))
+          .map(
+            formatOneListResult(tab, {
+              excludePackageName: true,
+              alwaysShowType: true
+            })
+          )
           .forEach(dom => actions.appendChild(dom))
       }
     }
   } else if (entity.type === 'activations') {
     showActivation(tab, entity, options)
   } else if (entity.type === 'triggers') {
-    const feed = entity.annotations && entity.annotations.find(kv => kv.key === 'feed')
+    const feed =
+      entity.annotations && entity.annotations.find(kv => kv.key === 'feed')
     const feedDom = element('.trigger-content .feed-content', sidecar)
     if (feed) {
       feedDom.innerText = `This is a feed based on ${feed.value}`

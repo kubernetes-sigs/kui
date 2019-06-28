@@ -47,7 +47,12 @@ const baseOptions: Options = {
  * The activation list impl.
  *
  */
-const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOptions }) => {
+const doList = wsk => async ({
+  command,
+  argvNoOptions,
+  parsedOptions,
+  execOptions
+}) => {
   debug('command', command)
   debug('skip', parsedOptions.skip)
   debug('limit', parsedOptions.limit)
@@ -66,11 +71,17 @@ const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOption
     debug('adding positional parameter name', parsedOptions)
   }
 
-  const opts = Object.assign({}, baseOptions, wsk.owOpts(parsedOptions, execOptions))
+  const opts = Object.assign(
+    {},
+    baseOptions,
+    wsk.owOpts(parsedOptions, execOptions)
+  )
   delete opts._
 
   try {
-    const list = await wsk.client(execOptions).activations.list(opts)
+    const list = await wsk
+      .client(execOptions)
+      .activations.list(opts)
       .then(L => Promise.all(L.map(wsk.addPrettyType('activations', 'list'))))
 
     return list
@@ -88,6 +99,8 @@ export default (commandTree, wsk) => {
   }
 
   wsk.synonyms('activations').forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/list`, doList(wsk), { usage: usage(syn).available.find(({ command }) => command === 'list') })
+    commandTree.listen(`/wsk/${syn}/list`, doList(wsk), {
+      usage: usage(syn).available.find(({ command }) => command === 'list')
+    })
   })
 }

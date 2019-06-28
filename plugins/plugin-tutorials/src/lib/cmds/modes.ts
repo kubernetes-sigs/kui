@@ -35,9 +35,12 @@ const _modes: Mode[] = [
   { mode: 'get', label: 'About' },
   { mode: 'api', label: 'API' },
   { mode: 'config', label: 'Configure' }
-].map(_ => Object.assign(_, { onclick: false,
-  command: ({ name }) => `${modCmd} ${_.mode} "${name}"` // add the command handler, e.g. "module get foo"
-}))
+].map(_ =>
+  Object.assign(_, {
+    onclick: false,
+    command: ({ name }) => `${modCmd} ${_.mode} "${name}"` // add the command handler, e.g. "module get foo"
+  })
+)
 
 /** flush-right buttons for the bottom stripe */
 const buttons: Mode[] = [
@@ -49,7 +52,8 @@ const buttons: Mode[] = [
       balloon: 'Undeploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} undeploy "${name}"` }, */
 
-  { mode: 'status',
+  {
+    mode: 'status',
     label: 'Status',
     fontawesome: 'fas fa-info-circle',
     balloon: 'Detailed status',
@@ -59,7 +63,8 @@ const buttons: Mode[] = [
     echo: true,
     noHistory: false,
     command: ({ name }) => `${modCmd}
- status "${name}"` }
+ status "${name}"`
+  }
 
   /* { mode: 'invoke', label: 'Invoke', //fontawesome: 'fas fa-trash-alt',
       balloon: 'Perform a trial inovcation of this project',
@@ -70,8 +75,15 @@ const buttons: Mode[] = [
 export const modes = (defaultMode: string, api, choices): Mode[] => {
   // add the defaultMode attribute to the matching IMode
   const modes: Mode[] = _modes
-    .filter(({ mode }) => mode === 'get' || (mode === 'api' && api) || (mode === 'config' && choices))
-    .map(_ => _.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _)
+    .filter(
+      ({ mode }) =>
+        mode === 'get' ||
+        (mode === 'api' && api) ||
+        (mode === 'config' && choices)
+    )
+    .map(_ =>
+      _.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _
+    )
 
   // return the modes plus any buttons we want to be flush right
   return modes.concat(buttons)

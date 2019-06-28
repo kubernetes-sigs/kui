@@ -17,10 +17,10 @@ targets. Kui currently focuses on the following:
 - a Windows zip file that includes the double-clickable
   application. The Electron packaging toolset also supports MSI and
   Windows Store targets; PRs are welcome to add such support to Kui.
-  
+
 - a Linux zip file and .deb; PRs are welcome to add support for the
   existing .rpm build target.
-  
+
 - a MacOS tar.bz2 and .dmg; PRs are welcome to add support for the
   Apple App Store build target.
 

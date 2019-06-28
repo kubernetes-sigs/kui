@@ -76,22 +76,44 @@ export enum FinalState {
 
 /** definitions of these groups */
 const stateGroups = {}
-const groupOf = (A: State[]) => A.reduce((group, state) => {
-  group[state] = true
-  return group
-}, {})
+const groupOf = (A: State[]) =>
+  A.reduce((group, state) => {
+    group[state] = true
+    return group
+  }, {})
 
 /** states that are synonymous with being Online */
-stateGroups[FinalState.OnlineLike] = groupOf([ States.Active, States.Online, States.Ready, States.Running, States.ProvisionedSuccessfully, States.Deployed, States.ChannelReady, States.Addressable, States.Completed, States.Succeeded
+stateGroups[FinalState.OnlineLike] = groupOf([
+  States.Active,
+  States.Online,
+  States.Ready,
+  States.Running,
+  States.ProvisionedSuccessfully,
+  States.Deployed,
+  States.ChannelReady,
+  States.Addressable,
+  States.Completed,
+  States.Succeeded
 ])
-const isOnlineLike = (state: State): boolean => stateGroups[FinalState.OnlineLike][state]
+const isOnlineLike = (state: State): boolean =>
+  stateGroups[FinalState.OnlineLike][state]
 
 /** states that are synonymous with being Offline */
-stateGroups[FinalState.OfflineLike] = groupOf([ States.Offline, States.Undeployed, States.Failed, States.Disparity, States.NotProvisioned, States.Unschedulable, States.ErrImagePull ])
-const isOfflineLike = (state: State): boolean => stateGroups[FinalState.OfflineLike][state]
+stateGroups[FinalState.OfflineLike] = groupOf([
+  States.Offline,
+  States.Undeployed,
+  States.Failed,
+  States.Disparity,
+  States.NotProvisioned,
+  States.Unschedulable,
+  States.ErrImagePull
+])
+const isOfflineLike = (state: State): boolean =>
+  stateGroups[FinalState.OfflineLike][state]
 
 /** isPendingLike is the remainder of isOnlineLike and isOfflineLike */
-const isPendingLike = (state: State): boolean => !isOnlineLike(state) && !isOfflineLike(state)
+const isPendingLike = (state: State): boolean =>
+  !isOnlineLike(state) && !isOfflineLike(state)
 
 export interface Status {
   state?: State
@@ -116,13 +138,19 @@ export enum TrafficLight {
  *
  */
 export const state2Traffic = (state: State): TrafficLight => {
-  return state === States.Conflict ? TrafficLight.Gray
-    : isOnlineLike(state) ? TrafficLight.Green
-      : isOfflineLike(state) ? TrafficLight.Red
-        : TrafficLight.Yellow
+  return state === States.Conflict
+    ? TrafficLight.Gray
+    : isOnlineLike(state)
+    ? TrafficLight.Green
+    : isOfflineLike(state)
+    ? TrafficLight.Red
+    : TrafficLight.Yellow
 }
 
-export const trafficMerge = (t1: TrafficLight, t2: TrafficLight): TrafficLight => {
+export const trafficMerge = (
+  t1: TrafficLight,
+  t2: TrafficLight
+): TrafficLight => {
   if (t1 === TrafficLight.Red || t2 === TrafficLight.Red) {
     return TrafficLight.Red
   } else if (t1 === TrafficLight.Yellow || t2 === TrafficLight.Yellow) {
@@ -144,11 +172,14 @@ export const rendering = {
 }
 
 /** format a CLI --context option, if we have one */
-const contextOption = (context?: string) => context ? '--context "' + context + '"' : ''
+const contextOption = (context?: string) =>
+  context ? '--context "' + context + '"' : ''
 
 /** format a CLI --namespace option, if we have one */
-const ns = (namespace?: string) => namespace && namespace !== 'default'
-  ? `--namespace ${repl.encodeComponent(namespace)}` : ''
+const ns = (namespace?: string) =>
+  namespace && namespace !== 'default'
+    ? `--namespace ${repl.encodeComponent(namespace)}`
+    : ''
 
 /**
  * Pretty generic online message; hepful for resource kinds that
@@ -178,14 +209,22 @@ const getStatusFromConditions = (response: KubeResource) => {
   if (response.status && !response.status.state && response.status.conditions) {
     // use the status.conditions, rather than status.state
     const conditions = response.status.conditions
-    conditions.sort((a, b) => -(new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()))
+    conditions.sort(
+      (a, b) =>
+        -(
+          new Date(a.lastTransitionTime).getTime() -
+          new Date(b.lastTransitionTime).getTime()
+        )
+    )
     debug('using condition for status', conditions[0], conditions)
 
     const conditionForMessage = conditions.find(_ => _.message) || conditions[0]
 
     return {
       state: conditions[0].reason || conditions[0].type,
-      message: (conditionForMessage && conditionForMessage.message) || conditions[0].lastTransitionTime
+      message:
+        (conditionForMessage && conditionForMessage.message) ||
+        conditions[0].lastTransitionTime
     }
   }
 }
@@ -194,7 +233,10 @@ const getStatusFromConditions = (response: KubeResource) => {
  * Determine whether a kube Deployment is ready
  *
  */
-const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: FinalState): Status => {
+const getStatusOfDeployment = (
+  kubeEntity: KubeResource,
+  desiredFinalState: FinalState
+): Status => {
   const desireIsOffline = desiredFinalState === FinalState.OfflineLike
 
   if (!kubeEntity) {
@@ -203,11 +245,15 @@ const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: Fina
       message: 'resource not yet available'
     }
   } else {
-    const readyCondition = kubeEntity.status &&
+    const readyCondition =
+      kubeEntity.status &&
       kubeEntity.status.conditions &&
       kubeEntity.status.conditions.find(({ reason, type, status }) => {
-        return reason === 'MinimumReplicasAvailable' ||
-          type === 'Ready' || status === 'True'
+        return (
+          reason === 'MinimumReplicasAvailable' ||
+          type === 'Ready' ||
+          status === 'True'
+        )
       })
 
     if (readyCondition) {
@@ -217,8 +263,10 @@ const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: Fina
       }
     } else {
       const desiredReplicas: number = kubeEntity.spec.replicas
-      const currentReplicas: number = (kubeEntity.status && kubeEntity.status.readyReplicas) || 0
-      const maybeCondition = kubeEntity.status &&
+      const currentReplicas: number =
+        (kubeEntity.status && kubeEntity.status.readyReplicas) || 0
+      const maybeCondition =
+        kubeEntity.status &&
         kubeEntity.status.conditions &&
         kubeEntity.status.conditions[0]
       const message = maybeCondition && maybeCondition.message
@@ -247,53 +295,74 @@ const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: Fina
  * Get the deployment status of the given resource name of the given kind
  *
  */
-export const getStatus = async (desiredFinalState: FinalState, apiVersion: string, kind: string, name: string, namespace?: string, context?: string): Promise<Status> => {
+export const getStatus = async (
+  desiredFinalState: FinalState,
+  apiVersion: string,
+  kind: string,
+  name: string,
+  namespace?: string,
+  context?: string
+): Promise<Status> => {
   try {
-    const cmd = `kubectl get ${contextOption(context)} ${kindForQuery(apiVersion, kind)} ${name} ${ns(namespace)} -o json`
+    const cmd = `kubectl get ${contextOption(context)} ${kindForQuery(
+      apiVersion,
+      kind
+    )} ${name} ${ns(namespace)} -o json`
     // debug('getStatus', cmd);
     const rawState = await repl.qexec(cmd, undefined, undefined, { raw: true })
     debug('getStatus rawState', apiVersion, rawState)
 
     const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
 
-    if (!response.status || // resource does not define a status; consider it Online
-        kind === 'Secret' ||
-        kind === 'Ingress' ||
-        kind === 'ConfigMap' ||
-        kind === 'PodSecurityPolicy' ||
-        kind === 'ClusterRole' ||
-        kind === 'CustomResourceDefinition' ||
-        kind === 'HorizontalPodAutoscaler' ||
-        kind === 'ClusterRoleBinding' ||
-        kind === 'VirtualService' ||
-        kind === 'ServiceAccount') {
+    if (
+      !response.status || // resource does not define a status; consider it Online
+      kind === 'Secret' ||
+      kind === 'Ingress' ||
+      kind === 'ConfigMap' ||
+      kind === 'PodSecurityPolicy' ||
+      kind === 'ClusterRole' ||
+      kind === 'CustomResourceDefinition' ||
+      kind === 'HorizontalPodAutoscaler' ||
+      kind === 'ClusterRoleBinding' ||
+      kind === 'VirtualService' ||
+      kind === 'ServiceAccount'
+    ) {
       // some resource types don't have a notion of deployment state :(
       return genericOnlineMessage
-    } else if ((apiVersion && apiVersion.match(/^v/)) && kind === 'Service' && response.status) {
+    } else if (
+      apiVersion &&
+      apiVersion.match(/^v/) &&
+      kind === 'Service' &&
+      response.status
+    ) {
       return genericOnlineMessage
     } else if (kind === 'ReplicaSet') {
       const hasReplicas = response.status.readyReplicas > 0
       return {
-        state: desiredFinalState === FinalState.NotPendingLike ||
+        state:
+          desiredFinalState === FinalState.NotPendingLike ||
           (desiredFinalState === FinalState.OfflineLike && !hasReplicas) ||
           hasReplicas
-          ? States.Online : States.Pending
+            ? States.Online
+            : States.Pending
       }
     } else if (kind === 'Deployment') {
       return getStatusOfDeployment(response, desiredFinalState)
     } else {
       // the Service controller currently puts the state field
       // at the top level, hence the state.state check
-      const status = getStatusFromConditions(response) ||
+      const status =
+        getStatusFromConditions(response) ||
         (response.status && (response.status.state || response.status.phase)
           ? response.status
-          : response.state ? response
-            : response.apiVersion.match(/istio\.io/) ? {
+          : response.state
+          ? response
+          : response.apiVersion.match(/istio\.io/)
+          ? {
               state: States.Online,
               message: new Date()
             }
-              : undefined
-        )
+          : undefined)
 
       if (!status) {
         throw new TryLaterError('Status not yet available')
@@ -347,15 +416,22 @@ interface Watch {
  * Watch a resource for its deployment status
  *
  */
-export const watchStatus = async (watch: Watch, finalStateStr: string | FinalState, count = 120) => {
-  const finalState: FinalState = typeof finalStateStr === 'string' ? FinalState[finalStateStr] : finalStateStr
+export const watchStatus = async (
+  watch: Watch,
+  finalStateStr: string | FinalState,
+  count = 120
+) => {
+  const finalState: FinalState =
+    typeof finalStateStr === 'string'
+      ? FinalState[finalStateStr]
+      : finalStateStr
 
   const { kind, name, namespace, type, fqn, context } = watch
   // debug('watchStatus', finalStateStr, FinalState[finalState], kind, name);
 
   try {
     // const [ status, detail ] = await Promise.all([
-    const [ status ] = await Promise.all([
+    const [status] = await Promise.all([
       getStatus(finalState, watch.apiVersion, kind, name, namespace, context)
       // type !== 'unknown' ? getOpenWhiskStatus(type, fqn) : undefined
     ])
@@ -370,35 +446,59 @@ export const watchStatus = async (watch: Watch, finalStateStr: string | FinalSta
     // debug('watchStatus newState', newState);
 
     // other cells to update
-    const others = newState === States.Disparity ? [ { key: 'message', value: 'Underlying resource has disappeared' } ]
-      : status.message ? [ { key: 'message', value: maybeAsDate(status.message) } ]
-        : status.startTime ? [ { key: 'message', value: maybeAsDate(status.startTime) } ]
-          : newState === States.Offline ? [ { key: 'message', value: finalState === FinalState.OnlineLike ? 'resource not yet available' : 'resource is offline' } ]
-            : newState === States.Pending || newState === States.Deploying || newState === States.Deleting ? [ { key: 'message', value: 'in progress' } ]
-              : undefined
+    const others =
+      newState === States.Disparity
+        ? [{ key: 'message', value: 'Underlying resource has disappeared' }]
+        : status.message
+        ? [{ key: 'message', value: maybeAsDate(status.message) }]
+        : status.startTime
+        ? [{ key: 'message', value: maybeAsDate(status.startTime) }]
+        : newState === States.Offline
+        ? [
+            {
+              key: 'message',
+              value:
+                finalState === FinalState.OnlineLike
+                  ? 'resource not yet available'
+                  : 'resource is offline'
+            }
+          ]
+        : newState === States.Pending ||
+          newState === States.Deploying ||
+          newState === States.Deleting
+        ? [{ key: 'message', value: 'in progress' }]
+        : undefined
 
     // are we done updating
-    const done = newState === States.Failed ||
+    const done =
+      newState === States.Failed ||
       (finalState === FinalState.NotPendingLike && !isPendingLike(newState)) ||
       (finalState === FinalState.OnlineLike && isOnlineLike(newState)) ||
       (finalState === FinalState.OfflineLike && isOfflineLike(newState))
     // || (!offlineOk && newState === States.Disparity);
 
-    const getOpenWhiskResource = (exec: string) => repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
-    const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${repl.encodeComponent(name)} ${contextOption(context)} ${ns(namespace)} -o yaml`
+    const getOpenWhiskResource = (exec: string) =>
+      repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
+    const getKubernetesResource = `kubectl get ${kindForQuery(
+      watch.apiVersion,
+      kind
+    )} ${repl.encodeComponent(name)} ${contextOption(context)} ${ns(
+      namespace
+    )} -o yaml`
 
-    const tryGetOpenWhiskResource = () => getOpenWhiskResource('qexec')
-      .then(() => getOpenWhiskResource('pexec'))
-      .catch(err => {
-        if (err.statusCode === 404) {
-          // hmm, then there is a disparity:
-          // kubernetes thinks the resource is
-          // alive, but OpenWhisk does not
-          return repl.pexec(getKubernetesResource)
-        } else {
-          throw err
-        }
-      })
+    const tryGetOpenWhiskResource = () =>
+      getOpenWhiskResource('qexec')
+        .then(() => getOpenWhiskResource('pexec'))
+        .catch(err => {
+          if (err.statusCode === 404) {
+            // hmm, then there is a disparity:
+            // kubernetes thinks the resource is
+            // alive, but OpenWhisk does not
+            return repl.pexec(getKubernetesResource)
+          } else {
+            throw err
+          }
+        })
 
     const isOpenWhiskLike = /* kind === 'Function' && */ type !== 'unknown'
 
@@ -410,7 +510,14 @@ export const watchStatus = async (watch: Watch, finalStateStr: string | FinalSta
     const slowPoll = done && finalState === FinalState.NotPendingLike
 
     if (done) {
-      debug('watchStatus done', slowPoll, newState, watch.kind, watch.name, FinalState[finalState])
+      debug(
+        'watchStatus done',
+        slowPoll,
+        newState,
+        watch.kind,
+        watch.name,
+        FinalState[finalState]
+      )
     }
 
     // this is the update spec
@@ -430,9 +537,7 @@ export const watchStatus = async (watch: Watch, finalStateStr: string | FinalSta
         debug('trying later', kind, name)
         return {
           value: States.Pending,
-          others: [
-            { key: 'message', value: 'not found, rechecking' }
-          ]
+          others: [{ key: 'message', value: 'not found, rechecking' }]
         }
       } else {
         debug('giving up, considering as offline', kind, name)
@@ -440,9 +545,7 @@ export const watchStatus = async (watch: Watch, finalStateStr: string | FinalSta
           done: true,
           value: States.Offline,
           css: rendering.cssForState(States.Offline),
-          others: [
-            { key: 'message', value: 'resource does not exist' }
-          ]
+          others: [{ key: 'message', value: 'resource does not exist' }]
         }
       }
     } else {

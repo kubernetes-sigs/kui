@@ -20,9 +20,14 @@ import { CommandRegistrar } from './command'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type KuiPlugin = any
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type PluginRegistration = (commandTree: CommandRegistrar, options?) => Promise<any>
+export type PluginRegistration = (
+  commandTree: CommandRegistrar,
+  options?
+) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
-export type PreloadRegistration = (commandTree: CommandRegistrar, options?) => Promise<void>
+export type PreloadRegistration = (
+  commandTree: CommandRegistrar,
+  options?
+) => Promise<void>
 
 export type CapabilityRegistration = () => Promise<void>

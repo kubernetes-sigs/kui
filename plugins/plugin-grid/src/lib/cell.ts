@@ -23,8 +23,16 @@ import { Tab } from '@kui-shell/core/webapp/cli'
  * Draw the given activation in the given cell (a dom)
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const renderCell = (tab: Tab, returnTo: string, cell: HTMLElement, activation: Record<string, any>, isFailure: boolean = !activation.response.success, duration: number = activation.end - activation.start, latBucket: number = isFailure ? -1 : latencyBucket(duration), options) => {
+export const renderCell = (
+  tab: Tab,
+  returnTo: string,
+  cell: HTMLElement,
+  activation: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  isFailure: boolean = !activation.response.success,
+  duration: number = activation.end - activation.start,
+  latBucket: number = isFailure ? -1 : latencyBucket(duration),
+  options
+) => {
   let returnValue = cell
   if (!cell) {
     // then the caller asked us to make the container
@@ -75,32 +83,62 @@ export const renderCell = (tab: Tab, returnTo: string, cell: HTMLElement, activa
   }
 
   if (activation) {
-    cell.onclick = drilldownWith(tab, returnTo, `wsk activation get ${activation.activationId}`, cell)
+    cell.onclick = drilldownWith(
+      tab,
+      returnTo,
+      `wsk activation get ${activation.activationId}`,
+      cell
+    )
 
     // tooltip
-    const result = activation.response && activation.response.result &&
-              activation.response.result
-    const statusCode = isFailure && result && (result.code || result.statusCode ||
-                                                   (result.error && (result.error.code || result.error.statusCode)))
-    const errorMessage = isFailure && result && (result.message ||
-                                                     (result.error && result.error.message))
+    const result =
+      activation.response &&
+      activation.response.result &&
+      activation.response.result
+    const statusCode =
+      isFailure &&
+      result &&
+      (result.code ||
+        result.statusCode ||
+        (result.error && (result.error.code || result.error.statusCode)))
+    const errorMessage =
+      isFailure &&
+      result &&
+      (result.message || (result.error && result.error.message))
 
     // failure versus success message for tooltip
     const msg = isFailure
-      ? `${newline}failed` + (statusCode ? ` with status code ${statusCode}` : '') + (errorMessage ? `: ${errorMessage}` : '')
+      ? `${newline}failed` +
+        (statusCode ? ` with status code ${statusCode}` : '') +
+        (errorMessage ? `: ${errorMessage}` : '')
       : ''
 
     const fmt = 'short'
-    const prettyStart = new Date(activation.start).toLocaleString(navigator.language, {
-      weekday: fmt, month: fmt, day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
-    })
+    const prettyStart = new Date(activation.start).toLocaleString(
+      navigator.language,
+      {
+        weekday: fmt,
+        month: fmt,
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      }
+    )
 
     // cell.setAttribute('data-activation-id', activation.activationId)
     cell.id = activation.activationId
     cell['isFailure'] = isFailure
     cell.setAttribute('data-action-name', activation.name)
     cell.setAttribute('data-balloon-break', 'data-balloon-break')
-    cell.setAttribute('data-balloon', `${options && options.nameInTooltip ? 'Action: ' + activation.name + newline : ''}${prettyStart}${msg}${extraTooltip}`)
+    cell.setAttribute(
+      'data-balloon',
+      `${
+        options && options.nameInTooltip
+          ? 'Action: ' + activation.name + newline
+          : ''
+      }${prettyStart}${msg}${extraTooltip}`
+    )
     cell.setAttribute('data-balloon-pos', options.balloonPos || 'up')
   }
 

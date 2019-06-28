@@ -24,10 +24,11 @@ const ExecRouter = require('./routes/exec')
 
 const app = express()
 
-app.use(cors(
+app.use(
+  cors()
   // TODO cors config, e.g.
   // { origin: 'https://localhost:8080' }
-))
+)
 app.use(express.json())
 app.use(logger('dev'))
 app.use(express.json())

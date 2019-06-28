@@ -48,26 +48,27 @@ export const maybeAsDate = str => {
  * Is the given filepath a directory?
  *
  */
-export const isDirectory = (filepath: string): Promise<boolean> => new Promise<boolean>(async (resolve, reject) => {
-  if (inBrowser()) {
-    resolve(false)
-  } else {
-    // why the dynamic import? being browser friendly here
-    const { lstat } = await import('fs')
+export const isDirectory = (filepath: string): Promise<boolean> =>
+  new Promise<boolean>(async (resolve, reject) => {
+    if (inBrowser()) {
+      resolve(false)
+    } else {
+      // why the dynamic import? being browser friendly here
+      const { lstat } = await import('fs')
 
-    lstat(filepath, (err, stats) => {
-      if (err) {
-        if (err.code === 'ENOENT') {
-          resolve(undefined)
+      lstat(filepath, (err, stats) => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            resolve(undefined)
+          } else {
+            reject(err)
+          }
         } else {
-          reject(err)
+          resolve(stats.isDirectory())
         }
-      } else {
-        resolve(stats.isDirectory())
-      }
-    })
-  }
-})
+      })
+    }
+  })
 
 /**
  * Turn a resource object into an OpenWhisk fully qualified name. This
@@ -84,8 +85,7 @@ export const toOpenWhiskFQN = ({ kind, spec, metadata }): TypedEntityName => {
       type: kind === 'Function' ? 'action' : 'app',
       packageName,
       actionName,
-      fqn:
-      packageName ? `${packageName}/${actionName}` : actionName
+      fqn: packageName ? `${packageName}/${actionName}` : actionName
     }
   } else if (kind === 'Composition') {
     return { type: 'app', fqn: metadata.name }
@@ -96,24 +96,22 @@ export const toOpenWhiskFQN = ({ kind, spec, metadata }): TypedEntityName => {
   }
 }
 
-export class StatusError extends Error {
-}
+export class StatusError extends Error {}
 
-export class TryLaterError extends StatusError {
-}
+export class TryLaterError extends StatusError {}
 
 export class NotFoundError extends StatusError {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   code: any
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor (message: string, code: any = 404) {
+  constructor(message: string, code: any = 404) {
     super(message)
     this.code = code
   }
 }
 
 /** flatten an array of arrays */
-export function flatten<T> (arrays: T[][]): T[] {
+export function flatten<T>(arrays: T[][]): T[] {
   return [].concat(...arrays)
 }

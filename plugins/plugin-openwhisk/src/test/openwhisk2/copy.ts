@@ -33,7 +33,7 @@ const value1 = 'bar'
 
 const CMD = 'copy'
 
-describe('Use copy to copy openwhisk entities', function (this: common.ISuite) {
+describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -51,71 +51,101 @@ describe('Use copy to copy openwhisk entities', function (this: common.ISuite) {
     expect[key1] = value1 // bound to the original action; make sure it survives the copy
     expectAnnotations[key1] = value1
 
-    it(`should copy ${aFull} to ${bFull}`, () => cli.do(`${cmd} ${aFull} ${bFull}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
-      .catch(common.oops(this)))
+    it(`should copy ${aFull} to ${bFull}`, () =>
+      cli
+        .do(`${cmd} ${aFull} ${bFull}`, this.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
+        .catch(common.oops(this)))
 
     // verify that annotations survived the copy
-    it('should switch to annotations mode', () => cli.do('annotations', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectSubset(expectAnnotations))
-      .catch(common.oops(this)))
+    it('should switch to annotations mode', () =>
+      cli
+        .do('annotations', this.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
+        .then(app =>
+          app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
+        )
+        .then(ui.expectSubset(expectAnnotations))
+        .catch(common.oops(this)))
 
     // invoke the copy
-    it(`should invoke the copied action ${bFull}`, () => cli.do(`invoke -p "${key}" "${value}"`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(b))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct(expect))
-      .catch(common.oops(this)))
+    it(`should invoke the copied action ${bFull}`, () =>
+      cli
+        .do(`invoke -p "${key}" "${value}"`, this.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(b))
+        .then(() =>
+          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
+        )
+        .then(ui.expectStruct(expect))
+        .catch(common.oops(this)))
 
     // verify that the original still exists
-    it(`${aFull} should still exist`, () => cli.do(`wsk action get ${aFull}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(a, undefined, undefined, aPackage))
-      .catch(common.oops(this)))
+    it(`${aFull} should still exist`, () =>
+      cli
+        .do(`wsk action get ${aFull}`, this.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(a, undefined, undefined, aPackage))
+        .catch(common.oops(this)))
 
     // verify that original annotations survived the copy
-    it('should switch to annotations mode', () => cli.do('annotations', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(a, undefined, undefined, aPackage))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectSubset(expectAnnotations))
-      .catch(common.oops(this)))
+    it('should switch to annotations mode', () =>
+      cli
+        .do('annotations', this.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(a, undefined, undefined, aPackage))
+        .then(app =>
+          app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
+        )
+        .then(ui.expectSubset(expectAnnotations))
+        .catch(common.oops(this)))
   }
 
   // COPY ACTION
-  it('should create an action via let', () => cli.do(`let ${actionName1} = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName1))
-    .catch(common.oops(this)))
+  it('should create an action via let', () =>
+    cli
+      .do(
+        `let ${actionName1} = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`,
+        this.app
+      )
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName1))
+      .catch(common.oops(this)))
   cp(actionName1, actionName1b)
   cp(actionName1, actionName1c, undefined, undefined, 'copy')
 
   // COPY PACKAGED ACTION TO NON-PACKAGED ACTION
-  it('should create a packaged action via let', () => cli.do(`let ${packageName1}/${actionName2}.js = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName1))
-    .catch(common.oops(this)))
+  it('should create a packaged action via let', () =>
+    cli
+      .do(
+        `let ${packageName1}/${actionName2}.js = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`,
+        this.app
+      )
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(
+        sidecar.expectShowing(actionName2, undefined, undefined, packageName1)
+      )
+      .catch(common.oops(this)))
   cp(actionName2, actionName2b, packageName1)
   cp(actionName2, actionName2c, packageName1, undefined, 'copy')
 
   // COPY PACKAGED ACTION TO PACKAGED ACTION, existing package
-  it('should create a package', () => cli.do(`wsk package update ${packageName2}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(packageName2))
-    .catch(common.oops(this)))
+  it('should create a package', () =>
+    cli
+      .do(`wsk package update ${packageName2}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(packageName2))
+      .catch(common.oops(this)))
   cp(actionName2, actionName2b, packageName1, packageName2)
 
   // COPY PACKAGED ACTION TO PACKAGED ACTION, new package

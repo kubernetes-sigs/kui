@@ -22,7 +22,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
  * Here starts the test
  *
  */
-describe('app init --reset', function (this: common.ISuite) {
+describe('app init --reset', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

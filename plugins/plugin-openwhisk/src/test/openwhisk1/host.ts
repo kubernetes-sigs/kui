@@ -24,26 +24,37 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli } = ui
 
-describe('openwhisk host tests', function (this: common.ISuite) {
+describe('openwhisk host tests', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should command not found on hosts set', () => cli.do('wsk hosts set', this.app)
-    .then(cli.expectError(404, 'Command not found'))
-    .catch(common.oops(this)))
+  it('should command not found on hosts set', () =>
+    cli
+      .do('wsk hosts set', this.app)
+      .then(cli.expectError(404, 'Command not found'))
+      .catch(common.oops(this)))
 
-  it('bogus host from default context', () => cli.do(`wsk host set xxx`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '', expect: `Before you can proceed, please provide an OpenWhisk auth key, using wsk auth add <AUTH_KEY>` })))
+  it('bogus host from default context', () =>
+    cli.do(`wsk host set xxx`, this.app).then(
+      cli.expectOKWithCustom({
+        selector: '',
+        expect: `Before you can proceed, please provide an OpenWhisk auth key, using wsk auth add <AUTH_KEY>`
+      })
+    ))
 
   // clicking on the host in the upper right prefills some content;
   // if the user hits return, we want the operation to be cancelled
   // see shell issue #192
-  it('should auto-cancel when using prefilled content', () => cli.do(`wsk host set <your_api_host>`, this.app)
-    .then(cli.expectError(0, 'Operation cancelled')))
+  it('should auto-cancel when using prefilled content', () =>
+    cli
+      .do(`wsk host set <your_api_host>`, this.app)
+      .then(cli.expectError(0, 'Operation cancelled')))
 
-  it(`should restore host to original setting: ${openwhisk.apihost}`, () => cli.do(`wsk host set ${openwhisk.apihost}`, this.app)
-    .then(cli.expectOK)
-    .then(() => cli.do('wsk host get', this.app))
-    .then(cli.expectOKWithCustom({ expect: openwhisk.apihost }))
-    .catch(common.oops(this)))
+  it(`should restore host to original setting: ${openwhisk.apihost}`, () =>
+    cli
+      .do(`wsk host set ${openwhisk.apihost}`, this.app)
+      .then(cli.expectOK)
+      .then(() => cli.do('wsk host get', this.app))
+      .then(cli.expectOKWithCustom({ expect: openwhisk.apihost }))
+      .catch(common.oops(this)))
 })

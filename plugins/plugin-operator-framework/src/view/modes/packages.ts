@@ -19,9 +19,15 @@ import * as Debug from 'debug'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
+import {
+  outerCSSForKey,
+  cssForKey
+} from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import {
+  Resource,
+  KubeResource
+} from '@kui-shell/plugin-k8s/lib/model/resource'
 
 const debug = Debug('plugin/operator-framework/view/modes/packages')
 
@@ -35,13 +41,16 @@ interface PackageBearerStatus {
  */
 export type PackageBearer = KubeResource<PackageBearerStatus>
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isPackageBearer (resource: KubeResource<any>): resource is PackageBearer {
+function isPackageBearer(
+  resource: KubeResource<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+): resource is PackageBearer {
   const bearer = resource as PackageBearer
-  return bearer !== undefined &&
+  return (
+    bearer !== undefined &&
     bearer.status !== undefined &&
     bearer.status.packages !== undefined &&
     typeof bearer.status.packages === 'string'
+  )
 }
 
 /**
@@ -74,7 +83,7 @@ interface Parameters {
   resource: Resource<PackageBearer>
 }
 
-function toTable (resource: PackageBearer): Table {
+function toTable(resource: PackageBearer): Table {
   return {
     title: 'Packages',
     header: {

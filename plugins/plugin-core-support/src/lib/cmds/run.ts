@@ -26,13 +26,16 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
 const debug = Debug('plugins/core-support/run')
 
-const execInSequence = async function (arr, status, idx: number) {
+const execInSequence = async function(arr, status, idx: number) {
   const item = arr[idx]
 
   try {
     const thisResult = await repl.qexec(item)
     status[idx].value = 'Done'
-    status[idx].css = status[idx].css.replace(/yellow-background/, 'green-background')
+    status[idx].css = status[idx].css.replace(
+      /yellow-background/,
+      'green-background'
+    )
     status[idx].done = true
     status[idx].onclick = event => {
       event.stopPropagation()
@@ -46,11 +49,17 @@ const execInSequence = async function (arr, status, idx: number) {
     }
   } catch (err) {
     const content = await Promise.resolve(err.message)
-    const isWarning = (typeof content === 'string' ? content : err.raw.message).match(/already exists|already has/i)
+    const isWarning = (typeof content === 'string'
+      ? content
+      : err.raw.message
+    ).match(/already exists|already has/i)
 
     status[idx].value = isWarning ? 'Warning' : 'Error'
     if (!isWarning) {
-      status[idx].css = status[idx].css.replace(/yellow-background/, 'red-background')
+      status[idx].css = status[idx].css.replace(
+        /yellow-background/,
+        'red-background'
+      )
     }
     status[idx].done = true
     status[idx].onclick = async event => {
@@ -70,78 +79,87 @@ const execInSequence = async function (arr, status, idx: number) {
   }
 }
 
-const doRun = ({ argv }) => new Promise((resolve, reject) => {
-  const filepath = argv[argv.indexOf('run') + 1]
-  const fullpath = findFile(expandHomeDir(filepath))
-  const parent = dirname(fullpath)
+const doRun = ({ argv }) =>
+  new Promise((resolve, reject) => {
+    const filepath = argv[argv.indexOf('run') + 1]
+    const fullpath = findFile(expandHomeDir(filepath))
+    const parent = dirname(fullpath)
 
-  const injectVariables = (str: string): string => {
-    return str.replace(/\$\{cwd\}/g, parent)
-  }
+    const injectVariables = (str: string): string => {
+      return str.replace(/\$\{cwd\}/g, parent)
+    }
 
-  //
-  // first read the command file
-  //
-  readFile(fullpath, async (err, data) => {
-    if (err) {
-      reject(err)
-    } else {
-      //
-      // evaluate each line, careful that each repl.pexec is an async
-      //
-      try {
-        const lines = data
-          .toString()
-          .replace(/\s*#.*/mg, '')
-          .split(/\n+/)
-          .filter(x => x)
-        debug('lines', lines)
+    //
+    // first read the command file
+    //
+    readFile(fullpath, async (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        //
+        // evaluate each line, careful that each repl.pexec is an async
+        //
+        try {
+          const lines = data
+            .toString()
+            .replace(/\s*#.*/gm, '')
+            .split(/\n+/)
+            .filter(x => x)
+          debug('lines', lines)
 
-        // done status for each row
-        const status = lines.map(() => ({
-          value: 'Pending',
-          css: 'yellow-background even-smaller-text'
-        }))
+          // done status for each row
+          const status = lines.map(() => ({
+            value: 'Pending',
+            css: 'yellow-background even-smaller-text'
+          }))
 
-        const linesAfterVariableInjection = lines.map(injectVariables)
+          const linesAfterVariableInjection = lines.map(injectVariables)
 
-        const table = linesAfterVariableInjection
-          .map((line, idx) => ({
+          const table = linesAfterVariableInjection.map((line, idx) => ({
             name: line,
             type: 'run',
             outerCSS: 'entity-name-group',
             css: 'entity-name',
             onclick: false,
             noSort: true,
-            attributes: [{
-              tag: 'badge',
-              key: 'status',
-              value: 'Pending',
-              css: 'yellow-background even-smaller-text',
-              outerCSS: '',
-              watch: () => status[idx]
-            }]
+            attributes: [
+              {
+                tag: 'badge',
+                key: 'status',
+                value: 'Pending',
+                css: 'yellow-background even-smaller-text',
+                outerCSS: '',
+                watch: () => status[idx]
+              }
+            ]
           }))
 
-        execInSequence(linesAfterVariableInjection, status, 0)
+          execInSequence(linesAfterVariableInjection, status, 0)
 
-        const headerRow = [{
-          name: 'COMMAND',
-          type: 'run',
-          noSort: true,
-          outerCSS: 'header-cell',
-          attributes: [
-            { key: 'status', value: 'STATUS', outerCSS: 'header-cell very-narrow not-too-wide min-width-6em text-center' }
+          const headerRow = [
+            {
+              name: 'COMMAND',
+              type: 'run',
+              noSort: true,
+              outerCSS: 'header-cell',
+              attributes: [
+                {
+                  key: 'status',
+                  value: 'STATUS',
+                  outerCSS:
+                    'header-cell very-narrow not-too-wide min-width-6em text-center'
+                }
+              ]
+            }
           ]
-        }]
 
-        resolve(headerRow.concat(table))
-      } catch (err) {
-        reject(err)
+          resolve(headerRow.concat(table))
+        } catch (err) {
+          reject(err)
+        }
       }
-    }
+    })
   })
-})
 
 /**
  * Usage model
@@ -159,7 +177,8 @@ const usage = {
 
 export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/run', doRun, { usage, noAuthOk: true })
-  commandTree.listen('/show',
+  commandTree.listen(
+    '/show',
     ({ execOptions, tab }) => {
       debug('show', execOptions)
       if (!execOptions || !execOptions.parameters) {
@@ -185,9 +204,11 @@ export default (commandTree: CommandRegistrar) => {
         container.classList.add('result-as-table')
         scrollInner.appendChild(container)
 
-        formatMultiListResult(tab,
+        formatMultiListResult(
+          tab,
           !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
-          container)
+          container
+        )
 
         return {
           type: 'custom',
@@ -212,5 +233,6 @@ export default (commandTree: CommandRegistrar) => {
         }
       }
     },
-    { hidden: true, noAuthOk: true })
+    { hidden: true, noAuthOk: true }
+  )
 }

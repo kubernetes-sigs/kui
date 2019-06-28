@@ -25,8 +25,17 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
-import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
-import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
+import {
+  bugs,
+  description,
+  homepage,
+  license,
+  version
+} from '@kui-shell/settings/package.json'
+import {
+  theme as settings,
+  config as extras
+} from '@kui-shell/core/core/settings'
 
 const debug = Debug('plugins/core-support/about')
 
@@ -39,16 +48,22 @@ const showVersionInfo = true
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async () => { /* bringYourOwnWindow impl */
+const aboutWindow = async () => {
+  /* bringYourOwnWindow impl */
   debug('aboutWindow')
 
   const { remote, shell } = await import('electron')
 
   try {
-    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/about.css'), key: 'about-window-css' })
+    injectCSS({
+      css: require('@kui-shell/plugin-core-support/web/css/about.css'),
+      key: 'about-window-css'
+    })
   } catch (err) {
     const { dirname, join } = await import('path')
-    const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+    const ourRootDir = dirname(
+      require.resolve('@kui-shell/plugin-core-support/package.json')
+    )
     injectCSS(join(ourRootDir, 'web/css/about.css'))
   }
 
@@ -118,7 +133,11 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type OnClickHandler = () => any
-  const iconify = (fontawesome: string, title: string, href: string | OnClickHandler): Element => {
+  const iconify = (
+    fontawesome: string,
+    title: string,
+    href: string | OnClickHandler
+  ): Element => {
     const wrapper = document.createElement('div')
     wrapper.classList.add('about-window-icon-stack')
 
@@ -149,10 +168,16 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     return wrapper
   }
 
-  insideContent.appendChild(iconify('fab fa-readme', 'View tutorials', () => repl.pexec('getting started')))
+  insideContent.appendChild(
+    iconify('fab fa-readme', 'View tutorials', () =>
+      repl.pexec('getting started')
+    )
+  )
 
   if (bugs) {
-    insideContent.appendChild(iconify('fas fa-bug', 'Report an issue', bugs.url))
+    insideContent.appendChild(
+      iconify('fas fa-bug', 'Report an issue', bugs.url)
+    )
   }
 
   if (homepage) {
@@ -161,7 +186,9 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
       fontawesome: 'fab fa-github',
       onclick: openHome
       }) */
-    insideContent.appendChild(iconify('fab fa-github', 'Clone on GitHub', homepage))
+    insideContent.appendChild(
+      iconify('fab fa-github', 'Clone on GitHub', homepage)
+    )
   }
 
   if (showVersionInfo) {
@@ -184,7 +211,14 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     column2.innerText = 'VERSION'
     column2.className = 'header-cell log-field'
 
-    for (const component of [name, 'build', 'electron', 'chrome', 'node', 'v8']) {
+    for (const component of [
+      name,
+      'build',
+      'electron',
+      'chrome',
+      'node',
+      'v8'
+    ]) {
       const version = versionModel[component]
 
       if (version !== undefined) {
@@ -216,7 +250,9 @@ const aboutWindow = async () => { /* bringYourOwnWindow impl */
     type: 'custom',
     isEntity: true,
     prettyType: 'about',
-    presentation: document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen,
+    presentation:
+      document.body.classList.contains('subwindow') &&
+      Presentation.SidecarFullscreen,
     name,
     badges,
     version,
@@ -260,27 +296,26 @@ const reportVersion = ({ argv }: EvaluatorArgs) => {
     process.stdout.write(colors.dim('Checking for updates... '))
   }
 
-  return repl.qexec('updater check')
-    .then(updates => {
-      if (updates === true) {
-        // then we're up to date, so just report the version
-        if (isHeadless()) {
-          return 'you are up to date!'
-        } else {
-          return version
-        }
+  return repl.qexec('updater check').then(updates => {
+    if (updates === true) {
+      // then we're up to date, so just report the version
+      if (isHeadless()) {
+        return 'you are up to date!'
       } else {
-        // then updates are available, so report the updates available message
-        if (isHeadless()) {
-          // above, we left with a process.stdout.write, so
-          // now we need to clear a newline see shell issue
-          // #194
-          console.log('')
-          console.log('')
-        }
-        return updates
+        return version
       }
-    })
+    } else {
+      // then updates are available, so report the updates available message
+      if (isHeadless()) {
+        // above, we left with a process.stdout.write, so
+        // now we need to clear a newline see shell issue
+        // #194
+        console.log('')
+        console.log('')
+      }
+      return updates
+    }
+  })
 }
 
 /**
@@ -302,9 +337,11 @@ export default (commandTree: CommandRegistrar) => {
    * Print out the current version of the tool, as text
    *
    */
-  commandTree.listen('/version', // the command path
+  commandTree.listen(
+    '/version', // the command path
     reportVersion, // the command handler
-    { noAuthOk, usage: usage.version })
+    { noAuthOk, usage: usage.version }
+  )
 
   /**
    * Open a graphical window displaying more detail about the tool
@@ -321,5 +358,6 @@ export default (commandTree: CommandRegistrar) => {
 
 export const preload = () => {
   // install click handlers
-  (document.querySelector('#help-button') as HTMLElement).onclick = () => repl.pexec(settings.gettingStarted || 'getting started')
+  ;(document.querySelector('#help-button') as HTMLElement).onclick = () =>
+    repl.pexec(settings.gettingStarted || 'getting started')
 }

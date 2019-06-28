@@ -25,7 +25,9 @@ const localWskProps = () => {
     const propertiesParser = require('properties-parser')
 
     try {
-      wskprops = propertiesParser.read(process.env['WSK_CONFIG_FILE'] || expandHomeDir('~/.wskprops'))
+      wskprops = propertiesParser.read(
+        process.env['WSK_CONFIG_FILE'] || expandHomeDir('~/.wskprops')
+      )
     } catch (err) {
       if (err.code === 'ENOENT') {
         // this probably is OK, it probably means that the user set everything via env vars
@@ -45,24 +47,37 @@ const localWskProps = () => {
  */
 exports.entities = ['action', 'trigger', 'rule', 'package']
 
-const apihost = process.env.__OW_API_HOST || process.env.API_HOST || process.env.APIHOST || localWskProps().APIHOST
-const apihostIsLocal = apihost ? apihost.indexOf('localhost') >= 0 ||
-      apihost.startsWith('192.') ||
-      apihost.startsWith('172.') ||
-      apihost.startsWith('https://192.') ||
-      apihost.startsWith('https://172.') : null;
+const apihost =
+  process.env.__OW_API_HOST ||
+  process.env.API_HOST ||
+  process.env.APIHOST ||
+  localWskProps().APIHOST
+const apihostIsLocal = apihost
+  ? apihost.indexOf('localhost') >= 0 ||
+    apihost.startsWith('192.') ||
+    apihost.startsWith('172.') ||
+    apihost.startsWith('https://192.') ||
+    apihost.startsWith('https://172.')
+  : null
 
 exports.apihost = apihost
 exports.apihostIsLocal = apihostIsLocal
 
-const cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)) => {
+const cleanAll = (
+  noDefault,
+  api_key = !noDefault &&
+    (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)
+) => {
   if (!api_key) return Promise.resolve(true) // eslint-disable-line
 
   const opts = {
     apihost,
     api_key,
-    ignore_certs: process.env.IGNORE_CERTS || process.env.INSECURE_SSL || localWskProps().INSECURE_SSL ||
-                  apihostIsLocal
+    ignore_certs:
+      process.env.IGNORE_CERTS ||
+      process.env.INSECURE_SSL ||
+      localWskProps().INSECURE_SSL ||
+      apihostIsLocal
   }
 
   const ow = require('openwhisk')(opts)
@@ -79,36 +94,54 @@ const cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY |
   }
 
   const deleteAllOnce = entities =>
-    Promise.all(entities.map(entity => {
-      const tryDelete = () => {
-        return ow[entity.type].delete({ name: `/${entity.namespace}/${entity.name}` })
-          .then(deleted => {
-            const feedAnnotation = deleted.annotations && deleted.annotations.find(kv => kv.key === 'feed')
-            if (feedAnnotation) {
-              // console.log('Deleting feed', feedAnnotation.value)
-              return ow.feeds.delete({ feedName: feedAnnotation.value,
-                trigger: entity.name
-              })
-            } else {
-              return deleted
-            }
-          }).catch(err => {
-            if (err.statusCode === 404) {
-              // ignore 404s on deletes
-            } else {
-              throw err
-            }
-          })
-      }
+    Promise.all(
+      entities.map(entity => {
+        const tryDelete = () => {
+          return ow[entity.type]
+            .delete({ name: `/${entity.namespace}/${entity.name}` })
+            .then(deleted => {
+              const feedAnnotation =
+                deleted.annotations &&
+                deleted.annotations.find(kv => kv.key === 'feed')
+              if (feedAnnotation) {
+                // console.log('Deleting feed', feedAnnotation.value)
+                return ow.feeds.delete({
+                  feedName: feedAnnotation.value,
+                  trigger: entity.name
+                })
+              } else {
+                return deleted
+              }
+            })
+            .catch(err => {
+              if (err.statusCode === 404) {
+                // ignore 404s on deletes
+              } else {
+                throw err
+              }
+            })
+        }
 
-      // with retries...
-      return tryDelete()
-        .catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete))
-        .catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete))
-    }))
+        // with retries...
+        return tryDelete()
+          .catch(logThen(tryDelete))
+          .catch(logThen(tryDelete))
+          .catch(logThen(tryDelete))
+          .catch(logThen(tryDelete))
+          .catch(logThen(tryDelete))
+          .catch(logThen(tryDelete))
+          .catch(logThen(tryDelete))
+          .catch(logThen(tryDelete))
+      })
+    )
 
   const list = type => {
-    return ow[type].list({ limit: 200 }).then(list => list.map(e => { e.type = type; return e }))
+    return ow[type].list({ limit: 200 }).then(list =>
+      list.map(e => {
+        e.type = type
+        return e
+      })
+    )
   }
 
   const deleteAllUntilDone = type => entities => {
@@ -125,7 +158,8 @@ const cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY |
 
   const clean = type => {
     // console.log(`Cleaning ${type}`)
-    return list(type).then(deleteAllUntilDone(type))
+    return list(type)
+      .then(deleteAllUntilDone(type))
       .catch(err => {
         console.error('List failure')
         console.error(err)
@@ -136,13 +170,16 @@ const cleanAll = (noDefault, api_key = !noDefault && (process.env.__OW_API_KEY |
   //
   // here is the core logic
   //
-  const cleanOnce = () => Promise.all([clean('triggers'), clean('actions')])
-    .then(() => Promise.all([clean('rules'), clean('packages')]))
+  const cleanOnce = () =>
+    Promise.all([clean('triggers'), clean('actions')]).then(() =>
+      Promise.all([clean('rules'), clean('packages')])
+    )
 
   return cleanOnce()
-    .catch(logThen(cleanOnce)).catch(logThen(cleanOnce))
-//  .then(() => event.sender.send('asynchronous-reply', 'true'))
-//  .catch(() => event.sender.send('asynchronous-reply', 'false'))
+    .catch(logThen(cleanOnce))
+    .catch(logThen(cleanOnce))
+  //  .then(() => event.sender.send('asynchronous-reply', 'true'))
+  //  .catch(() => event.sender.send('asynchronous-reply', 'false'))
 }
 
 exports.cleanAll = cleanAll
@@ -152,27 +189,44 @@ exports.before = (ctx, opts) => {
     ctx.retries(10) // don't retry the mocha.it in local testing
   }
 
-  return function () {
+  return function() {
     const { cli } = ui
 
-    const setApiHost = process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz) ? x => x
-      : () => cli.do(`wsk host set ${apihost}`, ctx.app)
-        .then(cli.expectOK)
-        .catch(err => {
-          console.log(`Failed at command: wsk host set ${apihost}`)
-          common.oops(ctx)(err)
-        })
+    const setApiHost =
+      process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz)
+        ? x => x
+        : () =>
+            cli
+              .do(`wsk host set ${apihost}`, ctx.app)
+              .then(cli.expectOK)
+              .catch(err => {
+                console.log(`Failed at command: wsk host set ${apihost}`)
+                common.oops(ctx)(err)
+              })
 
-    const addWskAuth = process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz) ? x => x
-      : () => cli.do(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
-        .then(cli.expectOK)
-        .catch(err => {
-          console.log(`Failed at command: wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`)
-          common.oops(ctx)(err)
-        })
+    const addWskAuth =
+      process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz)
+        ? x => x
+        : () =>
+            cli
+              .do(
+                `wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`,
+                ctx.app
+              )
+              .then(cli.expectOK)
+              .catch(err => {
+                console.log(
+                  `Failed at command: wsk auth add ${process.env.__OW_API_KEY ||
+                    process.env.AUTH}`
+                )
+                common.oops(ctx)(err)
+              })
 
     // clean openwhisk assets from previous runs, then start the app
-    return Promise.all([ cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH), cleanAll(true, process.env.AUTH2) ])
+    return Promise.all([
+      cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH),
+      cleanAll(true, process.env.AUTH2)
+    ])
       .then(common.before(ctx, opts))
       .then(setApiHost)
       .then(addWskAuth)

@@ -8,7 +8,6 @@ limitations, for example. To support this use case, Kui includes a
 proxy server. Without the proxy in place, the Kubernetes and OpenWhisk
 plugins will likely not be functional when serving Kui from a browser.
 
-
 ## The Design
 
 The proxy design leverages a headless build of Kui, hosted in a docker

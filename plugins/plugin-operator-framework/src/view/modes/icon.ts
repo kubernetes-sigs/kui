@@ -36,15 +36,17 @@ interface IconBearer extends KubeResource {
   }
 }
 
-function isIconBearer (resource: KubeResource): resource is IconBearer {
+function isIconBearer(resource: KubeResource): resource is IconBearer {
   const bearer = resource as IconBearer
-  return bearer !== undefined &&
+  return (
+    bearer !== undefined &&
     bearer.spec !== undefined &&
     bearer.spec.icon !== undefined &&
     Array.isArray(bearer.spec.icon) &&
     bearer.spec.icon.length > 0 &&
     bearer.spec.icon[0].base64data !== undefined &&
     bearer.spec.icon[0].mediatype !== undefined
+  )
 }
 
 /**

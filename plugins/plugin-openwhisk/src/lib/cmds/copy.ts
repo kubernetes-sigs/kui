@@ -38,7 +38,11 @@ const usage = (type: string, command: string) => ({
   command,
   strict: command,
   required: [
-    { name: 'name', docs: 'Name of the deployed entity to copy', entity: `wsk ${type}` },
+    {
+      name: 'name',
+      docs: 'Name of the deployed entity to copy',
+      entity: `wsk ${type}`
+    },
     { name: 'newName', docs: 'Name of the copied entity' }
   ],
   docs: 'Copy an OpenWhisk action',
@@ -49,7 +53,15 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const copy = (type: string) => (op: string) => ({ block: retryOK, argvNoOptions: argv, parsedOptions: options }: { block: boolean | Element; argvNoOptions: string[]; parsedOptions: ParsedOptions }) => {
+const copy = (type: string) => (op: string) => ({
+  block: retryOK,
+  argvNoOptions: argv,
+  parsedOptions: options
+}: {
+  block: boolean | Element
+  argvNoOptions: string[]
+  parsedOptions: ParsedOptions
+}) => {
   debug(`${type} ${op}`)
 
   const idx = argv.indexOf(op) + 1
@@ -64,10 +76,16 @@ const copy = (type: string) => (op: string) => ({ block: retryOK, argvNoOptions:
     if (err.statusCode === 404 && retryOK) {
       // create failure with 404, maybe package not found?
       const path = name.split('/')
-      const packageName = path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
+      const packageName =
+        path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
       if (packageName) {
-        return repl.qexec(`wsk package update "${packageName}"`)
-          .then(() => copy(type)(op)({ block: false, argvNoOptions: argv, parsedOptions: options })) // false: don't retry again
+        return repl.qexec(`wsk package update "${packageName}"`).then(() =>
+          copy(type)(op)({
+            block: false,
+            argvNoOptions: argv,
+            parsedOptions: options
+          })
+        ) // false: don't retry again
       }
     }
 
@@ -75,7 +93,8 @@ const copy = (type: string) => (op: string) => ({ block: retryOK, argvNoOptions:
     throw err
   }
 
-  return repl.qfexec(`wsk ${type} update --copy "${newName}" "${oldName}"`)
+  return repl
+    .qfexec(`wsk ${type} update --copy "${newName}" "${oldName}"`)
     .catch(packageAutoCreate(newName))
 }
 
@@ -85,10 +104,12 @@ const copy = (type: string) => (op: string) => ({ block: retryOK, argvNoOptions:
  */
 export default async (commandTree: CommandRegistrar) => {
   // Install the routes. for now, no copying of packages or triggers or rules
-  ['actions'].forEach(type => {
+  ;['actions'].forEach(type => {
     const handler = copy(type)
     synonyms(type).forEach(syn => {
-      commandTree.listen(`/wsk/${syn}/${CMD}`, handler(CMD), { usage: usage(type, CMD) })
+      commandTree.listen(`/wsk/${syn}/${CMD}`, handler(CMD), {
+        usage: usage(type, CMD)
+      })
     })
   })
 }

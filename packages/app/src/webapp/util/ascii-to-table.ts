@@ -29,7 +29,11 @@ interface Pair {
   key: string
   value: string
 }
-const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
+const split = (
+  str: string,
+  splits: number[],
+  headerCells?: string[]
+): Pair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
@@ -42,13 +46,13 @@ const split = (str: string, splits: number[], headerCells?: string[]): Pair[] =>
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingString?: string }[] => {
+export const preprocessTable = (
+  raw: string[]
+): { rows?: Pair[][]; trailingString?: string }[] => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
-    const header = table
-      .substring(0, table.indexOf('\n'))
-      .replace(/\t/g, ' ')
+    const header = table.substring(0, table.indexOf('\n')).replace(/\t/g, ' ')
 
     const headerCells = header
       .split(/(\t|\s\s)+\s?/)
@@ -60,9 +64,8 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
     const columnStarts: number[] = []
 
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
-      const { offset, prefix } = idx === 0
-        ? { offset: 0, prefix: '' }
-        : { offset: 1, prefix: ' ' }
+      const { offset, prefix } =
+        idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
 
       const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
       if (newJdx < 0) {
@@ -89,14 +92,13 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
         trailingString: table
       }
     } else {
-      const possibleRows = table
-        .split(/\n/)
+      const possibleRows = table.split(/\n/)
       debug('possibleRows', possibleRows)
 
       // look to see if any of the possibleRows violate the
       // columnStarts alignment; this is a good indication that the
       // possibleRows are not really rows of a table
-      const endOfTable = possibleRows.findIndex((row) => {
+      const endOfTable = possibleRows.findIndex(row => {
         const nope = columnStarts.findIndex(idx => {
           return idx > 0 && !/\s/.test(row[idx - 1])
         })
@@ -105,14 +107,18 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
       })
       debug('endOfTable', endOfTable, possibleRows)
 
-      const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
+      const rows =
+        endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
-      const preprocessed = rows.map((line) => {
-        return split(line, columnStarts, headerCells)
-      }).filter(x => x)
+      const preprocessed = rows
+        .map(line => {
+          return split(line, columnStarts, headerCells)
+        })
+        .filter(x => x)
       debug('preprocessed', preprocessed)
 
-      const trailingString = endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
+      const trailingString =
+        endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
       debug('trailingString', trailingString)
 
       return {
@@ -157,7 +163,7 @@ export const outerCSSForKey = {
   AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
   REFERENCE: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // istio autoscaler
 
-  'CREATED': 'hide-with-sidecar',
+  CREATED: 'hide-with-sidecar',
   'CREATED AT': 'hide-with-sidecar',
 
   ID: 'max-width-id-like',
@@ -209,8 +215,7 @@ const tagForKey = {
   STATUS: 'badge'
 }
 
-const cssForKeyValue = {
-}
+const cssForKeyValue = {}
 
 /** decorate certain values specially */
 export const cssForValue = {
@@ -277,7 +282,13 @@ export const cssForValue = {
  * TODO factor out kube-specifics to plugin-k8s
  *
  */
-export const formatTable = (command: string, verb: string, entityType: string, options: ParsedOptions, lines: Pair[][]): Table => {
+export const formatTable = (
+  command: string,
+  verb: string,
+  entityType: string,
+  options: ParsedOptions,
+  lines: Pair[][]
+): Table => {
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -285,18 +296,22 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   const drilldownCommand = isHelmStatus ? 'kubectl' : command
   const isKube = isKubeLike(drilldownCommand)
 
-  const drilldownVerb = (
-    verb === 'get' ? 'get'
-      : command === 'helm' && (verb === 'list' || verb === 'ls') ? 'status'
-        : isHelmStatus ? 'get' : undefined
-  ) || undefined
+  const drilldownVerb =
+    (verb === 'get'
+      ? 'get'
+      : command === 'helm' && (verb === 'list' || verb === 'ls')
+      ? 'status'
+      : isHelmStatus
+      ? 'get'
+      : undefined) || undefined
 
   // helm doesn't support --output
   const drilldownFormat = isKube && drilldownVerb === 'get' ? '-o yaml' : ''
 
-  const drilldownNamespace = options.n || options.namespace
-    ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
-    : ''
+  const drilldownNamespace =
+    options.n || options.namespace
+      ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
+      : ''
 
   const config = options.config
     ? `--config ${repl.encodeComponent(options.config)}`
@@ -314,12 +329,22 @@ export const formatTable = (command: string, verb: string, entityType: string, o
   }
 
   // maximum column count across all rows
-  const nameColumnIdx = Math.max(0, lines[0].findIndex(({ key }) => key === 'NAME'))
-  const namespaceColumnIdx = lines[0].findIndex(({ key }) => key === 'NAMESPACE')
-  const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
+  const nameColumnIdx = Math.max(
+    0,
+    lines[0].findIndex(({ key }) => key === 'NAME')
+  )
+  const namespaceColumnIdx = lines[0].findIndex(
+    ({ key }) => key === 'NAMESPACE'
+  )
+  const maxColumns = lines.reduce(
+    (max, columns) => Math.max(max, columns.length),
+    0
+  )
 
   // e.g. Name: -> NAME
-  const keyForFirstColumn = lines[0][nameColumnIdx].key.replace(/:/g, '').toUpperCase()
+  const keyForFirstColumn = lines[0][nameColumnIdx].key
+    .replace(/:/g, '')
+    .toUpperCase()
 
   const allRows: Row[] = lines.map((columns, idx) => {
     const name = columns[nameColumnIdx].value
@@ -327,8 +352,8 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     const nameForDisplay = columns[0].value
     const nameForDrilldown = nameSplit[1] || name
     const css = ''
-    const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT'
-      ? css : 'selected-entity'
+    const firstColumnCSS =
+      idx === 0 || columns[0].key !== 'CURRENT' ? css : 'selected-entity'
 
     const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
     const rowKey = columns[0].key
@@ -340,31 +365,53 @@ export const formatTable = (command: string, verb: string, entityType: string, o
 
     // if there isn't a global namespace specifier, maybe there is a row namespace specifier
     // we use the row specifier in preference to a global specifier -- is that right?
-    const ns = (namespaceColumnIdx >= 0 &&
-                command !== 'helm' &&
-                `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
+    const ns =
+      (namespaceColumnIdx >= 0 &&
+        command !== 'helm' &&
+        `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) ||
+      drilldownNamespace ||
+      ''
 
     // idx === 0: don't click on header row
-    const onclick = idx === 0 ? false
-      : drilldownVerb ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(nameForDrilldown)} ${drilldownFormat} ${ns} ${config}`
+    const onclick =
+      idx === 0
+        ? false
+        : drilldownVerb
+        ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(
+            nameSplit
+          )} ${repl.encodeComponent(
+            nameForDrilldown
+          )} ${drilldownFormat} ${ns} ${config}`
         : false
 
-    const attributes: Cell[] = columns.slice(1).map(({ key, value: column }, colIdx) => ({
-      key,
-      tag: idx > 0 && tagForKey[key],
-      onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
-      outerCSS: outerCSSForKey[key] +
-        (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
-      css: css +
-        (column.length > 20 ? ' pretty-wide' : '') +
-        ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
-      value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
-    })).concat(fillTo(columns.length, maxColumns))
+    const attributes: Cell[] = columns
+      .slice(1)
+      .map(({ key, value: column }, colIdx) => ({
+        key,
+        tag: idx > 0 && tagForKey[key],
+        onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
+        outerCSS:
+          outerCSSForKey[key] +
+          (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key)
+            ? ''
+            : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
+        css:
+          css +
+          (column.length > 20 ? ' pretty-wide' : '') +
+          ' ' +
+          ((idx > 0 && cssForKey[key]) || '') +
+          ' ' +
+          (cssForValue[column] || ''),
+        value:
+          idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
+      }))
+      .concat(fillTo(columns.length, maxColumns))
 
     const row: Row = {
       key: keyForFirstColumn,
       name: nameForDisplay,
-      fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
+      fontawesome:
+        idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
       onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
       css: firstColumnCSS,
       rowCSS,

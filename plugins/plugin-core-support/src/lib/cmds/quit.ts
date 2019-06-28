@@ -31,8 +31,14 @@ const usage = (command: string) => ({
 })
 
 export default (commandTree: CommandRegistrar) => {
-  const quitCmd = commandTree.listen('/quit', doQuit, { usage: usage('quit'), noAuthOk: true })
+  const quitCmd = commandTree.listen('/quit', doQuit, {
+    usage: usage('quit'),
+    noAuthOk: true
+  })
 
   // just for fun, make /exit a synonym for /quit
-  commandTree.synonym('/exit', doQuit, quitCmd, { usage: usage('exit'), noAuthOk: true })
+  commandTree.synonym('/exit', doQuit, quitCmd, {
+    usage: usage('exit'),
+    noAuthOk: true
+  })
 }

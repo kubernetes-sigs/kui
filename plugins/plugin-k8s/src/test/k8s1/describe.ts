@@ -15,12 +15,24 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectYAMLSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  cli,
+  expectYAMLSubset,
+  selectors,
+  sidecar
+} from '@kui-shell/core/tests/lib/ui'
+import {
+  waitForGreen,
+  waitForRed,
+  defaultModeForGet,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
-describe('electron describe', function (this: common.ISuite) {
+describe('electron describe', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -29,9 +41,13 @@ describe('electron describe', function (this: common.ISuite) {
 
     /** return the editor text */
     const getText = (ctx: common.ISuite) => {
-      return ctx.app.client.execute(() => {
-        return document.querySelector('.monaco-editor-wrapper')['editor'].getValue()
-      }).then(res => res.value)
+      return ctx.app.client
+        .execute(() => {
+          return document
+            .querySelector('.monaco-editor-wrapper')
+            ['editor'].getValue()
+        })
+        .then(res => res.value)
     }
 
     /**
@@ -42,15 +58,19 @@ describe('electron describe', function (this: common.ISuite) {
       await ctx.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
 
       return ctx.app.client.waitUntil(async () => {
-        const ok: boolean = await getText(ctx)
-          .then(expectYAMLSubset({
-            apiVersion: 'v1',
-            kind: 'Pod',
-            metadata: {
-              name: 'nginx',
-              namespace: ns
-            }
-          }, false))
+        const ok: boolean = await getText(ctx).then(
+          expectYAMLSubset(
+            {
+              apiVersion: 'v1',
+              kind: 'Pod',
+              metadata: {
+                name: 'nginx',
+                namespace: ns
+              }
+            },
+            false
+          )
+        )
 
         return ok
       })
@@ -61,17 +81,23 @@ describe('electron describe', function (this: common.ISuite) {
      *
      */
     const testSummaryTab = async (ctx: common.ISuite) => {
-      await ctx.app.client.click(selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
+      await ctx.app.client.click(
+        selectors.SIDECAR_MODE_BUTTON(defaultModeForGet)
+      )
 
       // expect to see some familiar bits of a pod in the editor under the raw tab
       return ctx.app.client.waitUntil(async () => {
-        const ok: boolean = await getText(ctx)
-          .then(expectYAMLSubset({
-            Status: 'Running',
-            Labels: {
-              name: 'nginx'
-            }
-          }, false))
+        const ok: boolean = await getText(ctx).then(
+          expectYAMLSubset(
+            {
+              Status: 'Running',
+              Labels: {
+                name: 'nginx'
+              }
+            },
+            false
+          )
+        )
 
         return ok
       })
@@ -81,19 +107,25 @@ describe('electron describe', function (this: common.ISuite) {
 
     it(`should fail with 404 for unknown resource type via ${kubectl}`, () => {
       const fakeType = 'yoyoyo1334u890724'
-      return cli.do(`${kubectl} describe ${fakeType} productPage`, this.app)
+      return cli
+        .do(`${kubectl} describe ${fakeType} productPage`, this.app)
         .then(cli.expectError(404))
     })
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
+      return cli
+        .do(
+          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+          this.app
+        )
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(common.oops(this))
     })
 
     it(`should describe that pod via ${kubectl}`, () => {
-      return cli.do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
+      return cli
+        .do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectMode(defaultModeForGet))
@@ -114,15 +146,18 @@ describe('electron describe', function (this: common.ISuite) {
     })
 
     it('should delete the pod via sidecar deletion button', () => {
-      return cli.do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
-        .then(async (res) => {
+      return cli
+        .do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
+        .then(async res => {
           await cli.expectJustOK(res)
           await this.app.client.click(selectors.BY_NAME('nginx')) // click nginx in the table and expect a new repl output with sidecar open
           await sidecar.expectOpen(this.app)
           await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete')) // click delete button
 
           // a deletion command should be issued
-          const newResourceSelector = await cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })({ app: res.app, count: res.count + 1 })
+          const newResourceSelector = await cli.expectOKWithCustom({
+            selector: selectors.BY_NAME('nginx')
+          })({ app: res.app, count: res.count + 1 })
           const expectOffline = `${newResourceSelector} span:not(.repeating-pulse)`
           await waitForRed(this.app, expectOffline)
         })

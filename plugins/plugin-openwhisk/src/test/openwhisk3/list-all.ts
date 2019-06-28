@@ -28,27 +28,38 @@ const actionName = 'foo'
 const packageName = 'ppp'
 const triggerName = 'ttt'
 const actionNameInPackage = `${packageName}/${actionName}`
-const ruleName = `on_${triggerName}_do_${actionNameInPackage.replace(/\//g, '_')}`
+const ruleName = `on_${triggerName}_do_${actionNameInPackage.replace(
+  /\//g,
+  '_'
+)}`
 
-describe('List all OpenWhisk entities', function (this: common.ISuite) {
+describe('List all OpenWhisk entities', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this, () => cli.do(`wsk rule rm ${ruleName}`, this.app)))
 
   // create action
-  it('should create a packaged action', () => cli.do(`let ${actionNameInPackage} = x=>x`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName)))
+  it('should create a packaged action', () =>
+    cli
+      .do(`let ${actionNameInPackage} = x=>x`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName)))
 
   // create rule (and trigger)
-  it('should create a rule', () => cli.do(`on ${triggerName} do ${packageName}/${actionName}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(ruleName)))
+  it('should create a rule', () =>
+    cli
+      .do(`on ${triggerName} do ${packageName}/${actionName}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(ruleName)))
 
   // list them all
-  it('should list them all action', () => cli.do('wsk list', this.app).then(cli.expectOKWith(actionName)))
-  it('should list them all trigger', () => cli.do('wsk list', this.app).then(cli.expectOKWith(triggerName)))
-  it('should list them all rule', () => cli.do('wsk list', this.app).then(cli.expectOKWith(ruleName)))
-  it('should list them all package', () => cli.do('wsk list', this.app).then(cli.expectOKWith(packageName)))
+  it('should list them all action', () =>
+    cli.do('wsk list', this.app).then(cli.expectOKWith(actionName)))
+  it('should list them all trigger', () =>
+    cli.do('wsk list', this.app).then(cli.expectOKWith(triggerName)))
+  it('should list them all rule', () =>
+    cli.do('wsk list', this.app).then(cli.expectOKWith(ruleName)))
+  it('should list them all package', () =>
+    cli.do('wsk list', this.app).then(cli.expectOKWith(packageName)))
 })

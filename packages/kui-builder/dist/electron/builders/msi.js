@@ -34,7 +34,8 @@ const creator = new MSICreator({
   exe: 'kui'
 })
 
-creator.create()
+creator
+  .create()
   .then(() => creator.compile())
   .then(() => {
     console.log('Windows msi build succeeded')

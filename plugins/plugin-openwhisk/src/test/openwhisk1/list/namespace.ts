@@ -24,13 +24,15 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli } = ui
 
-describe('Namespaces list', function (this: common.ISuite) {
+describe('Namespaces list', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // implicit entity type
   ui.aliases.list.forEach(cmd => {
-    it(`should list namespaces with "namespaces ${cmd}"`, () => cli.do(`namespaces ${cmd}`, this.app)
-      .then(cli.expectOKWithOnly(ui.expectedNamespace())))
+    it(`should list namespaces with "namespaces ${cmd}"`, () =>
+      cli
+        .do(`namespaces ${cmd}`, this.app)
+        .then(cli.expectOKWithOnly(ui.expectedNamespace())))
   })
 })

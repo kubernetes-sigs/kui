@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/view/util/selectors')
 
 interface Selector {
-  [ key: string ]: string | Selector
+  [key: string]: string | Selector
 }
 
 export const selectorToString = (selector: Selector): string => {
@@ -29,8 +29,7 @@ export const selectorToString = (selector: Selector): string => {
     return ''
   }
 
-  const stringified = Object
-    .keys(selector)
+  const stringified = Object.keys(selector)
     .map(key => `-l ${key}=${selector[key]}`)
     .join(' ')
 

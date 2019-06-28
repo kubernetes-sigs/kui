@@ -15,13 +15,26 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar, getValueFromMonaco, expectYAML } from '@kui-shell/core/tests/lib/ui'
-import { waitForRed, waitForGreen, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  cli,
+  selectors,
+  sidecar,
+  getValueFromMonaco,
+  expectYAML
+} from '@kui-shell/core/tests/lib/ui'
+import {
+  waitForRed,
+  waitForGreen,
+  defaultModeForGet,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
 
-describe('electron apply pod', function (this: common.ISuite) {
+describe('electron apply pod', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -36,28 +49,44 @@ describe('electron apply pod', function (this: common.ISuite) {
 
       it(`should create sample pod from URL via ${kubectl} apply`, async () => {
         try {
-          const selector = await cli.do(`${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
-            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+          const selector = await cli
+            .do(
+              `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+              this.app
+            )
+            .then(
+              cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
+            )
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
 
           // now click on the table row
           this.app.client.click(`${selector} .clickable`)
-          await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('nginx'))
+          await sidecar
+            .expectOpen(this.app)
+            .then(sidecar.expectMode(defaultModeForGet))
+            .then(sidecar.expectShowing('nginx'))
 
           // make sure we have a last applied tab
-          await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('last applied'))
+          await this.app.client.click(
+            selectors.SIDECAR_MODE_BUTTON('last applied')
+          )
 
           return this.app.client.waitUntil(() => {
-            return getValueFromMonaco(this.app)
-              .then(expectYAML({
-                apiVersion: 'v1',
-                kind: 'Pod',
-                metadata: {
-                  name: 'nginx'
-                }
-              }, true, false))
+            return getValueFromMonaco(this.app).then(
+              expectYAML(
+                {
+                  apiVersion: 'v1',
+                  kind: 'Pod',
+                  metadata: {
+                    name: 'nginx'
+                  }
+                },
+                true,
+                false
+              )
+            )
           })
         } catch (err) {
           common.oops(this)(err)
@@ -65,8 +94,14 @@ describe('electron apply pod', function (this: common.ISuite) {
       })
 
       it(`should delete the sample pod from URL via ${kubectl}`, () => {
-        return cli.do(`${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return cli
+          .do(
+            `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            this.app
+          )
+          .then(
+            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })

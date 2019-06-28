@@ -23,7 +23,6 @@ const { cli, selectors } = ui
 // the default tab we expect to see on "get"
 exports.defaultModeForGet = 'summary'
 
-
 /**
  * Wait for a green badge
  *
@@ -48,7 +47,8 @@ exports.createNS = (prefix = '') => `${prefix}${uuid()}`
 
 exports.allocateNS = (ctx, ns, theCli = cli) => {
   it(`should create a namespace ${ns} `, () => {
-    return theCli.do(`kubectl create namespace ${ns}`, ctx.app)
+    return theCli
+      .do(`kubectl create namespace ${ns}`, ctx.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
       .then(selector => exports.waitForGreen(ctx.app, selector))
       .catch(common.oops(ctx))
@@ -56,9 +56,11 @@ exports.allocateNS = (ctx, ns, theCli = cli) => {
 }
 
 exports.deleteNS = (ctx, ns, theCli = cli) => {
-  if (!process.env.TRAVIS_JOB_ID) { // to save travis test time
+  if (!process.env.TRAVIS_JOB_ID) {
+    // to save travis test time
     it(`should delete the namespace ${ns}`, () => {
-      return theCli.do(`kubectl delete namespace ${ns}`, ctx.app)
+      return theCli
+        .do(`kubectl delete namespace ${ns}`, ctx.app)
         .then(cli.expectOKWithCustom({ selector: ui.selectors.BY_NAME(ns) }))
         .then(selector => exports.waitForRed(ctx.app, selector))
         .catch(common.oops(ctx))
@@ -70,21 +72,33 @@ exports.deleteNS = (ctx, ns, theCli = cli) => {
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace = '') => app => new Promise(resolve => {
-  // fetch the entities
-  const fetch = () => theCli.do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, { errOk: theCli.exitCode(404) })
+exports.waitTillNone = (
+  kind,
+  theCli = cli,
+  name = '',
+  okToSurvive,
+  inNamespace = ''
+) => app =>
+  new Promise(resolve => {
+    // fetch the entities
+    const fetch = () =>
+      theCli.do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, {
+        errOk: theCli.exitCode(404)
+      })
 
-  // verify the entities
-  const verify = okToSurvive
-    ? theCli === cli ? theCli.expectOKWith(okToSurvive) : theCli.expectOK(okToSurvive)
-    : theCli.expectError(theCli.exitCode(404))
+    // verify the entities
+    const verify = okToSurvive
+      ? theCli === cli
+        ? theCli.expectOKWith(okToSurvive)
+        : theCli.expectOK(okToSurvive)
+      : theCli.expectError(theCli.exitCode(404))
 
-  const iter = () => {
-    return fetch()
-      .then(verify)
-      .then(resolve)
-      .catch(() => setTimeout(iter, 3000))
-  }
+    const iter = () => {
+      return fetch()
+        .then(verify)
+        .then(resolve)
+        .catch(() => setTimeout(iter, 3000))
+    }
 
-  iter()
-})
+    iter()
+  })

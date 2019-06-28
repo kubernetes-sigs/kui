@@ -24,10 +24,15 @@ const last = ({ argv: fullArgv }) => {
   const argv = fullArgv.slice(fullArgv.indexOf('last'))
 
   const limit = argv.length === 1 ? 1 : 200 // if no options, then we're showing just the last activation
-  return repl.qexec(`activation list --limit ${limit} ${argv.slice(1).join(' ')}`)
+  return repl
+    .qexec(`activation list --limit ${limit} ${argv.slice(1).join(' ')}`)
     .then(response => {
       if (response.length === 0) {
-        throw new Error(argv.length === 1 ? 'You have no activations' : 'No matching activations')
+        throw new Error(
+          argv.length === 1
+            ? 'You have no activations'
+            : 'No matching activations'
+        )
       } else {
         return repl.qexec(`activation get ${response[0].activationId}`)
       }
@@ -36,8 +41,9 @@ const last = ({ argv: fullArgv }) => {
 
 export default (commandTree, { synonyms }) => {
   synonyms('activations').forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/last`,
-      last,
-      { docs: 'Show the last activation. Hint: try passing --name xxx to filter results' })
+    commandTree.listen(`/wsk/${syn}/last`, last, {
+      docs:
+        'Show the last activation. Hint: try passing --name xxx to filter results'
+    })
   })
 }

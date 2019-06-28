@@ -53,8 +53,12 @@ const Latency = {
     if (latencyStacks) {
       console.error(latencyStacks)
       console.error(findReverse(latencyStacks))
-      const { breakdown: fastest } = latencyStacks[find(latencyStacks) || 0] || { breakdown: undefined }
-      const { breakdown: slowest } = latencyStacks[findReverse(latencyStacks) || latencyStacks.length - 1] || { breakdown: undefined }
+      const { breakdown: fastest } = latencyStacks[
+        find(latencyStacks) || 0
+      ] || { breakdown: undefined }
+      const { breakdown: slowest } = latencyStacks[
+        findReverse(latencyStacks) || latencyStacks.length - 1
+      ] || { breakdown: undefined }
 
       if (fastest && slowest) {
         // great, we have the data, now let's try to make sense of it
@@ -116,142 +120,169 @@ const Latency = {
   }
 }
 
-const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) => new Promise(async (resolve, reject) => {
-  debug('url', url || altURL)
+const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
+  new Promise(async (resolve, reject) => {
+    debug('url', url || altURL)
 
-  // confirm that wrk is compiled and ready
-  await $$('wrk check')
+    // confirm that wrk is compiled and ready
+    await $$('wrk check')
 
-  // request for early termination
-  let terminateNow = false
+    // request for early termination
+    let terminateNow = false
 
-  const { iters = 10000, timeout = 2000, duration = '10s', connections = 2 } = options
+    const {
+      iters = 10000,
+      timeout = 2000,
+      duration = '10s',
+      connections = 2
+    } = options
 
-  const iter = (N, { dryRun = false } = {}) => {
-    const nThreads = N * 1
-    const nConns = N * connections // connections per thread
+    const iter = (N, { dryRun = false } = {}) => {
+      const nThreads = N * 1
+      const nConns = N * connections // connections per thread
 
-    debug('wrkPath', wrkPath())
-    debug('wrkExeName', wrkExeName())
+      debug('wrkPath', wrkPath())
+      debug('wrkExeName', wrkExeName())
 
-    // use wrk to drive the load
-    wrk({
-      threads: nThreads,
-      connections: nConns,
-      duration: dryRun ? '2s' : duration,
-      timeout,
-      path: `./${wrkExeName()}`,
-      execOptions: { cwd: wrkPath() },
-      script,
-      printLatency: true,
-      url: url || altURL
-    }, (err, current) => {
-      if (err) {
-        console.error(err)
-        reject(err)
-      }
+      // use wrk to drive the load
+      wrk(
+        {
+          threads: nThreads,
+          connections: nConns,
+          duration: dryRun ? '2s' : duration,
+          timeout,
+          path: `./${wrkExeName()}`,
+          execOptions: { cwd: wrkPath() },
+          script,
+          printLatency: true,
+          url: url || altURL
+        },
+        (err, current) => {
+          if (err) {
+            console.error(err)
+            reject(err)
+          }
 
-      if (dryRun) {
-        // warm up run, don't report anything
-        console.error('Trial run!')
-        return iter(N)
-      }
+          if (dryRun) {
+            // warm up run, don't report anything
+            console.error('Trial run!')
+            return iter(N)
+          }
 
-      debug('current', current)
+          debug('current', current)
 
-      const first = results[0]
-      const prev = results[results.length - 1]
-      const fratio = !first ? 1 : parseDuration(current.latency90) / parseDuration(first.latency90)
-      const pratio = !prev ? 1 : parseDuration(current.latency90) / parseDuration(prev.latency90)
+          const first = results[0]
+          const prev = results[results.length - 1]
+          const fratio = !first
+            ? 1
+            : parseDuration(current.latency90) / parseDuration(first.latency90)
+          const pratio = !prev
+            ? 1
+            : parseDuration(current.latency90) / parseDuration(prev.latency90)
 
-      // try to explain why the slow hits are so slow
-      const disparity = Latency.explain(current.latencyStacks)
+          // try to explain why the slow hits are so slow
+          const disparity = Latency.explain(current.latencyStacks)
 
-      // add a few fields to the record
-      const row = Object.assign({
-        N, fratio, pratio, disparity, timestamp: new Date().getTime()
-      }, current)
+          // add a few fields to the record
+          const row = Object.assign(
+            {
+              N,
+              fratio,
+              pratio,
+              disparity,
+              timestamp: new Date().getTime()
+            },
+            current
+          )
 
-      /** push the current result onto the list of results */
-      const push = () => {
-        // notify the client of an incremental data point
-        if (eventBus) {
-          debug('row', row)
-          eventBus.emit('/wrk/iter', row)
+          /** push the current result onto the list of results */
+          const push = () => {
+            // notify the client of an incremental data point
+            if (eventBus) {
+              debug('row', row)
+              eventBus.emit('/wrk/iter', row)
+            }
+
+            // and also push on the overall list of results
+            results.push(row)
+
+            return true
+          }
+
+          /** push the current result, then resolve the test */
+          const pushResolve = () => push() && resolve(results)
+
+          /* do NOT push the current result; just resolve the test */
+          const nopushResolve = () => resolve(results)
+
+          if (prev) {
+            if (fratio === Infinity || pratio === Infinity) {
+              console.error('Exiting due to infinite spike')
+              return nopushResolve() // don't record the last finding
+            } else if (fratio > 100) {
+              console.error(`Exiting due to fratio ${fratio}`)
+              return pushResolve()
+            } else if (pratio > 100) {
+              console.error(`Exiting due to pratio ${pratio}`)
+              return pushResolve()
+            } else if (current.non2xx3xx > 10) {
+              console.error(`Exiting due to non2xx3xx ${current.non2xx3xx}`)
+              return nopushResolve()
+            } else if (current.connectErrors > 10) {
+              console.error(
+                `Exiting due to connectErrors ${current.connectErrors}`
+              )
+              return nopushResolve()
+            } else if (current.readErrors > 10) {
+              console.error(`Exiting due to readErrors ${current.readErrors}`)
+              return nopushResolve()
+            } else if (current.writeErrors > 10) {
+              console.error(`Exiting due to writeErrors ${current.writeErrors}`)
+              return nopushResolve()
+            } else if (current.timeoutErrors > 10) {
+              console.error(
+                `Exiting due to timeoutErrors ${current.timeoutErrors}`
+              )
+              return nopushResolve()
+            }
+          }
+
+          if (terminateNow) {
+            console.error('Exiting due to termination request')
+            pushResolve()
+          } else if (N === iters) {
+            console.error('Exiting due to maxIters')
+            pushResolve()
+          } else {
+            // we're not terminating, so push the current result and continue
+            push()
+            iter(N + 1)
+          }
         }
+      )
+    }
 
-        // and also push on the overall list of results
-        results.push(row)
+    iter(1, { dryRun: true })
 
-        return true
-      }
-
-      /** push the current result, then resolve the test */
-      const pushResolve = () => push() && resolve(results)
-
-      /* do NOT push the current result; just resolve the test */
-      const nopushResolve = () => resolve(results)
-
-      if (prev) {
-        if (fratio === Infinity || pratio === Infinity) {
-          console.error('Exiting due to infinite spike')
-          return nopushResolve() // don't record the last finding
-        } else if (fratio > 100) {
-          console.error(`Exiting due to fratio ${fratio}`)
-          return pushResolve()
-        } else if (pratio > 100) {
-          console.error(`Exiting due to pratio ${pratio}`)
-          return pushResolve()
-        } else if (current.non2xx3xx > 10) {
-          console.error(`Exiting due to non2xx3xx ${current.non2xx3xx}`)
-          return nopushResolve()
-        } else if (current.connectErrors > 10) {
-          console.error(`Exiting due to connectErrors ${current.connectErrors}`)
-          return nopushResolve()
-        } else if (current.readErrors > 10) {
-          console.error(`Exiting due to readErrors ${current.readErrors}`)
-          return nopushResolve()
-        } else if (current.writeErrors > 10) {
-          console.error(`Exiting due to writeErrors ${current.writeErrors}`)
-          return nopushResolve()
-        } else if (current.timeoutErrors > 10) {
-          console.error(`Exiting due to timeoutErrors ${current.timeoutErrors}`)
-          return nopushResolve()
-        }
-      }
-
-      if (terminateNow) {
-        console.error('Exiting due to termination request')
-        pushResolve()
-      } else if (N === iters) {
-        console.error('Exiting due to maxIters')
-        pushResolve()
-      } else {
-        // we're not terminating, so push the current result and continue
-        push()
-        iter(N + 1)
-      }
+    eventBus.on('/wrk/terminate', () => {
+      terminateNow = true
     })
-  }
-
-  iter(1, { dryRun: true })
-
-  eventBus.on('/wrk/terminate', () => {
-    terminateNow = true
   })
-}).then(result => {
-  // cleanupCallback()
-  return result
-}).catch(err => {
-  // cleanupCallback()
-  throw err
-})
+    .then(result => {
+      // cleanupCallback()
+      return result
+    })
+    .catch(err => {
+      // cleanupCallback()
+      throw err
+    })
 
 /**
  * Start a load test against the given url
  *
  */
-export const lt = options => $$(`wsk action get "${options.url}"`)
-  .then(generateScriptForAction(options))
-  .catch(generateScriptForURL(options))
-  .then(_lt(options))
+export const lt = options =>
+  $$(`wsk action get "${options.url}"`)
+    .then(generateScriptForAction(options))
+    .catch(generateScriptForURL(options))
+    .then(_lt(options))

@@ -25,18 +25,24 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, keys, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 // TODO: webpack test
-localDescribe('Create action with implicit entity type, then list it', function (this: common.ISuite) {
+localDescribe('Create action with implicit entity type, then list it', function(
+  this: common.ISuite
+) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo')))
+  it('should create an action', () =>
+    cli
+      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo')))
 
   // toggle sidebar closed
   it('should toggle the sidebar closed with escape', async () => {
@@ -47,17 +53,20 @@ localDescribe('Create action with implicit entity type, then list it', function 
   // toggle sidebar back open
   it('should toggle the sidebar back open with escape', async () => {
     await this.app.client.keys(keys.ESCAPE)
-    return sidecar.expectOpen(this.app)
-      .then(sidecar.expectShowing('foo'))
+    return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo'))
   })
 
   // list tests
   ui.aliases.list.forEach(cmd => {
-    it(`should find the new action with "${cmd}"`, () => cli.do(cmd, this.app).then(cli.expectOKWithOnly('foo')))
-    it(`should find the new action with "action ${cmd}"`, () => cli.do(`action ${cmd}`, this.app).then(cli.expectOKWithOnly('foo')))
+    it(`should find the new action with "${cmd}"`, () =>
+      cli.do(cmd, this.app).then(cli.expectOKWithOnly('foo')))
+    it(`should find the new action with "action ${cmd}"`, () =>
+      cli.do(`action ${cmd}`, this.app).then(cli.expectOKWithOnly('foo')))
   })
 
   // toggle sidebar closed by clicking on the Close button
-  it('should toggle the sidebar closed with close button click', () => this.app.client.click(ui.selectors.SIDECAR_CLOSE_BUTTON)
-    .then(() => sidecar.expectClosed(this.app)))
+  it('should toggle the sidebar closed with close button click', () =>
+    this.app.client
+      .click(ui.selectors.SIDECAR_CLOSE_BUTTON)
+      .then(() => sidecar.expectClosed(this.app)))
 })

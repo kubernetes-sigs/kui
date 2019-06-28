@@ -31,14 +31,14 @@ import * as electronEvents from '../electron-events'
 const debug = require('debug')('webapp/bootstrap/boot')
 debug('loading')
 
-function catastrophe (err: Error) {
+function catastrophe(err: Error) {
   console.error('restart needed')
   console.error(err)
   document.body.classList.add('oops-total-catastrophe')
 }
 
 // note: the q npm doesn't like functions called "bootstrap"!
-const domReady = (prefs) => async () => {
+const domReady = prefs => async () => {
   debug('domReady')
 
   try {

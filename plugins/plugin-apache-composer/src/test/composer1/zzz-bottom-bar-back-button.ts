@@ -28,7 +28,9 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
 const actionName1 = `bottom-bar-back-button-test-${uuid()}`
 const actionName2 = `bottom-bar-back-button-test-${uuid()}`
@@ -38,7 +40,7 @@ const seqName1 = 'seq1'
 const cell1 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child .grid-cell:first-child`
 const cell2 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child .grid-cell:last-child`
 
-describe('Bottom bar back button functionality', function (this: common.ISuite) {
+describe('Bottom bar back button functionality', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -49,27 +51,35 @@ describe('Bottom bar back button functionality', function (this: common.ISuite) 
            .catch(common.oops(this)))
     } */
 
-  it('should create an echo action', () => cli.do(`let echo = ${ROOT}/data/composer/echo.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('echo'))
-    .catch(common.oops(this)))
+  it('should create an echo action', () =>
+    cli
+      .do(`let echo = ${ROOT}/data/composer/echo.js`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('echo'))
+      .catch(common.oops(this)))
 
-  it('should create a composer sequence', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence2.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    .catch(common.oops(this)))
+  it('should create a composer sequence', () =>
+    cli
+      .do(
+        `app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence2.js`,
+        this.app
+      )
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      .catch(common.oops(this)))
 
   const node1 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .node.action[data-deployed="deployed"]:nth-of-type(3)`
   const node2 = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .node.action[data-deployed="deployed"]:nth-of-type(4)`
 
-  const getActionName = (path) => {
+  const getActionName = path => {
     return path.substring(path.lastIndexOf('/') + 1)
   }
 
   it('should click on the first node', () => {
-    return this.app.client.waitForVisible(node1)
+    return this.app.client
+      .waitForVisible(node1)
       .then(() => this.app.client.getAttribute(node1, 'data-name'))
       .then(path => getActionName(path))
       .then(async actionName => {
@@ -85,7 +95,8 @@ describe('Bottom bar back button functionality', function (this: common.ISuite) 
   })
 
   it('should click on the second node', () => {
-    return this.app.client.waitForVisible(node2)
+    return this.app.client
+      .waitForVisible(node2)
       .then(() => this.app.client.getAttribute(node2, 'data-name'))
       .then(path => getActionName(path))
       .then(async actionName => {
@@ -129,70 +140,77 @@ describe('Bottom bar back button functionality', function (this: common.ISuite) 
        .catch(common.oops(this))) */
 
   it(`should open grid, click on some cell, and come back`, () => {
-    const once = iter => cli.do('grid', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('Recent Activity'))
+    const once = iter =>
+      cli
+        .do('grid', this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing('Recent Activity'))
 
-      // find cell1, click, then click back
-      .then(() => this.app.client.getAttribute(cell1, 'data-action-name'))
-      .then(async actionName => {
-        await this.app.client.click(cell1)
-        return Promise.resolve(this.app)
-          .then(sidecar.expectShowing(actionName))
-      })
-      .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
-      .then(() => this.app)
-      .then(sidecar.expectShowing('Recent Activity'))
+        // find cell1, click, then click back
+        .then(() => this.app.client.getAttribute(cell1, 'data-action-name'))
+        .then(async actionName => {
+          await this.app.client.click(cell1)
+          return Promise.resolve(this.app).then(
+            sidecar.expectShowing(actionName)
+          )
+        })
+        .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
+        .then(() => this.app)
+        .then(sidecar.expectShowing('Recent Activity'))
 
-      .catch(err => {
-        console.error(err)
-        if (iter < 20) {
-          return once(iter + 1)
-        } else {
-          common.oops(this)(err)
-        }
-      })
+        .catch(err => {
+          console.error(err)
+          if (iter < 20) {
+            return once(iter + 1)
+          } else {
+            common.oops(this)(err)
+          }
+        })
 
     return once(0)
   })
 
   it(`should open grid, click on ${actionName2}, and come back, then ${actionName1}, and come back`, () => {
-    const once = iter => cli.do('grid', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('Recent Activity'))
+    const once = iter =>
+      cli
+        .do('grid', this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing('Recent Activity'))
 
-      // find cell1, click, then click back
-      .then(() => this.app.client.getAttribute(cell1, 'data-action-name'))
-      .then(async actionName => {
-        await this.app.client.click(cell1)
-        return Promise.resolve(this.app)
-          .then(sidecar.expectShowing(actionName))
-      })
-      .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
-      .then(() => this.app)
-      .then(sidecar.expectShowing('Recent Activity'))
+        // find cell1, click, then click back
+        .then(() => this.app.client.getAttribute(cell1, 'data-action-name'))
+        .then(async actionName => {
+          await this.app.client.click(cell1)
+          return Promise.resolve(this.app).then(
+            sidecar.expectShowing(actionName)
+          )
+        })
+        .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
+        .then(() => this.app)
+        .then(sidecar.expectShowing('Recent Activity'))
 
-      // find cell2, click, then click back
-      .then(() => this.app.client.getAttribute(cell2, 'data-action-name'))
-      .then(async actionName => {
-        await this.app.client.click(cell2)
-        return Promise.resolve(this.app)
-          .then(sidecar.expectShowing(actionName))
-      })
-      .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
-      .then(() => this.app)
-      .then(sidecar.expectShowing('Recent Activity'))
+        // find cell2, click, then click back
+        .then(() => this.app.client.getAttribute(cell2, 'data-action-name'))
+        .then(async actionName => {
+          await this.app.client.click(cell2)
+          return Promise.resolve(this.app).then(
+            sidecar.expectShowing(actionName)
+          )
+        })
+        .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
+        .then(() => this.app)
+        .then(sidecar.expectShowing('Recent Activity'))
 
-      .catch(err => {
-        console.error(err)
-        if (iter < 20) {
-          return once(iter + 1)
-        } else {
-          common.oops(this)(err)
-        }
-      })
+        .catch(err => {
+          console.error(err)
+          if (iter < 20) {
+            return once(iter + 1)
+          } else {
+            common.oops(this)(err)
+          }
+        })
 
     return once(0)
   })

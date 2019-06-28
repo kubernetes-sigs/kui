@@ -45,7 +45,8 @@ const getStep = async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
     err.code = 404
     throw err
   } else {
-    const step = task.spec.steps && task.spec.steps.find(_ => _.name === stepName)
+    const step =
+      task.spec.steps && task.spec.steps.find(_ => _.name === stepName)
     if (!step) {
       const err: CodedError = new Error('step not found')
       err.code = 404

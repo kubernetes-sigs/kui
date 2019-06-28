@@ -26,23 +26,33 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 // TODO: webpack test
-localDescribe('Create actions, add parameters with quotes', function (this: common.ISuite) {
+localDescribe('Create actions, add parameters with quotes', function(
+  this: common.ISuite
+) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo')))
+  it('should create an action', () =>
+    cli
+      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo')))
 
-  it('should add a parameter with double quotes around value', () => cli.do('set z="bbb"', this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo'))
-    .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-    .then(ui.expectStruct({ 'z': 'bbb' })))
+  it('should add a parameter with double quotes around value', () =>
+    cli
+      .do('set z="bbb"', this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo'))
+      .then(app =>
+        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
+      )
+      .then(ui.expectStruct({ z: 'bbb' })))
 })

@@ -16,12 +16,22 @@
 
 import makeButton from './button'
 
-export const createResourceButton = (fn?) => makeButton({ mode: 'create',
-  fontawesome: 'fas fa-plus-circle',
-  balloon: 'Create this resource'
-}, fn)
+export const createResourceButton = (fn?) =>
+  makeButton(
+    {
+      mode: 'create',
+      fontawesome: 'fas fa-plus-circle',
+      balloon: 'Create this resource'
+    },
+    fn
+  )
 
-export const deleteResourceButton = (fn?) => makeButton({ mode: 'delete',
-  fontawesome: 'fas fa-trash',
-  balloon: 'Delete this resource'
-}, fn)
+export const deleteResourceButton = (fn?) =>
+  makeButton(
+    {
+      mode: 'delete',
+      fontawesome: 'fas fa-trash',
+      balloon: 'Delete this resource'
+    },
+    fn
+  )

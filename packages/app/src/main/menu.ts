@@ -28,16 +28,21 @@ const { productName, gettingStarted } = theme
  */
 const tellRendererToExecute = async (command: string, exec = 'qexec') => {
   const { webContents } = await import('electron')
-  const focusedWindow = webContents.getFocusedWebContents() ||
-        webContents.getAllWebContents()[0] // see https://github.com/IBM/kui/issues/1717
+  const focusedWindow =
+    webContents.getFocusedWebContents() || webContents.getAllWebContents()[0] // see https://github.com/IBM/kui/issues/1717
 
-  const devTools = webContents.getAllWebContents().map(_ => _.devToolsWebContents).filter(x => x)
+  const devTools = webContents
+    .getAllWebContents()
+    .map(_ => _.devToolsWebContents)
+    .filter(x => x)
   const isFocusedWindowDevTools = devTools.find(_ => _.id === focusedWindow.id)
 
   if (isFocusedWindowDevTools) {
     // debug('closing dev tools')
     const owningWindow = webContents.getAllWebContents().find(_ => {
-      return _.devToolsWebContents && _.devToolsWebContents.id === focusedWindow.id
+      return (
+        _.devToolsWebContents && _.devToolsWebContents.id === focusedWindow.id
+      )
     })
     if (owningWindow) {
       owningWindow.closeDevTools()
@@ -63,16 +68,19 @@ const closeTab = () => tellRendererToExecute('tab close')
 export const install = (createWindow: () => void) => {
   if (!isDev) {
     const fileMenuItems: MenuItemConstructorOptions[] = [
-      { label: 'New Window',
+      {
+        label: 'New Window',
         click: () => createWindow(),
         accelerator: 'CommandOrControl+N'
       },
-      { label: 'New Tab',
+      {
+        label: 'New Tab',
         click: () => newTab(),
         accelerator: 'CommandOrControl+T'
       },
       { type: 'separator' },
-      { label: 'Close Tab',
+      {
+        label: 'Close Tab',
         click: closeTab,
         accelerator: 'CommandOrControl+W'
       },
@@ -108,7 +116,11 @@ export const install = (createWindow: () => void) => {
       { type: 'separator' },
       {
         label: 'Report Issue...',
-        click () { require('electron').shell.openExternal('https://github.com/IBM/kui/issues/new') }
+        click() {
+          require('electron').shell.openExternal(
+            'https://github.com/IBM/kui/issues/new'
+          )
+        }
       }
     ]
 
@@ -137,7 +149,11 @@ export const install = (createWindow: () => void) => {
         submenu: [
           themeMenuItem,
           { type: 'separator' },
-          { accelerator: process.platform === 'darwin' ? 'Meta+R' : 'Shift+CmdOrCtrl+R', role: 'reload' },
+          {
+            accelerator:
+              process.platform === 'darwin' ? 'Meta+R' : 'Shift+CmdOrCtrl+R',
+            role: 'reload'
+          },
           //          { role: 'forcereload' },
           { role: 'toggledevtools' },
           { type: 'separator' },
@@ -151,10 +167,7 @@ export const install = (createWindow: () => void) => {
 
       {
         role: 'window',
-        submenu: [
-          { role: 'minimize' },
-          { role: 'close' }
-        ]
+        submenu: [{ role: 'minimize' }, { role: 'close' }]
       },
 
       {
@@ -163,7 +176,8 @@ export const install = (createWindow: () => void) => {
       }
     ]
 
-    const about: MenuItemConstructorOptions = { label: `About ${productName}`,
+    const about: MenuItemConstructorOptions = {
+      label: `About ${productName}`,
       click: () => {
         try {
           tellRendererToExecute('about', 'pexec')

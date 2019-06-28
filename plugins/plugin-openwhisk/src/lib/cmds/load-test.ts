@@ -34,14 +34,22 @@ const prettyPrintDuration = require('pretty-ms')
  * Usage information
  *
  */
-const usage = (verb: string) => `Usage: ${verb} <action> [--numIters|-n N] [--numThreads|-t M] [--thinkTime|-s millis] [--validator|-v ...]`
+const usage = (verb: string) =>
+  `Usage: ${verb} <action> [--numIters|-n N] [--numThreads|-t M] [--thinkTime|-s millis] [--validator|-v ...]`
 
 const costFns = {
   duration: {
     cost: (duration: string) => duration, // nothing fancy, duration alone is our measure
     pretty: prettyPrintDuration, // use the pretty-ms module to render durations
 
-    summary: D => D.N === 0 ? `No such recent activity of ${D.name}` : `The <strong>average</strong> duration of <strong>${D.N}</strong> ${D.N === 1 ? 'activation' : 'activations'} ${D.name ? 'of ' + D.name : ''} was <strong>${prettyPrintDuration(D.totalCost / D.N)}</strong>.`
+    summary: D =>
+      D.N === 0
+        ? `No such recent activity of ${D.name}`
+        : `The <strong>average</strong> duration of <strong>${D.N}</strong> ${
+            D.N === 1 ? 'activation' : 'activations'
+          } ${D.name ? 'of ' + D.name : ''} was <strong>${prettyPrintDuration(
+            D.totalCost / D.N
+          )}</strong>.`
   }
 }
 
@@ -56,7 +64,7 @@ const formatOneGroup = (name: string, data: any[], costFn) => {
   const totalCost = data.reduce((sum, value) => sum + value, 0)
 
   /** return the nth percentile in the cumulative distribution */
-  const n = N => data[Math.floor(data.length * N / 100)]
+  const n = N => data[Math.floor((data.length * N) / 100)]
 
   const dom = document.createElement('div')
   const summary = document.createElement('div')
@@ -110,7 +118,9 @@ const formatResultForRepl = (costFn, name: string) => (groups, numErrors) => {
 
   const valid = document.createElement('div')
   result.appendChild(valid)
-  valid.innerText = `Run was ${numErrors === true || numErrors === 0 ? 'valid' : 'INVALID'}${numErrors > 0 ? ' with ' + numErrors + ' errors' : ''}`
+  valid.innerText = `Run was ${
+    numErrors === true || numErrors === 0 ? 'valid' : 'INVALID'
+  }${numErrors > 0 ? ' with ' + numErrors + ' errors' : ''}`
   valid.className = numErrors === 0 ? 'green-text' : 'oops'
 
   const table = document.createElement('div')
@@ -121,7 +131,8 @@ const formatResultForRepl = (costFn, name: string) => (groups, numErrors) => {
     const cell = document.createElement('div')
     table.appendChild(cell)
 
-    if (version !== 'all') { // all would mean there is no grouping
+    if (version !== 'all') {
+      // all would mean there is no grouping
       cell.style.margin = '1em'
       cell.style.display = 'flex'
       cell.style.flexDirection = 'column'
@@ -165,15 +176,29 @@ const makeValidator = (template, { numThreads, numIters }) => {
  * The loadtest command handler
  *
  */
-const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv, parsedOptions, execOptions }: EvaluatorArgs) => {
-  const pair = parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
+const loadtest = (verb: string) => ({
+  argv: argvWithOptions,
+  argvNoOptions: argv,
+  parsedOptions,
+  execOptions
+}: EvaluatorArgs) => {
+  const pair = parseOptions(
+    argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1),
+    'action'
+  )
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const options: Record<string, any> = Object.assign({}, parsedOptions, pair.kvOptions)
+  const options: Record<string, any> = Object.assign(
+    {},
+    parsedOptions,
+    pair.kvOptions
+  )
 
   const action = argv[argv.indexOf(verb) + 1]
   const numThreads = options.numThreads || 4
   const numIters = options.numIters || 10
-  const thinkTime = options.hasOwnProperty('thinkTime') ? options.thinkTime : 100
+  const thinkTime = options.hasOwnProperty('thinkTime')
+    ? options.thinkTime
+    : 100
 
   debug('action', action)
   debug('options', options)
@@ -188,7 +213,10 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
   const results = []
   const validator = makeValidator(options.validator, { numThreads, numIters })
 
-  console.error(`loadtest action=${action} numThreads=${numThreads} numIters=${numIters} thinkTime=${thinkTime}`, options)
+  console.error(
+    `loadtest action=${action} numThreads=${numThreads} numIters=${numIters} thinkTime=${thinkTime}`,
+    options
+  )
 
   interface Tally {
     durations: {
@@ -198,7 +226,7 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
     numErrors?: number
   }
 
-  return new Promise<Tally>((resolve) => {
+  return new Promise<Tally>(resolve => {
     // tally of results
     const tally: Tally = {
       durations: {
@@ -221,15 +249,18 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
         countDown()
       } else {
         // invoke the action with the given parameters
-        const params = options.action && options.action.parameters && options.action.parameters.reduce((M, kv) => {
-          M[kv.key] = kv.value
-          return M
-        }, {})
+        const params =
+          options.action &&
+          options.action.parameters &&
+          options.action.parameters.reduce((M, kv) => {
+            M[kv.key] = kv.value
+            return M
+          }, {})
 
-        getClient(execOptions).actions.invoke(owOpts({ name: action,
-          params: params || {},
-          blocking: true
-        }))
+        getClient(execOptions)
+          .actions.invoke(
+            owOpts({ name: action, params: params || {}, blocking: true })
+          )
           .then(activation => {
             const duration = activation.end - activation.start
             if (activation.response && activation.response.success) {
@@ -242,9 +273,13 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
             // proceed to the next iter
             spawn(iter + 1)
             // setTimeout(() => spawn(iter + 1, activation), thinkTime)
-          }).catch(activation => {
+          })
+          .catch(activation => {
             console.error(activation)
-            const duration = activation.end && activation.start ? activation.end - activation.start : 0
+            const duration =
+              activation.end && activation.start
+                ? activation.end - activation.start
+                : 0
             tally.durations.failure.push(duration)
 
             // proceed to the next iter
@@ -259,7 +294,10 @@ const loadtest = (verb: string) => ({ argv: argvWithOptions, argvNoOptions: argv
       setTimeout(() => spawn(0), 0)
     }
   }).then(tally => {
-    return formatResultForRepl(costFns.duration, action)(tally.durations, validator && validator(results))
+    return formatResultForRepl(costFns.duration, action)(
+      tally.durations,
+      validator && validator(results)
+    )
   })
 }
 
@@ -271,10 +309,15 @@ export default async (commandTree: CommandRegistrar) => {
       docs: 'Drive load against a selected action'
     }
   })
-  commandTree.synonym('/wsk/testing/loadtest', loadtest('loadtest'), loadtestCmd, {
-    usage: {
-      command: 'loadtest',
-      docs: 'Drive load against a selected action'
+  commandTree.synonym(
+    '/wsk/testing/loadtest',
+    loadtest('loadtest'),
+    loadtestCmd,
+    {
+      usage: {
+        command: 'loadtest',
+        docs: 'Drive load against a selected action'
+      }
     }
-  })
+  )
 }

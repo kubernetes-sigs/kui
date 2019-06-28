@@ -25,57 +25,81 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const actionName1 = `foo1-${new Date().getTime()}`
 const actionName2 = `foo2-${new Date().getTime()}`
 const { localDescribe } = common
 
 // TODO: webpack test
-localDescribe('wsk activation get --last', function (this: common.ISuite) {
+localDescribe('wsk activation get --last', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // create an action
-  it(`should create an action ${actionName1}`, () => cli.do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName1))
-    .catch(common.oops(this)))
-
-  it(`should invoke it ${actionName1}`, () => cli.do(`invoke -p name lastTestIPromise`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName1))
-    .catch(common.oops(this)))
-
-  // create another action
-  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2))
-    .catch(common.oops(this)))
-
-  it(`should show ${actionName1} with wsk activation get --last`, () => this.app.client.waitUntil(() => {
-    return cli.do(`wsk activation get --last`, this.app)
+  it(`should create an action ${actionName1}`, () =>
+    cli
+      .do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1, undefined, undefined, undefined, undefined, 500))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ name: 'Step1 lastTestIPromise' }))
-      .then(() => true)
-      .catch(() => false)
-  })
-    .catch(common.oops(this)))
+      .then(sidecar.expectShowing(actionName1))
+      .catch(common.oops(this)))
 
-  it(`should invoke it ${actionName2}`, () => cli.do(`invoke ${actionName2} -p name lastTestIPromise`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2))
-    .catch(common.oops(this)))
+  it(`should invoke it ${actionName1}`, () =>
+    cli
+      .do(`invoke -p name lastTestIPromise`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName1))
+      .catch(common.oops(this)))
+
+  // create another action
+  it(`should create an action ${actionName2}`, () =>
+    cli
+      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2))
+      .catch(common.oops(this)))
+
+  it(`should show ${actionName1} with wsk activation get --last`, () =>
+    this.app.client
+      .waitUntil(() => {
+        return cli
+          .do(`wsk activation get --last`, this.app)
+          .then(cli.expectOK)
+          .then(sidecar.expectOpen)
+          .then(
+            sidecar.expectShowing(
+              actionName1,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              500
+            )
+          )
+          .then(() =>
+            this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
+          )
+          .then(ui.expectStruct({ name: 'Step1 lastTestIPromise' }))
+          .then(() => true)
+          .catch(() => false)
+      })
+      .catch(common.oops(this)))
+
+  it(`should invoke it ${actionName2}`, () =>
+    cli
+      .do(`invoke ${actionName2} -p name lastTestIPromise`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2))
+      .catch(common.oops(this)))
 
   // this test is too flakey against IBM Cloud Functions, as activation records may only become visible way in the future
-/*
+  /*
   it(`should show ${actionName1} with wsk activation get --last ${actionName1}`, () => this.app.client.waitUntil(() => {
     return cli.do(`wsk activation get --last ${actionName1}`, this.app)
       .then(cli.expectOK)

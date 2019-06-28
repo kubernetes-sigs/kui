@@ -1,6 +1,6 @@
 {
-    "name": "kubernetes-basics",
-    "description": "Learn the basics of Kubernetes",
-    "level": "Beginner",
-    "kind": "kubernetes"
+  "name": "kubernetes-basics",
+  "description": "Learn the basics of Kubernetes",
+  "level": "Beginner",
+  "kind": "kubernetes"
 }

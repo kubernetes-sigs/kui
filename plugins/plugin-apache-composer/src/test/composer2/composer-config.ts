@@ -19,14 +19,17 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 
-describe('composer config', function (this: common.ISuite) {
+describe('composer config', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   /** app config */
-  const getConfig = cmd => it(`should show app configuration via "${cmd}"`, () => cli.do(cmd, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'Composer version' }))
-    .catch(common.oops(this)))
+  const getConfig = cmd =>
+    it(`should show app configuration via "${cmd}"`, () =>
+      cli
+        .do(cmd, this.app)
+        .then(cli.expectOKWithCustom({ expect: 'Composer version' }))
+        .catch(common.oops(this)))
 
   getConfig('app properties')
   getConfig('app props')

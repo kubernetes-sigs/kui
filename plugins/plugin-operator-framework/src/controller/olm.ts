@@ -20,9 +20,13 @@ import { CommandRegistrar, ParsedOptions } from '@kui-shell/core/models/command'
 
 // const getSources = `oc get opsrc -o json --all-namespaces ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''}`
 
-const config = [{
-  name: '--config', docs: 'An OpenShift config file', file: true
-}]
+const config = [
+  {
+    name: '--config',
+    docs: 'An OpenShift config file',
+    file: true
+  }
+]
 
 const catalog = {
   command: 'catalog',
@@ -43,17 +47,14 @@ export default async (commandTree: CommandRegistrar) => {
     usage: {
       command: 'olm',
       commandPrefix: 'olm',
-      available: [
-        catalog,
-        installed
-      ]
+      available: [catalog, installed]
     }
   })
 
   // experiment: remember the last used --config, to avoid having to retype it
   const configKey = '/kui/plugin-operator-framework/olm/config'
   let rememberedConfig: string
-  async function remember (parsedOptions: ParsedOptions) {
+  async function remember(parsedOptions: ParsedOptions) {
     if (parsedOptions.config) {
       rememberedConfig = parsedOptions.config
       setPreference(configKey, rememberedConfig)
@@ -67,27 +68,42 @@ export default async (commandTree: CommandRegistrar) => {
     }
   }
 
-  commandTree.listen('/olm/catalog', async ({ block, parsedOptions, execOptions }) => {
-    await remember(parsedOptions)
+  commandTree.listen(
+    '/olm/catalog',
+    async ({ block, parsedOptions, execOptions }) => {
+      await remember(parsedOptions)
 
-    const namespace = parsedOptions.n || parsedOptions.namespace
-    const getSources = `oc get OperatorSources ${namespace ? `-n ${namespace}` : '--all-namespaces'} -o=custom-columns=NAME:.metadata.name,PACKAGES:.status.packages ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''}`
+      const namespace = parsedOptions.n || parsedOptions.namespace
+      const getSources = `oc get OperatorSources ${
+        namespace ? `-n ${namespace}` : '--all-namespaces'
+      } -o=custom-columns=NAME:.metadata.name,PACKAGES:.status.packages ${
+        parsedOptions.config ? `--config ${parsedOptions.config}` : ''
+      }`
 
-    return $(getSources, block, undefined, execOptions)
-  }, {
-    noAuthOk: true,
-    usage: catalog
-  })
+      return $(getSources, block, undefined, execOptions)
+    },
+    {
+      noAuthOk: true,
+      usage: catalog
+    }
+  )
 
-  commandTree.listen('/olm/installed', async ({ block, parsedOptions, execOptions }) => {
-    await remember(parsedOptions)
+  commandTree.listen(
+    '/olm/installed',
+    async ({ block, parsedOptions, execOptions }) => {
+      await remember(parsedOptions)
 
-    const namespace = parsedOptions.n || parsedOptions.namespace
-    const getSources = `oc get ClusterServiceVersions -n ${namespace || 'default'} ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''} -o=custom-columns=NAME:.metadata.name,DISPLAY:.spec.displayName,VERSION:.spec.version,STATUS:.status.phase`
+      const namespace = parsedOptions.n || parsedOptions.namespace
+      const getSources = `oc get ClusterServiceVersions -n ${namespace ||
+        'default'} ${
+        parsedOptions.config ? `--config ${parsedOptions.config}` : ''
+      } -o=custom-columns=NAME:.metadata.name,DISPLAY:.spec.displayName,VERSION:.spec.version,STATUS:.status.phase`
 
-    return $(getSources, block, undefined, execOptions)
-  }, {
-    noAuthOk: true,
-    usage: installed
-  })
+      return $(getSources, block, undefined, execOptions)
+    },
+    {
+      noAuthOk: true,
+      usage: installed
+    }
+  )
 }

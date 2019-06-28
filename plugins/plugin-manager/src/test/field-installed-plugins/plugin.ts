@@ -19,7 +19,7 @@
 // const assert = require('assert')
 // const cli = ui.cli
 
-describe('Install and remove plugins', function () {
+describe('Install and remove plugins', function() {
   // disabled for now; not compatible with webpack
   /*
   before(common.before(this))

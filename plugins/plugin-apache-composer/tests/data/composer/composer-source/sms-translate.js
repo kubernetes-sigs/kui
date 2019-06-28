@@ -8,13 +8,21 @@ function translate() {
   return composer.sequence(
     composer.retain('watsonLanguage/languageId'),
 
-    composer.if(p => p.result.language !== 'en',
+    composer.if(
+      p => p.result.language !== 'en',
 
-    /* then */ composer.sequence(
-      p => ({ translateFrom: p.result.language, translateTo: 'en', payload: p.params.payload }),
-      'watsonLanguage/translator'),
+      /* then */ composer.sequence(
+        p => ({
+          translateFrom: p.result.language,
+          translateTo: 'en',
+          payload: p.params.payload
+        }),
+        'watsonLanguage/translator'
+      ),
 
-    /* else */ 'sms-translate/en2shakespeare'))
+      /* else */ 'sms-translate/en2shakespeare'
+    )
+  )
 }
 
 /**
@@ -22,14 +30,17 @@ function translate() {
  * @return { html: OK message }
  */
 module.exports = composer.sequence(
-  p => ({payload: p.Body, number: p.From}),
+  p => ({ payload: p.Body, number: p.From }),
 
   composer.retain(
     composer.sequence(
       args => ({ payload: args.payload }),
-      composer.try(
-        translate(),
-        err => ({payload: 'Sorry, we cannot translate your text'})))),
+      composer.try(translate(), err => ({
+        payload: 'Sorry, we cannot translate your text'
+      }))
+    )
+  ),
 
   ({ params, result }) => ({ Body: result.payload, number: params.number }),
-  'sms-translate/sendsms')
+  'sms-translate/sendsms'
+)

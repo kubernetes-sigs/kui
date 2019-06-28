@@ -27,22 +27,42 @@ const { localDescribe } = common
  * https://github.com/microsoft/node-pty/issues/85
  * so we can't use big.json
  */
-const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-bash-like/package.json')
+)
 const input = join(ROOT, 'tests/data/small.json')
 
-localDescribe('cat json to sidecar', function (this: common.ISuite) {
+localDescribe('cat json to sidecar', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('cat a json file and expect it to appear in the sidecar', () => cli.do(`cat "${input}"`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('Couchbase Operator', undefined, undefined, 'openshift-operators'))
-    .catch(common.oops(this)))
+  it('cat a json file and expect it to appear in the sidecar', () =>
+    cli
+      .do(`cat "${input}"`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(
+        sidecar.expectShowing(
+          'Couchbase Operator',
+          undefined,
+          undefined,
+          'openshift-operators'
+        )
+      )
+      .catch(common.oops(this)))
 
-  it('cat a json file, pipe it to jq, and expect it to appear in the sidecar', () => cli.do(`cat "${input}" | jq`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('Couchbase Operator', undefined, undefined, 'openshift-operators'))
-    .catch(common.oops(this)))
+  it('cat a json file, pipe it to jq, and expect it to appear in the sidecar', () =>
+    cli
+      .do(`cat "${input}" | jq`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(
+        sidecar.expectShowing(
+          'Couchbase Operator',
+          undefined,
+          undefined,
+          'openshift-operators'
+        )
+      )
+      .catch(common.oops(this)))
 })

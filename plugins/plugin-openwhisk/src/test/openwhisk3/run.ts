@@ -24,7 +24,9 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname, join } from 'path'
 const { cli, normalizeHTML } = ui
 const { rp, localDescribe } = common
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const commandFile = `${ROOT}/data/openwhisk/commandFile.wsk`
 const local = join(ROOT, 'data/openwhisk/openwhisk-shell-demo-html')
@@ -46,24 +48,39 @@ const clean = host => {
   }
 }
 
-localDescribe('Execute a command file', function (this: common.ISuite) {
+localDescribe('Execute a command file', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('execute commands from a file', () => cli.do(`run ${commandFile}`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.entity:not(.header-row)' }))
-    .then(selector => this.app.client.waitUntil(async () => {
-      const rows = await this.app.client.elements(`${selector} badge.green-background`)
-      return rows.value.length === 3
-    }))
-    .then(() => rp({ url: `${clean(API_HOST)}/api/v1/web/${ns}/public/hello.html`, rejectUnauthorized: false }))
-    .then(content => readFile(local, (err, data) => {
-      if (err) {
-        throw err
-      } else {
-        assert.strictEqual(normalizeHTML(content),
-          normalizeHTML(data).replace('nickm_wskng_test', `${ns}`))
-      }
-    }))
-    .catch(common.oops(this)))
+  it('execute commands from a file', () =>
+    cli
+      .do(`run ${commandFile}`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.entity:not(.header-row)' }))
+      .then(selector =>
+        this.app.client.waitUntil(async () => {
+          const rows = await this.app.client.elements(
+            `${selector} badge.green-background`
+          )
+          return rows.value.length === 3
+        })
+      )
+      .then(() =>
+        rp({
+          url: `${clean(API_HOST)}/api/v1/web/${ns}/public/hello.html`,
+          rejectUnauthorized: false
+        })
+      )
+      .then(content =>
+        readFile(local, (err, data) => {
+          if (err) {
+            throw err
+          } else {
+            assert.strictEqual(
+              normalizeHTML(content),
+              normalizeHTML(data).replace('nickm_wskng_test', `${ns}`)
+            )
+          }
+        })
+      )
+      .catch(common.oops(this)))
 })

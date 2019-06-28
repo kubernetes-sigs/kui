@@ -21,32 +21,48 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const cli = ui.cli
 const sidecar = ui.sidecar
 
-describe('app create where app name is also a package name', function (this: common.ISuite) {
+describe('app create where app name is also a package name', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should create a package named foo', () => cli.do('wsk package create foo', this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should create a package named foo', () =>
+    cli
+      .do('wsk package create foo', this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
 
-  it('should create an app named foo in package foo', () => cli.do('app create foo/foo @demos/hello.js', this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should create an app named foo in package foo', () =>
+    cli
+      .do('app create foo/foo @demos/hello.js', this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
 
-  it('should app get mo expecting 409', () => cli.do('app get foo', this.app)
-    .then(cli.expectError(409))
-    .catch(common.oops(this)))
+  it('should app get mo expecting 409', () =>
+    cli
+      .do('app get foo', this.app)
+      .then(cli.expectError(409))
+      .catch(common.oops(this)))
 
-  it('should app get /_/mo expecting 409', () => cli.do('app get /_/foo', this.app)
-    .then(cli.expectError(409))
-    .catch(common.oops(this)))
+  it('should app get /_/mo expecting 409', () =>
+    cli
+      .do('app get /_/foo', this.app)
+      .then(cli.expectError(409))
+      .catch(common.oops(this)))
 
-  it('should app list then click on foo/foo', () => cli.do('app list', this.app)
-    .then(cli.expectOKWithCustom({ selector: '.entity[data-name="foo"][data-package-name="foo"] .entity-name.clickable', passthrough: true }))
-    .then(ui.selectors.OUTPUT_N)
-    .then(selector => this.app.client.click(selector))
-    .then(() => this.app)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo', undefined, undefined, 'foo'))
-    .catch(common.oops(this)))
+  it('should app list then click on foo/foo', () =>
+    cli
+      .do('app list', this.app)
+      .then(
+        cli.expectOKWithCustom({
+          selector:
+            '.entity[data-name="foo"][data-package-name="foo"] .entity-name.clickable',
+          passthrough: true
+        })
+      )
+      .then(ui.selectors.OUTPUT_N)
+      .then(selector => this.app.client.click(selector))
+      .then(() => this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo', undefined, undefined, 'foo'))
+      .catch(common.oops(this)))
 })

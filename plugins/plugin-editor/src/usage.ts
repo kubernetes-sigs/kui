@@ -36,11 +36,29 @@ export const editUsage = command => ({
   title: 'Editor',
   header: 'Open a given file or entity for editing.',
   example: `${command} <filepath>`,
-  required: [{ name: '<filepath>', docs: 'The local file path or entity name to edit', implicitOK: ['actions', 'activations'] }],
+  required: [
+    {
+      name: '<filepath>',
+      docs: 'The local file path or entity name to edit',
+      implicitOK: ['actions', 'activations']
+    }
+  ],
   optional: [
-    { name: '--language', hidden: true, docs: 'For internal use, specify a language for coloring and IntelliSense' },
-    { name: '--name', hidden: true, docs: 'For internal use, specify a name to show up in the sidecar header' },
-    { name: '--type', hidden: true, docs: 'For internal use, specify a type to show up in the sidecar header' }
+    {
+      name: '--language',
+      hidden: true,
+      docs: 'For internal use, specify a language for coloring and IntelliSense'
+    },
+    {
+      name: '--name',
+      hidden: true,
+      docs: 'For internal use, specify a name to show up in the sidecar header'
+    },
+    {
+      name: '--type',
+      hidden: true,
+      docs: 'For internal use, specify a type to show up in the sidecar header'
+    }
   ],
   parents: [{ command: 'editor' }],
   related: allExcept('edit')

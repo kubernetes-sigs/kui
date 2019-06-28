@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  localDescribe
+} from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
@@ -28,7 +34,7 @@ const { cli } = ui
  * yes: export FOO=bar\ baz; echo $FOO -> bar baz
  */
 
-localDescribe('export command', function (this: ISuite) {
+localDescribe('export command', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 

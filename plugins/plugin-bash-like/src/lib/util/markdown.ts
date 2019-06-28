@@ -35,12 +35,19 @@ const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
 
   // eslint-disable-next-line node/no-deprecated-api
   const parsedUrl = url.parse(href)
-  const isRemote = parsedUrl.protocol !== undefined && parsedUrl.protocol !== 'file:'
+  const isRemote =
+    parsedUrl.protocol !== undefined && parsedUrl.protocol !== 'file:'
 
   if (!isRemote && parsedUrl.pathname) {
-    const url = href.charAt(0) === '!' ? href : path.relative(
-      process.cwd(),
-      path.normalize(path.join(path.dirname(fullpath), parsedUrl.pathname)))
+    const url =
+      href.charAt(0) === '!'
+        ? href
+        : path.relative(
+            process.cwd(),
+            path.normalize(
+              path.join(path.dirname(fullpath), parsedUrl.pathname)
+            )
+          )
     link.href = parsedUrl.hash || '#'
     link.setAttribute('data-url', url)
   }
@@ -64,7 +71,12 @@ const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
  * Wrap a formatted innerHTML
  *
  */
-const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown => {
+const wrap = (
+  tab: Tab,
+  htmlString: string,
+  fullpath: string,
+  hljs
+): Markdown => {
   const body = document.createElement('div')
   body.classList.add('padding-content')
   body.classList.add('overflow-auto')
@@ -92,13 +104,21 @@ const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown =>
       // below; some browsers don't (yet?) support <!  hopefully they
       // will all, at some point, and we can restore that commented
       // out part
-      exec.onclick = () => pexec(url.substring(1)/* .replace(new RegExp('(?<!\\)\/', 'g'), ' ') */.replace(/\\\//, '/').replace(/\$\{cwd\}/g, path.dirname(fullpath)))
+      exec.onclick = () =>
+        pexec(
+          url
+            .substring(1) /* .replace(new RegExp('(?<!\\)\/', 'g'), ' ') */
+            .replace(/\\\//, '/')
+            .replace(/\$\{cwd\}/g, path.dirname(fullpath))
+        )
     } else {
-      exec.onclick = drilldown(tab,
+      exec.onclick = drilldown(
+        tab,
         `open ${url}`,
         undefined,
         wrapper,
-        path.basename(fullpath))
+        path.basename(fullpath)
+      )
     }
   }
 
@@ -148,7 +168,12 @@ const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown =>
  * Render a markdown file as HTML
  *
  */
-const markdownify = async (tab: Tab, source: string, fullpath: string, hljs): Promise<Markdown> => {
+const markdownify = async (
+  tab: Tab,
+  source: string,
+  fullpath: string,
+  hljs
+): Promise<Markdown> => {
   // use marked, but render links specially
   const Marked = await import('marked')
   const renderer = new Marked.Renderer()
@@ -159,7 +184,10 @@ const markdownify = async (tab: Tab, source: string, fullpath: string, hljs): Pr
     const isRemote = !!parsedUrl.protocol
 
     if (!isRemote && parsedUrl.pathname) {
-      const newHref = href.charAt(0) === '!' ? href : path.join(path.dirname(fullpath), parsedUrl.pathname)
+      const newHref =
+        href.charAt(0) === '!'
+          ? href
+          : path.join(path.dirname(fullpath), parsedUrl.pathname)
       return newHref
     } else {
       return href
@@ -185,7 +213,11 @@ const markdownify = async (tab: Tab, source: string, fullpath: string, hljs): Pr
 
   /** transform the src attribute of images */
   renderer.image = (href, title, text) => {
-    return `<img src='${transformHref(href)}'` + (title ? ' title="' + title + '"' : '') + ` alt="${text}"></img>`
+    return (
+      `<img src='${transformHref(href)}'` +
+      (title ? ' title="' + title + '"' : '') +
+      ` alt="${text}"></img>`
+    )
   }
 
   /** transform the href attribute of links */
@@ -209,7 +241,13 @@ const markdownify = async (tab: Tab, source: string, fullpath: string, hljs): Pr
  * Render a markdown file as HTML
  *
  */
-export default (tab: Tab, suffix: string, source: string, fullpath: string, hljs): Promise<Markdown> => {
+export default (
+  tab: Tab,
+  suffix: string,
+  source: string,
+  fullpath: string,
+  hljs
+): Promise<Markdown> => {
   if (suffix === 'md') {
     return markdownify(tab, source, fullpath, hljs)
   }

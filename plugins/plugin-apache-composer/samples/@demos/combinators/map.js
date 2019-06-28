@@ -15,5 +15,6 @@ const composer = require('openwhisk-composer')
  * available to the body of our map.
  */
 module.exports = composer.sequence(
-  composer.merge(composer.literal({value: [1, 2, 3]})),
-  composer.map(({ value, factor }) => ({ value: value * factor })))
+  composer.merge(composer.literal({ value: [1, 2, 3] })),
+  composer.map(({ value, factor }) => ({ value: value * factor }))
+)

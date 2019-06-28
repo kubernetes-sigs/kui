@@ -76,7 +76,7 @@ export interface ExecOptions {
 export class DefaultExecOptions implements ExecOptions {
   readonly type: ExecType
 
-  constructor (type: ExecType = ExecType.TopLevel) {
+  constructor(type: ExecType = ExecType.TopLevel) {
     this.type = type
   }
 }
@@ -84,7 +84,7 @@ export class DefaultExecOptions implements ExecOptions {
 export class DefaultExecOptionsForTab extends DefaultExecOptions {
   readonly tab: Tab
 
-  constructor (tab: Tab) {
+  constructor(tab: Tab) {
     super()
     this.tab = tab
   }
@@ -92,5 +92,5 @@ export class DefaultExecOptionsForTab extends DefaultExecOptions {
 
 /** command line options */
 export interface ParsedOptions {
-  [ key: string ]: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }

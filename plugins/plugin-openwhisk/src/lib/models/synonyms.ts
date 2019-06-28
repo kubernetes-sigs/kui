@@ -36,7 +36,12 @@ export const synonymsTable = {
     create: [
       // these are synonyms from the openwhisk npm standpoint, but not from the openwhisk command experience standpoint
       { nickname: 'update', name: 'update', notSynonym: true },
-      { nickname: 'bind', name: 'bind', notSynonym: true, limitTo: { packages: true } }
+      {
+        nickname: 'bind',
+        name: 'bind',
+        notSynonym: true,
+        limitTo: { packages: true }
+      }
     ],
     update: ['up']
   }

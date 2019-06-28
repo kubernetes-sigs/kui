@@ -22,9 +22,7 @@ import { fetchTask } from '../../lib/read'
 const usage = (command: string) => ({
   command,
   strict: command,
-  required: [
-    { name: 'pipelineName', docs: 'Name of the pipeline' }
-  ],
+  required: [{ name: 'pipelineName', docs: 'Name of the pipeline' }],
   optional: [
     { name: 'taskName', docs: 'Name of the task', positional: true },
     { name: '--file', alias: '-f', docs: 'Path to resource specification' }
@@ -35,7 +33,10 @@ const usage = (command: string) => ({
  * Command handler
  *
  */
-const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
+const getTask = (cmd: string) => async ({
+  argvNoOptions,
+  parsedOptions
+}: EvaluatorArgs) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
 
@@ -61,6 +62,12 @@ const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Evalua
 }
 
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tekton/get/task', getTask('task'), { usage: usage('task'), noAuthOk: true })
-  commandTree.listen('/tekton/get/tasks', getTask('tasks'), { usage: usage('tasks'), noAuthOk: true })
+  commandTree.listen('/tekton/get/task', getTask('task'), {
+    usage: usage('task'),
+    noAuthOk: true
+  })
+  commandTree.listen('/tekton/get/tasks', getTask('tasks'), {
+    usage: usage('tasks'),
+    noAuthOk: true
+  })
 }

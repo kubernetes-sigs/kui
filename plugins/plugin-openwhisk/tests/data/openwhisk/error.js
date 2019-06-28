@@ -1,1 +1,1 @@
-const main = params => ({error: 'oops'})
+const main = params => ({ error: 'oops' })

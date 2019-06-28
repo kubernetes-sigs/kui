@@ -19,11 +19,25 @@
   "highlightTheme": "mono-blue",
   "defaultTheme": "Light",
   "themes": [
-    { "name": "Light", "css": "themes/light.css", "description": "Default Light", "style": "light" },
-    { "name": "Dark", "css": "themes/dark.css", "description": "Default Dark", "style": "dark" },
+    {
+      "name": "Light",
+      "css": "themes/light.css",
+      "description": "Default Light",
+      "style": "light"
+    },
+    {
+      "name": "Dark",
+      "css": "themes/dark.css",
+      "description": "Default Dark",
+      "style": "dark"
+    },
     { "name": "Atelier", "css": "themes/atelier-seaside.css", "style": "dark" },
     { "name": "Dracula", "css": "themes/dracula.css", "style": "dark" },
-    { "name": "Gruvbox", "css": "themes/gruvbox-dark-medium.css", "style": "dark" },
+    {
+      "name": "Gruvbox",
+      "css": "themes/gruvbox-dark-medium.css",
+      "style": "dark"
+    },
     { "name": "Lucario", "css": "themes/lucario.css", "style": "dark" },
     { "name": "Monokai", "css": "themes/monokai.css", "style": "dark" },
     { "name": "Nord", "css": "themes/nord.css", "style": "dark" },

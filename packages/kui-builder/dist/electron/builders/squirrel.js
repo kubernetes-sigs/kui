@@ -25,14 +25,15 @@ const outputDirectory = path.join(BUILDDIR, 'installers/win32-x64')
 
 console.log('Windows squirrel build started')
 
-electronInstaller.createWindowsInstaller({
-  appDirectory,
-  outputDirectory,
-  setupIcon,
-  name: 'kui',
-  setupExe: `${PRODUCT_NAME}.exe`,
-  exe: 'kui'
-})
+electronInstaller
+  .createWindowsInstaller({
+    appDirectory,
+    outputDirectory,
+    setupIcon,
+    name: 'kui',
+    setupExe: `${PRODUCT_NAME}.exe`,
+    exe: 'kui'
+  })
   .then(() => {
     console.log('Windows squirrel build succeeded')
   })

@@ -16,4 +16,5 @@ const log = params => ({ message: 'Composition time: ' + params.value })
  */
 module.exports = composer.sequence(
   composer.literal(Date()),
-  composer.action('log', { action: log }))
+  composer.action('log', { action: log })
+)

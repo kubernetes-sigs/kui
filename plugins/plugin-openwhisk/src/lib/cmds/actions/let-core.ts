@@ -23,15 +23,22 @@ export const ANON_CODE = 'anonymous-code'
  *
  */
 export const isAnonymousLet = action => {
-  if (action.annotations && action.annotations.find(kv => kv.key === ANON_KEY)) {
+  if (
+    action.annotations &&
+    action.annotations.find(kv => kv.key === ANON_KEY)
+  ) {
     const code = action.annotations.find(kv => kv.key === ANON_CODE)
     return code && code.value
   }
 }
 
 export const isAnonymousLetFor = (action, parent) => {
-  const annotation = action.annotations && action.annotations.find(kv => kv.key === ANON_KEY)
-  const annotationFQN = action.annotations && action.annotations.find(kv => kv.key === ANON_KEY_FQN)
-  return (annotation && annotation.value === parent) ||
+  const annotation =
+    action.annotations && action.annotations.find(kv => kv.key === ANON_KEY)
+  const annotationFQN =
+    action.annotations && action.annotations.find(kv => kv.key === ANON_KEY_FQN)
+  return (
+    (annotation && annotation.value === parent) ||
     (annotationFQN && annotationFQN.value === parent)
+  )
 }

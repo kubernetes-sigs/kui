@@ -16,8 +16,13 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-function isDate (object: Date | string | number): object is Date {
-  return object && typeof object !== 'string' && typeof object !== 'number' && 'getMonth' in object
+function isDate(object: Date | string | number): object is Date {
+  return (
+    object &&
+    typeof object !== 'string' &&
+    typeof object !== 'number' &&
+    'getMonth' in object
+  )
 }
 
 /** due to td styling issues, some CSS attrs are on td > span */
@@ -31,21 +36,33 @@ const span = (text: string): HTMLElement => {
  * Pretty print a timestamp
  *
  */
-export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long', previousTimestamp?: Date | string | number) => {
+export const prettyPrintTime = (
+  timestamp: Date | string | number,
+  fmt = 'long',
+  previousTimestamp?: Date | string | number
+) => {
   // compare now to then, to see if we need to show a year, etc.
   const now = new Date()
   const then = !isDate(timestamp) ? new Date(timestamp) : timestamp
 
-  if (now.getFullYear() === then.getFullYear() &&
-      now.getMonth() === then.getMonth()) {
+  if (
+    now.getFullYear() === then.getFullYear() &&
+    now.getMonth() === then.getMonth()
+  ) {
     // same year and month as now
 
     // same day as now: just print the time
-    const prev: Date = previousTimestamp &&
-      (!isDate(previousTimestamp) ? new Date(previousTimestamp) : previousTimestamp)
-    const prevOnSameDay = !!(prev && (prev.getFullYear() === then.getFullYear() &&
-                                      prev.getMonth() === then.getMonth() &&
-                                      prev.getDate() === then.getDate()))
+    const prev: Date =
+      previousTimestamp &&
+      (!isDate(previousTimestamp)
+        ? new Date(previousTimestamp)
+        : previousTimestamp)
+    const prevOnSameDay = !!(
+      prev &&
+      (prev.getFullYear() === then.getFullYear() &&
+        prev.getMonth() === then.getMonth() &&
+        prev.getDate() === then.getDate())
+    )
     const sameDay = () => {
       const delta = then.getTime() - prev.getTime()
       const verySmallDelta = Math.abs(delta) < 1000
@@ -56,7 +73,9 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
         } else {
           // very small delta (or we were explicitly asked to print deltas)
           const sign = delta < 0 ? '' : '+' // the minus will appear for us
-          return span(`${sign}${prettyPrintDuration(then.getTime() - prev.getTime())}`)
+          return span(
+            `${sign}${prettyPrintDuration(then.getTime() - prev.getTime())}`
+          )
         }
       } else {
         const res = document.createElement('span')
@@ -83,15 +102,29 @@ export const prettyPrintTime = (timestamp: Date | string | number, fmt = 'long',
       if (prevOnSameDay) {
         return sameDay()
       } else {
-        return span(then.toLocaleString(navigator.language, {
-          weekday: fmt, month: fmt, day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
-        }))
+        return span(
+          then.toLocaleString(navigator.language, {
+            weekday: fmt,
+            month: fmt,
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+          })
+        )
       }
     }
   } else if (now.getFullYear() === then.getFullYear()) {
-    return span(then.toLocaleString(navigator.language, {
-      weekday: fmt, month: fmt, day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
-    }))
+    return span(
+      then.toLocaleString(navigator.language, {
+        weekday: fmt,
+        month: fmt,
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      })
+    )
   } else {
     // different year or different month: print the long form
     return span(then.toLocaleString())

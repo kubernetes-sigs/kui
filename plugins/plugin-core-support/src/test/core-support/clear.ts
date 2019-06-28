@@ -16,20 +16,27 @@
 
 import * as assert from 'assert'
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  localIt
+} from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, keys } = ui
 
 const expectConsoleToBeClear = ({ app }) => {
   return app.client.waitUntil(() => {
-    return app.client.elements(selectors.PROMPT_BLOCK)
+    return app.client
+      .elements(selectors.PROMPT_BLOCK)
       .then(elements => elements.value.length === 1)
-      /* .then(() => app.client.getAttribute('#main-repl .repl-block input', 'placeholder'))
+    /* .then(() => app.client.getAttribute('#main-repl .repl-block input', 'placeholder'))
       .then(placeholderText => placeholderText === 'enter your command') */
   })
 }
 
-describe('Clear the console', function (this: ISuite) {
+describe('Clear the console', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
@@ -40,12 +47,20 @@ describe('Clear the console', function (this: ISuite) {
     cancel?: boolean
   }
   const doPrompt = (opts: PromptOptions) => async () => {
-    const { enteredString, enteredPlaceholder = '', expectedPlaceholder = 'Test prompt', cancel = false } = opts
+    const {
+      enteredString,
+      enteredPlaceholder = '',
+      expectedPlaceholder = 'Test prompt',
+      cancel = false
+    } = opts
 
     try {
       const res = await cli.do(`prompt ${enteredPlaceholder}`, this.app)
       await this.app.client.waitUntil(async () => {
-        const placeholder = await this.app.client.getAttribute(selectors.PROMPT_N(res.count), 'placeholder')
+        const placeholder = await this.app.client.getAttribute(
+          selectors.PROMPT_N(res.count),
+          'placeholder'
+        )
         return placeholder === expectedPlaceholder
       })
       if (cancel) {
@@ -62,53 +77,73 @@ describe('Clear the console', function (this: ISuite) {
   const enteredString = 'does this work?'
   const enteredString2 = 'does this also work?'
   it(`quick test of prompt`, doPrompt({ enteredString }))
-  it(`another quick test of prompt`, doPrompt({
-    enteredString: enteredString2,
-    enteredPlaceholder: 'foo',
-    expectedPlaceholder: 'foo'
-  }))
-  it(`cancel test of prompt`, doPrompt({
-    enteredPlaceholder: 'foo3',
-    expectedPlaceholder: 'foo3',
-    cancel: true
-  }))
+  it(
+    `another quick test of prompt`,
+    doPrompt({
+      enteredString: enteredString2,
+      enteredPlaceholder: 'foo',
+      expectedPlaceholder: 'foo'
+    })
+  )
+  it(
+    `cancel test of prompt`,
+    doPrompt({
+      enteredPlaceholder: 'foo3',
+      expectedPlaceholder: 'foo3',
+      cancel: true
+    })
+  )
 
   // get something on the screen
-  localIt(`should list files`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
+  localIt(`should list files`, () =>
+    cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md'))
+  )
 
-  it('should clear the console', () => cli.do('clear', this.app)
-    .then(expectConsoleToBeClear)
-    .catch(oops(this)))
+  it('should clear the console', () =>
+    cli
+      .do('clear', this.app)
+      .then(expectConsoleToBeClear)
+      .catch(oops(this)))
 
   // get something on the screen
-  localIt(`should list files again`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
+  localIt(`should list files again`, () =>
+    cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md'))
+  )
 
   const JUNK = 'junk text that should stay'
-  it('should clear the console with ctrl+l', () => cli.do(JUNK, this.app, true)
-    .then(async () => {
-      await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
-      return expectConsoleToBeClear({ app: this.app })
-    })
-    .then(() => this.app.client.getValue(selectors.CURRENT_PROMPT))
-    .then(text => assert.strictEqual(text, JUNK))
-    .catch(oops(this)))
+  it('should clear the console with ctrl+l', () =>
+    cli
+      .do(JUNK, this.app, true)
+      .then(async () => {
+        await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
+        return expectConsoleToBeClear({ app: this.app })
+      })
+      .then(() => this.app.client.getValue(selectors.CURRENT_PROMPT))
+      .then(text => assert.strictEqual(text, JUNK))
+      .catch(oops(this)))
 
   // hit enter, and expect that JUNK to fail
   it(`should fail with command not found`, () => {
-    return cli.do('nope', this.app)
+    return cli
+      .do('nope', this.app)
       .then(cli.expectError(404))
       .catch(oops(this))
   })
 
   // get something on the screen
-  localIt(`should list files yet again`, () => cli.do('ls ../..', this.app)
-    .then(cli.expectOKWith('README.md'))
-    .catch(oops(this)))
+  localIt(`should list files yet again`, () =>
+    cli
+      .do('ls ../..', this.app)
+      .then(cli.expectOKWith('README.md'))
+      .catch(oops(this))
+  )
 
-  it('should clear properly despite existing prompt', () => cli.do('prompt', this.app) // wipe will change the placeholder text
-    .then(async () => {
-      await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
-      return expectConsoleToBeClear({ app: this.app })
-    })
-    .catch(oops(this)))
+  it('should clear properly despite existing prompt', () =>
+    cli
+      .do('prompt', this.app) // wipe will change the placeholder text
+      .then(async () => {
+        await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
+        return expectConsoleToBeClear({ app: this.app })
+      })
+      .catch(oops(this)))
 })

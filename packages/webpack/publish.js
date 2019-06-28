@@ -7,7 +7,9 @@ const path = require('path')
 const glob = require('glob')
 const AWS = require('ibm-cos-sdk')
 const needle = require('needle')
-const secrets = process.env.COS_SECRETS ? JSON.parse(process.env.COS_SECRETS) : require('../publishers/s3/secrets-cos.json')
+const secrets = process.env.COS_SECRETS
+  ? JSON.parse(process.env.COS_SECRETS)
+  : require('../publishers/s3/secrets-cos.json')
 
 const colors = require('colors/safe')
 
@@ -15,20 +17,26 @@ const version = process.argv[2] || 'dev'
 const Bucket = `kui-web-${version}`
 
 /** promise version of glob */
-const globp = (dir, patternSuffix, dirWildcard = false) => new Promise((resolve, reject) => {
-  const pattern = `${dir}${dirWildcard ? '*/' : ''}${patternSuffix}`
+const globp = (dir, patternSuffix, dirWildcard = false) =>
+  new Promise((resolve, reject) => {
+    const pattern = `${dir}${dirWildcard ? '*/' : ''}${patternSuffix}`
 
-  glob(pattern, (err, files) => {
-    if (err) {
-      reject(err)
-    } else {
-      resolve(files.map(filepath => ({
-        filepath,
-        targetName: filepath.replace(new RegExp(`^${dir}${dirWildcard ? '[^/]+/' : ''}`), '')
-      })))
-    }
+    glob(pattern, (err, files) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(
+          files.map(filepath => ({
+            filepath,
+            targetName: filepath.replace(
+              new RegExp(`^${dir}${dirWildcard ? '[^/]+/' : ''}`),
+              ''
+            )
+          }))
+        )
+      }
+    })
   })
-})
 
 /** flatten array of arrays */
 const flatten = arrays => [].concat.apply([], arrays)
@@ -70,7 +78,11 @@ const cleanBucket = async (cos, Bucket) => {
     const list = await cos.listObjects({ Bucket }).promise()
 
     debug('deleting objects in bucket', list.Contents)
-    await Promise.all(list.Contents.map(({ Key }) => cos.deleteObject({ Bucket, Key }).promise()))
+    await Promise.all(
+      list.Contents.map(({ Key }) =>
+        cos.deleteObject({ Bucket, Key }).promise()
+      )
+    )
 
     // debug('deleting bucket', Bucket)
     // await cos.deleteBucket({ Bucket }).promise()
@@ -88,18 +100,20 @@ const cleanBucket = async (cos, Bucket) => {
  *
  */
 const putBucketCors = async (cos, Bucket) => {
-  await cos.putBucketCors({
-    Bucket,
-    CORSConfiguration: {
-      CORSRules: [
-        {
-          AllowedHeaders: [ '*' ],
-          AllowedMethods: [ 'GET', 'DELETE', 'POST', 'PUT', 'HEAD' ],
-          AllowedOrigins: [ '*' ]
-        }
-      ]
-    }
-  }).promise()
+  await cos
+    .putBucketCors({
+      Bucket,
+      CORSConfiguration: {
+        CORSRules: [
+          {
+            AllowedHeaders: ['*'],
+            AllowedMethods: ['GET', 'DELETE', 'POST', 'PUT', 'HEAD'],
+            AllowedOrigins: ['*']
+          }
+        ]
+      }
+    })
+    .promise()
 
   debug('put CORS succeeded, now fetching CORS to validate')
 
@@ -111,55 +125,75 @@ const putBucketCors = async (cos, Bucket) => {
  * Upload one binary to the given bucket
  *
  */
-const putObject = (cos, Bucket) => ({ filepath, targetName }) => new Promise((resolve, reject) => {
-  const filename = path.basename(filepath)
+const putObject = (cos, Bucket) => ({ filepath, targetName }) =>
+  new Promise((resolve, reject) => {
+    const filename = path.basename(filepath)
 
-  const ContentType = filename.endsWith('.html') ? 'text/html; charset=UTF-8'
-    : filename.endsWith('.css') ? 'text/css'
-      : filename.endsWith('.ico') ? 'image/vnd.microsoft.icon'
-        : filename.endsWith('.png') ? 'image/png'
-          : filename.endsWith('.jpg') ? 'image/jpeg'
-            : filename.endsWith('.svg') ? 'image/svg+xml'
-              : filename.endsWith('.js') || filename.endsWith('.js.gz') || filename.endsWith('.js.br') ? 'application/javascript'
-                : 'text/plain'
+    const ContentType = filename.endsWith('.html')
+      ? 'text/html; charset=UTF-8'
+      : filename.endsWith('.css')
+      ? 'text/css'
+      : filename.endsWith('.ico')
+      ? 'image/vnd.microsoft.icon'
+      : filename.endsWith('.png')
+      ? 'image/png'
+      : filename.endsWith('.jpg')
+      ? 'image/jpeg'
+      : filename.endsWith('.svg')
+      ? 'image/svg+xml'
+      : filename.endsWith('.js') ||
+        filename.endsWith('.js.gz') ||
+        filename.endsWith('.js.br')
+      ? 'application/javascript'
+      : 'text/plain'
 
-  const Key = (targetName || filename).replace(/\.(gz|br)$/, '')
+    const Key = (targetName || filename).replace(/\.(gz|br)$/, '')
 
-  // debug('putObject filepath', filepath)
-  // debug('putObject filename', filename)
-  // debug('putObject targetName', targetName)
+    // debug('putObject filepath', filepath)
+    // debug('putObject filename', filename)
+    // debug('putObject targetName', targetName)
 
-  fs.readFile(filepath, (err, Body) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        console.error(`WARNING: Not uploading ${Key}, as the file was not found`)
-        resolve(Key)
+    fs.readFile(filepath, (err, Body) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          console.error(
+            `WARNING: Not uploading ${Key}, as the file was not found`
+          )
+          resolve(Key)
+        } else {
+          reject(err)
+        }
       } else {
-        reject(err)
-      }
-    } else {
-      const object = {
-        Bucket,
-        Key,
-        ACL: 'public-read',
-        ContentType,
-        Body
-      }
+        const object = {
+          Bucket,
+          Key,
+          ACL: 'public-read',
+          ContentType,
+          Body
+        }
 
-      if (filename.endsWith('.gz')) {
-        object.ContentEncoding = 'gzip'
-      } else if (filename.endsWith('.br')) {
-        object.ContentEncoding = 'br'
+        if (filename.endsWith('.gz')) {
+          object.ContentEncoding = 'gzip'
+        } else if (filename.endsWith('.br')) {
+          object.ContentEncoding = 'br'
+        }
+
+        debug(
+          'putObject',
+          Bucket,
+          Key,
+          ContentType,
+          object.ContentEncoding || 'plain'
+        )
+
+        cos
+          .putObject(object)
+          .promise()
+          .then(() => resolve(Key))
+          .catch(reject)
       }
-
-      debug('putObject', Bucket, Key, ContentType, object.ContentEncoding || 'plain')
-
-      cos.putObject(object).promise()
-        .then(() => resolve(Key))
-        .catch(reject)
-    }
+    })
   })
-})
 
 /**
  * Create our bucket
@@ -167,16 +201,17 @@ const putObject = (cos, Bucket) => ({ filepath, targetName }) => new Promise((re
  */
 const createBucket = async (cos, Bucket) => {
   try {
-    await cos.createBucket({
-      Bucket,
-      CreateBucketConfiguration: {
-        LocationConstraint: 'us-standard'
-      }
-    }).promise()
+    await cos
+      .createBucket({
+        Bucket,
+        CreateBucketConfiguration: {
+          LocationConstraint: 'us-standard'
+        }
+      })
+      .promise()
   } catch (err) {
     if (err.code === 'BucketAlreadyExists' && process.env.EXIST_OK) {
       // debug('createBucket: bucket already exists', err)
-
       // make sure it's public
       // return makePublic(cos, Bucket)
     } else {
@@ -193,12 +228,16 @@ debug('assembling assets')
 const main = async () => {
   try {
     debug('requesting endpoints', secrets.endpoints)
-    const endpoints = (await needle('get', secrets.endpoints, { json: true })).body
+    const endpoints = (await needle('get', secrets.endpoints, { json: true }))
+      .body
 
     const config = {
-      endpoint: endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
+      endpoint:
+        endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
 
-      ibmAuthEndpoint: `https://${endpoints['identity-endpoints']['iam-token']}/oidc/token`,
+      ibmAuthEndpoint: `https://${
+        endpoints['identity-endpoints']['iam-token']
+      }/oidc/token`,
       apiKeyId: secrets.apikey,
       serviceInstanceId: secrets.resource_instance_id
 
@@ -248,7 +287,9 @@ const main = async () => {
 
     debug('uploads done')
     const base = `${config.endpoint}/${Bucket}`
-    console.log(colors.bold('Endpoint: ' + `${base}/${encodeURIComponent(index)}`))
+    console.log(
+      colors.bold('Endpoint: ' + `${base}/${encodeURIComponent(index)}`)
+    )
 
     console.log('ok')
     process.exit(0)

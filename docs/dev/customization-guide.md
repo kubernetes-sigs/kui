@@ -45,8 +45,7 @@ npm install --save @kui-shell/core
 npx kui-init
 ```
 
-You may mix in additional Kui plugins by adding more `npm install
---save` lines. For example, a useful plugin is
+You may mix in additional Kui plugins by adding more `npm install --save` lines. For example, a useful plugin is
 `@kui-shell/core-support` which adds the help system and the
 screenshot capability to the electron builds. You now should have a
 directory structure such as shown above.
@@ -82,22 +81,22 @@ hello world
 ## Theming
 
 In `theme.json, you may specify overrides of the [default
-   theme](../../clients/default/theme/theme.json). For example, this
-   [example
-   theme](../../packages/kui-builder/examples/build-configs/material-design/theme.json)
-   changes the product name to "Kui Fun Shell", and changes the UI
-   theme to use a [material design](https://material.io/) color
-   scheme.
+theme](../../clients/default/theme/theme.json). For example, this
+[example
+theme](../../packages/kui-builder/examples/build-configs/material-design/theme.json)
+changes the product name to "Kui Fun Shell", and changes the UI
+theme to use a [material design](https://material.io/) color
+scheme.
 
 ## Injecting Build-time Values
 
 Via a `config.json`, you have the opportunity to inject
-   configuration options into your plugin code. Using the
-   [example config injection](../../packages/kui-builder/examples/build-configs/material-design/config.json) as an example,
-   you would access that example configuration setting via:
-   ```typescript
-   import { config } from '@kui-shell/core/core/settings'
+configuration options into your plugin code. Using the
+[example config injection](../../packages/kui-builder/examples/build-configs/material-design/config.json) as an example,
+you would access that example configuration setting via:
 
-   if (config['disableProxy']) { ... }
-   ```
+```typescript
+import { config } from '@kui-shell/core/core/settings'
 
+if (config['disableProxy']) { ... }
+```

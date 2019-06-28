@@ -1,6 +1,6 @@
 const composer = require('openwhisk-composer')
 
-function hello ({ name = 'world' }) {
+function hello({ name = 'world' }) {
   return { msg: `hello ${name}!` }
 }
 

@@ -28,9 +28,11 @@ import repl = require('@kui-shell/core/core/repl')
 const levelToNumber = { Beginner: 0, Intermediate: 1, Advanced: 2 }
 const sort = list => {
   return list.sort((a, b) => {
-    return ((a.sort !== undefined ? a.sort : levelToNumber[a.level]) -
-            (b.sort !== undefined ? b.sort : levelToNumber[b.level])) ||
+    return (
+      (a.sort !== undefined ? a.sort : levelToNumber[a.level]) -
+        (b.sort !== undefined ? b.sort : levelToNumber[b.level]) ||
       (a.sort || a.name).localeCompare(b.sort || b.name)
+    )
   })
 }
 
@@ -38,66 +40,77 @@ const sort = list => {
  * The tutorials list command handler
  *
  */
-const doList = () => new Promise((resolve, reject) => {
-  readdir(contentDir, async (err, files) => {
-    if (err) {
-      reject(err)
-    } else {
-      const pane = document.querySelector('#tutorialPane')
-      const nowPlaying = pane && pane.getAttribute('now-playing')
+const doList = () =>
+  new Promise((resolve, reject) => {
+    readdir(contentDir, async (err, files) => {
+      if (err) {
+        reject(err)
+      } else {
+        const pane = document.querySelector('#tutorialPane')
+        const nowPlaying = pane && pane.getAttribute('now-playing')
 
-      const tutorials = (await Promise.all(files.map(async name => {
-        const { disabled, sort, description, level } = await import('@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json')
+        const tutorials = (await Promise.all(
+          files.map(async name => {
+            const { disabled, sort, description, level } = await import(
+              '@kui-shell/plugin-tutorials/samples/@tutorials/' +
+                name +
+                '/package.json'
+            )
 
-        if (disabled) {
-          // then this tutorial is currently disabled
-          return
-        }
+            if (disabled) {
+              // then this tutorial is currently disabled
+              return
+            }
 
-        const attributes = []
+            const attributes = []
 
-        // add a "level" column
-        attributes.push({ key: 'level',
-          value: level,
-          css: 'slightly-deemphasize'
-        })
+            // add a "level" column
+            attributes.push({
+              key: 'level',
+              value: level,
+              css: 'slightly-deemphasize'
+            })
 
-        let descriptionForDisplay = description
-        if (nowPlaying === name) {
-          const descriptionWrapper = document.createElement('div')
-          descriptionWrapper.appendChild(document.createTextNode(description))
+            let descriptionForDisplay = description
+            if (nowPlaying === name) {
+              const descriptionWrapper = document.createElement('div')
+              descriptionWrapper.appendChild(
+                document.createTextNode(description)
+              )
 
-          const isNowPlaying = document.createElement('span')
-          isNowPlaying.className = 'red-text semi-bold small-left-pad'
-          isNowPlaying.innerText = '(now playing)'
-          descriptionWrapper.appendChild(isNowPlaying)
+              const isNowPlaying = document.createElement('span')
+              isNowPlaying.className = 'red-text semi-bold small-left-pad'
+              isNowPlaying.innerText = '(now playing)'
+              descriptionWrapper.appendChild(isNowPlaying)
 
-          descriptionForDisplay = descriptionWrapper
-        }
+              descriptionForDisplay = descriptionWrapper
+            }
 
-        // add a "description" column attributes for the list model
-        attributes.push({ key: 'description',
-          value: descriptionForDisplay,
-          css: 'sans-serif hide-with-sidecar'
-        })
+            // add a "description" column attributes for the list model
+            attributes.push({
+              key: 'description',
+              value: descriptionForDisplay,
+              css: 'sans-serif hide-with-sidecar'
+            })
 
-        // here is the entity model for list elements
-        return {
-          type: 'tutorials',
-          name: name.replace(/-/g, ' '),
-          nameCss: ['capitalize', 'semi-bold'], // 'sans-serif',
-          sort,
-          level,
-          noSort: true, // we have already sorted the list
-          onclick: () => repl.pexec(`tutorial play @tutorials/${name}`),
-          attributes
-        }
-      }))).filter(x => x) // filter out any nils due to disabled tutorials
+            // here is the entity model for list elements
+            return {
+              type: 'tutorials',
+              name: name.replace(/-/g, ' '),
+              nameCss: ['capitalize', 'semi-bold'], // 'sans-serif',
+              sort,
+              level,
+              noSort: true, // we have already sorted the list
+              onclick: () => repl.pexec(`tutorial play @tutorials/${name}`),
+              attributes
+            }
+          })
+        )).filter(x => x) // filter out any nils due to disabled tutorials
 
-      resolve(sort(tutorials))
-    }
+        resolve(sort(tutorials))
+      }
+    })
   })
-})
 
 /**
  * Usage model for tutorial list
@@ -109,9 +122,7 @@ const usage = {
   title: 'List tutorials',
   header: 'List available tutorials',
   example: 'tutorials',
-  optional: [
-    { name: 'list', positional: true }
-  ]
+  optional: [{ name: 'list', positional: true }]
 }
 
 /**

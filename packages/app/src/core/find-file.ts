@@ -34,15 +34,23 @@ interface SpecialPath {
   command?: string
 }
 const specialPaths: SpecialPath[] = [] // any special paths added via self.addPath
-const defaultSpecial: SpecialPath = { prefix: '', filepath: join(__dirname, '..') } // default special is the app/ top-level
+const defaultSpecial: SpecialPath = {
+  prefix: '',
+  filepath: join(__dirname, '..')
+} // default special is the app/ top-level
 
 /**
  * If original has a trailing slash, make sure resolved has one, too
  *
  */
-const withMatchingTrailingSlash = (original: string, resolved: string): string => {
-  if (original.charAt(original.length - 1) === '/' &&
-      resolved.charAt(resolved.length - 1) !== '/') {
+const withMatchingTrailingSlash = (
+  original: string,
+  resolved: string
+): string => {
+  if (
+    original.charAt(original.length - 1) === '/' &&
+    resolved.charAt(resolved.length - 1) !== '/'
+  ) {
     return `${resolved}/`
   } else {
     return resolved
@@ -53,13 +61,17 @@ const withMatchingTrailingSlash = (original: string, resolved: string): string =
  * Is this a special @ directory?
  *
  */
-export const isSpecialDirectory = (filepath: string) => basename(filepath).charAt(0) === '@'
+export const isSpecialDirectory = (filepath: string) =>
+  basename(filepath).charAt(0) === '@'
 
 /**
  * Behaves like `findFile` with an extra call to `commandPrefix`
  *
  */
-export const findFileWithViewer = (filepath: string, { safe = false, keepRelative = false } = {}): { resolved: string; viewer?: string } => {
+export const findFileWithViewer = (
+  filepath: string,
+  { safe = false, keepRelative = false } = {}
+): { resolved: string; viewer?: string } => {
   if (!filepath) {
     if (!safe) {
       throw new Error('Please specify a file')
@@ -69,24 +81,39 @@ export const findFileWithViewer = (filepath: string, { safe = false, keepRelativ
     }
   } else if (filepath.charAt(0) === '@') {
     // the === '.' part handles the case where the call was e.g. findFile('@demos'), i.e. the special dir itself
-    const desiredPrefix = filepath.endsWith('/') ? filepath.slice(0, filepath.length - 1) : dirname(filepath) === '.' ? filepath : dirname(filepath)
+    const desiredPrefix = filepath.endsWith('/')
+      ? filepath.slice(0, filepath.length - 1)
+      : dirname(filepath) === '.'
+      ? filepath
+      : dirname(filepath)
 
     const longestMatchingSpecial = specialPaths
-      .filter(({ prefix }) => filepath === prefix || desiredPrefix.indexOf(prefix) === 0)
+      .filter(
+        ({ prefix }) =>
+          filepath === prefix || desiredPrefix.indexOf(prefix) === 0
+      )
       .sort((a, b) => b.prefix.length - a.prefix.length)[0]
 
     const special = longestMatchingSpecial || defaultSpecial
 
     debug('resolving @ file', filepath, desiredPrefix, special)
     return {
-      resolved: withMatchingTrailingSlash(filepath, join(special.filepath, filepath)),
+      resolved: withMatchingTrailingSlash(
+        filepath,
+        join(special.filepath, filepath)
+      ),
       viewer: special.command
     }
   } else if (keepRelative) {
     return { resolved: filepath }
   } else {
     debug('resolving normal file', filepath)
-    return { resolved: withMatchingTrailingSlash(filepath, resolve(expandHomeDir(filepath))) }
+    return {
+      resolved: withMatchingTrailingSlash(
+        filepath,
+        resolve(expandHomeDir(filepath))
+      )
+    }
   }
 }
 
@@ -96,7 +123,10 @@ export const findFileWithViewer = (filepath: string, { safe = false, keepRelativ
  * @param safe throw and exception if the file is not found
  * @param keepRelative don't expand ~
  */
-export const findFile = (filepath: string, { safe = false, keepRelative = false } = {}): string => {
+export const findFile = (
+  filepath: string,
+  { safe = false, keepRelative = false } = {}
+): string => {
   return findFileWithViewer(filepath, { safe, keepRelative }).resolved
 }
 
@@ -123,7 +153,10 @@ export const viewer = (prefix: string): string | never => {
  * @param prefix e.g. @demos/tekton which is a valid extension of `filepath`
  * @param command a command prefix that is used to view files in this special directory
  */
-export const addPath = (filepath: string, { prefix = basename(filepath), command = '' } = {}): void => {
+export const addPath = (
+  filepath: string,
+  { prefix = basename(filepath), command = '' } = {}
+): void => {
   if (!inBrowser()) {
     debug('addPath', filepath)
     try {

@@ -27,35 +27,48 @@ const debug = Debug('plugins/core-support/text-search')
  * Listen for control/command+F
  *
  */
-async function registerListener () {
+async function registerListener() {
   if (typeof document === 'undefined') return // return if no document
 
-  const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+  const root = path.dirname(
+    require.resolve('@kui-shell/plugin-core-support/package.json')
+  )
   injectCSS(path.join(root, 'web/css/text-search.css'))
 
   const app = await import('electron')
 
   // in case the document needs to be restyled as a consequence of the
   // searchBar visibility
-  const addVisibilityStatusToDocument = () => document.body.classList.add('search-bar-is-visible')
-  const removeVisibilityStatusFromDocument = () => document.body.classList.remove('search-bar-is-visible')
+  const addVisibilityStatusToDocument = () =>
+    document.body.classList.add('search-bar-is-visible')
+  const removeVisibilityStatusFromDocument = () =>
+    document.body.classList.remove('search-bar-is-visible')
 
   // insert html
   const searchBar = document.createElement('div')
   searchBar.setAttribute('id', 'search-bar')
   searchBar.style.opacity = '0' // we need the initial opacity:0 due to injectCSS's asynchronicity
-  searchBar.innerHTML = "<div id='search-container'><div id='search-input-container'><input id='search-input' placeholder='search term' onfocus='this.select();' onclick='event.stopPropagation(); return false;'/><span id='search-found-text' class='no-search-yet'></span></div><i id='search-close-button' class='fas fa-times-circle'></i></div>"
+  searchBar.innerHTML =
+    "<div id='search-container'><div id='search-input-container'><input id='search-input' placeholder='search term' onfocus='this.select();' onclick='event.stopPropagation(); return false;'/><span id='search-found-text' class='no-search-yet'></span></div><i id='search-close-button' class='fas fa-times-circle'></i></div>"
 
   const page = document.querySelector('body > .page')
   page.insertBefore(searchBar, page.querySelector('main').nextSibling)
 
   // now add the logic
-  const searchInput = document.getElementById('search-input') as HTMLInputElement
-  const searchFoundText = document.getElementById('search-found-text') as HTMLElement
+  const searchInput = document.getElementById(
+    'search-input'
+  ) as HTMLInputElement
+  const searchFoundText = document.getElementById(
+    'search-found-text'
+  ) as HTMLElement
 
   const stopSearch = (clear: boolean) => {
     app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
-    if (clear) { setTimeout(() => { cli.getCurrentPrompt().focus() }, 300) } // focus repl text input
+    if (clear) {
+      setTimeout(() => {
+        cli.getCurrentPrompt().focus()
+      }, 300)
+    } // focus repl text input
   }
 
   /** close the search box and tell chrome to terminate the search highlighting stuff */
@@ -82,12 +95,13 @@ async function registerListener () {
     searchInput.value = ''
     searchInput.value = v
     searchInput.focus()
-    if (result.matches === 1) { // there's always going to one matched text from the searchInput
+    if (result.matches === 1) {
+      // there's always going to one matched text from the searchInput
       searchFoundText.innerText = 'no matches'
     } else if (result.matches === 2) {
       searchFoundText.innerText = '1 match'
     } else {
-      searchFoundText.innerText = (result.matches - 1) + ' matches'
+      searchFoundText.innerText = result.matches - 1 + ' matches'
     }
   })
 
@@ -100,23 +114,27 @@ async function registerListener () {
     searchInput.focus()
   })
   searchInput.addEventListener('keyup', (e: KeyboardEvent) => {
-    if (e.key === 'Enter') { // search when Enter is pressed and there is text in searchInput
+    if (e.key === 'Enter') {
+      // search when Enter is pressed and there is text in searchInput
       if (searchInput.value.length > 0) {
         searchText(searchInput.value)
       } else {
         searchFoundText.innerHTML = ''
         stopSearch(true)
       }
-    } else if (e.key === 'Escape') { // esc closes the search tab (when search tab is focus)
+    } else if (e.key === 'Escape') {
+      // esc closes the search tab (when search tab is focus)
       e.stopPropagation() // stop event propagating to other dom elements - only affect the search bar
       closeSearchBox()
     }
   })
 
-  document.body.addEventListener('keydown', function (e: KeyboardEvent) {
-    if (!e.defaultPrevented &&
-        e.keyCode === keys.F &&
-        ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)) {
+  document.body.addEventListener('keydown', function(e: KeyboardEvent) {
+    if (
+      !e.defaultPrevented &&
+      e.keyCode === keys.F &&
+      ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)
+    ) {
       // ctrl/cmd-f opens search, unless some interior region prevented default
       searchBar.classList.add('visible')
       addVisibilityStatusToDocument()

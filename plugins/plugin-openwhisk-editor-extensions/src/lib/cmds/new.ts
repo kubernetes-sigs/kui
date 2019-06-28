@@ -43,21 +43,22 @@ export const defaults = {
  *
  */
 export const optional = allowed => [
-  { name: '--kind',
+  {
+    name: '--kind',
     alias: '-k',
     docs: 'The OpenWhisk kind of the new action',
     allowed,
     allowedIsPrefixMatch: true,
     defaultValue: 'nodejs'
   },
-  { name: '--template',
+  {
+    name: '--template',
     alias: '-t',
     docs: 'Create a new entity using the given file as the starting place'
   },
-  { name: '--readOnly',
-    docs: 'Open the editor in read-only mode'
-  },
-  { name: '--simple',
+  { name: '--readOnly', docs: 'Open the editor in read-only mode' },
+  {
+    name: '--simple',
     alias: '-s',
     docs: 'Simplify the editor presentation, such as not showing line numbers'
   }
@@ -71,7 +72,8 @@ export const newUsage = {
   strict: 'new',
   command: 'new',
   title: 'New action',
-  header: 'For quick prototyping of actions, this command opens an editor in the sidecar.',
+  header:
+    'For quick prototyping of actions, this command opens an editor in the sidecar.',
   example: 'new <actionName>',
   required: [{ name: '<actionName>', docs: 'The name of your new action' }],
   optional: optional(['nodejs', 'python', 'php']),
@@ -127,9 +129,11 @@ const failWith409 = () => {
   throw error
 }
 const failIfNot404 = err => {
-  if (err.statusCode !== 404 &&
-        err.message.indexOf('socket hang up') < 0 &&
-        err.statusCode !== 'ENOTFOUND') {
+  if (
+    err.statusCode !== 404 &&
+    err.message.indexOf('socket hang up') < 0 &&
+    err.statusCode !== 'ENOTFOUND'
+  ) {
     console.error(err)
     throw err
   } else {
@@ -153,10 +157,15 @@ export const gotoReadonlyView = ({ getEntity }) => async () => {
  * compatible with the editor
  *
  */
-export const fetchAction = (check = checkForConformance, tryLocal = true) => (name: string, parsedOptions?, execOptions?): Promise<Entity> => {
+export const fetchAction = (check = checkForConformance, tryLocal = true) => (
+  name: string,
+  parsedOptions?,
+  execOptions?
+): Promise<Entity> => {
   if (name.charAt(0) === '!') {
     const parameterName = name.substring(1)
-    const source = execOptions.parameters && execOptions.parameters[parameterName]
+    const source =
+      execOptions.parameters && execOptions.parameters[parameterName]
     if (source) {
       return Promise.resolve({
         type: 'source',
@@ -167,18 +176,24 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (na
         },
         annotations: [],
         persister: execOptions.parameters.persister,
-        gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+        gotoReadonlyView: ({ getEntity }) =>
+          lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
       })
     }
   }
-  return repl.qexec(`wsk action get "${name}"`)
+  return repl
+    .qexec(`wsk action get "${name}"`)
     .then(check)
-    .then(entity => Object.assign({}, entity, {
-      gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
-    }))
+    .then(entity =>
+      Object.assign({}, entity, {
+        gotoReadonlyView: ({ getEntity }) =>
+          lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+      })
+    )
     .catch(err => {
       debug('fetchAction error', err.statusCode, err.code, err.message)
-      if (tryLocal && err.code !== 406) { // 406 means that this is a valid action, but lacking composer source
+      if (tryLocal && err.code !== 406) {
+        // 406 means that this is a valid action, but lacking composer source
         return fetchFile(name)
       } else {
         throw err
@@ -195,7 +210,9 @@ export const betterNotExist = (name: string, options): Promise<boolean> => {
   if (options.readOnly) {
     return Promise.resolve(true)
   } else {
-    return fetchActionFailingIfExists(name).then(() => true).catch(failIfNot404)
+    return fetchActionFailingIfExists(name)
+      .then(() => true)
+      .catch(failIfNot404)
   }
 }
 
@@ -217,7 +234,8 @@ export const persisters = {
       debug('revert', entity)
       const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
 
-      return repl.qexec(`wsk action get "${namespacePart}${entity.name}"`)
+      return repl
+        .qexec(`wsk action get "${namespacePart}${entity.name}"`)
         .then(persisters.actions.getCode)
         .then(entity => {
           entity.persister = persisters.actions
@@ -225,7 +243,7 @@ export const persisters = {
         })
         .then(() => true)
     },
-    save: (action) => {
+    save: action => {
       debug('save', action)
       const namespacePart = action.namespace ? `/${action.namespace}/` : ''
 
@@ -233,8 +251,12 @@ export const persisters = {
       // https://github.com/apache/incubator-openwhisk/issues/3237
       delete action.version
 
-      return repl.qexec(`wsk action update "${namespacePart}${action.name}"`,
-        undefined, undefined, { entity: { action } })
+      return repl.qexec(
+        `wsk action update "${namespacePart}${action.name}"`,
+        undefined,
+        undefined,
+        { entity: { action } }
+      )
     }
   }
 }
@@ -243,7 +265,19 @@ export const persisters = {
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined, persister = persisters.actions } = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
+export const newAction = ({
+  cmd = 'new',
+  type = 'actions',
+  _kind = defaults.kind,
+  placeholder = undefined,
+  placeholderFn = undefined,
+  persister = persisters.actions
+} = {}) => async ({
+  tab,
+  argvNoOptions,
+  parsedOptions: options,
+  execOptions
+}: EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -251,7 +285,8 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   debug('newAction', cmd, name, kind, prettyKind)
 
   // create the initial, placeholder, source code to place in the editor
-  const makePlaceholderCode = placeholderFn || (() => placeholder || placeholders[language(kind)])
+  const makePlaceholderCode =
+    placeholderFn || (() => placeholder || placeholders[language(kind)])
 
   const code = await makePlaceholderCode(Object.assign({ kind }, options))
 
@@ -259,8 +294,8 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   const compile = () => Promise.resolve()
 
   // our placeholder action
-  const makeAction = () => compile()
-    .then(ast => {
+  const makeAction = () =>
+    compile().then(ast => {
       debug('makeAction', ast)
       return {
         name,
@@ -278,12 +313,19 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   // then send a response back to the repl
   //
   return betterNotExist(name, options)
-    .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
+    .then(() =>
+      Promise.all([makeAction(), openEditor(tab, name, options, execOptions)])
+    )
     .then(prepareEditorWithAction)
     .then(respondToRepl(undefined, ['is-modified']))
 }
 
 export default async (commandTree: CommandRegistrar) => {
   // command registration: create new action
-  commandTree.listen('/editor/new', newAction(), { usage: newUsage, noAuthOk: true, needsUI: true, inBrowserOk: true })
+  commandTree.listen('/editor/new', newAction(), {
+    usage: newUsage,
+    noAuthOk: true,
+    needsUI: true,
+    inBrowserOk: true
+  })
 }

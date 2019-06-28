@@ -38,25 +38,31 @@ const flatten = arrays => [].concat(...arrays)
  * Pull out the sub-directories in the given directory, if it is an @-style npm group
  *
  */
-const extractNested = root => dir => dir.charAt(0) === '@'
-  ? fs.readdir(path.join(root, dir)).then(subdirs => subdirs.map(subdir => `${dir}/${subdir}`))
-  : dir // we'll flatten this below
+const extractNested = root => dir =>
+  dir.charAt(0) === '@'
+    ? fs
+        .readdir(path.join(root, dir))
+        .then(subdirs => subdirs.map(subdir => `${dir}/${subdir}`))
+    : dir // we'll flatten this below
 
 /**
  * Read the package.json of one given plugin to get its version
  *
  */
-const getVersion = moduleDir => plugin => fs.readFile(path.join(moduleDir, plugin, 'package.json'))
-  .then(JSON.parse) // parse the package.json
-  .then(_ => _.version) // project out the version field
-  .then(version => ({ plugin, version })) // return a pair of the plugin name and its version
+const getVersion = moduleDir => plugin =>
+  fs
+    .readFile(path.join(moduleDir, plugin, 'package.json'))
+    .then(JSON.parse) // parse the package.json
+    .then(_ => _.version) // project out the version field
+    .then(version => ({ plugin, version })) // return a pair of the plugin name and its version
 // for debugging: .then(_ => { console.error(_); return _ })
 
 /**
  * Read the package.json of all plugins to get their versions
  *
  */
-const getVersions = moduleDir => installedPlugins => Promise.all(installedPlugins.map(getVersion(moduleDir)))
+const getVersions = moduleDir => installedPlugins =>
+  Promise.all(installedPlugins.map(getVersion(moduleDir)))
 
 const doList = () => {
   debug('command execution started')
@@ -67,7 +73,8 @@ const doList = () => {
   // help the REPL render our records
   const type = 'plugins'
 
-  return fs.pathExists(moduleDir)
+  return fs
+    .pathExists(moduleDir)
     .then(() => fs.readdir(moduleDir)) // read the top-level directory contents
     .then(dirs => Promise.all(dirs.map(extractNested(moduleDir)))) // extract any @foo/bar nested plugins
     .then(flatten) // if there are nested plugins, we need to flatten the arrays
@@ -78,15 +85,17 @@ const doList = () => {
         // make a list of records that includes more than just
         // the plugin name, so that the REPL can format them
         //
-        return installedPlugins.map(({ plugin, version }) => ({ type,
+        return installedPlugins.map(({ plugin, version }) => ({
+          type,
           name: `${plugin}`,
-          attributes: [ { key: 'version', value: version } ],
+          attributes: [{ key: 'version', value: version }],
           onclick: () => repl.pexec(`plugin commands ${plugin}`)
         }))
       } else {
         return 'No user-installed plugins found'
       }
-    }).catch(err => {
+    })
+    .catch(err => {
       if (err.code === 'ENOENT') {
         // this error is OK; it just means that moduleDir
         // doesn't exist, so there are no plugins to list!

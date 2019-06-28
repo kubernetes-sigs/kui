@@ -17,19 +17,34 @@
 import { Tab } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
 
-const makeButton = (overrides, fn?) => Object.assign({}, {
-  direct: async (tab: Tab, args) => {
-    const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
-    const response = await repl.pexec(`kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
-      { noStatus: !!fn, tab })
-    return fn ? fn(response) : response
-  },
-  echo: true,
-  noHistory: false,
-  replSilence: false,
-  balloonLength: 'medium',
-  actAsButton: true,
-  flush: 'right'
-}, overrides)
+const makeButton = (overrides, fn?) =>
+  Object.assign(
+    {},
+    {
+      direct: async (tab: Tab, args) => {
+        const {
+          prettyType: kind = '-f',
+          name,
+          resourceName = name,
+          packageName,
+          namespace = packageName
+        } = args
+        const response = await repl.pexec(
+          `kubectl ${overrides.mode} ${kind} ${resourceName} ${
+            namespace ? '-n ' + namespace : ''
+          }`,
+          { noStatus: !!fn, tab }
+        )
+        return fn ? fn(response) : response
+      },
+      echo: true,
+      noHistory: false,
+      replSilence: false,
+      balloonLength: 'medium',
+      actAsButton: true,
+      flush: 'right'
+    },
+    overrides
+  )
 
 export default makeButton

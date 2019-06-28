@@ -27,18 +27,19 @@ import repl = require('@kui-shell/core/core/repl')
  * Deploy a linked asset
  *
  */
-const link = (dir, file) => new Promise((resolve, reject) => {
-  const filepath = pathResolve(dir, file)
-  lstat(filepath, (err, stats) => {
-    if (stats) {
-      const mime = file.endsWith('.js') ? '.webjs' : ''
-      repl.qexec(`let ${file}${mime} = ${filepath}`).then(resolve, reject)
-    }
-    if (err) {
-      resolve()
-    }
+const link = (dir, file) =>
+  new Promise((resolve, reject) => {
+    const filepath = pathResolve(dir, file)
+    lstat(filepath, (err, stats) => {
+      if (stats) {
+        const mime = file.endsWith('.js') ? '.webjs' : ''
+        repl.qexec(`let ${file}${mime} = ${filepath}`).then(resolve, reject)
+      }
+      if (err) {
+        resolve()
+      }
+    })
   })
-})
 
 /**
  * Turn an attribute map into a key=value string
@@ -69,56 +70,59 @@ const webbify = uri => {
  * Deploy an HTML page, along with any locally linked scripts and stylesheets
  *
  */
-export const deployHTMLViaOpenWhisk = location => new Promise((resolve, reject) => {
-  try {
-    const filepath = expandHomeDir(location)
-    const dir = dirname(filepath)
+export const deployHTMLViaOpenWhisk = location =>
+  new Promise((resolve, reject) => {
+    try {
+      const filepath = expandHomeDir(location)
+      const dir = dirname(filepath)
 
-    readFile(filepath, (err, data) => {
-      try {
-        if (err) {
+      readFile(filepath, (err, data) => {
+        try {
+          if (err) {
+            reject(err)
+          }
+
+          const Ps = [] // for any other assets we may need to create
+          let text = '' // we may need to rewrite the content
+
+          const parser = new htmlparser.Parser(
+            {
+              onopentag: (name, attribs) => {
+                if (name === 'script' && attribs.src) {
+                  const webbed = webbify(attribs.src)
+                  Ps.push(link(dir, attribs.src))
+                  attribs.src = webbed
+                } else if (name === 'link' && attribs.href) {
+                  const webbed = webbify(attribs.href)
+                  Ps.push(link(dir, attribs.href))
+                  attribs.href = webbed
+                }
+
+                text += `<${name}${mapToString(attribs)}>`
+              },
+              ontext: txt => {
+                text += txt
+              },
+              onclosetag: tagname => {
+                if (tagname !== 'img' && tagname !== 'link') {
+                  text += `</${tagname}>`
+                }
+              }
+            } /*, {decodeEntities: true} */
+          )
+
+          parser.write(data)
+          parser.end()
+
+          // wait for the promises to complete
+          Promise.all(Ps)
+            .then(() => resolve({ location, text })) // return the location and updated text
+            .catch(reject)
+        } catch (err) {
           reject(err)
         }
-
-        const Ps = [] // for any other assets we may need to create
-        let text = '' // we may need to rewrite the content
-
-        const parser = new htmlparser.Parser({
-          onopentag: (name, attribs) => {
-            if (name === 'script' && attribs.src) {
-              const webbed = webbify(attribs.src)
-              Ps.push(link(dir, attribs.src))
-              attribs.src = webbed
-            } else if (name === 'link' && attribs.href) {
-              const webbed = webbify(attribs.href)
-              Ps.push(link(dir, attribs.href))
-              attribs.href = webbed
-            }
-
-            text += `<${name}${mapToString(attribs)}>`
-          },
-          ontext: txt => {
-            text += txt
-          },
-          onclosetag: tagname => {
-            if (tagname !== 'img' && tagname !== 'link') {
-              text += `</${tagname}>`
-            }
-          }
-        }/*, {decodeEntities: true} */)
-
-        parser.write(data)
-        parser.end()
-
-        // wait for the promises to complete
-        Promise.all(Ps)
-          .then(() => resolve({ location, text })) // return the location and updated text
-          .catch(reject)
-      } catch (err) {
-        reject(err)
-      }
-    })
-  } catch (err) {
-    reject(err)
-  }
-})
+      })
+    } catch (err) {
+      reject(err)
+    }
+  })

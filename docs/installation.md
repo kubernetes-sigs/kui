@@ -31,12 +31,12 @@ a command line experience.
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org)
 
-*Coming soon: MacOS .dmg, Linux .deb, Linux .rpm, Windows .zip*
+_Coming soon: MacOS .dmg, Linux .deb, Linux .rpm, Windows .zip_
 
 ##### Example Download for MacOS double-clickable
 
 > curl -L https://macos-tarball.kui-shell.org/ | tar jxf -  
-open Kui-darwin-x64/Kui.app
+> open Kui-darwin-x64/Kui.app
 
 ### Important Note on Unsigned Builds
 
@@ -60,7 +60,7 @@ kui shell # <-- this should launch the graphical shell
 The `shell` command should open the graphical shell. The first time
 you open a graphical window, you should see a message indicating that
 the graphical bits are being downloaded. This is a one-time download
-of the Electron components. (*warning*: there is currently a
+of the Electron components. (_warning_: there is currently a
 superficial bug in the downloader; you may see the "downloading"
 message repeated twice)
 
@@ -92,7 +92,7 @@ storage.
 
 If you are currently a user of Apache OpenWhisk, then your `.wskprops`
 file is sufficient to get you started; you may skip over this
-section. If you have *not* yet configured your local environment for
+section. If you have _not_ yet configured your local environment for
 use with OpenWhisk, then continue reading.
 
 ### Getting an Authorization Key for IBM Cloud

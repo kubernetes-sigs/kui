@@ -29,8 +29,10 @@ debug('loading')
  *
  */
 const nope = (filepath: string) => {
-  return filepath.toString().indexOf('.wskprops') >= 0 ||
+  return (
+    filepath.toString().indexOf('.wskprops') >= 0 ||
     filepath.toString().indexOf('.cf/config.json') >= 0
+  )
 }
 
 /**
@@ -44,10 +46,13 @@ const fuzzies = {
     const rf = fs.readFile
     const rfs = fs.readFileSync
 
-    fs.readFile = function (filepath: string, options, cb) {
+    fs.readFile = function(filepath: string, options, cb) {
       if (nope(filepath)) {
         debug('fs.readFile blocked', filepath)
-        rf('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas', options ? cb : options)
+        rf(
+          'fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas',
+          options ? cb : options
+        )
       } else {
         if (!cb) {
           rf(filepath, options)
@@ -57,7 +62,7 @@ const fuzzies = {
       }
     }
 
-    fs.readFileSync = function (filepath: string, options) {
+    fs.readFileSync = function(filepath: string, options) {
       if (nope(filepath)) {
         console.error(`fs.readFileSync blocked ${filepath}`)
         return rfs('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas')
@@ -75,7 +80,7 @@ export default fuzz => {
 
   // debug('options', fuzz.rules)
 
-  (fuzz.rules || []).forEach(rule => {
+  ;(fuzz.rules || []).forEach(rule => {
     // intentionally unprotected against failures, because we
     // want the test to fail
     debug('rule', rule)

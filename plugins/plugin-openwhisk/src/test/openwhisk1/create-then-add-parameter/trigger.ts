@@ -21,33 +21,47 @@ const { cli, sidecar } = ui
 
 const triggerName = 'ppp'
 
-describe('Add parameters to triggers', function (this: common.ISuite) {
+describe('Add parameters to triggers', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should create a trigger', () => cli.do(`wsk trigger update ${triggerName}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(triggerName)))
+  it('should create a trigger', () =>
+    cli
+      .do(`wsk trigger update ${triggerName}`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(triggerName)))
 
-  it('should add a parameter with explicit trigger name', () => cli.do(`set x=1 in ${triggerName}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(triggerName))
-    .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
-    .then(ui.expectStruct({ 'x': 1 })))
+  it('should add a parameter with explicit trigger name', () =>
+    cli
+      .do(`set x=1 in ${triggerName}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(triggerName))
+      .then(app =>
+        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`)
+      )
+      .then(ui.expectStruct({ x: 1 })))
 
-  it('should add a parameter with implicit trigger name', () => cli.do('set y=1', this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(triggerName))
-    .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
-    .then(ui.expectStruct(({ 'x': 1, 'y': 1 }))))
+  it('should add a parameter with implicit trigger name', () =>
+    cli
+      .do('set y=1', this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(triggerName))
+      .then(app =>
+        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`)
+      )
+      .then(ui.expectStruct({ x: 1, y: 1 })))
 
-  it('should update a parameter value with implicit trigger name', () => cli.do('set x=2', this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(triggerName))
-    .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
-    .then(ui.expectStruct({ 'x': 2, 'y': 1 })))
+  it('should update a parameter value with implicit trigger name', () =>
+    cli
+      .do('set x=2', this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(triggerName))
+      .then(app =>
+        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`)
+      )
+      .then(ui.expectStruct({ x: 2, y: 1 })))
 })

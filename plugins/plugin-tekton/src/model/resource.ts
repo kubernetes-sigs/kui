@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { KubeResource, KubeStatusCondition, KubeStatus } from '@kui-shell/plugin-k8s/lib/model/resource'
+import {
+  KubeResource,
+  KubeStatusCondition,
+  KubeStatus
+} from '@kui-shell/plugin-k8s/lib/model/resource'
 
 /** this is the api version matcher; TODO refactor */
 const tektonAPI = /tekton.dev/
@@ -98,10 +102,10 @@ export interface Task extends TektonKubeResource {
   }
 }
 
-export function isTask (resource: KubeResource): resource is Task {
-  return resource &&
-    tektonAPI.test(resource.apiVersion) &&
-    resource.kind === 'Task'
+export function isTask(resource: KubeResource): resource is Task {
+  return (
+    resource && tektonAPI.test(resource.apiVersion) && resource.kind === 'Task'
+  )
 }
 
 export interface Pipeline extends TektonKubeResource {
@@ -111,13 +115,15 @@ export interface Pipeline extends TektonKubeResource {
     tasks: TaskRef[]
   }
 }
-export function isPipeline (resource: KubeResource): resource is Pipeline {
+export function isPipeline(resource: KubeResource): resource is Pipeline {
   const run = resource as Pipeline
-  return run &&
+  return (
+    run &&
     tektonAPI.test(run.apiVersion) &&
     run.spec !== undefined &&
     run.kind === 'Pipeline' &&
     run.spec.tasks !== undefined
+  )
 }
 
 export interface PipelineRun extends TektonKubeResource {
@@ -133,12 +139,14 @@ export interface PipelineRun extends TektonKubeResource {
     taskRuns: TaskRuns
   }
 }
-export function isPipelineRun (resource: KubeResource): resource is PipelineRun {
+export function isPipelineRun(resource: KubeResource): resource is PipelineRun {
   const run = resource as PipelineRun
 
-  return tektonAPI.test(run.apiVersion) &&
+  return (
+    tektonAPI.test(run.apiVersion) &&
     run.spec !== undefined &&
     run.kind === 'PipelineRun' &&
     run.spec.serviceAccount !== undefined &&
     run.spec.pipelineRef !== undefined
+  )
 }

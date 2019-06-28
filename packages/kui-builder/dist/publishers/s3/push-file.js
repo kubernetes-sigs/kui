@@ -18,53 +18,70 @@ const files = process.argv.slice(3)
  * Upload one binary to the given bucket
  *
  */
-const putObject = (cos, Bucket) => filepath => new Promise((resolve, reject) => {
-  debug('putObject', Bucket, filepath)
+const putObject = (cos, Bucket) => filepath =>
+  new Promise((resolve, reject) => {
+    debug('putObject', Bucket, filepath)
 
-  const filename = path.basename(filepath)
-  const Key = filename
+    const filename = path.basename(filepath)
+    const Key = filename
 
-  const ContentType = filename.endsWith('.html') ? 'text/html; charset=UTF-8'
-    : filename.endsWith('.css') ? 'text/css'
-      : filename.endsWith('.ico') ? 'image/vnd.microsoft.icon'
-        : filename.endsWith('.png') ? 'image/png'
-          : filename.endsWith('.jpg') ? 'image/jpeg'
-            : filename.endsWith('.svg') ? 'image/svg+xml'
-              : filename.endsWith('.js') || filename.endsWith('.js.gz') || filename.endsWith('.js.br') ? 'application/javascript'
-                : 'text/plain'
+    const ContentType = filename.endsWith('.html')
+      ? 'text/html; charset=UTF-8'
+      : filename.endsWith('.css')
+      ? 'text/css'
+      : filename.endsWith('.ico')
+      ? 'image/vnd.microsoft.icon'
+      : filename.endsWith('.png')
+      ? 'image/png'
+      : filename.endsWith('.jpg')
+      ? 'image/jpeg'
+      : filename.endsWith('.svg')
+      ? 'image/svg+xml'
+      : filename.endsWith('.js') ||
+        filename.endsWith('.js.gz') ||
+        filename.endsWith('.js.br')
+      ? 'application/javascript'
+      : 'text/plain'
 
-  debug('ContentType', ContentType)
+    debug('ContentType', ContentType)
 
-  fs.readFile(filepath, (err, Body) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        console.error(`WARNING: Not uploading ${Key}, as the file was not found`)
-        resolve(Key)
+    fs.readFile(filepath, (err, Body) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          console.error(
+            `WARNING: Not uploading ${Key}, as the file was not found`
+          )
+          resolve(Key)
+        } else {
+          reject(err)
+        }
       } else {
-        reject(err)
+        cos
+          .putObject({
+            Bucket,
+            Key,
+            ACL: 'public-read',
+            ContentType,
+            Body
+          })
+          .promise()
+          .then(() => resolve(Key))
+          .catch(reject)
       }
-    } else {
-      cos.putObject({
-        Bucket,
-        Key,
-        ACL: 'public-read',
-        ContentType,
-        Body
-      }).promise()
-        .then(() => resolve(Key))
-        .catch(reject)
-    }
+    })
   })
-})
 
 debug('requesting endpoints', secrets.endpoints)
 
 needle('get', secrets.endpoints, { json: true })
   .then(endpoints => endpoints.body)
   .then(endpoints => ({
-    endpoint: endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
+    endpoint:
+      endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
 
-    ibmAuthEndpoint: `https://${endpoints['identity-endpoints']['iam-token']}/oidc/token`,
+    ibmAuthEndpoint: `https://${
+      endpoints['identity-endpoints']['iam-token']
+    }/oidc/token`,
     apiKeyId: secrets.apikey,
     serviceInstanceId: secrets.resource_instance_id
 
@@ -85,18 +102,19 @@ needle('get', secrets.endpoints, { json: true })
     debug('cos initialized')
     debug('creating bucket', Bucket)
 
-    return cos.createBucket({
-      Bucket,
-      CreateBucketConfiguration: {
-        LocationConstraint: 'us-standard'
-      }
-    }).promise()
+    return cos
+      .createBucket({
+        Bucket,
+        CreateBucketConfiguration: {
+          LocationConstraint: 'us-standard'
+        }
+      })
+      .promise()
       .catch(err => {
         if (err.code === 'BucketAlreadyExists' && process.env.EXIST_OK) {
           // when debugging, it is helpful to set EXIST_OK,
           // to reuse an existing bucket; for production
           // use, do not use this code path!
-
           // make sure it's public
           // debug('bucket already exists')
           // return makePublic(cos, Bucket)

@@ -45,7 +45,7 @@ export class Row {
   css?: string
   outerCSS?: string
 
-  constructor (row: Row) {
+  constructor(row: Row) {
     Object.assign(this, row)
   }
 }
@@ -66,7 +66,7 @@ export class Cell {
   className?: string
   parent?: HTMLElement
 
-  constructor (cell: Cell) {
+  constructor(cell: Cell) {
     Object.assign(this, cell)
   }
 }
@@ -103,7 +103,7 @@ export class Table {
   fontawesomeCSS?: string
   fontawesomeBalloon?: string
 
-  constructor (table: Table) {
+  constructor(table: Table) {
     Object.assign(this, table)
   }
 }
@@ -111,27 +111,44 @@ export class Table {
 export interface WatchableTable extends Table, Watchable {}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isTable (model: any): model is Table {
-  return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
+export function isTable(model: any): model is Table {
+  return (
+    model !== undefined &&
+    (model instanceof Table || (model as Table).body !== undefined)
+  )
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isMultiTable (model: any): model is Table[] {
-  return model !== undefined && Array.isArray(model) && model.length > 0 && model.filter(m => !isTable(m)).length === 0
+export function isMultiTable(model: any): model is Table[] {
+  return (
+    model !== undefined &&
+    Array.isArray(model) &&
+    model.length > 0 &&
+    model.filter(m => !isTable(m)).length === 0
+  )
 }
 
-export function isWatchableTable (model: Table | WatchableTable): model is WatchableTable {
-  return model && isTable(model) && (model as Watchable).refreshCommand && (model as Watchable).watchByDefault !== undefined
+export function isWatchableTable(
+  model: Table | WatchableTable
+): model is WatchableTable {
+  return (
+    model &&
+    isTable(model) &&
+    (model as Watchable).refreshCommand &&
+    (model as Watchable).watchByDefault !== undefined
+  )
 }
 
-export function formatWatchableTable (model: Table | Table[], watch: Watchable) {
+export function formatWatchableTable(model: Table | Table[], watch: Watchable) {
   if (isTable(model)) {
     return Object.assign(model, watch)
   } else if (isMultiTable(model)) {
     model.forEach(table => Object.assign(table, watch))
   } else {
     // TODO: we might need to consider the variance of model, throw error for now
-    throw new Error('models other than table(s) are not supported in watch mode yet')
+    throw new Error(
+      'models other than table(s) are not supported in watch mode yet'
+    )
   }
 }
 
@@ -142,7 +159,7 @@ export class Icon {
   balloonLength?: string
   balloonPos?: string
 
-  constructor (icon: Icon) {
+  constructor(icon: Icon) {
     Object.assign(this, icon)
   }
 }
@@ -172,22 +189,37 @@ export interface RowDiff {
  * diff two rows model
  * @param refreshRows is the rows model returned by refreshing
  */
-export function diffTableRows (existingRows: Row[], refreshRows: Row[]): RowDiff {
+export function diffTableRows(
+  existingRows: Row[],
+  refreshRows: Row[]
+): RowDiff {
   // find rows in the existing rows but not in the refreshed rows
-  const rowDeletion: RowDeletion[] = existingRows.map((row, index) => { return { deleteIndex: index, model: row } })
+  const rowDeletion: RowDeletion[] = existingRows
+    .map((row, index) => {
+      return { deleteIndex: index, model: row }
+    })
     .filter(_ => !refreshRows.find(row => row.name === _.model.name))
 
   // find the rows whose name appear in both the existing and refreshed rows, but are different in nature
-  const rowUpdate: RowUpdate[] = refreshRows.filter(row => existingRows.some(_ => _.name === row.name))
+  const rowUpdate: RowUpdate[] = refreshRows
+    .filter(row => existingRows.some(_ => _.name === row.name))
     .map(row => {
       const index = existingRows.findIndex(_ => _.name === row.name)
-      const doUpdate = JSON.stringify(row) !== JSON.stringify(existingRows[index])
+      const doUpdate =
+        JSON.stringify(row) !== JSON.stringify(existingRows[index])
       if (doUpdate) return { updateIndex: index, model: row }
-    }).filter(x => x)
+    })
+    .filter(x => x)
 
   // find the rows which are not in the existing rows, to get the insertion index, first concat with the existing rows, then sort
-  const rowInsertion: RowInsertion[] = sortBody(refreshRows.filter(row => !existingRows.some(_ => _.name === row.name)).concat(existingRows))
-    .map((row, index) => { return { insertBeforeIndex: index + 1, model: row } })
+  const rowInsertion: RowInsertion[] = sortBody(
+    refreshRows
+      .filter(row => !existingRows.some(_ => _.name === row.name))
+      .concat(existingRows)
+  )
+    .map((row, index) => {
+      return { insertBeforeIndex: index + 1, model: row }
+    })
     .filter(row => !existingRows.some(_ => _.name === row.model.name))
 
   return { rowUpdate, rowDeletion, rowInsertion }

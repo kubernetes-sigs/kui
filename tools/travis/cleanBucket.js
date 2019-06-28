@@ -5,7 +5,8 @@ const AWS = require('ibm-cos-sdk')
 const needle = require('needle')
 
 /** we decided not to do a swap */
-const main = _ => { // eslint-disable-line
+const main = _ => {
+  // eslint-disable-line
   debug('_', _)
   const { secrets, value } = _
   debug('value', value)
@@ -18,9 +19,12 @@ const main = _ => { // eslint-disable-line
   return needle('get', secrets.endpoints, { json: true })
     .then(endpoints => endpoints.body)
     .then(endpoints => ({
-      endpoint: endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
+      endpoint:
+        endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
 
-      ibmAuthEndpoint: `https://${endpoints['identity-endpoints']['iam-token']}/oidc/token`,
+      ibmAuthEndpoint: `https://${
+        endpoints['identity-endpoints']['iam-token']
+      }/oidc/token`,
       apiKeyId: secrets.apikey,
       serviceInstanceId: secrets.resource_instance_id
 
@@ -42,15 +46,26 @@ const main = _ => { // eslint-disable-line
 
       console.log('cleaning up bucket', Bucket)
 
-      return cos.listObjects({ Bucket }).promise()
-        .then(_ => { console.log('listObjects', _); return _ })
-        .then(({ Contents }) => Promise.all(Contents.map(({ Key }) => cos.deleteObject({ Bucket, Key }).promise())))
+      return cos
+        .listObjects({ Bucket })
+        .promise()
+        .then(_ => {
+          console.log('listObjects', _)
+          return _
+        })
+        .then(({ Contents }) =>
+          Promise.all(
+            Contents.map(({ Key }) =>
+              cos.deleteObject({ Bucket, Key }).promise()
+            )
+          )
+        )
         .then(() => cos.deleteBucket({ Bucket }).promise())
     })
 
     .then(details => ({ status: 'not swapping', details }))
     .catch(error => {
       console.error(error)
-      return ({ status: 'failed', error })
+      return { status: 'failed', error }
     })
 }

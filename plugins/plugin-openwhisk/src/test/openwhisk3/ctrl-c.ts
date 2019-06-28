@@ -22,30 +22,47 @@ const { cli, sidecar } = ui
 const delay = 3000
 const actionName = 'foo'
 
-describe('Cancel via Ctrl+C', function (this: common.ISuite) {
+describe('Cancel via Ctrl+C', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // note that this action resolves with its input parameter; we'll check this in the await step below
-  it('should create an action that completes with some delay', () => cli.do(`let ${actionName} = x=> new Promise((resolve, reject) => setTimeout(() => resolve(x), ${delay}))`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName)))
+  it('should create an action that completes with some delay', () =>
+    cli
+      .do(
+        `let ${actionName} = x=> new Promise((resolve, reject) => setTimeout(() => resolve(x), ${delay}))`,
+        this.app
+      )
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName)))
 
-  it('should invoke the long-running action, then cancel', () => cli.do(`invoke -p name openwhisk`, this.app)
-    .then(res => new Promise(resolve => setTimeout(() => resolve(res), delay / 3)))
-    .then(appAndCount => this.app.client.keys(ui.ctrlC).then(() => appAndCount))
-    .then(cli.expectBlank)
-    .catch(common.oops(this)))
+  it('should invoke the long-running action, then cancel', () =>
+    cli
+      .do(`invoke -p name openwhisk`, this.app)
+      .then(
+        res => new Promise(resolve => setTimeout(() => resolve(res), delay / 3))
+      )
+      .then(appAndCount =>
+        this.app.client.keys(ui.ctrlC).then(() => appAndCount)
+      )
+      .then(cli.expectBlank)
+      .catch(common.oops(this)))
 
   // checking the resolve(x)
-  it('should await the long-running action', () => cli.do(`await`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-    .then(ui.expectStruct({
-      name: 'openwhisk'
-    }))
-    .catch(common.oops(this)))
+  it('should await the long-running action', () =>
+    cli
+      .do(`await`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName))
+      .then(() =>
+        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
+      )
+      .then(
+        ui.expectStruct({
+          name: 'openwhisk'
+        })
+      )
+      .catch(common.oops(this)))
 })

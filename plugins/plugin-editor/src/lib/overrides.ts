@@ -15,7 +15,7 @@
  */
 
 export const applyOverrides = parsedOptions => params => {
-  const [ entity ] = params
+  const [entity] = params
 
   if (parsedOptions.name) {
     entity.name = parsedOptions.name

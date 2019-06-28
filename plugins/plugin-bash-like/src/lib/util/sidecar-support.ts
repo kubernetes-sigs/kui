@@ -21,7 +21,10 @@ const debug = Debug('plugins/bash-like/util/sidecar-support')
  * Render the given pre-rendered content as a sidecar-compatible dom
  *
  */
-export const asSidecarContent = (renderedContent: Element | string, tag = 'pre') => {
+export const asSidecarContent = (
+  renderedContent: Element | string,
+  tag = 'pre'
+) => {
   const content = document.createElement('div')
   content.classList.add('code-highlighting')
   content.classList.add('scrollable')
@@ -45,15 +48,25 @@ export const asSidecarContent = (renderedContent: Element | string, tag = 'pre')
  *
  * @param renderedContent either a DOM Element or a rendered HTML string
  */
-export const asSidecarEntity = (cmdLine: string, renderedContent: Element | string, options = {}, tag = 'pre', prettyType = 'shell', subtext?: string | Element | Promise<string | Element>) => {
+export const asSidecarEntity = (
+  cmdLine: string,
+  renderedContent: Element | string,
+  options = {},
+  tag = 'pre',
+  prettyType = 'shell',
+  subtext?: string | Element | Promise<string | Element>
+) => {
   debug('asSidecarEntity', options)
 
-  return Object.assign({
-    type: 'custom',
-    prettyType,
-    isEntity: true,
-    subtext,
-    name: cmdLine,
-    content: asSidecarContent(renderedContent, tag)
-  }, options)
+  return Object.assign(
+    {
+      type: 'custom',
+      prettyType,
+      isEntity: true,
+      subtext,
+      name: cmdLine,
+      content: asSidecarContent(renderedContent, tag)
+    },
+    options
+  )
 }

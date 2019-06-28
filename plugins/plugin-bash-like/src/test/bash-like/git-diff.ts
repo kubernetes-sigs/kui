@@ -22,66 +22,71 @@ const { cli, sidecar } = ui
 const { localDescribe } = common
 
 /** modify the top-level README.md, so that we can exhibit a git diff */
-const modifyTopLevelReadme = () => new Promise(async (resolve, reject) => {
-  try {
-    const copy = new Promise((resolve, reject) => {
-      copyFile('../../README.md', '../../README-bak.md', err => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve()
-        }
+const modifyTopLevelReadme = () =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const copy = new Promise((resolve, reject) => {
+        copyFile('../../README.md', '../../README-bak.md', err => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
       })
-    })
 
-    await copy
-  } catch (err) {
-    reject(err)
-  }
-
-  writeFile('../../README.md', 'hello there', err => {
-    if (err) {
+      await copy
+    } catch (err) {
       reject(err)
-    } else {
-      resolve()
     }
+
+    writeFile('../../README.md', 'hello there', err => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
   })
-})
 
 /** restore the top-level README.md from our backup copy */
-const restoreTopLevelReadme = () => new Promise((resolve, reject) => {
-  copyFile('../../README-bak.md', '../../README.md', err => {
-    if (err) {
-      reject(err)
-    } else {
-      unlink('../../README-bak.md', err => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve()
-        }
-      })
-    }
+const restoreTopLevelReadme = () =>
+  new Promise((resolve, reject) => {
+    copyFile('../../README-bak.md', '../../README.md', err => {
+      if (err) {
+        reject(err)
+      } else {
+        unlink('../../README-bak.md', err => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
+      }
+    })
   })
-})
 
-localDescribe('git diff', function (this: common.ISuite) {
+localDescribe('git diff', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should show no diffs', () => cli.do('git diff package.json', this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
+  it('should show no diffs', () =>
+    cli
+      .do('git diff package.json', this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
 
   it('should show a diff', async () => {
     try {
       await modifyTopLevelReadme()
 
-      await cli.do('git diff', this.app)
+      await cli
+        .do('git diff', this.app)
         .then(res => res.app)
         .then(sidecar.expectOpen)
-        // .then(sidecar.expectFullscreen)
+      // .then(sidecar.expectFullscreen)
 
       await restoreTopLevelReadme()
     } catch (err) {

@@ -1,8 +1,5 @@
 {
-  "packages": [
-    "packages/*",
-    "plugins/*"
-  ],
+  "packages": ["packages/*", "plugins/*"],
   "version": "independent",
   "command": {
     "publish": {

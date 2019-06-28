@@ -17,7 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
-describe('timeline visualization', function (this: common.ISuite) {
+describe('timeline visualization', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 

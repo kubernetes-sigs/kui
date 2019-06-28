@@ -27,12 +27,20 @@ const usage = {
   command: 'base64',
   strict: 'base64',
   hidden: true,
-  required: [
-    { name: 'string', docs: 'The string to encode or decode' }
-  ],
+  required: [{ name: 'string', docs: 'The string to encode or decode' }],
   optional: [
-    { name: '--decode', alias: '-d', boolean: true, docs: 'Decode the given string' },
-    { name: '--break', alias: '-b', numeric: true, docs: 'break encoded string into num character lines' }
+    {
+      name: '--decode',
+      alias: '-d',
+      boolean: true,
+      docs: 'Decode the given string'
+    },
+    {
+      name: '--break',
+      alias: '-b',
+      numeric: true,
+      docs: 'break encoded string into num character lines'
+    }
   ]
 }
 
@@ -45,7 +53,8 @@ const breakout = (str: string, options) => {
   if (options.break > 0) {
     let dest = ''
     for (let idx = 0; idx < str.length; idx += options.break) {
-      dest = dest + str.slice(idx, Math.min(str.length, idx + options.break)) + '\n'
+      dest =
+        dest + str.slice(idx, Math.min(str.length, idx + options.break)) + '\n'
     }
     return dest
   } else {
@@ -60,16 +69,20 @@ const breakout = (str: string, options) => {
 export default (commandTree: CommandRegistrar) => {
   debug('init')
 
-  commandTree.listen('/base64', ({ argvNoOptions, parsedOptions: options }) => {
-    const str = argvNoOptions[1]
-    debug('str', str, argvNoOptions)
+  commandTree.listen(
+    '/base64',
+    ({ argvNoOptions, parsedOptions: options }) => {
+      const str = argvNoOptions[1]
+      debug('str', str, argvNoOptions)
 
-    if (options.decode) {
-      debug('decoding')
-      return breakout(Buffer.from(str, 'base64').toString(), options)
-    } else {
-      debug('encoding')
-      return breakout(Buffer.from(str).toString('base64'), options)
-    }
-  }, { usage, noAuthOk: true })
+      if (options.decode) {
+        debug('decoding')
+        return breakout(Buffer.from(str, 'base64').toString(), options)
+      } else {
+        debug('encoding')
+        return breakout(Buffer.from(str).toString('base64'), options)
+      }
+    },
+    { usage, noAuthOk: true }
+  )
 }

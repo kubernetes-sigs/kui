@@ -25,7 +25,9 @@ const { dirname, join } = require('path')
 
 const ROOT = process.env.TEST_ROOT
 const kui = process.env.KUI || join(ROOT, '../../bin/kui')
-const bindir = process.env.KUI ? dirname(process.env.KUI) : join(ROOT, '../../bin') // should contain kubectl-kui
+const bindir = process.env.KUI
+  ? dirname(process.env.KUI)
+  : join(ROOT, '../../bin') // should contain kubectl-kui
 const { expectStruct, expectSubset } = require('./ui')
 
 /**
@@ -42,21 +44,22 @@ const KUI_TEE_TO_FILE_END_MARKER = 'XXX_KUI_END_MARKER'
  * readFile that returns a promise
  *
  */
-const readFileAsync = (fd/* : number */) => new Promise((resolve, reject) => {
-  readFile(fd, (err, data) => {
-    if (err) {
-      reject(err)
-    } else {
-      resolve(data)
-    }
+const readFileAsync = (fd /* : number */) =>
+  new Promise((resolve, reject) => {
+    readFile(fd, (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data)
+      }
+    })
   })
-})
 
 /**
  * Poll a given file descriptor `fd` for the end marker
  *
  */
-const pollForEndMarker = async (fd/*: number */)/* : Promise<string> */ => {
+const pollForEndMarker = async (fd /*: number */) /* : Promise<string> */ => {
   return new Promise((resolve, reject) => {
     const iter = async () => {
       try {
@@ -94,7 +97,7 @@ const appendPATH = (path, extra) => {
  *
  */
 class CLI {
-  constructor (exe = kui, pathEnv, teeToFile = false) {
+  constructor(exe = kui, pathEnv, teeToFile = false) {
     this.exe = exe
     this.pathEnv = pathEnv
     this.teeToFile = teeToFile
@@ -104,16 +107,14 @@ class CLI {
    * Execute a command
    *
    */
-  do (cmd, env = {}, { errOk = undefined } = {}) {
+  do(cmd, env = {}, { errOk = undefined } = {}) {
     return new Promise((resolve, reject) => {
       const command = `${this.exe} ${cmd} --no-color`
       debug('executing command', command)
 
-      const ourEnv = Object.assign(
-        {},
-        process.env,
-        env,
-        { PATH: appendPATH(env.PATH || process.env.PATH, this.pathEnv) })
+      const ourEnv = Object.assign({}, process.env, env, {
+        PATH: appendPATH(env.PATH || process.env.PATH, this.pathEnv)
+      })
 
       // for headless-to-electron tests, we leverage the
       // KUI_TEE_TO_FILE support offered by the core.
@@ -128,7 +129,9 @@ class CLI {
 
       exec(command, { env: ourEnv }, async (err, stdout, stderr) => {
         if (this.teeToFile) debug('tee done', command)
-        const stdoutPromise = this.teeToFile ? pollForEndMarker(tmpobj.fd) : Promise.resolve(stdout)
+        const stdoutPromise = this.teeToFile
+          ? pollForEndMarker(tmpobj.fd)
+          : Promise.resolve(stdout)
 
         if (err) {
           // command failed miserably; collect all of the output of
@@ -159,23 +162,26 @@ class CLI {
    * Exit code code for the given http status code.
    * See ui.js for the analogous electron implementation.
    */
-  exitCode (statusCode) {
+  exitCode(statusCode) {
     return statusCode - 256
   }
 
-  expectJustOK () {
+  expectJustOK() {
     return args => {
       return this.expectOK('', { exect: true })(args)
     }
   }
 
-  expectOKWithAny () {
+  expectOKWithAny() {
     return args => {
       return this.expectOK()
     }
   }
 
-  expectOK (expectedOutput, { exact = false, skipLines = 0, squish = false } = {}) {
+  expectOK(
+    expectedOutput,
+    { exact = false, skipLines = 0, squish = false } = {}
+  ) {
     return ({ code: actualCode, output: actualOutput }) => {
       assert.strictEqual(actualCode, 0)
       if (expectedOutput) {
@@ -192,17 +198,26 @@ class CLI {
 
           // skip a number of initial lines?
           if (skipLines > 0) {
-            checkAgainst = checkAgainst.split(/\n/).slice(1).join('\n')
+            checkAgainst = checkAgainst
+              .split(/\n/)
+              .slice(1)
+              .join('\n')
           }
 
           // squish whitespace?
           if (squish) {
-            checkAgainst = checkAgainst.split(/\n/).map(_ => _.replace(/\s+/g, ' ').trim()).join('\n').trim()
+            checkAgainst = checkAgainst
+              .split(/\n/)
+              .map(_ => _.replace(/\s+/g, ' ').trim())
+              .join('\n')
+              .trim()
           }
 
           if (exact) {
             if (checkAgainst !== expectedOutput) {
-              console.error(`mismatch; actual='${actualOutput}'; expected='${checkAgainst}'`)
+              console.error(
+                `mismatch; actual='${actualOutput}'; expected='${checkAgainst}'`
+              )
             }
             assert.strictEqual(checkAgainst, expectedOutput)
           } else {
@@ -212,7 +227,9 @@ class CLI {
 
             const ok = checkAgainst.indexOf(expectedOutput) >= 0
             if (!ok) {
-              console.error(`mismatch; actual='${actualOutput}' checkAgainst='${checkAgainst}'; expected='${expectedOutput}'`)
+              console.error(
+                `mismatch; actual='${actualOutput}' checkAgainst='${checkAgainst}'; expected='${expectedOutput}'`
+              )
             }
             assert.ok(ok)
           }
@@ -223,15 +240,18 @@ class CLI {
     }
   }
 
-  expectError (expectedCode, expectedOutput) {
+  expectError(expectedCode, expectedOutput) {
     return ({ code: actualCode, output: actualOutput }) => {
       assert.strictEqual(actualCode, expectedCode)
       if (expectedOutput) {
-        const ok = typeof expectedOutput === 'string'
-          ? actualOutput.indexOf(expectedOutput) >= 0
-          : !!actualOutput.match(expectedOutput) // expectedOutput is a RegExp
+        const ok =
+          typeof expectedOutput === 'string'
+            ? actualOutput.indexOf(expectedOutput) >= 0
+            : !!actualOutput.match(expectedOutput) // expectedOutput is a RegExp
         if (!ok) {
-          console.error(`mismatch; actual='${actualOutput}'; expected='${expectedOutput}'`)
+          console.error(
+            `mismatch; actual='${actualOutput}'; expected='${expectedOutput}'`
+          )
         }
         assert.ok(ok)
       }

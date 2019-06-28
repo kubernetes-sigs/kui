@@ -25,7 +25,7 @@ debug('loading')
  * Listen for the main process telling us to execute a command
  *
  */
-const listenForRemoteEvents = (ipcRenderer) => {
+const listenForRemoteEvents = ipcRenderer => {
   debug('listenForRemoteEvents')
 
   if (inElectron() && ipcRenderer) {
@@ -93,10 +93,10 @@ const listenForWindowEvents = (remote?) => {
     if (remote.getCurrentWindow().isFullScreen()) {
       document.body.classList.add('fullscreen')
     }
-    remote.getCurrentWindow().on('enter-full-screen', function () {
+    remote.getCurrentWindow().on('enter-full-screen', function() {
       document.body.classList.add('fullscreen')
     })
-    remote.getCurrentWindow().on('leave-full-screen', function () {
+    remote.getCurrentWindow().on('leave-full-screen', function() {
       document.body.classList.remove('fullscreen')
     })
   }
@@ -121,29 +121,32 @@ const listenForTestEvents = (ipcRenderer?) => {
  * Send a synchronous message to the main process
  *
  */
-export const tellMain = (message, channel?) => new Promise(async (resolve, reject) => {
-  const electron = await import('electron')
-  const ipcRenderer = electron.ipcRenderer
+export const tellMain = (message, channel?) =>
+  new Promise(async (resolve, reject) => {
+    const electron = await import('electron')
+    const ipcRenderer = electron.ipcRenderer
 
-  ipcRenderer[channel === 'asynchronous-message' ? 'send' : 'sendSync'](channel || 'synchronous-message',
-    typeof message === 'string'
-      ? JSON.stringify({ operation: message })
-      : JSON.stringify(message))
+    ipcRenderer[channel === 'asynchronous-message' ? 'send' : 'sendSync'](
+      channel || 'synchronous-message',
+      typeof message === 'string'
+        ? JSON.stringify({ operation: message })
+        : JSON.stringify(message)
+    )
 
-  if (channel === 'asynchronous-message') {
-    console.log('listening')
-    ipcRenderer.on('asynchronous-reply', (event, response) => {
-      console.log('got response', response)
-      if (response === 'true') {
-        resolve(true)
-      } else {
-        reject(response)
-      }
-    })
-  } else {
-    resolve(true)
-  }
-})
+    if (channel === 'asynchronous-message') {
+      console.log('listening')
+      ipcRenderer.on('asynchronous-reply', (event, response) => {
+        console.log('got response', response)
+        if (response === 'true') {
+          resolve(true)
+        } else {
+          reject(response)
+        }
+      })
+    } else {
+      resolve(true)
+    }
+  })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const init = (prefs = {}) => {

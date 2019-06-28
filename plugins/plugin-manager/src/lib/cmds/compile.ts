@@ -27,9 +27,14 @@ debug('loading')
 debug('finished loading modules')
 
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/plugin/compile', () => {
-    const rootDir = userDataDir()
-    return compile(rootDir, true)
-      .then(([newCommands]) => success('installed', 'will be available, after reload', newCommands))
-  }, {})
+  commandTree.listen(
+    '/plugin/compile',
+    () => {
+      const rootDir = userDataDir()
+      return compile(rootDir, true).then(([newCommands]) =>
+        success('installed', 'will be available, after reload', newCommands)
+      )
+    },
+    {}
+  )
 }

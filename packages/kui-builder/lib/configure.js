@@ -33,20 +33,21 @@ const info = (key, value) => console.log(colors.blue(`${key}: `) + value)
  * Read in index.html
  *
  */
-const readIndex = options => new Promise((resolve, reject) => {
-  const { templateDir } = options.build
+const readIndex = options =>
+  new Promise((resolve, reject) => {
+    const { templateDir } = options.build
 
-  debug('read template', templateDir)
-  task(`read index.html template from ${templateDir}`)
+    debug('read template', templateDir)
+    task(`read index.html template from ${templateDir}`)
 
-  fs.readFile(path.join(templateDir, 'index.html'), (err, data) => {
-    if (err) {
-      reject(err)
-    } else {
-      resolve(data.toString())
-    }
+    fs.readFile(path.join(templateDir, 'index.html'), (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data.toString())
+      }
+    })
   })
-})
 
 /**
  * Evaluate macros in the given string, using the given setting of configurations
@@ -67,22 +68,23 @@ const evaluateMacros = settings => str => {
  * Write the updated index.html
  *
  */
-const writeIndex = (settings) => str => new Promise((resolve, reject) => {
-  if (settings.build.writeIndex === false) {
-    return resolve()
-  }
-
-  const indexHtml = `index${settings.env.nameSuffix || ''}.html`
-  task(`write ${indexHtml} to ${settings.build.buildDir}`)
-
-  fs.writeFile(path.join(settings.build.buildDir, indexHtml), str, err => {
-    if (err) {
-      reject(err)
-    } else {
-      resolve()
+const writeIndex = settings => str =>
+  new Promise((resolve, reject) => {
+    if (settings.build.writeIndex === false) {
+      return resolve()
     }
+
+    const indexHtml = `index${settings.env.nameSuffix || ''}.html`
+    task(`write ${indexHtml} to ${settings.build.buildDir}`)
+
+    fs.writeFile(path.join(settings.build.buildDir, indexHtml), str, err => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
   })
-})
 
 /**
  * Stash the chosen configuration settings to the buildDir, and update
@@ -90,57 +92,71 @@ const writeIndex = (settings) => str => new Promise((resolve, reject) => {
  * chosen setting
  *
  */
-const writeConfig = (settings) => new Promise((resolve, reject) => {
-  if (settings.build.writeConfig === false) {
-    return resolve()
-  }
+const writeConfig = settings =>
+  new Promise((resolve, reject) => {
+    if (settings.build.writeConfig === false) {
+      return resolve()
+    }
 
-  const { configDir } = settings.build
+    const { configDir } = settings.build
 
-  task(`write config to ${configDir}`)
+    task(`write config to ${configDir}`)
 
-  const config = Object.assign({}, settings)
-  delete config.build
-  debug('writeConfig', configDir, config)
+    const config = Object.assign({}, settings)
+    delete config.build
+    debug('writeConfig', configDir, config)
 
-  fs.writeFile(path.join(configDir, 'config.json'), JSON.stringify(config, undefined, 4), err => {
-    if (err) {
-      reject(err)
-    } else {
-      task('write package.json')
-
-      const packageAppPjson = path.join(configDir, '../package.json')
-      const topLevel = moduleExists(packageAppPjson) ? require(packageAppPjson) : require(path.join(process.env.CLIENT_HOME, 'package.json'))
-      const packageJson = Object.assign({}, topLevel, config, { name: '@kui-shell/settings' })
-
-      fs.writeFile(path.join(configDir, 'package.json'), JSON.stringify(packageJson, undefined, 4), err => {
+    fs.writeFile(
+      path.join(configDir, 'config.json'),
+      JSON.stringify(config, undefined, 4),
+      err => {
         if (err) {
           reject(err)
         } else {
-          resolve()
+          task('write package.json')
+
+          const packageAppPjson = path.join(configDir, '../package.json')
+          const topLevel = moduleExists(packageAppPjson)
+            ? require(packageAppPjson)
+            : require(path.join(process.env.CLIENT_HOME, 'package.json'))
+          const packageJson = Object.assign({}, topLevel, config, {
+            name: '@kui-shell/settings'
+          })
+
+          fs.writeFile(
+            path.join(configDir, 'package.json'),
+            JSON.stringify(packageJson, undefined, 4),
+            err => {
+              if (err) {
+                reject(err)
+              } else {
+                resolve()
+              }
+            }
+          )
         }
-      })
-    }
+      }
+    )
   })
-})
 
 /**
  * Do a build
  *
  */
-const doBuild = (settings) => () => Promise.all([
-  writeConfig(settings),
-  readIndex(settings)
-    .then(evaluateMacros(settings.env))
-    .then(evaluateMacros(settings.theme))
-    .then(writeIndex(settings))
-])
+const doBuild = settings => () =>
+  Promise.all([
+    writeConfig(settings),
+    readIndex(settings)
+      .then(evaluateMacros(settings.env))
+      .then(evaluateMacros(settings.theme))
+      .then(writeIndex(settings))
+  ])
 
 /**
  * Either project out a field of the configuration settings, or do a build
  *
  */
-const doWork = (settings) => {
+const doWork = settings => {
   info('env.main', settings.env.main)
   info('env.cssHome', settings.env.cssHome)
   info('env.imageHome', settings.env.imageHome)
@@ -178,16 +194,19 @@ const main = (env, overrides = {}) => {
  *
  */
 const loadOverrides = (programmaticOverrides = {}) => {
-  let overrideDirectory = process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
+  let overrideDirectory =
+    process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
   if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
-    overrideDirectory = process.env.CLIENT_HOME && path.resolve(path.join(process.env.CLIENT_HOME, 'theme'))
+    overrideDirectory =
+      process.env.CLIENT_HOME &&
+      path.resolve(path.join(process.env.CLIENT_HOME, 'theme'))
     if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
       overrideDirectory = path.resolve(path.join(process.cwd(), 'theme'))
     }
   }
   info('theme directory', overrideDirectory)
 
-  const loadOverride = (file) => {
+  const loadOverride = file => {
     try {
       if (overrideDirectory) {
         debug(`Using this override directory: ${overrideDirectory}`)
@@ -211,8 +230,16 @@ const loadOverrides = (programmaticOverrides = {}) => {
     config: Object.assign({}, userConfig, programmaticOverrides.config)
   }
 
-  if (process.env.KUI_STAGE && (!programmaticOverrides || !programmaticOverrides.build || !programmaticOverrides.build.buildDir)) {
-    overrides.build.buildDir = overrides.build.configDir = path.join(process.env.KUI_STAGE, 'packages/app/build')
+  if (
+    process.env.KUI_STAGE &&
+    (!programmaticOverrides ||
+      !programmaticOverrides.build ||
+      !programmaticOverrides.build.buildDir)
+  ) {
+    overrides.build.buildDir = overrides.build.configDir = path.join(
+      process.env.KUI_STAGE,
+      'packages/app/build'
+    )
   }
 
   debug('overrides', overrides)
@@ -228,7 +255,7 @@ if (require.main === module) {
 
   class Builder {
     /** @param env is one of the entries in ../defaults/envs */
-    build (env, overrides) {
+    build(env, overrides) {
       return main(env, loadOverrides(overrides))
     }
   }

@@ -33,7 +33,7 @@ import repl = require('@kui-shell/core/core/repl')
 debug('finished loading modules')
 
 // Include start button for modules with accompanying tutorials
-const startButton = (args) => {
+const startButton = args => {
   // Create button that says 'Try a guided tutorial'
   const start = document.createElement('button')
   start.setAttribute('id', 'start')
@@ -123,7 +123,7 @@ const createServiceRow = dep => {
   icon.className = 'fas fa-cloud'
 
   text.className = 'left-pad nowrap'
-  text.innerText = dep.metadata.prettyName || dep.name// dep.attributes.find(({key}) => key === 'service').value;
+  text.innerText = dep.metadata.prettyName || dep.name // dep.attributes.find(({key}) => key === 'service').value;
 
   return dom
 }
@@ -133,11 +133,10 @@ const createServiceRow = dep => {
  *
  */
 const renderDeps = deps => {
-  return deps.map(createServiceRow)
-    .reduce((container, row) => {
-      container.appendChild(row)
-      return container
-    }, document.createElement('div'))
+  return deps.map(createServiceRow).reduce((container, row) => {
+    container.appendChild(row)
+    return container
+  }, document.createElement('div'))
 }
 
 /**
@@ -163,96 +162,116 @@ const doGet = async ({ argvNoOptions }) => {
   const args: string[] = argvNoOptions
   return setup(args)
     .then(fetchProjectData())
-    .then(({ info: { config: { projectName, name = projectName, api, choices, tutorial }, projectHome }, deps, imports }) => {
-      //
-      // @param name is an optional prettier name from the project
-      // config projectName is its shortname, e.g. the name of
-      // the github project, which may have lexical
-      // restrictions, making it less pretty
-      //
+    .then(
+      ({
+        info: {
+          config: { projectName, name = projectName, api, choices, tutorial },
+          projectHome
+        },
+        deps,
+        imports
+      }) => {
+        //
+        // @param name is an optional prettier name from the project
+        // config projectName is its shortname, e.g. the name of
+        // the github project, which may have lexical
+        // restrictions, making it less pretty
+        //
 
-      // renderStatusBadge(projectName);
+        // renderStatusBadge(projectName);
 
-      const content = enclosingContainer()
+        const content = enclosingContainer()
 
-      const intro = document.createElement('div')
-      intro.className = 'project-description'
-      content.appendChild(intro)
+        const intro = document.createElement('div')
+        intro.className = 'project-description'
+        content.appendChild(intro)
 
-      const introLeft = document.createElement('div')
-      const introRight = document.createElement('div')
-      introLeft.className = 'project-description-left'
-      introRight.className = 'project-description-right'
-      intro.appendChild(introLeft)
-      intro.appendChild(introRight)
+        const introLeft = document.createElement('div')
+        const introRight = document.createElement('div')
+        introLeft.className = 'project-description-left'
+        introRight.className = 'project-description-right'
+        intro.appendChild(introLeft)
+        intro.appendChild(introRight)
 
-      /* intro.appendChild(paragraphWithIcon({ iconClass: 'fas fa-info',
+        /* intro.appendChild(paragraphWithIcon({ iconClass: 'fas fa-info',
         text: kindStrings[kind]
         })); */
 
-      // Old Description Box
-      /* introLeft.appendChild(paragraphWithIcon({
+        // Old Description Box
+        /* introLeft.appendChild(paragraphWithIcon({
         title: 'Description',
         text: description
         })); */
 
-      // Description Box
-      const descriptionDom = document.createElement('div')
-      descriptionDom.className = 'project-config-paragraph project-config-items'
-      const titleDom = document.createElement('div')
-      titleDom.className = 'config-item-title'
-      titleDom.innerText = 'Description'
-      descriptionDom.appendChild(titleDom)
-      const text = document.createElement('div')
-      text.innerText = `${tutorial.profile} \n\n Level: ${tutorial.level} \n Time: ${tutorial.time} \n Skills: ${tutorial.skills}`
-      // text.className = 'project-config-paragraph-text smaller-text';
-      descriptionDom.appendChild(text)
-      introLeft.appendChild(descriptionDom)
-      // End of Description Box
+        // Description Box
+        const descriptionDom = document.createElement('div')
+        descriptionDom.className =
+          'project-config-paragraph project-config-items'
+        const titleDom = document.createElement('div')
+        titleDom.className = 'config-item-title'
+        titleDom.innerText = 'Description'
+        descriptionDom.appendChild(titleDom)
+        const text = document.createElement('div')
+        text.innerText = `${tutorial.profile} \n\n Level: ${tutorial.level} \n Time: ${tutorial.time} \n Skills: ${tutorial.skills}`
+        // text.className = 'project-config-paragraph-text smaller-text';
+        descriptionDom.appendChild(text)
+        introLeft.appendChild(descriptionDom)
+        // End of Description Box
 
-      if (deps.length > 0) {
-        introRight.appendChild(paragraphWithIcon({
-          title: 'Cloud Services',
-          content: renderDeps(deps)
-        }))
+        if (deps.length > 0) {
+          introRight.appendChild(
+            paragraphWithIcon({
+              title: 'Cloud Services',
+              content: renderDeps(deps)
+            })
+          )
+        }
+
+        if (imports.length > 0) {
+          introRight.appendChild(
+            paragraphWithIcon({
+              title: 'Module Imports',
+              content: renderDeps(imports)
+            })
+          )
+        }
+
+        // Add start button to display if module has a tutorial
+        if (tutorial) {
+          const buttons = document.createElement('div')
+          // same styling as configure buttons
+          buttons.className = 'project-config-buttons'
+          content.appendChild(buttons)
+          buttons.appendChild(startButton(args))
+        }
+
+        // render the wskflow of the composition
+        const wskflowContainer = document.createElement('div')
+        wskflowContainer.className = 'project-config-wskflow-container'
+        content.appendChild(wskflowContainer)
+
+        // asynchronously render wskflow
+        repl.qexec(
+          `preview "${projectHome}/composition.js"`,
+          undefined,
+          undefined,
+          { container: wskflowContainer }
+        )
+
+        return {
+          type: 'custom',
+          prettyType: entities,
+          isEntity: true,
+          prettyName: name,
+          name: projectName,
+          api,
+          subtext:
+            'Learn more about what this module offers, and how it is constructed',
+          content,
+          modes: modes('get', api, choices)
+        }
       }
-
-      if (imports.length > 0) {
-        introRight.appendChild(paragraphWithIcon({
-          title: 'Module Imports',
-          content: renderDeps(imports)
-        }))
-      }
-
-      // Add start button to display if module has a tutorial
-      if (tutorial) {
-        const buttons = document.createElement('div')
-        // same styling as configure buttons
-        buttons.className = 'project-config-buttons'
-        content.appendChild(buttons)
-        buttons.appendChild(startButton(args))
-      }
-
-      // render the wskflow of the composition
-      const wskflowContainer = document.createElement('div')
-      wskflowContainer.className = 'project-config-wskflow-container'
-      content.appendChild(wskflowContainer)
-
-      // asynchronously render wskflow
-      repl.qexec(`preview "${projectHome}/composition.js"`, undefined, undefined, { container: wskflowContainer })
-
-      return {
-        type: 'custom',
-        prettyType: entities,
-        isEntity: true,
-        prettyName: name,
-        name: projectName,
-        api,
-        subtext: 'Learn more about what this module offers, and how it is constructed',
-        content,
-        modes: modes('get', api, choices)
-      }
-    })
+    )
 }
 
 export default async (commandTree: CommandRegistrar) => {

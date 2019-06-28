@@ -15,19 +15,39 @@
  */
 
 /** sort by action name */
-export const nameSorter = { id: 'name', field: group => group.path, compare: (a, b) => a.localeCompare(b), extraCss: 'cell-label' }
+export const nameSorter = {
+  id: 'name',
+  field: group => group.path,
+  compare: (a, b) => a.localeCompare(b),
+  extraCss: 'cell-label'
+}
 
 /** sort by string field */
-export const stringSorter = id => ({ id, field: group => group[id], compare: (a, b) => a.localeCompare(b), extraCss: `cell-${id}` })
+export const stringSorter = id => ({
+  id,
+  field: group => group[id],
+  compare: (a, b) => a.localeCompare(b),
+  extraCss: `cell-${id}`
+})
 
 /** sort by the semver field */
 export const versionSorter = stringSorter('version') // note how, in grouping.js, the SemVer class supports a string-compatible localeCompare method
 
 /** sort by an element of statistical data */
-export const statDataSorter = (n, field = 'n') => ({ id: n, field: group => group.statData[field][n], compare: (a, b) => b - a, extraCss: 'cell-numeric' })
+export const statDataSorter = (n, field = 'n') => ({
+  id: n,
+  field: group => group.statData[field][n],
+  compare: (a, b) => b - a,
+  extraCss: 'cell-numeric'
+})
 
 /** generic sorter for numerical attributes */
-export const numericalSorter = (id, sortDir = +1) => ({ id, field: group => group[id], compare: (a, b) => sortDir * (b - a), extraCss: 'cell-numeric' })
+export const numericalSorter = (id, sortDir = +1) => ({
+  id,
+  field: group => group[id],
+  compare: (a, b) => sortDir * (b - a),
+  extraCss: 'cell-numeric'
+})
 
 /** sort by activation duration */
 export const durationSorter = numericalSorter('duration')
@@ -71,6 +91,6 @@ export const sortActivations = (groups, sorter, sortDir) => {
   const comparator = sortFn(sorter, sortDir)
 
   groups.forEach(group => {
-    (group.successes || group.activations).sort(comparator)
+    ;(group.successes || group.activations).sort(comparator)
   })
 }

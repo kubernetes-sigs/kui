@@ -24,46 +24,64 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli } = ui
 
-describe('no .wskprops tests', function (this: common.ISuite) {
+describe('no .wskprops tests', function(this: common.ISuite) {
   if (!process.env.WSK_CONFIG_FILE) {
     before(openwhisk.before(this))
     after(common.after(this))
 
-    it('shoule see empty action list', () => cli.do('action list', this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    it('shoule see empty action list', () =>
+      cli
+        .do('action list', this.app)
+        .then(cli.expectJustOK)
+        .catch(common.oops(this)))
 
-    it('should copy ~/.wskprops to ~/.tmp_wskprops', () => cli.do(`cp ~/.wskprops ~/.tmp_wskprops`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    it('should copy ~/.wskprops to ~/.tmp_wskprops', () =>
+      cli
+        .do(`cp ~/.wskprops ~/.tmp_wskprops`, this.app)
+        .then(cli.expectJustOK)
+        .catch(common.oops(this)))
 
-    it('should remove ~/.wskprops', () => cli.do(`rm ~/.wskprops`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    it('should remove ~/.wskprops', () =>
+      cli
+        .do(`rm ~/.wskprops`, this.app)
+        .then(cli.expectJustOK)
+        .catch(common.oops(this)))
 
     it('should restart', () => this.app.restart()) // TODO: investigate
 
-    it('shoule see error when action list', () => cli.do('action list', this.app)
-      .then(cli.expectError(403, 'Command requires authentication'))
-      .catch(common.oops(this)))
+    it('shoule see error when action list', () =>
+      cli
+        .do('action list', this.app)
+        .then(cli.expectError(403, 'Command requires authentication'))
+        .catch(common.oops(this)))
 
     // shoud add process.env.WSK_CONFIG_FILE
-    it('should add process.env.WSK_CONFIG_FILE', () => { process.env.WSK_CONFIG_FILE = '~/.tmp_wskprops' })
+    it('should add process.env.WSK_CONFIG_FILE', () => {
+      process.env.WSK_CONFIG_FILE = '~/.tmp_wskprops'
+    })
 
     it('should restart', () => this.app.restart())
 
-    it('shoule see action list', () => cli.do('action list', this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    it('shoule see action list', () =>
+      cli
+        .do('action list', this.app)
+        .then(cli.expectJustOK)
+        .catch(common.oops(this)))
 
-    it('should restore  ~/.wskprops', () => cli.do(`cp ~/.tmp_wskprops ~/.wskprops`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    it('should restore  ~/.wskprops', () =>
+      cli
+        .do(`cp ~/.tmp_wskprops ~/.wskprops`, this.app)
+        .then(cli.expectJustOK)
+        .catch(common.oops(this)))
 
-    it('should delete ~/.tmp_wskprops', () => cli.do(`rm ~/.tmp_wskprops`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    it('should delete ~/.tmp_wskprops', () =>
+      cli
+        .do(`rm ~/.tmp_wskprops`, this.app)
+        .then(cli.expectJustOK)
+        .catch(common.oops(this)))
 
-    it('should delete process.env.WSK_CONFIG_FILE', () => { delete process.env.WSK_CONFIG_FILE })
+    it('should delete process.env.WSK_CONFIG_FILE', () => {
+      delete process.env.WSK_CONFIG_FILE
+    })
   }
 })

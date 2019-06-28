@@ -40,10 +40,7 @@ export default () => {
   // --color-chart-02: #32AEB8;
 
   const area = theme.getPropertyValue('--color-chart-0').trim()
-  const base = [
-    theme.getPropertyValue('--color-chart-1').trim(),
-    area
-  ]
+  const base = [theme.getPropertyValue('--color-chart-1').trim(), area]
 
   debug('base0', base[0])
   debug('base1', base[1])

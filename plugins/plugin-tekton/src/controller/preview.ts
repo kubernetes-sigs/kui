@@ -24,7 +24,11 @@ const usage = {
   strict: 'flow',
   docs: 'Preview a Tekton pipeline',
   required: [
-    { name: 'pipeline.yml', file: true, docs: 'path to a pipeline description file' }
+    {
+      name: 'pipeline.yml',
+      file: true,
+      docs: 'path to a pipeline description file'
+    }
   ]
 }
 
@@ -34,13 +38,17 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tekton/flow', async ({ argvNoOptions, tab }) => {
-    const filepath = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
-    const raw = await read(filepath)
-    const jsons = await parse(raw)
+  commandTree.listen(
+    '/tekton/flow',
+    async ({ argvNoOptions, tab }) => {
+      const filepath = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
+      const raw = await read(filepath)
+      const jsons = await parse(raw)
 
-    // return a kui view
-    const runs = undefined
-    return flowView(tab, jsons, runs, raw, filepath)
-  }, { usage, noAuthOk: true })
+      // return a kui view
+      const runs = undefined
+      return flowView(tab, jsons, runs, raw, filepath)
+    },
+    { usage, noAuthOk: true }
+  )
 }

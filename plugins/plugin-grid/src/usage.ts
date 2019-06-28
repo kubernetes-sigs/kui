@@ -18,9 +18,11 @@
 const nRowsInViewport = 4
 
 /** list of related commands */
-const all = ['summary',
+const all = [
+  'summary',
   // 'timeline',
-  'grid']
+  'grid'
+]
 const allExcept = cmd => all.filter(_ => _ !== cmd)
 
 interface Optional {
@@ -39,19 +41,47 @@ interface Optional {
 
 /** optional arguments */
 const optional: Optional[] = [
-  { name: 'action|app', positional: true, docs: 'include only activity for the given action or composition', entity: 'action' },
-  { name: '--success', boolean: true, docs: 'include only successful activations' },
+  {
+    name: 'action|app',
+    positional: true,
+    docs: 'include only activity for the given action or composition',
+    entity: 'action'
+  },
+  {
+    name: '--success',
+    boolean: true,
+    docs: 'include only successful activations'
+  },
   { name: '--failure', boolean: true, docs: 'include only failed activations' },
-  { name: '--outliers', docs: 'include only outlier activations', allowed: ['min', 25, 50, 90, 95, 99, 'max'], defaultValue: 90 },
+  {
+    name: '--outliers',
+    docs: 'include only outlier activations',
+    allowed: ['min', 25, 50, 90, 95, 99, 'max'],
+    defaultValue: 90
+  },
   { name: '--since', hidden: true },
   { name: '--live', boolean: true, docs: 'Poll for updates' },
   { name: '--latency-bucket', hidden: true },
   { name: '--upto', hidden: true },
   { name: '--today', docs: 'show only activations from today' },
   { name: '--yesterday', docs: 'show only activations from yesterday' },
-  { name: '--this', docs: 'time filter, e.g. --this week', allowed: ['week', 'month', 'year'] },
-  { name: '--last', docs: 'time filter, e.g. --last week', allowed: ['week', 'month', 'year'] },
-  { name: '--batches', numeric: true, docs: 'the number of 200-activation batches to fetch', allowed: [ 1, 2, '...', 32 ], defaultValue: 2 }
+  {
+    name: '--this',
+    docs: 'time filter, e.g. --this week',
+    allowed: ['week', 'month', 'year']
+  },
+  {
+    name: '--last',
+    docs: 'time filter, e.g. --last week',
+    allowed: ['week', 'month', 'year']
+  },
+  {
+    name: '--batches',
+    numeric: true,
+    docs: 'the number of 200-activation batches to fetch',
+    allowed: [1, 2, '...', 32],
+    defaultValue: 2
+  }
 ]
 
 /* the breadcrumb chain */
@@ -73,9 +103,11 @@ export const toplevel = {
   example: 'visualize <command>',
   commandPrefix: 'visualize',
   commandPrefixNotNeeded: true,
-  available: [{ command: 'summary', docs: header.summary },
+  available: [
+    { command: 'summary', docs: header.summary },
     // { command: 'timeline', docs: header.timeline },
-    { command: 'grid', docs: header.grid }],
+    { command: 'grid', docs: header.grid }
+  ],
   related: ['wsk activation', 'composer session']
 }
 
@@ -115,7 +147,12 @@ export const grid = {
     docs: 'show only the worst offending successful activations'
   },
   optional: optional.concat([
-    { name: '--timeline', booleanOK: true, alias: '-t', docs: 'Draw as a timeline' }
+    {
+      name: '--timeline',
+      booleanOK: true,
+      alias: '-t',
+      docs: 'Draw as a timeline'
+    }
   ]),
   parents,
   related: allExcept('grid')

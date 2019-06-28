@@ -38,15 +38,20 @@ const viewName = 'Pods'
  * given resource
  *
  */
-const podsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
-  mode: 'pods',
-  direct: {
-    plugin: 'k8s',
-    module: 'lib/view/modes/pods',
-    operation: 'renderAndViewPods',
-    parameters: { command, resource }
-  }
-}, overrides || {})
+const podsButton = (command: string, resource: Resource, overrides?) =>
+  Object.assign(
+    {},
+    {
+      mode: 'pods',
+      direct: {
+        plugin: 'k8s',
+        module: 'lib/view/modes/pods',
+        operation: 'renderAndViewPods',
+        parameters: { command, resource }
+      }
+    },
+    overrides || {}
+  )
 
 /**
  * Add a Pods mode button to the given modes model, if called for by
@@ -56,8 +61,10 @@ const podsButton = (command: string, resource: Resource, overrides?) => Object.a
 export const podMode: ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => {
     // let's see if the resource refers to a pod in some fashion
-    return resource.kind === 'Deployment' ||
-      (resource.status !== undefined && resource.status.podName !== undefined) // e.g. tekton TaskRun or PipelineRun
+    return (
+      resource.kind === 'Deployment' ||
+      (resource.status !== undefined && resource.status.podName !== undefined)
+    ) // e.g. tekton TaskRun or PipelineRun
   },
   mode: (command: string, resource: Resource) => {
     debug('addPods', resource)
@@ -86,12 +93,18 @@ export const renderAndViewPods = async (tab: Tab, parameters: Parameters) => {
   const { selector } = resource.resource.spec
 
   const getPods = selector
-    ? `kubectl get pods ${selectorToString(selector)} -n "${resource.resource.metadata.namespace}"`
+    ? `kubectl get pods ${selectorToString(selector)} -n "${
+        resource.resource.metadata.namespace
+      }"`
     : `kubectl get pods ${resource.resource.status.podName} -n "${resource.resource.metadata.namespace}"`
   debug('getPods', getPods)
 
   const tableModel: Table = await $$(getPods)
 
-  const tableView = formatTable(tab, tableModel, { usePip: false, viewName, execOptions: { delegationOk: true } })
+  const tableView = formatTable(tab, tableModel, {
+    usePip: false,
+    viewName,
+    execOptions: { delegationOk: true }
+  })
   return insertView(tab)(tableView)
 }

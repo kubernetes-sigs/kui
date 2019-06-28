@@ -8,5 +8,6 @@ const state = { secret: 42 }
  * escaped beyond the scope of the Let.
  *
  */
-module.exports = Seq(Let(state, _ => ({ ok: secret === 42 })),
-  _ => ({ ok: (typeof secret === 'undefined') }))
+module.exports = Seq(Let(state, _ => ({ ok: secret === 42 })), _ => ({
+  ok: typeof secret === 'undefined'
+}))

@@ -22,8 +22,13 @@ import * as view from '../../view/entity-view'
 
 export default async (commandTree: CommandRegistrar) => {
   /* command handler for app delete */
-  commandTree.listen(`/wsk/app/delete`, ({ command }) => {
-    return repl.qfexec(command.replace('app', 'action'))
-      .then(result => view.formatDeleteResult(result))
-  }, { usage: appDelete })
+  commandTree.listen(
+    `/wsk/app/delete`,
+    ({ command }) => {
+      return repl
+        .qfexec(command.replace('app', 'action'))
+        .then(result => view.formatDeleteResult(result))
+    },
+    { usage: appDelete }
+  )
 }

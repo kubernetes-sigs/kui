@@ -16,11 +16,17 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, defaultModeForGet, createNS as create, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  waitForGreen,
+  waitForRed,
+  defaultModeForGet,
+  createNS as create,
+  waitTillNone
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
-describe('electron get all-namespaces', function (this: common.ISuite) {
+describe('electron get all-namespaces', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -28,7 +34,8 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
     /** create the given namespace */
     const createNs = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
-        return cli.do(`${kubectl} create namespace ${name}`, this.app)
+        return cli
+          .do(`${kubectl} create namespace ${name}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
@@ -38,8 +45,14 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
     /** create pod in the given namespace */
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
-        return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return cli
+          .do(
+            `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+            this.app
+          )
+          .then(
+            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
@@ -49,18 +62,22 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
     const listAndClickOn = (ns: string) => {
       it(`should list pods --all-namespaces expecting ns ${ns} via ${kubectl} then click`, async () => {
         try {
-          const selector = await cli.do(`${kubectl} get pods --all-namespaces`, this.app)
+          const selector = await cli
+            .do(`${kubectl} get pods --all-namespaces`, this.app)
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
 
           // make sure the NAME cell is clickable (as opposed to, say, the NAMESPACE cell)
-          await this.app.client.waitForExist(`${selector} .clickable [data-key="NAME"]`)
+          await this.app.client.waitForExist(
+            `${selector} .clickable [data-key="NAME"]`
+          )
 
           // now click on that cell
           this.app.client.click(`${selector} .clickable`)
-          await sidecar.expectOpen(this.app)
+          await sidecar
+            .expectOpen(this.app)
             .then(sidecar.expectMode(defaultModeForGet))
             .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
         } catch (err) {
@@ -72,7 +89,8 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
     /** delete the given namespace */
     const deleteNs = (name: string, errOk = false) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
-        return cli.do(`${kubectl} delete namespace ${name}`, this.app)
+        return cli
+          .do(`${kubectl} delete namespace ${name}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
@@ -87,8 +105,11 @@ describe('electron get all-namespaces', function (this: common.ISuite) {
     /** delete the pod in the given namespace `ns` */
     const deletePod = (ns: string) => {
       it(`should delete the pod in ns ${ns} by name via ${kubectl}`, () => {
-        return cli.do(`${kubectl} delete pod nginx -n ${ns}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return cli
+          .do(`${kubectl} delete pod nginx -n ${ns}`, this.app)
+          .then(
+            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })

@@ -38,7 +38,12 @@ let nWindows = 0
 let electron
 let app
 
-function createWindow (noHeadless = false, executeThisArgvPlease?: string[], subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
+function createWindow(
+  noHeadless = false,
+  executeThisArgvPlease?: string[],
+  subwindowPlease?: boolean,
+  subwindowPrefs?: ISubwindowPrefs
+) {
   debug('createWindow', executeThisArgvPlease)
 
   if (subwindowPrefs && subwindowPrefs.bringYourOwnWindow) {
@@ -69,10 +74,16 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     debug('we need to spawn electron', subwindowPlease, subwindowPrefs)
     delete subwindowPrefs.synonymFor // circular JSON
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    promise = initElectron(['--'].concat(executeThisArgvPlease), {}, subwindowPlease, subwindowPrefs)
+    promise = initElectron(
+      ['--'].concat(executeThisArgvPlease),
+      {},
+      subwindowPlease,
+      subwindowPrefs
+    )
       .then(async () => {
         electron = await import('electron')
-      }).catch((err: Error) => {
+      })
+      .catch((err: Error) => {
         // headless
         debug('not ready for graphics', err)
       })
@@ -90,16 +101,18 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     }
 
     const Electron = await import('electron')
-    const opts: Electron.BrowserWindowConstructorOptions = Object.assign({
-      width,
-      height,
-      webPreferences: {
-        nodeIntegration: true // prior to electron 5, this was the default
+    const opts: Electron.BrowserWindowConstructorOptions = Object.assign(
+      {
+        width,
+        height,
+        webPreferences: {
+          nodeIntegration: true // prior to electron 5, this was the default
+        },
+        show: false, // do not remove without consulting the ready-to-show comment below
+        titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
       },
-      show: false, // do not remove without consulting the ready-to-show comment below
-      titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
-    },
-    subwindowPrefs && subwindowPrefs.position)
+      subwindowPrefs && subwindowPrefs.position
+    )
 
     if (subwindowPlease) {
       // this tells electron to size content to the given width and height,
@@ -136,14 +149,24 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...
     const fixedWindows = {}
-    const openFixedWindow = (opts) => {
-      const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
+    const openFixedWindow = opts => {
+      const {
+        type,
+        event,
+        url,
+        size = mainWindow.getBounds(),
+        position = mainWindow.getBounds()
+      } = opts
 
       const existing = fixedWindows[type] || {}
       const { window: existingWindow, url: currentURL } = existing
 
       if (!existingWindow || existingWindow.isDestroyed()) {
-        const window = new Electron.BrowserWindow({ width: size.width, height: size.height, frame: true })
+        const window = new Electron.BrowserWindow({
+          width: size.width,
+          height: size.height,
+          frame: true
+        })
         fixedWindows[type] = { window, url }
         window.setPosition(position.x + 62, position.y + 62)
         // window.on('closed', () => { docsWindow = null })
@@ -165,7 +188,8 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
       // BrowserWindow opts doesn't stick; and... this has to be on
       // did-finish-load, for some reason... at least these are true
       // statements for electron 1.6.x
-      const productName = (await import('@kui-shell/settings/config.json')).theme.productName
+      const productName = (await import('@kui-shell/settings/config.json'))
+        .theme.productName
 
       if (mainWindow) {
         mainWindow.setTitle(productName)
@@ -173,25 +197,35 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
 
       if (mainWindow) {
         try {
-          const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support/lib/cmds/theme')
+          const { switchToPersistedThemeChoice } = await import(
+            '@kui-shell/plugin-core-support/lib/cmds/theme'
+          )
           switchToPersistedThemeChoice(mainWindow.webContents)
         } catch (err) {
           debug('theme support not found', err)
           const { theme, env } = await import('@kui-shell/core/core/settings')
           const { readFile } = await import('fs')
           const { join, dirname } = await import('path')
-          const themeModel = theme.themes.find(_ => _.name === theme.defaultTheme)
-          const filepath = join(dirname(require.resolve('@kui-shell/settings/package.json')),
+          const themeModel = theme.themes.find(
+            _ => _.name === theme.defaultTheme
+          )
+          const filepath = join(
+            dirname(require.resolve('@kui-shell/settings/package.json')),
             env.cssHome,
-            themeModel.css)
+            themeModel.css
+          )
           debug('default theme filepath', filepath)
           readFile(filepath, (err, data) => {
             if (err) {
               throw err
             } else {
               mainWindow.webContents.insertCSS(data.toString())
-              mainWindow.webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${themeModel.name}')`)
-              mainWindow.webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
+              mainWindow.webContents.executeJavaScript(
+                `document.body.setAttribute('kui-theme', '${themeModel.name}')`
+              )
+              mainWindow.webContents.executeJavaScript(
+                `document.body.setAttribute('kui-theme-style', '${themeModel.style}')`
+              )
             }
           })
         }
@@ -199,19 +233,35 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     })
 
     /** jump in and manage the way popups create new windows */
-    mainWindow.webContents.on('new-window', (event, url: string, frameName: string, disposition: string, options /*, additionalFeatures */) => {
+    mainWindow.webContents.on('new-window', (
+      event,
+      url: string,
+      frameName: string,
+      disposition: string,
+      options /*, additionalFeatures */
+    ) => {
       if (url.startsWith('https://youtu.be')) {
         // special handling of youtube links
-        openFixedWindow({ type: 'videos', event, url, options, size: { width: 800, height: 600 } })
+        openFixedWindow({
+          type: 'videos',
+          event,
+          url,
+          options,
+          size: { width: 800, height: 600 }
+        })
       } else {
         event.preventDefault()
         require('open')(url)
       }
     })
 
-    let commandContext = executeThisArgvPlease && executeThisArgvPlease.find(_ => /--command-context/.test(_))
+    let commandContext =
+      executeThisArgvPlease &&
+      executeThisArgvPlease.find(_ => /--command-context/.test(_))
     if (commandContext) {
-      executeThisArgvPlease = executeThisArgvPlease.filter(_ => !_.match(/--command-context/))
+      executeThisArgvPlease = executeThisArgvPlease.filter(
+        _ => !_.match(/--command-context/)
+      )
 
       // strip off the leading --, to help with URL window.location.search
       commandContext = commandContext.replace(/^--/, '')
@@ -227,7 +277,9 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     }
 
     // and load the index.html of the app.
-    const root = require('path').dirname(require.resolve('@kui-shell/settings/package.json'))
+    const root = require('path').dirname(
+      require.resolve('@kui-shell/settings/package.json')
+    )
     const urlSpec = {
       pathname: require('path').join(root, 'index.html'),
       protocol: 'file:',
@@ -244,10 +296,10 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     // mainWindow.webContents.openDevTools()
 
     // Emitted when the window is closed.
-    mainWindow.once('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+    mainWindow.once('closed', function() {
+      // Dereference the window object, usually you would store windows
+      // in an array if your app supports multi windows, this is the time
+      // when you should delete the corresponding element.
       nWindows--
     })
 
@@ -266,35 +318,50 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
     // plugin has to pollute main.js
     //
     debug('ipc registration')
-    ipcMain.on('capture-page-to-clipboard', (event, contentsId: string, rect) => {
-      try {
-        const { clipboard, nativeImage, webContents } = electron
-        webContents.fromId(contentsId).capturePage(rect, image => {
-          try {
-            const buf = image.toPNG()
-            clipboard.writeImage(nativeImage.createFromBuffer(buf))
-            event.sender.send('capture-page-to-clipboard-done', buf)
-          } catch (err) {
-            console.log(err)
-            event.sender.send('capture-page-to-clipboard-done')
-          }
-        })
-      } catch (err) {
-        console.log(err)
-        event.sender.send('capture-page-to-clipboard-done')
+    ipcMain.on(
+      'capture-page-to-clipboard',
+      (event, contentsId: string, rect) => {
+        try {
+          const { clipboard, nativeImage, webContents } = electron
+          webContents.fromId(contentsId).capturePage(rect, image => {
+            try {
+              const buf = image.toPNG()
+              clipboard.writeImage(nativeImage.createFromBuffer(buf))
+              event.sender.send('capture-page-to-clipboard-done', buf)
+            } catch (err) {
+              console.log(err)
+              event.sender.send('capture-page-to-clipboard-done')
+            }
+          })
+        } catch (err) {
+          console.log(err)
+          event.sender.send('capture-page-to-clipboard-done')
+        }
       }
-    })
+    )
     // end of screenshot logic
 
     ipcMain.on('synchronous-message', (event, arg: string) => {
       const message = JSON.parse(arg)
       switch (message.operation) {
-        case 'quit': app.quit(); break
-        case 'open-graphical-shell': createWindow(true); break
-        case 'enlarge-window': mainWindow.setContentSize(1400, 1050, true); break
-        case 'reduce-window': mainWindow.setContentSize(1024, 768, true); break
-        case 'maximize-window': mainWindow.maximize(); break
-        case 'unmaximize-window': mainWindow.unmaximize(); break
+        case 'quit':
+          app.quit()
+          break
+        case 'open-graphical-shell':
+          createWindow(true)
+          break
+        case 'enlarge-window':
+          mainWindow.setContentSize(1400, 1050, true)
+          break
+        case 'reduce-window':
+          mainWindow.setContentSize(1024, 768, true)
+          break
+        case 'maximize-window':
+          mainWindow.maximize()
+          break
+        case 'unmaximize-window':
+          mainWindow.unmaximize()
+          break
       }
       event.returnValue = 'ok'
     })
@@ -310,16 +377,22 @@ function createWindow (noHeadless = false, executeThisArgvPlease?: string[], sub
         const returnValue = await mod[message.main || 'main'](message.args)
         debug('invoke got returnValue', returnValue)
 
-        event.sender.send(channel, JSON.stringify({
-          success: true,
-          returnValue
-        }))
+        event.sender.send(
+          channel,
+          JSON.stringify({
+            success: true,
+            returnValue
+          })
+        )
       } catch (error) {
         debug('error in exec', error)
-        event.sender.send(channel, JSON.stringify({
-          success: false,
-          error
-        }))
+        event.sender.send(
+          channel,
+          JSON.stringify({
+            success: false,
+            error
+          })
+        )
       }
     })
 
@@ -342,21 +415,31 @@ export const getCommand = (argv: string[]): Command => {
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
 
   // re: the -psn bit, opening Kui from macOS Finder adds additional argv -psn; see: https://github.com/IBM/kui/issues/382
-  argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/))
+  argv = argv.filter(
+    _ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/)
+  )
 
   // re: argv.length === 0, this should happen for double-click launches
-  const isShell = !process.env.KUI_POPUP && (argv.length === 0 || argv.find(_ => _ === 'shell') || (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE))
+  const isShell =
+    !process.env.KUI_POPUP &&
+    (argv.length === 0 ||
+      argv.find(_ => _ === 'shell') ||
+      (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE))
 
   debug('isShell', argv, isShell)
 
   let subwindowPlease = true
-  let subwindowPrefs: ISubwindowPrefs = { fullscreen: true, width: windowDefaults.width, height: windowDefaults.height }
+  let subwindowPrefs: ISubwindowPrefs = {
+    fullscreen: true,
+    width: windowDefaults.width,
+    height: windowDefaults.height
+  }
 
   if (isShell) {
     // use a full window for 'shell'
     argv = ['shell']
     subwindowPlease = false
-    subwindowPrefs = { }
+    subwindowPrefs = {}
   } else if (process.env.KUI_POPUP) {
     argv = JSON.parse(process.env.KUI_POPUP)
   }
@@ -369,7 +452,12 @@ export const getCommand = (argv: string[]): Command => {
  * Bootstrap headless mode
  *
  */
-export async function initHeadless (argv: string[], force = false, isRunningHeadless = false, execOptions?: ExecOptions) {
+export async function initHeadless(
+  argv: string[],
+  force = false,
+  isRunningHeadless = false,
+  execOptions?: ExecOptions
+) {
   if (/* noHeadless !== true && */ force || isRunningHeadless) {
     debug('initHeadless')
 
@@ -381,13 +469,27 @@ export async function initHeadless (argv: string[], force = false, isRunningHead
     // HEADLESS MODE
     //
     try {
-      return (await import('./headless')).main(app, {
-        createWindow: (executeThisArgvPlease: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
-          // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
-          // because this will be called for cases where we want a headless -> GUI transition
-          return createWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
-        }
-      }, argv, execOptions)
+      return (await import('./headless')).main(
+        app,
+        {
+          createWindow: (
+            executeThisArgvPlease: string[],
+            subwindowPlease: boolean,
+            subwindowPrefs: ISubwindowPrefs
+          ) => {
+            // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
+            // because this will be called for cases where we want a headless -> GUI transition
+            return createWindow(
+              true,
+              executeThisArgvPlease,
+              subwindowPlease,
+              subwindowPrefs
+            )
+          }
+        },
+        argv,
+        execOptions
+      )
     } catch (err) {
       // oof, something real bad happened
       console.error('Internal Error, please report this bug:')
@@ -410,7 +512,12 @@ export async function initHeadless (argv: string[], force = false, isRunningHead
  * Spawn electron
  *
  */
-export async function initElectron (command: string[] = [], { isRunningHeadless = false, forceUI = false } = {}, subwindowPlease?: boolean, subwindowPrefs?: ISubwindowPrefs) {
+export async function initElectron(
+  command: string[] = [],
+  { isRunningHeadless = false, forceUI = false } = {},
+  subwindowPlease?: boolean,
+  subwindowPrefs?: ISubwindowPrefs
+) {
   debug('initElectron', command, subwindowPlease, subwindowPrefs)
 
   let promise: Promise<void>
@@ -424,7 +531,8 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
     const spawnGraphics = () => {
       debug('waiting for graphics')
       return app.graphics.wait().then(async graphics => {
-        const argv = command.slice(command.indexOf('--') + 1)
+        const argv = command
+          .slice(command.indexOf('--') + 1)
           .concat(forceUI ? ['--ui'] : [])
 
         debug('spawning graphics', graphics, argv)
@@ -433,7 +541,9 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
           const child = spawn(graphics, argv, {
             detached: !debug.enabled,
             env: Object.assign({}, process.env, {
-              KUI_HEADLESS: true, subwindowPlease, subwindowPrefs: JSON.stringify(subwindowPrefs)
+              KUI_HEADLESS: true,
+              subwindowPlease,
+              subwindowPrefs: JSON.stringify(subwindowPrefs)
             })
           })
           child.stdout.on('data', data => {
@@ -538,12 +648,12 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
       // is not enabled this allows you (as a developer) to
       // debug issues with spawning the subprocess by passing
       // DEBUG=* or DEBUG=main
-      const env = Object.assign({},
-        process.env,
-        windowOptions)
+      const env = Object.assign({}, process.env, windowOptions)
       delete env.KUI_HEADLESS
-      const child = spawn(electron, args, { stdio: debug.enabled ? 'inherit' : 'ignore',
-        env })
+      const child = spawn(electron, args, {
+        stdio: debug.enabled ? 'inherit' : 'ignore',
+        env
+      })
 
       if (!debug.enabled) {
         // as with the "ignore stdio" comment immediately
@@ -572,10 +682,16 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
       // Someone tried to run a second instance, open a new window
       // to handle it
       const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
-      debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
+      debug(
+        'opening window for second instance',
+        commandLine,
+        subwindowPlease,
+        subwindowPrefs
+      )
       createWindow(true, argv, subwindowPlease, subwindowPrefs)
     })
-    if (!app.requestSingleInstanceLock()) { // The primary instance of app failed to optain the lock, which means another instance of app is already running with the lock
+    if (!app.requestSingleInstanceLock()) {
+      // The primary instance of app failed to optain the lock, which means another instance of app is already running with the lock
       debug('exiting, since we are not the first instance')
       return app.exit(0)
     }
@@ -586,7 +702,12 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
   // Some APIs can only be used after this event occurs.
   app.once('ready', () => {
     debug('opening primary window', command)
-    createWindow(true, command.length > 0 && command, subwindowPlease, subwindowPrefs)
+    createWindow(
+      true,
+      command.length > 0 && command,
+      subwindowPlease,
+      subwindowPrefs
+    )
   })
 
   if (process.env.RUNNING_SHELL_TEST) {
@@ -602,7 +723,7 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
   }
 
   // Quit when all windows are closed.
-  app.on('window-all-closed', function () {
+  app.on('window-all-closed', function() {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin' || isRunningHeadless) {
@@ -613,7 +734,7 @@ export async function initElectron (command: string[] = [], { isRunningHeadless 
     }
   })
 
-  app.on('activate', function () {
+  app.on('activate', function() {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (nWindows === 0) {

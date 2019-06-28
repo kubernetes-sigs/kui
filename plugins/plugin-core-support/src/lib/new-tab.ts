@@ -20,16 +20,30 @@ import * as Debug from 'debug'
 
 import installReplFocusHandlers from './repl-focus'
 
-import { isVisible as isSidecarVisible,
+import {
+  isVisible as isSidecarVisible,
   toggle,
   toggleMaximization,
-  clearSelection } from '@kui-shell/core/webapp/views/sidecar'
+  clearSelection
+} from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, Tab, setStatus } from '@kui-shell/core/webapp/cli'
+import {
+  listen,
+  getCurrentPrompt,
+  getCurrentTab,
+  getTabIndex,
+  Tab,
+  setStatus
+} from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
+import {
+  CommandRegistrar,
+  Event,
+  ExecType,
+  EvaluatorArgs
+} from '@kui-shell/core/models/command'
 import { theme } from '@kui-shell/core/core/settings'
 
 const debug = Debug('plugins/core-support/new-tab')
@@ -46,10 +60,22 @@ const usage = {
  * Helper methods to crawl the DOM
  *
  */
-const getTabButton = (tab: Tab) => element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(tab)}"]`)
-const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
-const getTabButtonLabel = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-label') as HTMLElement
-const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
+const getTabButton = (tab: Tab) =>
+  element(
+    `.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(
+      tab
+    )}"]`
+  )
+const getCurrentTabButton = () =>
+  element('.main .left-tab-stripe .left-tab-stripe-button-selected')
+const getTabButtonLabel = (tab: Tab) =>
+  getTabButton(tab).querySelector(
+    '.left-tab-stripe-button-label'
+  ) as HTMLElement
+const getTabCloser = (tab: Tab) =>
+  getTabButton(tab).querySelector(
+    '.left-tab-stripe-button-closer'
+  ) as HTMLElement
 
 /**
  * Otherwise global state that we want to keep per tab
@@ -62,14 +88,14 @@ class TabState {
   /** current working directory */
   readonly cwd: string
 
-  constructor () {
+  constructor() {
     this.env = Object.assign({}, process.env)
     this.cwd = process.cwd().slice(0) // just in case, copy the string
 
     debug('captured tab state', this.cwd)
   }
 
-  restore () {
+  restore() {
     debug('changing cwd', process.cwd(), this.cwd)
     process.chdir(this.cwd)
     process.env = this.env
@@ -80,8 +106,12 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
   debug('switchTab', tabIndex)
 
   const currentTab = getCurrentTab()
-  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-index="${tabIndex}"]`)
-  const nextTabButton = document.querySelector(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${tabIndex}"]`)
+  const nextTab = document.querySelector(
+    `.main > .tab-container > tab[data-tab-index="${tabIndex}"]`
+  )
+  const nextTabButton = document.querySelector(
+    `.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${tabIndex}"]`
+  )
   debug('nextTab', nextTab)
   debug('nextTabButton', nextTabButton)
 
@@ -103,7 +133,7 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
       currentTab['state'] = new TabState()
     }
     if (nextTab['state']) {
-      (nextTab['state'] as TabState).restore()
+      ;(nextTab['state'] as TabState).restore()
     }
 
     return true
@@ -115,7 +145,7 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
  *
  */
 const addKeyboardListeners = (): void => {
-/* this is now done in the main process; see src/main/menu.js
+  /* this is now done in the main process; see src/main/menu.js
   document.addEventListener('keydown', async event => {
     if (event.keyCode === keys.T &&
         ((event.ctrlKey && process.platform !== 'darwin') || (event.metaKey && process.platform === 'darwin'))) {
@@ -132,9 +162,11 @@ const addKeyboardListeners = (): void => {
  */
 const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/complete', (event: Event) => {
-    if (event.execType !== undefined &&
-        event.execType !== ExecType.Nested &&
-        event.route) {
+    if (
+      event.execType !== undefined &&
+      event.execType !== ExecType.Nested &&
+      event.route
+    ) {
       // ignore nested, which means one plugin calling another
       debug('got event', event)
       getTabButton(event.tab).classList.remove('processing')
@@ -142,16 +174,19 @@ const addCommandEvaluationListeners = (): void => {
   })
 
   eventBus.on('/command/start', (event: Event) => {
-    if (event.execType !== undefined &&
-        event.execType !== ExecType.Nested &&
-        event.route) {
+    if (
+      event.execType !== undefined &&
+      event.execType !== ExecType.Nested &&
+      event.route
+    ) {
       // ignore nested, which means one plugin calling another
       debug('got event', event)
 
       const tab = event.tab
 
-      if (event.route !== undefined &&
-          !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
+      if (
+        event.route !== undefined &&
+        !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
       ) {
         if (/^\/clear/.test(event.route)) {
           // nbsp in the case of clear, except if the sidecar is open;
@@ -182,7 +217,9 @@ const reindexTabs = () => {
     tabs[idx].setAttribute('data-tab-index', id.toString())
   }
 
-  const tabButtons = document.querySelectorAll('.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button')
+  const tabButtons = document.querySelectorAll(
+    '.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button'
+  )
   for (let idx = 0; idx < tabButtons.length; idx++) {
     const id = idx + 1 // also indexed from 1
     const button = tabButtons[idx] as HTMLElement
@@ -305,9 +342,18 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
 
-  const currentlyProcessingBlock: true | HTMLElement = await qexec('clear --keep-current-active', undefined, undefined, { tab: newTab })
+  const currentlyProcessingBlock: true | HTMLElement = await qexec(
+    'clear --keep-current-active',
+    undefined,
+    undefined,
+    { tab: newTab }
+  )
   if (currentlyProcessingBlock !== true) {
-    debug('new tab cloned from one that is currently processing a command', currentlyProcessingBlock, currentlyProcessingBlock.querySelector('.repl-result').children.length)
+    debug(
+      'new tab cloned from one that is currently processing a command',
+      currentlyProcessingBlock,
+      currentlyProcessingBlock.querySelector('.repl-result').children.length
+    )
     setStatus(currentlyProcessingBlock, 'repl-active')
   }
 
@@ -330,7 +376,9 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
  */
 const oneTimeInit = (): void => {
   // focus the current prompt no matter where the user clicks in the left tab stripe
-  (document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
+  ;(document.querySelector(
+    '.main > .left-tab-stripe'
+  ) as HTMLElement).onclick = () => {
     getCurrentPrompt().focus()
   }
 
@@ -339,7 +387,8 @@ const oneTimeInit = (): void => {
   initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
 
   if (document.body.classList.contains('subwindow')) {
-    element('#new-tab-button > i').onclick = () => window.open(window.location.href, '_blank')
+    element('#new-tab-button > i').onclick = () =>
+      window.open(window.location.href, '_blank')
   } else {
     element('#new-tab-button > i').onclick = () => newTab()
   }
@@ -371,10 +420,20 @@ const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
 }
 
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
-  commandTree.listen('/tab/switch', ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
-    { usage, needsUI: true, noAuthOk: true })
-  commandTree.listen('/tab/new', newTabAsync, { needsUI: true, noAuthOk: true })
-  commandTree.listen('/tab/close', () => closeTab(), { needsUI: true, noAuthOk: true })
+  commandTree.listen(
+    '/tab/switch',
+    ({ argvNoOptions }) =>
+      switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
+    { usage, needsUI: true, noAuthOk: true }
+  )
+  commandTree.listen('/tab/new', newTabAsync, {
+    needsUI: true,
+    noAuthOk: true
+  })
+  commandTree.listen('/tab/close', () => closeTab(), {
+    needsUI: true,
+    noAuthOk: true
+  })
 }
 
 export default async (commandTree: CommandRegistrar) => {

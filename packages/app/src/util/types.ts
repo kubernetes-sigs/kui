@@ -15,6 +15,6 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isHTML (message: any): message is HTMLElement {
+export function isHTML(message: any): message is HTMLElement {
   return !!(message as HTMLElement).nodeName
 }

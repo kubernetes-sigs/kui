@@ -37,17 +37,40 @@ const fixedOf = val => () => val // the match is always a fixed value
  *
  */
 const matchers = [
-  { pattern: /^\s*webbify\s+as\s+(.+)\s*$/, action: (_, tab: Tab) => currentSelection(tab), mimeType: matchOf(1) },
-  { pattern: /^\s*webbify\s+(.+)\s+as\s+(.+)\s*$/, action: matchOf(1), mimeType: matchOf(2) },
-  { pattern: /^\s*webbify\s+(.+)\s*$/, action: matchOf(1), mimeType: fixedOf('json') },
-  { pattern: /^\s*webbify\s*$/, action: (_, tab: Tab) => currentSelection(tab), mimeType: fixedOf('json') }
+  {
+    pattern: /^\s*webbify\s+as\s+(.+)\s*$/,
+    action: (_, tab: Tab) => currentSelection(tab),
+    mimeType: matchOf(1)
+  },
+  {
+    pattern: /^\s*webbify\s+(.+)\s+as\s+(.+)\s*$/,
+    action: matchOf(1),
+    mimeType: matchOf(2)
+  },
+  {
+    pattern: /^\s*webbify\s+(.+)\s*$/,
+    action: matchOf(1),
+    mimeType: fixedOf('json')
+  },
+  {
+    pattern: /^\s*webbify\s*$/,
+    action: (_, tab: Tab) => currentSelection(tab),
+    mimeType: fixedOf('json')
+  }
 ]
 
 /**
  * Make a documentation struct
  *
  */
-const theDocs = (docString: string) => Object.assign({ docs: docString }, { requireSelection: true, filter: selection => selection.type === 'actions' })
+const theDocs = (docString: string) =>
+  Object.assign(
+    { docs: docString },
+    {
+      requireSelection: true,
+      filter: selection => selection.type === 'actions'
+    }
+  )
 
 /**
  * Add the webbifying annotations to the given `annotations` key-value array.
@@ -81,29 +104,47 @@ const addAnnotations = (annotations, mimeType) => {
  *
  */
 const doWebbify = ({ command, execOptions, tab }: EvaluatorArgs) => {
-  return Promise.all(matchers.map(matcher => ({ matcher: matcher, match: command.match(matcher.pattern) })))
+  return Promise.all(
+    matchers.map(matcher => ({
+      matcher: matcher,
+      match: command.match(matcher.pattern)
+    }))
+  )
     .then(matches => matches.filter(match => match.match)) // filter out only matching patterns
     .then(matches => matches && matches[0]) // and take the first one (we've ordered the patterns in priority order)
     .then(match => {
       // check to see if we've successfully parsed the user's intent
       if (!match) throw new Error('Parse error')
       else return match
-    }).then(match => {
+    })
+    .then(match => {
       const action = match.matcher.action(match.match, tab) // the action (name) to webbify
       const mimeType = match.matcher.mimeType(match.match) // webbify as .json? as .http?
 
       if (!action) {
         // user hasn't specified an action to webbify, either explicitly or implicitly via selection
-        throw new Error(`Please select an action, either via "webbify <action>", or by opening it in the sidecar`)
+        throw new Error(
+          `Please select an action, either via "webbify <action>", or by opening it in the sidecar`
+        )
       }
 
       // fetch, update, render to user
       const ow = getClient(execOptions)
-      return ow.actions.get(owOpts({ name: action.name || action, namespace: action.namespace }))
-        .then(action => ow.actions.update(owOpts({ name: action.name,
-          namespace: action.namespace,
-          action: Object.assign(action, { annotations: addAnnotations(action.annotations, mimeType) })
-        })))
+      return ow.actions
+        .get(
+          owOpts({ name: action.name || action, namespace: action.namespace })
+        )
+        .then(action =>
+          ow.actions.update(
+            owOpts({
+              name: action.name,
+              namespace: action.namespace,
+              action: Object.assign(action, {
+                annotations: addAnnotations(action.annotations, mimeType)
+              })
+            })
+          )
+        )
         .then(addPrettyType('actions', 'update', action.name))
     })
 }
@@ -115,6 +156,10 @@ const doWebbify = ({ command, execOptions, tab }: EvaluatorArgs) => {
  */
 export default (commandTree: CommandRegistrar) => {
   synonyms('actions').forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/webbify`, doWebbify, theDocs('Export an action to the web'))
+    commandTree.listen(
+      `/wsk/${syn}/webbify`,
+      doWebbify,
+      theDocs('Export an action to the web')
+    )
   })
 }

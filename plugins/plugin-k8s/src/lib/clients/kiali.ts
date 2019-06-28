@@ -54,7 +54,7 @@ class DefaultOptions implements KialiOptions {
 }
 
 export class Namespace extends DefaultOptions {
-  constructor (namespace: string) {
+  constructor(namespace: string) {
     super()
     this.namespace = namespace
   }
@@ -65,8 +65,12 @@ export class Namespace extends DefaultOptions {
  *
  */
 const fetch = (method: 'get') => (url: string) => {
-  return needle(method, url, { json: true, username: 'kiali', password: 'kiali', rejectUnauthorized: false })
-    .then(_ => _.body)
+  return needle(method, url, {
+    json: true,
+    username: 'kiali',
+    password: 'kiali',
+    rejectUnauthorized: false
+  }).then(_ => _.body)
 }
 const get = fetch('get')
 
@@ -86,7 +90,7 @@ const apihost = async (options: KialiOptions = new DefaultOptions()) => {
 
   const { kialiNamespace } = options
 
-  const [ svc, ingress ] = await Promise.all([
+  const [svc, ingress] = await Promise.all([
     $(`kubectl get svc kiali -n "${kialiNamespace}" -o json`),
     $(`kubectl get ingress kiali -n "${kialiNamespace}" -o json`)
   ])
@@ -107,7 +111,9 @@ const apihost = async (options: KialiOptions = new DefaultOptions()) => {
         throw new Error(`kiali ingress has no exposed IPs`)
       }
     } else {
-      throw new Error(`kiali ingress type not yet handled ${Object.keys(ingress.status)[0]}`)
+      throw new Error(
+        `kiali ingress type not yet handled ${Object.keys(ingress.status)[0]}`
+      )
     }
   } else {
     throw new Error(`kiali service type not yet handled ${svc.spec.type}`)
@@ -118,7 +124,9 @@ const apihost = async (options: KialiOptions = new DefaultOptions()) => {
  * @return the endpoint of the Kiali console
  *
  */
-export const consoleView = async (options: KialiOptions = new DefaultOptions()) => {
+export const consoleView = async (
+  options: KialiOptions = new DefaultOptions()
+) => {
   return `${await apihost(options)}/kiali/console`
 }
 
@@ -126,20 +134,30 @@ const _modes = [
   { mode: 'apps', command: () => 'kiali get apps' },
   { mode: 'graph', command: () => 'kiali graph --local' }
 ]
-export const modes = (defaultMode: string) => _modes.map(_ => Object.assign({}, _, { defaultMode: _.mode === defaultMode }))
+export const modes = (defaultMode: string) =>
+  _modes.map(_ => Object.assign({}, _, { defaultMode: _.mode === defaultMode }))
 
 /**
  * @return the endpoint of the Kiali graph view
  * e.g. graph/namespaces/?edges=noEdgeLabels&graphType=versionedApp&namespaces=default&injectServiceNodes=true&duration=60&pi=15000&layout=dagre
  *
  */
-export const graphView = async (_options: KialiOptions = new DefaultOptions()) => {
+export const graphView = async (
+  _options: KialiOptions = new DefaultOptions()
+) => {
   const options = Object.assign({}, new DefaultOptions(), _options)
 
   // the graph view seems to accept duration in units of seconds, weird. the graph model API accepts prometheus strings etc.
   const MILLIS_PER_SECOND = 1000
 
-  const endpoint = `${await apihost(options)}/console/graph/namespaces/?edges=noEdgeLabels&graphType=${options.graphType}&namespaces=${options.namespace}&injectServiceNodes=true&duration=${parseDuration(options.duration) / MILLIS_PER_SECOND}&pi=${parseDuration(options.pi)}&layout=${options.layout}`
+  const endpoint = `${await apihost(
+    options
+  )}/console/graph/namespaces/?edges=noEdgeLabels&graphType=${
+    options.graphType
+  }&namespaces=${
+    options.namespace
+  }&injectServiceNodes=true&duration=${parseDuration(options.duration) /
+    MILLIS_PER_SECOND}&pi=${parseDuration(options.pi)}&layout=${options.layout}`
   debug('graphView endpoint', endpoint)
 
   const content = document.createElement('webview')
@@ -149,7 +167,7 @@ export const graphView = async (_options: KialiOptions = new DefaultOptions()) =
     content.openDevTools()
   }) */
 
-  content.addEventListener('did-finish-load', function () {
+  content.addEventListener('did-finish-load', function() {
     content.insertCSS(`
 body { padding: 0 !important; background: #242924 !important; font-size: 16px !important; }
 #root, .container-pf-nav-pf-vertical, .container-fluid { height: 100% !important; }
@@ -215,8 +233,12 @@ interface ApplicationList {
  * Applications model
  *
  */
-export const appList = async (options: KialiOptions = new DefaultOptions()): Promise<ApplicationList> => {
-  const url = `${await apihost(options)}/kiali/api/namespaces/${options.namespace}/apps`
+export const appList = async (
+  options: KialiOptions = new DefaultOptions()
+): Promise<ApplicationList> => {
+  const url = `${await apihost(options)}/kiali/api/namespaces/${
+    options.namespace
+  }/apps`
   return get(url)
 }
 
@@ -239,7 +261,13 @@ interface ApplicationHealth {
  * Application health model
  *
  */
-export const appHealth = async (app: string, options: KialiOptions = new DefaultOptions(), rateInterval = '10m'): Promise<ApplicationHealth> => {
-  const url = `${await apihost(options)}/kiali/api/namespaces/${options.namespace}/apps/${app}/health?rateInterval=${rateInterval}`
+export const appHealth = async (
+  app: string,
+  options: KialiOptions = new DefaultOptions(),
+  rateInterval = '10m'
+): Promise<ApplicationHealth> => {
+  const url = `${await apihost(options)}/kiali/api/namespaces/${
+    options.namespace
+  }/apps/${app}/health?rateInterval=${rateInterval}`
   return get(url)
 }

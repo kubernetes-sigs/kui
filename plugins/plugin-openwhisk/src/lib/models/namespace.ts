@@ -31,34 +31,35 @@ const key = 'wsk.namespaces'
 let cached
 let currentNS
 
-const read = () => apiHost.get().then(host => {
-  debug('read:host', host)
-  let model = cached
-  if (!model) {
-    debug('read:not cached')
-    const raw = store().getItem(key)
-    try {
-      model = raw ? JSON.parse(raw) : {}
-    } catch (e) {
-      console.error(`Error parsing namespace JSON ${raw}`)
-      console.error(e)
-      model = {}
-    }
+const read = () =>
+  apiHost.get().then(host => {
+    debug('read:host', host)
+    let model = cached
+    if (!model) {
+      debug('read:not cached')
+      const raw = store().getItem(key)
+      try {
+        model = raw ? JSON.parse(raw) : {}
+      } catch (e) {
+        console.error(`Error parsing namespace JSON ${raw}`)
+        console.error(e)
+        model = {}
+      }
 
-    if (!model[host]) {
-      debug(`read no model yet for ${host}`)
-      model[host] = {}
-    }
+      if (!model[host]) {
+        debug(`read no model yet for ${host}`)
+        model[host] = {}
+      }
 
-    cached = model
-    debug('read:computed', model)
-  }
-  return {
-    _full: model, // the full model, needed for reserializing
-    _host: host, // help for updates and reserializing
-    namespaces: model[host] // this host's model
-  }
-})
+      cached = model
+      debug('read:computed', model)
+    }
+    return {
+      _full: model, // the full model, needed for reserializing
+      _host: host, // help for updates and reserializing
+      namespaces: model[host] // this host's model
+    }
+  })
 
 const write = model => {
   cached = model._full
@@ -72,16 +73,22 @@ const write = model => {
 const writeSelectedNS = selectedNS => {
   if (store().getItem('selectedNS') !== selectedNS) {
     store().setItem('selectedNS', selectedNS)
-    debug('stored selected namespace to local storage', store().getItem('selectedNS'))
+    debug(
+      'stored selected namespace to local storage',
+      store().getItem('selectedNS')
+    )
   }
 }
 
 export const setApiHost = (apiHost = '') => {
-  const apiHostDom = document.querySelector('#openwhisk-api-host') as HTMLElement
+  const apiHostDom = document.querySelector(
+    '#openwhisk-api-host'
+  ) as HTMLElement
 
   // strip off the proto
   const idx = apiHost.indexOf('://')
-  apiHostDom.innerText = idx >= 0 ? apiHost.substring(idx + '://'.length) : apiHost
+  apiHostDom.innerText =
+    idx >= 0 ? apiHost.substring(idx + '://'.length) : apiHost
   // apiHostDom.setAttribute('size', apiHostDom.value.length + 3)
 }
 
@@ -102,7 +109,9 @@ export const setNoNamespace = (provideHelp = true) => {
     return
   }
 
-  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
+  const namespaceDom = document.querySelector(
+    '#openwhisk-namespace'
+  ) as HTMLElement
   namespaceDom.className += ' oops'
   namespaceDom.innerText = 'no auth key!'
   namespaceDom.onclick = () => cli.partial('wsk auth add <your_auth_key>')
@@ -128,7 +137,9 @@ export const setPleaseSelectNamespace = () => {
     return
   }
 
-  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
+  const namespaceDom = document.querySelector(
+    '#openwhisk-namespace'
+  ) as HTMLElement
   namespaceDom.className += ' oops'
   namespaceDom.innerText = 'please select a namespace'
   namespaceDom.removeAttribute('data-value')
@@ -170,11 +181,17 @@ export const setNeedsNamespace = async (err?: Error) => {
   debug('setNeedsNamespace')
   const localSelectedNS = store().getItem('selectedNS')
   if (localSelectedNS) {
-    debug('user selected one namespace previously, so auto-selecting it from local storage', localSelectedNS)
+    debug(
+      'user selected one namespace previously, so auto-selecting it from local storage',
+      localSelectedNS
+    )
     try {
       return await repl.qexec(`auth switch ${localSelectedNS}`)
     } catch (err) {
-      console.error('The previously selected namespace probably does not align with the currently selected host', err)
+      console.error(
+        'The previously selected namespace probably does not align with the currently selected host',
+        err
+      )
 
       // intentionally falling through to "no selected namespace in local storage" ...
     }
@@ -223,7 +240,9 @@ const setNamespace = (namespace: string) => {
 
   // UI bits
   debug(`setNamespace ${namespace}`)
-  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
+  const namespaceDom = document.querySelector(
+    '#openwhisk-namespace'
+  ) as HTMLElement
   namespaceDom.className = 'clickable' // remove any prior oops
   namespaceDom.onclick = () => repl.pexec('wsk auth list')
   namespaceDom.innerText = namespace
@@ -247,7 +266,8 @@ const setNamespace = (namespace: string) => {
 export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
   debug('init')
 
-  return apiHost.get() // get the current apihost
+  return apiHost
+    .get() // get the current apihost
     .then(setApiHost) // udpate the UI for the apihost
     .then(() => repl.qexec('wsk auth namespace get')) // get the namespace associated with the current auth key
     .then(setNamespace) // update the UI for the namespace
@@ -272,7 +292,9 @@ interface CurrentOptions {
 class DefaultCurrentOptions implements CurrentOptions {
   noNamespaceOk = false // eslint-disable-line @typescript-eslint/explicit-member-accessibility
 }
-export const current = async (opts: CurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
+export const current = async (
+  opts: CurrentOptions = new DefaultCurrentOptions()
+): Promise<string> => {
   const ns = currentNS
   debug('current', ns)
 
@@ -289,10 +311,12 @@ export const current = async (opts: CurrentOptions = new DefaultCurrentOptions()
  * Switch to use the given openwhisk auth and save
  *
  */
-export const useAndSave = (auth: string) => authModel.set(auth)
-  .then(() => repl.qexec('wsk namespace current'))
-  .then(namespace => writeSelectedNS(namespace)) // store the selected namesapce to local storage (use case e.g. reload the browser after auth switch)
-  .then(() => init())
+export const useAndSave = (auth: string) =>
+  authModel
+    .set(auth)
+    .then(() => repl.qexec('wsk namespace current'))
+    .then(namespace => writeSelectedNS(namespace)) // store the selected namesapce to local storage (use case e.g. reload the browser after auth switch)
+    .then(() => init())
 
 /**
  * Switch to use the given openwhisk auth but don't save
@@ -306,4 +330,4 @@ export const use = (auth: string) => {
  * Fetch the namespace details for the given namespace, by name
  *
  */
-export const get = (name) => read().then(model => model && model.namespaces[name])
+export const get = name => read().then(model => model && model.namespaces[name])

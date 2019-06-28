@@ -36,12 +36,15 @@ const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
   if (!isHeadless()) {
     if (!parsedOptions.k) {
       // don't keep the current active prompt
-      debug('clearing everything, the repl loop will set up the next prompt for us')
+      debug(
+        'clearing everything, the repl loop will set up the next prompt for us'
+      )
       removeAllDomChildren(tab.querySelector('.repl-inner'))
     } else {
       // keep the current active prompt
       debug('preserving the current active prompt')
-      const selector = '.repl-inner .repl-block:not(.repl-active):not(.processing)'
+      const selector =
+        '.repl-inner .repl-block:not(.repl-active):not(.processing)'
 
       const blocks = tab.querySelectorAll(selector)
       for (let idx = 0; idx < blocks.length; idx++) {
@@ -66,5 +69,9 @@ const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/clear', clear, { usage, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/clear', clear, {
+    usage,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
 }

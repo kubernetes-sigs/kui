@@ -20,15 +20,19 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 const { cli } = ui
 
 // see https://github.com/ibm-functions/shell/issues/284
-describe('Confirm proper handling of all-numeric uuids', function (this: common.ISuite) {
+describe('Confirm proper handling of all-numeric uuids', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should present 404-type error with activation get on all-numeric uuid', () => cli.do(`activation get 00000000000000000000000000000000`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should present 404-type error with activation get on all-numeric uuid', () =>
+    cli
+      .do(`activation get 00000000000000000000000000000000`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
-  it('should present 404-type error with activation get on a different all-numeric uuid', () => cli.do(`activation get 00000000000000000000000000000001`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should present 404-type error with activation get on a different all-numeric uuid', () =>
+    cli
+      .do(`activation get 00000000000000000000000000000001`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 })

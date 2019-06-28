@@ -6,9 +6,9 @@ Beyond local development of Kui, you may want to package and
 distribute Kui to others. The code base currently supports three
 packaging modes:
 
-  - [Headless](#headless-packaging) &mdash; making a lightweight headless release
-  - [Electron](#electron-packaging) &mdash; building an Electron client app
-  - [Browser](#browser-packaging) &mdash; building for the browser, using [webpack](https://webpack.js.org/)
+- [Headless](#headless-packaging) &mdash; making a lightweight headless release
+- [Electron](#electron-packaging) &mdash; building an Electron client app
+- [Browser](#browser-packaging) &mdash; building for the browser, using [webpack](https://webpack.js.org/)
 
 ## Headless packaging
 

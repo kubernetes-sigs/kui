@@ -27,90 +27,99 @@ import extract = require('extract-zip')
  * Initiate a fetch
  *
  */
-const fetchElectron = (stagingArea: string, url: string, file: string) => new Promise<string>((resolve, reject) => {
-  const tmp = path.join(stagingArea, file)
-  const out = fs.createWriteStream(tmp)
+const fetchElectron = (stagingArea: string, url: string, file: string) =>
+  new Promise<string>((resolve, reject) => {
+    const tmp = path.join(stagingArea, file)
+    const out = fs.createWriteStream(tmp)
 
-  debug('fetchElectron', tmp, url)
+    debug('fetchElectron', tmp, url)
 
-  needle
-    .get(url)
-    .pipe(out)
-    .on('error', (err: Error) => {
-      console.error(err)
-      reject(err)
-    })
-    .on('finish', () => resolve(tmp))
-})
-
-const fetchAndExtract = (stagingArea: string, fetchLock: string, doneLock: string, url: string, file: string) => fetchElectron(stagingArea, url, file).then(filepath => {
-  debug('fetchAndExtract extracting', filepath)
-
-  const rm = (filepath: string) => new Promise<void>((resolve, reject) => {
-    fs.unlink(filepath, err => {
-      if (err) {
+    needle
+      .get(url)
+      .pipe(out)
+      .on('error', (err: Error) => {
+        console.error(err)
         reject(err)
-      } else {
-        resolve()
-      }
-    })
+      })
+      .on('finish', () => resolve(tmp))
   })
-  const rmdir = (filepath: string) => new Promise<void>((resolve, reject) => {
-    fs.rmdir(filepath, err => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
+
+const fetchAndExtract = (
+  stagingArea: string,
+  fetchLock: string,
+  doneLock: string,
+  url: string,
+  file: string
+) =>
+  fetchElectron(stagingArea, url, file).then(filepath => {
+    debug('fetchAndExtract extracting', filepath)
+
+    const rm = (filepath: string) =>
+      new Promise<void>((resolve, reject) => {
+        fs.unlink(filepath, err => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
+      })
+    const rmdir = (filepath: string) =>
+      new Promise<void>((resolve, reject) => {
+        fs.rmdir(filepath, err => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
+      })
+    const removeTemps = (result: string): Promise<string> =>
+      Promise.all([rm(filepath), rmdir(fetchLock)]).then(() => result)
+
+    return new Promise<string>((resolve, reject) => {
+      const done = () => {
+        fs.mkdir(doneLock, err => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(filepath)
+          }
+        })
       }
-    })
+
+      if (filepath.endsWith('.zip')) {
+        debug('extracting zip')
+
+        extract(filepath, { dir: stagingArea }, (err: Error) => {
+          if (err) {
+            console.error(err)
+            reject(new Error(`error unzipping ${err}`))
+          } else {
+            done()
+          }
+        })
+      } else {
+        debug('extracting tarball')
+
+        const child = spawn('tar', ['jxf', filepath], {
+          cwd: stagingArea,
+          stdio: 'inherit'
+        })
+        child.on('close', (code, signal) => {
+          if (code !== 0) {
+            reject(new Error(`error untarring ${code} ${signal}`))
+          } else {
+            done()
+          }
+        })
+      }
+    }).then(removeTemps, removeTemps)
   })
-  const removeTemps = (result: string): Promise<string> => Promise.all([rm(filepath), rmdir(fetchLock)]).then(() => result)
-
-  return new Promise<string>((resolve, reject) => {
-    const done = () => {
-      fs.mkdir(doneLock, err => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(filepath)
-        }
-      })
-    }
-
-    if (filepath.endsWith('.zip')) {
-      debug('extracting zip')
-
-      extract(filepath, { dir: stagingArea }, (err: Error) => {
-        if (err) {
-          console.error(err)
-          reject(new Error(`error unzipping ${err}`))
-        } else {
-          done()
-        }
-      })
-    } else {
-      debug('extracting tarball')
-
-      const child = spawn('tar', ['jxf', filepath], { cwd: stagingArea,
-        stdio: 'inherit' })
-      child.on('close', (code, signal) => {
-        if (code !== 0) {
-          reject(new Error(`error untarring ${code} ${signal}`))
-        } else {
-          done()
-        }
-      })
-    }
-  }).then(removeTemps, removeTemps)
-})
 
 const stagingArea = process.argv[2]
 const fetchLock = process.argv[3]
 const doneLock = process.argv[4]
 const url = process.argv[5]
 const file = process.argv[6]
-fetchAndExtract(stagingArea,
-  fetchLock,
-  doneLock,
-  url,
-  file)
+fetchAndExtract(stagingArea, fetchLock, doneLock, url, file)

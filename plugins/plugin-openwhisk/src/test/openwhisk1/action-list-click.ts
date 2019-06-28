@@ -22,45 +22,65 @@ const { cli, sidecar } = ui
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
-describe('create action list it then click to show it again', function (this: common.ISuite) {
+describe('create action list it then click to show it again', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should create an action', () => cli.do(`let ${actionName} = x=>x -p x 3`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .catch(common.oops(this)))
+  it('should create an action', () =>
+    cli
+      .do(`let ${actionName} = x=>x -p x 3`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName))
+      .catch(common.oops(this)))
 
-  it('should create another action', () => cli.do(`let ${actionName2} = x=>x -p x 3`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2))
-    .catch(common.oops(this)))
+  it('should create another action', () =>
+    cli
+      .do(`let ${actionName2} = x=>x -p x 3`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2))
+      .catch(common.oops(this)))
 
   const expectedSrc = 'let main = x => x'
 
-  it(`should list ${actionName}, click it, show it`, () => cli.do(`wsk action list`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '', passthrough: true }))
+  it(`should list ${actionName}, click it, show it`, () =>
+    cli
+      .do(`wsk action list`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '', passthrough: true }))
 
-    // click on the row entity, and expect sidecar to show it
-    .then(N => this.app.client.click(`${ui.selectors.OUTPUT_N(N)} .entity[data-name="${actionName}"] .entity-name.clickable`))
-    .then(() => this.app)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
+      // click on the row entity, and expect sidecar to show it
+      .then(N =>
+        this.app.client.click(
+          `${ui.selectors.OUTPUT_N(
+            N
+          )} .entity[data-name="${actionName}"] .entity-name.clickable`
+        )
+      )
+      .then(() => this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName))
 
-    // also confirm that source matches
-    .then(() => this.app.client.waitUntil(async () => {
-      const actualSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
-      return actualSrc.trim() === expectedSrc
-    }))
+      // also confirm that source matches
+      .then(() =>
+        this.app.client.waitUntil(async () => {
+          const actualSrc = await this.app.client.getText(
+            ui.selectors.SIDECAR_ACTION_SOURCE
+          )
+          return actualSrc.trim() === expectedSrc
+        })
+      )
 
-    // wait a bit and retry, to make sure it doesn't disappear
-    .then(() => new Promise(resolve => setTimeout(resolve, 3000)))
-    .then(() => this.app.client.waitUntil(async () => {
-      const actualSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
-      return actualSrc.trim() === expectedSrc
-    }))
+      // wait a bit and retry, to make sure it doesn't disappear
+      .then(() => new Promise(resolve => setTimeout(resolve, 3000)))
+      .then(() =>
+        this.app.client.waitUntil(async () => {
+          const actualSrc = await this.app.client.getText(
+            ui.selectors.SIDECAR_ACTION_SOURCE
+          )
+          return actualSrc.trim() === expectedSrc
+        })
+      )
 
-    .catch(common.oops(this)))
+      .catch(common.oops(this)))
 })

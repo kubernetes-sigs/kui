@@ -30,14 +30,19 @@ const mode: SidecarMode = {
   direct: async (tab: Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
       // then _ is already the response we need
-      const models = _.model.filter(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')
+      const models = _.model.filter(
+        _ => _.kind === 'PipelineRun' || _.kind === 'TaskRun'
+      )
       const model = models.length === 1 && models[0]
-      return Object.assign({
-        type: 'custom',
-        isEntity: true,
-        contentType: 'yaml',
-        content: safeDump(model || models)
-      }, model || {})
+      return Object.assign(
+        {
+          type: 'custom',
+          isEntity: true,
+          contentType: 'yaml',
+          content: safeDump(model || models)
+        },
+        model || {}
+      )
     }
   },
   leaveBottomStripeAlone: true

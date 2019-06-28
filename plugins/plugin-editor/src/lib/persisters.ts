@@ -31,34 +31,36 @@ export const persisters = {
   files: {
     getCode: entity => entity,
     saveString: strings.saveLocalFile,
-    save: (entity, editor) => new Promise((resolve, reject) => {
-      const rawText = editor.getValue()
+    save: (entity, editor) =>
+      new Promise((resolve, reject) => {
+        const rawText = editor.getValue()
 
-      writeFile(entity.filepath, rawText, err => {
-        if (err) {
-          reject(err)
-        } else {
-          if (entity.extract) {
-            // let's see if we can re-extract the updated entity name
-            // from the raw source
-            const newEntity = entity.extract(rawText, entity)
-            Object.assign(entity, newEntity)
+        writeFile(entity.filepath, rawText, err => {
+          if (err) {
+            reject(err)
+          } else {
+            if (entity.extract) {
+              // let's see if we can re-extract the updated entity name
+              // from the raw source
+              const newEntity = entity.extract(rawText, entity)
+              Object.assign(entity, newEntity)
+            }
+
+            resolve(entity)
           }
-
-          resolve(entity)
-        }
+        })
+      }),
+    revert: entity =>
+      new Promise((resolve, reject) => {
+        readFile(entity.filepath, (err, data) => {
+          if (err) {
+            reject(err)
+          } else {
+            entity.exec.code = data.toString()
+            resolve(entity)
+          }
+        })
       })
-    }),
-    revert: (entity) => new Promise((resolve, reject) => {
-      readFile(entity.filepath, (err, data) => {
-        if (err) {
-          reject(err)
-        } else {
-          entity.exec.code = data.toString()
-          resolve(entity)
-        }
-      })
-    })
   }
 }
 
@@ -68,7 +70,9 @@ export const persisters = {
  */
 export const save = ({ getEntity, editor, eventBus }) => {
   const entityRightNow = getEntity()
-  const mode = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
+  const mode =
+    (entityRightNow.persister && entityRightNow.persister.saveString) ||
+    strings.save
 
   return {
     mode,
@@ -84,13 +88,12 @@ export const save = ({ getEntity, editor, eventBus }) => {
       // transfer the latest code from the editor into the entity
       entity.exec.code = editor.getValue()
 
-      return save(entity, editor)
-        .then(entity => {
-          entity.persister = persister
-          eventBus.emit('/editor/save', entity, { event: 'save' })
-          globalEventBus.emit('/editor/save', entity, { event: 'save' })
-          return entity
-        })
+      return save(entity, editor).then(entity => {
+        entity.persister = persister
+        eventBus.emit('/editor/save', entity, { event: 'save' })
+        globalEventBus.emit('/editor/save', entity, { event: 'save' })
+        return entity
+      })
     }
   }
 }
@@ -110,7 +113,8 @@ export const revert = ({ getEntity, editor, eventBus }) => ({
     const persister = entity.persister
 
     if (persister.revert) {
-      return persister.revert(entity, { editor, eventBus })
+      return persister
+        .revert(entity, { editor, eventBus })
         .then(entity => {
           entity.persister = persister
           editor.updateText(entity)

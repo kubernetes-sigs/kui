@@ -17,10 +17,18 @@
 // const sampleInputs = require('../../composer/lib/sample-inputs')
 
 /** a srcFile.js input */
-const srcJs = { name: 'src.js', docs: 'generate a preview of a Composer source file', file: true }
+const srcJs = {
+  name: 'src.js',
+  docs: 'generate a preview of a Composer source file',
+  file: true
+}
 
 /** a srcFile.json input */
-const srcJson = { name: 'src.json', docs: 'ibid, but for a pre-compiled composition', file: true }
+const srcJson = {
+  name: 'src.json',
+  docs: 'ibid, but for a pre-compiled composition',
+  file: true
+}
 
 /**
  * Usage string for app preview
@@ -36,11 +44,28 @@ export const preview = command => ({
     command: `${command} @demos/hello.js`,
     docs: 'preview a built-in hello world demo'
   },
-  oneof: [ srcJs, srcJson ],
-  optional: [{ name: '--ast', boolean: true, docs: 'validate and show raw AST' },
-    { name: '--functions', alias: '-f', boolean: true, docs: 'show all functions directly in the view' },
-    { name: '--env', alias: '-e', docs: 'Assign a value to an environment variable', narg: 2 },
-    { name: '--show-code', alias: '-c', boolean: true, docs: 'Show code and preview side-by-side' }],
+  oneof: [srcJs, srcJson],
+  optional: [
+    { name: '--ast', boolean: true, docs: 'validate and show raw AST' },
+    {
+      name: '--functions',
+      alias: '-f',
+      boolean: true,
+      docs: 'show all functions directly in the view'
+    },
+    {
+      name: '--env',
+      alias: '-e',
+      docs: 'Assign a value to an environment variable',
+      narg: 2
+    },
+    {
+      name: '--show-code',
+      alias: '-c',
+      boolean: true,
+      docs: 'Show code and preview side-by-side'
+    }
+  ],
   // sampleInputs: sampleInputs(command),
   parents: ['composer', { command: 'composer app' }],
   related: ['app create']
@@ -60,7 +85,7 @@ export const source = command => ({
     command: `${command} @demos/hello.js`,
     docs: 'show the source of a built-in hello world demo'
   },
-  required: [ srcJs ],
+  required: [srcJs],
   parents: ['composer', { command: 'composer app' }],
   related: ['preview']
 })

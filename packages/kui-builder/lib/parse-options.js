@@ -23,42 +23,43 @@ const { moduleExists } = require('./module-exists')
  * Parse options
  *
  */
-module.exports = (env, overrides) => new Promise((resolve, reject) => {
-  debug('parsing options', env, overrides)
+module.exports = (env, overrides) =>
+  new Promise((resolve, reject) => {
+    debug('parsing options', env, overrides)
 
-  // the former is for npm install mode
-  // the latter is for monorepo mode
-  const templateDir = moduleExists('@kui-shell/core/templates/package.json')
-    ? path.dirname(require.resolve('@kui-shell/core/templates/package.json'))
-    : path.join(__dirname, '../../app/templates')
+    // the former is for npm install mode
+    // the latter is for monorepo mode
+    const templateDir = moduleExists('@kui-shell/core/templates/package.json')
+      ? path.dirname(require.resolve('@kui-shell/core/templates/package.json'))
+      : path.join(__dirname, '../../app/templates')
 
-  // default value assignments for options
-  const defaultOptions = {
-    // theme settings
-    theme: {},
+    // default value assignments for options
+    const defaultOptions = {
+      // theme settings
+      theme: {},
 
-    // env settings, e.g. webpack versus standalone
-    env: require('../examples/build-configs/default/' + env),
+      // env settings, e.g. webpack versus standalone
+      env: require('../examples/build-configs/default/' + env),
 
-    // allows for arbitrary injection of configuration parameters
-    config: {},
+      // allows for arbitrary injection of configuration parameters
+      config: {},
 
-    // build settings
-    build: {
-      templateDir,
-      buildDir: path.join(__dirname, '../../app/build'), // target for index.html
-      configDir: path.join(__dirname, '../../app/build') // target for config.json and package.json
+      // build settings
+      build: {
+        templateDir,
+        buildDir: path.join(__dirname, '../../app/build'), // target for index.html
+        configDir: path.join(__dirname, '../../app/build') // target for config.json and package.json
+      }
     }
-  }
-  debug('defaultOptions', defaultOptions)
+    debug('defaultOptions', defaultOptions)
 
-  // apply overrides to the defaults
-  const options = Object.assign({}, defaultOptions)
-  options.theme = Object.assign(options.theme, overrides.theme || {})
-  options.env = Object.assign(options.env, overrides.env || {})
-  options.config = Object.assign(options.config, overrides.config || {})
-  options.build = Object.assign(options.build, overrides.build || {})
+    // apply overrides to the defaults
+    const options = Object.assign({}, defaultOptions)
+    options.theme = Object.assign(options.theme, overrides.theme || {})
+    options.env = Object.assign(options.env, overrides.env || {})
+    options.config = Object.assign(options.config, overrides.config || {})
+    options.build = Object.assign(options.build, overrides.build || {})
 
-  debug('final options', options)
-  resolve(options)
-})
+    debug('final options', options)
+    resolve(options)
+  })

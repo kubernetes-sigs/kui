@@ -23,9 +23,18 @@ import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 import { installContext } from './prompt'
 
-import { Entity, SimpleEntity, isEntitySpec, isMessageBearingEntity } from '../models/entity'
+import {
+  Entity,
+  SimpleEntity,
+  isEntitySpec,
+  isMessageBearingEntity
+} from '../models/entity'
 import { CommandHandlerWithEvents } from '../models/command'
-import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
+import {
+  ExecOptions,
+  DefaultExecOptions,
+  ParsedOptions
+} from '../models/execOptions'
 import * as historyModel from '../models/history'
 import { CodedError, isCodedError } from '../models/errors'
 
@@ -34,9 +43,22 @@ import { prettyPrintTime } from './util/time'
 import { isHTML } from '../util/types'
 
 import Presentation from './views/presentation'
-import { formatListResult, formatMultiListResult, formatTable } from './views/table'
+import {
+  formatListResult,
+  formatMultiListResult,
+  formatTable
+} from './views/table'
 import { Table, isTable, isMultiTable } from './models/table'
-import { Formattable, getSidecar, BadgeSpec, presentAs, showEntity, showCustom, isCustomSpec, CustomSpec } from './views/sidecar'
+import {
+  Formattable,
+  getSidecar,
+  BadgeSpec,
+  presentAs,
+  showEntity,
+  showCustom,
+  isCustomSpec,
+  CustomSpec
+} from './views/sidecar'
 import { SidecarMode } from './bottom-stripe'
 
 const debug = Debug('webapp/cli')
@@ -60,7 +82,15 @@ interface ScrollOptions {
   center?: boolean | ScrollIntoViewOptions
 }
 export const scrollIntoView = (opts?: ScrollOptions) => {
-  const { when = 305, which = '.repl-active', element = document.querySelector(`tab.visible .repl ${which}`) as HTMLElement, center = undefined, how = 'scrollIntoViewIfNeeded' } = opts || {}
+  const {
+    when = 305,
+    which = '.repl-active',
+    element = document.querySelector(
+      `tab.visible .repl ${which}`
+    ) as HTMLElement,
+    center = undefined,
+    how = 'scrollIntoViewIfNeeded'
+  } = opts || {}
 
   const scroll = () => {
     try {
@@ -88,7 +118,9 @@ export const scrollIntoView = (opts?: ScrollOptions) => {
  */
 const startInputQueueing = () => {
   if (!isHeadless()) {
-    const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
+    const invisibleHand = document.getElementById(
+      'invisible-global-input'
+    ) as HTMLInputElement
     invisibleHand.focus()
   }
 }
@@ -108,7 +140,11 @@ export const disableInputQueueing = (): string => {
 
   debug('disableInputQueueing')
 
-  const invisibleHand = _invisibleHand || (_invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement)
+  const invisibleHand =
+    _invisibleHand ||
+    (_invisibleHand = document.getElementById(
+      'invisible-global-input'
+    ) as HTMLInputElement)
 
   // here is what might have queued up
   const queuedInput = invisibleHand.value
@@ -127,17 +163,20 @@ export const disableInputQueueing = (): string => {
  *
  */
 export const pasteQueuedInput = (value: string) => {
-  const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
+  const invisibleHand = document.getElementById(
+    'invisible-global-input'
+  ) as HTMLInputElement
   invisibleHand.value = value
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Tab extends HTMLElement { }
+export interface Tab extends HTMLElement {}
 const tabTagPattern = /tab/i
-export function isTab (node: Element): node is Tab {
+export function isTab(node: Element): node is Tab {
   return tabTagPattern.test(node.tagName)
 }
-export const getTabIndex = (tab: Tab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
+export const getTabIndex = (tab: Tab): number =>
+  parseInt(tab.getAttribute('data-tab-index'), 10)
 export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
   return getTabIndex(tab1) === getTabIndex(tab2)
 }
@@ -169,14 +208,16 @@ const getInitialBlock = (tab: Tab): HTMLElement => {
 export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
   return tab.querySelector('.repl-active')
 }
-export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
+export const getCurrentProcessingBlock = (
+  tab = getCurrentTab()
+): HTMLElement => {
   return tab.querySelector('.repl .repl-block.processing')
 }
 export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
   return prompt.parentElement.parentElement
 }
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
-  return (block && block.querySelector && block.querySelector('input'))
+  return block && block.querySelector && block.querySelector('input')
 }
 const getInitialPrompt = (tab: Tab): HTMLInputElement => {
   return getPrompt(getInitialBlock(tab))
@@ -208,14 +249,15 @@ const doPaste = (text: string) => {
     if (idx === lines.length) {
       // all done...
       return Promise.resolve()
-    /* } else if (lines[idx] === '') {
+      /* } else if (lines[idx] === '') {
       // then this is a blank line, so skip it
       return pasteLooper(idx + 1) */
     } else if (idx <= lines.length - 2) {
       // then this is a command line with a trailing newline
       const prompt = getCurrentPrompt()
       const repl = await import('../core/repl')
-      return repl.pexec(prompt.value + lines[idx])
+      return repl
+        .pexec(prompt.value + lines[idx])
         .then(() => pasteLooper(idx + 1))
     } else {
       // then this is the last line, but without a trailing newline.
@@ -237,7 +279,8 @@ const doPaste = (text: string) => {
       // note how this will either place the new text at the caret
       // position, or replace the selected text (if selectionEnd !==
       // selectionStart)
-      prompt.value = prompt.value.substring(0, prompt.selectionStart) +
+      prompt.value =
+        prompt.value.substring(0, prompt.selectionStart) +
         lines[idx] +
         prompt.value.substring(prompt.selectionEnd)
 
@@ -282,7 +325,12 @@ const handleQueuedInput = async (nextBlock: HTMLElement) => {
       const lines = queuedInput.split(/[\n\r]/)
 
       const firstNonBlank = lines.findIndex(_ => _.length > 0)
-      const nPrefixNewlines = firstNonBlank >= 0 ? firstNonBlank : lines.length === 0 ? -1 : lines.length
+      const nPrefixNewlines =
+        firstNonBlank >= 0
+          ? firstNonBlank
+          : lines.length === 0
+          ? -1
+          : lines.length
 
       // handle prefix newlines
       for (let idx = 0; idx < nPrefixNewlines; idx++) {
@@ -351,7 +399,10 @@ export const setStatus = (block: HTMLElement, status: string) => {
     }
 
     // add timestamp to prompt
-    element('.repl-prompt-timestamp', block).innerText = new Date().toLocaleTimeString()
+    element(
+      '.repl-prompt-timestamp',
+      block
+    ).innerText = new Date().toLocaleTimeString()
 
     // screenshot click handler
     element('.repl-prompt-right-element-icon', block).onclick = async event => {
@@ -364,7 +415,10 @@ export const setStatus = (block: HTMLElement, status: string) => {
       const repl = await import('../core/repl')
       debug(`capturing screenshot for block ${N}`)
 
-      repl.qexec(`screenshot --nth ${N}`, undefined, undefined, { rethrowErrors: true, reportErrors: true })
+      repl.qexec(`screenshot --nth ${N}`, undefined, undefined, {
+        rethrowErrors: true,
+        reportErrors: true
+      })
     }
   }
 }
@@ -373,14 +427,20 @@ export const setStatus = (block: HTMLElement, status: string) => {
  *
  *
  */
-export const ok = (parentNode: Element, suffix?: string | Element, css?: string) => {
+export const ok = (
+  parentNode: Element,
+  suffix?: string | Element,
+  css?: string
+) => {
   const okLine = document.createElement('div')
   okLine.classList.add('ok-line')
 
   const replResultBlock = parentNode.parentNode.querySelector('.repl-result')
   const resultHasContent = replResultBlock.children.length > 0
   if (resultHasContent) {
-    (replResultBlock.parentNode as Element).classList.add('repl-result-has-content')
+    ;(replResultBlock.parentNode as Element).classList.add(
+      'repl-result-has-content'
+    )
   }
 
   const ok = document.createElement('span')
@@ -390,7 +450,11 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
 
   if (suffix) {
     ok.classList.add('inline-ok')
-    okLine.appendChild(typeof suffix === 'string' ? document.createTextNode(` ${suffix}`) : suffix)
+    okLine.appendChild(
+      typeof suffix === 'string'
+        ? document.createTextNode(` ${suffix}`)
+        : suffix
+    )
   }
 
   if (css) {
@@ -402,9 +466,16 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
 }
 
 /** plugins can register view handlers for a given type: string */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ViewHandler = (tab: Tab, response: Entity, resultDom: Element, parsedOptions: ParsedOptions, execOptions: ExecOptions) => Promise<any> | void
-interface ViewRegistrar { [key: string]: ViewHandler }
+export type ViewHandler = (
+  tab: Tab,
+  response: Entity,
+  resultDom: Element,
+  parsedOptions: ParsedOptions,
+  execOptions: ExecOptions
+) => Promise<any> | void // eslint-disable-line @typescript-eslint/no-explicit-any
+interface ViewRegistrar {
+  [key: string]: ViewHandler
+}
 
 /**
  * Register a renderer for a given kind[]
@@ -428,19 +499,35 @@ export const registerEntityView = (kind: string, handler: ViewHandler) => {
  * Standard handling of Table responses
  *
  */
-const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement, execOptions?: ExecOptions, parsedOptions?: ParsedOptions) => {
+const printTable = async (
+  tab: Tab,
+  response: Table,
+  resultDom: HTMLElement,
+  execOptions?: ExecOptions,
+  parsedOptions?: ParsedOptions
+) => {
   //
   // some sort of list response; format as a table
   //
   const registeredListView = registeredListViews[response.type]
   if (registeredListView) {
-    await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
+    await registeredListView(
+      tab,
+      response,
+      resultDom,
+      parsedOptions,
+      execOptions
+    )
     return resultDom.children.length === 0
   }
 
-  (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
+  ;(resultDom.parentNode as HTMLElement).classList.add(
+    'result-as-table',
+    'result-as-vertical'
+  )
 
-  if (response.noEntityColors) { // client wants control over entity-cell coloring
+  if (response.noEntityColors) {
+    // client wants control over entity-cell coloring
     resultDom.classList.add('result-table-with-custom-entity-colors')
   }
 
@@ -464,8 +551,8 @@ export const streamTo = (tab: Tab, block: Element) => {
     const pre = document.createElement('pre')
     pre.classList.add('streaming-output')
     resultDom.appendChild(pre)
-    resultDom.setAttribute('data-stream', 'data-stream');
-    (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+    resultDom.setAttribute('data-stream', 'data-stream')
+    ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
 
     if (killLine && previousLine) {
       previousLine.parentNode.removeChild(previousLine)
@@ -490,7 +577,9 @@ export const streamTo = (tab: Tab, block: Element) => {
       showCustom(tab, response, {})
     } else {
       previousLine = document.createElement('div')
-      previousLine.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
+      previousLine.innerText = isMessageBearingEntity(response)
+        ? response.message
+        : response.toString()
       pre.appendChild(previousLine)
     }
 
@@ -499,7 +588,10 @@ export const streamTo = (tab: Tab, block: Element) => {
 }
 
 /** create a popup content container */
-export const createPopupContentContainer = (css: string[] = [], presentation?: Presentation): HTMLElement => {
+export const createPopupContentContainer = (
+  css: string[] = [],
+  presentation?: Presentation
+): HTMLElement => {
   const container = document.createElement('div')
   container.classList.add('padding-content')
 
@@ -532,10 +624,21 @@ interface PopupEntity {
  * Render popup content in the given container
  *
  */
-const renderPopupContent = (command: string, container: Element, execOptions: ExecOptions, entity: PopupEntity = {}) => {
+const renderPopupContent = (
+  command: string,
+  container: Element,
+  execOptions: ExecOptions,
+  entity: PopupEntity = {}
+) => {
   debug('renderPopupContent', command, entity)
 
-  const { prettyType = '', modes = [], badges = [], controlHeaders = false, presentation = Presentation.SidecarFullscreenForPopups } = entity
+  const {
+    prettyType = '',
+    modes = [],
+    badges = [],
+    controlHeaders = false,
+    presentation = Presentation.SidecarFullscreenForPopups
+  } = entity
 
   // Last updated... text
   const subtext = document.createElement('div')
@@ -546,7 +649,15 @@ const renderPopupContent = (command: string, container: Element, execOptions: Ex
   subtext.appendChild(date)
 
   const millisPerDay = 24 * 60 * 60 * 1000
-  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+  const midnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0,
+    0,
+    0,
+    0
+  )
   const millisSinceMidnight = now.getTime() - midnight.getTime()
   const millisTillMidnight = millisPerDay - millisSinceMidnight
 
@@ -564,8 +675,14 @@ const renderPopupContent = (command: string, container: Element, execOptions: Ex
   setTimeout(updateLastUpdateDateFirstTime, millisTillMidnight)
 
   if (container) {
-    if ((container.parentNode as HTMLElement).classList.contains('result-as-multi-table')) {
-      (container.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
+    if (
+      (container.parentNode as HTMLElement).classList.contains(
+        'result-as-multi-table'
+      )
+    ) {
+      ;(container.parentNode.parentNode as HTMLElement).classList.add(
+        'overflow-auto'
+      )
     }
 
     const custom = {
@@ -656,8 +773,12 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
     range.select()
   }
 }
-const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
-const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string) => {
+const setCaretPositionToEnd = (input: HTMLInputElement) =>
+  setCaretPosition(input, input.value.length)
+const updateInputAndMoveCaretToEOL = (
+  input: HTMLInputElement,
+  newValue: string
+) => {
   input.value = newValue
   setTimeout(() => setCaretPositionToEnd(input), 0)
 }
@@ -671,12 +792,17 @@ export const listen = (prompt: HTMLInputElement) => {
   debug('listen', prompt, document.activeElement)
   prompt.readOnly = false
 
-  if (!prompt.classList.contains('sidecar-header-input') && !document.activeElement.classList.contains('grab-focus')) {
+  if (
+    !prompt.classList.contains('sidecar-header-input') &&
+    !document.activeElement.classList.contains('grab-focus')
+  ) {
     prompt.focus()
   }
 
   const grandparent = prompt.parentNode.parentNode as Element
-  grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
+  grandparent.className = `${grandparent.getAttribute(
+    'data-base-class'
+  )} repl-active`
 
   prompt.onkeypress = async (event: KeyboardEvent) => {
     const char = event.keyCode
@@ -687,7 +813,7 @@ export const listen = (prompt: HTMLInputElement) => {
     }
   }
 
-  prompt.onkeydown = async (event) => {
+  prompt.onkeydown = async event => {
     const char = event.keyCode
 
     if (char === keys.UP || (char === keys.P && event.ctrlKey)) {
@@ -714,8 +840,10 @@ export const listen = (prompt: HTMLInputElement) => {
     } else if (char === keys.U && event.ctrlKey) {
       // clear line
       prompt.value = ''
-    } else if ((char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
-               (process.platform === 'darwin' && char === keys.K && event.metaKey)) {
+    } else if (
+      (char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
+      (process.platform === 'darwin' && char === keys.K && event.metaKey)
+    ) {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
       // behavior
@@ -725,17 +853,19 @@ export const listen = (prompt: HTMLInputElement) => {
         const current = getCurrentPrompt().value
         const repl = await import('../core/repl')
         const currentCursorPosition = getCurrentPrompt().selectionStart // also restore the cursor position
-        repl.pexec('clear')
-          .then(() => {
-            if (current) {
-              // restore the prompt value
-              getCurrentPrompt().value = current
+        repl.pexec('clear').then(() => {
+          if (current) {
+            // restore the prompt value
+            getCurrentPrompt().value = current
 
-              // restore the prompt cursor position
-              debug('restoring cursor position', currentCursorPosition)
-              getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
-            }
-          })
+            // restore the prompt cursor position
+            debug('restoring cursor position', currentCursorPosition)
+            getCurrentPrompt().setSelectionRange(
+              currentCursorPosition,
+              currentCursorPosition
+            )
+          }
+        })
       }
     } else if (char === keys.HOME) {
       // go to first command in history
@@ -756,10 +886,15 @@ export const listen = (prompt: HTMLInputElement) => {
 
   prompt.onpaste = paste
 }
-export const popupListen = (text = getSidecar(getCurrentTab()).querySelector('.sidecar-header-text'), previousCommand?: string) => {
+export const popupListen = (
+  text = getSidecar(getCurrentTab()).querySelector('.sidecar-header-text'),
+  previousCommand?: string
+) => {
   if (previousCommand) {
     // emit the previous command on the repl
-    const nameContainer = getSidecar(getCurrentTab()).querySelector('.sidecar-header-input') as HTMLInputElement
+    const nameContainer = getSidecar(getCurrentTab()).querySelector(
+      '.sidecar-header-input'
+    ) as HTMLInputElement
     nameContainer.value = previousCommand
   }
 
@@ -771,18 +906,37 @@ export const popupListen = (text = getSidecar(getCurrentTab()).querySelector('.s
  * Render the results of a command evaluation in the "console"
  *
  */
-export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Tab, resultDom: HTMLElement, echo = true, execOptions?: ExecOptions, parsedOptions?: ParsedOptions, command?: string, evaluator?: CommandHandlerWithEvents) => (response: Entity) => {
+export const printResults = (
+  block: HTMLElement,
+  nextBlock: HTMLElement,
+  tab: Tab,
+  resultDom: HTMLElement,
+  echo = true,
+  execOptions?: ExecOptions,
+  parsedOptions?: ParsedOptions,
+  command?: string,
+  evaluator?: CommandHandlerWithEvents
+) => (response: Entity) => {
   debug('printResults', response)
 
   // does the command handler want to be incognito in the UI?
-  const incognitoHint = evaluator && evaluator.options && evaluator.options.incognito && evaluator.options.incognito
-  const incognito = incognitoHint && isPopup() && incognitoHint.indexOf('popup') >= 0
+  const incognitoHint =
+    evaluator &&
+    evaluator.options &&
+    evaluator.options.incognito &&
+    evaluator.options.incognito
+  const incognito =
+    incognitoHint && isPopup() && incognitoHint.indexOf('popup') >= 0
 
   const presentation = isCustomSpec(response) && response.presentation
 
   let customContainer: HTMLElement
   if (isPopup() && !incognito) {
-    resultDom = customContainer = createPopupContentContainer(['valid-response'], presentation || (!Array.isArray(response) && Presentation.SidecarFullscreenForPopups))
+    resultDom = customContainer = createPopupContentContainer(
+      ['valid-response'],
+      presentation ||
+        (!Array.isArray(response) && Presentation.SidecarFullscreenForPopups)
+    )
   }
 
   if (process.env.KUI_TEE_TO_FILE) {
@@ -824,7 +978,10 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
     setStatus(block, 'valid-response')
   }
 
-  const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
+  const render = async (
+    response: Entity,
+    { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }
+  ) => {
     if (response && response !== true) {
       if (isTable(response)) {
         await printTable(tab, response, resultDom, execOptions, parsedOptions)
@@ -836,42 +993,68 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
         if (response.length > 0) {
           const registeredListView = registeredListViews[response[0].type]
           if (registeredListView) {
-            await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
+            await registeredListView(
+              tab,
+              response,
+              resultDom,
+              parsedOptions,
+              execOptions
+            )
             return resultDom.children.length === 0
           } else {
             const rows = await formatListResult(tab, response)
             rows.map(row => resultDom.appendChild(row))
           }
         }
-      } else if (isHTML(response)) { // TODO is this the best way to detect response is a dom??
+      } else if (isHTML(response)) {
+        // TODO is this the best way to detect response is a dom??
         // pre-formatted DOM element
         if (echo) {
-          resultDom.appendChild(response);
-          (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+          resultDom.appendChild(response)
+          ;(resultDom.parentNode as HTMLElement).classList.add(
+            'result-vertical'
+          )
           ok(resultDom.parentElement).classList.add('ok-for-list')
         }
-      } else if (isEntitySpec(response) && response.verb === 'list' && response[response.type] && typeof response[response.type] === 'number') {
+      } else if (
+        isEntitySpec(response) &&
+        response.verb === 'list' &&
+        response[response.type] &&
+        typeof response[response.type] === 'number'
+      ) {
         // maybe a list API returned a count?
         const span = document.createElement('span')
         span.innerText = response[response.type]
-        resultDom.appendChild(span);
-        (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+        resultDom.appendChild(span)
+        ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
         ok(resultDom.parentElement).classList.add('ok-for-list')
-      } else if (typeof response === 'number' || typeof response === 'string' ||
-                 (isMessageBearingEntity(response))) {
+      } else if (
+        typeof response === 'number' ||
+        typeof response === 'string' ||
+        isMessageBearingEntity(response)
+      ) {
         // if either the response is a string, or it's a non-entity (no response.type) and has a message field
         //     then treat the response as a simple string response
         if (echo) {
           // wrap in a span so that drag text selection works; see shell issue #249
           const span = document.createElement('pre')
-          span.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
-          resultDom.appendChild(span);
-          (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+          span.innerText = isMessageBearingEntity(response)
+            ? response.message
+            : response.toString()
+          resultDom.appendChild(span)
+          ;(resultDom.parentNode as HTMLElement).classList.add(
+            'result-vertical'
+          )
           ok(resultDom.parentElement).classList.add('ok-for-list')
         }
       } else if (isCustomSpec(response)) {
         if (echo || (execOptions && execOptions.replSilence)) {
-          const presentation = await showCustom(tab, response, execOptions, customContainer)
+          const presentation = await showCustom(
+            tab,
+            response,
+            execOptions,
+            customContainer
+          )
 
           if (!isPopup()) {
             ok(resultDom.parentElement)
@@ -885,7 +1068,15 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
         }
       } else if (registeredEntityViews[response.type]) {
         // there is a registered entity view handler for this response
-        if (await registeredEntityViews[response.type](tab, response, resultDom, parsedOptions, execOptions)) {
+        if (
+          await registeredEntityViews[response.type](
+            tab,
+            response,
+            resultDom,
+            parsedOptions,
+            execOptions
+          )
+        ) {
           if (echo) ok(resultDom.parentElement)
         }
 
@@ -895,14 +1086,30 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
         if (echo) {
           // we want the 'ok:' part to appear even in popup mode
           if (response.type) {
-            ok(resultDom, `deleted ${response.type.replace(/s$/, '')} ${response.name}`, 'show-in-popup')
+            ok(
+              resultDom,
+              `deleted ${response.type.replace(/s$/, '')} ${response.name}`,
+              'show-in-popup'
+            )
           } else {
             ok(resultDom)
           }
         }
-      } else if (isEntitySpec(response) && (response.verb === 'get' || response.verb === 'create' || response.verb === 'update')) {
+      } else if (
+        isEntitySpec(response) &&
+        (response.verb === 'get' ||
+          response.verb === 'create' ||
+          response.verb === 'update')
+      ) {
         // get response?
-        const forRepl = showEntity(tab, response, Object.assign({}, execOptions || {}, { echo, show: response.show || 'default' }))
+        const forRepl = showEntity(
+          tab,
+          response,
+          Object.assign({}, execOptions || {}, {
+            echo,
+            show: response.show || 'default'
+          })
+        )
         // forRepl means: the sidecar wants to display something on the repl when it's done
         // it's either a promise or a DOM entry directly
         if (echo) {
@@ -918,10 +1125,12 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
       } else if (typeof response === 'object') {
         // render random json in the REPL directly
         const code = document.createElement('code')
-        code.appendChild(document.createTextNode(JSON.stringify(response, undefined, 4)))
+        code.appendChild(
+          document.createTextNode(JSON.stringify(response, undefined, 4))
+        )
         resultDom.appendChild(code)
-        setTimeout(() => hljs.highlightBlock(code), 0);
-        (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+        setTimeout(() => hljs.highlightBlock(code), 0)
+        ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
         ok(resultDom.parentElement).classList.add('ok-for-list')
       }
     } else if (response) {
@@ -932,15 +1141,22 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
   let promise: Promise<boolean>
 
   if (isMultiTable(response)) {
-    (resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-multi-table', 'result-vertical')
+    ;(resultDom.parentNode as HTMLElement).classList.add(
+      'result-as-table',
+      'result-as-multi-table',
+      'result-vertical'
+    )
 
     if (response[0].flexWrap) {
-      (resultDom.parentNode as HTMLElement).classList.add('result-as-multi-table-flex-wrap')
+      ;(resultDom.parentNode as HTMLElement).classList.add(
+        'result-as-multi-table-flex-wrap'
+      )
     }
     // multi-table output; false means that the renderer hasn't placed
     // anything in the DOM; it's up to us here
-    promise = Promise.all(response.map(table => formatTable(tab, table, resultDom as HTMLElement)))
-      .then(() => false)
+    promise = Promise.all(
+      response.map(table => formatTable(tab, table, resultDom as HTMLElement))
+    ).then(() => false)
   } else if (Array.isArray(response) && Array.isArray(response[0])) {
     /**
      * multi-table output; false means that the renderer hasn't placed
@@ -967,7 +1183,7 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
      * decorate it as a table
      * @deprecated in favor of new models/table.ts
      */
-    (resultDom.parentNode as HTMLElement).classList.add('result-as-table')
+    ;(resultDom.parentNode as HTMLElement).classList.add('result-as-table')
 
     if (response.length > 0 && response[0].noEntityColors) {
       // client wants control over entity-cell coloring
@@ -980,14 +1196,18 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
         presentAs(tab, Presentation.FixedSize)
       }
     } else {
-      (resultDom.parentNode as HTMLElement).classList.add('result-as-multi-table')
+      ;(resultDom.parentNode as HTMLElement).classList.add(
+        'result-as-multi-table'
+      )
       if (response[0] && response[0][0] && response[0][0].flexWrap) {
-        (resultDom.parentNode as HTMLElement).classList.add('result-as-multi-table-flex-wrap')
+        ;(resultDom.parentNode as HTMLElement).classList.add(
+          'result-as-multi-table-flex-wrap'
+        )
       }
     }
 
     // say "ok"
-    (resultDom.parentNode as HTMLElement).classList.add('result-vertical')
+    ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
     if (echo) {
       promise.then(() => {
         ok(resultDom.parentNode as Element).classList.add('ok-for-list')
@@ -996,27 +1216,49 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
   }
 
   promise.then(async (alreadyRendered: boolean) => {
-    if (isPopup() && ((Array.isArray(response) || (customContainer && customContainer.children.length > 0)) || (isCustomSpec(response) && response.presentation === Presentation.FixedSize))) {
+    if (
+      isPopup() &&
+      (Array.isArray(response) ||
+        (customContainer && customContainer.children.length > 0) ||
+        (isCustomSpec(response) &&
+          response.presentation === Presentation.FixedSize))
+    ) {
       if (!incognito) {
         // view modes
-        const modes = isEntitySpec(response) &&
+        const modes =
+          isEntitySpec(response) &&
           (response.modes ||
-           (response[0] && response[0].modes) ||
-           (response[0] && response[0][0] && response[0][0].modes))
+            (response[0] && response[0].modes) ||
+            (response[0] && response[0][0] && response[0][0].modes))
 
         // entity type
-        const prettyType = isEntitySpec(response) && (response.type || response.kind || response.prettyType || response.prettyKind || (response[0] && response[0].title) || (response[0] && response[0][0] && response[0][0].title))
+        const prettyType =
+          isEntitySpec(response) &&
+          (response.type ||
+            response.kind ||
+            response.prettyType ||
+            response.prettyKind ||
+            (response[0] && response[0].title) ||
+            (response[0] && response[0][0] && response[0][0].title))
 
         // presentation mode
-        const presentation = (isCustomSpec(response) && response.presentation) || (prettyType && Array.isArray(response) && Presentation.FixedSize) || Presentation.SidecarFullscreenForPopups
+        const presentation =
+          (isCustomSpec(response) && response.presentation) ||
+          (prettyType && Array.isArray(response) && Presentation.FixedSize) ||
+          Presentation.SidecarFullscreenForPopups
 
-        await renderPopupContent(command, alreadyRendered !== true && resultDom, execOptions, Object.assign({}, response, {
-          modes: modes || undefined,
-          prettyType,
-          badges: isCustomSpec(response) && response.badges,
-          controlHeaders: isEntitySpec(response) && response.controlHeaders,
-          presentation
-        }))
+        await renderPopupContent(
+          command,
+          alreadyRendered !== true && resultDom,
+          execOptions,
+          Object.assign({}, response, {
+            modes: modes || undefined,
+            prettyType,
+            badges: isCustomSpec(response) && response.badges,
+            controlHeaders: isEntitySpec(response) && response.controlHeaders,
+            presentation
+          })
+        )
       }
 
       if (!incognito) {
@@ -1030,7 +1272,11 @@ export const printResults = (block: HTMLElement, nextBlock: HTMLElement, tab: Ta
   return Promise.resolve()
 }
 
-export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBlock: HTMLElement) => async () => {
+export const installBlock = (
+  parentNode: Node,
+  currentBlock: HTMLElement,
+  nextBlock: HTMLElement
+) => async () => {
   if (!nextBlock) return // error cases
 
   parentNode.appendChild(nextBlock)
@@ -1041,7 +1287,9 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
   }
 
   // the currentBlock might've been detached; if so, re-start from 0
-  const currentIndex = currentBlock.parentNode ? parseInt(currentBlock.getAttribute('data-input-count'), 10) : -1
+  const currentIndex = currentBlock.parentNode
+    ? parseInt(currentBlock.getAttribute('data-input-count'), 10)
+    : -1
   nextBlock.setAttribute('data-input-count', (currentIndex + 1).toString())
 
   installContext(nextBlock)
@@ -1089,7 +1337,10 @@ export const doCancel = () => {
  * Paste a command, but do not eval it
  *
  */
-export const partial = (cmd: string, execOptions: ExecOptions = new DefaultExecOptions()) => {
+export const partial = (
+  cmd: string,
+  execOptions: ExecOptions = new DefaultExecOptions()
+) => {
   const prompt = getCurrentPrompt()
   if (prompt) {
     debug('applying partial', cmd)
@@ -1108,7 +1359,11 @@ export const partial = (cmd: string, execOptions: ExecOptions = new DefaultExecO
  * Handle command execution errors
  *
  */
-export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => async (err: Error | CodedError | UsageError) => {
+export const oops = (
+  command: string,
+  block?: HTMLElement,
+  nextBlock?: HTMLElement
+) => async (err: Error | CodedError | UsageError) => {
   if (!block) return // we're not attached to a prompt right now
 
   if (!nextBlock) {
@@ -1116,13 +1371,16 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
     nextBlock.querySelector('input').value = ''
   }
 
-  if (getPrompt(block).value === '') { // e.g. we want qexec with reportErrors:true show command in repl
+  if (getPrompt(block).value === '') {
+    // e.g. we want qexec with reportErrors:true show command in repl
     getPrompt(block).value = command
   }
 
   setStatus(block, 'error')
 
-  const resultDom = isPopup() ? createPopupContentContainer(['error']) : block.querySelector('.repl-result')
+  const resultDom = isPopup()
+    ? createPopupContentContainer(['error'])
+    : block.querySelector('.repl-result')
   const oopsDom = document.createElement('div')
   oopsDom.className = 'oops'
   resultDom.appendChild(oopsDom)
@@ -1138,7 +1396,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
     // pre-rendered HTML
     oopsDom.classList.add('oops-as-html')
     oopsDom.appendChild(err.html) */
-  /* } else if (err.message && err.message.then) {
+    /* } else if (err.message && err.message.then) {
     err.message.then(message => {
       err.message = message
       oops(command, block, nextBlock)(err)
@@ -1158,7 +1416,10 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
 
   // add the http status code, if we have it (helps with testing)
   if (isCodedError(err)) {
-    oopsDom.setAttribute('data-status-code', (err.statusCode || err.code).toString())
+    oopsDom.setAttribute(
+      'data-status-code',
+      (err.statusCode || err.code).toString()
+    )
   } else {
     oopsDom.setAttribute('data-status-code', '0')
   }
@@ -1183,10 +1444,16 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   return false
 }
 
-export const showHelp = (command: string, block: HTMLElement, nextBlock: HTMLElement, error: Error) => {
+export const showHelp = (
+  command: string,
+  block: HTMLElement,
+  nextBlock: HTMLElement,
+  error: Error
+) => {
   // if the message says command not found, then add on the "enter help to see your options" as a suffix
   const baseMessage = 'Enter help to see your options.'
-  if (error.message && error.message === 'Command not found') error.message += `\n${baseMessage}`
+  if (error.message && error.message === 'Command not found')
+    error.message += `\n${baseMessage}`
 
   return oops(command, block, nextBlock)(error) && false
 }
@@ -1200,7 +1467,7 @@ interface RepromptSpec {
   reprompt?: boolean // recursively prompt?
 }
 
-function isRequestingReprompt (spec: PromptCompleter): spec is RepromptSpec {
+function isRequestingReprompt(spec: PromptCompleter): spec is RepromptSpec {
   return (spec as RepromptSpec).reprompt
 }
 
@@ -1208,7 +1475,9 @@ interface PromptCompletionData {
   field: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export type PromptCompletionHandler = (data: PromptCompletionData) => PromptCompleter
+export type PromptCompletionHandler = (
+  data: PromptCompletionData
+) => PromptCompleter
 
 interface PromptOptions {
   dangerous?: boolean
@@ -1222,7 +1491,14 @@ interface PromptOptions {
  * Prompt the user for information
  *
  */
-export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, tab: Tab, options: PromptOptions, completion: PromptCompletionHandler) => {
+export const prompt = (
+  msg: string,
+  block: HTMLElement,
+  nextBlock: HTMLElement,
+  tab: Tab,
+  options: PromptOptions,
+  completion: PromptCompletionHandler
+) => {
   debug('prompt', options)
 
   const selection = block.querySelector('.repl-selection') as HTMLElement
@@ -1242,7 +1518,10 @@ export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, 
   promptDom.readOnly = false
   promptDom.value = ''
 
-  promptDom.setAttribute('placeholder', options.placeholder || `Enter your ${msg}`)
+  promptDom.setAttribute(
+    'placeholder',
+    options.placeholder || `Enter your ${msg}`
+  )
 
   // paste handlers
   if (options.onpaste === 'capture') {
@@ -1313,13 +1592,17 @@ export const prompt = (msg: string, block: HTMLElement, nextBlock: HTMLElement, 
       restorePrompt()
       return prompt(msg, block, nextBlock, tab, completer, completer.completion)
     } else {
-      completer.then(response => {
-        return printResults(block, nextBlock, tab, resultDom)(response)
-      })
+      completer
+        .then(response => {
+          return printResults(block, nextBlock, tab, resultDom)(response)
+        })
         .then(() => undefined) // so that restorePrompt sees no input on success
         .then(restorePrompt)
         .then(installBlock(block.parentNode, block, nextBlock)) // <-- create a new input, for the next iter of the Loop
-        .catch((err: Error) => { restorePrompt(); oops('', block, nextBlock)(err) })
+        .catch((err: Error) => {
+          restorePrompt()
+          oops('', block, nextBlock)(err)
+        })
     }
   }
 
@@ -1338,8 +1621,13 @@ export const init = async (prefs = {}) => {
   if (isPopup()) {
     document.body.addEventListener('keydown', (event: KeyboardEvent) => {
       const char = event.keyCode
-      if (char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) {
-        const input = getSidecar(getCurrentTab()).querySelector('.repl-input input') as HTMLInputElement
+      if (
+        char === keys.L &&
+        (event.ctrlKey || (inElectron() && event.metaKey))
+      ) {
+        const input = getSidecar(getCurrentTab()).querySelector(
+          '.repl-input input'
+        ) as HTMLInputElement
         input.focus()
         input.setSelectionRange(0, input.value.length)
       }

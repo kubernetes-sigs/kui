@@ -30,17 +30,21 @@ const debug = Debug('k8s/view/modes/last-applied')
  * Extract the last-applied-configuration annotation
  *
  */
-function getLastAppliedRaw (resource: KubeResource): string {
+function getLastAppliedRaw(resource: KubeResource): string {
   // kube stores the last applied configuration (if any) in a raw json string
-  return resource.metadata.annotations &&
-    resource.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']
+  return (
+    resource.metadata.annotations &&
+    resource.metadata.annotations[
+      'kubectl.kubernetes.io/last-applied-configuration'
+    ]
+  )
 }
 
 /**
  * @return whether the given resource has a last applied configuration annotation
  *
  */
-function hasLastApplied (resource: KubeResource): boolean {
+function hasLastApplied(resource: KubeResource): boolean {
   return getLastAppliedRaw(resource) !== undefined
 }
 
@@ -76,7 +80,7 @@ interface Parameters {
   resource: Resource
 }
 
-function toCustomSpec (raw: string): CustomSpec {
+function toCustomSpec(raw: string): CustomSpec {
   // oof, it comes in as a JSON string, but we want a YAML string
   const resource: KubeResource = JSON.parse(raw) // we will extract some parameters from this
   const content = safeDump(resource) // this is what we want to show up in the UI
@@ -92,7 +96,10 @@ function toCustomSpec (raw: string): CustomSpec {
   }
 }
 
-export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
+export const renderAndViewLastApplied = async (
+  tab: Tab,
+  parameters: Parameters
+) => {
   const { command, resource } = parameters
   debug('renderAndViewLastApplied', command, resource)
 

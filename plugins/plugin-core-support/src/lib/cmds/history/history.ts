@@ -43,11 +43,16 @@ const usage = {
   history: {
     command: 'history',
     strict: 'history',
-    docs: 'List current command history, optionally filtering by a given string',
+    docs:
+      'List current command history, optionally filtering by a given string',
     example: 'history 100 filterString',
     optional: [
       { name: 'N', positional: true, docs: 'list the most recent N commands' },
-      { name: 'filterString', positional: true, docs: 'filter command history' },
+      {
+        name: 'filterString',
+        positional: true,
+        docs: 'filter command history'
+      },
       { name: '--clear', alias: '-c', docs: 'clear your command history' }
     ]
   },
@@ -58,7 +63,11 @@ const usage = {
     docs: 'Re-execute a given command index',
     example: `${command} 50`,
     optional: [
-      { name: 'N', positional: true, docs: 're-execute the given history index N' }
+      {
+        name: 'N',
+        positional: true,
+        docs: 're-execute the given history index N'
+      }
     ]
   })
 }
@@ -103,9 +112,12 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   const N = Nidx > 0 ? firstArgLooksLikeN : DEFAULT_HISTORY_N
 
   // construct the filter
-  const filterIdx = Nargs === 2 ? historyIdx + 2 : !firstArgLooksLikeN ? historyIdx + 1 : -1
+  const filterIdx =
+    Nargs === 2 ? historyIdx + 2 : !firstArgLooksLikeN ? historyIdx + 1 : -1
   const filterStr = filterIdx > 0 && argv[filterIdx]
-  const filter = filterStr ? line => line.raw.indexOf(filterStr) >= 0 : () => true
+  const filter = filterStr
+    ? line => line.raw.indexOf(filterStr) >= 0
+    : () => true
 
   const startIdx = Math.max(0, historyModel.getCursor() - N - 1)
   const endIdx = historyModel.getCursor() - 1
@@ -119,32 +131,40 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   debug('filterStr', filterStr)
   debug('got', recent.length, startIdx, endIdx)
 
-  const body: Row[] = recent.map((line, idx) => {
-    if (!filter(line)) return
+  const body: Row[] = recent
+    .map((line, idx) => {
+      if (!filter(line)) return
 
-    // some commands can be super long... try to trim them down for the initial display
-    const shortForm = line.raw.substring(0, line.raw.indexOf(' =')) || line.raw
-    const whitespace = shortForm.indexOf(' ')
-    const command = document.createElement('strong')
-    const rest = document.createElement('span')
+      // some commands can be super long... try to trim them down for the initial display
+      const shortForm =
+        line.raw.substring(0, line.raw.indexOf(' =')) || line.raw
+      const whitespace = shortForm.indexOf(' ')
+      const command = document.createElement('strong')
+      const rest = document.createElement('span')
 
-    command.innerText = shortForm.substring(0, whitespace === -1 ? shortForm.length : whitespace)
-    if (whitespace !== -1) {
-      rest.innerText = shortForm.substring(whitespace)
-    }
+      command.innerText = shortForm.substring(
+        0,
+        whitespace === -1 ? shortForm.length : whitespace
+      )
+      if (whitespace !== -1) {
+        rest.innerText = shortForm.substring(whitespace)
+      }
 
-    return new Row({
-      beforeAttributes: [ {
-        key: 'N',
-        value: `${startIdx + idx}`,
-        css: 'deemphasize'
-      } ],
-      fullName: line.raw,
-      name: line.raw,
-      type: 'history',
-      onclick: () => repl.pexec(line.raw)
+      return new Row({
+        beforeAttributes: [
+          {
+            key: 'N',
+            value: `${startIdx + idx}`,
+            css: 'deemphasize'
+          }
+        ],
+        fullName: line.raw,
+        name: line.raw,
+        type: 'history',
+        onclick: () => repl.pexec(line.raw)
+      })
     })
-  }).filter(x => x)
+    .filter(x => x)
 
   return new Table({
     type: 'history',
@@ -156,7 +176,10 @@ const showHistory = ({ argv, parsedOptions: options }) => {
 export default (commandTree: CommandRegistrar) => {
   debug('init')
 
-  commandTree.listen('/history', showHistory, { usage: usage.history, noAuthOk: true })
+  commandTree.listen('/history', showHistory, {
+    usage: usage.history,
+    noAuthOk: true
+  })
 
   /** clear view or clear history */
   // commandTree.listen('/history/purge', historyModel.wipe, { docs: 'Clear your command history' })
@@ -167,6 +190,12 @@ export default (commandTree: CommandRegistrar) => {
     console.error(execOptions)
     return again(N, execOptions && execOptions.history)
   }
-  const cmd = commandTree.listen('/!!', againCmd(), { usage: usage.again('!!'), noAuthOk: true })
-  commandTree.synonym('/again', againCmd(), cmd, { usage: usage.again('again'), noAuthOk: true })
+  const cmd = commandTree.listen('/!!', againCmd(), {
+    usage: usage.again('!!'),
+    noAuthOk: true
+  })
+  commandTree.synonym('/again', againCmd(), cmd, {
+    usage: usage.again('again'),
+    noAuthOk: true
+  })
 }

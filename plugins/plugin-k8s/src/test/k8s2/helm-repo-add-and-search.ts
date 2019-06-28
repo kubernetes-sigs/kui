@@ -19,14 +19,18 @@ import { cli } from '@kui-shell/core/tests/lib/ui'
 
 const synonyms = ['helm']
 
-describe('helm repo add and search', function (this: common.ISuite) {
+describe('helm repo add and search', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   synonyms.forEach(helm => {
     const addRepo = () => {
       it('should add a helm repo', () => {
-        return cli.do(`${helm} repo add bitnami https://charts.bitnami.com/bitnami`, this.app)
+        return cli
+          .do(
+            `${helm} repo add bitnami https://charts.bitnami.com/bitnami`,
+            this.app
+          )
           .then(cli.expectOKWithAny)
           .catch(common.oops(this))
       })
@@ -34,7 +38,8 @@ describe('helm repo add and search', function (this: common.ISuite) {
 
     const searchRepo = (desiredImage: string) => {
       it(`should search for ${desiredImage}`, () => {
-        return cli.do(`${helm} search ${desiredImage}`, this.app)
+        return cli
+          .do(`${helm} search ${desiredImage}`, this.app)
           .then(cli.expectOKWith(desiredImage))
           .catch(common.oops(this))
       })

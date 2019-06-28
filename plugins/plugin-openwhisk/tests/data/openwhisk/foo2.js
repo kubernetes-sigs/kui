@@ -1,1 +1,1 @@
-var main = params => ({ name: "Step2 " + params.name })
+var main = params => ({ name: 'Step2 ' + params.name })

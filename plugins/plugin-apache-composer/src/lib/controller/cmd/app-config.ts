@@ -31,10 +31,30 @@ export default async (commandTree: CommandRegistrar) => {
 
   const propertySynonyms = ['wsk/app', 'composer']
   propertySynonyms.forEach(tree => {
-    const cmd = commandTree.listen(`/${tree}/properties`, () => { return `Composer version ${version}` }, { usage: properties('properties'), noAuthOk: true })
+    const cmd = commandTree.listen(
+      `/${tree}/properties`,
+      () => {
+        return `Composer version ${version}`
+      },
+      { usage: properties('properties'), noAuthOk: true }
+    )
 
     // synonyms of app properties
-    commandTree.synonym(`/${tree}/props`, () => { return `Composer version ${version}` }, cmd, { usage: properties('props'), noAuthOk: true })
-    commandTree.synonym(`/${tree}/config`, () => { return `Composer version ${version}` }, cmd, { usage: properties('config'), noAuthOk: true })
+    commandTree.synonym(
+      `/${tree}/props`,
+      () => {
+        return `Composer version ${version}`
+      },
+      cmd,
+      { usage: properties('props'), noAuthOk: true }
+    )
+    commandTree.synonym(
+      `/${tree}/config`,
+      () => {
+        return `Composer version ${version}`
+      },
+      cmd,
+      { usage: properties('config'), noAuthOk: true }
+    )
   })
 }

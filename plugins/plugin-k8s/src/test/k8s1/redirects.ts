@@ -16,7 +16,14 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  waitForGreen,
+  waitForRed,
+  defaultModeForGet,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -26,7 +33,7 @@ const synonyms = ['kubectl']
  * deployments.
  *
  */
-describe('electron apply deployment against URL that has redirects', function (this: common.ISuite) {
+describe('electron apply deployment against URL that has redirects', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -40,23 +47,42 @@ describe('electron apply deployment against URL that has redirects', function (t
 
     it(`should apply with a redirecting URL via ${kubectl}`, async () => {
       try {
-        const selector = await cli.do(`${kubectl} apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx-deployment') }))
+        const selector = await cli
+          .do(
+            `${kubectl} apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`,
+            this.app
+          )
+          .then(
+            cli.expectOKWithCustom({
+              selector: selectors.BY_NAME('nginx-deployment')
+            })
+          )
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
-        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('nginx-deployment'))
+        await sidecar
+          .expectOpen(this.app)
+          .then(sidecar.expectMode(defaultModeForGet))
+          .then(sidecar.expectShowing('nginx-deployment'))
       } catch (err) {
         common.oops(this)(err)
       }
     })
 
     it(`should delete the deployment from redirecting URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx-deployment') }))
+      return cli
+        .do(
+          `${kubectl} delete -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`,
+          this.app
+        )
+        .then(
+          cli.expectOKWithCustom({
+            selector: selectors.BY_NAME('nginx-deployment')
+          })
+        )
         .then(selector => waitForRed(this.app, selector))
         .catch(common.oops(this))
     })

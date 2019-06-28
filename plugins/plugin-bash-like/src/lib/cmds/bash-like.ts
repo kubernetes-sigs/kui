@@ -26,7 +26,11 @@ import { exec } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import {
+  CommandRegistrar,
+  EvaluatorArgs,
+  ParsedOptions
+} from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { handleNonZeroExitCode } from '../util/exec'
@@ -35,166 +39,186 @@ import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
 const debug = Debug('plugins/bash-like/cmds/general')
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const doExec = (cmdLine: string, execOptions: ExecOptions): Promise<string | boolean | Record<string, any>> => new Promise(async (resolve, reject) => {
-  // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
+export const doExec = (
+  cmdLine: string,
+  execOptions: ExecOptions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<string | boolean | Record<string, any>> =>
+  new Promise(async (resolve, reject) => {
+    // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
 
-  const proc = exec(cmdLine, {
-    env: Object.assign({}, process.env, execOptions['env'] || {})
-  })
+    const proc = exec(cmdLine, {
+      env: Object.assign({}, process.env, execOptions['env'] || {})
+    })
 
-  // accumulate doms from the output of the subcommand
-  let rawOut = ''
-  let rawErr = ''
+    // accumulate doms from the output of the subcommand
+    let rawOut = ''
+    let rawErr = ''
 
-  proc.stdout.on('data', async data => {
-    const out = data.toString()
+    proc.stdout.on('data', async data => {
+      const out = data.toString()
 
-    if (execOptions.stdout) {
-      execOptions.stdout(data)
-    } else {
-      rawOut += out
-    }
-  })
-
-  proc.stderr.on('data', data => {
-    rawErr += data
-
-    if (execOptions.stderr) {
-      execOptions.stderr(data.toString())
-      // stderrLines += data.toString()
-    }
-  })
-
-  proc.on('close', async exitCode => {
-    if (exitCode === 0) {
-      // great, the process exited normally. resolve!
-      if (execOptions && execOptions['json']) {
-        // caller expects JSON back
-        try {
-          resolve(JSON.parse(rawOut))
-        } catch (err) {
-          const error = new Error('unexpected non-JSON')
-          error['value'] = rawOut
-          reject(error)
-        }
-      } else if (execOptions && execOptions.raw) {
-        // caller just wants the raw textual output
-        resolve(rawOut)
-      } else if (!rawOut && !rawErr) {
-        // in this case, the command produced nothing, but it did exit
-        // with a 0 exit code
-        resolve(true)
+      if (execOptions.stdout) {
+        execOptions.stdout(data)
       } else {
-        // else, we pass back a formatted form of the output
-        const json = extractJSON(rawOut)
+        rawOut += out
+      }
+    })
 
-        if (json) {
-          json['type'] = 'shell'
-          json['verb'] = 'get'
-          resolve(json)
-        } else {
+    proc.stderr.on('data', data => {
+      rawErr += data
+
+      if (execOptions.stderr) {
+        execOptions.stderr(data.toString())
+        // stderrLines += data.toString()
+      }
+    })
+
+    proc.on('close', async exitCode => {
+      if (exitCode === 0) {
+        // great, the process exited normally. resolve!
+        if (execOptions && execOptions['json']) {
+          // caller expects JSON back
+          try {
+            resolve(JSON.parse(rawOut))
+          } catch (err) {
+            const error = new Error('unexpected non-JSON')
+            error['value'] = rawOut
+            reject(error)
+          }
+        } else if (execOptions && execOptions.raw) {
+          // caller just wants the raw textual output
           resolve(rawOut)
-        }
-      }
-    } else {
-      // oops, non-zero exit code. reject!
-      debug('non-zero exit code', exitCode)
-
-      // strip off e.g. /bin/sh: line 0:
-      const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
-      try {
-        handleNonZeroExitCode(cmdLine, exitCode, rawOut, cleanErr, execOptions)
-      } catch (err) {
-        reject(err)
-      }
-    }
-  })
-})
-
-export const doShell = (argv: string[], options: ParsedOptions, execOptions?: ExecOptions) => new Promise(async (resolve, reject) => {
-  if (inBrowser()) {
-    reject(new Error('Local file access not supported when running in a browser'))
-  }
-
-  // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
-  const shell = await import('shelljs')
-
-  if (argv.length < 2) {
-    reject(new Error('Please provide a bash command'))
-  }
-
-  const cmd = argv[1]
-  debug('argv', argv)
-  debug('cmd', cmd)
-
-  // shell.echo prints the the outer console, which we don't want
-  if (shell[cmd] && (inBrowser() || (cmd !== 'mkdir' && cmd !== 'echo'))) {
-    const args = argv.slice(2)
-
-    // remember OLDPWD, so that `cd -` works (shell issue #78)
-    if (process.env.OLDPWD === undefined) {
-      process.env.OLDPWD = ''
-    }
-    const OLDPWD = shell.pwd() // remember it for when we're done
-    if (cmd === 'cd' && args[0] === '-') {
-      // special case for "cd -"
-      args[0] = process.env.OLDPWD
-    }
-
-    // see if we should use the built-in shelljs support
-    if (!args.find(arg => arg.charAt(0) === '-') && // any options? then no
-        !args.find(arg => arg === '>') && // redirection? then no
-        cmd !== 'ls') {
-      // shelljs doesn't like dash args
-      // otherwise, shelljs has a built-in handler for this
-
-      debug('using internal shelljs', cmd, args)
-
-      const output = shell[cmd](args)
-      if (cmd === 'cd') {
-        process.env.OLDPWD = OLDPWD
-
-        if (output.code === 0) {
-          // special case: if the user asked to change working
-          // directory, respond with the new working directory
-          resolve(shell.pwd().toString())
+        } else if (!rawOut && !rawErr) {
+          // in this case, the command produced nothing, but it did exit
+          // with a 0 exit code
+          resolve(true)
         } else {
-          reject(new Error(output.stderr))
+          // else, we pass back a formatted form of the output
+          const json = extractJSON(rawOut)
+
+          if (json) {
+            json['type'] = 'shell'
+            json['verb'] = 'get'
+            resolve(json)
+          } else {
+            resolve(rawOut)
+          }
         }
       } else {
-        // otherwise, respond with the output of the command;
-        if (output && output.length > 0) {
-          if (execOptions && execOptions['json']) {
-            resolve(JSON.parse(output))
+        // oops, non-zero exit code. reject!
+        debug('non-zero exit code', exitCode)
+
+        // strip off e.g. /bin/sh: line 0:
+        const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
+        try {
+          handleNonZeroExitCode(
+            cmdLine,
+            exitCode,
+            rawOut,
+            cleanErr,
+            execOptions
+          )
+        } catch (err) {
+          reject(err)
+        }
+      }
+    })
+  })
+
+export const doShell = (
+  argv: string[],
+  options: ParsedOptions,
+  execOptions?: ExecOptions
+) =>
+  new Promise(async (resolve, reject) => {
+    if (inBrowser()) {
+      reject(
+        new Error('Local file access not supported when running in a browser')
+      )
+    }
+
+    // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
+    const shell = await import('shelljs')
+
+    if (argv.length < 2) {
+      reject(new Error('Please provide a bash command'))
+    }
+
+    const cmd = argv[1]
+    debug('argv', argv)
+    debug('cmd', cmd)
+
+    // shell.echo prints the the outer console, which we don't want
+    if (shell[cmd] && (inBrowser() || (cmd !== 'mkdir' && cmd !== 'echo'))) {
+      const args = argv.slice(2)
+
+      // remember OLDPWD, so that `cd -` works (shell issue #78)
+      if (process.env.OLDPWD === undefined) {
+        process.env.OLDPWD = ''
+      }
+      const OLDPWD = shell.pwd() // remember it for when we're done
+      if (cmd === 'cd' && args[0] === '-') {
+        // special case for "cd -"
+        args[0] = process.env.OLDPWD
+      }
+
+      // see if we should use the built-in shelljs support
+      if (
+        !args.find(arg => arg.charAt(0) === '-') && // any options? then no
+        !args.find(arg => arg === '>') && // redirection? then no
+        cmd !== 'ls'
+      ) {
+        // shelljs doesn't like dash args
+        // otherwise, shelljs has a built-in handler for this
+
+        debug('using internal shelljs', cmd, args)
+
+        const output = shell[cmd](args)
+        if (cmd === 'cd') {
+          process.env.OLDPWD = OLDPWD
+
+          if (output.code === 0) {
+            // special case: if the user asked to change working
+            // directory, respond with the new working directory
+            resolve(shell.pwd().toString())
           } else {
-            resolve(output.toString())
+            reject(new Error(output.stderr))
           }
         } else {
-          resolve(true)
+          // otherwise, respond with the output of the command;
+          if (output && output.length > 0) {
+            if (execOptions && execOptions['json']) {
+              resolve(JSON.parse(output))
+            } else {
+              resolve(output.toString())
+            }
+          } else {
+            resolve(true)
+          }
         }
       }
     }
-  }
 
-  //
-  // otherwise, we use exec to implement the shell command; here, we
-  // cross our fingers that the platform implements the requested
-  // command
-  //
-  const rest = argv.slice(1) // skip over '!'
-  const cmdLine = rest.map(_ => repl.encodeComponent(_)).join(' ')
-  debug('cmdline', cmdLine, rest)
+    //
+    // otherwise, we use exec to implement the shell command; here, we
+    // cross our fingers that the platform implements the requested
+    // command
+    //
+    const rest = argv.slice(1) // skip over '!'
+    const cmdLine = rest.map(_ => repl.encodeComponent(_)).join(' ')
+    debug('cmdline', cmdLine, rest)
 
-  doExec(cmdLine, execOptions).then(resolve, reject)
-})
+    doExec(cmdLine, execOptions).then(resolve, reject)
+  })
 
 const usage = {
   cd: {
     strict: 'cd',
     command: 'cd',
     title: 'change working directory',
-    header: 'Update the current working directory for local filesystem manipulations',
+    header:
+      'Update the current working directory for local filesystem manipulations',
     optional: localFilepath
   }
 }
@@ -206,11 +230,10 @@ const usage = {
 const cd = ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
   const dir = repl.split(command, true, true)[1] || ''
   debug('cd dir', dir)
-  return doShell(['!', 'cd', dir], parsedOptions, execOptions)
-    .catch(err => {
-      err['code'] = 500
-      throw err
-    })
+  return doShell(['!', 'cd', dir], parsedOptions, execOptions).catch(err => {
+    err['code'] = 500
+    throw err
+  })
 }
 
 /**
@@ -218,7 +241,15 @@ const cd = ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/!', dispatchToShell, { docs: 'Execute a UNIX shell command', noAuthOk: true, requiresLocal: true })
+  commandTree.listen('/!', dispatchToShell, {
+    docs: 'Execute a UNIX shell command',
+    noAuthOk: true,
+    requiresLocal: true
+  })
 
-  commandTree.listen('/cd', cd, { usage: usage.cd, noAuthOk: true, requiresLocal: true })
+  commandTree.listen('/cd', cd, {
+    usage: usage.cd,
+    noAuthOk: true,
+    requiresLocal: true
+  })
 }

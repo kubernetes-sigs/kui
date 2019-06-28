@@ -8,7 +8,8 @@ const composer = require('openwhisk-composer')
 module.exports = composer.par(
   '/whisk.system/utils/date',
   x => x,
-  '/whisk.system/utils/echo')
+  '/whisk.system/utils/echo'
+)
 
 /**
  * Notes: Previously deployed Cloud Functions can be referenced by

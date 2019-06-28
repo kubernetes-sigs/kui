@@ -27,7 +27,10 @@ declare let Color
  * Color(thatString) fails!
  *
  */
-export const transparent = (color: string, alpha = 0.6) => Color(color.trim()).alpha(alpha).rgbString()
+export const transparent = (color: string, alpha = 0.6) =>
+  Color(color.trim())
+    .alpha(alpha)
+    .rgbString()
 
 /** clean up a url for display */
 export const prettyUrl = (x: string): string => {

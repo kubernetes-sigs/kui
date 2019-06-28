@@ -21,37 +21,51 @@ const { cli, sidecar } = ui
 
 const actionName = 'foo'
 
-describe('Check error handling for invoking a non-existent action', function (this: common.ISuite) {
+describe('Check error handling for invoking a non-existent action', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('invoke a non-existent action', () => cli.do(`invoke xxxxxx`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('invoke a non-existent action', () =>
+    cli
+      .do(`invoke xxxxxx`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
-  it('async a non-existent action', () => cli.do(`async xxxxxx`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('async a non-existent action', () =>
+    cli
+      .do(`async xxxxxx`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
-  it('create an action', () => cli.do(`let ${actionName} = x=>x`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .catch(common.oops(this)))
+  it('create an action', () =>
+    cli
+      .do(`let ${actionName} = x=>x`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName))
+      .catch(common.oops(this)))
 
-  it('invoke with a non-existent package, but existing action name', () => cli.do(`invoke xxxxxx/${actionName}`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('invoke with a non-existent package, but existing action name', () =>
+    cli
+      .do(`invoke xxxxxx/${actionName}`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
-  it('invoke with a non-existent package, but existing action name, via kui action invoke', () => cli.do(`kui action invoke xxxxxx/${actionName}`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('invoke with a non-existent package, but existing action name, via kui action invoke', () =>
+    cli
+      .do(`kui action invoke xxxxxx/${actionName}`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
-  it('invoke with a non-existent package, but existing action name, via wsk action invoke', () => cli.do(`wsk action invoke xxxxxx/${actionName}`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('invoke with a non-existent package, but existing action name, via wsk action invoke', () =>
+    cli
+      .do(`wsk action invoke xxxxxx/${actionName}`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
-  it('async with a non-existent package, but existing action name', () => cli.do(`async xxxxxx/${actionName}`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('async with a non-existent package, but existing action name', () =>
+    cli
+      .do(`async xxxxxx/${actionName}`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 })

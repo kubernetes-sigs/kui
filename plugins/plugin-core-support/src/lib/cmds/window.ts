@@ -23,21 +23,33 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.subtree('/window', { docs: 'Window sizing commands, e.g. "window max" and "window unmax"' })
+  commandTree.subtree('/window', {
+    docs: 'Window sizing commands, e.g. "window max" and "window unmax"'
+  })
 
   // commandTree.listen('/window/bigger', () => tellMain('enlarge-window'))
   // commandTree.listen('/window/smaller', () => tellMain('reduce-window'))
-  commandTree.listen('/window/max', () => tellMain('maximize-window'), { docs: 'Maximize the window', noAuthOk: true })
-  commandTree.listen('/window/unmax', () => tellMain('unmaximize-window'), { docs: 'Unmaximize the window', noAuthOk: true })
+  commandTree.listen('/window/max', () => tellMain('maximize-window'), {
+    docs: 'Maximize the window',
+    noAuthOk: true
+  })
+  commandTree.listen('/window/unmax', () => tellMain('unmaximize-window'), {
+    docs: 'Unmaximize the window',
+    noAuthOk: true
+  })
 
   // register a window close command handler
-  commandTree.listen('/window/close', () => {
-    if (inBrowser()) {
-      throw new Error('Unsupported operation')
-    } else {
-      const remote = require('electron').remote
-      const w = remote.getCurrentWindow()
-      w.close()
-    }
-  }, { noAuthOk: true })
+  commandTree.listen(
+    '/window/close',
+    () => {
+      if (inBrowser()) {
+        throw new Error('Unsupported operation')
+      } else {
+        const remote = require('electron').remote
+        const w = remote.getCurrentWindow()
+        w.close()
+      }
+    },
+    { noAuthOk: true }
+  )
 }

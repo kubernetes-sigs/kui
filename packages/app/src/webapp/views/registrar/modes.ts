@@ -21,7 +21,9 @@ import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 const debug = Debug('webapp/views/registrar/modes')
 
-export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Resource) => boolean
+export type SidecarModeFilter<Resource extends MetadataBearing> = (
+  resource: Resource
+) => boolean
 
 /**
  * Interpretation: if the resource passes the given "when" filter,
@@ -30,7 +32,9 @@ export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Res
  */
 export interface ModeRegistration<Resource extends MetadataBearing> {
   when: SidecarModeFilter<Resource> // when this filter returns true...
-  mode: SidecarMode | ((command: string, resource: { resource: Resource }) => SidecarMode) // ...display this mode option
+  mode:
+    | SidecarMode
+    | ((command: string, resource: { resource: Resource }) => SidecarMode) // ...display this mode option
 }
 
 /** registered mode handlers */
@@ -40,7 +44,9 @@ const registrar: ModeRegistration<MetadataBearing>[] = []
  * Register a new mode
  *
  */
-export function registerSidecarMode<Resource extends MetadataBearing> (registration: ModeRegistration<Resource>) {
+export function registerSidecarMode<Resource extends MetadataBearing>(
+  registration: ModeRegistration<Resource>
+) {
   registrar.push(registration)
 }
 export default registerSidecarMode
@@ -50,7 +56,11 @@ export default registerSidecarMode
  * to the given modes model
  *
  */
-export function apply<Resource extends MetadataBearing> (modes: SidecarMode[], command: string, resource: { resource: Resource }) {
+export function apply<Resource extends MetadataBearing>(
+  modes: SidecarMode[],
+  command: string,
+  resource: { resource: Resource }
+) {
   registrar
     .filter(({ when }) => {
       // filter out any irrelevant modes (for this resource)
@@ -94,7 +104,10 @@ export function apply<Resource extends MetadataBearing> (modes: SidecarMode[], c
  * @return the relevant modes for the given command on the given resource
  *
  */
-export function get<Resource extends MetadataBearing> (command: string, resource: { resource: Resource }): SidecarMode[] {
+export function get<Resource extends MetadataBearing>(
+  command: string,
+  resource: { resource: Resource }
+): SidecarMode[] {
   debug('get relevant modes', resource)
   const modes: SidecarMode[] = []
   apply(modes, command, resource)

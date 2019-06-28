@@ -19,7 +19,12 @@
  *
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops
+} from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
@@ -35,13 +40,15 @@ export const header2 = (folder1, folder2) => `${header(folder1)}
 ${folder2}`
 
 /** helper method, used in the tests below: ask for help */
-export const doHelp = function (cmd, { code = 500, expect = undefined } = {}) {
-  return it(`should show help via ${cmd}`, () => cli.do(cmd, this.app)
-    .then(cli.expectError(code, expect))
-    .catch(oops(this)))
+export const doHelp = function(cmd, { code = 500, expect = undefined } = {}) {
+  return it(`should show help via ${cmd}`, () =>
+    cli
+      .do(cmd, this.app)
+      .then(cli.expectError(code, expect))
+      .catch(oops(this)))
 }
 
-describe('Help command', function (this: ISuite) {
+describe('Help command', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 

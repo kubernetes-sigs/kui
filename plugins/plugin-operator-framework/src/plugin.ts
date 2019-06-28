@@ -19,7 +19,5 @@ import olm from './controller/olm'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 export default async (commandTree: CommandRegistrar) => {
-  return Promise.all([
-    olm(commandTree)
-  ])
+  return Promise.all([olm(commandTree)])
 }

@@ -16,7 +16,11 @@
 
 /* eslint @typescript-eslint/camelcase: ["error", { allow: ["session_get", "session_result"] }] */
 
-import { actions, activations, skipAndLimit } from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-usage'
+import {
+  actions,
+  activations,
+  skipAndLimit
+} from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-usage'
 import { sampleInputs } from './sample-inputs'
 
 const activationsUsage = {
@@ -29,7 +33,8 @@ const actionsUsage = {
 }
 
 const strings = {
-  create: 'Use this command to create a new composition from a given source file.',
+  create:
+    'Use this command to create a new composition from a given source file.',
   update: 'Use this command to update an existing composition.',
   session_get: `Display the full details of a session`,
   session_result: `Display the return value of a session. (Hint: use session get to see the full details)`
@@ -45,8 +50,19 @@ export const create = command => ({
   title: 'Deploy composition',
   header: strings[command],
   example: `app ${command} <name> <sourceFile>`,
-  required: [{ name: 'name', docs: 'the name of your new app', implicitOK: ['actions', 'preview'] },
-    { name: 'sourceFile', docs: 'source file or pre-compiled composition', file: true, notNeededIfImplicit: true }],
+  required: [
+    {
+      name: 'name',
+      docs: 'the name of your new app',
+      implicitOK: ['actions', 'preview']
+    },
+    {
+      name: 'sourceFile',
+      docs: 'source file or pre-compiled composition',
+      file: true,
+      notNeededIfImplicit: true
+    }
+  ],
   optional: actionsUsage[command].optional,
   sampleInputs: sampleInputs(sampleName => `app ${command} ${sampleName}`),
   parents: ['composer', { command: 'composer app' }],
@@ -63,7 +79,14 @@ export const invoke = {
   title: 'Invoke composition',
   header: 'Invoke a given app and wait for its completion',
   example: 'app invoke <name> [-p key value]*',
-  required: [{ name: 'name', docs: 'a deployed composition', entity: 'action', implicitOK: ['actions', 'activations'] }],
+  required: [
+    {
+      name: 'name',
+      docs: 'a deployed composition',
+      entity: 'action',
+      implicitOK: ['actions', 'activations']
+    }
+  ],
   optional: actionsUsage.invoke.optional,
   parents: ['composer', { command: 'composer app' }],
   related: ['app async', 'app create', 'app get', 'app list']
@@ -98,9 +121,21 @@ export const appGet = command => ({
   title: 'Show composition',
   header: 'Displays the details of a given composition',
   example: `app ${command} <appName>`,
-  required: [{ name: 'appName', docs: 'the name of your composition', entity: 'action' }],
-  optional: [{ name: '--cli', boolean: true, docs: 'display the results textually (headless mode only)' },
-    { name: '--functions', alias: '-f', boolean: true, docs: 'show all functions directly in the view' }
+  required: [
+    { name: 'appName', docs: 'the name of your composition', entity: 'action' }
+  ],
+  optional: [
+    {
+      name: '--cli',
+      boolean: true,
+      docs: 'display the results textually (headless mode only)'
+    },
+    {
+      name: '--functions',
+      alias: '-f',
+      boolean: true,
+      docs: 'show all functions directly in the view'
+    }
   ],
   parents: ['composer', { command: 'composer app' }],
   related: ['app create', 'app invoke', 'app list']
@@ -142,9 +177,21 @@ export const sessionGet = command => ({
   title: 'Show composer session',
   header: strings[`session_${command}`],
   example: `session ${command} <sessionId>`,
-  oneof: [{ name: 'sessionId', docs: 'show a specific session id' },
-    { name: '--last', example: '[appName]', booleanOK: true, docs: 'show the last session [of the given app]' },
-    { name: '--last-failed', example: '[appName]', booleanOK: true, docs: 'ibid, except show the last failed session' }],
+  oneof: [
+    { name: 'sessionId', docs: 'show a specific session id' },
+    {
+      name: '--last',
+      example: '[appName]',
+      booleanOK: true,
+      docs: 'show the last session [of the given app]'
+    },
+    {
+      name: '--last-failed',
+      example: '[appName]',
+      booleanOK: true,
+      docs: 'ibid, except show the last failed session'
+    }
+  ],
   optional: activationsUsage.get.optional,
   parents: ['composer', { command: 'composer session' }],
   related: related[command]
@@ -156,14 +203,31 @@ export const sessionGet = command => ({
  */
 export const sessionList = {
   title: 'List Recent Sessions',
-  header: 'Returns a list of recent composition activations (a.k.a. "sessions").',
+  header:
+    'Returns a list of recent composition activations (a.k.a. "sessions").',
   example: 'session list',
   optional: [
     { name: '--name', docs: 'filter to show only a given named composition' },
-    { name: '--limit', numeric: true, docs: 'show at most N sessions in recent 20 activations' },
-    { name: '--skip', numeric: true, docs: 'skip over the most recent N sessions' },
-    { name: '--count', numeric: true, docs: 'try to find a precise number of sessions' },
-    { name: '--scan-limit', numeric: true, docs: 'show at most N sessions in all activations' }
+    {
+      name: '--limit',
+      numeric: true,
+      docs: 'show at most N sessions in recent 20 activations'
+    },
+    {
+      name: '--skip',
+      numeric: true,
+      docs: 'skip over the most recent N sessions'
+    },
+    {
+      name: '--count',
+      numeric: true,
+      docs: 'try to find a precise number of sessions'
+    },
+    {
+      name: '--scan-limit',
+      numeric: true,
+      docs: 'show at most N sessions in all activations'
+    }
   ],
   parents: ['composer', { command: 'composer session' }],
   related: ['grid', 'summary']
@@ -178,7 +242,9 @@ export const appDelete = {
   docs: 'delete a given composition',
   strict: 'delete',
   example: 'app delete <composition>',
-  required: [{ name: 'name', docs: 'a deployed composition', entity: 'action' }],
+  required: [
+    { name: 'name', docs: 'a deployed composition', entity: 'action' }
+  ],
   parents: ['composer', { command: 'composer app' }]
 }
 

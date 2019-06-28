@@ -41,7 +41,11 @@ const usage = {
     docs: 'Check on the status of the wrk executable',
     example: 'wrk check',
     optional: [
-      { name: '--details', alias: '-d', docs: 'Show the location of the wrk executable' }
+      {
+        name: '--details',
+        alias: '-d',
+        docs: 'Show the location of the wrk executable'
+      }
     ]
   },
   clean: {
@@ -72,86 +76,96 @@ const cleanWrk = async () => {
  * Compile the `wrk` executable
  *
  */
-export const compileWrk = ({ createOutputStream }) => new Promise<boolean>(async (resolve, reject) => {
-  const stdout = createOutputStream()
+export const compileWrk = ({ createOutputStream }) =>
+  new Promise<boolean>(async (resolve, reject) => {
+    const stdout = createOutputStream()
 
-  try {
-    await cleanWrk()
+    try {
+      await cleanWrk()
 
-    const tmp = '/tmp'
-    const wrkTmp = join(tmp, 'wrk')
-    const wrkTmpExec = join(wrkTmp, 'wrk')
+      const tmp = '/tmp'
+      const wrkTmp = join(tmp, 'wrk')
+      const wrkTmpExec = join(wrkTmp, 'wrk')
 
-    debug('cleaning out tmp dir')
-    await remove(wrkTmp)
+      debug('cleaning out tmp dir')
+      await remove(wrkTmp)
 
-    debug('cloning from git')
-    stdout('cloning from git', true)
+      debug('cloning from git')
+      stdout('cloning from git', true)
 
-    const clone = spawn('git', ['clone', '-b', 'latency_stacks3', 'https://github.com/starpit/wrk.git'], { cwd: tmp })
-    clone.stdout.on('data', data => {
-      stdout(data.toString().split(/[\n\r]/)[0], true) // print first line only
-    })
-    let err = ''
-    clone.stderr.on('data', data => {
-      err += data.toString()
-    })
-    clone.on('close', exitCode => {
-      if (exitCode !== 0) {
-        console.error(err)
-        reject(new Error('Failed in git clone'))
-      } else {
-        debug('compiling')
-        stdout('compiling wrk', true)
+      const clone = spawn(
+        'git',
+        [
+          'clone',
+          '-b',
+          'latency_stacks3',
+          'https://github.com/starpit/wrk.git'
+        ],
+        { cwd: tmp }
+      )
+      clone.stdout.on('data', data => {
+        stdout(data.toString().split(/[\n\r]/)[0], true) // print first line only
+      })
+      let err = ''
+      clone.stderr.on('data', data => {
+        err += data.toString()
+      })
+      clone.on('close', exitCode => {
+        if (exitCode !== 0) {
+          console.error(err)
+          reject(new Error('Failed in git clone'))
+        } else {
+          debug('compiling')
+          stdout('compiling wrk', true)
 
-        // compute the "N" for make -j N; we could use fancier logic
-        // to get the number of physical CPUs, but this is probably
-        // good enough
-        const numJobs = Math.max(1, require('os').cpus().length / 2)
-        debug('numJobs', numJobs)
+          // compute the "N" for make -j N; we could use fancier logic
+          // to get the number of physical CPUs, but this is probably
+          // good enough
+          const numJobs = Math.max(1, require('os').cpus().length / 2)
+          debug('numJobs', numJobs)
 
-        const make = spawn('make', ['-j', numJobs.toString()], {
-          cwd: wrkTmp,
-          env: {
-            PATH: '/usr/local/bin:/usr/bin:/bin',
-            MACOSX_DEPLOYMENT_TARGET: '10.14'
-          }
-        })
+          const make = spawn('make', ['-j', numJobs.toString()], {
+            cwd: wrkTmp,
+            env: {
+              PATH: '/usr/local/bin:/usr/bin:/bin',
+              MACOSX_DEPLOYMENT_TARGET: '10.14'
+            }
+          })
 
-        make.stdout.on('data', data => {
-          stdout(data.toString().split(/[\n\r]/)[0], true) // print first line only
-        })
-        let err = ''
-        make.stderr.on('data', data => {
-          err += data.toString()
-        })
-        make.on('close', async exitCode => {
-          if (exitCode !== 0) {
-            console.error(err)
-            reject(new Error('Failed in compile'))
-          } else if (!(await exists(wrkTmpExec))) {
-            reject(new Error('Cannot find wrk executable'))
-          } else {
-            debug('compilation successful')
-            stdout('compilation successful', true)
-
-            await move(wrkTmpExec, wrkExec())
-
-            if (!(await exists(wrkExec()))) {
-              debug('strange, the move did not succeed')
+          make.stdout.on('data', data => {
+            stdout(data.toString().split(/[\n\r]/)[0], true) // print first line only
+          })
+          let err = ''
+          make.stderr.on('data', data => {
+            err += data.toString()
+          })
+          make.on('close', async exitCode => {
+            if (exitCode !== 0) {
+              console.error(err)
+              reject(new Error('Failed in compile'))
+            } else if (!(await exists(wrkTmpExec))) {
               reject(new Error('Cannot find wrk executable'))
             } else {
-              resolve(true)
+              debug('compilation successful')
+              stdout('compilation successful', true)
+
+              await move(wrkTmpExec, wrkExec())
+
+              if (!(await exists(wrkExec()))) {
+                debug('strange, the move did not succeed')
+                reject(new Error('Cannot find wrk executable'))
+              } else {
+                resolve(true)
+              }
             }
-          }
-        })
-      }
-    })
-  } catch (err) {
-    console.error(err)
-    reject(err)
-  }
-})
+          })
+        }
+      })
+    } catch (err) {
+      console.error(err)
+      reject(err)
+    }
+  })
 
 /**
  * Check the status of the wrk executable
@@ -185,8 +199,17 @@ const checkWrk = async ({ parsedOptions }) => {
   }
 }
 
-export default (commandTree) => {
-  commandTree.listen('/wrk/init', compileWrk, { usage: usage.init, requiresLocal: true })
-  commandTree.listen('/wrk/check', checkWrk, { usage: usage.check, requiresLocal: true })
-  commandTree.listen('/wrk/clean', cleanWrk, { usage: usage.clean, requiresLocal: true })
+export default commandTree => {
+  commandTree.listen('/wrk/init', compileWrk, {
+    usage: usage.init,
+    requiresLocal: true
+  })
+  commandTree.listen('/wrk/check', checkWrk, {
+    usage: usage.check,
+    requiresLocal: true
+  })
+  commandTree.listen('/wrk/clean', cleanWrk, {
+    usage: usage.clean,
+    requiresLocal: true
+  })
 }

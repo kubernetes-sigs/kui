@@ -18,4 +18,4 @@ const composer = require('openwhisk-composer')
 
 require('fs')
 
-module.exports = composer.sequence('echo1','echo2')
+module.exports = composer.sequence('echo1', 'echo2')

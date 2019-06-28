@@ -19,7 +19,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { expectSuggestionsFor } from '@kui-shell/core/test/core/command-not-found-suggestions'
 
-describe('Suggestions for command not found', function (this: common.ISuite) {
+describe('Suggestions for command not found', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -28,7 +28,8 @@ describe('Suggestions for command not found', function (this: common.ISuite) {
       click: 0, // click on it
       expectedBreadcrumb: 'OpenWhisk' // expect this breadcrumb
     }
-    return expectSuggestionsFor.call(this,
+    return expectSuggestionsFor.call(
+      this,
       'ws', // type this
       ['wsk'], // expect these completions
       opts
@@ -40,7 +41,8 @@ describe('Suggestions for command not found', function (this: common.ISuite) {
       click: 0, // click on it
       sidecar: 'grid' // expected sidecar icon
     }
-    return expectSuggestionsFor.call(this,
+    return expectSuggestionsFor.call(
+      this,
       'gri', // type this
       ['grid'], // expect these completions
       opts

@@ -17,7 +17,12 @@
 import eventBus from '@kui-shell/core/core/events'
 
 import { toOpenWhiskFQN } from '../util/util'
-import { States, FinalState, watchStatus, rendering as stateRendering } from '../model/states'
+import {
+  States,
+  FinalState,
+  watchStatus,
+  rendering as stateRendering
+} from '../model/states'
 
 const debug = require('debug')('k8s/util/formatEntity')
 
@@ -26,11 +31,15 @@ const debug = require('debug')('k8s/util/formatEntity')
  *
  */
 export const formatContextAttr = (context: string, extraCSS?: string) => {
-  return [{
-    key: 'context',
-    value: context,
-    outerCSS: `${extraCSS ? extraCSS + ' ' : ''}entity-name-group entity-name-group-narrow hide-with-sidecar`
-  }]
+  return [
+    {
+      key: 'context',
+      value: context,
+      outerCSS: `${
+        extraCSS ? extraCSS + ' ' : ''
+      }entity-name-group entity-name-group-narrow hide-with-sidecar`
+    }
+  ]
 }
 
 /**
@@ -43,7 +52,11 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   const doWatch = true
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
 
-  const { apiVersion, kind, metadata: { name, namespace, labels, annotations = {} } } = kubeEntity
+  const {
+    apiVersion,
+    kind,
+    metadata: { name, namespace, labels, annotations = {} }
+  } = kubeEntity
   const { type, actionName, packageName, fqn } = toOpenWhiskFQN(kubeEntity)
   const { outerCSS, cssForState } = stateRendering
 
@@ -55,18 +68,31 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   const kindForDisplay = masqueradeKind || kind
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const kindAttr: any[] = [{ key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }]
-  const contextAttr = parsedOptions.multi || !context ? []
-    : formatContextAttr(context)
+  const kindAttr: any[] = [
+    { key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }
+  ]
+  const contextAttr =
+    parsedOptions.multi || !context ? [] : formatContextAttr(context)
 
   // see if anyone else changes the expected final state
-  const watch = { apiVersion, kind, name, namespace, type, fqn, context, labels }
+  const watch = {
+    apiVersion,
+    kind,
+    name,
+    namespace,
+    type,
+    fqn,
+    context,
+    labels
+  }
   const eventType = '/kubectl/state/expect'
   const listener = ({ watch: other, finalState: otherFinalState }) => {
-    if (watch.kind === other.kind &&
-        watch.name === other.name &&
-        watch.context === other.context &&
-        finalState !== otherFinalState) {
+    if (
+      watch.kind === other.kind &&
+      watch.name === other.name &&
+      watch.context === other.context &&
+      finalState !== otherFinalState
+    ) {
       debug('conflicting final states', watch, finalState, otherFinalState)
 
       eventBus.removeListener(eventType, listener)
@@ -77,42 +103,52 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
   // let everyone know that this resource has a new expected final state
   eventBus.emit('/kubectl/state/expect', { watch, finalState })
 
-  const namespaceAttrs = !watch.kind || watch.kind.match(/(ns|Namespace)/i) ? [] : [{
-    key: 'namespace',
-    value: targetNamespace || namespace,
-    outerCSS: 'pretty-narrow hide-with-sidecar'
-  }]
-
-  const statusAttrs = parsedOptions['no-status'] ? [] : [
-    {
-      key: 'status',
-      value: States.Pending,
-      placeholderValue: true, // allows headless to make an informed rendering decision
-      tag: 'badge',
-      watch: !doWatch ? undefined : (iter: number) => {
-        const watchResponse = watchStatus(watch, finalState, iter)
-        watchResponse.then(({ done }) => {
-          if (done) {
-            eventBus.removeListener(eventType, listener)
+  const namespaceAttrs =
+    !watch.kind || watch.kind.match(/(ns|Namespace)/i)
+      ? []
+      : [
+          {
+            key: 'namespace',
+            value: targetNamespace || namespace,
+            outerCSS: 'pretty-narrow hide-with-sidecar'
           }
-        })
+        ]
 
-        return watchResponse
-      },
-      outerCSS,
-      css: cssForState(States.Pending)
-    },
+  const statusAttrs = parsedOptions['no-status']
+    ? []
+    : [
+        {
+          key: 'status',
+          value: States.Pending,
+          placeholderValue: true, // allows headless to make an informed rendering decision
+          tag: 'badge',
+          watch: !doWatch
+            ? undefined
+            : (iter: number) => {
+                const watchResponse = watchStatus(watch, finalState, iter)
+                watchResponse.then(({ done }) => {
+                  if (done) {
+                    eventBus.removeListener(eventType, listener)
+                  }
+                })
 
-    {
-      key: 'message',
-      value: '',
-      css: 'somewhat-smaller-text slightly-deemphasize',
-      outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
-    }
-  ]
+                return watchResponse
+              },
+          outerCSS,
+          css: cssForState(States.Pending)
+        },
+
+        {
+          key: 'message',
+          value: '',
+          css: 'somewhat-smaller-text slightly-deemphasize',
+          outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
+        }
+      ]
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const attributes: any[] = kindAttr.concat(contextAttr)
+  const attributes: any[] = kindAttr
+    .concat(contextAttr)
     .concat(namespaceAttrs)
     .concat(statusAttrs)
 
@@ -122,7 +158,9 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
     name: title || actionName || fqn,
     packageName,
     noSort: true,
-    onclick: parsedOptions.onclickFn ? parsedOptions.onclickFn(kubeEntity) : false,
+    onclick: parsedOptions.onclickFn
+      ? parsedOptions.onclickFn(kubeEntity)
+      : false,
     attributes
   })
 }

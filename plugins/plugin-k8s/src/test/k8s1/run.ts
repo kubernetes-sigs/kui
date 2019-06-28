@@ -16,11 +16,16 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  waitForGreen,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl', 'k']
 
-describe('electron kubectl run', function (this: common.ISuite) {
+describe('electron kubectl run', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -31,14 +36,16 @@ describe('electron kubectl run', function (this: common.ISuite) {
     allocateNS(this, ns)
 
     it(`should create deployment from ${kubectl} run`, () => {
-      return cli.do(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
+      return cli
+        .do(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(common.oops(this))
     })
 
     it(`should delete the deployment by name via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete deployment nginx -n ${ns}`, this.app)
+      return cli
+        .do(`${kubectl} delete deployment nginx -n ${ns}`, this.app)
         .then(cli.expectOKWithAny)
         .catch(common.oops(this))
     })
