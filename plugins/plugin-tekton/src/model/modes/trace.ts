@@ -44,7 +44,12 @@ interface RenderOpts {
  * Render a trace view in the given container
  *
  */
-export const render = (tab: Tab, activations: ActivationLike[], container: Element, opts: RenderOpts = {}): void => {
+export const render = (
+  tab: Tab,
+  activations: ActivationLike[],
+  container: Element,
+  opts: RenderOpts = {}
+): void => {
   const { noCrop = false, showStart = false, showTimeline = true } = opts
 
   debug('trace', activations)
@@ -64,7 +69,10 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
   // normalizing the bar dimensions
   const first = 0
   const start = activations[first].start
-  const maxEnd = activations.reduce((max, activation) => Math.max(max, activation.end || (activation.start + 1)), 0) // the last one in the list might not have the highest end
+  const maxEnd = activations.reduce(
+    (max, activation) => Math.max(max, activation.end || activation.start + 1),
+    0
+  ) // the last one in the list might not have the highest end
   const dur = Math.max(1, maxEnd - start, maxEnd - start)
 
   const tgap = 0
@@ -103,8 +111,11 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
     // if statusCode is undefined, check activation.response for success/fail info
     // need to avoid isSuccess is set to undefined, as (false || undefined) returns undefined
     // and re: statusCode === 0, see the note just above
-    const isSuccess = !activation.end ? true // rules and triggers. always successful?
-      : activation.statusCode !== undefined ? activation.statusCode === 0 : (activation.response && activation.response.success)
+    const isSuccess = !activation.end
+      ? true // rules and triggers. always successful?
+      : activation.statusCode !== undefined
+      ? activation.statusCode === 0
+      : activation.response && activation.response.success
 
     // row dom
     const line = logTable.insertRow(-1)
@@ -144,10 +155,13 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
 
     // column 3: duration cell
     const duration = nextCell()
-    duration.className = 'somewhat-smaller-text log-field log-field-right-align duration-field'
+    duration.className =
+      'somewhat-smaller-text log-field log-field-right-align duration-field'
     duration.classList.add(isSuccess ? 'green-text' : 'red-text')
     if (activation.end) {
-      duration.innerText = prettyPrintDuration(activation.end - activation.start)
+      duration.innerText = prettyPrintDuration(
+        activation.end - activation.start
+      )
     } else {
       // for trigger and rule, set duration to be 1ms. If duration is not set, qtip will show 'lasting undefined'
       duration.innerText = prettyPrintDuration(1)
@@ -181,18 +195,32 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
       bar.classList.add('log-line-bar')
       bar.classList.add(`is-success-${isSuccess}`)
       const left = normalize(activation.start + initTime, idx)
-      const right = normalize(idx === 0 ? maxEnd : activation.end || (activation.start + initTime + 1), idx) // handle rules and triggers as having dur=1
+      const right = normalize(
+        idx === 0 ? maxEnd : activation.end || activation.start + initTime + 1,
+        idx
+      ) // handle rules and triggers as having dur=1
       const width = right - left
 
       // on which side should we render the tooltip?
       const balloonPos = right > 0.9 ? 'left' : 'right'
 
-      bar.style.left = (100 * left) + '%'
-      bar.style.width = (100 * width) + '%'
+      bar.style.left = 100 * left + '%'
+      bar.style.width = 100 * width + '%'
       // bar.onclick = pip(show(activation))
-      bar.setAttribute('data-balloon', prettyPrintDuration(activation.end ? activation.end - activation.start - initTime : initTime))
+      bar.setAttribute(
+        'data-balloon',
+        prettyPrintDuration(
+          activation.end
+            ? activation.end - activation.start - initTime
+            : initTime
+        )
+      )
       bar.setAttribute('data-balloon-pos', balloonPos)
-      bar.onmouseover = () => legend.setAttribute('data-hover-type', isSuccess ? 'execution-time' : 'failures')
+      bar.onmouseover = () =>
+        legend.setAttribute(
+          'data-hover-type',
+          isSuccess ? 'execution-time' : 'failures'
+        )
       bar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
       // container initialization bar
@@ -203,16 +231,21 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
         const l = normalize(activation.start, idx)
         const w = normalize(activation.start + initTime, idx) - l
 
-        initTimeBar.style.left = (100 * l) + '%'
-        initTimeBar.style.width = (100 * w) + '%'
+        initTimeBar.style.left = 100 * l + '%'
+        initTimeBar.style.width = 100 * w + '%'
         initTimeBar.style.position = 'absolute'
         initTimeBar.classList.add('log-line-bar')
         initTimeBar.classList.add('is-initTime')
-        initTimeBar.onmouseover = () => legend.setAttribute('data-hover-type', 'container-initialization')
+        initTimeBar.onmouseover = () =>
+          legend.setAttribute('data-hover-type', 'container-initialization')
         initTimeBar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
         // activation can fail at init time - if that's the case, initTime === duration
-        if (initTime === activation.duration) { initTimeBar.classList.add(`is-success-false`) } else { initTimeBar.classList.add(`is-success-true`) }
+        if (initTime === activation.duration) {
+          initTimeBar.classList.add(`is-success-false`)
+        } else {
+          initTimeBar.classList.add(`is-success-true`)
+        }
 
         // initTimeBar.onclick = pip(show(activation))
         initTimeBar.setAttribute('data-balloon', prettyPrintDuration(initTime))
@@ -225,15 +258,16 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
         const l = normalize(activation.start - waitTime, idx)
         const w = normalize(activation.start, idx) - l
 
-        waitTimeBar.style.left = (100 * l) + '%'
-        waitTimeBar.style.width = (100 * w) + '%'
+        waitTimeBar.style.left = 100 * l + '%'
+        waitTimeBar.style.width = 100 * w + '%'
         waitTimeBar.style.position = 'absolute'
         waitTimeBar.classList.add('log-line-bar')
         waitTimeBar.classList.add('is-waitTime')
         // waitTimeBar.onclick = pip(show(activation))
         waitTimeBar.setAttribute('data-balloon', prettyPrintDuration(waitTime))
         waitTimeBar.setAttribute('data-balloon-pos', balloonPos)
-        waitTimeBar.onmouseover = () => legend.setAttribute('data-hover-type', 'queueing-delays')
+        waitTimeBar.onmouseover = () =>
+          legend.setAttribute('data-hover-type', 'queueing-delays')
         waitTimeBar.onmouseout = () => legend.removeAttribute('data-hover-type')
       }
 
@@ -256,9 +290,14 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
       const startInner = document.createElement('span') as HTMLElement
       const previous = activations[idx - 1]
       const previousWaitTime = 0
-      const previousStart = previous && (previous.start - previousWaitTime)
-      const time = prettyPrintTime(activation.start - waitTime, 'short', previousStart)
-      start.className = 'somewhat-smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
+      const previousStart = previous && previous.start - previousWaitTime
+      const time = prettyPrintTime(
+        activation.start - waitTime,
+        'short',
+        previousStart
+      )
+      start.className =
+        'somewhat-smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
       start.appendChild(startInner)
       if (typeof time === 'string') {
         startInner.innerText = time
@@ -270,10 +309,15 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
   })
 }
 
-function makeRunActivationLike (run: PipelineRun): ActivationLike {
-  const start = run && run.status && run.status.startTime && new Date(run.status.startTime)
-  const end = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
-  const duration = start && end && (end.getTime() - start.getTime())
+function makeRunActivationLike(run: PipelineRun): ActivationLike {
+  const start =
+    run && run.status && run.status.startTime && new Date(run.status.startTime)
+  const end =
+    run &&
+    run.status &&
+    run.status.completionTime &&
+    new Date(run.status.completionTime)
+  const duration = start && end && end.getTime() - start.getTime()
 
   return {
     activationId: run.metadata.name,
@@ -287,9 +331,11 @@ function makeRunActivationLike (run: PipelineRun): ActivationLike {
   }
 }
 
-interface SymbolTable<N> { [key: string]: N }
+interface SymbolTable<N> {
+  [key: string]: N
+}
 
-function makeSymbolTables (pipeline: Pipeline, jsons: KubeResource[]) {
+function makeSymbolTables(pipeline: Pipeline, jsons: KubeResource[]) {
   // map from Task.metadata.name to Task
   const taskName2Task: SymbolTable<Task> = jsons
     .filter(_ => _.kind === 'Task')
@@ -299,29 +345,36 @@ function makeSymbolTables (pipeline: Pipeline, jsons: KubeResource[]) {
     }, {})
 
   // map from Pipeline.Task.name to Task
-  const taskRefName2Task: SymbolTable<Task> = pipeline.spec.tasks
-    .reduce((symtab: SymbolTable<Task>, taskRef: TaskRef) => {
+  const taskRefName2Task: SymbolTable<Task> = pipeline.spec.tasks.reduce(
+    (symtab: SymbolTable<Task>, taskRef: TaskRef) => {
       symtab[taskRef.name] = taskName2Task[taskRef.taskRef.name]
       return symtab
-    }, {})
+    },
+    {}
+  )
 
   return { taskRefName2Task }
 }
 
-function makeTaskRunsActivationLike (run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]): ActivationLike[] {
+function makeTaskRunsActivationLike(
+  run: PipelineRun,
+  pipeline: Pipeline,
+  jsons: KubeResource[]
+): ActivationLike[] {
   const runs = run && run.status.taskRuns
 
   const { taskRefName2Task } = makeSymbolTables(pipeline, jsons)
 
-  const activations = Object.keys(runs || []).reduce((M: ActivationLike[], _: string) => {
-    const taskRun = runs[_]
-    const taskRefName = taskRun.pipelineTaskName
-    const task = taskRefName2Task[taskRefName]
+  const activations = Object.keys(runs || []).reduce(
+    (M: ActivationLike[], _: string) => {
+      const taskRun = runs[_]
+      const taskRefName = taskRun.pipelineTaskName
+      const task = taskRefName2Task[taskRefName]
 
-    if (!task) {
-      console.error('!! task not found', taskRefName, taskRefName2Task)
-    } else {
-      /* const start = new Date(taskRun.status.startTime).getTime()
+      if (!task) {
+        console.error('!! task not found', taskRefName, taskRefName2Task)
+      } else {
+        /* const start = new Date(taskRun.status.startTime).getTime()
 
       task.visitedIdx = M.length
       M.push({
@@ -332,39 +385,46 @@ function makeTaskRunsActivationLike (run: PipelineRun, pipeline: Pipeline, jsons
         }
       }) */
 
-      taskRun.status.steps.forEach(stepRun => {
-        const start = new Date(stepRun.terminated.startedAt).getTime()
-        const end = new Date(stepRun.terminated.finishedAt).getTime()
-        const success = stepRun.terminated.reason !== 'Error'
+        taskRun.status.steps.forEach(stepRun => {
+          const start = new Date(stepRun.terminated.startedAt).getTime()
+          const end = new Date(stepRun.terminated.finishedAt).getTime()
+          const success = stepRun.terminated.reason !== 'Error'
 
-        /* const step = task.spec.steps.find(_ => _.name === stepRun.name)
+          /* const step = task.spec.steps.find(_ => _.name === stepRun.name)
         if (!step) {
           console.error('!! step not found', stepRun.name, task.spec.steps)
         } else if (step) {
           step.visitedIdx = M.length
         } */
 
-        M.push({
-          activationId: taskRun.pipelineTaskName,
-          name: stepRun.name,
-          start,
-          end,
-          duration: end - start,
-          response: {
-            success
-          }
+          M.push({
+            activationId: taskRun.pipelineTaskName,
+            name: stepRun.name,
+            start,
+            end,
+            duration: end - start,
+            response: {
+              success
+            }
+          })
         })
-      })
-    }
-    return M
-  }, [] as ActivationLike[])
+      }
+      return M
+    },
+    [] as ActivationLike[]
+  )
 
   activations.sort((a, b) => a.start - b.start)
 
   return activations
 }
 
-export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]) => {
+export const traceView = (
+  tab: Tab,
+  run: PipelineRun,
+  pipeline: Pipeline,
+  jsons: KubeResource[]
+) => {
   const content = document.createElement('div')
   content.classList.add('padding-content', 'repl-result')
   content.style.flex = '1'
@@ -373,9 +433,13 @@ export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons:
   content.style.overflowX = 'hidden'
 
   const runActivation = makeRunActivationLike(run)
-  render(tab, [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)), content)
+  render(
+    tab,
+    [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)),
+    content
+  )
 
-  const badges: Badge[] = [ 'Tekton' ]
+  const badges: Badge[] = ['Tekton']
 
   return {
     type: 'custom',
@@ -391,13 +455,16 @@ export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons:
 
 /**
  * Sidecar mode for a pipeline run trace view
-*
-*/
+ *
+ */
 const traceMode: SidecarMode = {
   mode: 'trace',
   direct: async (tab: Tab, _: ResponseObject) => {
     const resource = _.resource as PipelineRun
-    const [ pipeline, tasks ] = await Promise.all([ getPipelineFromRef(resource), getTasks() ])
+    const [pipeline, tasks] = await Promise.all([
+      getPipelineFromRef(resource),
+      getTasks()
+    ])
     return traceView(tab, resource, pipeline, tasks)
   },
   defaultMode: true,

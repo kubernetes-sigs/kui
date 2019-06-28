@@ -31,31 +31,59 @@ import repl = require('@kui-shell/core/core/repl')
  * the given resource
  *
  */
-export const statusButton = (command: string, resource: Resource, finalState: FinalState, overrides?) => Object.assign({}, {
-  mode: 'status',
-  direct: {
-    plugin: 'k8s',
-    module: 'lib/view/modes/status',
-    operation: 'renderAndViewStatus',
-    parameters: { command, resource, finalState }
-  }
-}, overrides || {})
+export const statusButton = (
+  command: string,
+  resource: Resource,
+  finalState: FinalState,
+  overrides?
+) =>
+  Object.assign(
+    {},
+    {
+      mode: 'status',
+      direct: {
+        plugin: 'k8s',
+        module: 'lib/view/modes/status',
+        operation: 'renderAndViewStatus',
+        parameters: { command, resource, finalState }
+      }
+    },
+    overrides || {}
+  )
 
 /**
  * Render the multi-table status view. This just wraps some doms
  * around the formatMultiListResult() output.
  *
  */
-export const renderStatus = async (tab: Tab, command: string, resource: Resource, finalState: FinalState) => {
-  debug('renderStatus', command, resource.filepathForDrilldown, resource.kind, resource.name, finalState, resource.resource)
+export const renderStatus = async (
+  tab: Tab,
+  command: string,
+  resource: Resource,
+  finalState: FinalState
+) => {
+  debug(
+    'renderStatus',
+    command,
+    resource.filepathForDrilldown,
+    resource.kind,
+    resource.name,
+    finalState,
+    resource.resource
+  )
 
   // TODO: helm status doesn't yet support watching; so no final-state for helm status
-  const final = command === 'kubectl' ? `--final-state ${finalState.toString()}` : ''
+  const final =
+    command === 'kubectl' ? `--final-state ${finalState.toString()}` : ''
 
   // kubectl status => k8s status
   const commandForRepl = command === 'kubectl' ? 'k8s' : command
 
-  const fetchModels = `${commandForRepl} status ${repl.encodeComponent(resource.filepathForDrilldown || resource.kind || resource.resource.kind)} ${repl.encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
+  const fetchModels = `${commandForRepl} status ${repl.encodeComponent(
+    resource.filepathForDrilldown || resource.kind || resource.resource.kind
+  )} ${repl.encodeComponent(resource.name)} ${final} -n "${
+    resource.resource.metadata.namespace
+  }"`
   debug('issuing command', fetchModels)
 
   const model = await repl.qexec(fetchModels)

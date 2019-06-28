@@ -20,7 +20,9 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const actionName = 'foo'
 const actionNameWithSpaces = 'foo foo'
@@ -29,112 +31,179 @@ const packageName = 'ppp'
 const packageNameWithSpaces = 'ppp ppp'
 const seqName = 'sss'
 
-describe('Delete multiple actions using rimraf', function (this: common.ISuite) {
+describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should fail with 404 to delete non-existent numeric name', () => cli.do(`rimraf 3`, this.app)
-    .then(cli.expectError(404))
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
+  it('should fail with 404 to delete non-existent numeric name', () =>
+    cli
+      .do(`rimraf 3`, this.app)
+      .then(cli.expectError(404))
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .catch(common.oops(this)))
+  it('should create an action', () =>
+    cli
+      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName))
+      .catch(common.oops(this)))
 
   // create an action, using the implicit entity type
-  it('should create another action', () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2))
-    .catch(common.oops(this)))
+  it('should create another action', () =>
+    cli
+      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2))
+      .catch(common.oops(this)))
 
   // delete them both
-  it('should delete them both', () => cli.do(`rimraf ${actionName} ${actionName2}`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
+  it('should delete them both', () =>
+    cli
+      .do(`rimraf ${actionName} ${actionName2}`, this.app)
+      .then(
+        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
+      )
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
 
-  it('should NOT find a deleted action', () => cli.do(`action get ${actionName} --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should NOT find a deleted action', () =>
+    cli
+      .do(`action get ${actionName} --no-retry`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
-  it('should FAIL to delete a non-existent action', () => cli.do(`rimraf ${actionName} --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should FAIL to delete a non-existent action', () =>
+    cli
+      .do(`rimraf ${actionName} --no-retry`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
   //
   // recursive removal of packages
   //
-  it('should create a packaged action', () => cli.do(`let ${packageName}/${actionName} = x=>x`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName, undefined, undefined, packageName))
-    .catch(common.oops(this)))
-  it('should create another packaged action', () => cli.do(`let ${packageName}/${actionName2} = x=>x`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName))
-    .catch(common.oops(this)))
-  it('should delete the package recursively', () => cli.do(`package rimraf -r ${packageName}`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true }))
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
-  it('should FAIL to delete the removed package', () => cli.do(`package rimraf -r ${packageName} --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
-  it('should NOT find the deleted package', () => cli.do(`action get ${packageName} --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
-  it('should NOT find the deleted package action', () => cli.do(`action get ${packageName}/${actionName} --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should create a packaged action', () =>
+    cli
+      .do(`let ${packageName}/${actionName} = x=>x`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(
+        sidecar.expectShowing(actionName, undefined, undefined, packageName)
+      )
+      .catch(common.oops(this)))
+  it('should create another packaged action', () =>
+    cli
+      .do(`let ${packageName}/${actionName2} = x=>x`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(
+        sidecar.expectShowing(actionName2, undefined, undefined, packageName)
+      )
+      .catch(common.oops(this)))
+  it('should delete the package recursively', () =>
+    cli
+      .do(`package rimraf -r ${packageName}`, this.app)
+      .then(
+        cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true })
+      )
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
+  it('should FAIL to delete the removed package', () =>
+    cli
+      .do(`package rimraf -r ${packageName} --no-retry`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
+  it('should NOT find the deleted package', () =>
+    cli
+      .do(`action get ${packageName} --no-retry`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
+  it('should NOT find the deleted package action', () =>
+    cli
+      .do(`action get ${packageName}/${actionName} --no-retry`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
   //
   // recursive removal of packages with spaces
   //
-  it('should create a packaged action with spaces', () => cli.do(`let "${packageNameWithSpaces}/${actionNameWithSpaces}" = x=>x`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionNameWithSpaces, undefined, undefined, packageNameWithSpaces))
-    .catch(common.oops(this)))
-  it('should delete the package recursively', () => cli.do(`package rimraf -r "${packageNameWithSpaces}"`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
-  it('should FAIL to delete the removed package', () => cli.do(`package rimraf -r "${packageNameWithSpaces}" --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
-  it('should NOT find the deleted package', () => cli.do(`action get "${actionNameWithSpaces}" --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
-  it('should NOT find the deleted package action', () => cli.do(`action get "${packageNameWithSpaces}/${actionNameWithSpaces}" --no-retry`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should create a packaged action with spaces', () =>
+    cli
+      .do(
+        `let "${packageNameWithSpaces}/${actionNameWithSpaces}" = x=>x`,
+        this.app
+      )
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(
+        sidecar.expectShowing(
+          actionNameWithSpaces,
+          undefined,
+          undefined,
+          packageNameWithSpaces
+        )
+      )
+      .catch(common.oops(this)))
+  it('should delete the package recursively', () =>
+    cli
+      .do(`package rimraf -r "${packageNameWithSpaces}"`, this.app)
+      .then(
+        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
+      )
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
+  it('should FAIL to delete the removed package', () =>
+    cli
+      .do(`package rimraf -r "${packageNameWithSpaces}" --no-retry`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
+  it('should NOT find the deleted package', () =>
+    cli
+      .do(`action get "${actionNameWithSpaces}" --no-retry`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
+  it('should NOT find the deleted package action', () =>
+    cli
+      .do(
+        `action get "${packageNameWithSpaces}/${actionNameWithSpaces}" --no-retry`,
+        this.app
+      )
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
   //
   // recursive removal of anonymous inline functions
   //
-  it('should create an action', () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .catch(common.oops(this)))
-  it('should create another action', () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2))
-    .catch(common.oops(this)))
-  it('should create a sequence with anonymous inline action', () => cli.do(`let ${seqName} = ${actionName} -> x=>x -> ${actionName2}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName))
-    .catch(common.oops(this)))
-  it('should delete the sequence recursively', () => cli.do(`rimraf -r ${seqName}`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
+  it('should create an action', () =>
+    cli
+      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName))
+      .catch(common.oops(this)))
+  it('should create another action', () =>
+    cli
+      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2))
+      .catch(common.oops(this)))
+  it('should create a sequence with anonymous inline action', () =>
+    cli
+      .do(`let ${seqName} = ${actionName} -> x=>x -> ${actionName2}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName))
+      .catch(common.oops(this)))
+  it('should delete the sequence recursively', () =>
+    cli
+      .do(`rimraf -r ${seqName}`, this.app)
+      .then(
+        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
+      )
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
 })

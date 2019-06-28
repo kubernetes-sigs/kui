@@ -22,5 +22,4 @@ export interface ShowOptions {
   modes?: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export class DefaultShowOptions implements ShowOptions {
-}
+export class DefaultShowOptions implements ShowOptions {}

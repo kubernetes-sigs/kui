@@ -22,13 +22,22 @@ import * as view from '../../view/entity-view'
 
 export default async (commandTree: CommandRegistrar) => {
   /* command handler for app invoke */
-  commandTree.listen(`/wsk/app/invoke`, ({ command, parsedOptions: options }) => {
-    return repl.qfexec(command.replace('app', 'action'))
-      .then(result => view.formatCompositionResult(result, options))
-  }, { usage: invoke })
+  commandTree.listen(
+    `/wsk/app/invoke`,
+    ({ command, parsedOptions: options }) => {
+      return repl
+        .qfexec(command.replace('app', 'action'))
+        .then(result => view.formatCompositionResult(result, options))
+    },
+    { usage: invoke }
+  )
 
   /* command handler for app async */
-  commandTree.listen(`/wsk/app/async`, ({ command }) => {
-    return repl.qfexec(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
-  }, { usage: async })
+  commandTree.listen(
+    `/wsk/app/async`,
+    ({ command }) => {
+      return repl.qfexec(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
+    },
+    { usage: async }
+  )
 }

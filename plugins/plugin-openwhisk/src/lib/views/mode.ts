@@ -21,7 +21,10 @@
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import {
+  show as showSidecar,
+  showEntity
+} from '@kui-shell/core/webapp/views/sidecar'
 
 import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
 import repl = require('@kui-shell/core/core/repl')
@@ -34,13 +37,25 @@ import repl = require('@kui-shell/core/core/repl')
  * If requiredType===true, then accept any
  *
  */
-const docs = (docString: string, requiredType?: string | boolean, noSequencesPlease = false) => Object.assign({ docs: docString }, {
-  requireSelection: true,
-  filter: requiredType && (selection => {
-    return (requiredType === true || selection.type === requiredType) && // requiredType matches
-            (!noSequencesPlease || selection.prettyType !== 'sequence') // isSequence matches
-  })
-})
+const docs = (
+  docString: string,
+  requiredType?: string | boolean,
+  noSequencesPlease = false
+) =>
+  Object.assign(
+    { docs: docString },
+    {
+      requireSelection: true,
+      filter:
+        requiredType &&
+        (selection => {
+          return (
+            (requiredType === true || selection.type === requiredType) && // requiredType matches
+            (!noSequencesPlease || selection.prettyType !== 'sequence')
+          ) // isSequence matches
+        })
+    }
+  )
 
 /** does the given entity match the given entityId? */
 const idMatch = (entity, entityId) => {
@@ -52,27 +67,41 @@ const idMatch = (entity, entityId) => {
   }
 }
 
-export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => {
-  const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args, tab }: EvaluatorArgs) => {
+export default async (
+  commandTree: CommandRegistrar,
+  { crudable, synonyms }
+) => {
+  const switchSidecarMode = (entityType, mode) => async ({
+    argvNoOptions: args,
+    tab
+  }: EvaluatorArgs) => {
     const entityId = args[args.indexOf(mode) + 1]
     const selection = currentSelection(tab)
 
-    if (selection &&
-        (!entityType ||
-         !entityId ||
-         (selection.type === entityType && idMatch(selection, entityId)) ||
-         (Array.isArray(entityType) && entityType.find(t => t === selection.type)))) {
-      if (mode !== 'raw' &&
-          !(selection[mode] ||
-            (selection.exec && selection.exec[mode]) ||
-            (isActivationSpec(selection) && selection.response[mode]))) {
+    if (
+      selection &&
+      (!entityType ||
+        !entityId ||
+        (selection.type === entityType && idMatch(selection, entityId)) ||
+        (Array.isArray(entityType) &&
+          entityType.find(t => t === selection.type)))
+    ) {
+      if (
+        mode !== 'raw' &&
+        !(
+          selection[mode] ||
+          (selection.exec && selection.exec[mode]) ||
+          (isActivationSpec(selection) && selection.response[mode])
+        )
+      ) {
         console.error('!!!!!!!!', selection)
         throw new Error(`The current entity does not support viewing ${mode}`)
       } else {
         showSidecar(tab)
         return showEntity(tab, selection, { show: mode })
       }
-    } else if (args.length === 3 || args.length === 4) { // activation logs xxx or wsk activation logs xxx
+    } else if (args.length === 3 || args.length === 4) {
+      // activation logs xxx or wsk activation logs xxx
       const activation = await repl.qexec(`${entityType} get ${entityId}`)
       if (isHeadless()) {
         return activation[mode]
@@ -81,11 +110,17 @@ export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => 
         return true // make repl happy
       }
     } else {
-      const isVowel = c => c === 'a' || c === 'e' || c === 'i' || c === 'o' || c === 'u'
+      const isVowel = c =>
+        c === 'a' || c === 'e' || c === 'i' || c === 'o' || c === 'u'
       const startsWithVowel = s => isVowel(s.charAt(0))
 
-      throw new Error(!entityType ? 'You have not selected an entity'
-        : `You have not yet selected ${startsWithVowel(entityType) ? 'an' : 'a'} ${entityType.replace(/s$/, '')}`)
+      throw new Error(
+        !entityType
+          ? 'You have not selected an entity'
+          : `You have not yet selected ${
+              startsWithVowel(entityType) ? 'an' : 'a'
+            } ${entityType.replace(/s$/, '')}`
+      )
     }
   }
 
@@ -93,26 +128,66 @@ export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => 
   // toggle activation mode
   //
   synonyms('activations').forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/result`, switchSidecarMode('activations', 'result'), docs('Show the result of an activation', 'activations'))
-    commandTree.listen(`/wsk/${syn}/logs`, switchSidecarMode('activations', 'logs'),
-      Object.assign(docs('Show the logs of an activation', 'activations'), { needsUI: true, width: 800, height: 800 }))
+    commandTree.listen(
+      `/wsk/${syn}/result`,
+      switchSidecarMode('activations', 'result'),
+      docs('Show the result of an activation', 'activations')
+    )
+    commandTree.listen(
+      `/wsk/${syn}/logs`,
+      switchSidecarMode('activations', 'logs'),
+      Object.assign(docs('Show the logs of an activation', 'activations'), {
+        needsUI: true,
+        width: 800,
+        height: 800
+      })
+    )
   })
 
   //
   // toggle action mode
   synonyms('actions').forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/code`, switchSidecarMode('actions', 'code'), docs('Show the code of an action', 'actions', true))
-    commandTree.listen(`/wsk/${syn}/limits`, switchSidecarMode('actions', 'limits'), docs('Show the limits of an action', 'actions'))
+    commandTree.listen(
+      `/wsk/${syn}/code`,
+      switchSidecarMode('actions', 'code'),
+      docs('Show the code of an action', 'actions', true)
+    )
+    commandTree.listen(
+      `/wsk/${syn}/limits`,
+      switchSidecarMode('actions', 'limits'),
+      docs('Show the limits of an action', 'actions')
+    )
   })
 
   crudable.forEach(type => {
     synonyms(type).forEach(syn => {
-      const paramsCmd = commandTree.listen(`/wsk/${syn}/parameters`, switchSidecarMode(undefined, 'parameters'), docs('Show the parameters', true, true))
-      commandTree.synonym(`/wsk/${syn}/params`, switchSidecarMode(undefined, 'parameters'), paramsCmd, docs('Show the parameters', true, true))
+      const paramsCmd = commandTree.listen(
+        `/wsk/${syn}/parameters`,
+        switchSidecarMode(undefined, 'parameters'),
+        docs('Show the parameters', true, true)
+      )
+      commandTree.synonym(
+        `/wsk/${syn}/params`,
+        switchSidecarMode(undefined, 'parameters'),
+        paramsCmd,
+        docs('Show the parameters', true, true)
+      )
 
-      commandTree.listen(`/wsk/${syn}/annotations`, switchSidecarMode(undefined, 'annotations'), docs('Show the annotations'))
-      commandTree.listen(`/wsk/${syn}/content`, switchSidecarMode(undefined, 'default'), docs('Show the main content'))
-      commandTree.listen(`/wsk/${syn}/raw`, switchSidecarMode(undefined, 'raw'), docs('Show the raw JSON record'))
+      commandTree.listen(
+        `/wsk/${syn}/annotations`,
+        switchSidecarMode(undefined, 'annotations'),
+        docs('Show the annotations')
+      )
+      commandTree.listen(
+        `/wsk/${syn}/content`,
+        switchSidecarMode(undefined, 'default'),
+        docs('Show the main content')
+      )
+      commandTree.listen(
+        `/wsk/${syn}/raw`,
+        switchSidecarMode(undefined, 'raw'),
+        docs('Show the raw JSON record')
+      )
       // commandTree.listen('/default', switchSidecarMode(undefined, 'default'))
     })
   })

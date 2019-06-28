@@ -18,11 +18,13 @@ const composer = require('openwhisk-composer')
 const path = require('path')
 
 function foo() {
-    const fs = require('fs');
-    const authorMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'author-map.json'), 'utf8'));
-    return composer.let({ am: authorMap }, p => {
-        return am[p.author] == undefined ? {} : am[p.author]
-    })
+  const fs = require('fs')
+  const authorMap = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'author-map.json'), 'utf8')
+  )
+  return composer.let({ am: authorMap }, p => {
+    return am[p.author] == undefined ? {} : am[p.author]
+  })
 }
 
 module.exports = composer.sequence(foo())

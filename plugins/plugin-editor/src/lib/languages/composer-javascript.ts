@@ -40,12 +40,14 @@ const strings = {
     args: ['task', 'errorHandler']
   },
   let: {
-    documentation: 'Bind a variable to a value, then execute a sequence of tasks',
+    documentation:
+      'Bind a variable to a value, then execute a sequence of tasks',
     detail: 'var=value; task1 -> task2',
     args: ['variable', 'value', 'task1', 'task2']
   },
   mask: {
-    documentation: 'Execute a given composition masking any enclosing variable bindings',
+    documentation:
+      'Execute a given composition masking any enclosing variable bindings',
     detail: 'mask enclosing variable bindings',
     args: ['composition']
   },
@@ -70,7 +72,8 @@ const strings = {
     args: ['task']
   },
   task: {
-    documentation: 'You may optionally choose to merge the task input and output (options.merge), or project a given field (options.output)',
+    documentation:
+      'You may optionally choose to merge the task input and output (options.merge), or project a given field (options.output)',
     detail: 'Perform a single task',
     args: ['task', 'options']
   }
@@ -81,14 +84,20 @@ const strings = {
  * keys of the `strings` object above, and make a proposal out of them
  *
  */
-const makeProposal = monaco => keyword => Object.assign({
-  label: keyword,
-  kind: monaco.languages.CompletionItemKind.Method,
-  insertText: {
-    // the map changes [x,y] to [${1:x}, ${2:y}], which gives a tab order
-    value: `${keyword}(${strings[keyword].args.map((_, idx) => `\${${idx + 1}:${_}}`).join(', ')})`
-  }
-}, strings[keyword])
+const makeProposal = monaco => keyword =>
+  Object.assign(
+    {
+      label: keyword,
+      kind: monaco.languages.CompletionItemKind.Method,
+      insertText: {
+        // the map changes [x,y] to [${1:x}, ${2:y}], which gives a tab order
+        value: `${keyword}(${strings[keyword].args
+          .map((_, idx) => `\${${idx + 1}:${_}}`)
+          .join(', ')})`
+      }
+    },
+    strings[keyword]
+  )
 
 const proposals = monaco => Object.keys(strings).map(makeProposal(monaco))
 
@@ -99,12 +108,17 @@ export default monaco => ({
     triggerCharacters: ['.'],
     provideCompletionItems: (model, position) => {
       // Split everything the user has typed on the current line up at each space, and only look at the last word
-      const lastChars = model.getValueInRange({ startLineNumber: position.lineNumber, startColumn: 0, endLineNumber: position.lineNumber, endColumn: position.column })
+      const lastChars = model.getValueInRange({
+        startLineNumber: position.lineNumber,
+        startColumn: 0,
+        endLineNumber: position.lineNumber,
+        endColumn: position.column
+      })
       const words = lastChars.replace('\t', '').split(' ')
       const activeTyping = words[words.length - 1] // What the user is currently typing (everything after the last space)
 
       // If the last character typed is a period then we need to look at member objects of the obj object
-      const isPrefix = activeTyping.match(composerPattern)// activeTyping.charAt(activeTyping.length - 1) === '.'
+      const isPrefix = activeTyping.match(composerPattern) // activeTyping.charAt(activeTyping.length - 1) === '.'
 
       if (isPrefix) {
         return proposals(monaco)

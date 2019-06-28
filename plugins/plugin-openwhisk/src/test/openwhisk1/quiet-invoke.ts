@@ -26,30 +26,44 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
 // TODO: webpack test
-localDescribe('Invoke -q (quiet invoke)', function (this: common.ISuite) {
+localDescribe('Invoke -q (quiet invoke)', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should create an action', () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName)))
+  it('should create an action', () =>
+    cli
+      .do(
+        `create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`,
+        this.app
+      )
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName)))
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2)))
+  it('should create an action', () =>
+    cli
+      .do(
+        `create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`,
+        this.app
+      )
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2)))
 
   // quiet invoke shouldn't affect the sidecar
-  it('should invoke -q', () => cli.do(`invoke ${actionName} -q`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2)))
+  it('should invoke -q', () =>
+    cli
+      .do(`invoke ${actionName} -q`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2)))
 })

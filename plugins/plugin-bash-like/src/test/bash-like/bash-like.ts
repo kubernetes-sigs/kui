@@ -31,63 +31,98 @@ ${folder}`
  * Check to see if the given executable is available
  *
  */
-const hasExe = (exe: string): Promise<boolean> => new Promise(resolve => {
-  exec(exe, err => resolve(!err))
-})
+const hasExe = (exe: string): Promise<boolean> =>
+  new Promise(resolve => {
+    exec(exe, err => resolve(!err))
+  })
 
-localDescribe('shell commands', function (this: common.ISuite) {
+localDescribe('shell commands', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should give 404 for unknown outer command', () => cli.do(`ibmcloudo target`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should give 404 for unknown outer command', () =>
+    cli
+      .do(`ibmcloudo target`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 
   // these two are useful as a pair; git usage responds with exit code
   // 1, whereas ibmcloud responds with exit code 0
-  it('should give usage for git', () => cli.do(`git`, this.app)
-    .then(cli.expectError(1))
-    .catch(common.oops(this)))
-  it('should give usage for ibmcloud', () => cli.do(`ibmcloud`, this.app)
-    .then(cli.expectError(500, header('ibmcloud')))
-    .catch(common.oops(this)))
+  it('should give usage for git', () =>
+    cli
+      .do(`git`, this.app)
+      .then(cli.expectError(1))
+      .catch(common.oops(this)))
+  it('should give usage for ibmcloud', () =>
+    cli
+      .do(`ibmcloud`, this.app)
+      .then(cli.expectError(500, header('ibmcloud')))
+      .catch(common.oops(this)))
 
   if (!process.env.LOCAL_OPENWHISK) {
-    it('should give ok for known outer command: ibmcloud target', () => cli.do(`ibmcloud target`, this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    it('should give ok for known outer command: ibmcloud target', () =>
+      cli
+        .do(`ibmcloud target`, this.app)
+        .then(cli.expectOK)
+        .catch(common.oops(this)))
   }
 
   if (hasExe('ibmcloud')) {
-    it('should give usage for ibmcloud config', () => cli.do(`ibmcloud config`, this.app)
-      .then(cli.expectError(2, undefined))
-      .catch(common.oops(this)))
+    it('should give usage for ibmcloud config', () =>
+      cli
+        .do(`ibmcloud config`, this.app)
+        .then(cli.expectError(2, undefined))
+        .catch(common.oops(this)))
 
-    it('should give usage for ibmcloud app', () => cli.do(`ibmcloud app`, this.app)
-      .then(cli.expectErrorWithPassthrough(500))
-      .then(N => Promise.all([
-        this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
-        this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`),
-        this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`)
-      ]))
-      .catch(common.oops(this)))
+    it('should give usage for ibmcloud app', () =>
+      cli
+        .do(`ibmcloud app`, this.app)
+        .then(cli.expectErrorWithPassthrough(500))
+        .then(N =>
+          Promise.all([
+            this.app.client.waitForExist(
+              `${selectors.OUTPUT_N(
+                N
+              )} h4.usage-error-title[data-title="commands"]`
+            ),
+            this.app.client.waitForExist(
+              `${selectors.OUTPUT_N(
+                N
+              )} .bx--breadcrumb-item .bx--no-link[data-label="app"]`
+            ),
+            this.app.client.waitForExist(
+              `${selectors.OUTPUT_N(
+                N
+              )} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`
+            )
+          ])
+        )
+        .catch(common.oops(this)))
   }
 
-  it('should answer which ls with /bin/ls', () => cli.do(`which -a ls`, this.app) // For some customized bash, `which ls` could show: ls: aliased to ls -G
-    .then(cli.expectOKWithCustom({ expect: '/bin/ls', exact: false }))
-    .catch(common.oops(this)))
+  it('should answer which ls with /bin/ls', () =>
+    cli
+      .do(`which -a ls`, this.app) // For some customized bash, `which ls` could show: ls: aliased to ls -G
+      .then(cli.expectOKWithCustom({ expect: '/bin/ls', exact: false }))
+      .catch(common.oops(this)))
 
-  it('should echo hi', () => cli.do(`echo hi`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'hi' }))
-    .catch(common.oops(this)))
+  it('should echo hi', () =>
+    cli
+      .do(`echo hi`, this.app)
+      .then(cli.expectOKWithCustom({ expect: 'hi' }))
+      .catch(common.oops(this)))
 
-  it('should change working directory', () => cli.do(`cd bin`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should change working directory', () =>
+    cli
+      .do(`cd bin`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
 
-  it('should list core/', () => cli.do(`ls`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'runTest.sh' }))
-    .catch(common.oops(this)))
+  it('should list core/', () =>
+    cli
+      .do(`ls`, this.app)
+      .then(cli.expectOKWithCustom({ expect: 'runTest.sh' }))
+      .catch(common.oops(this)))
 
   // clean up possible previous test leftovers
   try {
@@ -116,33 +151,51 @@ localDescribe('shell commands', function (this: common.ISuite) {
     .then(cli.expectOKWithCustom({ expect: 'try.js' }))
     .catch(common.oops(this))) */
 
-  it('should mkdir with spaces', () => cli.do(`mkdir "foo bar"`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
-  it('should fail to mkdir again', () => cli.do(`mkdir "foo bar"`, this.app)
-    .then(cli.expectError(409))
-    .catch(common.oops(this)))
+  it('should mkdir with spaces', () =>
+    cli
+      .do(`mkdir "foo bar"`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
+  it('should fail to mkdir again', () =>
+    cli
+      .do(`mkdir "foo bar"`, this.app)
+      .then(cli.expectError(409))
+      .catch(common.oops(this)))
 
-  it('should echo ho to a file', () => cli.do(`echo ho > "foo bar"/testTmp`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
-  it('should cat that file', () => cli.do(`cat "foo bar"/testTmp`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'ho' }))
-    .catch(common.oops(this)))
-  it('should rm that file', () => cli.do(`rm "foo bar"/testTmp`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should echo ho to a file', () =>
+    cli
+      .do(`echo ho > "foo bar"/testTmp`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
+  it('should cat that file', () =>
+    cli
+      .do(`cat "foo bar"/testTmp`, this.app)
+      .then(cli.expectOKWithCustom({ expect: 'ho' }))
+      .catch(common.oops(this)))
+  it('should rm that file', () =>
+    cli
+      .do(`rm "foo bar"/testTmp`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
 
-  it('should mkdir a subdir with spaces', () => cli.do(`mkdir "foo bar"/"foo2 bar2"`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
-  it('should list the new directory with spaces', () => cli.do(`lls "foo bar"`, this.app) // test the lls synonym for ls
-    .then(cli.expectOKWithCustom({ expect: 'foo2 bar2' }))
-    .catch(common.oops(this)))
-  it('should rmdir a subdir with spaces', () => cli.do(`rmdir "foo bar"/"foo2 bar2"`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
-  it('should rmdir a dir with spaces', () => cli.do(`rmdir "foo bar"`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should mkdir a subdir with spaces', () =>
+    cli
+      .do(`mkdir "foo bar"/"foo2 bar2"`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
+  it('should list the new directory with spaces', () =>
+    cli
+      .do(`lls "foo bar"`, this.app) // test the lls synonym for ls
+      .then(cli.expectOKWithCustom({ expect: 'foo2 bar2' }))
+      .catch(common.oops(this)))
+  it('should rmdir a subdir with spaces', () =>
+    cli
+      .do(`rmdir "foo bar"/"foo2 bar2"`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
+  it('should rmdir a dir with spaces', () =>
+    cli
+      .do(`rmdir "foo bar"`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this)))
 })

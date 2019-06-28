@@ -39,24 +39,30 @@ const usage = {
  *
  */
 const addClickHandlers = (table: Table, execOptions): Table => {
-  const body: Row[] = table.body.map((row): Row => {
-    const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
-    const { value: contextName } = nameAttr
+  const body: Row[] = table.body.map(
+    (row): Row => {
+      const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
+      const { value: contextName } = nameAttr
 
-    nameAttr.outerCSS += ' entity-name-group-narrow'
+      nameAttr.outerCSS += ' entity-name-group-narrow'
 
-    const onclick = async () => {
-      await repl.qexec(`kubectl config use-context ${repl.encodeComponent(contextName)}`,
-        undefined, undefined, Object.assign({}, execOptions, { raw: true }))
-      row.setSelected()
+      const onclick = async () => {
+        await repl.qexec(
+          `kubectl config use-context ${repl.encodeComponent(contextName)}`,
+          undefined,
+          undefined,
+          Object.assign({}, execOptions, { raw: true })
+        )
+        row.setSelected()
+      }
+
+      row.name = contextName
+      row.onclick = onclick
+      nameAttr.onclick = onclick
+
+      return row
     }
-
-    row.name = contextName
-    row.onclick = onclick
-    nameAttr.onclick = onclick
-
-    return row
-  })
+  )
 
   return new Table({
     header: table.header,
@@ -69,29 +75,47 @@ const addClickHandlers = (table: Table, execOptions): Table => {
  * List contets command handler
  *
  */
-const listContexts = opts => repl.qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions)
-  .then((contexts: Table | Table[]) => Array.isArray(contexts)
-    ? contexts.map(context => addClickHandlers(context, opts.execOptions)) : addClickHandlers(contexts, opts.execOptions))
+const listContexts = opts =>
+  repl
+    .qexec(
+      `kubectl config get-contexts`,
+      undefined,
+      undefined,
+      opts.execOptions
+    )
+    .then((contexts: Table | Table[]) =>
+      Array.isArray(contexts)
+        ? contexts.map(context => addClickHandlers(context, opts.execOptions))
+        : addClickHandlers(contexts, opts.execOptions)
+    )
 
 /**
  * Register the commands
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/k8s/context',
+  commandTree.listen(
+    '/k8s/context',
     async ({ execOptions }) => {
-      return (await repl.qexec(`kubectl config current-context`,
-        undefined, undefined, Object.assign({}, execOptions, { raw: true }))).trim()
+      return (await repl.qexec(
+        `kubectl config current-context`,
+        undefined,
+        undefined,
+        Object.assign({}, execOptions, { raw: true })
+      )).trim()
     },
-    { usage: usage.context('context'),
+    {
+      usage: usage.context('context'),
       inBrowserOk: true,
-      noAuthOk: [ 'openwhisk' ] })
+      noAuthOk: ['openwhisk']
+    }
+  )
 
-  commandTree.listen('/k8s/contexts',
-    listContexts,
-    { usage: usage.contexts('contexts'),
-      width: 1024,
-      height: 600,
-      inBrowserOk: true,
-      noAuthOk: [ 'openwhisk' ] })
+  commandTree.listen('/k8s/contexts', listContexts, {
+    usage: usage.contexts('contexts'),
+    width: 1024,
+    height: 600,
+    inBrowserOk: true,
+    noAuthOk: ['openwhisk']
+  })
 }

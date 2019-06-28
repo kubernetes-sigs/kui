@@ -6,10 +6,11 @@ const composer = require('openwhisk-composer')
  * pollute the parameter bindings of the given composition, this
  * helper uses the MASK combinator to "mask out" the n variable.
  */
-function loop (n, composition) {
-  return composer.let({ n },
-    composer.while(() => n-- > 0,
-      composer.mask(composition)))
+function loop(n, composition) {
+  return composer.let(
+    { n },
+    composer.while(() => n-- > 0, composer.mask(composition))
+  )
 }
 
 /**
@@ -25,4 +26,5 @@ module.exports = composer.let(
   // the body of the let; the n referenced here should
   // be "our" n, not the n declared by the loop helper.
   // With mask, we achieve the desired scoping.
-  loop(3, loop(4, () => ++n)))
+  loop(3, loop(4, () => ++n))
+)

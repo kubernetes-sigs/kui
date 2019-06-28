@@ -55,7 +55,9 @@ export const del = ({ argvNoOptions: args, parsedOptions: options }) => {
   const which = args.slice(idx + 1)
 
   if (which.length === 0 || options.help) {
-    throw new UsageError(args.slice(0, idx).join(' ') + ' <idx1> [<idx2> <idx3> ...]')
+    throw new UsageError(
+      args.slice(0, idx).join(' ') + ' <idx1> [<idx2> <idx3> ...]'
+    )
   }
 
   let list = all()

@@ -54,7 +54,8 @@ const usage = {
     toplevel: {
       commandPrefix: 'wsk auth',
       title: 'Authorization Operations',
-      header: 'Commands to switch, list, and remember OpenWhisk authorization keys',
+      header:
+        'Commands to switch, list, and remember OpenWhisk authorization keys',
       available: [],
       related: ['host']
     },
@@ -66,18 +67,31 @@ const usage = {
       strict: 'list',
       command: 'list',
       title: 'List Auth Keys',
-      header: 'List the OpenWhisk namespaces for which you have authorization keys',
+      header:
+        'List the OpenWhisk namespaces for which you have authorization keys',
       parents: ['auth'],
       related: ['host set']
     },
-    'switch': {
+    switch: {
       strict: 'switch',
       command: 'switch',
       title: 'Switch Auth Keys',
       header: 'Switch to use an OpenWhisk namespace, by name',
       example: 'auth switch <namespace>',
-      required: [{ name: 'namespace', docs: 'an OpenWhisk namespace', entity: 'namespace' }],
-      optional: [{ name: '--save', boolean: false, docs: 'switch the namespace and save it locally' }],
+      required: [
+        {
+          name: 'namespace',
+          docs: 'an OpenWhisk namespace',
+          entity: 'namespace'
+        }
+      ],
+      optional: [
+        {
+          name: '--save',
+          boolean: false,
+          docs: 'switch the namespace and save it locally'
+        }
+      ],
       parents: ['auth'],
       related: ['auth list', 'host set']
     },
@@ -119,7 +133,10 @@ const usage = {
       nRowsInViewport: 5,
       oneof: [
         { name: 'local', docs: 'Use a local OpenWhisk installation' },
-        { command: 'us-east', docs: 'Use the IBM Cloud Washington D.C. installation' },
+        {
+          command: 'us-east',
+          docs: 'Use the IBM Cloud Washington D.C. installation'
+        },
         { command: 'us-south', docs: 'Use the IBM Cloud Dallas installation' },
         { command: 'eu-gb', docs: 'Use the IBM Cloud London installation' },
         { command: 'eu-de', docs: 'Use the IBM Cloud Frankrut installation' },
@@ -129,7 +146,11 @@ const usage = {
     }
   }
 }
-usage.auth.toplevel.available = [usage.auth.add, usage.auth.list, usage.auth.switch]
+usage.auth.toplevel.available = [
+  usage.auth.add,
+  usage.auth.list,
+  usage.auth.switch
+]
 usage.host.toplevel.available = [usage.host.get, usage.host.set]
 
 /**
@@ -137,10 +158,14 @@ usage.host.toplevel.available = [usage.host.get, usage.host.set]
  *
  */
 const informUserOfChange = (tab: Tab, subject?: string) => () => {
-  setTimeout(async () => eventBus.emit('/auth/change', {
-    namespace: await namespace.current(),
-    subject: subject
-  }), 0)
+  setTimeout(
+    async () =>
+      eventBus.emit('/auth/change', {
+        namespace: await namespace.current(),
+        subject: subject
+      }),
+    0
+  )
 
   return apiHost.get().then(async host => {
     clearSelection(tab)
@@ -152,7 +177,7 @@ const informUserOfChange = (tab: Tab, subject?: string) => () => {
  * Notify other plugins of a host change event
  *
  */
-const notifyOfHostChange = (host) => async () => {
+const notifyOfHostChange = host => async () => {
   eventBus.emit('/host/change', {
     namespace: await namespace.current({ noNamespaceOk: true }),
     host: host
@@ -165,34 +190,40 @@ const notifyOfHostChange = (host) => async () => {
  * @return resolves with the updated structure
  *
  */
-const readFromLocalWskProps = (auth?: string, subject?: string) => apiHost.get().then(apiHost => new Promise((resolve, reject) => {
-  // read from ~/.wskprops
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const propertiesParser = require('properties-parser')
-  propertiesParser.read(wskpropsFile(), (err, wskprops) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        // the .wskprops file does not yet exist. manufacture
-        // an in-memory form of the data we currently have
-        debug('using blank wskprops')
-        resolve({
-          APIHOST: apiHost,
-          AUTH: auth || ''
+const readFromLocalWskProps = (auth?: string, subject?: string) =>
+  apiHost.get().then(
+    apiHost =>
+      new Promise((resolve, reject) => {
+        // read from ~/.wskprops
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const propertiesParser = require('properties-parser')
+        propertiesParser.read(wskpropsFile(), (err, wskprops) => {
+          if (err) {
+            if (err.code === 'ENOENT') {
+              // the .wskprops file does not yet exist. manufacture
+              // an in-memory form of the data we currently have
+              debug('using blank wskprops')
+              resolve({
+                APIHOST: apiHost,
+                AUTH: auth || ''
+              })
+            } else {
+              reject(err)
+            }
+          } else {
+            // we successfuly read the .wskprops file into an
+            // in-memory struct; now update that struct
+            wskprops.APIHOST = apiHost // in case this has also changed, via `host set`
+            if (auth) wskprops.AUTH = auth
+            if (subject) wskprops.SUBJECT = subject
+            console.error(
+              `updating existing wksprops ${JSON.stringify(wskprops)}`
+            )
+            resolve(wskprops)
+          }
         })
-      } else {
-        reject(err)
-      }
-    } else {
-      // we successfuly read the .wskprops file into an
-      // in-memory struct; now update that struct
-      wskprops.APIHOST = apiHost // in case this has also changed, via `host set`
-      if (auth) wskprops.AUTH = auth
-      if (subject) wskprops.SUBJECT = subject
-      console.error(`updating existing wksprops ${JSON.stringify(wskprops)}`)
-      resolve(wskprops)
-    }
-  })
-}))
+      })
+  )
 
 /**
  * Write the given wskprops data structure to ~/.wskprops
@@ -200,23 +231,31 @@ const readFromLocalWskProps = (auth?: string, subject?: string) => apiHost.get()
  * @return resolves with the wskprops data structure
  *
  */
-const writeToLocalWskProps = (wskprops): Promise<string> => new Promise((resolve, reject) => {
-  let props = ''
-  for (const key in wskprops) {
-    props += `${key}=${wskprops[key]}\n`
-  }
-  console.error('writing wskprops file to %s %s', wskpropsFile(), wskprops.AUTH)
-  require('fs').writeFile(wskpropsFile(), props, err => {
-    if (err) reject(err)
-    else resolve(wskprops.AUTH)
+const writeToLocalWskProps = (wskprops): Promise<string> =>
+  new Promise((resolve, reject) => {
+    let props = ''
+    for (const key in wskprops) {
+      props += `${key}=${wskprops[key]}\n`
+    }
+    console.error(
+      'writing wskprops file to %s %s',
+      wskpropsFile(),
+      wskprops.AUTH
+    )
+    require('fs').writeFile(wskpropsFile(), props, err => {
+      if (err) reject(err)
+      else resolve(wskprops.AUTH)
+    })
   })
-})
 
 /**
  * Read-and-update an auth choice to ~/.wskprops
  *
  */
-const updateLocalWskProps = (auth?: string, subject?: string): Promise<string> => {
+const updateLocalWskProps = (
+  auth?: string,
+  subject?: string
+): Promise<string> => {
   if (!inBrowser()) {
     return readFromLocalWskProps(auth, subject).then(writeToLocalWskProps)
   } else {
@@ -243,35 +282,33 @@ const list = async (): Promise<Table> => {
     type,
     name: 'CURRENT',
     outerCSS: 'header-cell very-narrow',
-    attributes: [
-      { value: 'NAMESPACE', outerCSS: 'header-cell' }
-    ]
+    attributes: [{ value: 'NAMESPACE', outerCSS: 'header-cell' }]
   }
 
-  const body: Row[] = list.map((ns): Row => {
-    const row: Row = {
-      type,
-      name: ns.namespace,
-      fontawesome: 'fas fa-check',
-      outerCSS: 'very-narrow',
-      css: 'selected-entity',
-      rowCSS: ns.namespace === current && 'selected-row',
-      onclick: undefined,
-      attributes: [
-        { value: ns.namespace, onclick: undefined }
-      ]
+  const body: Row[] = list.map(
+    (ns): Row => {
+      const row: Row = {
+        type,
+        name: ns.namespace,
+        fontawesome: 'fas fa-check',
+        outerCSS: 'very-narrow',
+        css: 'selected-entity',
+        rowCSS: ns.namespace === current && 'selected-row',
+        onclick: undefined,
+        attributes: [{ value: ns.namespace, onclick: undefined }]
+      }
+
+      const onclick = async () => {
+        await repl.qexec(`auth switch ${repl.encodeComponent(ns.namespace)}`)
+        row.setSelected()
+      }
+
+      row.onclick = onclick // <-- clicks on the "check mark"
+      row.attributes[0].onclick = onclick // <-- clicks on the namespace
+
+      return row
     }
-
-    const onclick = async () => {
-      await repl.qexec(`auth switch ${repl.encodeComponent(ns.namespace)}`)
-      row.setSelected()
-    }
-
-    row.onclick = onclick // <-- clicks on the "check mark"
-    row.attributes[0].onclick = onclick // <-- clicks on the namespace
-
-    return row
-  })
+  )
 
   return { header: headerRow, body, noSort: true, type, title: type }
 }
@@ -288,31 +325,35 @@ interface UseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: EvaluatorArgs) => namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
-  if (auth) {
-    /**
-     * e.g. auth switch [auth] (=> options.save is undefined)
-     *      auth switch [auth] --save (=> options.save is true)
-     *      auth switch [auth] --no-save (=> options.save is false)
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const options = (parsedOptions as any) as UseOptions
-    if (options.save === false) {
-      return namespace.use(auth)
-        .then(informUserOfChange(tab))
+const use = (verb: string) => ({
+  argvNoOptions,
+  parsedOptions,
+  tab
+}: EvaluatorArgs) =>
+  namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
+    if (auth) {
+      /**
+       * e.g. auth switch [auth] (=> options.save is undefined)
+       *      auth switch [auth] --save (=> options.save is true)
+       *      auth switch [auth] --no-save (=> options.save is false)
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const options = (parsedOptions as any) as UseOptions
+      if (options.save === false) {
+        return namespace.use(auth).then(informUserOfChange(tab))
+      } else {
+        return updateLocalWskProps(auth)
+          .then(auth => namespace.useAndSave(auth))
+          .then(informUserOfChange(tab))
+      }
     } else {
-      return updateLocalWskProps(auth)
-        .then(auth => namespace.useAndSave(auth))
-        .then(informUserOfChange(tab))
+      return namespace.list().then(namespaces => {
+        const ns = firstArg(argvNoOptions, verb)
+        console.error(`Namespace not found ${ns} ${JSON.stringify(namespaces)}`)
+        throw new Error(`The details for this namespace were not found: ${ns}`)
+      })
     }
-  } else {
-    return namespace.list().then(namespaces => {
-      const ns = firstArg(argvNoOptions, verb)
-      console.error(`Namespace not found ${ns} ${JSON.stringify(namespaces)}`)
-      throw new Error(`The details for this namespace were not found: ${ns}`)
-    })
-  }
-})
+  })
 
 /**
  * Make a dom that suggests a command to the user
@@ -334,23 +375,25 @@ const addFn = (tab: Tab, key: string, subject: string) => {
   debug('add', key, subject)
 
   const previousAuth = authModel.get()
-  return authModel.set(key)
+  return authModel
+    .set(key)
     .then(() => namespace.init(true)) // true means that we'll do the error handling
     .then(() => updateLocalWskProps(key, subject))
     .then(informUserOfChange(tab, subject))
     .catch(err => {
       if (err.statusCode === 401) {
         // then the key is bogus, restore the previousAuth
-        return authModel.set(previousAuth)
-          .then(() => {
-            err.error.error = 'The supplied authentication key was not recognized'
-            throw err
-          })
+        return authModel.set(previousAuth).then(() => {
+          err.error.error = 'The supplied authentication key was not recognized'
+          throw err
+        })
       } else {
         console.log(err)
         // otherwise, guide the user towards possibly helpful commands
         const dom = document.createElement('div')
-        dom.appendChild(document.createTextNode('Please select a namespace, using '))
+        dom.appendChild(
+          document.createTextNode('Please select a namespace, using ')
+        )
         clicky(dom, 'wsk auth list', repl.pexec)
         dom.appendChild(document.createTextNode(' or '))
         clicky(dom, 'wsk auth add', partial)
@@ -363,12 +406,20 @@ const addFn = (tab: Tab, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
+const hostSet = async ({
+  argvNoOptions,
+  parsedOptions: options,
+  execOptions
+}: EvaluatorArgs) => {
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
     host: argv[0] || options.host, // the new apihost to use
-    ignoreCerts: !!(options.ignoreCerts || options.insecureSSL || options.insecure),
+    ignoreCerts: !!(
+      options.ignoreCerts ||
+      options.insecureSSL ||
+      options.insecure
+    ),
     isLocal: false // is this a local openwhisk?
   }
 
@@ -398,7 +449,13 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
   } else if (hostConfig.host === 'frankfurt' || hostConfig.host === 'eu-de') {
     // accept a short-hand for the Frankfurt Bluemix OpenWhisk
     hostConfig.host = 'https://openwhisk.eu-de.bluemix.net'
-  } else if (hostConfig.host === 'docker-machine' || hostConfig.host === 'dm' || hostConfig.host === 'mac' || hostConfig.host === 'darwin' || hostConfig.host === 'macos') {
+  } else if (
+    hostConfig.host === 'docker-machine' ||
+    hostConfig.host === 'dm' ||
+    hostConfig.host === 'mac' ||
+    hostConfig.host === 'darwin' ||
+    hostConfig.host === 'macos'
+  ) {
     // local docker-machine host (this is usually macOS)
     hostConfig.host = 'http://192.168.99.100:10001'
     hostConfig.ignoreCerts = true
@@ -409,66 +466,79 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
     hostConfig.ignoreCerts = true
     hostConfig.isLocal = true
   } else if (hostConfig.host === 'local' || hostConfig.host === 'localhost') {
-    hostConfig = await repl.qexec('wsk host pinglocal', undefined, undefined, execOptions)
+    hostConfig = await repl.qexec(
+      'wsk host pinglocal',
+      undefined,
+      undefined,
+      execOptions
+    )
   }
 
   const { host, ignoreCerts, isLocal } = await Promise.resolve(hostConfig)
 
-  return apiHost.set(host, { ignoreCerts })
+  return apiHost
+    .set(host, { ignoreCerts })
     .then(namespace.setApiHost)
     .then(() => updateLocalWskProps())
     .then(notifyOfHostChange(host))
-    .then(() => namespace.list().then(auths => {
-      debug('got auths', auths)
-      //
-      // after switching hosts, we'll need to get a new AUTH key. either:
-      //
-      //    1. the user provided one on the CLI (specifiedKey), or
-      //    2. the user has not yet registered any keys for this host
-      //    3. there is exactly one key (that the user has previously registered with a wsk auth add command)
-      //       in this case, we use that singleton auth key without question
-      //    4. there user has previously registered more than one; in this case, we list them
-      //
-      const specifiedKey = argv[1] || options.auth || options.key
-      if (specifiedKey) {
-        // use `wsk auth add` to register the key for this host
-        debug('using specified key')
-        return repl.qfexec(`wsk auth add ${specifiedKey}`)
-      } else if (auths.length === 0) {
-        if (isLocal && !process.env.LOCAL_OPENWHISK) {
-          // fixed key for local openwhisk
-          // when in travis (LOCAL_OPENWHISK), then we aren't using the
-          // default key, hence the extra if guard
-          debug('using fixed localhost key')
-          const key = '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
-          return repl.qfexec(`wsk auth add ${key}`)
+    .then(() =>
+      namespace.list().then(auths => {
+        debug('got auths', auths)
+        //
+        // after switching hosts, we'll need to get a new AUTH key. either:
+        //
+        //    1. the user provided one on the CLI (specifiedKey), or
+        //    2. the user has not yet registered any keys for this host
+        //    3. there is exactly one key (that the user has previously registered with a wsk auth add command)
+        //       in this case, we use that singleton auth key without question
+        //    4. there user has previously registered more than one; in this case, we list them
+        //
+        const specifiedKey = argv[1] || options.auth || options.key
+        if (specifiedKey) {
+          // use `wsk auth add` to register the key for this host
+          debug('using specified key')
+          return repl.qfexec(`wsk auth add ${specifiedKey}`)
+        } else if (auths.length === 0) {
+          if (isLocal && !process.env.LOCAL_OPENWHISK) {
+            // fixed key for local openwhisk
+            // when in travis (LOCAL_OPENWHISK), then we aren't using the
+            // default key, hence the extra if guard
+            debug('using fixed localhost key')
+            const key =
+              '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
+            return repl.qfexec(`wsk auth add ${key}`)
+          }
+
+          // no keys, yet. enter a special mode requesting further assistance
+          debug('no auth found')
+          namespace.setNoNamespace(false)
+          const dom = document.createElement('div')
+          const clicky = document.createElement('span')
+          const cmd = 'wsk auth add <AUTH_KEY>'
+
+          clicky.className = 'clickable clickable-blatant'
+          clicky.innerText = cmd
+          clicky.onclick = () => partial(cmd)
+
+          dom.appendChild(
+            document.createTextNode(
+              'Before you can proceed, please provide an OpenWhisk auth key, using '
+            )
+          )
+          dom.appendChild(clicky)
+          return dom
+        } else if (auths.length === 1) {
+          // if there's just one namespace, then select it
+          debug('found exactly one auth')
+          return repl.qfexec(`auth switch ${auths[0].namespace}`)
+        } else {
+          // otherwise, offer a list of them to the user
+          debug('found multiple auths')
+          namespace.setPleaseSelectNamespace()
+          return list()
         }
-
-        // no keys, yet. enter a special mode requesting further assistance
-        debug('no auth found')
-        namespace.setNoNamespace(false)
-        const dom = document.createElement('div')
-        const clicky = document.createElement('span')
-        const cmd = 'wsk auth add <AUTH_KEY>'
-
-        clicky.className = 'clickable clickable-blatant'
-        clicky.innerText = cmd
-        clicky.onclick = () => partial(cmd)
-
-        dom.appendChild(document.createTextNode('Before you can proceed, please provide an OpenWhisk auth key, using '))
-        dom.appendChild(clicky)
-        return dom
-      } else if (auths.length === 1) {
-        // if there's just one namespace, then select it
-        debug('found exactly one auth')
-        return repl.qfexec(`auth switch ${auths[0].namespace}`)
-      } else {
-        // otherwise, offer a list of them to the user
-        debug('found multiple auths')
-        namespace.setPleaseSelectNamespace()
-        return list()
-      }
-    }))
+      })
+    )
 }
 
 /**
@@ -480,9 +550,11 @@ const pingLocal = async () => {
 
   // we will try a variety of options
   const variants = [
-    'https://192.168.33.13', 'https://192.168.33.16', // these are vagrant
+    'https://192.168.33.13',
+    'https://192.168.33.16', // these are vagrant
     'https://172.17.0.1',
-    'http://172.17.0.1:10001', 'http://192.168.99.100:10001', // these are direct-to-controller
+    'http://172.17.0.1:10001',
+    'http://192.168.99.100:10001', // these are direct-to-controller
     'https://localhost'
   ]
 
@@ -509,28 +581,35 @@ const pingLocal = async () => {
         }
       }
 
-      needle('get', `${host}/ping`, {}, {
-        rejectUnauthorized: false,
-        timeout: 500,
-        open_timeout: 500
-      }).then(response => {
-        if (response.statusCode >= 400) {
-          tryNext()
-        } else {
-          debug('found local openwhisk', host)
-
-          resolve({
-            host,
-            ignoreCerts: true,
-            isLocal: true
-          })
+      needle(
+        'get',
+        `${host}/ping`,
+        {},
+        {
+          rejectUnauthorized: false,
+          timeout: 500,
+          open_timeout: 500
         }
-      }).catch(err => {
-        // for what it's worth, err.code === ECONNRESET is a good
-        // indicator that the given host is not online
-        debug('giving up on this host, trying the next', err.code, err)
-        tryNext()
-      })
+      )
+        .then(response => {
+          if (response.statusCode >= 400) {
+            tryNext()
+          } else {
+            debug('found local openwhisk', host)
+
+            resolve({
+              host,
+              ignoreCerts: true,
+              isLocal: true
+            })
+          }
+        })
+        .catch(err => {
+          // for what it's worth, err.code === ECONNRESET is a good
+          // indicator that the given host is not online
+          debug('giving up on this host, trying the next', err.code, err)
+          tryNext()
+        })
     }
 
     // start the ping loop with the first variant
@@ -548,29 +627,63 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.subtree('/wsk/host', { usage: usage.host.toplevel })
   commandTree.subtree('/wsk/auth', { usage: usage.auth.toplevel })
 
-  const add = ({ argvNoOptions, tab }: EvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
+  const add = ({ argvNoOptions, tab }: EvaluatorArgs) =>
+    addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
-  commandTree.listen('/wsk/auth/switch', use('switch'), { usage: usage.auth.switch, noAuthOk: true, inBrowserOk: true })
-  commandTree.listen('/wsk/auth/add', add, { usage: usage.auth.add, noAuthOk: true, inBrowserOk: true })
-  commandTree.listen('/wsk/auth/list', list, { usage: usage.auth.list, noAuthOk: true, inBrowserOk: true })
-  commandTree.listen('/wsk/auth/get', () => authModel.get(), { usage: usage.auth.get, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/wsk/auth/switch', use('switch'), {
+    usage: usage.auth.switch,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
+  commandTree.listen('/wsk/auth/add', add, {
+    usage: usage.auth.add,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
+  commandTree.listen('/wsk/auth/list', list, {
+    usage: usage.auth.list,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
+  commandTree.listen('/wsk/auth/get', () => authModel.get(), {
+    usage: usage.auth.get,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
 
   /**
    * OpenWhisk API host: get and set commands
    *
    */
-  commandTree.listen('/wsk/host/get', () => apiHost.get(), { usage: usage.host.get, noAuthOk: true, inBrowserOk: true })
-  commandTree.listen('/wsk/host/set', hostSet, { usage: usage.host.set, noAuthOk: true, inBrowserOk: true })
-  commandTree.listen('/wsk/host/pinglocal', pingLocal, { hidden: true, noAuthOk: true })
+  commandTree.listen('/wsk/host/get', () => apiHost.get(), {
+    usage: usage.host.get,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
+  commandTree.listen('/wsk/host/set', hostSet, {
+    usage: usage.host.set,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
+  commandTree.listen('/wsk/host/pinglocal', pingLocal, {
+    hidden: true,
+    noAuthOk: true
+  })
 
   /**
    * An internal command that turns the current auth key into the corresponding openwhisk namespace
    *
    */
-  commandTree.listen('/wsk/auth/namespace/get', ({ execOptions }) => {
-    // the api returns, as a historical artifact, an array of length 1
-    return getClient(execOptions).namespaces.list(owOpts()).then(A => A[0])
-  }, { hidden: true })
+  commandTree.listen(
+    '/wsk/auth/namespace/get',
+    ({ execOptions }) => {
+      // the api returns, as a historical artifact, an array of length 1
+      return getClient(execOptions)
+        .namespaces.list(owOpts())
+        .then(A => A[0])
+    },
+    { hidden: true }
+  )
 
   return {
     add: addFn

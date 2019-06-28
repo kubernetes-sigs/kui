@@ -38,8 +38,17 @@ class DefaultOptions implements Options {
  * Replay a previous dataset
  *
  */
-export const replay = (tab: Tab, { url, dataset, testName }, graphics = initUI(), options: Options = new DefaultOptions()) => {
-  const resp = response(tab, graphics, Object.assign({ url, testName }, options))
+export const replay = (
+  tab: Tab,
+  { url, dataset, testName },
+  graphics = initUI(),
+  options: Options = new DefaultOptions()
+) => {
+  const resp = response(
+    tab,
+    graphics,
+    Object.assign({ url, testName }, options)
+  )
 
   if (!options.noTable) {
     // add header row to the table
@@ -81,7 +90,11 @@ export const last = ({ tab }: EvaluatorArgs) => {
  * Visualize the idx-th most recent data set
  *
  */
-export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: EvaluatorArgs) => {
+export const show = ({
+  tab,
+  argvNoOptions: args,
+  parsedOptions: options
+}: EvaluatorArgs) => {
   const idx = args[args.indexOf('show') + 1]
   if (idx === undefined || options.help) {
     console.error(idx, args)

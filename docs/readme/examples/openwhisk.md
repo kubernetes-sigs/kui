@@ -8,9 +8,9 @@
 Some commands work well in textual mode, without any need for
 graphical assistance:
 
-|Command                               | Functionality                 |
-|:-------------------------------------|:------------------------------|
-|`kui action list`                     |list deployed actions          |
+| Command           | Functionality         |
+| :---------------- | :-------------------- |
+| `kui action list` | list deployed actions |
 
 ## Examples that provide visualizations<a name='visualizations'></a>
 
@@ -22,36 +22,44 @@ command takes only a second or so.
 
 <a name="preview"></a><a name="grid"></a>
 
--------------------------------------------
+---
+
 ### A grid view of recent activations
 
 ```bash
 $ kui grid
 ```
+
 ![grid view](https://ibm.box.com/shared/static/kzgsbdeou04twohdlbzp20fsdqhzb334.gif)
 
---------------------------------------------
+---
+
 ### Log viewer
 
 ```bash
 $ kui activation logs c5dba..
 ```
+
 ![logs view](https://ibm.box.com/shared/static/21668bkuw4925y35tydx7btjq2hor5mn.png)
 
---------------------------------------------
+---
+
 ### A statistical view of recent invocations
 
 ```bash
 $ kui table
 ```
+
 ![table view](https://ibm.box.com/shared/static/zisacj7inozq2pamjun3suf8qxi6dvd2.png)
 
---------------------------------------------
+---
+
 ### A temporal view of recent invocations
 
 ```bash
 $ kui grid --timeline
 ```
+
 ![timeline view](https://ibm.box.com/shared/static/3iuczlken4geeknqkrt0pbrvk2sjlag0.png)
 
 ## Next Steps

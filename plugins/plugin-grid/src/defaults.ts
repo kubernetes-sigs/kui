@@ -15,7 +15,7 @@
  */
 
 export default {
-  'batchSize': 200,
-  'N': 2,
-  'maxN': 32
+  batchSize: 200,
+  N: 2,
+  maxN: 32
 }

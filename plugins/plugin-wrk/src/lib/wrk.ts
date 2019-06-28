@@ -29,7 +29,11 @@ const debug = Debug('wrk/wrk')
  * Start a load test, hooked up to graphics
  *
  */
-export const start = ({ tab, argvNoOptions: args, parsedOptions: options }: EvaluatorArgs) => {
+export const start = ({
+  tab,
+  argvNoOptions: args,
+  parsedOptions: options
+}: EvaluatorArgs) => {
   const url = args[args.indexOf('wrk') + 1] || options.url
   debug('url', url)
 

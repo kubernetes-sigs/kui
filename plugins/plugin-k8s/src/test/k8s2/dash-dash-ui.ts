@@ -15,11 +15,18 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@kui-shell/core/tests/lib/headless'
+import {
+  cli as kui,
+  kubectlElectron,
+  kuiElectron,
+  CLI
+} from '@kui-shell/core/tests/lib/headless'
 import { createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
-const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
+)
 
 const doTests = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))
@@ -29,34 +36,41 @@ const doTests = (ctx: common.ISuite, impl: CLI) => {
   const inNamespace = `-n ${ns}`
 
   it(`should create a namespace ${ns} `, () => {
-    return kui.do(`kubectl create namespace ${ns}`, ctx.app)
+    return kui
+      .do(`kubectl create namespace ${ns}`, ctx.app)
       .then(kui.expectOK(`namespace/${ns} created`))
       .catch(common.oops(ctx))
   })
 
   it('should create sample pod from local file', () => {
-    return kui.do(`kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
+    return kui
+      .do(
+        `kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`,
+        ctx.app
+      )
       .then(kui.expectOK('nginx'))
       .catch(common.oops(ctx))
   })
 
   it('should list the new pod in electron', () => {
-    return impl.do(`kubectl get pods ${inNamespace} --ui`, ctx.app)
+    return impl
+      .do(`kubectl get pods ${inNamespace} --ui`, ctx.app)
       .then(impl.expectOK('nginx'))
       .catch(common.oops(ctx))
   })
 
   it(`should delete the namespace ${ns} `, () => {
-    return kui.do(`kubectl delete namespace ${ns}`, ctx.app)
+    return kui
+      .do(`kubectl delete namespace ${ns}`, ctx.app)
       .then(kui.expectOK(`namespace "${ns}" deleted`)) // TODO: weird: why create and delte has different output
       .catch(common.oops(ctx))
   })
 }
 
-describe('k8s with electron via bin/kui', function (this: common.ISuite) {
+describe('k8s with electron via bin/kui', function(this: common.ISuite) {
   doTests(this, kuiElectron)
 })
 
-describe('k8s with electron via kubectl kui', function (this: common.ISuite) {
+describe('k8s with electron via kubectl kui', function(this: common.ISuite) {
   doTests(this, kubectlElectron)
 })

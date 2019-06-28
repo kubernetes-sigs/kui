@@ -19,14 +19,18 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
 // test that new tab does not copy any output over from the cloned tab
-common.localDescribe('new tab from pty active tab via click', function (this: common.ISuite) {
+common.localDescribe('new tab from pty active tab via click', function(
+  this: common.ISuite
+) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should open sidecar with about', () => cli.do('about', this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .catch(common.oops(this)))
+  it('should open sidecar with about', () =>
+    cli
+      .do('about', this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .catch(common.oops(this)))
 
   it('should less README.md', async () => {
     try {
@@ -39,169 +43,315 @@ common.localDescribe('new tab from pty active tab via click', function (this: co
     }
   })
 
-  it('click new tab button', () => this.app.client.click('.new-tab-button')
-    .then(() => this.app.client.waitForVisible(selectors.TAB_N(2)))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('click new tab button', () =>
+    this.app.client
+      .click('.new-tab-button')
+      .then(() => this.app.client.waitForVisible(selectors.TAB_N(2)))
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
   // no xterm copied over!
-  it('should have a clean tab', () => this.app.client.waitForVisible(`${selectors.CURRENT_TAB} .xterm`, 5000, true)
-    .catch(common.oops(this)))
+  it('should have a clean tab', () =>
+    this.app.client
+      .waitForVisible(`${selectors.CURRENT_TAB} .xterm`, 5000, true)
+      .catch(common.oops(this)))
 })
 
-common.localDescribe('new tab from quiescent tab via command', function (this: common.ISuite) {
+common.localDescribe('new tab from quiescent tab via command', function(
+  this: common.ISuite
+) {
   before(common.before(this))
   after(common.after(this))
 
   const CWD1 = process.cwd()
   const CWD2 = '/tmp'
 
-  it(`cd to ${CWD1} in tab1`, () => cli.do(`cd ${CWD1}`, this.app)
-    .then(cli.expectOKWithString(CWD1))
-    .catch(common.oops(this)))
+  it(`cd to ${CWD1} in tab1`, () =>
+    cli
+      .do(`cd ${CWD1}`, this.app)
+      .then(cli.expectOKWithString(CWD1))
+      .catch(common.oops(this)))
 
-  it('new tab via command', () => cli.do('tab new', this.app)
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('new tab via command', () =>
+    cli
+      .do('tab new', this.app)
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
-  it('should execute echo in new tab', () => cli.do('echo hi', this.app)
-    .then(cli.expectOKWithString('hi'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .catch(common.oops(this)))
+  it('should execute echo in new tab', () =>
+    cli
+      .do('echo hi', this.app)
+      .then(cli.expectOKWithString('hi'))
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .catch(common.oops(this)))
 
-  it(`pwd should show CWD1 ${CWD1} in tab2`, () => cli.do(`pwd`, this.app)
-    .then(cli.expectOKWithString(CWD1))
-    .catch(common.oops(this)))
+  it(`pwd should show CWD1 ${CWD1} in tab2`, () =>
+    cli
+      .do(`pwd`, this.app)
+      .then(cli.expectOKWithString(CWD1))
+      .catch(common.oops(this)))
 
-  it(`cd to ${CWD2} in tab2`, () => cli.do(`cd ${CWD2}`, this.app)
-    .then(cli.expectOKWithString(CWD2))
-    .catch(common.oops(this)))
+  it(`cd to ${CWD2} in tab2`, () =>
+    cli
+      .do(`cd ${CWD2}`, this.app)
+      .then(cli.expectOKWithString(CWD2))
+      .catch(common.oops(this)))
 
-  it(`pwd should show CWD2 ${CWD2} in tab2`, () => cli.do(`pwd`, this.app)
-    .then(cli.expectOKWithString(CWD2))
-    .catch(common.oops(this)))
+  it(`pwd should show CWD2 ${CWD2} in tab2`, () =>
+    cli
+      .do(`pwd`, this.app)
+      .then(cli.expectOKWithString(CWD2))
+      .catch(common.oops(this)))
 
-  it('should close tab via "exit" command', () => cli.do('exit', this.app)
-    .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true))
-    .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('should close tab via "exit" command', () =>
+    cli
+      .do('exit', this.app)
+      .then(() =>
+        this.app.client.waitForExist(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]',
+          5000,
+          true
+        )
+      )
+      .then(() =>
+        this.app.client.waitForExist(
+          '.left-tab-stripe-button-selected[data-tab-button-index="1"]'
+        )
+      )
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
-  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () => cli.do(`pwd`, this.app)
-    .then(cli.expectOKWithString(CWD1))
-    .catch(common.oops(this)))
+  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
+    cli
+      .do(`pwd`, this.app)
+      .then(cli.expectOKWithString(CWD1))
+      .catch(common.oops(this)))
 
-  it('new tab via command', () => cli.do('tab new', this.app)
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('new tab via command', () =>
+    cli
+      .do('tab new', this.app)
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
-  it(`cd to ${CWD2} in tab2`, () => cli.do(`cd ${CWD2}`, this.app)
-    .then(cli.expectOKWithString(CWD2))
-    .catch(common.oops(this)))
+  it(`cd to ${CWD2} in tab2`, () =>
+    cli
+      .do(`cd ${CWD2}`, this.app)
+      .then(cli.expectOKWithString(CWD2))
+      .catch(common.oops(this)))
 
-  it(`switch back to first tab via command`, () => cli.do('tab switch 1', this.app)
-    .catch(common.oops(this)))
+  it(`switch back to first tab via command`, () =>
+    cli.do('tab switch 1', this.app).catch(common.oops(this)))
 
-  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () => cli.do('pwd', this.app)
-    .then(cli.expectOKWithString(CWD1))
-    .catch(common.oops(this)))
+  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
+    cli
+      .do('pwd', this.app)
+      .then(cli.expectOKWithString(CWD1))
+      .catch(common.oops(this)))
 
-  it(`switch back to second tab via command`, () => cli.do('tab switch 2', this.app)
-    .catch(common.oops(this)))
+  it(`switch back to second tab via command`, () =>
+    cli.do('tab switch 2', this.app).catch(common.oops(this)))
 
-  it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () => cli.do('pwd', this.app)
-    .then(cli.expectOKWithString(CWD2))
-    .catch(common.oops(this)))
+  it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () =>
+    cli
+      .do('pwd', this.app)
+      .then(cli.expectOKWithString(CWD2))
+      .catch(common.oops(this)))
 
-  it(`switch back to first tab via command`, () => cli.do('tab switch 1', this.app)
-    .catch(common.oops(this)))
+  it(`switch back to first tab via command`, () =>
+    cli.do('tab switch 1', this.app).catch(common.oops(this)))
 
-  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () => cli.do('pwd', this.app)
-    .then(cli.expectOKWithString(CWD1))
-    .catch(common.oops(this)))
+  it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
+    cli
+      .do('pwd', this.app)
+      .then(cli.expectOKWithString(CWD1))
+      .catch(common.oops(this)))
 })
 
-common.localDescribe('new tab from quiescent tab via button click', function (this: common.ISuite) {
+common.localDescribe('new tab from quiescent tab via button click', function(
+  this: common.ISuite
+) {
   before(common.before(this))
   after(common.after(this))
 
-  it('new tab via button click', () => this.app.client.click('.new-tab-button')
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('new tab via button click', () =>
+    this.app.client
+      .click('.new-tab-button')
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
-  it('should execute echo in new tab', () => cli.do('echo hi', this.app)
-    .then(cli.expectOKWithString('hi'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .catch(common.oops(this)))
+  it('should execute echo in new tab', () =>
+    cli
+      .do('echo hi', this.app)
+      .then(cli.expectOKWithString('hi'))
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .catch(common.oops(this)))
 
-  it('should close tab via "tab close" command', () => cli.do('tab close', this.app)
-    .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true))
-    .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('should close tab via "tab close" command', () =>
+    cli
+      .do('tab close', this.app)
+      .then(() =>
+        this.app.client.waitForExist(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]',
+          5000,
+          true
+        )
+      )
+      .then(() =>
+        this.app.client.waitForExist(
+          '.left-tab-stripe-button-selected[data-tab-button-index="1"]'
+        )
+      )
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
-  it('should execute echo in first tab', () => cli.do('echo hi', this.app)
-    .then(cli.expectOKWithString('hi'))
-    .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]', 5000))
-    .catch(common.oops(this)))
+  it('should execute echo in first tab', () =>
+    cli
+      .do('echo hi', this.app)
+      .then(cli.expectOKWithString('hi'))
+      .then(() =>
+        this.app.client.waitForExist(
+          '.left-tab-stripe-button-selected[data-tab-button-index="1"]',
+          5000
+        )
+      )
+      .catch(common.oops(this)))
 })
 
-common.localDescribe('new tab from active tab via button click', function (this: common.ISuite) {
+common.localDescribe('new tab from active tab via button click', function(
+  this: common.ISuite
+) {
   before(common.before(this))
   after(common.after(this))
 
-  it('start a sleep, then new tab via button click', () => cli.do('sleep 10000', this.app)
-    .then(() => this.app.client.click('.new-tab-button'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('start a sleep, then new tab via button click', () =>
+    cli
+      .do('sleep 10000', this.app)
+      .then(() => this.app.client.click('.new-tab-button'))
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
-  it('should execute echo in new tab', () => cli.do('echo hi', this.app)
-    .then(cli.expectOKWithString('hi'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .catch(common.oops(this)))
+  it('should execute echo in new tab', () =>
+    cli
+      .do('echo hi', this.app)
+      .then(cli.expectOKWithString('hi'))
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .catch(common.oops(this)))
 })
 
-common.localDescribe('new tab from pty active tab via button click', function (this: common.ISuite) {
+common.localDescribe('new tab from pty active tab via button click', function(
+  this: common.ISuite
+) {
   before(common.before(this))
   after(common.after(this))
 
-  it('start vi, then new tab via button click', () => cli.do('vi', this.app)
-    .then(() => this.app.client.waitForExist('tab.visible.xterm-alt-buffer-mode'))
-    .then(() => this.app.client.click('.new-tab-button'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .catch(common.oops(this)))
+  it('start vi, then new tab via button click', () =>
+    cli
+      .do('vi', this.app)
+      .then(() =>
+        this.app.client.waitForExist('tab.visible.xterm-alt-buffer-mode')
+      )
+      .then(() => this.app.client.click('.new-tab-button'))
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
 
-  it('should execute echo in new tab', () => cli.do('echo hi', this.app)
-    .then(cli.expectOKWithString('hi'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .catch(common.oops(this)))
+  it('should execute echo in new tab', () =>
+    cli
+      .do('echo hi', this.app)
+      .then(cli.expectOKWithString('hi'))
+      .then(() =>
+        this.app.client.waitForVisible(
+          '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+        )
+      )
+      .catch(common.oops(this)))
 })
 
-common.localDescribe('new tab from active tab that is emitting output via button click', function (this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+common.localDescribe(
+  'new tab from active tab that is emitting output via button click',
+  function(this: common.ISuite) {
+    before(common.before(this))
+    after(common.after(this))
 
-  it('start an echo loop, then new tab via button click', () => cli.do('while true; do echo hi; sleep 1; done', this.app)
-    .then(() => new Promise(resolve => setTimeout(resolve, 4000)))
-    .then(() => this.app.client.click('.new-tab-button'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .then(() => cli.waitForRepl(this.app)) // should have an active repl
-    .then(() => this.app.client.waitForExist(`${selectors.CURRENT_TAB} .xterm`, 5000, true)) // no xterm DOM in the new tab
-    .catch(common.oops(this)))
+    it('start an echo loop, then new tab via button click', () =>
+      cli
+        .do('while true; do echo hi; sleep 1; done', this.app)
+        .then(() => new Promise(resolve => setTimeout(resolve, 4000)))
+        .then(() => this.app.client.click('.new-tab-button'))
+        .then(() =>
+          this.app.client.waitForVisible(
+            '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+          )
+        )
+        .then(() => cli.waitForRepl(this.app)) // should have an active repl
+        .then(() =>
+          this.app.client.waitForExist(
+            `${selectors.CURRENT_TAB} .xterm`,
+            5000,
+            true
+          )
+        ) // no xterm DOM in the new tab
+        .catch(common.oops(this)))
 
-  it('should execute echo in new tab', () => cli.do('echo hi', this.app)
-    .then(cli.expectOKWithString('hi'))
-    .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-    .catch(common.oops(this)))
+    it('should execute echo in new tab', () =>
+      cli
+        .do('echo hi', this.app)
+        .then(cli.expectOKWithString('hi'))
+        .then(() =>
+          this.app.client.waitForVisible(
+            '.left-tab-stripe-button-selected[data-tab-button-index="2"]'
+          )
+        )
+        .catch(common.oops(this)))
 
-  it('should close by clicking on the tab closer button', async () => {
-    this.app.client.click('.left-tab-stripe-button-selected .left-tab-stripe-button-closer')
-    await this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true)
-    await this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]')
-  })
-})
+    it('should close by clicking on the tab closer button', async () => {
+      this.app.client.click(
+        '.left-tab-stripe-button-selected .left-tab-stripe-button-closer'
+      )
+      await this.app.client.waitForExist(
+        '.left-tab-stripe-button-selected[data-tab-button-index="2"]',
+        5000,
+        true
+      )
+      await this.app.client.waitForExist(
+        '.left-tab-stripe-button-selected[data-tab-button-index="1"]'
+      )
+    })
+  }
+)

@@ -1,4 +1,9 @@
-const { sequence: Seq, if: If, finally: Finally, retain: Retain } = require('openwhisk-composer')
+const {
+  sequence: Seq,
+  if: If,
+  finally: Finally,
+  retain: Retain
+} = require('openwhisk-composer')
 
 /** travis for some reason gives us this in string form */
 const parse = ({ payload }) => {
@@ -23,7 +28,10 @@ const And = result => {
   return fns.reduce((yup, fn) => yup && fn(result), true)
 }
 
-module.exports = Seq(parse, Finally(Retain(If(And,
-  'travis-for-kui/swapIntoPlace')),
-Seq(({ params }) => params,
-  'travis-for-kui/cleanBucket')))
+module.exports = Seq(
+  parse,
+  Finally(
+    Retain(If(And, 'travis-for-kui/swapIntoPlace')),
+    Seq(({ params }) => params, 'travis-for-kui/cleanBucket')
+  )
+)

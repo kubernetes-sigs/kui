@@ -25,45 +25,56 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const actionName1 = `foo1-${new Date().getTime()}`
 
 // TODO: webpack test
-localDescribe('wsk activation result and wsk activation logs', function (this: common.ISuite) {
+localDescribe('wsk activation result and wsk activation logs', function(
+  this: common.ISuite
+) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // create an action
-  it(`should create an action ${actionName1}`, () => cli.do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName1))
-    .catch(common.oops(this)))
+  it(`should create an action ${actionName1}`, () =>
+    cli
+      .do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName1))
+      .catch(common.oops(this)))
 
-  it(`should async that action then show its logs and result`, () => cli.do(`async ${actionName1}`, this.app)
-    .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
-    .then(async selector => {
-      const activationId = await this.app.client.getText(selector)
-      return this.app.client.waitUntil(() => {
-        return cli.do(`wsk activation logs ${activationId}`, this.app)
-          .then(cli.expectOK)
-          .then(() => sidecar.expectOpen(this.app))
-          .then(sidecar.expectShowing(actionName1, activationId))
-          .then(sidecar.expectMode('logs'))
-          .then(() => this.app.restart())
-          .then(() => cli.do(`wsk activation logs ${activationId}`, this.app))
-          .then(() => sidecar.expectOpen(this.app))
-          .then(sidecar.expectShowing(actionName1, activationId))
-          .then(sidecar.expectMode('logs'))
-          .then(() => this.app.restart())
-          .then(() => cli.do(`wsk activation result ${activationId}`, this.app))
-          .then(() => sidecar.expectOpen(this.app))
-          .then(sidecar.expectShowing(actionName1, activationId))
-          .then(sidecar.expectMode('result'))
-          .then(() => true)
-          .catch(() => false)
+  it(`should async that action then show its logs and result`, () =>
+    cli
+      .do(`async ${actionName1}`, this.app)
+      .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
+      .then(async selector => {
+        const activationId = await this.app.client.getText(selector)
+        return this.app.client.waitUntil(() => {
+          return cli
+            .do(`wsk activation logs ${activationId}`, this.app)
+            .then(cli.expectOK)
+            .then(() => sidecar.expectOpen(this.app))
+            .then(sidecar.expectShowing(actionName1, activationId))
+            .then(sidecar.expectMode('logs'))
+            .then(() => this.app.restart())
+            .then(() => cli.do(`wsk activation logs ${activationId}`, this.app))
+            .then(() => sidecar.expectOpen(this.app))
+            .then(sidecar.expectShowing(actionName1, activationId))
+            .then(sidecar.expectMode('logs'))
+            .then(() => this.app.restart())
+            .then(() =>
+              cli.do(`wsk activation result ${activationId}`, this.app)
+            )
+            .then(() => sidecar.expectOpen(this.app))
+            .then(sidecar.expectShowing(actionName1, activationId))
+            .then(sidecar.expectMode('result'))
+            .then(() => true)
+            .catch(() => false)
+        })
       })
-    })
-    .catch(common.oops(this)))
+      .catch(common.oops(this)))
 })

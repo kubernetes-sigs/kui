@@ -32,7 +32,13 @@ import { enDash, latencyBuckets } from './util'
  * @param options user options from the CLI
  *
  */
-export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement, { statData, nFailures }, gridContainer: HTMLElement) => {
+export const drawLegend = (
+  tab: Tab,
+  viewName: string,
+  rightHeader: HTMLElement,
+  { statData, nFailures },
+  gridContainer: HTMLElement
+) => {
   const existing = rightHeader.querySelector('.grid-header-key')
   const wrapper = existing || document.createElement('div')
   const existing2 = wrapper.querySelector('.cell-container')
@@ -41,7 +47,8 @@ export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement,
   /** user asked to toggle the latency bucket filter */
   const toggleFilter = idx => (): boolean | void => {
     // isRemove: user deselected current filter
-    const isRemove = parseInt(gridContainer.getAttribute('data-latency-filter'), 10) === idx
+    const isRemove =
+      parseInt(gridContainer.getAttribute('data-latency-filter'), 10) === idx
     const containers = [wrapper2, gridContainer] // legend and main grid
 
     containers.forEach(container => {
@@ -75,7 +82,13 @@ export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement,
     balloonLength?: string
     onclick?: () => boolean | void
   }
-  const entry = (labelText, labelValue, isFailure, latBucket, options: EntryOptions) => {
+  const entry = (
+    labelText,
+    labelValue,
+    isFailure,
+    latBucket,
+    options: EntryOptions
+  ) => {
     const existing3 = wrapper2.querySelector(`.grid[label="${labelText}"]`)
     const wrapper3 = existing3 || document.createElement('div')
     const existingEntry = wrapper3.querySelector('table')
@@ -101,7 +114,9 @@ export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement,
       valueCell.classList.add('kind')
       gridCellCell.appendChild(valueCell)
 
-      renderCell(tab, 'Legend', cell, null, isFailure, 0, latBucket, { zoom: options.zoom }) // null means no activation associated with cell
+      renderCell(tab, 'Legend', cell, null, isFailure, 0, latBucket, {
+        zoom: options.zoom
+      }) // null means no activation associated with cell
 
       if (options.onclick) {
         cell.onclick = options.onclick
@@ -118,7 +133,9 @@ export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement,
 
       if (options.useThisLabelInstead) {
         const labelCell = labelRow.insertCell(-1)
-        labelCell.appendChild(document.createTextNode(options.useThisLabelInstead))
+        labelCell.appendChild(
+          document.createTextNode(options.useThisLabelInstead)
+        )
         labelCell.setAttribute('colspan', '2')
         labelCell.className = 'activation-viz-legend-label'
       } else if (!options.labelAsTooltip) {
@@ -144,23 +161,31 @@ export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement,
     const last = idx === A.length - 1
     const lower = idx === 0 ? 0 : A[idx - 1]
     const upper = latencyRange
-    const roughlySame = upper - lower < 1000 && ((lower < 1000 && upper < 1000) || (lower > 1000 && upper > 1000))
+    const roughlySame =
+      upper - lower < 1000 &&
+      ((lower < 1000 && upper < 1000) || (lower > 1000 && upper > 1000))
 
     // roughlySame means e.g. 50-100ms versus 500ms-1s; both
     // are "close", but the second one splits into a new range
 
-    const labelText = '' +
-          (last
-            ? `${prettyPrintDuration(latencyRange)}+` // special label for the last latency bucket
-            : roughlySame ? `${lower}${enDash}${prettyPrintDuration(upper)}`
-              : `${prettyPrintDuration(lower)}${enDash}${prettyPrintDuration(upper)}`)
+    const labelText =
+      '' +
+      (last
+        ? `${prettyPrintDuration(latencyRange)}+` // special label for the last latency bucket
+        : roughlySame
+        ? `${lower}${enDash}${prettyPrintDuration(upper)}`
+        : `${prettyPrintDuration(lower)}${enDash}${prettyPrintDuration(upper)}`)
 
     // number of cells with this coloration
     const count = statData.latBuckets[idx]
 
     const opts: EntryOptions = {
       zoom: -1,
-      useThisLabelInstead: (idx === A.length - 1 ? '>' : '') + (upper >= 500 && upper < 1000 ? `${(upper / 1000).toLocaleString()}s` : prettyPrintDuration(upper))
+      useThisLabelInstead:
+        (idx === A.length - 1 ? '>' : '') +
+        (upper >= 500 && upper < 1000
+          ? `${(upper / 1000).toLocaleString()}s`
+          : prettyPrintDuration(upper))
     }
 
     if (count > 0) {
@@ -178,8 +203,11 @@ export const drawLegend = (tab: Tab, viewName: string, rightHeader: HTMLElement,
   if (nFailures > 0) {
     opts.onclick = toggleFilter(-1)
   }
-  entry('these cells represent activation failures',
+  entry(
+    'these cells represent activation failures',
     nFailures,
-    true, -1, // true means render as failure
-    opts)
+    true,
+    -1, // true means render as failure
+    opts
+  )
 }

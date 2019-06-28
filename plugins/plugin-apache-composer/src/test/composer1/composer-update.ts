@@ -22,9 +22,11 @@ import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
 const appName1 = 'foo1'
-const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
-describe('confirm that app update preserves annotations and parameters', function (this: common.ISuite) {
+describe('confirm that app update preserves annotations and parameters', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -35,24 +37,40 @@ describe('confirm that app update preserves annotations and parameters', functio
            .catch(common.oops(this)))
     } */
 
-  it('should create an app', () => cli.do(`app create ${appName1} ${ROOT}/data/composer/composer-source/if.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(appName1))
-    .catch(common.oops(this)))
+  it('should create an app', () =>
+    cli
+      .do(
+        `app create ${appName1} ${ROOT}/data/composer/composer-source/if.js`,
+        this.app
+      )
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName1))
+      .catch(common.oops(this)))
 
-  it('should webbify the app', () => cli.do(`webbify ${appName1}`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
-    .then(() => this.app)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(appName1))
-    .then(() => this.app.client.getText(`${ui.selectors.SIDECAR} .entity-web-export-url.has-url`))
-    .catch(common.oops(this)))
+  it('should webbify the app', () =>
+    cli
+      .do(`webbify ${appName1}`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
+      .then(() => this.app)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName1))
+      .then(() =>
+        this.app.client.getText(
+          `${ui.selectors.SIDECAR} .entity-web-export-url.has-url`
+        )
+      )
+      .catch(common.oops(this)))
 
-  it('should update an app', () => cli.do(`app update ${appName1} ${ROOT}/data/composer/composer-source/if.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(appName1))
-  // .then(() => this.app.client.getText(`${ui.selectors.SIDECAR} .entity-web-export-url.has-url`)) // TODO
-    .catch(common.oops(this)))
+  it('should update an app', () =>
+    cli
+      .do(
+        `app update ${appName1} ${ROOT}/data/composer/composer-source/if.js`,
+        this.app
+      )
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName1))
+      // .then(() => this.app.client.getText(`${ui.selectors.SIDECAR} .entity-web-export-url.has-url`)) // TODO
+      .catch(common.oops(this)))
 })

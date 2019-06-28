@@ -1,1 +1,1 @@
-const main = x=>x
+const main = x => x

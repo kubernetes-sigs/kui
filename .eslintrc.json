@@ -2,44 +2,50 @@
   "extends": [
     "standard",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/standard",
+    "prettier/@typescript-eslint"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "no-undef": "off",
-    "@typescript-eslint/camelcase": ["error", {
-      "allow": [
-        "wrap_line_length",
-        "indent_size",
-        "api_key",
-        "apigw_token",
-        "apigw_space_guid",
-        "ignore_certs",
-        "__cloudshell_decorations",
-        "follow_max",
-        "open_timeout",
-        "read_timeout",
-        "get_activation",
-        "action_body",
-        "rule_body",
-        "invoke_options",
-        "invoke_params",
-        "convert_to_fqn"
-      ]
-    }],
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/indent": ["error", 2],
-    "@typescript-eslint/member-delimiter-style": ["error", {
-      "multiline": {
-        "delimiter": "none"
+    "@typescript-eslint/camelcase": [
+      "error",
+      {
+        "allow": [
+          "wrap_line_length",
+          "indent_size",
+          "api_key",
+          "apigw_token",
+          "apigw_space_guid",
+          "ignore_certs",
+          "__cloudshell_decorations",
+          "follow_max",
+          "open_timeout",
+          "read_timeout",
+          "get_activation",
+          "action_body",
+          "rule_body",
+          "invoke_options",
+          "invoke_params",
+          "convert_to_fqn"
+        ]
       }
-    }]
+    ],
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      {
+        "multiline": {
+          "delimiter": "none"
+        }
+      }
+    ]
   }
 }

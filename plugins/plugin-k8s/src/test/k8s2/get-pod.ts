@@ -16,13 +16,20 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  waitForGreen,
+  waitForRed,
+  defaultModeForGet,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import assert = require('assert')
 
 const synonyms = ['kubectl']
 
-describe('electron get pod', function (this: common.ISuite) {
+describe('electron get pod', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -38,19 +45,27 @@ describe('electron get pod', function (this: common.ISuite) {
       await this.app.client.waitForExist(table)
 
       if (!fast) {
-        const tableTitle = await this.app.client.getText(`${table} .result-table-title`)
+        const tableTitle = await this.app.client.getText(
+          `${table} .result-table-title`
+        )
         assert.strictEqual(tableTitle.toLowerCase(), 'containers')
       }
 
       // check the conditions rows
-      await this.app.client.waitForExist(`${table} .entity[data-name="nginx"] [data-key="ready"][data-value="true"]`)
+      await this.app.client.waitForExist(
+        `${table} .entity[data-name="nginx"] [data-key="ready"][data-value="true"]`
+      )
 
       // check that the message shows the final state
-      const message = await this.app.client.getText(`${table} .entity[data-name="nginx"] [data-key="message"]`)
+      const message = await this.app.client.getText(
+        `${table} .entity[data-name="nginx"] [data-key="message"]`
+      )
       assert.ok(!/Initializing/i.test(message))
 
       // check that the ready check mark is green
-      await this.app.client.waitForExist(`${table} .entity[data-name="nginx"] [data-key="ready"].green-text .fa-check-circle`)
+      await this.app.client.waitForExist(
+        `${table} .entity[data-name="nginx"] [data-key="ready"].green-text .fa-check-circle`
+      )
     }
 
     const ns: string = createNS()
@@ -65,12 +80,21 @@ describe('electron get pod', function (this: common.ISuite) {
     for (let idx = 0; idx < 5; idx++) {
       it(`should eventually show ready containers if we click mid-creation iter=${idx}`, async () => {
         try {
-          const selector = await cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
-            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+          const selector = await cli
+            .do(
+              `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+              this.app
+            )
+            .then(
+              cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
+            )
 
           await this.app.client.waitForExist(`${selector} .clickable`)
           this.app.client.click(`${selector} .clickable`)
-          await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('nginx'))
+          await sidecar
+            .expectOpen(this.app)
+            .then(sidecar.expectMode(defaultModeForGet))
+            .then(sidecar.expectShowing('nginx'))
 
           await testContainersTab(true)
         } catch (err) {
@@ -79,15 +103,25 @@ describe('electron get pod', function (this: common.ISuite) {
       })
 
       it(`should delete the sample pod from URL via ${kubectl} iter=${idx}`, () => {
-        return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return cli
+          .do(
+            `${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            this.app
+          )
+          .then(
+            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })
     }
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
+      return cli
+        .do(
+          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+          this.app
+        )
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(common.oops(this))
@@ -95,15 +129,21 @@ describe('electron get pod', function (this: common.ISuite) {
 
     it(`should list pods via ${kubectl} then click`, async () => {
       try {
-        const selector = await cli.do(`${kubectl} get pods ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        const selector = await cli
+          .do(`${kubectl} get pods ${inNamespace}`, this.app)
+          .then(
+            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
+          )
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
-        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing('nginx'))
+        await sidecar
+          .expectOpen(this.app)
+          .then(sidecar.expectMode(defaultModeForGet))
+          .then(sidecar.expectShowing('nginx'))
       } catch (err) {
         common.oops(this)(err)
       }
@@ -116,7 +156,9 @@ describe('electron get pod', function (this: common.ISuite) {
         const table = `${selectors.SIDECAR} [k8s-table="Pod"]`
         await this.app.client.waitForExist(table)
 
-        const tableTitle = await this.app.client.getText(`${table} .result-table-title`)
+        const tableTitle = await this.app.client.getText(
+          `${table} .result-table-title`
+        )
         assert.strictEqual(tableTitle.toLowerCase(), 'pod')
 
         // wait for the badge to become green
@@ -144,31 +186,52 @@ describe('electron get pod', function (this: common.ISuite) {
       // the sidecar should still be full screen https://github.com/IBM/kui/issues/1794
       await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN)
 
-      const tableTitle = await this.app.client.getText(`${table} .result-table-title`)
+      const tableTitle = await this.app.client.getText(
+        `${table} .result-table-title`
+      )
       assert.strictEqual(tableTitle.toLowerCase(), 'conditions')
 
       // check the conditions rows
       await Promise.all([
-        this.app.client.waitForExist(`${table} .entity[data-name="PodScheduled"] [data-key="status"][data-value="True"]`),
-        this.app.client.waitForExist(`${table} .entity[data-name="Initialized"] [data-key="status"][data-value="True"]`),
-        this.app.client.waitForExist(`${table} .entity[data-name="Ready"] [data-key="status"][data-value="True"]`),
-        this.app.client.waitForExist(`${table} .entity[data-name="ContainersReady"] [data-key="status"][data-value="True"]`)
+        this.app.client.waitForExist(
+          `${table} .entity[data-name="PodScheduled"] [data-key="status"][data-value="True"]`
+        ),
+        this.app.client.waitForExist(
+          `${table} .entity[data-name="Initialized"] [data-key="status"][data-value="True"]`
+        ),
+        this.app.client.waitForExist(
+          `${table} .entity[data-name="Ready"] [data-key="status"][data-value="True"]`
+        ),
+        this.app.client.waitForExist(
+          `${table} .entity[data-name="ContainersReady"] [data-key="status"][data-value="True"]`
+        )
       ])
     })
 
     it('should click on the sidecar maximize button to restore split screen', async () => {
       try {
         this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
-        await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN, 5000, true)
+        await this.app.client.waitForExist(
+          selectors.SIDECAR_FULLSCREEN,
+          5000,
+          true
+        )
       } catch (err) {
         common.oops(this)(err)
       }
     })
 
-    it(`should click on containers sidecar tab and show containers table`, testContainersTab)
+    it(
+      `should click on containers sidecar tab and show containers table`,
+      testContainersTab
+    )
 
     it(`should delete the sample pod from URL via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
+      return cli
+        .do(
+          `${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+          this.app
+        )
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => waitForRed(this.app, selector))
         .catch(common.oops(this))

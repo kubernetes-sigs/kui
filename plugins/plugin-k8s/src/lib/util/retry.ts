@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-import { ExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
+import {
+  ExecOptions,
+  DefaultExecOptions
+} from '@kui-shell/core/models/execOptions'
 const debug = require('debug')('k8s/util/retry')
 
 import repl = require('@kui-shell/core/core/repl')
 
-export const withRetryOnCode = (code: number) => (fn, cmd: string) => new Promise((resolve, reject) => {
-  const iter = async () => {
-    try {
-      resolve(await fn())
-    } catch (err) {
-      if (err.code === code) {
-        debug('retrying', cmd)
-        setTimeout(iter, 5000)
-      } else {
-        debug('rejecting', err.code, err)
-        reject(err)
+export const withRetryOnCode = (code: number) => (fn, cmd: string) =>
+  new Promise((resolve, reject) => {
+    const iter = async () => {
+      try {
+        resolve(await fn())
+      } catch (err) {
+        if (err.code === code) {
+          debug('retrying', cmd)
+          setTimeout(iter, 5000)
+        } else {
+          debug('rejecting', err.code, err)
+          reject(err)
+        }
       }
     }
-  }
 
-  iter()
-})
+    iter()
+  })
 
 export const withRetryOn404 = withRetryOnCode(404)
 
@@ -43,7 +47,10 @@ export const withRetryOn404 = withRetryOnCode(404)
  * Swallow 404s
  *
  */
-export const okIf404 = async (command: string, execOptions: ExecOptions = new DefaultExecOptions()) => {
+export const okIf404 = async (
+  command: string,
+  execOptions: ExecOptions = new DefaultExecOptions()
+) => {
   try {
     await repl.qexec(command, undefined, undefined, execOptions)
   } catch (err) {

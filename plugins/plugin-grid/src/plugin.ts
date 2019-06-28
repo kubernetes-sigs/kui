@@ -28,8 +28,5 @@ export default (commandTree: CommandRegistrar) => {
   commandTree.subtree('/visualize', { usage })
 
   // register the command handlers
-  return Promise.all([
-    grid(commandTree),
-    table(commandTree)
-  ])
+  return Promise.all([grid(commandTree), table(commandTree)])
 }

@@ -94,7 +94,9 @@ const success = quit => async out => {
     debug('graphical shell is open')
   }
 }
-const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => {
+const failure = (quit, execOptions?: ExecOptions) => async (
+  err: CodedError
+) => {
   if (execOptions && execOptions.rethrowErrors) {
     throw err
   }
@@ -129,11 +131,14 @@ const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => 
           error(colors.red(msg))
         }
       } else {
-        completion = print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
+        completion =
+          print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
       }
     }
   } else {
-    error(`No credentials found. Consider trying again with "kui help" command.`)
+    error(
+      `No credentials found. Consider trying again with "kui help" command.`
+    )
   }
 
   return completion.then(() => {
@@ -163,7 +168,11 @@ const insufficientArgs = (argv: string[]) => argv.length === 0
  *
  */
 let electronCreateWindowFn
-export const createWindow = (argv: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
+export const createWindow = (
+  argv: string[],
+  subwindowPlease: boolean,
+  subwindowPrefs: ISubwindowPrefs
+) => {
   try {
     graphicalShellIsOpen = true
     setGraphicalShellIsOpen()
@@ -186,8 +195,10 @@ export const createWindow = (argv: string[], subwindowPlease: boolean, subwindow
 const initCommandContext = async (commandContext: string) => {
   if (commandContext) {
     try {
-      debug('setting command context', commandContext);
-      (await import('../core/command-tree')).setDefaultCommandContext(JSON.parse(commandContext.substring(commandContext.indexOf('=') + 1)))
+      debug('setting command context', commandContext)
+      ;(await import('../core/command-tree')).setDefaultCommandContext(
+        JSON.parse(commandContext.substring(commandContext.indexOf('=') + 1))
+      )
     } catch (err) {
       debug('Error initializing command context', err)
     }
@@ -198,7 +209,12 @@ const initCommandContext = async (commandContext: string) => {
  * Initialize headless mode
  *
  */
-export const main = async (app, mainFunctions, rawArgv = process.argv, execOptions?: ExecOptions) => {
+export const main = async (
+  app,
+  mainFunctions,
+  rawArgv = process.argv,
+  execOptions?: ExecOptions
+) => {
   debug('main')
 
   const ourCommandContext = rawArgv.find(_ => !!_.match(commandContextPattern))
@@ -207,7 +223,19 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
     commandContext = ourCommandContext
   }
 
-  const argv = rawArgv.slice(argStart).filter(arg => !arg.match(commandContextPattern) && arg !== '--kui-headless' && arg !== '-v' && arg !== '--raw-output' && arg !== '--no-color' && arg !== '--no-colors' && arg !== '--color=always' && arg !== '--ui')
+  const argv = rawArgv
+    .slice(argStart)
+    .filter(
+      arg =>
+        !arg.match(commandContextPattern) &&
+        arg !== '--kui-headless' &&
+        arg !== '-v' &&
+        arg !== '--raw-output' &&
+        arg !== '--no-color' &&
+        arg !== '--no-colors' &&
+        arg !== '--color=always' &&
+        arg !== '--ui'
+    )
   debug('argv', argv)
 
   const { quit } = app
@@ -222,17 +250,23 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
    * Evaluate the given command
    *
    */
-  const evaluate = (cmd: string) => Promise.resolve(repl.exec(cmd, execOptions))
-    .then(success(quit))
+  const evaluate = (cmd: string) =>
+    Promise.resolve(repl.exec(cmd, execOptions)).then(success(quit))
 
-  console.log = function () {
-    if (arguments[0] !== undefined &&
-        (!arguments[0].indexOf || (arguments[0].indexOf('::') < 0 && arguments[0].indexOf('Resolving') < 0 &&
-                                   arguments[0].indexOf('using implicit context') < 0 &&
-                                   arguments[0].indexOf('Using timeout') < 0 &&
-                                   arguments[0].indexOf('Updates') < 0 &&
-                                   arguments[0].indexOf("Couldn't set selectedTextBackgroundColor") < 0 &&
-                                   arguments[0].indexOf('Unresolved') < 0 && arguments[0].indexOf('Processing catch-alls') < 0))) {
+  console.log = function() {
+    if (
+      arguments[0] !== undefined &&
+      (!arguments[0].indexOf ||
+        (arguments[0].indexOf('::') < 0 &&
+          arguments[0].indexOf('Resolving') < 0 &&
+          arguments[0].indexOf('using implicit context') < 0 &&
+          arguments[0].indexOf('Using timeout') < 0 &&
+          arguments[0].indexOf('Updates') < 0 &&
+          arguments[0].indexOf("Couldn't set selectedTextBackgroundColor") <
+            0 &&
+          arguments[0].indexOf('Unresolved') < 0 &&
+          arguments[0].indexOf('Processing catch-alls') < 0))
+    ) {
       log.apply(undefined, arguments)
     }
   }
@@ -243,7 +277,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
     trace()
     console.error = tmp
   }
-  console.error = function () {
+  console.error = function() {
     if (!noAuth && typeof arguments[0] === 'string') {
       const args = Object.keys(arguments).map(key => {
         if (typeof arguments[key] === 'string') {
@@ -258,11 +292,13 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
   }
 
   try {
-    if (!process.env.TRAVIS_JOB_ID &&
-        !process.env.RUNNING_SHELL_TEST &&
-        !process.env.CLOUD_SHELL_GO &&
-        !process.env.KUI_REPL_MODE &&
-        !process.env.KUI_DEV) {
+    if (
+      !process.env.TRAVIS_JOB_ID &&
+      !process.env.RUNNING_SHELL_TEST &&
+      !process.env.CLOUD_SHELL_GO &&
+      !process.env.KUI_REPL_MODE &&
+      !process.env.KUI_DEV
+    ) {
       const { fetch, watch } = await import('../webapp/util/fetch-ui')
       const { userDataDir } = await import('../core/userdata')
       const stagingArea = userDataDir()
@@ -277,37 +313,42 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
 
   /** main work starts here */
   debug('bootstrap')
-  return pluginsInit(/* { app } */).then(async () => {
-    debug('plugins initialized')
+  return pluginsInit(/* { app } */)
+    .then(async () => {
+      debug('plugins initialized')
 
-    await initCommandContext(commandContext)
+      await initCommandContext(commandContext)
 
-    const maybeRetry = (err: Error) => {
-      // nothing, yet
-      return failure(quit, execOptions)(err)
-    }
-
-    debug('invoking plugin preloader')
-    await preload()
-    debug('invoking plugin preloader... done')
-
-    if (insufficientArgs(argv)) {
-      debug('insufficient args, invoking help command')
-      return evaluate('help')
-    }
-
-    //
-    // execute a single command from the CLI
-    //
-    const cmd = argv.map(_ => _.match(/\s+/) ? `"${_}"` : _).join(' ').trim()
-    if (cmd && cmd.length > 0) {
-      debug('about to execute command')
-      return evaluate(cmd).catch(maybeRetry)
-    } else {
-      debug('exiting, no command')
-      if (!process.env.KUI_REPL_MODE) {
-        process.exit(0)
+      const maybeRetry = (err: Error) => {
+        // nothing, yet
+        return failure(quit, execOptions)(err)
       }
-    }
-  }).catch(failure(quit, execOptions))
+
+      debug('invoking plugin preloader')
+      await preload()
+      debug('invoking plugin preloader... done')
+
+      if (insufficientArgs(argv)) {
+        debug('insufficient args, invoking help command')
+        return evaluate('help')
+      }
+
+      //
+      // execute a single command from the CLI
+      //
+      const cmd = argv
+        .map(_ => (_.match(/\s+/) ? `"${_}"` : _))
+        .join(' ')
+        .trim()
+      if (cmd && cmd.length > 0) {
+        debug('about to execute command')
+        return evaluate(cmd).catch(maybeRetry)
+      } else {
+        debug('exiting, no command')
+        if (!process.env.KUI_REPL_MODE) {
+          process.exit(0)
+        }
+      }
+    })
+    .catch(failure(quit, execOptions))
 }

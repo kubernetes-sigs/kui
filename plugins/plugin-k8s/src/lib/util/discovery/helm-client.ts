@@ -29,21 +29,29 @@ export default async (env): Promise<string> => {
   if (process.env.KUI_HELM_CLIENTS_DIR) {
     const { exists } = await import('fs-extra')
 
-    debug('attempting to infer a matching helm client', env.KUBECONFIG, env.PATH)
+    debug(
+      'attempting to infer a matching helm client',
+      env.KUBECONFIG,
+      env.PATH
+    )
     const { exec } = await import('child_process')
 
     const helmLatest = process.env.HELM_LATEST_VERSION
     const versionLine = await new Promise<string>((resolve, reject) => {
       try {
-        exec(`${helmLatest} --short --server version`, { env }, (err, stdout, stderr) => {
-          if (err) {
-            console.error(stderr)
-            console.error(err)
-            reject(err)
-          } else {
-            resolve(stdout)
+        exec(
+          `${helmLatest} --short --server version`,
+          { env },
+          (err, stdout, stderr) => {
+            if (err) {
+              console.error(stderr)
+              console.error(err)
+              reject(err)
+            } else {
+              resolve(stdout)
+            }
           }
-        })
+        )
       } catch (err) {
         reject(err)
       }
@@ -57,7 +65,10 @@ export default async (env): Promise<string> => {
 
       if (version.trim().length > 0) {
         const helmClient = `helm-${major(version)}.${minor(version)}`
-        const helmClientPath = join(process.env.KUI_HELM_CLIENTS_DIR, helmClient)
+        const helmClientPath = join(
+          process.env.KUI_HELM_CLIENTS_DIR,
+          helmClient
+        )
         debug('helmClientPat', helmClientPath)
 
         if (exists(helmClientPath)) {

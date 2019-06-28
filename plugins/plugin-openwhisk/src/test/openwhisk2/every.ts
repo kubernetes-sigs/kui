@@ -33,7 +33,7 @@ const ruleName = `every_${interval}_do_${actionName}`
 /** Turn an list of strings into a map */
 /* const toMap = L => L.reduce((M, elt) => { M[elt] = true; return M }, {}) */
 
-describe('Create a rule using every', function () {
+describe('Create a rule using every', function() {
   // alarms tests disabled
   /*
   before(openwhisk.before(this))
@@ -52,7 +52,7 @@ describe('Create a rule using every', function () {
   }
 */
   // remember the current list of activations
-/*  it('should list activations, so we can remember them', () => cli.do(`wsk activation list`, this.app)
+  /*  it('should list activations, so we can remember them', () => cli.do(`wsk activation list`, this.app)
     .then(cli.expectOKWithCustom({ selector: '.activationId .clickable', elements: true }))
     .then(activations => Promise.all(activations.value.map(activation => this.app.client.elementIdText(activation.ELEMENT).then(elt => elt.value))))
     .then(toMap)

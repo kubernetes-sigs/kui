@@ -16,4 +16,11 @@
 
 const composer = require('openwhisk-composer')
 
-module.exports = composer.while('isNotOne', composer.if('isEven', /* then */ 'DivideByTwo', /* else */ 'TripleAndIncrement'))
+module.exports = composer.while(
+  'isNotOne',
+  composer.if(
+    'isEven',
+    /* then */ 'DivideByTwo',
+    /* else */ 'TripleAndIncrement'
+  )
+)

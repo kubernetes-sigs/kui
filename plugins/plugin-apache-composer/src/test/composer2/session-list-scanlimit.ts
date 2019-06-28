@@ -23,7 +23,7 @@ const cli = ui.cli
 const sidecar = ui.sidecar
 const debug = Debug('tests/apache-composer/session-list-scan-limit')
 
-describe('session list --scan-limit --skip', function (this: common.ISuite) {
+describe('session list --scan-limit --skip', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -35,18 +35,36 @@ describe('session list --scan-limit --skip', function (this: common.ISuite) {
 
   const appName = getUniqueName()
 
-  const invokeApp = (appName) => {
-    it(`should invoke ${appName}`, () => cli.do(`app invoke ${appName}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(appName))
-      .catch(common.oops(this)))
+  const invokeApp = appName => {
+    it(`should invoke ${appName}`, () =>
+      cli
+        .do(`app invoke ${appName}`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(appName))
+        .catch(common.oops(this)))
   }
 
-  const verifySessionList = async ({ commandIndex, expectedLength = 0, expectedSessions = [] }) => {
-    return this.app.client.waitForText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`, 5000)
-      .then(() => this.app.client.getText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`))
-      .then(sessions => !Array.isArray(sessions) ? [sessions] : sessions) // make sure we have an array
+  const verifySessionList = async ({
+    commandIndex,
+    expectedLength = 0,
+    expectedSessions = []
+  }) => {
+    return this.app.client
+      .waitForText(
+        `${ui.selectors.OUTPUT_N(
+          commandIndex
+        )} .entity.session .entity-name .clickable`,
+        5000
+      )
+      .then(() =>
+        this.app.client.getText(
+          `${ui.selectors.OUTPUT_N(
+            commandIndex
+          )} .entity.session .entity-name .clickable`
+        )
+      )
+      .then(sessions => (!Array.isArray(sessions) ? [sessions] : sessions)) // make sure we have an array
       .then(actualSessions => {
         if (expectedLength) {
           debug('acutal length', actualSessions.length)
@@ -70,76 +88,148 @@ describe('session list --scan-limit --skip', function (this: common.ISuite) {
     return sessionArray
   }
 
-  it(`should create app ${appName}`, () => cli.do(`app create ${appName} @demos/hello.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(appName))
-    .catch(common.oops(this)))
+  it(`should create app ${appName}`, () =>
+    cli
+      .do(`app create ${appName} @demos/hello.js`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(appName))
+      .catch(common.oops(this)))
 
   invokeApp(appName)
 
-  it(`should show just ok in session list --scan-limit 0`, () => cli.do(`session list --scan-limit 0`, this.app)
-    .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+  it(`should show just ok in session list --scan-limit 0`, () =>
+    cli
+      .do(`session list --scan-limit 0`, this.app)
+      .then(cli.expectJustOK)
+      .catch(common.oops(this)))
 
-  it(`should show session ${appName} in session list --scan-limit 1`, () => cli.do(`session list --scan-limit 1`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 1, expectedSessions: [appName] }))
-    .catch(common.oops(this)))
+  it(`should show session ${appName} in session list --scan-limit 1`, () =>
+    cli
+      .do(`session list --scan-limit 1`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 1,
+          expectedSessions: [appName]
+        })
+      )
+      .catch(common.oops(this)))
 
-  it(`should create app if`, () => cli.do(`app create if @demos/if.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('if'))
-    .catch(common.oops(this)))
+  it(`should create app if`, () =>
+    cli
+      .do(`app create if @demos/if.js`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('if'))
+      .catch(common.oops(this)))
 
   invokeApp('if')
 
-  it(`should not show session ${appName} in session list --scan-limit 1`, () => cli.do(`session list --scan-limit 1`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 1, expectedSessions: ['if'] }))
-    .catch(common.oops(this)))
+  it(`should not show session ${appName} in session list --scan-limit 1`, () =>
+    cli
+      .do(`session list --scan-limit 1`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 1,
+          expectedSessions: ['if']
+        })
+      )
+      .catch(common.oops(this)))
 
-  it(`should show session ${appName} in session list ${appName} --scan-limit 1`, () => cli.do(`session list ${appName} --scan-limit 1`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 1, expectedSessions: [appName] }))
-    .catch(common.oops(this)))
-
-  for (let round = 0; round < 10; round++) {
-    invokeApp(appName)
-  }
-
-  it(`should show session 11 ${appName} in session list ${appName} --scan-limit 11`, () => cli.do(`session list ${appName} --scan-limit 11`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 11, expectedSessions: createSessionArray(appName, 11) }))
-    .catch(common.oops(this)))
-
-  it(`should show session 11 in session list ${appName} --scan-limit 11 --count`, () => cli.do(`session list ${appName} --scan-limit 11 --count`, this.app)
-    .then(cli.expectOKWithString('11'))
-    .catch(common.oops(this)))
-
-  it(`should show session 10 ${appName} in session list ${appName} --skip 1 --scan-limit 10`, () => cli.do(`session list ${appName} --skip 1 --scan-limit 10`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 10, expectedSessions: createSessionArray(appName, 10) }))
-    .catch(common.oops(this)))
-
-  it(`should show session 10 ${appName} in session list ${appName} --skip 1 --scan-limit 11`, () => cli.do(`session list ${appName} --skip 1 --scan-limit 11`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 10, expectedSessions: createSessionArray(appName, 10) }))
-    .catch(common.oops(this)))
+  it(`should show session ${appName} in session list ${appName} --scan-limit 1`, () =>
+    cli
+      .do(`session list ${appName} --scan-limit 1`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 1,
+          expectedSessions: [appName]
+        })
+      )
+      .catch(common.oops(this)))
 
   for (let round = 0; round < 10; round++) {
     invokeApp(appName)
   }
 
-  it(`should show session 21 ${appName} in session list ${appName} --scan-limit 21`, () => cli.do(`session list ${appName} --scan-limit 21`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 21, expectedSessions: createSessionArray(appName, 21) }))
-    .catch(common.oops(this)))
+  it(`should show session 11 ${appName} in session list ${appName} --scan-limit 11`, () =>
+    cli
+      .do(`session list ${appName} --scan-limit 11`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 11,
+          expectedSessions: createSessionArray(appName, 11)
+        })
+      )
+      .catch(common.oops(this)))
+
+  it(`should show session 11 in session list ${appName} --scan-limit 11 --count`, () =>
+    cli
+      .do(`session list ${appName} --scan-limit 11 --count`, this.app)
+      .then(cli.expectOKWithString('11'))
+      .catch(common.oops(this)))
+
+  it(`should show session 10 ${appName} in session list ${appName} --skip 1 --scan-limit 10`, () =>
+    cli
+      .do(`session list ${appName} --skip 1 --scan-limit 10`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 10,
+          expectedSessions: createSessionArray(appName, 10)
+        })
+      )
+      .catch(common.oops(this)))
+
+  it(`should show session 10 ${appName} in session list ${appName} --skip 1 --scan-limit 11`, () =>
+    cli
+      .do(`session list ${appName} --skip 1 --scan-limit 11`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 10,
+          expectedSessions: createSessionArray(appName, 10)
+        })
+      )
+      .catch(common.oops(this)))
+
+  for (let round = 0; round < 10; round++) {
+    invokeApp(appName)
+  }
+
+  it(`should show session 21 ${appName} in session list ${appName} --scan-limit 21`, () =>
+    cli
+      .do(`session list ${appName} --scan-limit 21`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 21,
+          expectedSessions: createSessionArray(appName, 21)
+        })
+      )
+      .catch(common.oops(this)))
 
   // Note: this test may take longer than expected, since it's trying to find 21 sessions in all activations
-  it(`should show session 21 ${appName} in session list ${appName} --scan-limit 30`, () => cli.do(`session list ${appName} --scan-limit 30`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
-    .then(async commandIndex => verifySessionList({ commandIndex, expectedLength: 21, expectedSessions: createSessionArray(appName, 21) }))
-    .catch(common.oops(this)))
+  it(`should show session 21 ${appName} in session list ${appName} --scan-limit 30`, () =>
+    cli
+      .do(`session list ${appName} --scan-limit 30`, this.app)
+      .then(cli.expectOKWithCustom({ passthrough: true }))
+      .then(async commandIndex =>
+        verifySessionList({
+          commandIndex,
+          expectedLength: 21,
+          expectedSessions: createSessionArray(appName, 21)
+        })
+      )
+      .catch(common.oops(this)))
 })

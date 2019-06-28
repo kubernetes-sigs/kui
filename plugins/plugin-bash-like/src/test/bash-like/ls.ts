@@ -19,36 +19,46 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 const { localDescribe } = common
 
-localDescribe('directory listing', function (this: common.ISuite) {
+localDescribe('directory listing', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should use ls ../../', () => cli.do(`ls ../../`, this.app)
-    .then(cli.expectOKWith('package.json'))
-    .catch(common.oops(this)))
+  it('should use ls ../../', () =>
+    cli
+      .do(`ls ../../`, this.app)
+      .then(cli.expectOKWith('package.json'))
+      .catch(common.oops(this)))
 
-  it('should use ls ../../README.md', () => cli.do(`ls ../../README.md`, this.app)
-    .then(cli.expectOKWith('README.md'))
-    .catch(common.oops(this)))
+  it('should use ls ../../README.md', () =>
+    cli
+      .do(`ls ../../README.md`, this.app)
+      .then(cli.expectOKWith('README.md'))
+      .catch(common.oops(this)))
 
   const Cs = ['CHANGELOG.md', 'CONTRIBUTING.md']
   Cs.forEach(expect => {
-    it(`should use ls ../../C* and expect ${expect}`, () => cli.do(`ls ../../C*`, this.app)
-      .then(cli.expectOKWith(expect))
-      .catch(common.oops(this)))
+    it(`should use ls ../../C* and expect ${expect}`, () =>
+      cli
+        .do(`ls ../../C*`, this.app)
+        .then(cli.expectOKWith(expect))
+        .catch(common.oops(this)))
   })
 
   const CsandP = Cs.concat(['package.json'])
   CsandP.forEach(expect => {
-    it('should use ls ../../C* ../package.json', () => cli.do(`ls ../../C* ../../package.json`, this.app)
-      .then(cli.expectOKWith(expect))
-      .catch(common.oops(this)))
+    it('should use ls ../../C* ../package.json', () =>
+      cli
+        .do(`ls ../../C* ../../package.json`, this.app)
+        .then(cli.expectOKWith(expect))
+        .catch(common.oops(this)))
   })
 
   const CsandT = Cs.concat(['tools'])
   CsandT.forEach(expect => {
-    it('should use ls -d ../../C* ../tool*', () => cli.do(`ls -d ../../C* ../../tool*`, this.app)
-      .then(cli.expectOKWith(expect))
-      .catch(common.oops(this)))
+    it('should use ls -d ../../C* ../tool*', () =>
+      cli
+        .do(`ls -d ../../C* ../../tool*`, this.app)
+        .then(cli.expectOKWith(expect))
+        .catch(common.oops(this)))
   })
 })

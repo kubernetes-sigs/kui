@@ -39,7 +39,10 @@ interface TextualProperties {
 export const textualPropertiesOfCode = (code: string): TextualProperties => {
   const lines = code.split(/[\n\r]/)
   const nLines = lines.length
-  const maxLineLength = lines.reduce((max, line) => Math.max(max, line.length), 0)
+  const maxLineLength = lines.reduce(
+    (max, line) => Math.max(max, line.length),
+    0
+  )
 
   return { nLines, maxLineLength }
 }
@@ -61,7 +64,7 @@ export const codeViewMode = (source: string, contentType = 'javascript') => ({
       source
     }
   }
-/*  direct: entity => {
+  /*  direct: entity => {
     entity.type = 'actions'
     return sidecar.showEntity(entity, { show: 'source' })
   } */
@@ -71,8 +74,14 @@ export const codeViewMode = (source: string, contentType = 'javascript') => ({
  * Entity view modes
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode = 'visualization', input: string, ast: Record<string, any>, options) => {
+export const vizAndfsmViewModes = (
+  visualize,
+  commandPrefix: string,
+  defaultMode = 'visualization',
+  input: string,
+  ast: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  options
+) => {
   const modes = [
     {
       mode: 'visualization',
@@ -104,17 +113,32 @@ export const vizAndfsmViewModes = (visualize, commandPrefix: string, defaultMode
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
+export const wskflow = async (
+  tab: Tab,
+  visualize,
+  { ast, name, namespace, viewOptions, container }
+) => {
   debug('wskflow', viewOptions)
 
-  const isPartOfRule = await repl.qexec('wsk rule list')
-    .then(rules => rules.find(({ action: ruleAction }) => {
-      return ruleAction.name === name &&
-        ruleAction.path === namespace
-    }))
+  const isPartOfRule = await repl
+    .qexec('wsk rule list')
+    .then(rules =>
+      rules.find(({ action: ruleAction }) => {
+        return ruleAction.name === name && ruleAction.path === namespace
+      })
+    )
     .catch(() => [])
 
-  return visualize(tab, ast, container, undefined, undefined, undefined, viewOptions, isPartOfRule)
+  return visualize(
+    tab,
+    ast,
+    container,
+    undefined,
+    undefined,
+    undefined,
+    viewOptions,
+    isPartOfRule
+  )
 }
 
 /**
@@ -124,7 +148,10 @@ export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewO
  * @param visibleWhenShowing only show the zoom buttons when the given mode is active
  *
  */
-export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): SidecarMode[] => {
+export const zoomToFitButtons = (
+  controller,
+  { visibleWhenShowing = 'visualization' } = {}
+): SidecarMode[] => {
   if (controller && controller.register) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require('events')
@@ -132,8 +159,14 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
     const zoomToFitBus = new events.EventEmitter()
 
     const listener = event => {
-      zoom1to1Bus.emit('change', event.applyAutoScale === false && !event.customZoom)
-      zoomToFitBus.emit('change', event.applyAutoScale === true && !event.customZoom)
+      zoom1to1Bus.emit(
+        'change',
+        event.applyAutoScale === false && !event.customZoom
+      )
+      zoomToFitBus.emit(
+        'change',
+        event.applyAutoScale === true && !event.customZoom
+      )
     }
 
     controller.register(listener)
@@ -177,7 +210,10 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
  * like an app
  *
  */
-export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
+export const decorateAsApp = async (
+  tab: Tab,
+  { action, input, commandPrefix = 'app get', doVisualize, options }
+) => {
   debug('decorateAsApp', options)
   action.prettyType = badges.app
 
@@ -202,16 +238,32 @@ export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = '
     }
 
     const visualize = require('./visualize').default
-    const { view, controller } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
+    const { view, controller } = await wskflow(
+      tab,
+      visualize,
+      Object.assign({}, action, { viewOptions })
+    )
 
-    const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
+    const sourceAnnotation = action.annotations.find(
+      ({ key }) => key === 'source'
+    )
     if (sourceAnnotation) {
       action.source = sourceAnnotation.value
     }
 
-    action.modes = (action.modes || []).filter(_ => _.mode !== 'code')
-      .concat(vizAndfsmViewModes(visualize, commandPrefix, undefined, input, action.ast, options.originalOptions || options))
-      .concat(sourceAnnotation ? [ codeViewMode(action.source) ] : [])
+    action.modes = (action.modes || [])
+      .filter(_ => _.mode !== 'code')
+      .concat(
+        vizAndfsmViewModes(
+          visualize,
+          commandPrefix,
+          undefined,
+          input,
+          action.ast,
+          options.originalOptions || options
+        )
+      )
+      .concat(sourceAnnotation ? [codeViewMode(action.source)] : [])
       .concat(zoomToFitButtons(controller))
     debug('action', action)
     return view || action

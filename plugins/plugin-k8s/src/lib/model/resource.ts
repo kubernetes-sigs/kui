@@ -107,7 +107,7 @@ export interface KubeResource<Status = KubeStatus> extends MetadataBearing {
 interface Role extends KubeResource {
   rules: RoleRule[]
 }
-export function isRole (resource: KubeResource): resource is Role {
+export function isRole(resource: KubeResource): resource is Role {
   const role = resource as Role
   return role.rules !== undefined
 }
@@ -117,7 +117,7 @@ interface RoleBinding extends KubeResource {
   roleRef: RoleRef
   subjects: { kind: string; name: string }[]
 }
-export function isRoleBinding (resource: KubeResource): resource is RoleBinding {
+export function isRoleBinding(resource: KubeResource): resource is RoleBinding {
   const rb = resource as RoleBinding
   return rb.roleRef !== undefined && rb.subjects !== undefined
 }
@@ -126,7 +126,9 @@ export function isRoleBinding (resource: KubeResource): resource is RoleBinding 
 interface ServiceAccount extends KubeResource {
   secrets: { name: string }[]
 }
-export function isServiceAccount (resource: KubeResource): resource is ServiceAccount {
+export function isServiceAccount(
+  resource: KubeResource
+): resource is ServiceAccount {
   const sa = resource as ServiceAccount
   return sa.secrets !== undefined
 }

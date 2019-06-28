@@ -26,7 +26,9 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const args = {
   action: `${ROOT}/data/openwhisk/foo.js`,
@@ -36,7 +38,9 @@ const args = {
 }
 
 // TODO: webpack test
-localDescribe('Create with explicit entity type, then list', function (this: common.ISuite) {
+localDescribe('Create with explicit entity type, then list', function(
+  this: common.ISuite
+) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -44,12 +48,15 @@ localDescribe('Create with explicit entity type, then list', function (this: com
     const name = `foo-${entity}`
 
     // create, using the implicit entity type
-    it(`should create ${entity}`, () => cli.do(`${entity} create ${name} ${args[entity]}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name)))
+    it(`should create ${entity}`, () =>
+      cli
+        .do(`${entity} create ${name} ${args[entity]}`, this.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(name)))
 
     // list tests
-    it(`should find the new ${entity} with "${entity} list"`, () => cli.do(`${entity} list`, this.app).then(cli.expectOKWithOnly(name)))
+    it(`should find the new ${entity} with "${entity} list"`, () =>
+      cli.do(`${entity} list`, this.app).then(cli.expectOKWithOnly(name)))
   })
 })

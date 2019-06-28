@@ -38,15 +38,26 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/prompt', ({ argvNoOptions, block, nextBlock, tab }) => {
-    const placeholder = argvNoOptions[1] || 'Test prompt'
-    debug('placeholder', placeholder, argvNoOptions)
+  commandTree.listen(
+    '/prompt',
+    ({ argvNoOptions, block, nextBlock, tab }) => {
+      const placeholder = argvNoOptions[1] || 'Test prompt'
+      debug('placeholder', placeholder, argvNoOptions)
 
-    return cli.prompt('Prompt', block as HTMLElement, nextBlock, tab, {
-      placeholder
-    }, options => {
-      debug('response', options.field)
-      return Promise.resolve(options.field)
-    })
-  }, { usage, noAuthOk: true })
+      return cli.prompt(
+        'Prompt',
+        block as HTMLElement,
+        nextBlock,
+        tab,
+        {
+          placeholder
+        },
+        options => {
+          debug('response', options.field)
+          return Promise.resolve(options.field)
+        }
+      )
+    },
+    { usage, noAuthOk: true }
+  )
 }

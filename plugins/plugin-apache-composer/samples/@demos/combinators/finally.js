@@ -10,7 +10,8 @@ const fail = () => ({ error: 'intentional failure' })
  */
 module.exports = composer.finally(
   composer.sequence('mainLogic', fail), // body
-  composer.async('cleanup')) // finalizer
+  composer.async('cleanup')
+) // finalizer
 
 /**
  * Notes: Previously deployed Cloud Functions can be referenced by

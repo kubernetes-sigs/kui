@@ -8,4 +8,5 @@ const composer = require('openwhisk-composer')
 module.exports = composer.if(
   () => true,
   '/whisk.system/utils/date',
-  composer.empty())
+  composer.empty()
+)

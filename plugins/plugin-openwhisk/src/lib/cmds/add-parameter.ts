@@ -45,12 +45,26 @@ const patterns = {
     double: /^"(.*)"$/g
   },
   set: {
-    implicitEntity: { pattern: /\s+([^=]+)\s*=\s*([^=]+)\s*$/, key: 1, value: 2 },
-    explicitEntity: { pattern: /\s+([^=]+)\s*=\s*([^=]+)\s+in\s+(.*)\s*$/, key: 1, value: 2, entity: 3 }
+    implicitEntity: {
+      pattern: /\s+([^=]+)\s*=\s*([^=]+)\s*$/,
+      key: 1,
+      value: 2
+    },
+    explicitEntity: {
+      pattern: /\s+([^=]+)\s*=\s*([^=]+)\s+in\s+(.*)\s*$/,
+      key: 1,
+      value: 2,
+      entity: 3
+    }
   },
   push: {
     implicitEntity: { pattern: /\s+(.+)\s*to\s*(.+)\s*$/, key: 2, value: 1 },
-    explicitEntity: { pattern: /\s+(.+)\s*to\s*(.+)\s+in\s+(.*)\s*$/, key: 2, value: 1, entity: 3 }
+    explicitEntity: {
+      pattern: /\s+(.+)\s*to\s*(.+)\s+in\s+(.*)\s*$/,
+      key: 2,
+      value: 1,
+      entity: 3
+    }
   },
   unset: {
     implicitEntity: { pattern: /\s+([^=]+)\s*$/, key: 1 },
@@ -97,8 +111,12 @@ const fillIn = (path, value) => {
  * and splices in (or out) as directed.
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const updateMapping = (op: string, attr: string, key: string, value: any) => entity => {
+const updateMapping = (
+  op: string,
+  attr: string,
+  key: string,
+  value: any // eslint-disable-line @typescript-eslint/no-explicit-any
+) => entity => {
   if (!entity[attr]) {
     entity[attr] = []
   }
@@ -112,7 +130,10 @@ const updateMapping = (op: string, attr: string, key: string, value: any) => ent
     if (op === 'set') {
       entity[attr].push({ key: path[0], value: fillIn(path.slice(1), value) })
     } else if (op === 'push') {
-      entity[attr].push({ key: path[0], value: fillIn(path.slice(1), [value]) }) // start a new array
+      entity[attr].push({
+        key: path[0],
+        value: fillIn(path.slice(1), [value])
+      }) // start a new array
     } else {
       // no-op for unset, as we didn't find the key, anyway
     }
@@ -173,19 +194,41 @@ const logThen = f => err => {
  * @param attr will be 'parameters' or 'annotations'
  *
  */
-const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({ command: rawCommand, execOptions, tab }: EvaluatorArgs) => {
+const add = (type: string) => (
+  op: string,
+  opKind = op,
+  attr = 'parameters'
+) => ({ command: rawCommand, execOptions, tab }: EvaluatorArgs) => {
   /** fetch the given entity with the given type */
-  const fetchEntityWithType = (name, type) => repl.qexec(`wsk ${type} get ${name}`)
+  const fetchEntityWithType = (name, type) =>
+    repl.qexec(`wsk ${type} get ${name}`)
 
   /** try to find the given entity name, across the types */
-  const fetchEntityWithFallbacks = name => fetchEntityWithType(name, type)
-    .catch(logThen(() => fetchEntityWithType(name, type === 'packages' ? 'actions' : 'packages')))
-    .catch(logThen(() => fetchEntityWithType(name, type === 'triggers' ? 'actions' : 'triggers')))
+  const fetchEntityWithFallbacks = name =>
+    fetchEntityWithType(name, type)
+      .catch(
+        logThen(() =>
+          fetchEntityWithType(
+            name,
+            type === 'packages' ? 'actions' : 'packages'
+          )
+        )
+      )
+      .catch(
+        logThen(() =>
+          fetchEntityWithType(
+            name,
+            type === 'triggers' ? 'actions' : 'triggers'
+          )
+        )
+      )
 
   /** fetch the entity with the given name, using the given entity type, then fall back to trying all types */
   const fetchEntity = (name, tryThisType) =>
-    (tryThisType ? fetchEntityWithType(name, tryThisType) : fetchEntityWithFallbacks(name))
-      .catch(() => fetchEntityWithFallbacks(name))
+    (tryThisType
+      ? fetchEntityWithType(name, tryThisType)
+      : fetchEntityWithFallbacks(name)
+    ).catch(() => fetchEntityWithFallbacks(name))
 
   let key
   let value
@@ -236,16 +279,21 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
 
   if (!tryThisType) {
     // see if the dest entity is the selected entity, in which case we'll know the type
-    if (selection &&
-        (selection.name === dest ||
-         `${selection.namespace}/${selection.name}` === dest ||
-         `/${selection.namespace}/${selection.name}` === dest)) {
+    if (
+      selection &&
+      (selection.name === dest ||
+        `${selection.namespace}/${selection.name}` === dest ||
+        `/${selection.namespace}/${selection.name}` === dest)
+    ) {
       // yup! we have been asked to add a parameter to the current selection
       tryThisType = selection.type
     }
   }
 
-  console.log(`${op} ${key}=${value} to ${dest} using type ${tryThisType || '(we will try to infer the type)'}`)
+  console.log(
+    `${op} ${key}=${value} to ${dest} using type ${tryThisType ||
+      '(we will try to infer the type)'}`
+  )
 
   // here is where we do the work!
   return fetchEntity(dest, tryThisType) // grab a copy of the current attributes
@@ -261,10 +309,14 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
  * parameter bindings)
  *
  */
-const mkDocs = docString => Object.assign({ docs: docString }, {
-  requireSelection: true,
-  filter: selection => selection.type !== 'rules'
-})
+const mkDocs = docString =>
+  Object.assign(
+    { docs: docString },
+    {
+      requireSelection: true,
+      filter: selection => selection.type !== 'rules'
+    }
+  )
 
 /** this is the handler body */
 export default async (commandTree: CommandRegistrar) => {
@@ -272,26 +324,52 @@ export default async (commandTree: CommandRegistrar) => {
   // docs
   //
   const docs = {
-    set: attr => mkDocs(`Modify ${attr} by adding or updating a key-value pair`),
+    set: attr =>
+      mkDocs(`Modify ${attr} by adding or updating a key-value pair`),
     unset: attr => mkDocs(`Modify ${attr} by removing a key`),
-    push: attr => mkDocs(`Modify ${attr} by pushing a new value onto an array-valued entry`)
-  };
+    push: attr =>
+      mkDocs(`Modify ${attr} by pushing a new value onto an array-valued entry`)
+  }
 
   //
   // register command handlers
   //
-  ['actions', 'triggers', 'packages'].forEach(type => {
+  ;['actions', 'triggers', 'packages'].forEach(type => {
     synonyms(type).forEach(syn => {
       const doAdd = add(type)
 
-      commandTree.listen(`/wsk/${syn}/set`, doAdd('set'), docs.set('parameters'))
-      commandTree.listen(`/wsk/${syn}/annotate`, doAdd('annotate', 'set', 'annotations'), docs.set('annotations'))
+      commandTree.listen(
+        `/wsk/${syn}/set`,
+        doAdd('set'),
+        docs.set('parameters')
+      )
+      commandTree.listen(
+        `/wsk/${syn}/annotate`,
+        doAdd('annotate', 'set', 'annotations'),
+        docs.set('annotations')
+      )
 
-      commandTree.listen(`/wsk/${syn}/unset`, doAdd('unset'), docs.unset('parameters'))
-      commandTree.listen(`/wsk/${syn}/deannotate`, doAdd('deannotate', 'unset', 'annotations'), docs.unset('annotations'))
+      commandTree.listen(
+        `/wsk/${syn}/unset`,
+        doAdd('unset'),
+        docs.unset('parameters')
+      )
+      commandTree.listen(
+        `/wsk/${syn}/deannotate`,
+        doAdd('deannotate', 'unset', 'annotations'),
+        docs.unset('annotations')
+      )
 
-      commandTree.listen(`/wsk/${syn}/push`, doAdd('push'), docs.push('parameters'))
-      commandTree.listen(`/wsk/${syn}/apush`, doAdd('apush', 'push', 'annotations'), docs.push('annotations'))
+      commandTree.listen(
+        `/wsk/${syn}/push`,
+        doAdd('push'),
+        docs.push('parameters')
+      )
+      commandTree.listen(
+        `/wsk/${syn}/apush`,
+        doAdd('apush', 'push', 'annotations'),
+        docs.push('annotations')
+      )
     })
   })
 }

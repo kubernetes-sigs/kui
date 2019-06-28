@@ -14,39 +14,55 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localDescribe } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  localDescribe
+} from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
 // TODO: test this in webpack
-localDescribe('History', function (this: ISuite) {
+localDescribe('History', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
   const listCommand = 'ls ../..'
-  it('should list local files', () => cli.do(listCommand, this.app)
-    .then(cli.expectOKWith('README.md'))
-    .catch(oops(this)))
+  it('should list local files', () =>
+    cli
+      .do(listCommand, this.app)
+      .then(cli.expectOKWith('README.md'))
+      .catch(oops(this)))
 
   // 1 says it better be the last command we executed
-  it(`should list history with filter 1`, () => cli.do(`history 1 ls`, this.app)
-    .then(cli.expectOKWithOnly(listCommand))
-    .catch(oops(this)))
+  it(`should list history with filter 1`, () =>
+    cli
+      .do(`history 1 ls`, this.app)
+      .then(cli.expectOKWithOnly(listCommand))
+      .catch(oops(this)))
 
-  it(`should list history 2 and show the list command`, () => cli.do(`history 2`, this.app)
-    .then(cli.expectOKWith(listCommand))
-    .catch(oops(this)))
+  it(`should list history 2 and show the list command`, () =>
+    cli
+      .do(`history 2`, this.app)
+      .then(cli.expectOKWith(listCommand))
+      .catch(oops(this)))
 
   // get something on the screen
-  it(`should list local files again`, () => cli.do(listCommand, this.app)
-    .then(cli.expectOKWith('README.md'))
-    .catch(oops(this)))
+  it(`should list local files again`, () =>
+    cli
+      .do(listCommand, this.app)
+      .then(cli.expectOKWith('README.md'))
+      .catch(oops(this)))
 
   it('should re-execte from history via mouse click', async () => {
     try {
       const res = await cli.do('history 5 ls', this.app)
       const N = await cli.expectOKWithCustom({ passthrough: true })(res)
-      const selector = `${ui.selectors.LIST_RESULTS_N(N)}:first-child .entity-name`
+      const selector = `${ui.selectors.LIST_RESULTS_N(
+        N
+      )}:first-child .entity-name`
       await this.app.client.click(selector)
       return cli.expectOKWith('README.md')({ app: this.app, count: N + 1 })
     } catch (err) {
@@ -54,30 +70,42 @@ localDescribe('History', function (this: ISuite) {
     }
   })
 
-  it(`should list history with no arguments and show the list command`, () => cli.do(`history`, this.app)
-    .then(cli.expectOKWith(listCommand)))
+  it(`should list history with no arguments and show the list command`, () =>
+    cli.do(`history`, this.app).then(cli.expectOKWith(listCommand)))
 
-  it(`should list history with filter, expect nothing`, () => cli.do(`history gumbogumbo`, this.app)
-    .then(cli.expectJustOK) // some random string that won't be in the command history
-    .catch(oops(this)))
+  it(`should list history with filter, expect nothing`, () =>
+    cli
+      .do(`history gumbogumbo`, this.app)
+      .then(cli.expectJustOK) // some random string that won't be in the command history
+      .catch(oops(this)))
 
-  it(`should delete command history`, () => cli.do(`history -c`, this.app)
-    .then(cli.expectJustOK)
-    .catch(oops(this)))
+  it(`should delete command history`, () =>
+    cli
+      .do(`history -c`, this.app)
+      .then(cli.expectJustOK)
+      .catch(oops(this)))
 
-  it(`should list history with no args after delete and expect nothing`, () => cli.do(`history`, this.app)
-    .then(cli.expectJustOK)
-    .catch(oops(this)))
+  it(`should list history with no args after delete and expect nothing`, () =>
+    cli
+      .do(`history`, this.app)
+      .then(cli.expectJustOK)
+      .catch(oops(this)))
 
-  it(`should list history with idx arg after delete and expect only the previous`, () => cli.do(`history 10`, this.app)
-    .then(cli.expectOKWithOnly('history'))
-    .catch(oops(this)))
+  it(`should list history with idx arg after delete and expect only the previous`, () =>
+    cli
+      .do(`history 10`, this.app)
+      .then(cli.expectOKWithOnly('history'))
+      .catch(oops(this)))
 
-  it(`should delete command history again`, () => cli.do(`history -c`, this.app)
-    .then(cli.expectJustOK)
-    .catch(oops(this)))
+  it(`should delete command history again`, () =>
+    cli
+      .do(`history -c`, this.app)
+      .then(cli.expectJustOK)
+      .catch(oops(this)))
 
-  it(`should list history with idx and filter args after delete and expect nothing`, () => cli.do(`history 10 ls`, this.app)
-    .then(cli.expectJustOK) // some random string that won't be in the command history
-    .catch(oops(this)))
+  it(`should list history with idx and filter args after delete and expect nothing`, () =>
+    cli
+      .do(`history 10 ls`, this.app)
+      .then(cli.expectJustOK) // some random string that won't be in the command history
+      .catch(oops(this)))
 })

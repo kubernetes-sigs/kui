@@ -22,15 +22,23 @@ import { pexec } from '@kui-shell/core/core/repl'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
-import { Activation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
+import {
+  Activation,
+  isAsyncActivationSpec
+} from '../../../models/openwhisk-entity'
 const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
 /**
  * Render an activation response in the CLI portion of the UI
  *
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default async (tab: Tab, response: Activation | EntitySpec, resultDom: Element, parsedOptions: Object, execOptions: Object): Promise<boolean> => {
+export default async (
+  tab: Tab,
+  response: Activation | EntitySpec,
+  resultDom: Element,
+  parsedOptions: Object, // eslint-disable-line @typescript-eslint/ban-types
+  execOptions: Object // eslint-disable-line @typescript-eslint/ban-types
+): Promise<boolean> => {
   if (isAsyncActivationSpec(response)) {
     // probably non-blocking invoke
     // say "ok: invoked foo with id xxx"
@@ -41,24 +49,26 @@ export default async (tab: Tab, response: Activation | EntitySpec, resultDom: El
     const isAbsolute = response.entity.name.charAt(0) === '/'
     const ns = isAbsolute && nameParts[1]
     const restIndex = isAbsolute ? 2 : 0 // '/a/b/c' => ['', 'a', 'b', 'c'], rest starts at 2
-    const nsForDisplay = !ns || ns === await currentNamespace() ? '' : `/${ns}/`
+    const nsForDisplay =
+      !ns || ns === (await currentNamespace()) ? '' : `/${ns}/`
     const prettyName = `${nsForDisplay}${nameParts.slice(restIndex).join('/')}`
 
-    suffix.appendChild(document.createTextNode(` invoked ${prettyName} with id `))
+    suffix.appendChild(
+      document.createTextNode(` invoked ${prettyName} with id `)
+    )
 
     const clickable = document.createElement('span') as HTMLElement
     clickable.className = 'clickable clickable-blatant activationId'
     clickable.innerText = response.activationId
     clickable.onclick = () => {
       const fetch = async (iter: number) => {
-        return pexec(`await ${response.activationId}`)
-          .catch(err => {
-            if (iter < 10) {
-              setTimeout(() => fetch(iter + 1), 500)
-            } else {
-              console.error(err)
-            }
-          })
+        return pexec(`await ${response.activationId}`).catch(err => {
+          if (iter < 10) {
+            setTimeout(() => fetch(iter + 1), 500)
+          } else {
+            console.error(err)
+          }
+        })
       }
 
       fetch(0)

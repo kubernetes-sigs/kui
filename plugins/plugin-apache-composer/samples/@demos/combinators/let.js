@@ -10,8 +10,11 @@ module.exports = composer.let(
   { idx: 100 },
 
   // body of let
-  composer.while(() => idx-- > 0, // condition
-    '/whisk.system/utils/echo')) // body of while
+  composer.while(
+    () => idx-- > 0, // condition
+    '/whisk.system/utils/echo'
+  )
+) // body of while
 
 /**
  * Notes: the parameter bindings by default only visible to

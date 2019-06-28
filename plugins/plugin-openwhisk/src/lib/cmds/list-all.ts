@@ -35,20 +35,22 @@ const usage = cmd => ({
 const docs = cmd => ({ usage: usage(cmd) })
 
 /** list all of these entity types: */
-const types = [ 'actions', 'packages', 'triggers', 'rules' ]
+const types = ['actions', 'packages', 'triggers', 'rules']
 
 /** list the entities of a given type */
-const list = type => repl.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
+const list = type =>
+  repl.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
 
 /** the command handler */
-const doList = () => () => Promise.all(types.map(list)).then(L => {
-  return L.map(_ => _[0] || []).filter(x => x.length > 0)
-})
+const doList = () => () =>
+  Promise.all(types.map(list)).then(L => {
+    return L.map(_ => _[0] || []).filter(x => x.length > 0)
+  })
 
 /**
  * Here is the module, where we register command handlers
  *
  */
-export default (commandTree) => {
+export default commandTree => {
   commandTree.listen(`/wsk/list`, doList(), docs('list'))
 }

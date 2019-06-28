@@ -78,7 +78,11 @@ const readFile = async (): Promise<Prescan> => {
  * Find what's new in after versus before, two structures
  *
  */
-const diff = (beforeModel: Prescan, afterModel: Prescan, reverseDiff = false): PrescanDiff => {
+const diff = (
+  beforeModel: Prescan,
+  afterModel: Prescan,
+  reverseDiff = false
+): PrescanDiff => {
   const { commandToPlugin: before } = beforeModel
   const { commandToPlugin: after } = afterModel
 
@@ -101,14 +105,20 @@ const diff = (beforeModel: Prescan, afterModel: Prescan, reverseDiff = false): P
  *
  */
 const readDirRecursively = (dir: string): string[] => {
-  if (path.basename(dir) !== 'helpers' &&
-      path.basename(dir) !== 'bin' &&
-      path.basename(dir) !== 'modules' &&
-      path.basename(dir) !== 'node_modules' &&
-      fs.statSync(dir).isDirectory()) {
-    return Array.prototype.concat(...fs.readdirSync(dir).map((f: string) => readDirRecursively(path.join(dir, f))))
+  if (
+    path.basename(dir) !== 'helpers' &&
+    path.basename(dir) !== 'bin' &&
+    path.basename(dir) !== 'modules' &&
+    path.basename(dir) !== 'node_modules' &&
+    fs.statSync(dir).isDirectory()
+  ) {
+    return Array.prototype.concat(
+      ...fs
+        .readdirSync(dir)
+        .map((f: string) => readDirRecursively(path.join(dir, f)))
+    )
   } else {
-    return [ dir ] // was dir
+    return [dir] // was dir
   }
 }
 
@@ -116,7 +126,8 @@ const readDirRecursively = (dir: string): string[] => {
  * Scan the given directory, recursively, for javascript files
  *
  */
-export const scanForJsFiles = (dir: string) => readDirRecursively(dir).filter(s => s.endsWith('.js'))
+export const scanForJsFiles = (dir: string) =>
+  readDirRecursively(dir).filter(s => s.endsWith('.js'))
 
 interface File {
   path: string
@@ -161,7 +172,8 @@ const makeTree = (map: plugins.PrescanUsage, docs: plugins.PrescanDocs) => {
 
   /** create new node */
   const newLeaf = (route: string): Node => ({ route })
-  const newNode = (route: string): Node => Object.assign(newLeaf(route), { children: {} })
+  const newNode = (route: string): Node =>
+    Object.assign(newLeaf(route), { children: {} })
 
   /** get or create a subtree */
   const getOrCreate = (tree: Node, pathPrefix: string) => {
@@ -187,7 +199,7 @@ const makeTree = (map: plugins.PrescanUsage, docs: plugins.PrescanDocs) => {
     }
 
     if (!subtree.children) subtree.children = {}
-    const leaf = subtree.children[route] = newLeaf(route)
+    const leaf = (subtree.children[route] = newLeaf(route))
     leaf.usage = map[route]
     leaf.docs = map[route].header || docs[route]
 
@@ -214,8 +226,12 @@ const amendWithUsageModels = (modules: plugins.PrescanModel) => {
       if (options.needsUI) modules.usage[route].needsUI = true
       if (options.requiresLocal) modules.usage[route].requiresLocal = true
       if (options.noAuthOk) modules.usage[route].noAuthOk = true
-      if (options.synonymFor) modules.usage[route].synonymFor = options.synonymFor.route
-      if (synonyms) modules.usage[route].synonyms = Object.keys(synonyms).map(route => synonyms[route].key)
+      if (options.synonymFor)
+        modules.usage[route].synonymFor = options.synonymFor.route
+      if (synonyms)
+        modules.usage[route].synonyms = Object.keys(synonyms).map(
+          route => synonyms[route].key
+        )
     }
 
     if (options && options.docs) {
@@ -236,7 +252,12 @@ const amendWithUsageModels = (modules: plugins.PrescanModel) => {
  * and write the list to the .pre-scanned.json file
  *
  */
-export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirname, plugins.pluginRoot), externalOnly = false, reverseDiff = false) => {
+export default async (
+  pluginRoot = process.env.PLUGIN_ROOT ||
+    path.join(__dirname, plugins.pluginRoot),
+  externalOnly = false,
+  reverseDiff = false
+) => {
   debug('pluginRoot is %s', pluginRoot)
   debug('externalOnly is %s', externalOnly)
 
@@ -256,9 +277,12 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
       .replace(/\/src/, '') // client-hosted plugins
       .replace(/^(.*\/)(plugin-.*)$/, '$2') // client-required plugins
   }
-  const fixupPaths = (pluginList: plugins.PrescanCommandDefinitions) => pluginList.map(plugin => Object.assign(plugin, {
-    path: fixupOnePath(plugin.path)
-  }))
+  const fixupPaths = (pluginList: plugins.PrescanCommandDefinitions) =>
+    pluginList.map(plugin =>
+      Object.assign(plugin, {
+        path: fixupOnePath(plugin.path)
+      })
+    )
 
   const model: plugins.PrescanModel = Object.assign(modules, {
     preloads: fixupPaths(modules.preloads),
@@ -267,9 +291,7 @@ export default async (pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirnam
 
   const modelWithUsage = amendWithUsageModels(model)
 
-  await Promise.all([
-    writeToFile(modelWithUsage)
-  ])
+  await Promise.all([writeToFile(modelWithUsage)])
 
   // resolve with what is new
   return diff(before, modelWithUsage, reverseDiff)

@@ -51,7 +51,11 @@ const usage = {
       { name: 'file', file: true, docs: 'A kubernetes resource file or kind' }
     ],
     optional: [
-      { name: 'resource', positional: true, docs: 'A resource within the file to view' }
+      {
+        name: 'resource',
+        positional: true,
+        docs: 'A resource within the file to view'
+      }
     ]
   }
 }
@@ -64,19 +68,29 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   debug('showing one resource', yaml)
 
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-shell/plugin-k8s/web/css/main.css').toString(), key: 'kedit' })
+    injectCSS({
+      css: require('@kui-shell/plugin-k8s/web/css/main.css').toString(),
+      key: 'kedit'
+    })
   } else {
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-k8s/package.json'))
+    const ourRoot = dirname(
+      require.resolve('@kui-shell/plugin-k8s/package.json')
+    )
     injectCSS(join(ourRoot, 'web/css/main.css'))
   }
 
   // override the type shown in the sidecar header to show the
   // resource kind
   const typeOverride = yaml.kind
-  const nameOverride = (resource: KubeResource) => (resource.metadata && resource.metadata.name) || basename(filepath)
+  const nameOverride = (resource: KubeResource) =>
+    (resource.metadata && resource.metadata.name) || basename(filepath)
 
   // add our mode buttons
-  const resource = { kind: yaml.kind, filepathForDrilldown: filepath, resource: yaml }
+  const resource = {
+    kind: yaml.kind,
+    filepathForDrilldown: filepath,
+    resource: yaml
+  }
   const addModeButtons = (defaultMode: string) => (response: EntitySpec) => {
     response['modes'] = (response['modes'] || []).concat([
       { mode: 'edit', direct: openAsForm },
@@ -104,8 +118,11 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   const { safeLoad, safeDump } = await import('js-yaml')
 
   /** re-extract the structure from raw yaml string */
-  const extract = (rawText: string, entity?: ResourceSource): ResourceSource => {
-    const resource = editorEntity.resource = safeLoad(rawText)
+  const extract = (
+    rawText: string,
+    entity?: ResourceSource
+  ): ResourceSource => {
+    const resource = (editorEntity.resource = safeLoad(rawText))
     editorEntity.source = rawText
     editorEntity.name = resource.metadata.name
     editorEntity.kind = resource.kind
@@ -133,17 +150,31 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   const openInEditor = () => {
     debug('openInEditor', yaml.metadata.name)
 
-    return repl.qexec(`edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.resource)}" --language yaml`,
-      undefined, undefined, {
-        parameters: editorEntity
-      })
+    return repl
+      .qexec(
+        `edit !source --type "${typeOverride}" --name "${nameOverride(
+          editorEntity.resource
+        )}" --language yaml`,
+        undefined,
+        undefined,
+        {
+          parameters: editorEntity
+        }
+      )
       .then(addModeButtons('raw'))
   }
 
   /** open the content as a pretty-printed form */
   const openAsForm = () => {
-    return Promise.resolve(generateForm(tab)(editorEntity.resource, filepath, nameOverride(editorEntity.resource), typeOverride, extract))
-      .then(addModeButtons('edit'))
+    return Promise.resolve(
+      generateForm(tab)(
+        editorEntity.resource,
+        filepath,
+        nameOverride(editorEntity.resource),
+        typeOverride,
+        extract
+      )
+    ).then(addModeButtons('edit'))
   }
 
   // open as form by default
@@ -154,8 +185,11 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
  * Render the resources as a REPL table
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const showAsTable = (yamls: any[], filepathAsGiven: string, parsedOptions): Table => {
+const showAsTable = (
+  yamls: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
+  filepathAsGiven: string,
+  parsedOptions
+): Table => {
   debug('showing as table', yamls)
 
   const ourOptions = {
@@ -163,7 +197,11 @@ const showAsTable = (yamls: any[], filepathAsGiven: string, parsedOptions): Tabl
     onclickFn: kubeEntity => {
       return evt => {
         evt.stopPropagation() // row versus name click handling; we don't want both
-        return repl.pexec(`kedit ${repl.encodeComponent(filepathAsGiven)} ${repl.encodeComponent(kubeEntity.metadata.name)}`)
+        return repl.pexec(
+          `kedit ${repl.encodeComponent(
+            filepathAsGiven
+          )} ${repl.encodeComponent(kubeEntity.metadata.name)}`
+        )
       }
     }
   }
@@ -191,13 +229,19 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
 
   if (yamls.length === 0) {
     throw new Error('The specified file is empty')
-  } else if (yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0) {
-    debug('The specified file does not contain any Kubernetes resource definitions')
+  } else if (
+    yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0
+  ) {
+    debug(
+      'The specified file does not contain any Kubernetes resource definitions'
+    )
     return repl.qexec(`edit "${filepathAsGiven}"`)
   } else if (yamls.length > 1 && !resource) {
     return showAsTable(yamls, filepathAsGiven, parsedOptions)
   } else {
-    const yamlIdx = !resource ? 0 : yamls.findIndex(({ metadata: { name } }) => name === resource)
+    const yamlIdx = !resource
+      ? 0
+      : yamls.findIndex(({ metadata: { name } }) => name === resource)
     if (yamlIdx < 0) {
       throw new Error('Cannot find the specified resource')
     } else {
@@ -213,7 +257,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
 const registration = (commandTree: CommandRegistrar) => {
   commandTree.listen('/k8s/kedit', kedit, {
     usage: usage.kedit,
-    noAuthOk: [ 'openwhisk' ]
+    noAuthOk: ['openwhisk']
   })
 }
 

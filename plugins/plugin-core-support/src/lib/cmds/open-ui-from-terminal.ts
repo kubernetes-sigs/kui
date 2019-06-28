@@ -25,7 +25,14 @@ const usage = {
 }
 
 // noEcho means don't echo the command if we came from headless
-const docs = { usage, needsUI: true, fullscreen: false, noEcho: true, noHistory: true, noAuthOk: true }
+const docs = {
+  usage,
+  needsUI: true,
+  fullscreen: false,
+  noEcho: true,
+  noHistory: true,
+  noAuthOk: true
+}
 
 /**
  * This plugin allows opening the graphical shell from the terminal

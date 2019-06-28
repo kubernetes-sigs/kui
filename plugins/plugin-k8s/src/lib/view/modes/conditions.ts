@@ -20,7 +20,11 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
-import { Resource, KubeResource, KubeStatusCondition } from '../../model/resource'
+import {
+  Resource,
+  KubeResource,
+  KubeStatusCondition
+} from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
@@ -32,15 +36,24 @@ const debug = Debug('k8s/view/modes/conditions')
  * for the given resource
  *
  */
-export const conditionsButton = (command: string, resource: Resource, overrides?) => Object.assign({}, {
-  mode: 'conditions',
-  direct: {
-    plugin: 'k8s',
-    module: 'lib/view/modes/conditions',
-    operation: 'renderAndViewConditions',
-    parameters: { command, resource }
-  }
-}, overrides || {})
+export const conditionsButton = (
+  command: string,
+  resource: Resource,
+  overrides?
+) =>
+  Object.assign(
+    {},
+    {
+      mode: 'conditions',
+      direct: {
+        plugin: 'k8s',
+        module: 'lib/view/modes/conditions',
+        operation: 'renderAndViewConditions',
+        parameters: { command, resource }
+      }
+    },
+    overrides || {}
+  )
 
 /**
  * Add a Conditions mode button to the given modes model, if called
@@ -77,18 +90,28 @@ const formatTimestamp = (timestamp: string): string => {
  * Render the tabular conditions view
  *
  */
-export const renderConditions = async (tab: Tab, command: string, resource: Resource) => {
+export const renderConditions = async (
+  tab: Tab,
+  command: string,
+  resource: Resource
+) => {
   debug('renderConditions', command, resource)
 
-  const anyProbeTimes = resource.resource.status.conditions.some(_ => !!_.lastProbeTime)
-  const probeHeader: Cell[] = anyProbeTimes ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }] : []
+  const anyProbeTimes = resource.resource.status.conditions.some(
+    _ => !!_.lastProbeTime
+  )
+  const probeHeader: Cell[] = anyProbeTimes
+    ? [{ value: 'LAST PROBE', outerCSS: 'header-cell min-width-date-like' }]
+    : []
   const probeBody = (condition: KubeStatusCondition): Cell[] => {
     if (anyProbeTimes) {
-      return [{
-        key: 'lastProbeTime',
-        value: formatTimestamp(condition.lastProbeTime),
-        outerCSS: 'min-width-date-like smaller-text'
-      }]
+      return [
+        {
+          key: 'lastProbeTime',
+          value: formatTimestamp(condition.lastProbeTime),
+          outerCSS: 'min-width-date-like smaller-text'
+        }
+      ]
     } else {
       return []
     }
@@ -98,11 +121,13 @@ export const renderConditions = async (tab: Tab, command: string, resource: Reso
   const messageHeader: Cell[] = anyMessages ? [{ value: 'MESSAGE' }] : []
   const messageBody = (condition: KubeStatusCondition): Cell[] => {
     if (anyMessages) {
-      return [{
-        key: 'message',
-        value: condition.message,
-        css: 'pre-wrap'
-      }]
+      return [
+        {
+          key: 'message',
+          value: condition.message,
+          css: 'pre-wrap'
+        }
+      ]
     } else {
       return []
     }
@@ -129,34 +154,52 @@ export const renderConditions = async (tab: Tab, command: string, resource: Reso
     } else if (!a.lastTransitionTime && !b.lastTransitionTime) {
       return 0
     } else {
-      return new Date(b.lastTransitionTime).getTime() - new Date(a.lastTransitionTime).getTime()
+      return (
+        new Date(b.lastTransitionTime).getTime() -
+        new Date(a.lastTransitionTime).getTime()
+      )
     }
   })
 
-  const bodyModel: Row[] = resource.resource.status.conditions.map(condition => {
-    const success = condition.status === 'True' || /Succeed/i.test(condition.reason)
-    const failure = condition.status === 'False' || /Failed/i.test(condition.reason)
+  const bodyModel: Row[] = resource.resource.status.conditions.map(
+    condition => {
+      const success =
+        condition.status === 'True' || /Succeed/i.test(condition.reason)
+      const failure =
+        condition.status === 'False' || /Failed/i.test(condition.reason)
 
-    const standardBodyCells: Cell[] = [
-      { key: 'lastTransitionTime', value: formatTimestamp(condition.lastTransitionTime), outerCSS: 'min-width-date-like smaller-text' },
-      {
-        key: 'status',
-        value: (condition.status || condition.reason).toString(),
-        outerCSS: 'text-center',
-        fontawesome: success ? 'fas fa-check-circle'
-          : failure ? 'fas fa-times-circle' : 'fas fa-question-circle',
-        css: 'larger-text ' + (success ? 'green-text' : failure ? 'red-text' : 'yellow-text')
+      const standardBodyCells: Cell[] = [
+        {
+          key: 'lastTransitionTime',
+          value: formatTimestamp(condition.lastTransitionTime),
+          outerCSS: 'min-width-date-like smaller-text'
+        },
+        {
+          key: 'status',
+          value: (condition.status || condition.reason).toString(),
+          outerCSS: 'text-center',
+          fontawesome: success
+            ? 'fas fa-check-circle'
+            : failure
+            ? 'fas fa-times-circle'
+            : 'fas fa-question-circle',
+          css:
+            'larger-text ' +
+            (success ? 'green-text' : failure ? 'red-text' : 'yellow-text')
+        }
+      ]
+
+      return {
+        type: 'condition',
+        name: condition.type || condition.reason,
+        outerCSS: 'entity-name-group-narrow',
+        onclick: false,
+        attributes: probeBody(condition)
+          .concat(standardBodyCells)
+          .concat(messageBody(condition))
       }
-    ]
-
-    return {
-      type: 'condition',
-      name: condition.type || condition.reason,
-      outerCSS: 'entity-name-group-narrow',
-      onclick: false,
-      attributes: probeBody(condition).concat(standardBodyCells).concat(messageBody(condition))
     }
-  })
+  )
 
   const tableModel: Table = {
     header: headerModel,
@@ -182,5 +225,7 @@ interface Parameters {
   resource: Resource
 }
 export const renderAndViewConditions = (tab: Tab, parameters: Parameters) => {
-  renderConditions(tab, parameters.command, parameters.resource).then(insertView(tab))
+  renderConditions(tab, parameters.command, parameters.resource).then(
+    insertView(tab)
+  )
 }

@@ -26,7 +26,9 @@ export default async () => {
 
     // add the directory that encloses `openwhisk-composer`
     // this is needed e.g. for `compose foo`
-    const root = path.dirname(require.resolve('openwhisk-composer/package.json'))
+    const root = path.dirname(
+      require.resolve('openwhisk-composer/package.json')
+    )
     appModulePath.addPath(path.join(root, '..'))
   }
 }

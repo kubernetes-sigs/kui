@@ -48,10 +48,14 @@ const doEvery = async ({ argv }) => {
   const safeTimeSpec = timeSpecString.replace(/"/, '').replace(/'/, '') // no quotes
 
   try {
-    await repl.qexec(`wsk trigger get ${triggerName}`, null, null, { noRetry: true })
+    await repl.qexec(`wsk trigger get ${triggerName}`, null, null, {
+      noRetry: true
+    })
   } catch (err) {
     if (err.statusCode === 404) {
-      await repl.qexec(`wsk trigger create ${triggerName} --feed /whisk.system/alarms/alarm -a pretty "every ${safeTimeSpec}" -p cron "${cron}"`)
+      await repl.qexec(
+        `wsk trigger create ${triggerName} --feed /whisk.system/alarms/alarm -a pretty "every ${safeTimeSpec}" -p cron "${cron}"`
+      )
     } else {
       throw err
     }
@@ -64,8 +68,10 @@ const doEvery = async ({ argv }) => {
  * Register the command
  *
  */
-export default (commandTree) => {
+export default commandTree => {
   // install the routes
-  commandTree.listen('/wsk/every', doEvery, { docs: 'Execute an OpenWhisk action periodically; e.g. "every 5 sec do foo"' })
+  commandTree.listen('/wsk/every', doEvery, {
+    docs: 'Execute an OpenWhisk action periodically; e.g. "every 5 sec do foo"'
+  })
   // commandTree.listen('/wsk/never', doEvery, { docs: 'Remove a periodic execution; e.g. "never 5 sec do foo"' })
 }

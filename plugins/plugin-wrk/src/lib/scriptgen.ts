@@ -30,82 +30,107 @@ import path = require('path')
  * User has requested to test an openwhisk action
  *
  */
-export const generateScriptForAction = ({ options }) => action => new Promise((resolve, reject) => {
-  fs.readFile(path.join(__dirname, '../scripts/echo.lua'), (err, data) => {
-    if (err) {
-      reject(err)
-    } else {
-      tmp.file((err, path, fd, cleanupCallback) => {
-        if (err) {
-          reject(err)
-        } else {
-          // fs.write(fd, `wrk.method = "${method}"\n`)
-          // fs.write(fd, 'wrk.body   = \'{ "name": "nick" }\'\n')
-          // fs.write(fd, 'wrk.headers["Content-Type"] = "application/json"\n')
-          // fs.write(fd, `wrk.headers["Authorization"] = "Basic ${Buffer.from(wsk.auth.get()).toString('base64')}"\n`)
+export const generateScriptForAction = ({ options }) => action =>
+  new Promise((resolve, reject) => {
+    fs.readFile(path.join(__dirname, '../scripts/echo.lua'), (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        tmp.file((err, path, fd, cleanupCallback) => {
+          if (err) {
+            reject(err)
+          } else {
+            // fs.write(fd, `wrk.method = "${method}"\n`)
+            // fs.write(fd, 'wrk.body   = \'{ "name": "nick" }\'\n')
+            // fs.write(fd, 'wrk.headers["Content-Type"] = "application/json"\n')
+            // fs.write(fd, `wrk.headers["Authorization"] = "Basic ${Buffer.from(wsk.auth.get()).toString('base64')}"\n`)
 
-          // openwhisk auth key; either a command line
-          // argument, or the global one previously chosen
-          // by the user
-          Promise.resolve().then(() => getCreds(options).then(({ apiHost, auth }) => {
-            // eslint-disable-next-line no-template-curly-in-string
-            fs.write(fd, data.toString().replace('${AUTH}', Buffer.from(auth).toString('base64')), err => {
-              if (err) {
-                reject(err)
-              } else {
-                const apiHostParse = url.parse(apiHost)
-                if (options.direct) {
-                  // talk directly to the openwhisk controller
-                  apiHostParse.protocol = 'http:'
-                  apiHostParse.port = '10001'
-                  delete apiHostParse.host
-                }
+            // openwhisk auth key; either a command line
+            // argument, or the global one previously chosen
+            // by the user
+            Promise.resolve()
+              .then(() =>
+                getCreds(options).then(({ apiHost, auth }) => {
+                  fs.write(
+                    fd,
+                    data
+                      .toString()
+                      // eslint-disable-next-line no-template-curly-in-string
+                      .replace('${AUTH}', Buffer.from(auth).toString('base64')),
+                    err => {
+                      if (err) {
+                        reject(err)
+                      } else {
+                        const apiHostParse = url.parse(apiHost)
+                        if (options.direct) {
+                          // talk directly to the openwhisk controller
+                          apiHostParse.protocol = 'http:'
+                          apiHostParse.port = '10001'
+                          delete apiHostParse.host
+                        }
 
-                const theURL = `${url.format(apiHostParse)}api/v1/namespaces/${encodeURIComponent(action.namespace)}/actions/${encodeURIComponent(action.name)}?blocking=true&result=true`
-                console.error(path, theURL)
+                        const theURL = `${url.format(
+                          apiHostParse
+                        )}api/v1/namespaces/${encodeURIComponent(
+                          action.namespace
+                        )}/actions/${encodeURIComponent(
+                          action.name
+                        )}?blocking=true&result=true`
+                        console.error(path, theURL)
 
-                resolve({
-                  script: path, cleanupCallback, url: theURL
+                        resolve({
+                          script: path,
+                          cleanupCallback,
+                          url: theURL
+                        })
+                      }
+                    }
+                  )
                 })
-              }
-            })
-          })).catch(reject)
-        }
-      })
-    }
+              )
+              .catch(reject)
+          }
+        })
+      }
+    })
   })
-})
 
 /**
  * User has requested to test some random URL
  *
  */
-export const generateScriptForURL = ({ method = 'GET' }) => () => new Promise((resolve, reject) => {
-  debug('generateScriptForURL', method)
+export const generateScriptForURL = ({ method = 'GET' }) => () =>
+  new Promise((resolve, reject) => {
+    debug('generateScriptForURL', method)
 
-  /*
+    /*
     wrk.method = "POST"
     wrk.body   = '{ "name": "nick" }'
     wrk.headers["Content-Type"] = "application/json"
   */
-  tmp.file((err, path, fd, cleanupCallback) => {
-    if (err) {
-      reject(err)
-    } else {
-      fs.writeSync(fd, `wrk.method = "${method}"\n`)
-      fs.writeSync(fd, 'wrk.body   = \'{ "name": "nick" }\'\n')
-      fs.writeSync(fd, 'wrk.headers["Content-Type"] = "application/json"\n')
-      resolve({ script: path, cleanupCallback })
-    }
+    tmp.file((err, path, fd, cleanupCallback) => {
+      if (err) {
+        reject(err)
+      } else {
+        fs.writeSync(fd, `wrk.method = "${method}"\n`)
+        fs.writeSync(fd, 'wrk.body   = \'{ "name": "nick" }\'\n')
+        fs.writeSync(fd, 'wrk.headers["Content-Type"] = "application/json"\n')
+        resolve({ script: path, cleanupCallback })
+      }
+    })
   })
-})
 
 /**
  * Command handler to generate a lua script to run load against a given action
  *
  */
-export const script = async ({ argvNoOptions: argv, parsedOptions: options }: EvaluatorArgs) => {
-  const namespace = await import('@kui-shell/plugin-openwhisk/lib/models/namespace')
+export const script = async ({
+  argvNoOptions: argv,
+  parsedOptions: options
+}: EvaluatorArgs) => {
+  const namespace = await import(
+    '@kui-shell/plugin-openwhisk/lib/models/namespace'
+  )
 
   const rootDir = path.join(__dirname, '..')
   const nameFull = argv[argv.indexOf('script') + 1]
@@ -128,7 +153,13 @@ export const script = async ({ argvNoOptions: argv, parsedOptions: options }: Ev
   addOption('connections')
 
   return generateScriptForAction({ options })(action)
-    .then(({ url, script }) => `${rootDir.replace(/ /g, '\\ ')}/wrk/wrk -s '${script}' '${url}'${cliOptions}`)
+    .then(
+      ({ url, script }) =>
+        `${rootDir.replace(
+          / /g,
+          '\\ '
+        )}/wrk/wrk -s '${script}' '${url}'${cliOptions}`
+    )
     .then(require('electron').clipboard.writeText)
     .then(() => 'Command copied to clipboard')
 }

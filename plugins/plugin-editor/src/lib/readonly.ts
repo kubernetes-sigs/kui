@@ -38,7 +38,10 @@ export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: Tab) => {
 export const edit = ({ getEntity, lock = undefined }) => async (tab: Tab) => {
   const { namespace, name } = await getEntity(tab)
 
-  return repl.qexec(`edit "/${namespace}/${name}"`, undefined, undefined, { custom: { getEntity, lock } })
+  return repl
+    .qexec(`edit "/${namespace}/${name}"`, undefined, undefined, {
+      custom: { getEntity, lock }
+    })
     .then(entity => showCustom(tab, entity, {}))
 }
 
@@ -46,7 +49,8 @@ export const edit = ({ getEntity, lock = undefined }) => async (tab: Tab) => {
  * Render a lock/unlock icon as a mode button
  *
  */
-export const lockIcon = ({ getEntity,
+export const lockIcon = ({
+  getEntity,
   mode = 'lock', // doesn't need to be translated, as we use an icon
   icon = 'fas fa-unlock-alt',
   tooltip = 'You are in edit mode.\u000aClick to return to view mode.', // TODO externalize string

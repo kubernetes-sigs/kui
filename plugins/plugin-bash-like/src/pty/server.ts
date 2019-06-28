@@ -37,32 +37,33 @@ type ExitHandler = (exitCode: number) => Promise<void>
  * Allocate a port
  *
  */
-const getPort = (): Promise<number> => new Promise(async (resolve, reject) => {
-  const { createServer } = await import('net')
+const getPort = (): Promise<number> =>
+  new Promise(async (resolve, reject) => {
+    const { createServer } = await import('net')
 
-  const iter = () => {
-    const port = portRange
-    portRange += 1
+    const iter = () => {
+      const port = portRange
+      portRange += 1
 
-    const server = createServer()
-    server.listen(port, () => {
-      server.once('close', function () {
-        resolve(port)
+      const server = createServer()
+      server.listen(port, () => {
+        server.once('close', function() {
+          resolve(port)
+        })
+        server.close()
       })
-      server.close()
-    })
 
-    server.on('error', (err: NodeJS.ErrnoException) => {
-      if (err.code === 'EADDRINUSE') {
-        iter()
-      } else {
-        reject(err)
-      }
-    })
-  }
+      server.on('error', (err: NodeJS.ErrnoException) => {
+        if (err.code === 'EADDRINUSE') {
+          iter()
+        } else {
+          reject(err)
+        }
+      })
+    }
 
-  iter()
-})
+    iter()
+  })
 
 // these bits are to avoid macOS garbage; those lines marked with //* here:
 // $ bash -i -l -c ls
@@ -94,7 +95,9 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
     }
   }
 
-  return async () => { /* no-op */ }
+  return async () => {
+    /* no-op */
+  }
 }
 
 /**
@@ -102,24 +105,25 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
  *
  */
 let cachedLoginShell: string
-const getLoginShell = async (): Promise<string> => new Promise((resolve, reject) => {
-  if (cachedLoginShell) {
-    resolve(cachedLoginShell)
-  } else {
-    exec('/bin/bash -c "echo $SHELL"', (err, stdout, stderr) => {
-      if (err) {
-        console.error(err)
-        if (stderr) {
-          console.error(stderr)
+const getLoginShell = async (): Promise<string> =>
+  new Promise((resolve, reject) => {
+    if (cachedLoginShell) {
+      resolve(cachedLoginShell)
+    } else {
+      exec('/bin/bash -c "echo $SHELL"', (err, stdout, stderr) => {
+        if (err) {
+          console.error(err)
+          if (stderr) {
+            console.error(stderr)
+          }
+          reject(err)
+        } else {
+          cachedLoginShell = stdout.trim()
+          resolve(cachedLoginShell)
         }
-        reject(err)
-      } else {
-        cachedLoginShell = stdout.trim()
-        resolve(cachedLoginShell)
-      }
-    })
-  }
-})
+      })
+    }
+  })
 
 /**
  *
@@ -142,7 +146,16 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
   ws.on('message', async (data: string) => {
     // console.log('message', data)
     try {
-      const msg: { type: string; data?: string; cmdline?: string; exitCode?: number; env?: Record<string, string>; cwd?: string; rows?: number; cols?: number } = JSON.parse(data)
+      const msg: {
+        type: string
+        data?: string
+        cmdline?: string
+        exitCode?: number
+        env?: Record<string, string>
+        cwd?: string
+        rows?: number
+        cols?: number
+      } = JSON.parse(data)
 
       switch (msg.type) {
         case 'exit':
@@ -150,13 +163,17 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
 
         case 'exec':
           try {
-            shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
-              name: 'xterm-color',
-              rows: msg.rows,
-              cols: msg.cols,
-              cwd: msg.cwd || process.cwd(),
-              env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
-            })
+            shell = spawn(
+              await getLoginShell(),
+              ['-l', '-i', '-c', '--', msg.cmdline],
+              {
+                name: 'xterm-color',
+                rows: msg.rows,
+                cols: msg.cols,
+                cwd: msg.cwd || process.cwd(),
+                env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
+              }
+            )
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
             // send all PTY data out to the websocket client
@@ -222,7 +239,11 @@ const createDefaultServer = (): Server => {
  */
 let cachedWss
 let cachedPort
-export const main = async (N: number, server?: Server, preexistingPort?: number) => {
+export const main = async (
+  N: number,
+  server?: Server,
+  preexistingPort?: number
+) => {
   if (cachedWss) {
     return cachedPort
   } else {
@@ -245,9 +266,9 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
         cachedWss = new WebSocket.Server({ noServer: true })
         servers.push({ wss: cachedWss })
 
-        server.on('upgrade', function upgrade (request, socket, head) {
+        server.on('upgrade', function upgrade(request, socket, head) {
           console.log('upgrade')
-          cachedWss.handleUpgrade(request, socket, head, function done (ws) {
+          cachedWss.handleUpgrade(request, socket, head, function done(ws) {
             console.log('handleUpgrade')
             cachedWss.emit('connection', ws, request)
           })
@@ -278,47 +299,57 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
 let count = 0
 // const children = []
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/bash/websocket/open', ({ execOptions }) => new Promise(async (resolve, reject) => {
-    const N = count++
+  commandTree.listen(
+    '/bash/websocket/open',
+    ({ execOptions }) =>
+      new Promise(async (resolve, reject) => {
+        const N = count++
 
-    /**
-     * Return a websocket URL for the given port
-     *
-     */
-    const resolveWithHost = (port: number) => {
-      const host = execOptions['host'] || `localhost:${port}`
-      resolve(`wss://${host}/bash/${N}`)
-    }
-
-    if (execOptions.isProxied) {
-      console.log(`do we have a port? ${execOptions['port']}`)
-      return main(N, execOptions['server'], execOptions['port']).then(resolveWithHost).catch(reject)
-    } else {
-      const { ipcRenderer } = await import('electron')
-
-      if (!ipcRenderer) {
-        const error = new Error('electron not available')
-        error['code'] = 127
-        return reject(error)
-      }
-
-      ipcRenderer.send('/exec/invoke', JSON.stringify({
-        module: '@kui-shell/plugin-bash-like/pty/server',
-        hash: N
-      }))
-
-      const channel = `/exec/response/${N}`
-      ipcRenderer.once(channel, (event, arg) => {
-        const message = JSON.parse(arg)
-        if (!message.success) {
-          reject(message.error)
-        } else {
-          const port = message.returnValue
-          resolveWithHost(port)
+        /**
+         * Return a websocket URL for the given port
+         *
+         */
+        const resolveWithHost = (port: number) => {
+          const host = execOptions['host'] || `localhost:${port}`
+          resolve(`wss://${host}/bash/${N}`)
         }
-      })
-    }
-  }), { noAuthOk: true })
+
+        if (execOptions.isProxied) {
+          console.log(`do we have a port? ${execOptions['port']}`)
+          return main(N, execOptions['server'], execOptions['port'])
+            .then(resolveWithHost)
+            .catch(reject)
+        } else {
+          const { ipcRenderer } = await import('electron')
+
+          if (!ipcRenderer) {
+            const error = new Error('electron not available')
+            error['code'] = 127
+            return reject(error)
+          }
+
+          ipcRenderer.send(
+            '/exec/invoke',
+            JSON.stringify({
+              module: '@kui-shell/plugin-bash-like/pty/server',
+              hash: N
+            })
+          )
+
+          const channel = `/exec/response/${N}`
+          ipcRenderer.once(channel, (event, arg) => {
+            const message = JSON.parse(arg)
+            if (!message.success) {
+              reject(message.error)
+            } else {
+              const port = message.returnValue
+              resolveWithHost(port)
+            }
+          })
+        }
+      }),
+    { noAuthOk: true }
+  )
 }
 
 // this is the entry point when we re-invoke ourselves as a separate

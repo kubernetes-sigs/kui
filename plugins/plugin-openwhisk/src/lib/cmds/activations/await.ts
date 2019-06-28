@@ -67,95 +67,119 @@ const handleComposer = options => activation => {
  * been recorded... the inner fetchPoll loop deals with that
  *
  */
-const fetch = activationId => new Promise((resolve, reject) => {
-  const fetchPoll = () => (isConductorActivation(activationId) ? repl.qexec(`session get ${activationId}`)
-    : repl.qexec(`wsk activation get ${activationId}`))
-    .then(resolve)
-    .catch(err => {
-      if (err && err.error && err.error.error === 'The requested resource does not exist.') {
-        // the activation isn't even recorded, yet!
-        debug('fetch needs to poll', activationId)
-        setTimeout(() => fetchPoll(), POLL_INTERVAL)
-      } else {
-        reject(err)
-      }
-    })
+const fetch = activationId =>
+  new Promise((resolve, reject) => {
+    const fetchPoll = () =>
+      (isConductorActivation(activationId)
+        ? repl.qexec(`session get ${activationId}`)
+        : repl.qexec(`wsk activation get ${activationId}`)
+      )
+        .then(resolve)
+        .catch(err => {
+          if (
+            err &&
+            err.error &&
+            err.error.error === 'The requested resource does not exist.'
+          ) {
+            // the activation isn't even recorded, yet!
+            debug('fetch needs to poll', activationId)
+            setTimeout(() => fetchPoll(), POLL_INTERVAL)
+          } else {
+            reject(err)
+          }
+        })
 
-  fetchPoll()
-})
+    fetchPoll()
+  })
 
 /**
  * Check to see whether the given activation has completed
  *
  */
-const poll = activation => new Promise((resolve) => {
-  const iter = () => {
-    if (activation.end || activation.response.status) {
-      // then the activation has finished!
-      debug('await complete')
-      resolve(activation)
-    } else {
-      // otherwise, the activation is recorded, but not yet complete, so retry after some time
-      debug('poll still waiting for completion', activation.activationId)
-      setTimeout(() => fetch(activation.activationId).then(poll), POLL_INTERVAL)
+const poll = activation =>
+  new Promise(resolve => {
+    const iter = () => {
+      if (activation.end || activation.response.status) {
+        // then the activation has finished!
+        debug('await complete')
+        resolve(activation)
+      } else {
+        // otherwise, the activation is recorded, but not yet complete, so retry after some time
+        debug('poll still waiting for completion', activation.activationId)
+        setTimeout(
+          () => fetch(activation.activationId).then(poll),
+          POLL_INTERVAL
+        )
+      }
     }
-  }
-  iter()
-})
+    iter()
+  })
 
 /**
  * If not given an activationId, then find one
  *
  */
-const findActivationId = (options, activationId?: string) => new Promise((resolve, reject) => {
-  if (activationId) {
-    resolve(activationId)
-  } else {
-    if (options && options.remote) {
-      // the user has requested that we ignore local history; so fetch the last activation from openwhisk
-      return repl.qexec(`wsk activation last`).then(poll).catch(reject)
+const findActivationId = (options, activationId?: string) =>
+  new Promise((resolve, reject) => {
+    if (activationId) {
+      resolve(activationId)
     } else {
-      // otherwise, use our local history to find the last activation id
-      const lastActivationCommand = historyModel.find(entry => entry.entityType === 'actions' && (entry.verb === 'invoke' || entry.verb === 'async'))
-      debug('lastActivationCommand', lastActivationCommand)
+      if (options && options.remote) {
+        // the user has requested that we ignore local history; so fetch the last activation from openwhisk
+        return repl
+          .qexec(`wsk activation last`)
+          .then(poll)
+          .catch(reject)
+      } else {
+        // otherwise, use our local history to find the last activation id
+        const lastActivationCommand = historyModel.find(
+          entry =>
+            entry.entityType === 'actions' &&
+            (entry.verb === 'invoke' || entry.verb === 'async')
+        )
+        debug('lastActivationCommand', lastActivationCommand)
 
-      if (lastActivationCommand) {
-        // in some cases, the history does not yet record the activationId, so poll until it does
-        const findPoll = iter => {
-          if (lastActivationCommand.response && lastActivationCommand.response.activationId) {
-            // got it!
-            resolve(lastActivationCommand.response.activationId)
-          } else {
-            if (iter > 100) {
-              reject(new Error('No recent activations to await'))
+        if (lastActivationCommand) {
+          // in some cases, the history does not yet record the activationId, so poll until it does
+          const findPoll = iter => {
+            if (
+              lastActivationCommand.response &&
+              lastActivationCommand.response.activationId
+            ) {
+              // got it!
+              resolve(lastActivationCommand.response.activationId)
             } else {
-              debug('need to poll history', lastActivationCommand)
-              setTimeout(() => findPoll(iter + 1), 1000)
+              if (iter > 100) {
+                reject(new Error('No recent activations to await'))
+              } else {
+                debug('need to poll history', lastActivationCommand)
+                setTimeout(() => findPoll(iter + 1), 1000)
+              }
             }
           }
+          findPoll(0)
+        } else {
+          reject(new Error('No recent activations to await'))
         }
-        findPoll(0)
-      } else {
-        reject(new Error('No recent activations to await'))
       }
     }
-  }
-})
+  })
 
 /**
  * await command handler
  *
  */
-const doAwait = ({ argvNoOptions: argv, parsedOptions: options }) => new Promise((resolve, reject) => {
-  const activationId = argv[argv.indexOf('await') + 1]
-  debug('activationId', activationId)
+const doAwait = ({ argvNoOptions: argv, parsedOptions: options }) =>
+  new Promise((resolve, reject) => {
+    const activationId = argv[argv.indexOf('await') + 1]
+    debug('activationId', activationId)
 
-  findActivationId(options, activationId)
-    .then(fetch)
-    .then(poll)
-    .then(handleComposer(options))
-    .then(resolve, reject)
-}) /* doAwait */
+    findActivationId(options, activationId)
+      .then(fetch)
+      .then(poll)
+      .then(handleComposer(options))
+      .then(resolve, reject)
+  }) /* doAwait */
 
 /**
  * Register commands
@@ -164,8 +188,9 @@ const doAwait = ({ argvNoOptions: argv, parsedOptions: options }) => new Promise
 export default (commandTree, wsk) => {
   // install the routes
   wsk.synonyms('activations').map(syn => {
-    commandTree.listen(`/wsk/${syn}/await`,
-      doAwait,
-      { docs: 'Wait until a previous activation completes (default: the last activation)' })
+    commandTree.listen(`/wsk/${syn}/await`, doAwait, {
+      docs:
+        'Wait until a previous activation completes (default: the last activation)'
+    })
   })
 }

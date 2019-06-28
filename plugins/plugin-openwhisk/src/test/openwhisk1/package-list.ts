@@ -28,71 +28,98 @@ const pckage = 'package'
 const package2 = 'package2'
 const action = 'action'
 
-describe('wsk package list tests', function (this: common.ISuite) {
+describe('wsk package list tests', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it(`should create ${action} in ${pckage}`, () => cli.do(`let ${pckage}/${action} = x=>x`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(action, undefined, undefined, pckage))
-    .catch(common.oops(this)))
+  it(`should create ${action} in ${pckage}`, () =>
+    cli
+      .do(`let ${pckage}/${action} = x=>x`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(action, undefined, undefined, pckage))
+      .catch(common.oops(this)))
 
-  it(`should list ${pckage} with wsk package list`, () => cli.do(`wsk package list`, this.app)
-    .then(cli.expectOKWithOnly(pckage))
-    .catch(common.oops(this)))
+  it(`should list ${pckage} with wsk package list`, () =>
+    cli
+      .do(`wsk package list`, this.app)
+      .then(cli.expectOKWithOnly(pckage))
+      .catch(common.oops(this)))
 
-  it(`should create ${pckage} with wsk package create`, () => cli.do(`wsk package create ${package2}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(package2))
-    .catch(common.oops(this)))
+  it(`should create ${pckage} with wsk package create`, () =>
+    cli
+      .do(`wsk package create ${package2}`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(package2))
+      .catch(common.oops(this)))
 
   it(`should list ${pckage} with kui package list`, async () => {
     try {
-      const selector = await cli.do(`kui package list`, this.app)
+      const selector = await cli
+        .do(`kui package list`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(pckage) }))
 
       await this.app.client.click(`${selector} .clickable`)
       await sidecar.expectOpen(this.app).then(sidecar.expectShowing(pckage))
 
-      await this.app.client.click(`${selectors.SIDECAR} .package-action-list .entity[data-name="${action}"] .clickable`)
+      await this.app.client.click(
+        `${selectors.SIDECAR} .package-action-list .entity[data-name="${action}"] .clickable`
+      )
 
-      await sidecar.expectOpen(this.app).then(sidecar.expectShowing(action, undefined, undefined, pckage))
+      await sidecar
+        .expectOpen(this.app)
+        .then(sidecar.expectShowing(action, undefined, undefined, pckage))
     } catch (err) {
       common.oops(this)(err)
     }
   })
 
-  it(`should list ${pckage} with wsk package list`, () => cli.do(`wsk package list`, this.app)
-    .then(cli.expectOKWith(pckage))
-    .catch(common.oops(this)))
+  it(`should list ${pckage} with wsk package list`, () =>
+    cli
+      .do(`wsk package list`, this.app)
+      .then(cli.expectOKWith(pckage))
+      .catch(common.oops(this)))
 
-  it(`should list ${package2} with package list`, () => cli.do(`package list`, this.app)
-    .then(cli.expectOKWith(package2))
-    .catch(common.oops(this)))
+  it(`should list ${package2} with package list`, () =>
+    cli
+      .do(`package list`, this.app)
+      .then(cli.expectOKWith(package2))
+      .catch(common.oops(this)))
 
-  it(`should list ${package2} with package list`, () => cli.do(`package list`, this.app)
-    .then(cli.expectOKWith(package2))
-    .catch(common.oops(this)))
+  it(`should list ${package2} with package list`, () =>
+    cli
+      .do(`package list`, this.app)
+      .then(cli.expectOKWith(package2))
+      .catch(common.oops(this)))
 
-  it(`should list ${pckage} with package list /${ui.expectedNamespace()}`, () => cli.do(`package list /${ui.expectedNamespace()}`, this.app)
-    .then(cli.expectOKWith(package2))
-    .catch(common.oops(this)))
+  it(`should list ${pckage} with package list /${ui.expectedNamespace()}`, () =>
+    cli
+      .do(`package list /${ui.expectedNamespace()}`, this.app)
+      .then(cli.expectOKWith(package2))
+      .catch(common.oops(this)))
 
-  it(`should list ${package2} with package list /${ui.expectedNamespace()}`, () => cli.do(`package list /${ui.expectedNamespace()}`, this.app)
-    .then(cli.expectOKWith(package2))
-    .catch(common.oops(this)))
+  it(`should list ${package2} with package list /${ui.expectedNamespace()}`, () =>
+    cli
+      .do(`package list /${ui.expectedNamespace()}`, this.app)
+      .then(cli.expectOKWith(package2))
+      .catch(common.oops(this)))
 
-  it(`should list actions in ${pckage} with wsk action list ${pckage}`, () => cli.do(`wsk action list ${pckage}`, this.app)
-    .then(cli.expectOKWith(action))
-    .catch(common.oops(this)))
+  it(`should list actions in ${pckage} with wsk action list ${pckage}`, () =>
+    cli
+      .do(`wsk action list ${pckage}`, this.app)
+      .then(cli.expectOKWith(action))
+      .catch(common.oops(this)))
 
-  it(`should list actions in ${pckage} with kui action list ${pckage}`, () => cli.do(`kui action list ${pckage}`, this.app)
-    .then(cli.expectOKWith(action))
-    .catch(common.oops(this)))
+  it(`should list actions in ${pckage} with kui action list ${pckage}`, () =>
+    cli
+      .do(`kui action list ${pckage}`, this.app)
+      .then(cli.expectOKWith(action))
+      .catch(common.oops(this)))
 
-  it(`should list actions in ${pckage} with action list ${pckage}`, () => cli.do(`action list ${pckage}`, this.app)
-    .then(cli.expectOKWith(action))
-    .catch(common.oops(this)))
+  it(`should list actions in ${pckage} with action list ${pckage}`, () =>
+    cli
+      .do(`action list ${pckage}`, this.app)
+      .then(cli.expectOKWith(action))
+      .catch(common.oops(this)))
 })

@@ -23,7 +23,11 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
+import {
+  getPreference,
+  setPreference,
+  clearPreference
+} from '@kui-shell/core/core/userdata'
 import { theme as settings, env } from '@kui-shell/core/core/settings'
 const debug = Debug('plugins/core-support/theme')
 
@@ -67,9 +71,7 @@ const usage = {
     command: 'set',
     strict: 'set',
     docs: 'Set the current theme',
-    required: [
-      { name: 'string', docs: 'The name of a theme to use' }
-    ]
+    required: [{ name: 'string', docs: 'The name of a theme to use' }]
   }
 }
 
@@ -110,32 +112,38 @@ const list = async (): Promise<Table> => {
   const currentTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
   debug('currentTheme', currentTheme)
 
-  const body: Row[] = (settings.themes || []).map((theme): Row => {
-    const row = {
-      type: 'theme',
-      name: theme.name,
-      fontawesome: 'fas fa-check',
-      css: 'selected-entity',
-      outerCSS: 'very-narrow',
-      rowCSS: theme.name === currentTheme && 'selected-row',
-      attributes: [
-        { value: theme.description || theme.name, css: 'not-too-wide', onclick: undefined },
-        { value: theme.style, css: 'pretty-narrow' }
-      ],
-      onclick: undefined,
-      setSelected: undefined
+  const body: Row[] = (settings.themes || []).map(
+    (theme): Row => {
+      const row = {
+        type: 'theme',
+        name: theme.name,
+        fontawesome: 'fas fa-check',
+        css: 'selected-entity',
+        outerCSS: 'very-narrow',
+        rowCSS: theme.name === currentTheme && 'selected-row',
+        attributes: [
+          {
+            value: theme.description || theme.name,
+            css: 'not-too-wide',
+            onclick: undefined
+          },
+          { value: theme.style, css: 'pretty-narrow' }
+        ],
+        onclick: undefined,
+        setSelected: undefined
+      }
+
+      const onclick = async () => {
+        await repl.qexec(`theme set ${repl.encodeComponent(theme.name)}`)
+        row.setSelected()
+      }
+
+      row.onclick = onclick // <-- clicks on the "check mark"
+      row.attributes[0].onclick = onclick // <-- clicks on the theme name
+
+      return row
     }
-
-    const onclick = async () => {
-      await repl.qexec(`theme set ${repl.encodeComponent(theme.name)}`)
-      row.setSelected()
-    }
-
-    row.onclick = onclick // <-- clicks on the "check mark"
-    row.attributes[0].onclick = onclick // <-- clicks on the theme name
-
-    return row
-  })
+  )
 
   return new Table({ type: 'theme', noSort: true, header, body })
 }
@@ -145,7 +153,9 @@ const list = async (): Promise<Table> => {
  *
  */
 const getCssFilepathForGivenTheme = (themeModel): string => {
-  const prefix = inBrowser() ? '' : dirname(require.resolve('@kui-shell/settings/package.json'))
+  const prefix = inBrowser()
+    ? ''
+    : dirname(require.resolve('@kui-shell/settings/package.json'))
   return join(prefix, env.cssHome, themeModel.css)
 }
 
@@ -163,7 +173,10 @@ export const getCssFilepathForCurrentTheme = async (): Promise<string> => {
  * Internal logic to switch themes
  *
  */
-const switchTo = async (theme: string, webContents?: WebContents): Promise<void> => {
+const switchTo = async (
+  theme: string,
+  webContents?: WebContents
+): Promise<void> => {
   const themeModel = (settings.themes || []).find(_ => _.name === theme)
   if (!themeModel) {
     debug('could not find theme', theme, settings)
@@ -177,18 +190,34 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
   try {
     if (webContents) {
       const { readFile } = await import('fs-extra')
-      const css = (await readFile(getCssFilepathForGivenTheme(themeModel))).toString()
-      debug('using electron to pre-inject CSS before the application loads, from the main process', css)
+      const css = (await readFile(
+        getCssFilepathForGivenTheme(themeModel)
+      )).toString()
+      debug(
+        'using electron to pre-inject CSS before the application loads, from the main process',
+        css
+      )
       webContents.insertCSS(css)
-      webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${theme}')`)
-      webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
+      webContents.executeJavaScript(
+        `document.body.setAttribute('kui-theme', '${theme}')`
+      )
+      webContents.executeJavaScript(
+        `document.body.setAttribute('kui-theme-style', '${themeModel.style}')`
+      )
     } else {
       const previousKey = document.body.getAttribute('kui-theme-key')
       const newKey = `kui-theme-css-${theme}`
 
       if (previousKey !== newKey) {
-        debug('using kui to inject CSS after the application has loaded, from the renderer process', previousKey, newKey)
-        const css = { key: newKey, path: getCssFilepathForGivenTheme(themeModel) }
+        debug(
+          'using kui to inject CSS after the application has loaded, from the renderer process',
+          previousKey,
+          newKey
+        )
+        const css = {
+          key: newKey,
+          path: getCssFilepathForGivenTheme(themeModel)
+        }
 
         // set the theme attributes on document.body
         document.body.setAttribute('kui-theme-key', newKey)
@@ -216,7 +245,9 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
  * Switch to the last user choice, if the user so indicated
  *
  */
-export const switchToPersistedThemeChoice = async (webContents?: WebContents): Promise<void> => {
+export const switchToPersistedThemeChoice = async (
+  webContents?: WebContents
+): Promise<void> => {
   const theme = await getPersistedThemeChoice()
   if (theme) {
     debug('switching to persisted theme choice')
@@ -257,15 +288,36 @@ const resetToDefault = async () => {
 export const plugin = (commandTree: CommandRegistrar) => {
   debug('plugin')
 
-  commandTree.listen('/theme/list', list, { usage: usage.list, noAuthOk: true, inBrowserOk: true })
-  commandTree.listen('/themes', list, { usage: usage.themes, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/theme/list', list, {
+    usage: usage.list,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
+  commandTree.listen('/themes', list, {
+    usage: usage.themes,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
 
-  commandTree.listen('/theme/set', set, { usage: usage.set, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/theme/set', set, {
+    usage: usage.set,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
 
   // returns the current persisted theme choice; helpful for debugging
-  commandTree.listen('/theme/current', async () => (await getPersistedThemeChoice()) || 'You are using the default theme', { noAuthOk: true, inBrowserOk: true, hidden: true }) // for debugging
+  commandTree.listen(
+    '/theme/current',
+    async () =>
+      (await getPersistedThemeChoice()) || 'You are using the default theme',
+    { noAuthOk: true, inBrowserOk: true, hidden: true }
+  ) // for debugging
 
-  commandTree.listen('/theme/reset', resetToDefault, { usage: usage.reset, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/theme/reset', resetToDefault, {
+    usage: usage.reset,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
 }
 
 /**

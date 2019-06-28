@@ -25,14 +25,29 @@ import fsm2graph from './fsm2graph'
 const debug = Debug('plugins/wskflow/visualize')
 debug('loading')
 
-type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
+type GraphRenderer = (
+  ir,
+  containerElement,
+  acts,
+  options,
+  rule
+) => Promise<void>
 
 /**
  * Create the wskflow visualization for the given fsm
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async (tab: Tab, passedFsm: Record<string, any>, container?: HTMLElement, w?: number, h?: number, activations?, options?, rule?): Promise<any> => {
+export default async (
+  tab: Tab,
+  passedFsm: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  container?: HTMLElement,
+  w?: number,
+  h?: number,
+  activations?,
+  options?,
+  rule?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> => {
   if (isHeadless()) {
     return
   }

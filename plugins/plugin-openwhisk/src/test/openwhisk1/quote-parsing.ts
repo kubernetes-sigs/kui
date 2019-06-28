@@ -19,26 +19,32 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, sidecar } = ui
 
-describe('parameter parsing with quotes', function (this: common.ISuite) {
+describe('parameter parsing with quotes', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   const createWith = params => {
-    return it(`should create package with -p creds ${params}`, () => cli.do(`package update ppp -p creds ${params}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('ppp'))
-      .catch(common.oops(this)))
+    return it(`should create package with -p creds ${params}`, () =>
+      cli
+        .do(`package update ppp -p creds ${params}`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing('ppp'))
+        .catch(common.oops(this)))
   }
 
   const expectParams = params => {
-    return it('should show parameters', () => cli.do('params', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('ppp'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_PACKAGE_PARAMETERS}`))
-      .then(ui.expectStruct(params))
-      .catch(common.oops(this)))
+    return it('should show parameters', () =>
+      cli
+        .do('params', this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing('ppp'))
+        .then(app =>
+          app.client.getText(`${ui.selectors.SIDECAR_PACKAGE_PARAMETERS}`)
+        )
+        .then(ui.expectStruct(params))
+        .catch(common.oops(this)))
   }
 
   createWith(`'"foo" "bar"'`)

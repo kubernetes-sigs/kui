@@ -21,7 +21,7 @@ export interface CodedError extends Error {
   statusCode?: number
 }
 
-export function isCodedError (err: Error): err is CodedError {
+export function isCodedError(err: Error): err is CodedError {
   const error = err as CodedError
   return !!(UsageError.isUsageError(err) || error.code || error.statusCode)
 }

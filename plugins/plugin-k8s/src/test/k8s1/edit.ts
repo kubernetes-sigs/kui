@@ -15,12 +15,26 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, keys, selectors, sidecar, sleep } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, defaultModeForGet, createNS, allocateNS, deleteNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  cli,
+  keys,
+  selectors,
+  sidecar,
+  sleep
+} from '@kui-shell/core/tests/lib/ui'
+import {
+  waitForGreen,
+  waitForRed,
+  defaultModeForGet,
+  createNS,
+  allocateNS,
+  deleteNS,
+  waitTillNone
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const kubectl = 'kubectl'
 
-describe('electron kubectl edit', function (this: common.ISuite) {
+describe('electron kubectl edit', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -30,10 +44,13 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   /** delete the given pod */
   const deleteIt = (name: string, errOk = false) => {
     it(`should delete the pod ${name} via ${kubectl}`, () => {
-      return cli.do(`${kubectl} delete pod ${name} ${inNamespace}`, this.app)
+      return cli
+        .do(`${kubectl} delete pod ${name} ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
         .then(selector => waitForRed(this.app, selector))
-        .then(() => waitTillNone('pod', undefined, name, undefined, inNamespace))
+        .then(() =>
+          waitTillNone('pod', undefined, name, undefined, inNamespace)
+        )
         .catch(err => {
           if (!errOk) {
             return common.oops(this)(err)
@@ -45,7 +62,11 @@ describe('electron kubectl edit', function (this: common.ISuite) {
   const createIt = (name: string) => {
     it(`should create sample pod ${name} from URL via ${kubectl}`, async () => {
       try {
-        const selector = await cli.do(`${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`, this.app)
+        const selector = await cli
+          .do(
+            `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            this.app
+          )
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
 
         // wait for the badge to become green
@@ -53,7 +74,10 @@ describe('electron kubectl edit', function (this: common.ISuite) {
 
         // now click on the table row
         this.app.client.click(`${selector} .clickable`)
-        await sidecar.expectOpen(this.app).then(sidecar.expectMode(defaultModeForGet)).then(sidecar.expectShowing(name))
+        await sidecar
+          .expectOpen(this.app)
+          .then(sidecar.expectMode(defaultModeForGet))
+          .then(sidecar.expectShowing(name))
       } catch (err) {
         common.oops(this)(err)
       }
@@ -79,8 +103,10 @@ describe('electron kubectl edit', function (this: common.ISuite) {
       await this.app.client.waitUntil(() => {
         // first false: not exact
         // second false: don't assert, so that we can waitUntil
-        return res.then(cli.expectOKWithTextContent('cancelled', false, false))
-          .then(() => true).catch(() => false)
+        return res
+          .then(cli.expectOKWithTextContent('cancelled', false, false))
+          .then(() => true)
+          .catch(() => false)
       })
     })
   }

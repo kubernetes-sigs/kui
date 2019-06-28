@@ -17,7 +17,10 @@
 import { dirname, join } from 'path'
 
 import { addPath } from '@kui-shell/core/core/find-file'
-import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
+import {
+  registerSidecarMode,
+  SidecarModeFilter
+} from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
@@ -39,7 +42,9 @@ import logsMode from './model/modes/logs'
  * A sidecar mode relevancy filter
  *
  */
-function either (...filters: SidecarModeFilter<KubeResource>[]): SidecarModeFilter<KubeResource> {
+function either(
+  ...filters: SidecarModeFilter<KubeResource>[]
+): SidecarModeFilter<KubeResource> {
   return (resource: KubeResource) => filters.some(filter => filter(resource))
 }
 
@@ -75,6 +80,9 @@ export default () => {
   registerSidecarMode(logsSpec)
 
   // register a "special path" that resolves
-  const specialPath = join(dirname(require.resolve('@kui-shell/plugin-tekton/package.json')), 'samples/@demos')
+  const specialPath = join(
+    dirname(require.resolve('@kui-shell/plugin-tekton/package.json')),
+    'samples/@demos'
+  )
   addPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
 }

@@ -16,17 +16,27 @@
 
 import { dirname, join } from 'path'
 
-import { before as commonBefore, after as commonAfter, localDescribe, ISuite, oops } from '@kui-shell/core/tests/lib/common'
+import {
+  before as commonBefore,
+  after as commonAfter,
+  localDescribe,
+  ISuite,
+  oops
+} from '@kui-shell/core/tests/lib/common'
 import { cli } from '@kui-shell/core/tests/lib/ui'
 
-const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
+)
 const input = join(ROOT, 'data/k8s/empty-status-cell.txt')
 
-localDescribe('k8s table with empty status cell', function (this: ISuite) {
+localDescribe('k8s table with empty status cell', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
-  it('should format a table with an empty status cell', () => cli.do(`kdebug "${input}"`, this.app)
-    .then(cli.expectOKWith('reviews-v3-rollout'))
-    .catch(oops(this)))
+  it('should format a table with an empty status cell', () =>
+    cli
+      .do(`kdebug "${input}"`, this.app)
+      .then(cli.expectOKWith('reviews-v3-rollout'))
+      .catch(oops(this)))
 })

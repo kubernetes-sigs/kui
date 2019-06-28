@@ -21,9 +21,14 @@ import { dirname, join } from 'path'
 
 export default () => {
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-shell/plugin-wskflow/web/css/wskflow.css').toString(), key: 'wskflow' })
+    injectCSS({
+      css: require('@kui-shell/plugin-wskflow/web/css/wskflow.css').toString(),
+      key: 'wskflow'
+    })
   } else {
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-wskflow/package.json'))
+    const ourRoot = dirname(
+      require.resolve('@kui-shell/plugin-wskflow/package.json')
+    )
     injectCSS(join(ourRoot, 'web/css/wskflow.css'))
   }
 }

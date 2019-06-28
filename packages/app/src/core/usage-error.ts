@@ -30,15 +30,17 @@ interface UsageOptions {
   noHide?: boolean
   noBreadcrumb?: boolean
 }
-class DefaultUsageOptions implements UsageOptions {
-}
+class DefaultUsageOptions implements UsageOptions {}
 
 /**
  * Map a asynchronous function to an array sequentially from front to
  * back.
  *
  */
-async function promiseEach<T, R> (arr: T[], fn: (t: T) => Promise<R>): Promise<R[]> {
+async function promiseEach<T, R>(
+  arr: T[],
+  fn: (t: T) => Promise<R>
+): Promise<R[]> {
   const result = []
   for (const item of arr) {
     result.push(await fn(item))
@@ -47,7 +49,11 @@ async function promiseEach<T, R> (arr: T[], fn: (t: T) => Promise<R>): Promise<R
 }
 
 /** Create an HTML DIV to wrap around the given string */
-const div = (str?: string | Promise<string> | Element, css: string | string[] = undefined, tag = 'div'): HTMLElement => {
+const div = (
+  str?: string | Promise<string> | Element,
+  css: string | string[] = undefined,
+  tag = 'div'
+): HTMLElement => {
   const result = document.createElement(tag)
 
   if (str) {
@@ -69,7 +75,8 @@ const div = (str?: string | Promise<string> | Element, css: string | string[] = 
   }
   return result
 }
-const span = (str?: string | Element, css?: string): HTMLElement => div(str, css, 'span')
+const span = (str?: string | Element, css?: string): HTMLElement =>
+  div(str, css, 'span')
 
 /**
  * The start of every section, e.g. Usage:
@@ -113,13 +120,18 @@ interface BreadcrumbWithClickCommand {
 interface BreadcrumbWithLabelProvider {
   command: string
 }
-type BreadcrumbLabel = string | BreadcrumbWithLabelProvider | BreadcrumbWithClickCommand
-function isBreadcrumbWithClickCommand (crumb: BreadcrumbLabel): crumb is BreadcrumbWithClickCommand {
-  const breadcrumb = (crumb as BreadcrumbWithClickCommand)
+type BreadcrumbLabel =
+  | string
+  | BreadcrumbWithLabelProvider
+  | BreadcrumbWithClickCommand
+function isBreadcrumbWithClickCommand(
+  crumb: BreadcrumbLabel
+): crumb is BreadcrumbWithClickCommand {
+  const breadcrumb = crumb as BreadcrumbWithClickCommand
   return !!(breadcrumb.label && breadcrumb.command)
 }
 
-function isMessageWithUsageModel (msg: UsageLike): msg is MessageWithUsageModel {
+function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
   const message = msg as MessageWithUsageModel
   return !!message.usage
 }
@@ -129,7 +141,12 @@ function isMessageWithUsageModel (msg: UsageLike): msg is MessageWithUsageModel 
  *
  */
 const breadcrumbFromCommand = async (command: string): Promise<string> => {
-  const usageError: UsageError = await repl.qexec(command, undefined, undefined, { failWithUsage: true })
+  const usageError: UsageError = await repl.qexec(
+    command,
+    undefined,
+    undefined,
+    { failWithUsage: true }
+  )
 
   if (isMessageWithUsageModel(usageError.raw)) {
     const usage = usageError.raw.usage
@@ -159,30 +176,29 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
     label = breadcrumbFromCommand(cmd)
   }
 
-  return Promise.resolve(label)
-    .then(label => {
-      const item = span()
-      item.classList.add('bx--breadcrumb-item')
+  return Promise.resolve(label).then(label => {
+    const item = span()
+    item.classList.add('bx--breadcrumb-item')
 
-      if (!options.preserveCase) {
-        item.classList.add('capitalize')
-      }
+    if (!options.preserveCase) {
+      item.classList.add('capitalize')
+    }
 
-      const dom = span(label, 'bx--no-link')
-      dom.setAttribute('data-label', label)
-      item.appendChild(dom)
+    const dom = span(label, 'bx--no-link')
+    dom.setAttribute('data-label', label)
+    item.appendChild(dom)
 
-      if (!options.noSlash) {
-        item.appendChild(span('/', 'bx--breadcrumb-item--slash'))
-      }
+    if (!options.noSlash) {
+      item.appendChild(span('/', 'bx--breadcrumb-item--slash'))
+    }
 
-      if (cmd) {
-        dom.classList.add('bx--link')
-        dom.onclick = () => repl.pexec(cmd)
-      }
+    if (cmd) {
+      dom.classList.add('bx--link')
+      dom.onclick = () => repl.pexec(cmd)
+    }
 
-      return item
-    })
+    return item
+  })
 }
 
 interface Generator {
@@ -190,7 +206,7 @@ interface Generator {
   fn: (command: string) => IUsageRow
 }
 
-function isGenerator (row: UsageRow): row is Generator {
+function isGenerator(row: UsageRow): row is Generator {
   return !!(row as Generator).fn
 }
 
@@ -198,7 +214,10 @@ function isGenerator (row: UsageRow): row is Generator {
  * Format the given usage message
  *
  */
-const format = async (message: UsageLike, options: UsageOptions = new DefaultUsageOptions()): Promise<HTMLElement> => {
+const format = async (
+  message: UsageLike,
+  options: UsageOptions = new DefaultUsageOptions()
+): Promise<HTMLElement> => {
   debug('format message', message)
 
   if (typeof message === 'string') {
@@ -214,13 +233,28 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
     // these are the fields of the usage message
     const usage: UsageModel = message.usage
 
-    const { command, docs, title, breadcrumb = title || command, header = docs && `${docs}.`, example, detailedExample, sampleInputs,
-      intro, sections, // the more general case: the usage model has custom sections
-      commandPrefix, commandPrefixNotNeeded,
+    const {
+      command,
+      docs,
+      title,
+      breadcrumb = title || command,
+      header = docs && `${docs}.`,
+      example,
+      detailedExample,
+      sampleInputs,
+      intro,
+      sections, // the more general case: the usage model has custom sections
+      commandPrefix,
+      commandPrefixNotNeeded,
       commandSuffix = '',
       drilldownWithPip = false,
       preserveCase = false, // in breadcrumbs
-      available, related, required, optional, oneof } = usage
+      available,
+      related,
+      required,
+      optional,
+      oneof
+    } = usage
     const outerCommandPrefix = commandPrefix
     const outerCommandSuffix = commandSuffix
     const outerCommand = command
@@ -229,15 +263,25 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
     // those fields now; `body` is the flex-wrap portion of the
     // content
     const resultWrapper = div(undefined, 'usage-error-wrapper')
-    const result = div(undefined, options.noHide ? '' : ['hideable', 'page-content'], 'p')
+    const result = div(
+      undefined,
+      options.noHide ? '' : ['hideable', 'page-content'],
+      'p'
+    )
     const body = div()
     const left = div() // usage and detailedExample
     const right = div() // required and optional parameters
 
     // if we have a great many detailed examples, place them in a scroll region
-    const scrollableDetailedExamples = detailedExample && Array.isArray(detailedExample) && detailedExample.length > 4
+    const scrollableDetailedExamples =
+      detailedExample &&
+      Array.isArray(detailedExample) &&
+      detailedExample.length > 4
 
-    if ((sections && sections.length > 1) || (scrollableDetailedExamples && sections && sections.length > 0)) {
+    if (
+      (sections && sections.length > 1) ||
+      (scrollableDetailedExamples && sections && sections.length > 0)
+    ) {
       left.classList.add('fifty-fifty')
       right.classList.add('fifty-fifty')
     } else {
@@ -250,7 +294,10 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       const messageDom = div(undefined, '', 'div')
       const prefacePart = span('')
 
-      const messagePart = span(messageString, 'red-text usage-error-message-string')
+      const messagePart = span(
+        messageString,
+        'red-text usage-error-message-string'
+      )
       if (message.messageDom) {
         if (typeof message.messageDom === 'string') {
           messagePart.appendChild(document.createTextNode(message.messageDom))
@@ -268,9 +315,15 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       resultWrapper.appendChild(messageDom)
 
       if (!isHeadless() && !options.noHide) {
-        const usagePart = div(undefined, 'small-top-pad hideable click-here-for-usage-container')
+        const usagePart = div(
+          undefined,
+          'small-top-pad hideable click-here-for-usage-container'
+        )
         const frontPart = span('Click ')
-        const clickyPart = span('here', 'clickable clickable-blatant click-here-for-usage')
+        const clickyPart = span(
+          'here',
+          'clickable clickable-blatant click-here-for-usage'
+        )
         const restPart = span(' for usage information.')
 
         usagePart.appendChild(frontPart)
@@ -292,8 +345,12 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
     //
     if (!options.noBreadcrumb) {
       // breadcrumb model chain
-      const rootCrumb = { breadcrumb: { label: 'Shell Docs', command: 'help' } }
-      const parentChain = (usage.parents || []).map(breadcrumb => ({ breadcrumb }))
+      const rootCrumb = {
+        breadcrumb: { label: 'Shell Docs', command: 'help' }
+      }
+      const parentChain = (usage.parents || []).map(breadcrumb => ({
+        breadcrumb
+      }))
       const thisCommand = { breadcrumb, noSlash: true, preserveCase }
       const breadcrumbs: CrumbOptions[] = [
         rootCrumb,
@@ -305,7 +362,11 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       const crumbs = await promiseEach(breadcrumbs, makeBreadcrumb)
 
       // attach the breadcrumb to the view
-      const container = div(undefined, 'bx--breadcrumb bx--breadcrumb--no-trailing-slash', 'h2')
+      const container = div(
+        undefined,
+        'bx--breadcrumb bx--breadcrumb--no-trailing-slash',
+        'h2'
+      )
       result.appendChild(container)
       crumbs.forEach(breadcrumb => container.appendChild(breadcrumb))
     }
@@ -365,7 +426,10 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
     const scrollRegions = []
 
     // any minimally formatted sections? e.g. `intro` and `section` fields
-    const makeSection = (parent = right, noMargin = false) => ({ title, content }: TitledContent) => {
+    const makeSection = (parent = right, noMargin = false) => ({
+      title,
+      content
+    }: TitledContent) => {
       const wrapper = bodyPart(noMargin)
       const prePart = prefix(title)
       const contentPart = document.createElement('pre')
@@ -403,7 +467,9 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
     // detailed example command
     if (detailedExample) {
-      const examples = !Array.isArray(detailedExample) ? [detailedExample] : detailedExample
+      const examples = !Array.isArray(detailedExample)
+        ? [detailedExample]
+        : detailedExample
 
       const examplePart = bodyPart()
       const prePart = prefix(examples.length === 1 ? 'Example' : 'Examples')
@@ -412,9 +478,12 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
       // only if we there are other sections to show, render the
       // detailed examples in a scroll region
-      const examplesInScrollRegion = examples.length > 4 && sections && sections.length > 0
+      const examplesInScrollRegion =
+        examples.length > 4 && sections && sections.length > 0
 
-      const rowsPart = examplesInScrollRegion ? div(undefined, ['scrollable', 'scrollable-auto']) : examplePart
+      const rowsPart = examplesInScrollRegion
+        ? div(undefined, ['scrollable', 'scrollable-auto'])
+        : examplePart
       if (examplesInScrollRegion) {
         scrollRegions.push(rowsPart)
 
@@ -441,7 +510,12 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
      * Render a table of options
      *
      */
-    const makeTable = (title: string, rows: IUsageRow[], parent = right, nRowsInViewport = (usage && usage.nRowsInViewport) || 5): HTMLElement => {
+    const makeTable = (
+      title: string,
+      rows: IUsageRow[],
+      parent = right,
+      nRowsInViewport = (usage && usage.nRowsInViewport) || 5
+    ): HTMLElement => {
       const wrapper = bodyPart()
       const prePart = prefix(title)
 
@@ -467,8 +541,16 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       // bottom border; the 3em part must .log-line's height in
       // ui.css; nRowsInViewport = true means disable inner scrolling
       if (rows.length > nRowsInViewport && nRowsInViewport !== true) {
-        const tableScrollable = div(undefined, ['scrollable', 'scrollable-auto'])
-        const nRows = (sections && (sections.length === 2 || (sections.length === 1 && scrollableDetailedExamples))) ? 8 : nRowsInViewport
+        const tableScrollable = div(undefined, [
+          'scrollable',
+          'scrollable-auto'
+        ])
+        const nRows =
+          sections &&
+          (sections.length === 2 ||
+            (sections.length === 1 && scrollableDetailedExamples))
+            ? 8
+            : nRowsInViewport
         tableScrollable.style.maxHeight = `calc(${nRows} * 3em + 1px)`
         tableScrollable.appendChild(table)
         wrapper.appendChild(tableScrollable)
@@ -486,14 +568,29 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
         // fields of the row model
         // debug('row', rowData)
-        const { commandPrefix = outerCommandPrefix, commandSuffix = outerCommandSuffix,
+        const {
+          commandPrefix = outerCommandPrefix,
+          commandSuffix = outerCommandSuffix,
           command = outerCommand,
-          name = command, label = name,
+          name = command,
+          label = name,
           noclick = false,
-          synonyms, alias, numeric, aliases = (synonyms || [alias]).filter(x => x), hidden = false, advanced = false,
+          synonyms,
+          alias,
+          numeric,
+          aliases = (synonyms || [alias]).filter(x => x),
+          hidden = false,
+          advanced = false,
           available,
-          example = numeric && 'N', dir: isDir = available || false,
-          title, header, docs = header || title, partial = false, allowed, defaultValue } = rowData
+          example = numeric && 'N',
+          dir: isDir = available || false,
+          title,
+          header,
+          docs = header || title,
+          partial = false,
+          allowed,
+          defaultValue
+        } = rowData
 
         // row is either hidden or only shown for advanced users
         if (hidden) return
@@ -504,16 +601,29 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
         const cmdCell = row.insertCell(-1)
         const docsCell = row.insertCell(-1)
-        const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap not-very-wide')
+        const cmdPart = span(
+          label && label.replace(/=/g, '=\u00ad'),
+          'pre-wrap not-very-wide'
+        )
         const dirPart = isDir && label && span('/')
-        const examplePart = example && span(example, label || dirPart ? 'left-pad lighter-text smaller-text' : '') // for -p key value, "key value"
-        const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'lighter-text smaller-text small-left-pad')
+        const examplePart =
+          example &&
+          span(
+            example,
+            label || dirPart ? 'left-pad lighter-text smaller-text' : ''
+          ) // for -p key value, "key value"
+        const aliasesPart =
+          aliases &&
+          aliases.length > 0 &&
+          span(undefined, 'lighter-text smaller-text small-left-pad')
         const docsPart = span(docs)
         const allowedPart = allowed && smaller(span(undefined))
 
         // for repl.exec,
         const commandForExec = (alias: string, cmd = ''): string => {
-          return `${commandPrefix && !commandPrefixNotNeeded ? commandPrefix + ' ' : ''}${alias} ${cmd} ${commandSuffix}`
+          return `${
+            commandPrefix && !commandPrefixNotNeeded ? commandPrefix + ' ' : ''
+          }${alias} ${cmd} ${commandSuffix}`
         }
 
         cmdCell.className = 'log-field'
@@ -524,19 +634,23 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
         // command aliases
         if (aliases) {
-          aliases.filter(x => x).forEach(alias => {
-            const cmdCell = span()
-            const cmdPart = span(alias /* noclick ? '' : 'clickable clickable-blatant' */) // don't make aliases clickable
-            const dirPart = isDir && span('/')
+          aliases
+            .filter(x => x)
+            .forEach(alias => {
+              const cmdCell = span()
+              const cmdPart = span(
+                alias /* noclick ? '' : 'clickable clickable-blatant' */
+              ) // don't make aliases clickable
+              const dirPart = isDir && span('/')
 
-            if (!noclick) {
-              cmdPart.onclick = () => repl.pexec(commandForExec(alias))
-            }
+              if (!noclick) {
+                cmdPart.onclick = () => repl.pexec(commandForExec(alias))
+              }
 
-            aliasesPart.appendChild(cmdCell)
-            cmdCell.appendChild(cmdPart)
-            if (dirPart) cmdCell.appendChild(smaller(dirPart))
-          })
+              aliasesPart.appendChild(cmdCell)
+              cmdCell.appendChild(cmdPart)
+              if (dirPart) cmdCell.appendChild(smaller(dirPart))
+            })
         }
 
         // allowed and default values
@@ -544,7 +658,11 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
           allowedPart.style.color = 'var(--color-text-02)'
           allowedPart.appendChild(span('options: '))
           allowed.forEach((value, idx) => {
-            const option = span(`${idx > 0 ? ', ' : ''}${value}${value !== defaultValue ? '' : '*'}`)
+            const option = span(
+              `${idx > 0 ? ', ' : ''}${value}${
+                value !== defaultValue ? '' : '*'
+              }`
+            )
             allowedPart.appendChild(option)
           })
         }
@@ -564,16 +682,26 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
             cmdPart.onclick = async event => {
               const cli = await import('../webapp/cli')
               if (partial) {
-                return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
+                return cli.partial(
+                  commandForExec(alias, command) +
+                    `${partial === true ? '' : ' ' + partial}`
+                )
               } else {
                 if (drilldownWithPip) {
-                  return pip(cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
-                    commandForExec(command, name !== command ? name : undefined),
+                  return pip(
+                    cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
+                    commandForExec(
+                      command,
+                      name !== command ? name : undefined
+                    ),
                     undefined,
                     resultWrapper.parentNode.parentNode as Element,
-                    'Previous Usage')(event)
+                    'Previous Usage'
+                  )(event)
                 } else {
-                  return repl.pexec(commandForExec(command, name !== command ? name : undefined))
+                  return repl.pexec(
+                    commandForExec(command, name !== command ? name : undefined)
+                  )
                 }
               }
             }
@@ -603,20 +731,28 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       tableSections.sort(({ rows: a }, { rows: b }) => a.length - b.length)
 
       const nRowsOf = (section: UsageSection, idx: number) => {
-        debug('nRowsOf', section, section.rows.length, section.nRowsInViewport, defaultNRowsInViewport(idx, section.rows.length))
-        return Math.min(section.rows.length,
-          section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length)
+        debug(
+          'nRowsOf',
+          section,
+          section.rows.length,
+          section.nRowsInViewport,
+          defaultNRowsInViewport(idx, section.rows.length)
+        )
+        return Math.min(
+          section.rows.length,
+          section.nRowsInViewport ||
+            defaultNRowsInViewport(idx, section.rows.length) ||
+            section.rows.length
+        )
       }
 
       const totalRows = tableSections.reduce((total, section, idx) => {
         return total + nRowsOf(section, idx)
       }, 0)
 
-      stringSections.forEach((section) => {
+      stringSections.forEach(section => {
         const { title, rows } = section
-        makeTable(title,
-          rows,
-          left)
+        makeTable(title, rows, left)
       })
 
       let runningSum = 0
@@ -625,10 +761,12 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
         runningSum += nRowsOf(section, idx)
         debug('running', runningSum, totalRows)
-        makeTable(title,
+        makeTable(
+          title,
           rows,
           runningSum < totalRows / 2 ? left : right,
-          nRowsInViewport || defaultNRowsInViewport(idx, rows.length))
+          nRowsInViewport || defaultNRowsInViewport(idx, rows.length)
+        )
       })
     }
 
@@ -824,9 +962,12 @@ interface MessageWithUsageModel extends MessageWithCode {
   extra?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-function isMessageWithCode (msg: UsageLike): msg is MessageWithCode {
+function isMessageWithCode(msg: UsageLike): msg is MessageWithCode {
   const message = msg as MessageWithCode
-  return !!(message.message && (message.code || message.statusCode || message.exitCode))
+  return !!(
+    message.message &&
+    (message.code || message.statusCode || message.exitCode)
+  )
 }
 
 type MessageLike = string | HTMLElement
@@ -837,14 +978,16 @@ export class UsageError extends Error implements CodedError {
   raw: UsageLike
   code: number
 
-  constructor (message: UsageLike, extra?: UsageOptions) {
+  constructor(message: UsageLike, extra?: UsageOptions) {
     super()
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor)
     }
     this.raw = message
-    this.code = isMessageWithCode(message) ? message.statusCode || message.code || message.exitCode : 500
+    this.code = isMessageWithCode(message)
+      ? message.statusCode || message.code || message.exitCode
+      : 500
 
     if (typeof message === 'string') {
       this.message = message
@@ -853,15 +996,17 @@ export class UsageError extends Error implements CodedError {
     }
   }
 
-  getUsageModel (): UsageModel {
+  getUsageModel(): UsageModel {
     return (this.raw as MessageWithUsageModel).usage
   }
 
-  getFormattedMessage (): Promise<HTMLElement> {
-    return this.formattedMessage ? this.formattedMessage : Promise.resolve(span(this.message))
+  getFormattedMessage(): Promise<HTMLElement> {
+    return this.formattedMessage
+      ? this.formattedMessage
+      : Promise.resolve(span(this.message))
   }
 
-  static isUsageError (error: Entity): error is UsageError {
+  static isUsageError(error: Entity): error is UsageError {
     const err = error as UsageError
     return !!(err.formattedMessage && err.code)
   }

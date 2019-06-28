@@ -47,13 +47,19 @@ export interface MessageBearingEntity {
   message: string
 }
 
-export function isMessageBearingEntity (entity: Entity): entity is MessageBearingEntity {
+export function isMessageBearingEntity(
+  entity: Entity
+): entity is MessageBearingEntity {
   return (entity as MessageBearingEntity).message !== undefined
 }
 
-export function isEntitySpec (entity: Entity): entity is EntitySpec {
+export function isEntitySpec(entity: Entity): entity is EntitySpec {
   const spec = entity as EntitySpec
-  return spec.verb !== undefined || spec.type !== undefined || spec.name !== undefined
+  return (
+    spec.verb !== undefined ||
+    spec.type !== undefined ||
+    spec.name !== undefined
+  )
 }
 
 /**
@@ -72,19 +78,26 @@ export interface MetadataBearing {
     displayName?: string
   }
 }
-export function isMetadataBearing (spec: EntitySpec): spec is MetadataBearing {
+export function isMetadataBearing(spec: EntitySpec): spec is MetadataBearing {
   const meta = spec as MetadataBearing
-  return meta !== undefined &&
+  return (
+    meta !== undefined &&
     meta.kind !== undefined &&
     meta.metadata !== undefined &&
     meta.metadata.name !== undefined
+  )
 }
 
 /**
  * A mostly scalar entity
  *
  */
-export type SimpleEntity = Error | string | number | HTMLElement | MessageBearingEntity
+export type SimpleEntity =
+  | Error
+  | string
+  | number
+  | HTMLElement
+  | MessageBearingEntity
 
 /**
  * A potentially more complex entity with a "spec"
@@ -92,5 +105,10 @@ export type SimpleEntity = Error | string | number | HTMLElement | MessageBearin
  * Note: Array<any> will go away once we have fully typed tables
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Entity = SimpleEntity | EntitySpec | CustomSpec | boolean | any[] | Table
+export type Entity =
+  | SimpleEntity
+  | EntitySpec
+  | CustomSpec
+  | boolean
+  | any[] // eslint-disable-line @typescript-eslint/no-explicit-any
+  | Table

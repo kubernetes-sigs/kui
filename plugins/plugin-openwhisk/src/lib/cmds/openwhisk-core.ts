@@ -30,8 +30,19 @@ import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
-import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
-import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
+import {
+  actionSpecificModes,
+  addActionMode,
+  activationModes,
+  addActivationModes
+} from '../models/modes'
+import {
+  ow as globalOW,
+  apiHost,
+  apihost,
+  auth as authModel,
+  initOWFromConfig
+} from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
 import repl = require('@kui-shell/core/core/repl')
 import historyModel = require('@kui-shell/core/models/history')
@@ -51,7 +62,11 @@ const isLinux = osType() === 'Linux'
 debug('modules loaded')
 
 export const getClient = (execOptions: ExecOptions) => {
-  if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
+  if (
+    execOptions &&
+    execOptions.credentials &&
+    execOptions.credentials.openwhisk
+  ) {
     return initOWFromConfig(execOptions.credentials.openwhisk)
   } else {
     return globalOW
@@ -75,9 +90,13 @@ for (const type in isCRUDable) crudableTypes.push(type)
 
 // some verbs not directly exposed by the openwhisk npm (hidden in super-prototypes)
 const alreadyHaveGet = { namespaces: true, activations: true }
-const extraVerbsForAllTypes = (type: string) => alreadyHaveGet[type] ? [] : ['get']
+const extraVerbsForAllTypes = (type: string) =>
+  alreadyHaveGet[type] ? [] : ['get']
 const extraVerbsForAllCRUDableTypes = ['delete', 'update']
-const extraVerbs = (type: string) => extraVerbsForAllTypes(type).concat(isCRUDable[type] ? extraVerbsForAllCRUDableTypes : [])
+const extraVerbs = (type: string) =>
+  extraVerbsForAllTypes(type).concat(
+    isCRUDable[type] ? extraVerbsForAllCRUDableTypes : []
+  )
 
 /** given /a/b/c, return /a/b */
 const parseNamespace = (fqn: string) => fqn.substring(0, fqn.lastIndexOf('/'))
@@ -118,10 +137,21 @@ const toArray = (map: Record<string, string>) => {
   return A
 }
 
-type ParameterMap = Record<string, { parameters?: { key: string; value: string }[]; limits?: Record<string, number> }>
+type ParameterMap = Record<
+  string,
+  {
+    parameters?: { key: string; value: string }[]
+    limits?: Record<string, number>
+  }
+>
 
 /** update the parameter mapping M.params with the mapping stored in a given file */
-const paramFile = (M: ParameterMap, idx: number, argv: string[], type: string) => {
+const paramFile = (
+  M: ParameterMap,
+  idx: number,
+  argv: string[],
+  type: string
+) => {
   if (!M[type]) M[type] = {}
   if (!M[type].parameters) {
     M[type].parameters = []
@@ -154,7 +184,12 @@ const isBinary = {
   mp4: true
 }
 
-const handleKeyValuePairAsArray = (key: string) => (M, idx: number, argv: string[], type: string) => {
+const handleKeyValuePairAsArray = (key: string) => (
+  M,
+  idx: number,
+  argv: string[],
+  type: string
+) => {
   if (!argv[idx + 1] || !argv[idx + 2]) {
     return idx + 1
   }
@@ -169,7 +204,9 @@ const handleKeyValuePairAsArray = (key: string) => (M, idx: number, argv: string
       // it might be a negative number...
       JSON.parse(argv[idx + 1])
     } catch (e) {
-      throw new Error(`Parse error: expected string, got an option ${argv[idx + 1]}`)
+      throw new Error(
+        `Parse error: expected string, got an option ${argv[idx + 1]}`
+      )
       // return idx + 1
     }
   }
@@ -178,7 +215,9 @@ const handleKeyValuePairAsArray = (key: string) => (M, idx: number, argv: string
       // it might be a negative number...
       JSON.parse(argv[idx + 2])
     } catch (e) {
-      throw Error(`Parse error: expected string, got an option ${argv[idx + 2]}`)
+      throw Error(
+        `Parse error: expected string, got an option ${argv[idx + 2]}`
+      )
       // return idx + 1
     }
   }
@@ -239,12 +278,17 @@ const handleKeyValuePairAsArray = (key: string) => (M, idx: number, argv: string
 }
 const param = handleKeyValuePairAsArray('parameters')
 const annotation = handleKeyValuePairAsArray('annotations')
-function isNumeric (input) {
+function isNumeric(input) {
   // a rough approximation
   // eslint-disable-next-line eqeqeq
-  return (input - 0) == input && ('' + input).trim().length > 0
+  return input - 0 == input && ('' + input).trim().length > 0
 }
-const limits = (key: string) => (M: ParameterMap, idx: number, argv: string[], type: string) => {
+const limits = (key: string) => (
+  M: ParameterMap,
+  idx: number,
+  argv: string[],
+  type: string
+) => {
   if (!M[type]) M[type] = {}
   if (!M[type].limits) M[type].limits = {}
 
@@ -253,10 +297,18 @@ const limits = (key: string) => (M: ParameterMap, idx: number, argv: string[], t
 
   // check that the value is a valid integer
   if (!isNumeric(valueString)) {
-    if (key === 'timeout' && valueString && (valueString.endsWith('s') || valueString.endsWith('m'))) {
+    if (
+      key === 'timeout' &&
+      valueString &&
+      (valueString.endsWith('s') || valueString.endsWith('m'))
+    ) {
       value = require('parse-duration')(valueString)
     } else {
-      throw new Error(`Invalid ${key} limit: expected integer, but got ${valueString === undefined ? 'nothing' : valueString}.`)
+      throw new Error(
+        `Invalid ${key} limit: expected integer, but got ${
+          valueString === undefined ? 'nothing' : valueString
+        }.`
+      )
     }
   }
 
@@ -279,13 +331,21 @@ const keyValueParams = {
   '-t': limits('timeout'),
   '--timeout': limits('timeout')
 }
-const extractKeyValuePairs = (argv: string[], type: string): { action?: Record<string, string>; trigger?: Record<string, string>; package?: Record<string, string>; rule?: Record<string, string> } => {
+const extractKeyValuePairs = (
+  argv: string[],
+  type: string
+): {
+  action?: Record<string, string>
+  trigger?: Record<string, string>
+  package?: Record<string, string>
+  rule?: Record<string, string>
+} => {
   const options = {}
-  for (let idx = 0; idx < argv.length;) {
+  for (let idx = 0; idx < argv.length; ) {
     const handler = keyValueParams[argv[idx]]
     if (handler) {
       const idxBefore = idx
-      idx = handler(options, idx, argv, type) || (idxBefore + 1)
+      idx = handler(options, idx, argv, type) || idxBefore + 1
       for (let i = idxBefore; i < idx; i++) {
         argv[i] = undefined
       }
@@ -348,7 +408,10 @@ const correctMissingBindingName = options => entity => {
 
   if (packageName) {
     if (entity.namespace) {
-      entity.namespace = entity.namespace.replace(new RegExp(`/${entity.packageName}$`), `/${packageName}`)
+      entity.namespace = entity.namespace.replace(
+        new RegExp(`/${entity.packageName}$`),
+        `/${packageName}`
+      )
     }
     entity.packageName = packageName
   }
@@ -376,7 +439,11 @@ const specials = {
   activations: BlankSpecial
 }
 
-export const addPrettyType = (entityType: string, verb: string, entityName: string) => async entity => {
+export const addPrettyType = (
+  entityType: string,
+  verb: string,
+  entityName: string
+) => async entity => {
   if (typeof entity === 'string') {
     return {
       type: entityType,
@@ -394,8 +461,13 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
     if (!entity.type) {
       entity.type = entityType
     }
-    if ((entity.exec && entity.exec.kind === 'sequence') ||
-        (entity.annotations && entity.annotations.find(kv => kv.key === 'exec' && kv.value === 'sequence'))) {
+    if (
+      (entity.exec && entity.exec.kind === 'sequence') ||
+      (entity.annotations &&
+        entity.annotations.find(
+          kv => kv.key === 'exec' && kv.value === 'sequence'
+        ))
+    ) {
       entity.prettyType = 'sequence'
     }
 
@@ -426,7 +498,10 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
 
   if (specials[entityType] && specials[entityType][verb]) {
     try {
-      const res = specials[entityType][verb]({ name: entity.name, namespace: entity.namespace })
+      const res = specials[entityType][verb]({
+        name: entity.name,
+        namespace: entity.namespace
+      })
       entity.modes = res && res.modes && res.modes(entity)
     } catch (e) {
       console.error(e)
@@ -434,7 +509,8 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
   }
 
   // action-specific cells
-  const kind = entity.annotations && entity.annotations.find(({ key }) => key === 'exec')
+  const kind =
+    entity.annotations && entity.annotations.find(({ key }) => key === 'exec')
   if (kind && kind.value) {
     entity.kind = kind.value
   }
@@ -445,12 +521,16 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
     //
     if (!entity.onclick) {
       // a postprocess handler might have already added an onclick handler
-      entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(`/${entity.namespace}/${entity.name}`)}`
+      entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(
+        `/${entity.namespace}/${entity.name}`
+      )}`
     }
 
     if (entity.type === 'actions' && entity.prettyType === 'sequence') {
       // add a fun a->b->c rendering of the sequence
-      const action = repl.qexec(`wsk action get "/${entity.namespace}/${entity.name}"`)
+      const action = repl.qexec(
+        `wsk action get "/${entity.namespace}/${entity.name}"`
+      )
       const ns = repl.qexec('wsk namespace current')
 
       entity.prettyVersion = await action.then(async action => {
@@ -464,10 +544,14 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
       })
     } else if (entity.type === 'rules') {
       // rule-specific cells
-      const rule = repl.qexec(`wsk rule get "/${entity.namespace}/${entity.name}"`)
+      const rule = repl.qexec(
+        `wsk rule get "/${entity.namespace}/${entity.name}"`
+      )
 
       entity.status = rule.then(rule => rule.status)
-      entity.prettyVersion = await rule.then(rule => `${rule.trigger.name} \u27fc ${rule.action.name}`)
+      entity.prettyVersion = await rule.then(
+        rule => `${rule.trigger.name} \u27fc ${rule.action.name}`
+      )
       //                                                                   ^^^^^^ this is a unicode |->
     }
   }
@@ -476,9 +560,9 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
 }
 
 const extensionToKind = {
-  'jar': 'java:default',
-  'js': 'nodejs:default',
-  'py': 'python:default'
+  jar: 'java:default',
+  js: 'nodejs:default',
+  py: 'python:default'
 }
 
 /** return the fully qualified form of the given entity name */
@@ -496,16 +580,22 @@ const fqn = (name: string): string => {
 const standardViewModes = (defaultMode, fn?) => {
   const makeModes = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let modes: any[] = [{ mode: 'parameters', label: 'params', command: () => 'parameters' },
+    let modes: any[] = [
+      { mode: 'parameters', label: 'params', command: () => 'parameters' },
       { mode: 'annotations', command: () => 'annotations' },
-      { mode: 'raw', command: () => 'raw' }]
+      { mode: 'raw', command: () => 'raw' }
+    ]
 
     if (defaultMode) {
       if (!Array.isArray(defaultMode)) {
         if (!modes.find(_ => _.mode === defaultMode)) {
           // only add the defaultMode if it isn't already in the list
           const mode = defaultMode.mode || defaultMode
-          modes.splice(0, 0, { mode, defaultMode: typeof mode === 'string' || mode.default, command: () => mode })
+          modes.splice(0, 0, {
+            mode,
+            defaultMode: typeof mode === 'string' || mode.default,
+            command: () => mode
+          })
         }
       } else {
         modes = defaultMode.concat(modes)
@@ -516,19 +606,31 @@ const standardViewModes = (defaultMode, fn?) => {
   }
 
   if (fn) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (options: Record<string, any>, argv: string[], verb: string, execOptions: ExecOptions) => Object.assign(fn(options, argv, verb, execOptions) || {}, { modes: () => makeModes() })
+    return (
+      options: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+      argv: string[],
+      verb: string,
+      execOptions: ExecOptions
+    ) =>
+      Object.assign(fn(options, argv, verb, execOptions) || {}, {
+        modes: () => makeModes()
+      })
   } else {
     return () => ({ modes: () => makeModes() })
   }
 }
 
 /** flatten an array of arrays */
-function flatten<T> (arrays: T[][]): T[] {
+function flatten<T>(arrays: T[][]): T[] {
   return [].concat(...arrays)
 }
 
-export const agent = isLinux ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https').Agent)({ keepAlive: true, keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000 }) : undefined
+export const agent = isLinux
+  ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https')).Agent({
+      keepAlive: true,
+      keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000
+    })
+  : undefined
 interface WskOpts {
   action?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -582,12 +684,15 @@ specials.api = {
 
         // our "something reasonable" is the action impl, but
         // decorated with the name of the API and the verb
-        return repl.qexec(`wsk action get "/${namespace}/${name}"`)
-          .then(action => Object.assign(action, {
-            name,
-            namespace,
-            packageName: `${verb} ${basePath}${path}`
-          }))
+        return repl
+          .qexec(`wsk action get "/${namespace}/${name}"`)
+          .then(action =>
+            Object.assign(action, {
+              name,
+              namespace,
+              packageName: `${verb} ${basePath}${path}`
+            })
+          )
       }
     }
   },
@@ -614,11 +719,16 @@ specials.api = {
         // this is the desired action impl for the api
         const name = argv[argv.length - 1]
         debug('fetching action', name)
-        return ow.actions.get(owOpts({ name }))
+        return ow.actions
+          .get(owOpts({ name }))
           .then(action => {
-            const isWebExported = action.annotations.find(({ key }) => key === 'web-export')
+            const isWebExported = action.annotations.find(
+              ({ key }) => key === 'web-export'
+            )
             if (!isWebExported) {
-              const error = new Error(`Action '${name}' is not a web action. Issue 'wsk action update "${name}" --web true' to convert the action to a web action.`)
+              const error = new Error(
+                `Action '${name}' is not a web action. Issue 'wsk action update "${name}" --web true' to convert the action to a web action.`
+              )
               error['code'] = 412 // precondition failed
               throw error
             }
@@ -626,7 +736,9 @@ specials.api = {
           .then(() => _) // on success, return whatever preprocess was given as input
           .catch(err => {
             if (err.statusCode === 404) {
-              const error = new Error(`Unable to get action '${name}': The requested resource does not exist.`)
+              const error = new Error(
+                `Unable to get action '${name}': The requested resource does not exist.`
+              )
               error['code'] = 404 // not found
               throw error
             } else {
@@ -642,12 +754,15 @@ specials.api = {
         const { action: name, namespace } = api[verb]['x-openwhisk']
 
         // manufacture an entity-like object
-        return repl.qexec(`wsk action get "/${namespace}/${name}"`)
-          .then(action => Object.assign(action, {
-            name,
-            namespace,
-            packageName: `${verb} ${basePath}${path}`
-          }))
+        return repl
+          .qexec(`wsk action get "/${namespace}/${name}"`)
+          .then(action =>
+            Object.assign(action, {
+              name,
+              namespace,
+              packageName: `${verb} ${basePath}${path}`
+            })
+          )
       }
     }
   },
@@ -658,59 +773,75 @@ specials.api = {
         debug('raw output of api list', res)
 
         // main list for each api
-        return flatten((res.apis || []).map(({ value }) => {
-          // one sublist for each path
-          const basePath = value.apidoc.basePath
-          const baseUrl = value.gwApiUrl
+        return flatten(
+          (res.apis || []).map(({ value }) => {
+            // one sublist for each path
+            const basePath = value.apidoc.basePath
+            const baseUrl = value.gwApiUrl
 
-          return flatten(Object.keys(value.apidoc.paths).map(path => {
-            const api = value.apidoc.paths[path]
+            return flatten(
+              Object.keys(value.apidoc.paths).map(path => {
+                const api = value.apidoc.paths[path]
 
-            // one sub-sublist for each verb of the api
-            return Object.keys(api).map(verb => {
-              const { action, namespace } = api[verb]['x-openwhisk']
-              const name = `${basePath}${path}`
-              const url = `${baseUrl}${path}`
-              const actionFqn = `/${namespace}/${action}`
+                // one sub-sublist for each verb of the api
+                return Object.keys(api).map(verb => {
+                  const { action, namespace } = api[verb]['x-openwhisk']
+                  const name = `${basePath}${path}`
+                  const url = `${baseUrl}${path}`
+                  const actionFqn = `/${namespace}/${action}`
 
-              // here is the entity for that api/path/verb:
-              return {
-                name,
-                namespace,
-                onclick: () => {
-                  return repl.pexec(`wsk api get ${repl.encodeComponent(name)} ${verb}`)
-                },
-                attributes: [
-                  { key: 'verb', value: verb },
-                  { key: 'action', value: action, onclick: () => repl.pexec(`wsk action get ${repl.encodeComponent(actionFqn)}`) },
-                  { key: 'url',
-                    value: url,
-                    fontawesome: 'fas fa-external-link-square-alt',
-                    css: 'clickable clickable-blatant',
-                    onclick: () => window.open(url, '_blank') },
-                  { key: 'copy',
-                    fontawesome: 'fas fa-clipboard',
-                    css: 'clickable clickable-blatant',
-                    onclick: evt => {
-                      const target = evt.currentTarget
-                      require('electron').clipboard.writeText(url)
+                  // here is the entity for that api/path/verb:
+                  return {
+                    name,
+                    namespace,
+                    onclick: () => {
+                      return repl.pexec(
+                        `wsk api get ${repl.encodeComponent(name)} ${verb}`
+                      )
+                    },
+                    attributes: [
+                      { key: 'verb', value: verb },
+                      {
+                        key: 'action',
+                        value: action,
+                        onclick: () =>
+                          repl.pexec(
+                            `wsk action get ${repl.encodeComponent(actionFqn)}`
+                          )
+                      },
+                      {
+                        key: 'url',
+                        value: url,
+                        fontawesome: 'fas fa-external-link-square-alt',
+                        css: 'clickable clickable-blatant',
+                        onclick: () => window.open(url, '_blank')
+                      },
+                      {
+                        key: 'copy',
+                        fontawesome: 'fas fa-clipboard',
+                        css: 'clickable clickable-blatant',
+                        onclick: evt => {
+                          const target = evt.currentTarget
+                          require('electron').clipboard.writeText(url)
 
-                      const svg = target.querySelector('svg')
-                      svg.classList.remove('fa-clipboard')
-                      svg.classList.add('fa-clipboard-check')
+                          const svg = target.querySelector('svg')
+                          svg.classList.remove('fa-clipboard')
+                          svg.classList.add('fa-clipboard-check')
 
-                      setTimeout(() => {
-                        const svg = target.querySelector('svg')
-                        svg.classList.remove('fa-clipboard-check')
-                        svg.classList.add('fa-clipboard')
-                      }, 1500)
-                    }
+                          setTimeout(() => {
+                            const svg = target.querySelector('svg')
+                            svg.classList.remove('fa-clipboard-check')
+                            svg.classList.add('fa-clipboard')
+                          }, 1500)
+                        }
+                      }
+                    ]
                   }
-                ]
-              }
-            })
-          }))
-        }))
+                })
+              })
+            )
+          })
+        )
       }
     }
   }
@@ -719,171 +850,207 @@ specials.api = {
 specials.actions = {
   get: standardViewModes(actionSpecificModes),
   update: BlankSpecial, // updated below
-  create: standardViewModes(actionSpecificModes, (options, argv, verb, execOptions) => {
-    if (!options || !argv) return
+  create: standardViewModes(
+    actionSpecificModes,
+    (options, argv, verb, execOptions) => {
+      if (!options || !argv) return
 
-    if (!options.action) options.action = {}
-    if (!options.action.exec) options.action.exec = {}
+      if (!options.action) options.action = {}
+      if (!options.action.exec) options.action.exec = {}
 
-    if (options.web) {
-      if (!options.action.annotations) options.action.annotations = []
-      options.action.annotations.push({ key: 'web-export', value: true })
-
-      if (options['content-type']) {
-        options.action.annotations.push({ key: 'content-type-extension', value: options['content-type'] })
-      }
-    }
-
-    if (options.sequence) {
-      options.action.exec = {
-        kind: 'sequence',
-        components: argv[0].split(/,\s*/).map(fqn) // split by commas, and we need fully qualified names
-      }
-    } else if (options.copy) {
-      // copying an action
-      const src = argv[argv.length - 1]
-      const dest = options.name
-      debug('action copy SRC', src, 'DEST', dest, argv)
-
-      return {
-        options: getClient(execOptions).actions.get(owOpts({ name: src }))
-          .then(action => {
-            if (options.action.parameters && !action.parameters) {
-              action.parameters = options.action.parameters
-            } else if (options.action.parameters) {
-              action.parameters = action.parameters.concat(options.action.parameters)
-            }
-            if (options.action.annotations && !action.annotations) {
-              action.annotations = options.action.annotations
-            } else if (options.action.annotations) {
-              action.annotations = action.annotations.concat(options.action.annotations)
-            }
-            return {
-              name: dest,
-              action: action
-            }
-          })
-      }
-    } else if (verb !== 'update' || argv[0]) {
-      // for action create, or update and the user gave a
-      // positional param... find the input file
-      if (options.docker) {
-        // blackbox action
-        options.action.exec.kind = 'blackbox'
-        options.action.exec.image = options.docker
-      }
-
-      if (argv[0]) {
-        // find the file named by argv[0]
-        const filepath = findFile(expandHomeDir(argv[0]))
-        const isZip = argv[0].endsWith('.zip')
-        const isJar = argv[0].endsWith('.jar')
-        const isBinary = isZip || isJar
-        const encoding = isBinary ? 'base64' : 'utf8'
-
-        if (argv[0].charAt(0) === '!') {
-          // read the file from execOptions
-          const key = argv[0].slice(1)
-          options.action.exec.code = execOptions && (execOptions.parameters[key] || execOptions.params[key])
-
-          // remove traces of this from params
-          if (execOptions.parameters) delete execOptions.parameters[key]
-          if (execOptions.params) delete execOptions.params[key]
-          options.action.parameters = options.action.parameters.filter(({ key: otherKey }) => key !== otherKey)
-
-          debug('code passed programmatically', options.action, execOptions)
-          if (!options.action.exec.code) {
-            debug('Could not find code', execOptions)
-            throw new Error('Could not find code')
-          }
-        } else {
-          options.action.exec.code = readFileSync(filepath).toString(encoding)
-        }
-
+      if (options.web) {
         if (!options.action.annotations) options.action.annotations = []
-        options.action.annotations.push({ key: 'file', value: filepath })
+        options.action.annotations.push({ key: 'web-export', value: true })
 
-        if (isBinary) {
-          // add an annotation to indicate that this is a managed action
+        if (options['content-type']) {
           options.action.annotations.push({
-            key: 'wskng.combinators',
-            value: [{
-              type: 'action.kind',
-              role: 'replacement',
-              badge: isZip ? 'zip' : 'jar'
-            }]
+            key: 'content-type-extension',
+            value: options['content-type']
+          })
+        }
+      }
+
+      if (options.sequence) {
+        options.action.exec = {
+          kind: 'sequence',
+          components: argv[0].split(/,\s*/).map(fqn) // split by commas, and we need fully qualified names
+        }
+      } else if (options.copy) {
+        // copying an action
+        const src = argv[argv.length - 1]
+        const dest = options.name
+        debug('action copy SRC', src, 'DEST', dest, argv)
+
+        return {
+          options: getClient(execOptions)
+            .actions.get(owOpts({ name: src }))
+            .then(action => {
+              if (options.action.parameters && !action.parameters) {
+                action.parameters = options.action.parameters
+              } else if (options.action.parameters) {
+                action.parameters = action.parameters.concat(
+                  options.action.parameters
+                )
+              }
+              if (options.action.annotations && !action.annotations) {
+                action.annotations = options.action.annotations
+              } else if (options.action.annotations) {
+                action.annotations = action.annotations.concat(
+                  options.action.annotations
+                )
+              }
+              return {
+                name: dest,
+                action: action
+              }
+            })
+        }
+      } else if (verb !== 'update' || argv[0]) {
+        // for action create, or update and the user gave a
+        // positional param... find the input file
+        if (options.docker) {
+          // blackbox action
+          options.action.exec.kind = 'blackbox'
+          options.action.exec.image = options.docker
+        }
+
+        if (argv[0]) {
+          // find the file named by argv[0]
+          const filepath = findFile(expandHomeDir(argv[0]))
+          const isZip = argv[0].endsWith('.zip')
+          const isJar = argv[0].endsWith('.jar')
+          const isBinary = isZip || isJar
+          const encoding = isBinary ? 'base64' : 'utf8'
+
+          if (argv[0].charAt(0) === '!') {
+            // read the file from execOptions
+            const key = argv[0].slice(1)
+            options.action.exec.code =
+              execOptions &&
+              (execOptions.parameters[key] || execOptions.params[key])
+
+            // remove traces of this from params
+            if (execOptions.parameters) delete execOptions.parameters[key]
+            if (execOptions.params) delete execOptions.params[key]
+            options.action.parameters = options.action.parameters.filter(
+              ({ key: otherKey }) => key !== otherKey
+            )
+
+            debug('code passed programmatically', options.action, execOptions)
+            if (!options.action.exec.code) {
+              debug('Could not find code', execOptions)
+              throw new Error('Could not find code')
+            }
+          } else {
+            options.action.exec.code = readFileSync(filepath).toString(encoding)
+          }
+
+          if (!options.action.annotations) options.action.annotations = []
+          options.action.annotations.push({ key: 'file', value: filepath })
+
+          if (isBinary) {
+            // add an annotation to indicate that this is a managed action
+            options.action.annotations.push({
+              key: 'wskng.combinators',
+              value: [
+                {
+                  type: 'action.kind',
+                  role: 'replacement',
+                  badge: isZip ? 'zip' : 'jar'
+                }
+              ]
+            })
+
+            options.action.annotations.push({ key: 'binary', value: true })
+          }
+
+          if (options.native) {
+            // native code blackbox action
+            options.action.exec.kind = 'blackbox'
+            options.action.exec.image = 'openwhisk/dockerskeleton'
+          }
+
+          eventBus.emit('/action/update', {
+            file: filepath,
+            action: { name: options.name, namespace: options.namespace }
           })
 
-          options.action.annotations.push({ key: 'binary', value: true })
-        }
-
-        if (options.native) {
-          // native code blackbox action
-          options.action.exec.kind = 'blackbox'
-          options.action.exec.image = 'openwhisk/dockerskeleton'
-        }
-
-        eventBus.emit('/action/update', { file: filepath, action: { name: options.name, namespace: options.namespace } })
-
-        // set the default kind
-        if (!options.action.exec.kind) {
-          if (options.kind) {
-            options.action.exec.kind = options.kind
-          } else {
-            const extension = filepath.substring(filepath.lastIndexOf('.') + 1)
-            if (extension) {
-              options.action.exec.kind = extensionToKind[extension] || extension
+          // set the default kind
+          if (!options.action.exec.kind) {
+            if (options.kind) {
+              options.action.exec.kind = options.kind
+            } else {
+              const extension = filepath.substring(
+                filepath.lastIndexOf('.') + 1
+              )
+              if (extension) {
+                options.action.exec.kind =
+                  extensionToKind[extension] || extension
+              }
             }
           }
         }
+      } else {
+        // then we must remove options.exec; the backend fails if an empty struct is passed
+        delete options.action.exec
       }
-    } else {
-      // then we must remove options.exec; the backend fails if an empty struct is passed
-      delete options.action.exec
-    }
 
-    if (options.main && options.action.exec) {
-      // main method of java actions
-      options.action.exec.main = options.main
+      if (options.main && options.action.exec) {
+        // main method of java actions
+        options.action.exec.main = options.main
+      }
     }
-  }),
-  list: (options) => {
+  ),
+  list: options => {
     // support for `wsk action list <packageName>` see shell issue #449
     if (options && options.name) {
       const parts = (options.name.match(/\//g) || []).length
       const names = options.name.split('/')
-      if (parts === 2 && options.name.startsWith('/')) { // /namespace/package
+      if (parts === 2 && options.name.startsWith('/')) {
+        // /namespace/package
         options.namespace = '/' + names[1]
         options.id = names[2] + '/'
-      } else if (parts === 1 && options.name.startsWith('/')) { // /namespace
+      } else if (parts === 1 && options.name.startsWith('/')) {
+        // /namespace
         options.namespace = options.name
-      } else if (parts === 0) { // package
+      } else if (parts === 0) {
+        // package
         options.id = options.name + '/'
-      } else { // invalid entity
+      } else {
+        // invalid entity
         options.id = options.name
       }
       delete options.name
     }
   },
-  invoke: (options) => {
-    eventBus.emit('/action/invoke', { name: options.name, namespace: options.namespace })
+  invoke: options => {
+    eventBus.emit('/action/invoke', {
+      name: options.name,
+      namespace: options.namespace
+    })
 
     if (options && options.action && options.action.parameters) {
-      options.params = options.action && options.action.parameters && options.action.parameters.reduce((M, kv) => {
-        M[kv.key] = kv.value
-        return M
-      }, {})
+      options.params =
+        options.action &&
+        options.action.parameters &&
+        options.action.parameters.reduce((M, kv) => {
+          M[kv.key] = kv.value
+          return M
+        }, {})
     }
   }
 }
 
 specials.activations = {
   // activations list always gets full docs, and has a default limit of 10, but can be overridden
-  list: (options) => activationModes({ options: Object.assign({}, { limit: 10 }, options, { docs: false }) }),
+  list: options =>
+    activationModes({
+      options: Object.assign({}, { limit: 10 }, options, { docs: false })
+    }),
   get: () => activationModes()
 }
 specials.packages = {
-  list: (options) => {
+  list: options => {
     if (options) {
       options.namespace = options.name
     }
@@ -926,22 +1093,27 @@ specials.rules = {
     }
 
     if (options && (!options.name || !options.trigger || !options.action)) {
-      throw new Error('Invalid argument(s). A rule, trigger and action name are required.')
+      throw new Error(
+        'Invalid argument(s). A rule, trigger and action name are required.'
+      )
     }
   }
 }
 specials.triggers = {
   get: standardViewModes('parameters'),
-  invoke: (options) => {
+  invoke: options => {
     if (options && options.trigger && options.trigger.parameters) {
-      options.params = options.trigger && options.trigger.parameters && options.trigger.parameters.reduce((M, kv) => {
-        M[kv.key] = kv.value
-        return M
-      }, {})
+      options.params =
+        options.trigger &&
+        options.trigger.parameters &&
+        options.trigger.parameters.reduce((M, kv) => {
+          M[kv.key] = kv.value
+          return M
+        }, {})
     }
   },
   update: BlankSpecial, // updated below
-  create: standardViewModes('parameters', (options) => {
+  create: standardViewModes('parameters', options => {
     if (options && options.feed) {
       // the openwhisk npm is a bit bizarre here for feed creation
       const feedName = options.feed
@@ -987,7 +1159,12 @@ export const parseOptions = (argvFull: string[], type: string) => {
  */
 const handle204 = name => response => {
   if (Buffer.isBuffer(response)) {
-    return { name, activationId: 'trigger fire', annotations: [], response: { result: { success: true, status: 'Success' } } }
+    return {
+      name,
+      activationId: 'trigger fire',
+      annotations: [],
+      response: { result: { success: true, status: 'Success' } }
+    }
   } else {
     return response
   }
@@ -997,11 +1174,19 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: argvFull, execOptions, tab }: EvaluatorArgs) => {
+const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
+  argv: argvFull,
+  execOptions,
+  tab
+}: EvaluatorArgs) => {
   let entity = _entity
   let verb = _verb
 
-  if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
+  if (
+    execOptions &&
+    execOptions.credentials &&
+    execOptions.credentials.openwhisk
+  ) {
     // FIXME we can do better here
     initOWFromConfig(execOptions.credentials.openwhisk)
   }
@@ -1018,7 +1203,11 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
   const argv = regularOptions._
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let options: Record<string, any> = Object.assign({}, regularOptions, pair.kvOptions)
+  let options: Record<string, any> = Object.assign(
+    {},
+    regularOptions,
+    pair.kvOptions
+  )
   delete options._
 
   debug('exec', entity, verb, argv, options, execOptions)
@@ -1040,8 +1229,10 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
       // mucked things up) argvFull, looking for an arg that is
       // ==, but not === the one that minimist gave us.
       // THUS NOTE THE USE OF == in `arg == options.name` <-- important
-      // eslint-disable-next-line eqeqeq
-      options.name = argvFull.find(arg => arg == options.name && arg !== options.name)
+      options.name = argvFull.find(
+        // eslint-disable-next-line eqeqeq
+        arg => arg == options.name && arg !== options.name
+      )
     }
   } else if (!noImplicitName[verb]) {
     //
@@ -1056,7 +1247,9 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
         //
         // special case for activations... the proper entity path is an annotation. nice
         //
-        const pathAnnotation = selection.annotations && selection.annotations.find(kv => kv.key === 'path')
+        const pathAnnotation =
+          selection.annotations &&
+          selection.annotations.find(kv => kv.key === 'path')
         if (pathAnnotation) {
           // note: the path doesn't have a leading slash. nice nice
           options.name = `/${pathAnnotation.value}`
@@ -1091,15 +1284,24 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
 
   // pre and post-process the output of openwhisk; default is do nothing
   let postprocess = x => x
-  let preprocess = (options) => options
+  let preprocess = options => options
 
   if (entity === 'activations' && verb === 'get' && options.last) {
     // special case for wsk activation get --last
-    return repl.qfexec(`wsk activation last ${typeof options.last === 'string' ? options.last : ''}`)
+    return repl.qfexec(
+      `wsk activation last ${
+        typeof options.last === 'string' ? options.last : ''
+      }`
+    )
   }
 
   if (specials[entity] && specials[entity][verb]) {
-    const res = await specials[entity][verb](options, argv.slice(restIndex), verb, execOptions)
+    const res = await specials[entity][verb](
+      options,
+      argv.slice(restIndex),
+      verb,
+      execOptions
+    )
     if (res && res.verb) {
       // updated verb? e.g. 'package bind' => 'package update'
       verb = res.verb
@@ -1138,7 +1340,11 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
   const kind = toOpenWhiskKind(entity)
   if (execOptions && execOptions.entity && execOptions.entity[kind]) {
     // passing entity options programatically rather than via the command line
-    options[kind] = Object.assign({}, options[entity] || {}, execOptions.entity[kind])
+    options[kind] = Object.assign(
+      {},
+      options[entity] || {},
+      execOptions.entity[kind]
+    )
     debug('programmatic entity', execOptions.entity[kind], options[entity])
   }
 
@@ -1191,12 +1397,24 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
         })
         .then(pretty)
         .then(correctMissingBindingName(options))
-        .then(response => Array.isArray(response) ? Promise.all(response.map(pretty)) : response)
-        .then(response => Array.isArray(response) && response.length > 0 ? withHeader(response, execOptions) : response)
+        .then(response =>
+          Array.isArray(response) ? Promise.all(response.map(pretty)) : response
+        )
+        .then(response =>
+          Array.isArray(response) && response.length > 0
+            ? withHeader(response, execOptions)
+            : response
+        )
         .then(response => {
-          if (commandTree &&
-              (!execOptions || !execOptions.noHistory || (execOptions && execOptions.contextChangeOK)) && // don't update context for nested execs
-              (response.verb === 'get' || response.verb === 'create' || response.verb === 'update')) {
+          if (
+            commandTree &&
+            (!execOptions ||
+              !execOptions.noHistory ||
+              (execOptions && execOptions.contextChangeOK)) && // don't update context for nested execs
+            (response.verb === 'get' ||
+              response.verb === 'create' ||
+              response.verb === 'update')
+          ) {
             return response
           } else {
             return response
@@ -1214,9 +1432,17 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({ argv: a
             //
             const message = oopsMessage(err)
             const code = err.statusCode || err.code
-            const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity]
-            const _usageModel = __usageModel.available && __usageModel.available.find(({ command }) => command === verb)
-            const usageModel: UsageModel = _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
+            const __usageModel =
+              typeof usage[entity] === 'function'
+                ? usage[entity](entity)
+                : usage[entity]
+            const _usageModel =
+              __usageModel.available &&
+              __usageModel.available.find(({ command }) => command === verb)
+            const usageModel: UsageModel =
+              _usageModel && typeof _usageModel.fn === 'function'
+                ? _usageModel.fn(verb, entity)
+                : _usageModel
 
             console.error(err)
             if (!usageModel) {
@@ -1248,7 +1474,8 @@ export const update = execOptions => (entity, retryCount = 0) => {
   options[toOpenWhiskKind(entity.type)] = entity
   debug('update', options)
   try {
-    return ow[entity.type].update(options)
+    return ow[entity.type]
+      .update(options)
       .then(addPrettyType(entity.type, 'update', entity.name))
       .catch(err => {
         console.error(`error in wsk::update ${err}`)
@@ -1266,8 +1493,13 @@ export const update = execOptions => (entity, retryCount = 0) => {
   }
 }
 
-export const fillInActionDetails = (Package, type = 'actions') => actionSummary => {
-  const kindAnnotation = actionSummary.annotations && actionSummary.annotations.find(_ => _.key === 'exec')
+export const fillInActionDetails = (
+  Package,
+  type = 'actions'
+) => actionSummary => {
+  const kindAnnotation =
+    actionSummary.annotations &&
+    actionSummary.annotations.find(_ => _.key === 'exec')
   const kind = kindAnnotation && kindAnnotation.value
 
   return Object.assign({}, actionSummary, {
@@ -1276,11 +1508,13 @@ export const fillInActionDetails = (Package, type = 'actions') => actionSummary 
     packageName: Package.name,
     namespace: `${Package.namespace}/${Package.name}`,
     kind,
-    onclick: `wsk action get ${repl.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
+    onclick: `wsk action get ${repl.encodeComponent(
+      `/${Package.namespace}/${Package.name}/${actionSummary.name}`
+    )}`
   })
 }
 
-const makeInit = (commandTree) => async (isReinit = false) => {
+const makeInit = commandTree => async (isReinit = false) => {
   debug('init')
 
   // exported API
@@ -1322,8 +1556,12 @@ const makeInit = (commandTree) => async (isReinit = false) => {
     toOpenWhiskKind: toOpenWhiskKind,
 
     /** is this activation that of a sequence? */
-    isSequenceActivation: entity => entity.logs &&
-      entity.annotations && entity.annotations.find(kv => kv.key === 'kind' && kv.value === 'sequence'),
+    isSequenceActivation: entity =>
+      entity.logs &&
+      entity.annotations &&
+      entity.annotations.find(
+        kv => kv.key === 'kind' && kv.value === 'sequence'
+      ),
 
     /** update the given openwhisk entity */
     update,
@@ -1334,7 +1572,13 @@ const makeInit = (commandTree) => async (isReinit = false) => {
     owOpts: owOpts,
 
     /** execute a wsk command without saving to the command history */
-    qexec: (command, execOptions) => executor(commandTree, history, command, Object.assign({}, { noHistory: true }, execOptions)),
+    qexec: (command, execOptions) =>
+      executor(
+        commandTree,
+        history,
+        command,
+        Object.assign({}, { noHistory: true }, execOptions)
+      ),
 
     /** execute a wsk command with the given options */
     exec: (command, execOptions) => {
@@ -1360,15 +1604,20 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   //
   for (const api in globalOW) {
     const clazz = globalOW[api].constructor
-    const props = Object.getOwnPropertyNames(clazz.prototype).concat(extraVerbs(api) || [])
+    const props = Object.getOwnPropertyNames(clazz.prototype).concat(
+      extraVerbs(api) || []
+    )
     // alsoInstallAtRoot = api === 'actions'
 
     /** return the usage model for the given (api, syn, verb) */
     const docs = (syn, verb?, alias?) => {
-      const entityModel = typeof usage[api] === 'function' ? usage[api](syn) : usage[api]
+      const entityModel =
+        typeof usage[api] === 'function' ? usage[api](syn) : usage[api]
 
       if (verb) {
-        const model = entityModel && entityModel.available.find(({ command }) => command === verb)
+        const model =
+          entityModel &&
+          entityModel.available.find(({ command }) => command === verb)
         if (model && typeof model.fn === 'function') {
           return model.fn(alias || verb, syn)
         } else {
@@ -1393,10 +1642,16 @@ const makeInit = (commandTree) => async (isReinit = false) => {
         const entities = (synonymsTable.entities[api] || []).concat([api])
         const verbs = synonymsTable.verbs[verb] || []
         entities.forEach(eee => {
-          commandTree.subtreeSynonym(`/wsk/${eee.nickname || eee}`, apiMaster, { usage: docs(eee.nickname || eee) })
+          commandTree.subtreeSynonym(`/wsk/${eee.nickname || eee}`, apiMaster, {
+            usage: docs(eee.nickname || eee)
+          })
 
           const handler = executor(commandTree, eee.name || api, verb, verb)
-          const entityAliasMaster = commandTree.listen(`/wsk/${eee.nickname || eee}/${verb}`, handler, { usage: docs(api, verb) })
+          const entityAliasMaster = commandTree.listen(
+            `/wsk/${eee.nickname || eee}/${verb}`,
+            handler,
+            { usage: docs(api, verb) }
+          )
 
           // register e.g. wsk action help; we delegate to
           // "wsk action", which will print out usage (this
@@ -1405,14 +1660,33 @@ const makeInit = (commandTree) => async (isReinit = false) => {
           // commandTree.listen(`/wsk/${eee.nickname || eee}/help`, () => repl.qexec(`wsk ${eee.nickname || eee}`), { noArgs: true })
 
           verbs.forEach(vvv => {
-            const handler = executor(commandTree, eee.name || api, vvv.name || verb, vvv.nickname || vvv)
+            const handler = executor(
+              commandTree,
+              eee.name || api,
+              vvv.name || verb,
+              vvv.nickname || vvv
+            )
             if (vvv.notSynonym || vvv === verb) {
               if (vvv.limitTo && vvv.limitTo[api]) {
-                commandTree.listen(`/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`, handler, { usage: docs(api, vvv.nickname || vvv) })
+                commandTree.listen(
+                  `/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`,
+                  handler,
+                  { usage: docs(api, vvv.nickname || vvv) }
+                )
               }
             } else {
-              const handler = executor(commandTree, eee.name || api, verb, vvv.nickname || vvv)
-              commandTree.synonym(`/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`, handler, entityAliasMaster, { usage: docs(api, verb, vvv.nickname || vvv) })
+              const handler = executor(
+                commandTree,
+                eee.name || api,
+                verb,
+                vvv.nickname || vvv
+              )
+              commandTree.synonym(
+                `/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`,
+                handler,
+                entityAliasMaster,
+                { usage: docs(api, verb, vvv.nickname || vvv) }
+              )
             }
 
             // if (alsoInstallAtRoot) {
@@ -1427,7 +1701,9 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   // trigger fire special case?? hacky
   const doFire = executor(commandTree, 'triggers', 'invoke', 'fire')
   synonyms('triggers').forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/fire`, doFire, { usage: usage.triggers.available.find(({ command }) => command === 'fire') })
+    commandTree.listen(`/wsk/${syn}/fire`, doFire, {
+      usage: usage.triggers.available.find(({ command }) => command === 'fire')
+    })
   })
 
   /**
@@ -1440,26 +1716,34 @@ const makeInit = (commandTree) => async (isReinit = false) => {
     const name = argv[argv.length - 1]
     const ow = getClient(execOptions)
 
-    return ow.triggers.delete(owOpts({ name: name }))
+    return ow.triggers
+      .delete(owOpts({ name: name }))
       .then(trigger => {
-        const feedAnnotation = trigger.annotations && trigger.annotations.find(kv => kv.key === 'feed')
+        const feedAnnotation =
+          trigger.annotations &&
+          trigger.annotations.find(kv => kv.key === 'feed')
         debug('trigger delete success', trigger, feedAnnotation)
         if (feedAnnotation) {
           // special case of feed
           debug('delete feed', trigger)
-          return ow.feeds.delete(owOpts({
-            feedName: feedAnnotation.value,
-            trigger: name
-          }))
+          return ow.feeds.delete(
+            owOpts({
+              feedName: feedAnnotation.value,
+              trigger: name
+            })
+          )
         } else {
           return trigger
         }
-      }).then(() => true)
+      })
+      .then(() => true)
   }
   synonymsTable.entities.triggers.forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/delete`,
-      removeTrigger,
-      { usage: usage.triggers.available.find(({ command }) => command === 'delete') })
+    commandTree.listen(`/wsk/${syn}/delete`, removeTrigger, {
+      usage: usage.triggers.available.find(
+        ({ command }) => command === 'delete'
+      )
+    })
   })
 
   /**
@@ -1468,7 +1752,11 @@ const makeInit = (commandTree) => async (isReinit = false) => {
    * creation
    *
    */
-  const createTrigger = ({ argvNoOptions: argv, parsedOptions: options, execOptions }) => {
+  const createTrigger = ({
+    argvNoOptions: argv,
+    parsedOptions: options,
+    execOptions
+  }) => {
     const name = argv[argv.length - 1]
     const triggerSpec = owOpts({ name })
     const paramsArray = []
@@ -1512,12 +1800,15 @@ const makeInit = (commandTree) => async (isReinit = false) => {
       if (!triggerSpec['trigger'].parameters) {
         triggerSpec['trigger'].parameters = paramsArray
       } else {
-        triggerSpec['trigger'].parameters = triggerSpec['trigger'].parameters.concat(paramsArray)
+        triggerSpec['trigger'].parameters = triggerSpec[
+          'trigger'
+        ].parameters.concat(paramsArray)
       }
     }
 
     debug('creating trigger', triggerSpec)
-    return ow.triggers.create(triggerSpec)
+    return ow.triggers
+      .create(triggerSpec)
       .then(trigger => {
         /** remove trigger if something bad happened instantiating the feed */
         const removeTrigger = err => {
@@ -1532,7 +1823,8 @@ const makeInit = (commandTree) => async (isReinit = false) => {
             const feedName = options.feed
 
             debug('create feed', feedName, name, params)
-            return ow.feeds.create(owOpts({ feedName, trigger: name, params }))
+            return ow.feeds
+              .create(owOpts({ feedName, trigger: name, params }))
               .then(() => trigger) // return the trigger, not the result of invoking the feed lifecycle
               .catch(removeTrigger) // catastrophe, clean up after ourselves
           } catch (err) {
@@ -1547,30 +1839,34 @@ const makeInit = (commandTree) => async (isReinit = false) => {
       .then(addPrettyType('triggers', 'create', name))
   }
   synonymsTable.entities.triggers.forEach(syn => {
-    commandTree.listen(`/wsk/${syn}/create`,
-      createTrigger,
-      { usage: usage.triggers.available.find(({ command }) => command === 'create') })
+    commandTree.listen(`/wsk/${syn}/create`, createTrigger, {
+      usage: usage.triggers.available.find(
+        ({ command }) => command === 'create'
+      )
+    })
   })
 
   // count APIs
   for (const entityType in synonymsTable.entities) {
     synonymsTable.entities[entityType].forEach(syn => {
-      commandTree.listen(`/wsk/${syn}/count`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
-        const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
-        const overrides = { count: true }
-        delete options._
-        delete options.limit
-        delete options.skip
-        if (name) {
-          overrides['name'] = name
+      commandTree.listen(
+        `/wsk/${syn}/count`,
+        ({ argvNoOptions, parsedOptions: options, execOptions }) => {
+          const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
+          const overrides = { count: true }
+          delete options._
+          delete options.limit
+          delete options.skip
+          if (name) {
+            overrides['name'] = name
+          }
+
+          const opts = owOpts(Object.assign({}, options, overrides))
+          const ow = getClient(execOptions)
+
+          return ow[entityType].list(opts).then(res => res[entityType])
         }
-
-        const opts = owOpts(Object.assign({}, options, overrides))
-        const ow = getClient(execOptions)
-
-        return ow[entityType].list(opts)
-          .then(res => res[entityType])
-      })
+      )
     })
   }
 
@@ -1578,7 +1874,7 @@ const makeInit = (commandTree) => async (isReinit = false) => {
   return self
 }
 
-export default function (commandTree) {
+export default function(commandTree) {
   initSelf = makeInit(commandTree)
   return initSelf(false)
 }

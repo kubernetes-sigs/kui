@@ -28,7 +28,11 @@ const viewName = 'Load Test History'
 
 export const list = ({ tab }: EvaluatorArgs) => {
   const graphics = initUI({ noChart: true })
-  const resp = response(tab, graphics, { url: undefined, testName: 'Historical', defaultMode: 'history' })
+  const resp = response(tab, graphics, {
+    url: undefined,
+    testName: 'Historical',
+    defaultMode: 'history'
+  })
 
   // for each historic run...
   const showAll = () => {
@@ -43,46 +47,49 @@ export const list = ({ tab }: EvaluatorArgs) => {
     header(i18n.latency99)
     header(i18n.latencyMax)
 
-    all()/* .filter(({ apiHost: other }) => apiHost === other) */.forEach((run, idx) => {
-      const row = insertRow(resp.graphics.table)
-      const cell = addCell(row, run)
+    all() /* .filter(({ apiHost: other }) => apiHost === other) */
+      .forEach((run, idx) => {
+        const row = insertRow(resp.graphics.table)
+        const cell = addCell(row, run)
 
-      // find the max sample in this run, so we can display it in the table
-      const max = run.dataset.reduce((max, row) => {
-        if (!max || row.requestsPerSec > max.requestsPerSec) {
-          return row
-        } else {
-          return max
+        // find the max sample in this run, so we can display it in the table
+        const max = run.dataset.reduce((max, row) => {
+          if (!max || row.requestsPerSec > max.requestsPerSec) {
+            return row
+          } else {
+            return max
+          }
+        }, undefined)
+        const { requestsPerSec, latency50, latency99, latencyMax } = max
+        // const { requestsPerSec: maxRPS } = max
+        // const { requestsPerSec, latency50, latency99, latencyMax } = run.dataset.find(row => row.requestsPerSec >= 0.8 * maxRPS)
+        // const { requestsPerSec, latency50, latency99, latencyMax } = run.dataset.find(row => row.requestsPerSec === maxRPS)
+
+        // the addCell impl requires that the fields be part of the data object...
+        run.requestsPerSec = requestsPerSec
+        run.latency50 = latency50
+        run.latency99 = latency99
+        run.latencyMax = latencyMax
+
+        // now we can add the cells to the view
+        cell('apiHost', { formatter: prettyUrl })
+        cell('testName', { css: 'border-right' })
+        cell('requestsPerSec', { css: 'bold' })
+        cell('latency50')
+        cell('latency99')
+        cell('latencyMax')
+
+        row.onclick = () => {
+          const container = graphics.container
+          const command = `wrk show ${idx}`
+          const highlightThis = undefined
+          const returnTo = viewName
+
+          return drilldown(tab, command, highlightThis, container, returnTo)(
+            event
+          )
         }
-      }, undefined)
-      const { requestsPerSec, latency50, latency99, latencyMax } = max
-      // const { requestsPerSec: maxRPS } = max
-      // const { requestsPerSec, latency50, latency99, latencyMax } = run.dataset.find(row => row.requestsPerSec >= 0.8 * maxRPS)
-      // const { requestsPerSec, latency50, latency99, latencyMax } = run.dataset.find(row => row.requestsPerSec === maxRPS)
-
-      // the addCell impl requires that the fields be part of the data object...
-      run.requestsPerSec = requestsPerSec
-      run.latency50 = latency50
-      run.latency99 = latency99
-      run.latencyMax = latencyMax
-
-      // now we can add the cells to the view
-      cell('apiHost', { formatter: prettyUrl })
-      cell('testName', { css: 'border-right' })
-      cell('requestsPerSec', { css: 'bold' })
-      cell('latency50')
-      cell('latency99')
-      cell('latencyMax')
-
-      row.onclick = () => {
-        const container = graphics.container
-        const command = `wrk show ${idx}`
-        const highlightThis = undefined
-        const returnTo = viewName
-
-        return drilldown(tab, command, highlightThis, container, returnTo)(event)
-      }
-    })
+      })
   }
   showAll()
   eventBus.on('/wrk/history/delete', showAll)

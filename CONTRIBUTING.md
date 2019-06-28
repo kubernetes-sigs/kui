@@ -4,9 +4,10 @@ This page contains information about reporting issues, how to suggest changes
 as well as the guidelines we follow for how our documents are formatted.
 
 ## Table of Contents
-* [Reporting an Issue](#reporting-an-issue)
-* [Suggesting a Change](#suggesting-a-change)
-* [Spec Formatting Conventions](#spec-formatting-conventions)
+
+- [Reporting an Issue](#reporting-an-issue)
+- [Suggesting a Change](#suggesting-a-change)
+- [Spec Formatting Conventions](#spec-formatting-conventions)
 
 ## Reporting an Issue
 
@@ -42,9 +43,9 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org) as
 type(component?): message
 ```
 
-*type* is one of: feat, fix, docs, chore, style, refactor, perf, test
+_type_ is one of: feat, fix, docs, chore, style, refactor, perf, test
 
-*component* optionally is the name of the module you are fixing; either "core" or a named module in `plugins/` directory. Note: Please specify the full name of the module (e.g. plugin-bash-like) instead of abbreviation. It helps us generate the correct CHANGELOG.md.
+_component_ optionally is the name of the module you are fixing; either "core" or a named module in `plugins/` directory. Note: Please specify the full name of the module (e.g. plugin-bash-like) instead of abbreviation. It helps us generate the correct CHANGELOG.md.
 
 #### Sign your work
 
@@ -102,7 +103,7 @@ If you set your `user.name` and `user.email` git configs, you can sign your
 commit automatically with `git commit -s`.
 
 Note: If your git config information is set properly then viewing the
- `git log` information for your commit will look something like this:
+`git log` information for your commit will look something like this:
 
 ```
 Author: Joe Smith <joe.smith@email.com>
@@ -119,6 +120,7 @@ your PR will be rejected by the automated DCO check.
 ## Spec Formatting Conventions
 
 Documents in this repository will adhere to the following rules:
-  * Lines are wrapped at 80 columns (when possible)
-  * Specifications will use [RFC2119](https://tools.ietf.org/html/rfc2119)
-    keywords to indicate normative requirements
+
+- Lines are wrapped at 80 columns (when possible)
+- Specifications will use [RFC2119](https://tools.ietf.org/html/rfc2119)
+  keywords to indicate normative requirements

@@ -28,15 +28,18 @@ const cli = ui.cli
 // fuzz testing: eliminate auth
 //    NOTE: since we have no wskprops, the expected API_HOST is going to be
 //          a static default, hard-coded into openwhisk-core.js
-const fuzz = { fuzz: { rules: ['noAuth'],
-  prefs: { noAuthOk: true,
-    API_HOST: process.env.API_HOST } } }
+const fuzz = {
+  fuzz: {
+    rules: ['noAuth'],
+    prefs: { noAuthOk: true, API_HOST: process.env.API_HOST }
+  }
+}
 
 /**
  * Here starts the test
  *
  */
-describe('show the composer visualization with no wskauth', function (this: common.ISuite) {
+describe('show the composer visualization with no wskauth', function(this: common.ISuite) {
   before(openwhisk.before(this, fuzz)) // fuzz testing: eliminate authentication bits
   after(common.after(this))
 
@@ -46,45 +49,51 @@ describe('show the composer visualization with no wskauth', function (this: comm
   const whileSeq = composerInput('while-seq.js')
 
   /** test: load @demos/hello */
-  it(`show visualization via ${cmd} from file ${hello.path}`, () => cli.do(`${cmd} ${hello.path}`, this.app)
-    .then(verifyTheBasicStuff(hello.file))
-    .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
-    .catch(common.oops(this)))
+  it(`show visualization via ${cmd} from file ${hello.path}`, () =>
+    cli
+      .do(`${cmd} ${hello.path}`, this.app)
+      .then(verifyTheBasicStuff(hello.file))
+      .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
+      .catch(common.oops(this)))
 
   /** test: load an if.js */
-  it(`show visualization via ${cmd} from FSM file ${If.file}`, () => cli.do(`${cmd} ${If.path}`, this.app)
-    .then(verifyTheBasicStuff(If.file))
-    .then(verifyNodeExists('seq1'))
-    .then(verifyNodeExists('seq2'))
-    .then(verifyNodeExists('seq3'))
-    .then(verifyNodeExists('seq4'))
-    .then(verifyNodeExists('seq5'))
-    .then(verifyEdgeExists('Entry', 'isTrue'))
-    .then(verifyEdgeExists('seq1', 'seq2'))
-    .then(verifyEdgeExists('seq2', 'seq3'))
-    .then(verifyEdgeExists('seq4', 'seq5'))
-    .then(verifyEdgeExists('seq3', 'dummy_0'))
-    .then(verifyEdgeExists('seq5', 'dummy_0'))
-    .then(verifyEdgeExists('dummy_0', 'Exit'))
-    .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
-    .catch(common.oops(this)))
+  it(`show visualization via ${cmd} from FSM file ${If.file}`, () =>
+    cli
+      .do(`${cmd} ${If.path}`, this.app)
+      .then(verifyTheBasicStuff(If.file))
+      .then(verifyNodeExists('seq1'))
+      .then(verifyNodeExists('seq2'))
+      .then(verifyNodeExists('seq3'))
+      .then(verifyNodeExists('seq4'))
+      .then(verifyNodeExists('seq5'))
+      .then(verifyEdgeExists('Entry', 'isTrue'))
+      .then(verifyEdgeExists('seq1', 'seq2'))
+      .then(verifyEdgeExists('seq2', 'seq3'))
+      .then(verifyEdgeExists('seq4', 'seq5'))
+      .then(verifyEdgeExists('seq3', 'dummy_0'))
+      .then(verifyEdgeExists('seq5', 'dummy_0'))
+      .then(verifyEdgeExists('dummy_0', 'Exit'))
+      .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
+      .catch(common.oops(this)))
 
   /** test: while with nested sequence, from js file */
-  it(`show visualization from javascript source ${whileSeq.path}`, () => cli.do(`app viz ${whileSeq.path}`, this.app)
-    .then(verifyTheBasicStuff(whileSeq.file))
-    .then(verifyNodeExists('seq1'))
-    .then(verifyNodeExists('seq2'))
-    .then(verifyNodeExists('seq3'))
-    .then(verifyNodeExists('cond1'))
-    .then(verifyNodeExists('cond2'))
-    .then(verifyNodeExists('cond3'))
-    .then(verifyNodeExists('action4'))
-    .then(verifyEdgeExists('Entry', 'cond1'))
-    .then(verifyEdgeExists('seq1', 'seq2'))
-    .then(verifyEdgeExists('seq2', 'seq3'))
-    .then(verifyEdgeExists('cond1', 'cond2'))
-    .then(verifyEdgeExists('action4', 'cond3'))
-    .then(verifyEdgeExists('cond3', 'Exit'))
-    .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
-    .catch(common.oops(this)))
+  it(`show visualization from javascript source ${whileSeq.path}`, () =>
+    cli
+      .do(`app viz ${whileSeq.path}`, this.app)
+      .then(verifyTheBasicStuff(whileSeq.file))
+      .then(verifyNodeExists('seq1'))
+      .then(verifyNodeExists('seq2'))
+      .then(verifyNodeExists('seq3'))
+      .then(verifyNodeExists('cond1'))
+      .then(verifyNodeExists('cond2'))
+      .then(verifyNodeExists('cond3'))
+      .then(verifyNodeExists('action4'))
+      .then(verifyEdgeExists('Entry', 'cond1'))
+      .then(verifyEdgeExists('seq1', 'seq2'))
+      .then(verifyEdgeExists('seq2', 'seq3'))
+      .then(verifyEdgeExists('cond1', 'cond2'))
+      .then(verifyEdgeExists('action4', 'cond3'))
+      .then(verifyEdgeExists('cond3', 'Exit'))
+      .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
+      .catch(common.oops(this)))
 })

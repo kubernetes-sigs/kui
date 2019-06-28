@@ -24,36 +24,53 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 const { cli, keys, sidecar } = ui
 
-describe('List activations, then drill down to summary views', function (this: common.ISuite) {
+describe('List activations, then drill down to summary views', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   const drilldownWith = command => {
-    return it(`should list activations and click on ${command}`, () => cli.do(`$ list`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N => sidecar.expectClosed(this.app)
-        .then(() => `${ui.selectors.OUTPUT_N(N)} .list-paginator-left-buttons span[data-button-command="${command}"]`)
-        .then(sel => { console.error(`Looking for ${sel}`); return sel })
-        .then(async sel => {
-          await this.app.client.waitForEnabled(sel)
-          return sel
-        })
-        .then(sel => this.app.client.click(sel))
-        .catch(async err => {
-          const txt = await this.app.client.getText(ui.selectors.OUTPUT_N(N))
-          console.log(`huh, got this ${txt}`)
-          throw err
-        }))
-      .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('Recent Activity'))
-      .catch(common.oops(this)))
+    return it(`should list activations and click on ${command}`, () =>
+      cli
+        .do(`$ list`, this.app)
+        .then(cli.expectOKWithCustom({ passthrough: true }))
+        .then(N =>
+          sidecar
+            .expectClosed(this.app)
+            .then(
+              () =>
+                `${ui.selectors.OUTPUT_N(
+                  N
+                )} .list-paginator-left-buttons span[data-button-command="${command}"]`
+            )
+            .then(sel => {
+              console.error(`Looking for ${sel}`)
+              return sel
+            })
+            .then(async sel => {
+              await this.app.client.waitForEnabled(sel)
+              return sel
+            })
+            .then(sel => this.app.client.click(sel))
+            .catch(async err => {
+              const txt = await this.app.client.getText(
+                ui.selectors.OUTPUT_N(N)
+              )
+              console.log(`huh, got this ${txt}`)
+              throw err
+            })
+        )
+        .then(() => this.app)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing('Recent Activity'))
+        .catch(common.oops(this)))
   }
 
   const closeSidecar = () => {
-    return it('should toggle the sidebar closed with escape', () => this.app.client.keys(keys.ESCAPE)
-      .then(() => sidecar.expectClosed(this.app))
-      .catch(common.oops(this)))
+    return it('should toggle the sidebar closed with escape', () =>
+      this.app.client
+        .keys(keys.ESCAPE)
+        .then(() => sidecar.expectClosed(this.app))
+        .catch(common.oops(this)))
   }
 
   drilldownWith('summary')

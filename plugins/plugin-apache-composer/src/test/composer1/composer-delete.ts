@@ -21,11 +21,13 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
 const seqName1 = 'seq1'
 
-describe('Use the app delete command to delete an invokeable composition', function (this: common.ISuite) {
+describe('Use the app delete command to delete an invokeable composition', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -42,13 +44,17 @@ describe('Use the app delete command to delete an invokeable composition', funct
 
   /** invoke a composition */
   const invoke = (name, key, value, extraExpect, expectIsIt = false) => {
-    it(`should invoke the composition ${name} with ${key}=${value}`, () => cli.do(`app invoke ${name} -p ${key} ${value}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct(expect(key, value, extraExpect, expectIsIt)))
-      .catch(common.oops(this)))
+    it(`should invoke the composition ${name} with ${key}=${value}`, () =>
+      cli
+        .do(`app invoke ${name} -p ${key} ${value}`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(name))
+        .then(() =>
+          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
+        )
+        .then(ui.expectStruct(expect(key, value, extraExpect, expectIsIt)))
+        .catch(common.oops(this)))
   }
 
   /* {
@@ -60,46 +66,63 @@ describe('Use the app delete command to delete an invokeable composition', funct
     } */
 
   // we have to make an app before we can delete it
-  it('should create a composer sequence', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    // .then(sidecar.expectBadge(badges.sequence))
-    .catch(common.oops(this)))
+  it('should create a composer sequence', () =>
+    cli
+      .do(
+        `app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`,
+        this.app
+      )
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      // .then(sidecar.expectBadge(badges.sequence))
+      .catch(common.oops(this)))
   invoke(seqName1, 'x', 3, undefined, undefined)
 
-  it(`should get ${seqName1} via app get`, () => cli.do(`app get ${seqName1}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1)) // and sidecar should be showing it, too
-    // .then(sidecar.expectBadge(badges.sequence))
-    .catch(common.oops(this)))
+  it(`should get ${seqName1} via app get`, () =>
+    cli
+      .do(`app get ${seqName1}`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1)) // and sidecar should be showing it, too
+      // .then(sidecar.expectBadge(badges.sequence))
+      .catch(common.oops(this)))
 
   // show up in the list prior to deletion
-  it(`should list ${seqName1} via app list`, () => cli.do(`app list`, this.app)
-    .then(cli.expectOKWithOnly(seqName1)) // seqName1 had better still be in the list
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1)) // and sidecar should be showing it, too
-    // .then(sidecar.expectBadge(badges.sequence))
-    .catch(common.oops(this)))
+  it(`should list ${seqName1} via app list`, () =>
+    cli
+      .do(`app list`, this.app)
+      .then(cli.expectOKWithOnly(seqName1)) // seqName1 had better still be in the list
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1)) // and sidecar should be showing it, too
+      // .then(sidecar.expectBadge(badges.sequence))
+      .catch(common.oops(this)))
 
-  it(`should delete a composer sequence`, () => cli.do(`app delete ${seqName1}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
+  it(`should delete a composer sequence`, () =>
+    cli
+      .do(`app delete ${seqName1}`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
 
   // now the list should be empty
-  it(`should list nothing via wsk app list`, () => cli.do(`wsk app list`, this.app)
-    .then(cli.expectBlank) // expect empty result from the list (other than 'OK')
-    .then(sidecar.expectClosed)
-    .catch(common.oops(this)))
+  it(`should list nothing via wsk app list`, () =>
+    cli
+      .do(`wsk app list`, this.app)
+      .then(cli.expectBlank) // expect empty result from the list (other than 'OK')
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this)))
 
-  it(`should fail to delete an unexisting composer sequence`, () => cli.do(`app delete ${seqName1}`, this.app)
-    .then(cli.expectError(404, 'The requested resource does not exist'))
-    .catch(common.oops(this)))
+  it(`should fail to delete an unexisting composer sequence`, () =>
+    cli
+      .do(`app delete ${seqName1}`, this.app)
+      .then(cli.expectError(404, 'The requested resource does not exist'))
+      .catch(common.oops(this)))
 
   // now the package binding should NOT exist
-  it('should fail to get the package binding', () => cli.do(`package get openwhisk-composer.${seqName1}`, this.app)
-    .then(cli.expectError(404))
-    .catch(common.oops(this)))
+  it('should fail to get the package binding', () =>
+    cli
+      .do(`package get openwhisk-composer.${seqName1}`, this.app)
+      .then(cli.expectError(404))
+      .catch(common.oops(this)))
 })

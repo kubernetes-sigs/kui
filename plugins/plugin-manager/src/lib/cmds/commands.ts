@@ -34,7 +34,8 @@ const doList = ({ argvNoOptions }: EvaluatorArgs) => {
 
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]
 
-  return fs.readFile(prescanned)
+  return fs
+    .readFile(prescanned)
     .then(JSON.parse)
     .then(({ commandToPlugin, flat }) => {
       const commands = []
@@ -55,12 +56,23 @@ const doList = ({ argvNoOptions }: EvaluatorArgs) => {
       return commands
     })
     .then(commands => commands.sort((a, b) => -a.localeCompare(b)))
-    .then(commands => commands.filter((command, idx) => !commands.find((other, otherIdx) => idx !== otherIdx && command.endsWith(other))))
-    .then(commands => commands.map(command => command.replace(/^\//, '').replace(/\//g, ' '))
-      .map(name => ({ type: 'command',
-        name,
-        onclick: () => repl.pexec(name)
-      })))
+    .then(commands =>
+      commands.filter(
+        (command, idx) =>
+          !commands.find(
+            (other, otherIdx) => idx !== otherIdx && command.endsWith(other)
+          )
+      )
+    )
+    .then(commands =>
+      commands
+        .map(command => command.replace(/^\//, '').replace(/\//g, ' '))
+        .map(name => ({
+          type: 'command',
+          name,
+          onclick: () => repl.pexec(name)
+        }))
+    )
     .catch(err => {
       if (err['code'] === 'ENOENT') {
         const error = new Error('This plugin is not installed')

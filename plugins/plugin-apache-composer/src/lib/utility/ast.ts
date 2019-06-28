@@ -20,7 +20,10 @@ const debug = Debug('plugins/apache-composer/utility/ast')
 /* Does the given action represent a composer app? */
 export const isAnApp = action => {
   debug('filtering action', action)
-  const anno = action && action.annotations && action.annotations.find(({ key }) => key === 'conductor')
+  const anno =
+    action &&
+    action.annotations &&
+    action.annotations.find(({ key }) => key === 'conductor')
   return anno && anno.value
 }
 
@@ -28,7 +31,7 @@ export const isAnApp = action => {
  * Extract the Action Tasks from a given FSM
  *
  */
-export const extractActionsFromAst = (composition) => {
+export const extractActionsFromAst = composition => {
   const actions = []
 
   /** recursively add actions from the given root sequence */
@@ -56,8 +59,9 @@ export const extractActionsFromAst = (composition) => {
  *
  */
 export const astAnnotation = entity => {
-  const anno = entity.annotations.find(({ key }) => key === 'ast') ||
-          entity.annotations.find(({ key }) => key === 'conductor')
+  const anno =
+    entity.annotations.find(({ key }) => key === 'ast') ||
+    entity.annotations.find(({ key }) => key === 'conductor')
 
   // avoid conductor:true as indicating the presence of an Ast
   return anno && anno.value !== true ? anno : undefined
@@ -75,8 +79,9 @@ export const hasAst = entity => entity && !!astAnnotation(entity)
  *
  */
 export const isValidAst = maybe => {
-  return maybe &&
-        ((maybe.constructor && maybe.constructor.name === 'Composition') || // for nodejs
-             maybe.type // for other languages (for now, at least)
-        )
+  return (
+    maybe &&
+    ((maybe.constructor && maybe.constructor.name === 'Composition') || // for nodejs
+      maybe.type) // for other languages (for now, at least)
+  )
 }

@@ -26,72 +26,96 @@ import { asSidecarEntity } from '../util/sidecar-support'
 import { onbranch, injectCSS } from '../util/git-support'
 const debug = Debug('plugins/bash-like/cmds/git-diff')
 
-const doDiff = async ({ command, execOptions }: EvaluatorArgs) => new Promise(async (resolve, reject) => {
-  injectCSS()
+const doDiff = async ({ command, execOptions }: EvaluatorArgs) =>
+  new Promise(async (resolve, reject) => {
+    injectCSS()
 
-  // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
-  const shell = await import('shelljs')
+    // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
+    const shell = await import('shelljs')
 
-  // prefetch the current branch
-  const currentBranch = onbranch()
+    // prefetch the current branch
+    const currentBranch = onbranch()
 
-  // spawn the git diff
-  const proc = shell.exec(command, {
-    async: true,
-    silent: true
-  })
+    // spawn the git diff
+    const proc = shell.exec(command, {
+      async: true,
+      silent: true
+    })
 
-  let rawOut = ''
-  let rawErr = ''
-  proc.stdout.on('data', (data: Buffer) => {
-    rawOut += data.toString()
-  })
-  proc.stderr.on('data', (data: Buffer) => {
-    rawErr += data.toString()
-  })
-  proc.on('close', async (exitCode: number) => {
-    if (exitCode === 0) {
-      if (rawOut.trim().length === 0) {
-        debug('nothing to show')
-        resolve(true)
+    let rawOut = ''
+    let rawErr = ''
+    proc.stdout.on('data', (data: Buffer) => {
+      rawOut += data.toString()
+    })
+    proc.stderr.on('data', (data: Buffer) => {
+      rawErr += data.toString()
+    })
+    proc.on('close', async (exitCode: number) => {
+      if (exitCode === 0) {
+        if (rawOut.trim().length === 0) {
+          debug('nothing to show')
+          resolve(true)
+        }
+
+        debug('rendering git diff as HTML')
+
+        // show a summary of changed files the top?
+        const diffMatch = rawOut.match(/^diff\s+/gm)
+        const showFiles = diffMatch && diffMatch.length >= 2
+        debug('diffMatch', diffMatch)
+
+        const argv = split(command)
+        const commandPart = argv[1]
+        const filePart = argv.slice(2).join(' ') || 'All changes'
+
+        // loaded lazily to help with the size of the headless dist
+        const { Diff2Html } = await import('diff2html')
+
+        // note: no sidecar header if this launched from the command line ("subwindow mode")
+        resolve(
+          asSidecarEntity(
+            filePart,
+            Diff2Html.getPrettyHtml(rawOut, {
+              showFiles,
+              matching: 'lines'
+              // outputFormat: 'side-by-side',
+            }),
+            {
+              presentation: isPopup()
+                ? Presentation.FixedSize
+                : Presentation.Default
+            },
+            undefined,
+            commandPart,
+            currentBranch
+          )
+        )
+      } else {
+        try {
+          resolve(
+            handleNonZeroExitCode(
+              command,
+              exitCode,
+              rawOut,
+              rawErr,
+              execOptions
+            )
+          )
+        } catch (err) {
+          reject(err)
+        }
       }
-
-      debug('rendering git diff as HTML')
-
-      // show a summary of changed files the top?
-      const diffMatch = rawOut.match(/^diff\s+/mg)
-      const showFiles = diffMatch && diffMatch.length >= 2
-      debug('diffMatch', diffMatch)
-
-      const argv = split(command)
-      const commandPart = argv[1]
-      const filePart = argv.slice(2).join(' ') || 'All changes'
-
-      // loaded lazily to help with the size of the headless dist
-      const { Diff2Html } = await import('diff2html')
-
-      // note: no sidecar header if this launched from the command line ("subwindow mode")
-      resolve(asSidecarEntity(filePart, Diff2Html.getPrettyHtml(rawOut, {
-        showFiles,
-        matching: 'lines'
-        // outputFormat: 'side-by-side',
-      }), {
-        presentation: isPopup() ? Presentation.FixedSize : Presentation.Default
-      }, undefined, commandPart, currentBranch))
-    } else {
-      try {
-        resolve(handleNonZeroExitCode(command, exitCode, rawOut, rawErr, execOptions))
-      } catch (err) {
-        reject(err)
-      }
-    }
+    })
   })
-})
 
 /**
  * Register command handlers
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/git/diff', doDiff, { needsUI: true, requiresLocal: true, noAuthOk: true })
+  commandTree.listen('/git/diff', doDiff, {
+    needsUI: true,
+    requiresLocal: true,
+    noAuthOk: true
+  })
 }

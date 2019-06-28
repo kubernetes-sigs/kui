@@ -20,8 +20,5 @@ import newCmd from './lib/cmds/new'
 import composeCmd from './lib/cmds/compose'
 
 export default async (commandTree: CommandRegistrar) => {
-  return Promise.all([
-    newCmd(commandTree),
-    composeCmd(commandTree)
-  ])
+  return Promise.all([newCmd(commandTree), composeCmd(commandTree)])
 }

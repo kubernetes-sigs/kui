@@ -40,7 +40,6 @@ const toUsage = (models, { commandPrefix, title, docs, breadcrumb = title }) => 
 
 export default () => {
   /* disabled for now; not compatible with webpack */
-
   /* commandTree.subtree('/plugin', {
     usage: toUsage(usagePerCommand, {
       commandPrefix: 'plugin',

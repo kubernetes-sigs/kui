@@ -38,15 +38,15 @@ debug('loading')
 class ClassList {
   private classList: string[] = []
 
-  add (_: string) {
+  add(_: string) {
     return this.classList.push(_)
   }
 
-  contains (_: string): boolean {
+  contains(_: string): boolean {
     return this.classList.indexOf(_) >= 0
   }
 
-  remove (_: string) {
+  remove(_: string) {
     const idx = this.classList.findIndex((x: string) => x === _)
     if (idx >= 0) {
       this.classList.splice(idx, 1)
@@ -55,7 +55,7 @@ class ClassList {
 }
 
 /** generic clone */
-function clone<T> (instance: T): T {
+function clone<T>(instance: T): T {
   const copy = new (instance.constructor as { new (): T })()
   Object.assign(copy, instance)
   return copy
@@ -76,47 +76,47 @@ export class ElementMimic {
 
   private _attrs: { [key: string]: string } = {}
 
-  focus () {
+  focus() {
     /* empty ok */
   }
 
-  appendChild (c: ElementMimic) {
+  appendChild(c: ElementMimic) {
     return this.children.push(c)
   }
 
-  getAttribute (k: string): string {
+  getAttribute(k: string): string {
     return this._attrs[k] || ''
   }
 
-  setAttribute (k: string, v: string): string {
+  setAttribute(k: string, v: string): string {
     this._attrs[k] = v
     return v
   }
 
-  removeAttribute (k: string): string {
+  removeAttribute(k: string): string {
     const attr = this._attrs[k]
     delete this._attrs[k]
     return attr
   }
 
-  cloneNode (): ElementMimic {
+  cloneNode(): ElementMimic {
     return clone(this)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  querySelectorAll (selector: string): ElementMimic[] {
+  querySelectorAll(selector: string): ElementMimic[] {
     return []
   }
 
-  querySelector (sel: string): ElementMimic {
+  querySelector(sel: string): ElementMimic {
     return this[sel] || new ElementMimic()
   }
 
-  addEventListener () {
+  addEventListener() {
     return true
   }
 
-  hasStyle (style: string, desiredValue?: number | string): boolean | string {
+  hasStyle(style: string, desiredValue?: number | string): boolean | string {
     const actualValue = this.style && this.style[style]
     // intentional double equals, so that 500=='500'
     // eslint-disable-next-line eqeqeq
@@ -124,11 +124,17 @@ export class ElementMimic {
     else return actualValue
   }
 
-  recursiveInnerTextLength (): number {
-    return this.innerText.length + this.children.reduce((sum: number, child) => sum + child.recursiveInnerTextLength(), 0)
+  recursiveInnerTextLength(): number {
+    return (
+      this.innerText.length +
+      this.children.reduce(
+        (sum: number, child) => sum + child.recursiveInnerTextLength(),
+        0
+      )
+    )
   }
 
-  static isFakeDom (dom: object): dom is ElementMimic {
+  static isFakeDom(dom: object): dom is ElementMimic {
     return (dom as ElementMimic)._isFakeDom
   }
 }
@@ -137,7 +143,7 @@ export class ElementMimic {
  * Create structures to mimic having a head
  *
  */
-export default function () {
+export default function() {
   debug('mimicDom')
 
   try {
@@ -148,7 +154,10 @@ export default function () {
 
     const localStorage = {}
     global['localStorage'] = {
-      setItem: (k: string, v: string) => { localStorage[k] = v; return v },
+      setItem: (k: string, v: string) => {
+        localStorage[k] = v
+        return v
+      },
       getItem: (k: string) => localStorage[k] || null
     }
   } finally {
@@ -185,7 +194,11 @@ export default function () {
       return element
     },
     addEventListener: () => true,
-    createTextNode: (text: string) => { const element = dom0(); element.innerText = text; return element },
+    createTextNode: (text: string) => {
+      const element = dom0()
+      element.innerText = text
+      return element
+    },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     querySelector: (selector: string) => {
       return dom0()

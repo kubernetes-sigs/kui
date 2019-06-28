@@ -42,7 +42,7 @@ export const range = options => {
   const oneHour = 60 * oneMinute
   const oneDay = 24 * oneHour
   const startOfToday = startOfDay(date)
-  const startOfWeek = (startOfToday - date.getDay() * oneDay)
+  const startOfWeek = startOfToday - date.getDay() * oneDay
 
   let since
   let upto

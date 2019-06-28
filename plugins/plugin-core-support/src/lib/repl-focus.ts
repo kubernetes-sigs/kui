@@ -15,13 +15,20 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { getCurrentPrompt, getPromptFromTarget } from '@kui-shell/core/webapp/cli'
+import {
+  getCurrentPrompt,
+  getPromptFromTarget
+} from '@kui-shell/core/webapp/cli'
 
 /**
  * Is no text currently selected?
  *
  */
-const noCurrentTextSelection = () => window.getSelection().toString().trim().length === 0
+const noCurrentTextSelection = () =>
+  window
+    .getSelection()
+    .toString()
+    .trim().length === 0
 
 /**
  * We want to focus the current "active" repl <input> element when the
@@ -54,8 +61,10 @@ export default () => {
   // handling click events, to give us time not to see a dblclick
   // event
   const finishClick = (evt: MouseEvent) => () => {
-    if (evt.screenX === startX && evt.screenY === startY && // not a drag
-        noCurrentTextSelection() // not a double-click text selection
+    if (
+      evt.screenX === startX &&
+      evt.screenY === startY && // not a drag
+      noCurrentTextSelection() // not a double-click text selection
     ) {
       // finally! if those conditions hold, then we can focus the current <input>
       getPromptFromTarget(evt.srcElement).focus()
@@ -79,25 +88,34 @@ export default () => {
     if (noCurrentTextSelection()) {
       clearTimeout(currentFinishAsync)
     }
-  });
+  })
 
   // horizontal landing zone clicks should keep the repl prompt focused
-  (repl.querySelector('.horizontal-landing-zone') as HTMLElement).addEventListener('click', (evt: MouseEvent) => {
+  ;(repl.querySelector(
+    '.horizontal-landing-zone'
+  ) as HTMLElement).addEventListener('click', (evt: MouseEvent) => {
     getPromptFromTarget(evt.srcElement).focus()
   })
 
   // sidecar header clicks should keep the repl prompt focused
   const sidecar = document.querySelector('tab.visible sidecar') as HTMLElement
-  let promptHasFocusBeforeClick = false;
-  (sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener('mousedown', (evt: MouseEvent) => {
-    promptHasFocusBeforeClick = document.activeElement === getPromptFromTarget(evt.srcElement)
-  });
-  (sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener('click', (evt: MouseEvent) => {
-    const noTextSelection = window.getSelection().toString().length === 0
-    if (promptHasFocusBeforeClick && noTextSelection) {
-      getPromptFromTarget(evt.srcElement).focus()
+  let promptHasFocusBeforeClick = false
+  ;(sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener(
+    'mousedown',
+    (evt: MouseEvent) => {
+      promptHasFocusBeforeClick =
+        document.activeElement === getPromptFromTarget(evt.srcElement)
     }
-  })
+  )
+  ;(sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener(
+    'click',
+    (evt: MouseEvent) => {
+      const noTextSelection = window.getSelection().toString().length === 0
+      if (promptHasFocusBeforeClick && noTextSelection) {
+        getPromptFromTarget(evt.srcElement).focus()
+      }
+    }
+  )
 
   /** listen for paste events, focus on the current prompt first */
   document.body.onpaste = (evt: Event) => {
@@ -123,7 +141,10 @@ export default () => {
    *
    */
   document.body.addEventListener('click', (evt: MouseEvent) => {
-    if (document.activeElement === document.body && window.getSelection().toString().length === 0) {
+    if (
+      document.activeElement === document.body &&
+      window.getSelection().toString().length === 0
+    ) {
       // refocus current prompt, because there is no active element
       // and no text selection
       getPromptFromTarget(evt.srcElement).focus()

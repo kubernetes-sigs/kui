@@ -39,66 +39,98 @@ interface Stat {
 interface Stats {
   [key: string]: Stat
 }
-const numstat = (): Promise<Stats> => new Promise<Stats>((resolve, reject) => {
-  const child = spawn('git', ['diff', '--numstat']) // `--relative=${path.basename(process.cwd())}`])
+const numstat = (): Promise<Stats> =>
+  new Promise<Stats>((resolve, reject) => {
+    const child = spawn('git', ['diff', '--numstat']) // `--relative=${path.basename(process.cwd())}`])
 
-  let rawOut = ''
-  child.stdout.on('data', data => {
-    rawOut += data.toString()
-  })
+    let rawOut = ''
+    child.stdout.on('data', data => {
+      rawOut += data.toString()
+    })
 
-  let rawErr = ''
-  child.stderr.on('data', data => {
-    rawErr += data.toString()
-  })
+    let rawErr = ''
+    child.stderr.on('data', data => {
+      rawErr += data.toString()
+    })
 
-  child.on('close', exitCode => {
-    if (exitCode !== 0) {
-      reject(rawErr)
-    } else {
-      /* e.g., where the columns are Added and Deleted
+    child.on('close', exitCode => {
+      if (exitCode !== 0) {
+        reject(rawErr)
+      } else {
+        /* e.g., where the columns are Added and Deleted
         18      7       app/content/css/ui.css
         16      16      app/plugins/modules/bash-like/src/lib/cmds/git-diff.ts
         14      6       app/plugins/modules/bash-like/src/lib/cmds/git-status.ts
         30      2       app/src/core/usage-error.ts
         7       5       app/src/webapp/util/ascii-to-usage.ts
       */
-      resolve(rawOut
-        .split(/\n/)
-        .reduce((M, line) => {
-          const [ added, deleted, file ] = line.split(/\s+/)
-          M[file] = { added, deleted } // no need to parseInt; we will use these as strings
-          return M
-        }, {}))
-    }
+        resolve(
+          rawOut.split(/\n/).reduce((M, line) => {
+            const [added, deleted, file] = line.split(/\s+/)
+            M[file] = { added, deleted } // no need to parseInt; we will use these as strings
+            return M
+          }, {})
+        )
+      }
+    })
   })
-})
 
 /**
  * Is no text currently selected?
  *
  */
-const noCurrentTextSelection = () => window.getSelection().toString().trim().length === 0
+const noCurrentTextSelection = () =>
+  window
+    .getSelection()
+    .toString()
+    .trim().length === 0
 
 /**
  * Look for modified: and turn them into git diff links
  *
  */
-export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
+export const status2Html = (
+  tab: Tab,
+  rawOut: string,
+  stats: Promise<Stats> = numstat()
+): HTMLElement => {
   injectCSS()
 
   const mods = rawOut
-    .replace(/^\s*\(use .*\)$/mg, '___nope___')
-    .replace(/^(\s+)([^:\s]+)$/mg, `<div class='entity'><div class='entity-attributes'><span class='repl-pexec-link do-not-overflow clickable clickable-blatant small-bottom-pad' data-file='$2' data-partial data-command='git add'>$2</span></div></div>`)
-    .replace(/^(\s+)(modified:|new file:|deleted:)(\s+)(.*)$/mg,
-      `<div class='entity'><div class='entity-attributes'>$2<span class='repl-pexec-link do-not-overflow clickable clickable-blatant small-bottom-pad' data-file='$4'>$4</span><span class='d2h-file-stats-wrapper'><span class='d2h-file-stats double-icon-width' data-file='$4'><span class='d2h-lines-added'></span><span class='d2h-lines-deleted'></span></span></span></div></div>`)
+    .replace(/^\s*\(use .*\)$/gm, '___nope___')
+    .replace(
+      /^(\s+)([^:\s]+)$/gm,
+      `<div class='entity'><div class='entity-attributes'><span class='repl-pexec-link do-not-overflow clickable clickable-blatant small-bottom-pad' data-file='$2' data-partial data-command='git add'>$2</span></div></div>`
+    )
+    .replace(
+      /^(\s+)(modified:|new file:|deleted:)(\s+)(.*)$/gm,
+      `<div class='entity'><div class='entity-attributes'>$2<span class='repl-pexec-link do-not-overflow clickable clickable-blatant small-bottom-pad' data-file='$4'>$4</span><span class='d2h-file-stats-wrapper'><span class='d2h-file-stats double-icon-width' data-file='$4'><span class='d2h-lines-added'></span><span class='d2h-lines-deleted'></span></span></span></div></div>`
+    )
     .replace(/(On branch\s+)(.*)\n/, '') // $1<strong>$2</strong>
-    .replace(/(Changes to be committed:|Changes not staged for commit:)/g, `</div></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><div class='result-table'>`)
-    .replace(/(Untracked files:)/g, `</div></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><div class='result-table'>`)
-    .replace(/modified:/g, `<span class='yellow-text larger-text icon-width'><i class="fas fa-file"></i></span>`)
-    .replace(/new file:/g, `<span class='green-text larger-text icon-width'><i class='fas fa-file-medical'></i></i></span>`)
-    .replace(/deleted:/g, `<span class='red-text larger-text icon-width'><i class='far fa-file'></i></i></span>`)
-    .replace(/\s*(nothing added to commit but untracked files present|no changes added to commit.*)/, `</div></div><div class='top-pad'>$1</div>`)
+    .replace(
+      /(Changes to be committed:|Changes not staged for commit:)/g,
+      `</div></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><div class='result-table'>`
+    )
+    .replace(
+      /(Untracked files:)/g,
+      `</div></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><div class='result-table'>`
+    )
+    .replace(
+      /modified:/g,
+      `<span class='yellow-text larger-text icon-width'><i class="fas fa-file"></i></span>`
+    )
+    .replace(
+      /new file:/g,
+      `<span class='green-text larger-text icon-width'><i class='fas fa-file-medical'></i></i></span>`
+    )
+    .replace(
+      /deleted:/g,
+      `<span class='red-text larger-text icon-width'><i class='far fa-file'></i></i></span>`
+    )
+    .replace(
+      /\s*(nothing added to commit but untracked files present|no changes added to commit.*)/,
+      `</div></div><div class='top-pad'>$1</div>`
+    )
     .replace(/___nope___(\r\n|\r|\n)/g, '')
 
   const wrapper = document.createElement('div') as HTMLElement
@@ -121,7 +153,8 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
         const deleted = elt.querySelector('.d2h-lines-deleted') as HTMLElement
 
         added.innerText = stat.added === '0' ? stat.added : `+${stat.added}`
-        deleted.innerText = stat.deleted === '0' ? stat.deleted : `-${stat.deleted}`
+        deleted.innerText =
+          stat.deleted === '0' ? stat.deleted : `-${stat.deleted}`
       } else {
         elt.parentNode.removeChild(elt)
       }
@@ -151,7 +184,13 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
         // no-text-selected.
         setTimeout(() => {
           if (noCurrentTextSelection()) {
-            return pip(tab, `${command} ${relpath}`, undefined, wrapper.parentNode.parentNode as Element, 'git status')(event)
+            return pip(
+              tab,
+              `${command} ${relpath}`,
+              undefined,
+              wrapper.parentNode.parentNode as Element,
+              'git status'
+            )(event)
           }
         }, 0)
       }
@@ -165,46 +204,65 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
  * git status command handler
  *
  */
-const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) => new Promise(async (resolve, reject) => {
-  const stats = numstat()
-  const currentBranch = onbranch()
+const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) =>
+  new Promise(async (resolve, reject) => {
+    const stats = numstat()
+    const currentBranch = onbranch()
 
-  // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
-  const shell = await import('shelljs')
+    // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
+    const shell = await import('shelljs')
 
-  // spawn the git status
-  const proc = shell.exec(command, {
-    async: true,
-    silent: true
-  })
+    // spawn the git status
+    const proc = shell.exec(command, {
+      async: true,
+      silent: true
+    })
 
-  let rawOut = ''
-  let rawErr = ''
-  proc.stdout.on('data', (data: Buffer) => {
-    rawOut += data.toString()
-  })
-  proc.stderr.on('data', (data: Buffer) => {
-    rawErr += data.toString()
-  })
-  proc.on('close', (exitCode: number) => {
-    if (exitCode === 0) {
-      // note: no sidecar header if this launched from the command line ("subwindow mode")
-      resolve(asSidecarEntity('git status', status2Html(tab, rawOut, stats), {
-      }, undefined, 'statuss', currentBranch)) // intentional additional s at the end
-    } else {
-      try {
-        return handleNonZeroExitCode(command, exitCode, rawOut, rawErr, execOptions)
-      } catch (err) {
-        reject(err)
+    let rawOut = ''
+    let rawErr = ''
+    proc.stdout.on('data', (data: Buffer) => {
+      rawOut += data.toString()
+    })
+    proc.stderr.on('data', (data: Buffer) => {
+      rawErr += data.toString()
+    })
+    proc.on('close', (exitCode: number) => {
+      if (exitCode === 0) {
+        // note: no sidecar header if this launched from the command line ("subwindow mode")
+        resolve(
+          asSidecarEntity(
+            'git status',
+            status2Html(tab, rawOut, stats),
+            {},
+            undefined,
+            'statuss',
+            currentBranch
+          )
+        ) // intentional additional s at the end
+      } else {
+        try {
+          return handleNonZeroExitCode(
+            command,
+            exitCode,
+            rawOut,
+            rawErr,
+            execOptions
+          )
+        } catch (err) {
+          reject(err)
+        }
       }
-    }
+    })
   })
-})
 
 /**
  * Register command handlers
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/git/status', doStatus, { needsUI: true, requiresLocal: true, noAuthOk: true })
+  commandTree.listen('/git/status', doStatus, {
+    needsUI: true,
+    requiresLocal: true,
+    noAuthOk: true
+  })
 }

@@ -15,12 +15,15 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ResponseStructure {
-}
+export interface ResponseStructure {}
 
 export type IReplResponse =
-  void |
-  boolean | Promise<boolean> |
-  number | Promise<number> |
-  string | Promise<string> |
-  ResponseStructure | Promise<ResponseStructure>
+  | void
+  | boolean
+  | Promise<boolean>
+  | number
+  | Promise<number>
+  | string
+  | Promise<string>
+  | ResponseStructure
+  | Promise<ResponseStructure>

@@ -18,13 +18,16 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, keys, selectors } = ui
 
-describe('input queueing', function (this: common.ISuite) {
+describe('input queueing', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   const queueUp = (textWhileQueued: string, N: number, sleepTime = 2) => {
     return {
-      thenType: (textAfterQueued: string, verify = cli.expectOKWithCustom({ expect: common.expectedVersion })) => {
+      thenType: (
+        textAfterQueued: string,
+        verify = cli.expectOKWithCustom({ expect: common.expectedVersion })
+      ) => {
         it(`should queue ${textWhileQueued} while we sleep, then ${textAfterQueued}`, async () => {
           try {
             // do something that takes a while
@@ -38,7 +41,9 @@ describe('input queueing', function (this: common.ISuite) {
 
             // now await completion of the first command; sleep should
             // result in blank output, i.e. no "ok"
-            await outstanding.then(cli.expectBlankWithOpts({ nonBlankPromptOk: true }))
+            await outstanding.then(
+              cli.expectBlankWithOpts({ nonBlankPromptOk: true })
+            )
 
             if (textAfterQueued !== undefined) {
               // finally, type the trailing text and verify the output (use
@@ -46,7 +51,10 @@ describe('input queueing', function (this: common.ISuite) {
               return await cli.do(textAfterQueued, this.app).then(verify)
             } else {
               // otherwise, the ENTER was typed while queued
-              return await Promise.resolve({ app: this.app, count: N + 1 }).then(verify)
+              return await Promise.resolve({
+                app: this.app,
+                count: N + 1
+              }).then(verify)
             }
           } catch (err) {
             common.oops(this)(err)
@@ -58,22 +66,23 @@ describe('input queueing', function (this: common.ISuite) {
 
   // type "version" while queued, then "\n" after queued
   let nPromptBlocksSoFar = 0
-  queueUp('version', nPromptBlocksSoFar)
-    .thenType('') // '' because cli.do will add a newline for us
+  queueUp('version', nPromptBlocksSoFar).thenType('') // '' because cli.do will add a newline for us
   nPromptBlocksSoFar += 2
 
   // type "version\n" while queued, then "" after queued
-  queueUp(`version${keys.ENTER}`, nPromptBlocksSoFar)
-    .thenType(undefined)
+  queueUp(`version${keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
   nPromptBlocksSoFar += 2
 
   // double newlines while queued up
-  queueUp(`version${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar)
-    .thenType(undefined)
+  queueUp(`version${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar).thenType(
+    undefined
+  )
   nPromptBlocksSoFar += 3
 
   // triple newlines while queued up
-  queueUp(`version${keys.ENTER}${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar)
-    .thenType(undefined)
+  queueUp(
+    `version${keys.ENTER}${keys.ENTER}${keys.ENTER}`,
+    nPromptBlocksSoFar
+  ).thenType(undefined)
   nPromptBlocksSoFar += 4
 })

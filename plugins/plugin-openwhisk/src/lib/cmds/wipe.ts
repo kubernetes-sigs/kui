@@ -44,22 +44,33 @@ const logThen = f => (msg: string) => {
  *
  */
 const deleteAllOnce = entities =>
-  Promise.all(entities.map(entity => {
-    const tryDelete = () => repl.qexec(`${entity.type} delete "/${entity.namespace}/${entity.name}"`)
+  Promise.all(
+    entities.map(entity => {
+      const tryDelete = () =>
+        repl.qexec(
+          `${entity.type} delete "/${entity.namespace}/${entity.name}"`
+        )
 
-    // with retries...
-    return tryDelete()
-      .catch(err => {
-        if (err.statusCode === 404) {
-          // ignore 404s, since we're deleting
-          debug('concurrent deletion')
-        } else {
-          throw err
-        }
-      })
-      .catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete))
-      .catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete)).catch(logThen(tryDelete))
-  }))
+      // with retries...
+      return tryDelete()
+        .catch(err => {
+          if (err.statusCode === 404) {
+            // ignore 404s, since we're deleting
+            debug('concurrent deletion')
+          } else {
+            throw err
+          }
+        })
+        .catch(logThen(tryDelete))
+        .catch(logThen(tryDelete))
+        .catch(logThen(tryDelete))
+        .catch(logThen(tryDelete))
+        .catch(logThen(tryDelete))
+        .catch(logThen(tryDelete))
+        .catch(logThen(tryDelete))
+        .catch(logThen(tryDelete))
+    })
+  )
 
 /**
  * List the entities of a given entity type (e.g. actions)
@@ -116,16 +127,29 @@ const handle404s = (retry: () => void) => err => {
  * The main wipe method: clean triggers and actions, then rules and packages
  *
  */
-const doWipe1 = (quiet = false) => Promise.all([clean('trigger', quiet), clean('action', quiet)]).catch(handle404s(() => doWipe1(true)))
-const doWipe2 = (quiet = false) => Promise.all([clean('rule', quiet), clean('package', quiet)]).catch(handle404s(() => doWipe2(true)))
-const doWipe = () => doWipe1().then(() => doWipe2()).then(() => {
-  if (isHeadless()) {
-    // we did process.stdout.write above, so clear a newline
-    console.log('.'['random'])
-  }
-})
+const doWipe1 = (quiet = false) =>
+  Promise.all([clean('trigger', quiet), clean('action', quiet)]).catch(
+    handle404s(() => doWipe1(true))
+  )
+const doWipe2 = (quiet = false) =>
+  Promise.all([clean('rule', quiet), clean('package', quiet)]).catch(
+    handle404s(() => doWipe2(true))
+  )
+const doWipe = () =>
+  doWipe1()
+    .then(() => doWipe2())
+    .then(() => {
+      if (isHeadless()) {
+        // we did process.stdout.write above, so clear a newline
+        console.log('.'['random'])
+      }
+    })
 
-const doWipeWithConfirmation = async ({ tab, block, nextBlock }: EvaluatorArgs) => {
+const doWipeWithConfirmation = async ({
+  tab,
+  block,
+  nextBlock
+}: EvaluatorArgs) => {
   //
   // first, hide the sidecar
   //
@@ -134,28 +158,36 @@ const doWipeWithConfirmation = async ({ tab, block, nextBlock }: EvaluatorArgs) 
   //
   // then ask the user to confirm the dangerous operation
   //
-  return cli.prompt('DANGER!', block as HTMLElement, nextBlock, tab, {
-    placeholder: 'This operation will remove all entities. Enter "yes" to confirm.',
-    dangerous: true
-  }, options => {
-    if (options.field !== 'yes') {
-      //
-      // the user didn't type 'yes', get out of here!
-      //
-      return Promise.reject(new Error('Operation cancelled'))
-    } else {
-    //
-    // here is the core logic, initiate the wipe, then return to the home context with a message
-    //
-      return doWipe()
-        .then(() => 'Your OpenWhisk assets have been successfully removed')
-        .catch(err => {
-          console.error(`wipe::oops ${err}`)
-          console.error(err)
-          throw err
-        })
+  return cli.prompt(
+    'DANGER!',
+    block as HTMLElement,
+    nextBlock,
+    tab,
+    {
+      placeholder:
+        'This operation will remove all entities. Enter "yes" to confirm.',
+      dangerous: true
+    },
+    options => {
+      if (options.field !== 'yes') {
+        //
+        // the user didn't type 'yes', get out of here!
+        //
+        return Promise.reject(new Error('Operation cancelled'))
+      } else {
+        //
+        // here is the core logic, initiate the wipe, then return to the home context with a message
+        //
+        return doWipe()
+          .then(() => 'Your OpenWhisk assets have been successfully removed')
+          .catch(err => {
+            console.error(`wipe::oops ${err}`)
+            console.error(err)
+            throw err
+          })
+      }
     }
-  })
+  )
 }
 
 /**
@@ -163,7 +195,7 @@ const doWipeWithConfirmation = async ({ tab, block, nextBlock }: EvaluatorArgs) 
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/wsk/wipe',
-    doWipeWithConfirmation,
-    { docs: 'Remove all of your OpenWhisk assets from the current namespace' })
+  commandTree.listen('/wsk/wipe', doWipeWithConfirmation, {
+    docs: 'Remove all of your OpenWhisk assets from the current namespace'
+  })
 }

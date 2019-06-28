@@ -21,7 +21,13 @@ import { RowDiff, Row } from '../models/table'
 import { formatOneRowResult } from '../views/table'
 const debug = Debug('webapp/views/diff')
 
-export const applyDiffTable = (diff: RowDiff, tab: Tab, tableDom: HTMLElement, rows: HTMLElement[], prepareRows: Row[]) => {
+export const applyDiffTable = (
+  diff: RowDiff,
+  tab: Tab,
+  tableDom: HTMLElement,
+  rows: HTMLElement[],
+  prepareRows: Row[]
+) => {
   if (diff.rowUpdate && diff.rowUpdate.length > 0) {
     debug('update rows', diff.rowUpdate)
     diff.rowUpdate.map(update => {
@@ -36,7 +42,8 @@ export const applyDiffTable = (diff: RowDiff, tab: Tab, tableDom: HTMLElement, r
 
   if (diff.rowDeletion && diff.rowDeletion.length > 0) {
     debug('delete rows', diff.rowDeletion)
-    diff.rowDeletion.filter(_ => _.model.name !== 'NAME')
+    diff.rowDeletion
+      .filter(_ => _.model.name !== 'NAME')
       .map(rowDeletion => {
         // apply diff to the model
         rowDeletion.model.attributes.forEach(attr => {
@@ -48,12 +55,16 @@ export const applyDiffTable = (diff: RowDiff, tab: Tab, tableDom: HTMLElement, r
         prepareRows[rowDeletion.deleteIndex] = rowDeletion.model
 
         // apply diff to the view
-        const status = rows[rowDeletion.deleteIndex].querySelector('.cell-inner[data-key="STATUS"]') as HTMLElement
+        const status = rows[rowDeletion.deleteIndex].querySelector(
+          '.cell-inner[data-key="STATUS"]'
+        ) as HTMLElement
         if (status) {
           status.className = 'cell-inner red-background'
           status.innerText = 'Offline'
         }
-        const badge = rows[rowDeletion.deleteIndex].querySelector('.badge-width') as HTMLElement
+        const badge = rows[rowDeletion.deleteIndex].querySelector(
+          '.badge-width'
+        ) as HTMLElement
         if (badge) badge.classList.remove('repeating-pulse')
       })
   }

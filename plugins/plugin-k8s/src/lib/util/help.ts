@@ -24,7 +24,8 @@ const debug = require('debug')('k8s/util/help')
  * is a single sentence, this is less necessary.
  *
  */
-const removeSolitaryAndTrailingPeriod = (str: string) => str.replace(/^\s*([^.]+)[.]\s*$/, '$1').trim()
+const removeSolitaryAndTrailingPeriod = (str: string) =>
+  str.replace(/^\s*([^.]+)[.]\s*$/, '$1').trim()
 
 /**
  * Pretty-print the kubectl help output
@@ -33,7 +34,12 @@ const removeSolitaryAndTrailingPeriod = (str: string) => str.replace(/^\s*([^.]+
  * @param verb e.g. list versus get
  *
  */
-export const renderHelp = (out: string, command: string, verb: string, exitCode: number) => {
+export const renderHelp = (
+  out: string,
+  command: string,
+  verb: string,
+  exitCode: number
+) => {
   debug('renderHelp')
 
   // kube and helm help often have a `Use "this command" to do that operation`
@@ -46,28 +52,36 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
   const header = rawSections[0] // the first section is the top-level doc string
 
   // form the detailedExample model from the use part we stripped out
-  const detailedExampleFromUsePart = usePart && usePart.filter(x => x).map(line => {
-    const [ , command, docs ] = line.split(/^Use "([^"]+)"\s+(.*)\s*$/)
-    return { command, docs }
-  })
+  const detailedExampleFromUsePart =
+    usePart &&
+    usePart
+      .filter(x => x)
+      .map(line => {
+        const [, command, docs] = line.split(/^Use "([^"]+)"\s+(.*)\s*$/)
+        return { command, docs }
+      })
 
   // for the remaining sections, form a [{ title, content }] model
-  const _allSections: Section[] = rawSections.slice(1).reduce((S, _, idx, sections) => {
-    if (idx % 2 === 0) {
-      S.push({
-        title: sections[idx],
-        content: sections[idx + 1].replace(/^\n/, '')
-      })
-    }
+  const _allSections: Section[] = rawSections
+    .slice(1)
+    .reduce((S, _, idx, sections) => {
+      if (idx % 2 === 0) {
+        S.push({
+          title: sections[idx],
+          content: sections[idx + 1].replace(/^\n/, '')
+        })
+      }
 
-    return S
-  }, [])
+      return S
+    }, [])
 
   interface Section {
     title: string
     content: string
   }
-  const allSections: Section[] = [_allSections[0]].concat(_allSections.slice(1).sort((a, b) => -a.title.localeCompare(b.title)))
+  const allSections: Section[] = [_allSections[0]].concat(
+    _allSections.slice(1).sort((a, b) => -a.title.localeCompare(b.title))
+  )
 
   // sometimes, the first section is extra intro docs; sometimes it
   // is a legitimate command/usage section
@@ -84,40 +98,39 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
     // .slice(firstSectionIsCommandLike ? 0 : 1)
     .filter(({ title }) => title !== 'Usage:' && title !== 'Examples:')
 
-  const sections = remainingSections
-    .map(({ title, content }) => {
-      return {
-        title,
-        nRowsInViewport: title.match(/Available Commands/i) ? 8 : undefined,
-        rows: content
-          .split(/[\n\r]/)
-          .filter(x => x)
-          .map(line => line
+  const sections = remainingSections.map(({ title, content }) => {
+    return {
+      title,
+      nRowsInViewport: title.match(/Available Commands/i) ? 8 : undefined,
+      rows: content
+        .split(/[\n\r]/)
+        .filter(x => x)
+        .map(line =>
+          line
             .split(/(\t|(\s\s)+\s?)|(?=:\s)/)
-            .filter(x => x && !/(\t|\s\s)/.test(x)))
-          .map(([ thisCommand, docs ]) => {
-            if (thisCommand) {
-              return {
-                command: thisCommand
-                  .replace(/^\s*-\s+/, '')
-                  .replace(/:\s*$/, ''),
-                docs: docs && docs.replace(/^\s*:\s*/, ''),
-                commandPrefix: /Commands/i.test(title) && command,
-                noclick: !title.match(/Common actions/i) &&
-                  !title.match(/Commands/i)
-              }
+            .filter(x => x && !/(\t|\s\s)/.test(x))
+        )
+        .map(([thisCommand, docs]) => {
+          if (thisCommand) {
+            return {
+              command: thisCommand.replace(/^\s*-\s+/, '').replace(/:\s*$/, ''),
+              docs: docs && docs.replace(/^\s*:\s*/, ''),
+              commandPrefix: /Commands/i.test(title) && command,
+              noclick:
+                !title.match(/Common actions/i) && !title.match(/Commands/i)
             }
-          })
-          .filter(x => x)
-      }
-    })
+          }
+        })
+        .filter(x => x)
+    }
+  })
 
-  const detailedExample = (detailedExampleFromUsePart || [])
-    .concat((examplesSection ? examplesSection.content : '')
-      .split(/^\s*(?:#\s+)/mg)
+  const detailedExample = (detailedExampleFromUsePart || []).concat(
+    (examplesSection ? examplesSection.content : '')
+      .split(/^\s*(?:#\s+)/gm)
       .map(x => x.trim())
       .filter(x => x)
-      .map((group) => {
+      .map(group => {
         //
         // Explanation: compare `kubectl completion -h` to `kubectl get -h`
         // The former Examples section has a structure of (Summary, MultiLineDetail)
@@ -167,7 +180,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
         return lines
       }, [])
       .filter(x => x)
-    )
+  )
 
   return new UsageError({
     exitCode,
@@ -180,7 +193,10 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
       intro,
       sections,
       detailedExample,
-      example: usageSection && usageSection[0] && usageSection[0].content.replace(/\s+$/, '')
+      example:
+        usageSection &&
+        usageSection[0] &&
+        usageSection[0].content.replace(/\s+$/, '')
     }
   })
 }

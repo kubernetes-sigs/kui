@@ -17,11 +17,15 @@
 const fs = require('fs')
 const path = require('path')
 
-const isWatching = !!process.argv.find(_ => /--watch/.test(_) || /webpack-dev-server/.test(_))
+const isWatching = !!process.argv.find(
+  _ => /--watch/.test(_) || /webpack-dev-server/.test(_)
+)
 const webCompress = process.env.WEB_COMPRESS
 const noCompression = webCompress === 'none' || isWatching
 const useGzip = webCompress === 'gzip'
-const CompressionPlugin = !noCompression && require(useGzip ? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
+const CompressionPlugin =
+  !noCompression &&
+  require(useGzip ? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
 
 console.log('watching?', isWatching)
 console.log('explicit compression option?', webCompress || '<not set>')
@@ -38,18 +42,29 @@ if (isMonorepo) {
 // const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
-const stageDir = process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd()
+const stageDir =
+  process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd()
 console.log('stageDir', stageDir)
 
 /** point webpack to the output directory */
-const buildDir = process.env.KUI_BUILDDIR || (process.env.KUI_MONO_HOME && path.join(process.env.KUI_MONO_HOME, 'clients/default/dist/webpack')) || path.join(stageDir, 'dist/webpack')
+const buildDir =
+  process.env.KUI_BUILDDIR ||
+  (process.env.KUI_MONO_HOME &&
+    path.join(process.env.KUI_MONO_HOME, 'clients/default/dist/webpack')) ||
+  path.join(stageDir, 'dist/webpack')
 console.log('buildDir', buildDir)
 
-const builderHome = process.env.KUI_BUILDER_HOME || process.env.KUI_MONO_HOME ? path.join(process.env.KUI_MONO_HOME, 'packages/kui-builder') : path.join(stageDir, 'node_modules/@kui-shell/builder')
+const builderHome =
+  process.env.KUI_BUILDER_HOME || process.env.KUI_MONO_HOME
+    ? path.join(process.env.KUI_MONO_HOME, 'packages/kui-builder')
+    : path.join(stageDir, 'node_modules/@kui-shell/builder')
 console.log('builderHome', builderHome)
 
 if (!process.env.CLIENT_HOME && process.env.KUI_MONO_HOME) {
-  process.env.CLIENT_HOME = path.join(process.env.KUI_MONO_HOME, 'clients/default')
+  process.env.CLIENT_HOME = path.join(
+    process.env.KUI_MONO_HOME,
+    'clients/default'
+  )
 } else {
   process.env.CLIENT_HOME = stageDir
 }
@@ -63,22 +78,27 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * an example of this.
  *
  */
-const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/webpack')
+const main = path.join(
+  stageDir,
+  'node_modules/@kui-shell/core/webapp/bootstrap/webpack'
+)
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
-const pluginEntries = fs.readdirSync(pluginBase).map(dir => {
-  try {
-    const pjson = path.join(pluginBase, dir, 'package.json')
-    const { kui } = require(pjson)
-    return kui && kui.webpack && kui.webpack.entry
-  } catch (err) {
-  }
-}).filter(x => x)
+const pluginEntries = fs
+  .readdirSync(pluginBase)
+  .map(dir => {
+    try {
+      const pjson = path.join(pluginBase, dir, 'package.json')
+      const { kui } = require(pjson)
+      return kui && kui.webpack && kui.webpack.entry
+    } catch (err) {}
+  })
+  .filter(x => x)
 const entry = Object.assign({ main }, ...pluginEntries)
 console.log('entry', entry)
 
-const plugins = [ ]
+const plugins = []
 
 // any compression plugins?
 if (CompressionPlugin) {
@@ -159,7 +179,8 @@ module.exports = {
     'net',
     'webworker-threads', // wskflow
     'xml2js', // used by ./app/plugins/modules/composer/@demos/combinators/http.js
-    'redis', 'redis-commands', // openwhisk-composer
+    'redis',
+    'redis-commands', // openwhisk-composer
     'nyc',
     'electron'
   ],
@@ -170,7 +191,13 @@ module.exports = {
     overlay: { errors: true },
     watchOptions: {
       poll: 1000,
-      ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']
+      ignored: [
+        '**/*.d.ts',
+        'node_modules',
+        '**/packages/**/src/*',
+        '**/plugins/**/src/*',
+        '**/clients/default/**'
+      ]
     },
     contentBase: buildDir,
     port: process.env.KUI_PORT || 9080
@@ -190,10 +217,22 @@ module.exports = {
       //
       // the following elide terser from modules/plugin
       { test: /\/modules\/field-installed-plugins\//, use: 'ignore-loader' },
-      { test: /\/modules\/field-installed-plugins\/node_modules\/buffer-from/, use: 'ignore-loader' },
-      { test: /\/modules\/field-installed-plugins\/node_modules\/commander/, use: 'ignore-loader' },
-      { test: /\/modules\/field-installed-plugins\/node_modules\/source-map/, use: 'ignore-loader' },
-      { test: /\/modules\/field-installed-plugins\/node_modules\/terser/, use: 'ignore-loader' },
+      {
+        test: /\/modules\/field-installed-plugins\/node_modules\/buffer-from/,
+        use: 'ignore-loader'
+      },
+      {
+        test: /\/modules\/field-installed-plugins\/node_modules\/commander/,
+        use: 'ignore-loader'
+      },
+      {
+        test: /\/modules\/field-installed-plugins\/node_modules\/source-map/,
+        use: 'ignore-loader'
+      },
+      {
+        test: /\/modules\/field-installed-plugins\/node_modules\/terser/,
+        use: 'ignore-loader'
+      },
       { test: /\/terser\/tools/, use: 'ignore-loader' },
       // end of modules/plugin rules
       //
@@ -201,8 +240,14 @@ module.exports = {
       // otherwise the splitter (seeing the static imports) won't be as effective
       // { test: /app\/content\/js\/static-import.js$/, use: 'raw-loader' },
       //
-      { test: /\/modules\/editor\/node_modules\/monaco-editor\/min/, use: 'raw-loader' },
-      { test: /\/modules\/editor\/plugin\/lib\/cmds\/edit-amd\.js/, use: 'raw-loader' },
+      {
+        test: /\/modules\/editor\/node_modules\/monaco-editor\/min/,
+        use: 'raw-loader'
+      },
+      {
+        test: /\/modules\/editor\/plugin\/lib\/cmds\/edit-amd\.js/,
+        use: 'raw-loader'
+      },
       { test: /beautify-html\.js/, use: 'ignore-loader' },
       { test: /package-lock\.json/, use: 'ignore-loader' },
       { test: /jquery\.map/, use: 'ignore-loader' },
@@ -241,7 +286,7 @@ module.exports = {
       { test: /\.jpg$/, use: 'file-loader' },
       { test: /\.png$/, use: 'file-loader' },
       { test: /\.svg$/, use: 'svg-inline-loader' },
-      { test: /\.css$/, use: [ 'to-string-loader', 'css-loader' ] },
+      { test: /\.css$/, use: ['to-string-loader', 'css-loader'] },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },

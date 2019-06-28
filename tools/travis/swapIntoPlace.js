@@ -7,12 +7,14 @@ const needle = require('needle')
 const createBucket = (cos, Bucket) => {
   console.log(`creating bucket ${Bucket}`)
 
-  return cos.createBucket({
-    Bucket,
-    CreateBucketConfiguration: {
-      LocationConstraint: 'us-standard'
-    }
-  }).promise()
+  return cos
+    .createBucket({
+      Bucket,
+      CreateBucketConfiguration: {
+        LocationConstraint: 'us-standard'
+      }
+    })
+    .promise()
     .catch(err => {
       if (err.code === 'BucketAlreadyExists') {
         console.log(`bucket already exists: ${Bucket}`)
@@ -24,7 +26,8 @@ const createBucket = (cos, Bucket) => {
 }
 
 /** we decided not to do a swap */
-const main = ({ secrets, value }) => { // eslint-disable-line
+const main = ({ secrets, value }) => {
+  // eslint-disable-line
   // WARNING: this has to match the BRANCH= part in .travis.yml
   const TRAVIS_JOB_NUMBER = value.number
   const Bucket = `kui-dev.${TRAVIS_JOB_NUMBER}`
@@ -36,9 +39,12 @@ const main = ({ secrets, value }) => { // eslint-disable-line
   return needle('get', secrets.endpoints, { json: true })
     .then(endpoints => endpoints.body)
     .then(endpoints => ({
-      endpoint: endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
+      endpoint:
+        endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
 
-      ibmAuthEndpoint: `https://${endpoints['identity-endpoints']['iam-token']}/oidc/token`,
+      ibmAuthEndpoint: `https://${
+        endpoints['identity-endpoints']['iam-token']
+      }/oidc/token`,
       apiKeyId: secrets.apikey,
       serviceInstanceId: secrets.resource_instance_id
 
@@ -62,15 +68,27 @@ const main = ({ secrets, value }) => { // eslint-disable-line
 
       await createBucket(cos, destBucket)
 
-      return cos.listObjects({ Bucket }).promise()
-        .then(_ => { console.log('listObjects', _); return _ })
-        .then(({ Contents }) => Promise.all(Contents.map(({ Key }) => {
-          return cos.copyObject({ Bucket: destBucket,
-            Key,
-            CopySource: `${Bucket}/${Key}`,
-            ACL: 'public-read'
-          }).promise()
-        })))
+      return cos
+        .listObjects({ Bucket })
+        .promise()
+        .then(_ => {
+          console.log('listObjects', _)
+          return _
+        })
+        .then(({ Contents }) =>
+          Promise.all(
+            Contents.map(({ Key }) => {
+              return cos
+                .copyObject({
+                  Bucket: destBucket,
+                  Key,
+                  CopySource: `${Bucket}/${Key}`,
+                  ACL: 'public-read'
+                })
+                .promise()
+            })
+          )
+        )
 
         .then(() => cos.listObjects({ Bucket: destBucket }).promise())
     })

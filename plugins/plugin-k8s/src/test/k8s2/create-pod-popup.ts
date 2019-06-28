@@ -16,7 +16,11 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { selectors } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import {
+  waitForGreen,
+  waitForRed,
+  createNS
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
 const ns2: string = createNS()
@@ -24,7 +28,10 @@ const ns2: string = createNS()
 const kubectl = 'kubectl'
 
 /** wait for a deletion to complete */
-const waitForDelete = function (this: common.ISuite, { name }: { name: string }) {
+const waitForDelete = function(
+  this: common.ISuite,
+  { name }: { name: string }
+) {
   it(`should wait for deletion of resource named ${name}`, async () => {
     try {
       await waitForRed(this.app, selectors.BY_NAME(name))
@@ -35,9 +42,14 @@ const waitForDelete = function (this: common.ISuite, { name }: { name: string })
 }
 
 /** verify that the monaco editor component contains the given substring */
-const verifyTextExists = async function (this: common.ISuite, expectedSubstring: string) {
+const verifyTextExists = async function(
+  this: common.ISuite,
+  expectedSubstring: string
+) {
   await this.app.client.waitUntil(async () => {
-    const actualText = await this.app.client.getText(`${selectors.SIDECAR} .monaco-editor .view-lines`)
+    const actualText = await this.app.client.getText(
+      `${selectors.SIDECAR} .monaco-editor .view-lines`
+    )
     return actualText.indexOf(expectedSubstring) >= 0
   })
 }
@@ -49,14 +61,16 @@ interface CreateSpec {
   ns?: string
 }
 
-const waitForCreate = function (this: common.ISuite, spec: CreateSpec) {
+const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
   const { name, kind, ns } = spec
 
   it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {
     const textExists = verifyTextExists.bind(this)
     const waitForIcon = async () => {
       await this.app.client.waitUntil(async () => {
-        const iconText = await this.app.client.getText(`${selectors.SIDECAR} .sidecar-header-icon`)
+        const iconText = await this.app.client.getText(
+          `${selectors.SIDECAR} .sidecar-header-icon`
+        )
         return new RegExp(kind, 'i').test(iconText)
       })
     }
@@ -82,7 +96,10 @@ const waitForCreate = function (this: common.ISuite, spec: CreateSpec) {
       /** see NOTE just below; we use the STATUS mode as the "clear the editor" intermission */
       const intermission = async () => {
         await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
-        await waitForGreen(this.app, `${selectors.SIDECAR} ${selectors.BY_NAME(name)}`)
+        await waitForGreen(
+          this.app,
+          `${selectors.SIDECAR} ${selectors.BY_NAME(name)}`
+        )
       }
 
       // first wait for the table entry to turn green
@@ -118,56 +135,82 @@ const pod = 'nginx'
 //
 // from here on are the tests...
 //
-describe(`popup create namespace ${ns1}`, function (this: common.ISuite) {
+describe(`popup create namespace ${ns1}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'create', 'ns', ns1] }))
   after(common.after(this))
 
   waitForCreate.bind(this)({ name: ns1, kind: 'Namespace' })
 })
 
-describe(`popup create pod in ${ns1}`, function (this: common.ISuite) {
-  before(common.before(this, { popup: [kubectl, 'create', '-f', 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod', '-n', ns1] }))
+describe(`popup create pod in ${ns1}`, function(this: common.ISuite) {
+  before(
+    common.before(this, {
+      popup: [
+        kubectl,
+        'create',
+        '-f',
+        'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
+        '-n',
+        ns1
+      ]
+    })
+  )
   after(common.after(this))
 
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1 })
 })
 
-describe(`popup create namespace ${ns2}`, function (this: common.ISuite) {
+describe(`popup create namespace ${ns2}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'create', 'ns', ns2] }))
   after(common.after(this))
 
   waitForCreate.bind(this)({ name: ns2, kind: 'Namespace' })
 })
 
-describe(`popup create pod in ${ns2}`, function (this: common.ISuite) {
-  before(common.before(this, { popup: [kubectl, 'create', '-f', 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod', '-n', ns2] }))
+describe(`popup create pod in ${ns2}`, function(this: common.ISuite) {
+  before(
+    common.before(this, {
+      popup: [
+        kubectl,
+        'create',
+        '-f',
+        'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
+        '-n',
+        ns2
+      ]
+    })
+  )
   after(common.after(this))
 
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns2 })
 })
 
-describe('popup delete pod', function (this: common.ISuite) {
-  before(common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns1] }))
+describe('popup delete pod', function(this: common.ISuite) {
+  before(
+    common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns1] })
+  )
   after(common.after(this))
 
   waitForDelete.bind(this)({ name: pod })
 })
 
-describe(`popup delete pod in ${ns2}`, function (this: common.ISuite) {
-  before(common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns2] }))
+describe(`popup delete pod in ${ns2}`, function(this: common.ISuite) {
+  before(
+    common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns2] })
+  )
   after(common.after(this))
 
   waitForDelete.bind(this)({ name: pod })
 })
 
-describe(`popup delete namespace ${ns1}`, function (this: common.ISuite) {
+describe(`popup delete namespace ${ns1}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'ns', ns1] }))
   after(common.after(this))
 
   waitForDelete.bind(this)({ name: ns1 })
 })
 
-describe(`popup delete namespace ${ns2}`, function (this: common.ISuite) {
+describe(`popup delete namespace ${ns2}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'ns', ns2] }))
   after(common.after(this))
 

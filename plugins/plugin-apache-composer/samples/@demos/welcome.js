@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-let main = args => ({ html: `<html><body>welcome ${args.name}!</body></html>` })
+let main = args => ({
+  html: `<html><body>welcome ${args.name}!</body></html>`
+})

@@ -33,12 +33,17 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/sleep', ({ argvNoOptions }) => new Promise((resolve) => {
-    const nSeconds = parseInt(argvNoOptions[1], 10)
-    const nMillis = nSeconds * 1000
+  commandTree.listen(
+    '/sleep',
+    ({ argvNoOptions }) =>
+      new Promise(resolve => {
+        const nSeconds = parseInt(argvNoOptions[1], 10)
+        const nMillis = nSeconds * 1000
 
-    // resolve with an empty string to defeat the "ok" that the repl
-    // would add if we resolved with true
-    setTimeout(() => resolve(''), nMillis)
-  }), { usage, noAuthOk: true, inBrowserOk: true })
+        // resolve with an empty string to defeat the "ok" that the repl
+        // would add if we resolved with true
+        setTimeout(() => resolve(''), nMillis)
+      }),
+    { usage, noAuthOk: true, inBrowserOk: true }
+  )
 }

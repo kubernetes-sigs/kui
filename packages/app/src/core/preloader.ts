@@ -30,36 +30,48 @@ debug('loading')
 export default async (prescan: PrescanModel, options) => {
   debug('init', prescan.preloads)
 
-  const jobs = Promise.all(prescan.preloads.map(async module => {
-    // extends the capabilities of Kui
-    try {
-      const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
-      const registration: CapabilityRegistration = registrationRef.registerCapability
-      if (registration) {
-        await registration()
-        debug('registered capabilities %s', module.path)
+  const jobs = Promise.all(
+    prescan.preloads.map(async module => {
+      // extends the capabilities of Kui
+      try {
+        const registrationRef = await import(
+          '@kui-shell/plugin-' + module.path.replace(/^plugin-/, '')
+        )
+        const registration: CapabilityRegistration =
+          registrationRef.registerCapability
+        if (registration) {
+          await registration()
+          debug('registered capabilities %s', module.path)
+        }
+      } catch (err) {
+        debug('error registering capabilities', module.path, err)
+        console.error(err)
       }
-    } catch (err) {
-      debug('error registering capabilities', module.path, err)
-      console.error(err)
-    }
-  })).then(() => Promise.all(prescan.preloads.map(async module => {
-    // FIXME to support field-installed plugin paths
-    try {
-      debug('preloading %s', module.path)
-      // NOTE ON @kui-shell relativization: this is important so that
-      // webpack can be isntructed to pull in the plugins into the
-      // build see the corresponding NOTE in ./plugin-assembler.ts and
-      // ./plugins.ts
-      const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
-      const registration: PreloadRegistration = registrationRef.default || registrationRef
-      await registration(commandTree.proxy(module.route), options)
-      debug('done preloading %s', module.path)
-    } catch (err) {
-      debug('error invoking preload', module.path, err)
-      console.error(err)
-    }
-  })))
+    })
+  ).then(() =>
+    Promise.all(
+      prescan.preloads.map(async module => {
+        // FIXME to support field-installed plugin paths
+        try {
+          debug('preloading %s', module.path)
+          // NOTE ON @kui-shell relativization: this is important so that
+          // webpack can be isntructed to pull in the plugins into the
+          // build see the corresponding NOTE in ./plugin-assembler.ts and
+          // ./plugins.ts
+          const registrationRef = await import(
+            '@kui-shell/plugin-' + module.path.replace(/^plugin-/, '')
+          )
+          const registration: PreloadRegistration =
+            registrationRef.default || registrationRef
+          await registration(commandTree.proxy(module.route), options)
+          debug('done preloading %s', module.path)
+        } catch (err) {
+          debug('error invoking preload', module.path, err)
+          console.error(err)
+        }
+      })
+    )
+  )
 
   try {
     await jobs

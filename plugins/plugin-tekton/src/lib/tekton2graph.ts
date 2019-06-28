@@ -23,7 +23,16 @@ import ActivationLike from '@kui-shell/plugin-wskflow/lib/activation'
 import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import success from './success'
-import { PipelineRun, Pipeline, isPipeline, Task, TaskName, TaskRef, Step, Port } from '../model/resource'
+import {
+  PipelineRun,
+  Pipeline,
+  isPipeline,
+  Task,
+  TaskName,
+  TaskRef,
+  Step,
+  Port
+} from '../model/resource'
 const debug = Debug('plugins/tekton/lib/tekton2graph')
 
 interface Node extends BaseNode {
@@ -37,7 +46,9 @@ interface Graph extends Node {
   runs: ActivationLike[]
 }
 
-interface SymbolTable<N> { [key: string]: N }
+interface SymbolTable<N> {
+  [key: string]: N
+}
 
 const defaultHeight = 13
 const defaultCharWidth = 3.25
@@ -46,7 +57,24 @@ const defaultCharWidth = 3.25
  * @return a blank IGraph instance with optional "children" subgraphs
  *
  */
-const makeSubGraph = (label = 'root', { visited, children, tooltip, tooltipColor, type, onclick }: { visited?: number[]; children: Node[]; tooltip?: string; tooltipColor?: string; type?: string; onclick?: string } = { children: [] }): Node => {
+const makeSubGraph = (
+  label = 'root',
+  {
+    visited,
+    children,
+    tooltip,
+    tooltipColor,
+    type,
+    onclick
+  }: {
+    visited?: number[]
+    children: Node[]
+    tooltip?: string
+    tooltipColor?: string
+    type?: string
+    onclick?: string
+  } = { children: [] }
+): Node => {
   return {
     id: label,
     label,
@@ -63,7 +91,8 @@ const makeSubGraph = (label = 'root', { visited, children, tooltip, tooltipColor
 }
 
 /** graph node id for a given Step located in a given Task */
-const stepId = (taskRef: TaskRef, step: Step): string => `__step__${taskRef.name}__${step.name}`
+const stepId = (taskRef: TaskRef, step: Step): string =>
+  `__step__${taskRef.name}__${step.name}`
 
 /** find the pipeline in a given set of resource definitions */
 const getPipeline = (jsons: KubeResource[]): Pipeline => {
@@ -102,7 +131,12 @@ const getPipeline = (jsons: KubeResource[]): Pipeline => {
  * Add an edge between parent and child nodes
  *
  */
-function addEdge (graph: Node, parent: Node, child: Node, { singletonSource, singletonTarget, hasRuns }: EdgeOptions) {
+function addEdge(
+  graph: Node,
+  parent: Node,
+  child: Node,
+  { singletonSource, singletonTarget, hasRuns }: EdgeOptions
+) {
   debug('addEdge', parent.id, child.id)
 
   if (!parent.ports) {
@@ -112,12 +146,16 @@ function addEdge (graph: Node, parent: Node, child: Node, { singletonSource, sin
     child.ports = []
   }
 
-  const targetPort = `${child.id}-` + (singletonTarget ? 'pTargetSingleton' : `p${child.ports.length}`)
+  const targetPort =
+    `${child.id}-` +
+    (singletonTarget ? 'pTargetSingleton' : `p${child.ports.length}`)
   if (!child.ports.find(_ => _.id === targetPort)) {
     child.ports.push({ id: targetPort })
   }
 
-  const sourcePort = `${parent.id}-` + (singletonSource ? 'pSourceSingleton' : `p${parent.ports.length}`)
+  const sourcePort =
+    `${parent.id}-` +
+    (singletonSource ? 'pSourceSingleton' : `p${parent.ports.length}`)
   if (!parent.ports.find(_ => _.id === sourcePort)) {
     parent.ports.push({ id: sourcePort })
   }
@@ -140,7 +178,11 @@ function addEdge (graph: Node, parent: Node, child: Node, { singletonSource, sin
  * is compatible with the ELK graph layout toolkit.
  *
  */
-export default async function (jsons: KubeResource[], filepath?: string, run?: PipelineRun): Promise<Graph> {
+export default async function(
+  jsons: KubeResource[],
+  filepath?: string,
+  run?: PipelineRun
+): Promise<Graph> {
   debug('jsons', jsons)
   const pipeline = getPipeline(jsons)
   debug('pipeline', pipeline)
@@ -154,73 +196,90 @@ export default async function (jsons: KubeResource[], filepath?: string, run?: P
     }, {})
 
   // map from Pipeline.Task.name to Task
-  const taskRefName2Task: SymbolTable<Task> = pipeline.spec.tasks
-    .reduce((symtab: SymbolTable<Task>, taskRef: TaskRef) => {
+  const taskRefName2Task: SymbolTable<Task> = pipeline.spec.tasks.reduce(
+    (symtab: SymbolTable<Task>, taskRef: TaskRef) => {
       symtab[taskRef.name] = taskName2Task[taskRef.taskRef.name]
       return symtab
-    }, {})
+    },
+    {}
+  )
 
   // map from Pipeline.Task.name to Pipeline.Task
-  const taskRefName2TaskRef: SymbolTable<TaskRef> = pipeline.spec.tasks
-    .reduce((symtab: SymbolTable<TaskRef>, taskRef: TaskRef) => {
+  const taskRefName2TaskRef: SymbolTable<TaskRef> = pipeline.spec.tasks.reduce(
+    (symtab: SymbolTable<TaskRef>, taskRef: TaskRef) => {
       symtab[taskRef.name] = taskRef
       return symtab
-    }, {})
+    },
+    {}
+  )
 
   // do we have TaskRun information? if so, construct a map from
   // TaskName to an index into the taskRuns array
   const runs = run && run.status.taskRuns
-  const startVisit: ActivationLike[] = (run && [{
-    start: new Date(run.status.startTime).getTime(),
-    duration: 0,
-    response: {
-      success: true
-    }
-  }]) || []
-  const endVisit: ActivationLike[] = (run && run.status.completionTime && [{
-    start: new Date(run.status.completionTime).getTime(),
-    duration: 0,
-    response: {
-      success: success(run.status.conditions)
-    }
-  }]) || []
-  const runInfo: ActivationLike[] = runs && Object.keys(runs).reduce((M, _: string) => {
-    const taskRun = runs[_]
-    const taskRefName = taskRun.pipelineTaskName
-    const task = taskRefName2Task[taskRefName]
-
-    if (task) {
-      const start = new Date(taskRun.status.startTime).getTime()
-
-      task.visitedIdx = M.length
-      M.push({
-        start,
-        duration: taskRun.status.completionTime ? new Date(taskRun.status.completionTime).getTime() - start : 0,
+  const startVisit: ActivationLike[] =
+    (run && [
+      {
+        start: new Date(run.status.startTime).getTime(),
+        duration: 0,
         response: {
-          success: success(taskRun.status.conditions)
+          success: true
         }
-      })
-
-      taskRun.status.steps.forEach(stepRun => {
-        const start = new Date(stepRun.terminated.startedAt).getTime()
-        const end = new Date(stepRun.terminated.finishedAt).getTime()
-        const success = stepRun.terminated.reason !== 'Error'
-
-        const step = task.spec.steps.find(_ => _.name === stepRun.name)
-        if (step) {
-          step.visitedIdx = M.length
-          M.push({
-            start,
-            duration: end - start,
-            response: {
-              success
-            }
-          })
+      }
+    ]) ||
+    []
+  const endVisit: ActivationLike[] =
+    (run &&
+      run.status.completionTime && [
+        {
+          start: new Date(run.status.completionTime).getTime(),
+          duration: 0,
+          response: {
+            success: success(run.status.conditions)
+          }
         }
-      })
-    }
-    return M
-  }, startVisit.concat(endVisit))
+      ]) ||
+    []
+  const runInfo: ActivationLike[] =
+    runs &&
+    Object.keys(runs).reduce((M, _: string) => {
+      const taskRun = runs[_]
+      const taskRefName = taskRun.pipelineTaskName
+      const task = taskRefName2Task[taskRefName]
+
+      if (task) {
+        const start = new Date(taskRun.status.startTime).getTime()
+
+        task.visitedIdx = M.length
+        M.push({
+          start,
+          duration: taskRun.status.completionTime
+            ? new Date(taskRun.status.completionTime).getTime() - start
+            : 0,
+          response: {
+            success: success(taskRun.status.conditions)
+          }
+        })
+
+        taskRun.status.steps.forEach(stepRun => {
+          const start = new Date(stepRun.terminated.startedAt).getTime()
+          const end = new Date(stepRun.terminated.finishedAt).getTime()
+          const success = stepRun.terminated.reason !== 'Error'
+
+          const step = task.spec.steps.find(_ => _.name === stepRun.name)
+          if (step) {
+            step.visitedIdx = M.length
+            M.push({
+              start,
+              duration: end - start,
+              response: {
+                success
+              }
+            })
+          }
+        })
+      }
+      return M
+    }, startVisit.concat(endVisit))
 
   const graph: Graph = {
     id: 'root',
@@ -265,8 +324,8 @@ export default async function (jsons: KubeResource[], filepath?: string, run?: P
     }
   }
 
-  const symbolTable: SymbolTable<Node> = pipeline.spec.tasks
-    .reduce((symtab: SymbolTable<Node>, taskRef: TaskRef) => {
+  const symbolTable: SymbolTable<Node> = pipeline.spec.tasks.reduce(
+    (symtab: SymbolTable<Node>, taskRef: TaskRef) => {
       const task: Task = taskName2Task[taskRef.taskRef.name]
       debug('TaskRef', taskRef.name, task)
 
@@ -280,7 +339,9 @@ export default async function (jsons: KubeResource[], filepath?: string, run?: P
         // includes Steps; we will make a subgraph for the steps
         //
         const resources = (task.spec.inputs && task.spec.inputs.resources) || []
-        const resourceList = `${resources.map(_ => `<span class='color-base0A'>${_.type}</span>:${_.name}`).join(', ')}`
+        const resourceList = `${resources
+          .map(_ => `<span class='color-base0A'>${_.type}</span>:${_.name}`)
+          .join(', ')}`
 
         const params = (task.spec.inputs && task.spec.inputs.params) || []
         const paramList = `(${params.map(_ => _.name).join(', ')})`
@@ -289,8 +350,11 @@ export default async function (jsons: KubeResource[], filepath?: string, run?: P
           type: 'Tekton Task',
           tooltip: `<table><tr><td><strong>Resources</strong></td><td>${resourceList}</td></tr><tr><td><strong>Params</strong></td><td>${paramList}</td></tr></table>`,
           tooltipColor: '0C',
-          onclick: `tekton get task ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(task.metadata.name)} ${filearg}`,
-          visited: task.visitedIdx !== undefined ? [task.visitedIdx] : undefined,
+          onclick: `tekton get task ${encodeComponent(
+            pipeline.metadata.name
+          )} ${encodeComponent(task.metadata.name)} ${filearg}`,
+          visited:
+            task.visitedIdx !== undefined ? [task.visitedIdx] : undefined,
           children: task.spec.steps.map(step => {
             const stepNode: Node = {
               id: stepId(taskRef, step),
@@ -300,11 +364,16 @@ export default async function (jsons: KubeResource[], filepath?: string, run?: P
               nChildren: 0,
               nParents: 0,
               deployed: false,
-              visited: step.visitedIdx !== undefined ? [step.visitedIdx] : undefined,
+              visited:
+                step.visitedIdx !== undefined ? [step.visitedIdx] : undefined,
               type: 'Tekton Step',
               tooltip: `<strong>Image</strong>: ${step.image}`,
               tooltipColor: '0E',
-              onclick: `tekton get step ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(task.metadata.name)} ${encodeComponent(step.name)} ${filearg}`
+              onclick: `tekton get step ${encodeComponent(
+                pipeline.metadata.name
+              )} ${encodeComponent(task.metadata.name)} ${encodeComponent(
+                step.name
+              )} ${filearg}`
             }
 
             symtab[stepNode.id] = stepNode
@@ -340,40 +409,64 @@ export default async function (jsons: KubeResource[], filepath?: string, run?: P
       graph.children.push(node)
 
       return symtab
-    }, {})
+    },
+    {}
+  )
 
   const lastStepOf = (node: Node): Node => {
     const taskRef = taskRefName2TaskRef[node.id]
     const task = taskRefName2Task[node.id]
 
-    return task &&
+    return (
+      task &&
       symbolTable[stepId(taskRef, task.spec.steps[task.spec.steps.length - 1])]
+    )
   }
 
   const firstStepOf = (node: Node): Node => {
     const taskRef = taskRefName2TaskRef[node.id]
     const task = taskRefName2Task[node.id]
 
-    return task &&
-      symbolTable[stepId(taskRef, task.spec.steps[0])]
+    return task && symbolTable[stepId(taskRef, task.spec.steps[0])]
   }
 
-  const _addEdge = (parent: Node, child: Node, opts: EdgeOptions = { hasRuns: runs !== undefined }) => {
+  const _addEdge = (
+    parent: Node,
+    child: Node,
+    opts: EdgeOptions = { hasRuns: runs !== undefined }
+  ) => {
     const lastStepOfParentTask = lastStepOf(parent)
     const firstStepOfChildTask = firstStepOf(child)
 
     if (lastStepOfParentTask && firstStepOfChildTask) {
-      addEdge(graph, lastStepOfParentTask, firstStepOfChildTask, { singletonSource: true, singletonTarget: true, hasRuns: runs !== undefined })
+      addEdge(graph, lastStepOfParentTask, firstStepOfChildTask, {
+        singletonSource: true,
+        singletonTarget: true,
+        hasRuns: runs !== undefined
+      })
       parent.nChildren++
       child.nParents++
     } else if (!lastStepOfParentTask && firstStepOfChildTask) {
-      addEdge(graph, parent, firstStepOfChildTask, { singletonSource: opts.singletonSource || false, singletonTarget: true, hasRuns: runs !== undefined })
+      addEdge(graph, parent, firstStepOfChildTask, {
+        singletonSource: opts.singletonSource || false,
+        singletonTarget: true,
+        hasRuns: runs !== undefined
+      })
       child.nParents++
     } else if (lastStepOfParentTask && !firstStepOfChildTask) {
-      addEdge(graph, lastStepOfParentTask, child, { singletonSource: true, singletonTarget: opts.singletonTarget || false, hasRuns: runs !== undefined })
+      addEdge(graph, lastStepOfParentTask, child, {
+        singletonSource: true,
+        singletonTarget: opts.singletonTarget || false,
+        hasRuns: runs !== undefined
+      })
       parent.nChildren++
     } else {
-      addEdge(graph, parent, child, Object.assign({}, opts, { hasRuns: runs !== undefined }))
+      addEdge(
+        graph,
+        parent,
+        child,
+        Object.assign({}, opts, { hasRuns: runs !== undefined })
+      )
     }
   }
 
@@ -421,12 +514,22 @@ export default async function (jsons: KubeResource[], filepath?: string, run?: P
   // link start node
   graph.children
     .filter(child => child.nParents === 0)
-    .forEach(child => _addEdge(start, child, { singletonSource: true, hasRuns: graph.runs !== undefined }))
+    .forEach(child =>
+      _addEdge(start, child, {
+        singletonSource: true,
+        hasRuns: graph.runs !== undefined
+      })
+    )
 
   // link end node
   graph.children
     .filter(parent => parent.nChildren === 0)
-    .forEach(parent => _addEdge(parent, end, { singletonTarget: true, hasRuns: graph.runs !== undefined }))
+    .forEach(parent =>
+      _addEdge(parent, end, {
+        singletonTarget: true,
+        hasRuns: graph.runs !== undefined
+      })
+    )
 
   // add the start and end nodes after we've done the linking
   graph.children.push(start)

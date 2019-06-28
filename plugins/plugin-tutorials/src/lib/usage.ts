@@ -24,7 +24,14 @@ const commandPrefix = entity
 
 /** projectName required attribute */
 const projectNameAttr = 'projectName'
-const importedProject = [{ name: projectNameAttr, docs: 'Name of an imported module', entity, implicitOK: [entities] }]
+const importedProject = [
+  {
+    name: projectNameAttr,
+    docs: 'Name of an imported module',
+    entity,
+    implicitOK: [entities]
+  }
+]
 
 /** example string */
 const example = (command: string) => `${entity} ${command} <${projectNameAttr}>`
@@ -54,27 +61,66 @@ export const usage = {
     title: 'Import',
     header: 'import a Composer module from GitHub',
     example: `${entity} import <url>`,
-    required: [{ name: 'url', docs: 'github.com URL for the module to import', entity, file: true }],
-    optional: [{ name: '--name', docs: 'Name for the imported module; defaults to the git repo name' },
-      { name: '--branch', alias: '-b', docs: 'Check out a branch of the given module repository' },
-      { name: '--force', alias: '-f', boolean: true, docs: 'Refresh the module if it has already been imported' }],
+    required: [
+      {
+        name: 'url',
+        docs: 'github.com URL for the module to import',
+        entity,
+        file: true
+      }
+    ],
+    optional: [
+      {
+        name: '--name',
+        docs: 'Name for the imported module; defaults to the git repo name'
+      },
+      {
+        name: '--branch',
+        alias: '-b',
+        docs: 'Check out a branch of the given module repository'
+      },
+      {
+        name: '--force',
+        alias: '-f',
+        boolean: true,
+        docs: 'Refresh the module if it has already been imported'
+      }
+    ],
     // related: ['plugin install', 'plugin list'],
     parents
   },
 
-  get: projectCommand('get', 'learn more about a module', { related: [`${entity} api`, `${entity} deps`] }),
+  get: projectCommand('get', 'learn more about a module', {
+    related: [`${entity} api`, `${entity} deps`]
+  }),
 
-  imports: projectCommand('imports', 'discover the other modules upon which this module depends', { breadcrumb: 'Module Imports' }),
-  deps: projectCommand('deps', 'discover the cloud services upon which this module depends', { breadcrumb: 'Service Dependencies' }),
+  imports: projectCommand(
+    'imports',
+    'discover the other modules upon which this module depends',
+    { breadcrumb: 'Module Imports' }
+  ),
+  deps: projectCommand(
+    'deps',
+    'discover the cloud services upon which this module depends',
+    { breadcrumb: 'Service Dependencies' }
+  ),
 
   config: {
     strict: 'config',
     command: 'config',
     title: 'Configure',
-    header: 'configure a module before deploying, such as setting up credentials',
+    header:
+      'configure a module before deploying, such as setting up credentials',
     example: example('config'),
     required: importedProject,
-    optional: [{ name: '--save', hidden: true, boolean: true, docs: 'Save an empty config' }],
+    optional: [
+      {
+        name: '--save',
+        hidden: true,
+        boolean: true,
+        docs: 'Save an empty config'
+      }
+    ],
     parents
   },
 
@@ -99,31 +145,60 @@ export const usage = {
   },
 
   // module list command
-  list: syn => projectCommand(syn, 'list the imported projects',
-    { breadcrumb: 'list',
+  list: syn =>
+    projectCommand(syn, 'list the imported projects', {
+      breadcrumb: 'list',
       noProjectRequired: true,
       optional: [
-        { name: 'moduleName', positional: true, docs: 'list the assets of a given module', entity },
+        {
+          name: 'moduleName',
+          positional: true,
+          docs: 'list the assets of a given module',
+          entity
+        },
         { name: '--limit', hidden: true } // needed for tab completion
       ],
-      related: [`${entity} set`] }),
+      related: [`${entity} set`]
+    }),
 
   // module init
-  init: projectCommand('init', 'create a new empty project', { required: [{ name: 'moduleName', docs: 'name for the new module' }],
-    related: [`${entity} set`, `${entity} list`] }),
+  init: projectCommand('init', 'create a new empty project', {
+    required: [{ name: 'moduleName', docs: 'name for the new module' }],
+    related: [`${entity} set`, `${entity} list`]
+  }),
 
   // module set, and unset
-  set: projectCommand('set', 'focus the Shell on a given module', { related: [`${entity} list`] }),
-  unset: projectCommand('unset', 'remove the current module focus', { noProjectRequired: true, related: [`${entity} list`, `${entity} set`] }),
+  set: projectCommand('set', 'focus the Shell on a given module', {
+    related: [`${entity} list`]
+  }),
+  unset: projectCommand('unset', 'remove the current module focus', {
+    noProjectRequired: true,
+    related: [`${entity} list`, `${entity} set`]
+  }),
 
-  delete: projectCommand('delete', 'delete your local copy of a given imported module', { related: [`${entity} list`] }),
+  delete: projectCommand(
+    'delete',
+    'delete your local copy of a given imported module',
+    { related: [`${entity} list`] }
+  ),
 
-  status: syn => projectCommand(syn, 'Check on the status of a module\'s deployment',
-    { optional: [{ name: '--resource', alias: '-r', docs: 'Show the status of a given resource type' }],
+  status: syn =>
+    projectCommand(syn, "Check on the status of a module's deployment", {
+      optional: [
+        {
+          name: '--resource',
+          alias: '-r',
+          docs: 'Show the status of a given resource type'
+        }
+      ],
       related: [`${entity} list`, `${entity} watch`]
     }),
 
-  watch: projectCommand('watch', 'Monitor the status of a module\'s deployment', { related: [`${entity} list`, `${entity} status`] })
+  watch: projectCommand(
+    'watch',
+    "Monitor the status of a module's deployment",
+    { related: [`${entity} list`, `${entity} status`] }
+  )
 }
 
 /** form a subtree usage model (TODO: this should be moved to a more common spot) */

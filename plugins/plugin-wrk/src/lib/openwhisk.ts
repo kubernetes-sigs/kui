@@ -24,29 +24,39 @@ import { qexec as $ } from '@kui-shell/core/core/repl'
  * Get the apiHost and auth key
  *
  */
-export const getCreds = async (options) => {
+export const getCreds = async options => {
   if (options.wskprops) {
     // read from a wskprops file
-    return new Promise((resolve, reject) => fs.readFile(expandHomeDir(options.wskprops), (err, data) => {
-      if (err) {
-        reject(err)
-      } else {
-        try {
-          const { APIHOST, AUTH } = propertiesParser.parse(data.toString())
-          resolve({ apiHost: !new URL(APIHOST).protocol ? `https://${APIHOST}` : APIHOST, auth: AUTH })
-        } catch (err) {
+    return new Promise((resolve, reject) =>
+      fs.readFile(expandHomeDir(options.wskprops), (err, data) => {
+        if (err) {
           reject(err)
+        } else {
+          try {
+            const { APIHOST, AUTH } = propertiesParser.parse(data.toString())
+            resolve({
+              apiHost: !new URL(APIHOST).protocol
+                ? `https://${APIHOST}`
+                : APIHOST,
+              auth: AUTH
+            })
+          } catch (err) {
+            reject(err)
+          }
         }
-      }
-    }))
+      })
+    )
   } else if (options.apiHost && options.auth) {
     // specified on command line
     return options
-  } else if ((options.apiHost && !options.auth) || (!options.apiHost && options.auth)) {
+  } else if (
+    (options.apiHost && !options.auth) ||
+    (!options.apiHost && options.auth)
+  ) {
     throw new Error('Please specify both --apiHost and --auth')
   } else {
     // use the global settings
-    const [ apiHost, auth ] = await Promise.all([
+    const [apiHost, auth] = await Promise.all([
       $('wsk host get'),
       $('wsk auth get')
     ])

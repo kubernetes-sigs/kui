@@ -42,22 +42,37 @@ const open = async (tab: Tab, filepath: string, hljs) => {
   const fullpath = findFile(expandHomeDir(filepath))
   const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
 
-  if (suffix === 'js' ||
-      suffix === 'ts' ||
-      suffix === 'go' ||
-      suffix === 'txt' ||
-      suffix === 'swift' ||
-      suffix === 'py' ||
-      suffix === 'json') {
+  if (
+    suffix === 'js' ||
+    suffix === 'ts' ||
+    suffix === 'go' ||
+    suffix === 'txt' ||
+    suffix === 'swift' ||
+    suffix === 'py' ||
+    suffix === 'json'
+  ) {
     // open json and javascript files in the editor
     return qexec(`edit "${filepath}"`)
   } else if (suffix === 'yaml' || suffix === 'yml') {
     // use the k8s plugin to edit yamls
     return qexec(`kedit "${filepath}"`)
-  } else if (suffix === 'png' || suffix === 'jpg' || suffix === 'jpeg' || suffix === 'tiff' ||
-             suffix === 'tif' || suffix === 'gif' || suffix === 'icns' || suffix === 'ico' ||
-             suffix === 'webp' || suffix === 'bpg' || suffix === 'svg' ||
-             suffix === 'mov' || suffix === 'mp4' || suffix === 'ogg' || suffix === 'mp3') {
+  } else if (
+    suffix === 'png' ||
+    suffix === 'jpg' ||
+    suffix === 'jpeg' ||
+    suffix === 'tiff' ||
+    suffix === 'tif' ||
+    suffix === 'gif' ||
+    suffix === 'icns' ||
+    suffix === 'ico' ||
+    suffix === 'webp' ||
+    suffix === 'bpg' ||
+    suffix === 'svg' ||
+    suffix === 'mov' ||
+    suffix === 'mp4' ||
+    suffix === 'ogg' ||
+    suffix === 'mp3'
+  ) {
     // open binary/imag fields in a separate window
     window.open(fullpath, 'target=_blank')
     return true
@@ -78,10 +93,17 @@ const open = async (tab: Tab, filepath: string, hljs) => {
 
           let data: string | Element = fileContent.toString()
           let name = basename(filepath)
-          let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
+          let packageName =
+            enclosingDirectory === '.' ? undefined : enclosingDirectory
 
           if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
-            const { title, body } = await markdownify(tab, suffix, data, fullpath, hljs)
+            const { title, body } = await markdownify(
+              tab,
+              suffix,
+              data,
+              fullpath,
+              hljs
+            )
 
             data = body
 
@@ -124,7 +146,11 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/open', ({ tab, argvNoOptions: argv }) => {
-    return open(tab, argv[argv.indexOf('open') + 1], hljs)
-  }, { usage, needsUI: true, noAuthOk: true })
+  commandTree.listen(
+    '/open',
+    ({ tab, argvNoOptions: argv }) => {
+      return open(tab, argv[argv.indexOf('open') + 1], hljs)
+    },
+    { usage, needsUI: true, noAuthOk: true }
+  )
 }

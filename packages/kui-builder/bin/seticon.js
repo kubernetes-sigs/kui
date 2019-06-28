@@ -21,17 +21,21 @@ const { exec } = require('child_process')
 
 if (process.platform === 'darwin') {
   console.log('commencing seticon')
-  exec(join(__dirname, 'seticon.sh'), { stdio: 'inherit' }, (err, stdout, stderr) => {
-    if (err) {
-      console.error('error in seticon', err.message)
-      console.error(stderr)
-      console.error(stdout)
-      process.exit(err.code)
-    } else {
-      console.log(stdout)
-      console.log('done')
+  exec(
+    join(__dirname, 'seticon.sh'),
+    { stdio: 'inherit' },
+    (err, stdout, stderr) => {
+      if (err) {
+        console.error('error in seticon', err.message)
+        console.error(stderr)
+        console.error(stdout)
+        process.exit(err.code)
+      } else {
+        console.log(stdout)
+        console.log('done')
+      }
     }
-  })
+  )
 } else {
   console.log('skipping seticon')
 }

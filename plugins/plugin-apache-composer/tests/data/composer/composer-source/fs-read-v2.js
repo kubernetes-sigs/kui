@@ -17,11 +17,11 @@
 const composer = require('openwhisk-composer')
 
 function foo() {
-    const fs = require('fs');
-    const authorMap = require('./author-map.json');
-    return composer.let({ am: authorMap }, p => {
-        return am[p.author] == undefined ? {} : am[p.author]
-    })
+  const fs = require('fs')
+  const authorMap = require('./author-map.json')
+  return composer.let({ am: authorMap }, p => {
+    return am[p.author] == undefined ? {} : am[p.author]
+  })
 }
 
 module.exports = composer.sequence(foo())

@@ -32,9 +32,14 @@ const firstRow = (N: number) => `${rows(N)} > div:first-child`
 const lastRow = (N: number) => `${rows(N)} > div:last-child`
 
 /** we have a custom vimrc, to make sure INSERT shows up */
-const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
+const vimrc = join(
+  dirname(
+    require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')
+  ),
+  'vimrc'
+)
 
-localDescribe('xterm copy paste', function (this: common.ISuite) {
+localDescribe('xterm copy paste', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -65,7 +70,7 @@ localDescribe('xterm copy paste', function (this: common.ISuite) {
       await this.app.client.execute(() => document.execCommand('paste'))
 
       await this.app.client.waitUntil(async () => {
-        const [ actualValue, expectedValue ] = await Promise.all([
+        const [actualValue, expectedValue] = await Promise.all([
           this.app.client.getValue(selectors.CURRENT_PROMPT),
           this.app.client.getText(firstRow(0))
         ])
@@ -123,7 +128,8 @@ localDescribe('xterm copy paste', function (this: common.ISuite) {
 
       await res.then(cli.expectBlank)
 
-      await cli.do(`cat ${file.name}`, this.app)
+      await cli
+        .do(`cat ${file.name}`, this.app)
         .then(cli.expectOKWithString(text))
 
       const contents = readFileSync(file.name).toString()

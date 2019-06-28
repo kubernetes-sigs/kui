@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-const { sequence: Seq, try: Try, retain: Retain } = require('openwhisk-composer')
+const {
+  sequence: Seq,
+  try: Try,
+  retain: Retain
+} = require('openwhisk-composer')
 
 /**
  *
  *
  */
-const base64ify = args => ({ text: Buffer.from(args.params.str, 'base64').toString() })
+const base64ify = args => ({
+  text: Buffer.from(args.params.str, 'base64').toString()
+})
 
 module.exports = Try(
   /* try */ Seq(Retain('validate'), base64ify),
-  /* catch */ args => ({ ok: false }))
+  /* catch */ args => ({ ok: false })
+)

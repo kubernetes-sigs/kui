@@ -23,7 +23,7 @@ import { PipelineRun, Pipeline, Task } from './resource'
  * Get the Pipeline referenced by a PipelineRun
  *
  */
-export function getPipelineFromRef (run: PipelineRun): Promise<Pipeline> {
+export function getPipelineFromRef(run: PipelineRun): Promise<Pipeline> {
   return $(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
     .catch((err: CodedError) => {
       if (err.code === 404) {
@@ -38,6 +38,6 @@ export function getPipelineFromRef (run: PipelineRun): Promise<Pipeline> {
  * Retrieve all Tasks
  *
  */
-export function getTasks (): Promise<Task[]> {
+export function getTasks(): Promise<Task[]> {
   return $('kubectl get Task') // want Task.tekton.dev, but that is much slower
 }

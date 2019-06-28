@@ -25,7 +25,14 @@ import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import createdOn from '../util/created-on'
 
 import { FinalState } from '../model/states'
-import { KubeStatus, DefaultKubeStatus, KubeMetadata, DefaultKubeMetadata, KubeResource, Resource } from '../model/resource'
+import {
+  KubeStatus,
+  DefaultKubeStatus,
+  KubeMetadata,
+  DefaultKubeMetadata,
+  KubeResource,
+  Resource
+} from '../model/resource'
 
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
@@ -34,7 +41,7 @@ const debug = Debug('k8s/controller/describe')
 
 /** conditionally add a field, if it exists */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function addField (label: string, value: any) {
+function addField(label: string, value: any) {
   if (value || value === 0) {
     if (!Array.isArray(value) || value.length > 0) {
       this[label] = value
@@ -46,7 +53,13 @@ function addField (label: string, value: any) {
  * Render a describe summary
  *
  */
-const renderDescribe = async (command: string, getCmd: string, describeCmd: string, resource: KubeResource, parsedOptions) => {
+const renderDescribe = async (
+  command: string,
+  getCmd: string,
+  describeCmd: string,
+  resource: KubeResource,
+  parsedOptions
+) => {
   debug('renderDescribe', command, resource)
 
   const { spec = {} } = resource
@@ -75,7 +88,12 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   add('Selectors', spec.selector)
   add('Type', spec.type)
   add('Status', status.phase)
-  add('Controlled By', metadata.ownerReferences && metadata.ownerReferences.length === 1 && `${metadata.ownerReferences[0].kind}/${metadata.ownerReferences[0].name}`)
+  add(
+    'Controlled By',
+    metadata.ownerReferences &&
+      metadata.ownerReferences.length === 1 &&
+      `${metadata.ownerReferences[0].kind}/${metadata.ownerReferences[0].name}`
+  )
 
   // Ingress
   add('Address', status.loadBalancer && status.loadBalancer.ingress)
@@ -90,13 +108,16 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   add('Session Affinity', spec.sessionAffinity)
 
   // deployments
-  add('Replicas', status.replicas && {
-    desired: status.replicas || 0,
-    available: status.availableReplicas || 0,
-    ready: status.readyReplicas || 0,
-    updated: status.updatedReplicas || 0,
-    unavailable: status.unavailableReplicas || 0
-  })
+  add(
+    'Replicas',
+    status.replicas && {
+      desired: status.replicas || 0,
+      available: status.availableReplicas || 0,
+      ready: status.readyReplicas || 0,
+      updated: status.updatedReplicas || 0,
+      unavailable: status.unavailableReplicas || 0
+    }
+  )
   add('StrategyType', spec.strategy && spec.strategy.type)
   add('Strategy', spec.strategy)
   // pods
@@ -106,13 +127,18 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   // Conditions: status.conditions,
   // Volumes: spec.volumes,
   add('QoS Class', status.qosClass)
-  add('Tolerations', (spec.tolerations || []).map(({ key, value, effect, tolerationSeconds }) => {
-    if (!effect) {
-      return { key, value }
-    } else {
-      return { tolerate: key, effect, for: `${tolerationSeconds}s` }
-    }
-  }))
+  add(
+    'Tolerations',
+    (spec.tolerations || []).map(
+      ({ key, value, effect, tolerationSeconds }) => {
+        if (!effect) {
+          return { key, value }
+        } else {
+          return { tolerate: key, effect, for: `${tolerationSeconds}s` }
+        }
+      }
+    )
+  )
 
   const modes: SidecarMode[] = [
     {
@@ -126,7 +152,11 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   const yaml = resource
   {
     const command = 'kubectl'
-    const resource: Resource = { kind: yaml.kind, name: yaml.metadata.name, resource: yaml }
+    const resource: Resource = {
+      kind: yaml.kind,
+      name: yaml.metadata.name,
+      resource: yaml
+    }
     modes.push(statusButton(command, resource, FinalState.NotPendingLike))
   }
   modes.push({
@@ -152,12 +182,19 @@ const renderDescribe = async (command: string, getCmd: string, describeCmd: stri
   }
 
   // some resources have a notion of duration
-  const startTime = resource && status && status.startTime && new Date(status.startTime)
-  const endTime = resource && status && status.completionTime && new Date(status.completionTime)
-  const duration = startTime && endTime && (endTime.getTime() - startTime.getTime())
+  const startTime =
+    resource && status && status.startTime && new Date(status.startTime)
+  const endTime =
+    resource &&
+    status &&
+    status.completionTime &&
+    new Date(status.completionTime)
+  const duration =
+    startTime && endTime && endTime.getTime() - startTime.getTime()
 
   // some resources have a notion of version
-  const version = resource && metadata && metadata.labels && metadata.labels.version
+  const version =
+    resource && metadata && metadata.labels && metadata.labels.version
 
   const description = {
     type: 'custom',
@@ -202,10 +239,24 @@ const describe = async ({ command, parsedOptions, execOptions }) => {
     debug('describeCmd', describeCmd)
     debug('getCmd', getCmd)
 
-    const resource: KubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
+    const resource: KubeResource = await $(
+      `${getCmd} -o json`,
+      noDelegationPlease
+    )
 
-    const response = await renderDescribe(command, getCmd, describeCmd, resource, parsedOptions)
-    if (!response || !response.content || response.content === '{}' || Object.keys(response.content).length === 0) {
+    const response = await renderDescribe(
+      command,
+      getCmd,
+      describeCmd,
+      resource,
+      parsedOptions
+    )
+    if (
+      !response ||
+      !response.content ||
+      response.content === '{}' ||
+      Object.keys(response.content).length === 0
+    ) {
       debug('the describe summary is empty, falling back to base view')
       return fallback()
     } else {

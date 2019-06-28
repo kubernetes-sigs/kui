@@ -32,54 +32,69 @@ const usage = {
 
 const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
   const { prompt } = await import('@kui-shell/core/webapp/cli')
-  return prompt('kubectl auth add', block as HTMLElement, nextBlock, tab, {
-    placeholder: 'Paste the contents of your kubeconfig: cat $KUBECONFIG',
-    onpaste: 'capture'
-  }, ({ field: kubeconfigString }) => {
-    if (kubeconfigString.length === 0) {
-      //
-      // the user paste anything, get out of here!
-      //
-      return Promise.reject(new Error('Operation cancelled'))
-    } else {
-      //
-      // here is the core logic
-      //
-      debug('got kubeconfig', kubeconfigString)
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { safeLoad: parseYAML } = require('js-yaml')
+  return prompt(
+    'kubectl auth add',
+    block as HTMLElement,
+    nextBlock,
+    tab,
+    {
+      placeholder: 'Paste the contents of your kubeconfig: cat $KUBECONFIG',
+      onpaste: 'capture'
+    },
+    ({ field: kubeconfigString }) => {
+      if (kubeconfigString.length === 0) {
+        //
+        // the user paste anything, get out of here!
+        //
+        return Promise.reject(new Error('Operation cancelled'))
+      } else {
+        //
+        // here is the core logic
+        //
+        debug('got kubeconfig', kubeconfigString)
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const { safeLoad: parseYAML } = require('js-yaml')
 
-        const kubeconfig = parseYAML(kubeconfigString)
-        debug('kubeconfig', kubeconfig)
+          const kubeconfig = parseYAML(kubeconfigString)
+          debug('kubeconfig', kubeconfig)
 
-        if (!kubeconfig.apiVersion && kubeconfig.kind !== 'Config') {
-          return Promise.reject(new Error('This does not look like a kubeconfig'))
-        } else if (!kubeconfig.clusters || kubeconfig.clusters.length === 0) {
-          return Promise.reject(new Error('Could not find a cluster config'))
-        } else {
-          const cafile = kubeconfig.clusters[0].cluster['certificate-authority']
-          if (!cafile) {
-            return Promise.reject(new Error('Could not find a certificate-authority'))
+          if (!kubeconfig.apiVersion && kubeconfig.kind !== 'Config') {
+            return Promise.reject(
+              new Error('This does not look like a kubeconfig')
+            )
+          } else if (!kubeconfig.clusters || kubeconfig.clusters.length === 0) {
+            return Promise.reject(new Error('Could not find a cluster config'))
           } else {
-            return {
-              reprompt: true,
-              placeholder: `Paste the contents of your certificate-authority: cat $(dirname $KUBECONFIG})/${cafile}`,
-              onpaste: 'capture',
-              completion: async ({ field: ca }) => {
-                debug('got ca', ca)
+            const cafile =
+              kubeconfig.clusters[0].cluster['certificate-authority']
+            if (!cafile) {
+              return Promise.reject(
+                new Error('Could not find a certificate-authority')
+              )
+            } else {
+              return {
+                reprompt: true,
+                placeholder: `Paste the contents of your certificate-authority: cat $(dirname $KUBECONFIG})/${cafile}`,
+                onpaste: 'capture',
+                completion: async ({ field: ca }) => {
+                  debug('got ca', ca)
 
-                /** matches a kube PEM certificate */
-                const certPattern = /^\s*-----BEGIN CERTIFICATE-----[^-]+-----END CERTIFICATE-----\s*$/
+                  /** matches a kube PEM certificate */
+                  const certPattern = /^\s*-----BEGIN CERTIFICATE-----[^-]+-----END CERTIFICATE-----\s*$/
 
-                if (!ca.match(certPattern)) {
-                  return Promise.reject(new Error('This does not look like a kubernetes certificate'))
-                } else {
-                  // all right! we now have the kubeconfig and the PEM
-                  setAuth(kubeconfigString, ca, cafile)
-                  return true
+                  if (!ca.match(certPattern)) {
+                    return Promise.reject(
+                      new Error(
+                        'This does not look like a kubernetes certificate'
+                      )
+                    )
+                  } else {
+                    // all right! we now have the kubeconfig and the PEM
+                    setAuth(kubeconfigString, ca, cafile)
+                    return true
 
-                  /* const repl = await import('@kui-shell/core/core/repl')
+                    /* const repl = await import('@kui-shell/core/core/repl')
                   const { PACKAGE } = await import('../../actionProxy/deploy')
                   const { deploy: deployKubectl } = await import('../../actionProxy/kubectl')
                   return deployKubectl()
@@ -92,16 +107,17 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
                       })
                     }))
                     .then(() => 'Successfully imported your kubeconfig and certificate') */
+                  }
                 }
               }
             }
           }
+        } catch (err) {
+          return Promise.reject(err)
         }
-      } catch (err) {
-        return Promise.reject(err)
       }
     }
-  })
+  )
 }
 
 /**
@@ -109,5 +125,9 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/k8s/auth/add', add, { usage: usage.add, noAuthOk: [ 'openwhisk' ], inBrowserOk: true })
+  commandTree.listen('/k8s/auth/add', add, {
+    usage: usage.add,
+    noAuthOk: ['openwhisk'],
+    inBrowserOk: true
+  })
 }

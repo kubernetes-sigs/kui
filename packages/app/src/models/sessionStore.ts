@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2019 IBM Corporation
  *
@@ -23,8 +22,9 @@ interface SessionStorage {
 }
 
 /**
-   * This shim allows clients to define a sessionStorage scheme, if they
-   * cannot provide window.sessionStorage.
-   *
-   */
-export default (): SessionStorage => window['kuiSessionStorage'] || window.sessionStorage
+ * This shim allows clients to define a sessionStorage scheme, if they
+ * cannot provide window.sessionStorage.
+ *
+ */
+export default (): SessionStorage =>
+  window['kuiSessionStorage'] || window.sessionStorage

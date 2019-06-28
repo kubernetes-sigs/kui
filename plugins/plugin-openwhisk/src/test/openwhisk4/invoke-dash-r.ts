@@ -22,49 +22,63 @@ const { cli, sidecar } = ui
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
-describe('wsk action invoke -r', function (this: common.ISuite) {
+describe('wsk action invoke -r', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should create an action', () => cli.do(`let ${actionName} = x=>x -p x 3`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .catch(common.oops(this)))
+  it('should create an action', () =>
+    cli
+      .do(`let ${actionName} = x=>x -p x 3`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName))
+      .catch(common.oops(this)))
 
-  it('should create another action', () => cli.do(`let ${actionName2} = x=>x -p x 3`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2))
-    .catch(common.oops(this)))
+  it('should create another action', () =>
+    cli
+      .do(`let ${actionName2} = x=>x -p x 3`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2))
+      .catch(common.oops(this)))
 
-  it(`should invoke ${actionName} with -r`, () => cli.do(`wsk action invoke ${actionName} -r`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.json' }))
-    .then(selector => this.app.client.getText(selector))
-    .then(ui.expectStruct({ x: 3 }))
-    .catch(common.oops(this)))
+  it(`should invoke ${actionName} with -r`, () =>
+    cli
+      .do(`wsk action invoke ${actionName} -r`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.json' }))
+      .then(selector => this.app.client.getText(selector))
+      .then(ui.expectStruct({ x: 3 }))
+      .catch(common.oops(this)))
 
-  it(`should invoke ${actionName} with --result`, () => cli.do(`wsk action invoke ${actionName} --result`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.json' }))
-    .then(selector => this.app.client.getText(selector))
-    .then(ui.expectStruct({ x: 3 }))
-    .catch(common.oops(this)))
+  it(`should invoke ${actionName} with --result`, () =>
+    cli
+      .do(`wsk action invoke ${actionName} --result`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.json' }))
+      .then(selector => this.app.client.getText(selector))
+      .then(ui.expectStruct({ x: 3 }))
+      .catch(common.oops(this)))
 
-  it(`should invoke ${actionName} with -br`, () => cli.do(`wsk action invoke ${actionName} -br`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.json' }))
-    .then(selector => this.app.client.getText(selector))
-    .then(ui.expectStruct({ x: 3 }))
-    .catch(common.oops(this)))
+  it(`should invoke ${actionName} with -br`, () =>
+    cli
+      .do(`wsk action invoke ${actionName} -br`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.json' }))
+      .then(selector => this.app.client.getText(selector))
+      .then(ui.expectStruct({ x: 3 }))
+      .catch(common.oops(this)))
 
-  it(`should invoke ${actionName} with -rb`, () => cli.do(`wsk action invoke ${actionName} -rb`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.json' }))
-    .then(selector => this.app.client.getText(selector))
-    .then(ui.expectStruct({ x: 3 }))
-    .catch(common.oops(this)))
+  it(`should invoke ${actionName} with -rb`, () =>
+    cli
+      .do(`wsk action invoke ${actionName} -rb`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.json' }))
+      .then(selector => this.app.client.getText(selector))
+      .then(ui.expectStruct({ x: 3 }))
+      .catch(common.oops(this)))
 
-  it(`should invoke ${actionName} with --blocking --result`, () => cli.do(`wsk action invoke ${actionName} --blocking --result`, this.app)
-    .then(cli.expectOKWithCustom({ selector: '.json' }))
-    .then(selector => this.app.client.getText(selector))
-    .then(ui.expectStruct({ x: 3 }))
-    .catch(common.oops(this)))
+  it(`should invoke ${actionName} with --blocking --result`, () =>
+    cli
+      .do(`wsk action invoke ${actionName} --blocking --result`, this.app)
+      .then(cli.expectOKWithCustom({ selector: '.json' }))
+      .then(selector => this.app.client.getText(selector))
+      .then(ui.expectStruct({ x: 3 }))
+      .catch(common.oops(this)))
 })

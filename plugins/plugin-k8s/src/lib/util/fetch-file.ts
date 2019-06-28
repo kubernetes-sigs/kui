@@ -31,19 +31,21 @@ export const fetchFile = (url: string): Promise<Buffer[]> => {
 
   const urls = url.split(/,/)
 
-  return Promise.all(urls.map(async url => {
-    if (url.match(/http(s)?:\/\//)) {
-      debug('fetch remote', url)
-      return needle('get', url, { follow_max: 10 }).then(_ => _.body)
-    } else {
-      debug('fetch local', url)
+  return Promise.all(
+    urls.map(async url => {
+      if (url.match(/http(s)?:\/\//)) {
+        debug('fetch remote', url)
+        return needle('get', url, { follow_max: 10 }).then(_ => _.body)
+      } else {
+        debug('fetch local', url)
 
-      // why the dynamic import? being browser friendly here
-      const { readFile } = await import('fs-extra')
+        // why the dynamic import? being browser friendly here
+        const { readFile } = await import('fs-extra')
 
-      return readFile(findFile(expandHomeDir(url)))
-    }
-  }))
+        return readFile(findFile(expandHomeDir(url)))
+      }
+    })
+  )
 }
 
 /** same as fetchFile, but returning a string rather than a Buffer */

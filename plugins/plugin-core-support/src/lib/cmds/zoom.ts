@@ -54,13 +54,15 @@ const usage = {
     command: 'set',
     strict: 'set',
     docs: 'Set the current font zoom level',
-    required: [{
-      name: 'level',
-      numeric: true,
-      docs: 'A zoom level',
-      allowed: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, -2 ],
-      defaultValue: 1
-    }]
+    required: [
+      {
+        name: 'level',
+        numeric: true,
+        docs: 'A zoom level',
+        allowed: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, -2],
+        defaultValue: 1
+      }
+    ]
   }
 }
 
@@ -76,7 +78,10 @@ const _set = newZoom => {
     main.setAttribute('data-zoom', newZoom)
     // maybe? repl.scrollIntoView()
   } else {
-    throw new UsageError({ message: 'Unsupported zoom level', usage: usage.set })
+    throw new UsageError({
+      message: 'Unsupported zoom level',
+      usage: usage.set
+    })
   }
 
   const editors = document.querySelectorAll('.monaco-editor-wrapper')
@@ -124,7 +129,11 @@ const listener = (event: KeyboardEvent): void => {
     event.preventDefault()
     reset()
     setTimeout(() => eventBus.emit('/zoom', 1), 100)
-  } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
+  } else if (
+    (char === keys.ZOOM_IN || char === keys.ZOOM_OUT) &&
+    (event.ctrlKey || event.metaKey) &&
+    !event.shiftKey
+  ) {
     // zooming
     event.preventDefault()
     const main = document.querySelector('body > .page')
@@ -164,9 +173,14 @@ export default (commandTree: CommandRegistrar) => {
   // inject our CSS
   //
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(), key: 'zoom.css' })
+    injectCSS({
+      css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
+      key: 'zoom.css'
+    })
   } else {
-    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+    const root = path.dirname(
+      require.resolve('@kui-shell/plugin-core-support/package.json')
+    )
     injectCSS(path.join(root, 'web/css/zoom.css'))
   }
 

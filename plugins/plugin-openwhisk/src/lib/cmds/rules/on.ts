@@ -33,9 +33,11 @@ const on = ({ argvNoOptions: argv, parsedOptions }) => {
 
   const trigger = argv[idx]
   const action = argv[idx + 2]
-  const rule = parsedOptions.name || `on_${trigger}_do_${action.replace(/\//g, '_')}`
+  const rule =
+    parsedOptions.name || `on_${trigger}_do_${action.replace(/\//g, '_')}`
 
-  return repl.qexec(`wsk trigger get ${trigger}`, null, null, { noRetry: true })
+  return repl
+    .qexec(`wsk trigger get ${trigger}`, null, null, { noRetry: true })
     .catch(err => {
       if (err.statusCode === 404) {
         return repl.qexec(`wsk trigger update ${trigger}`)
@@ -52,6 +54,6 @@ const on = ({ argvNoOptions: argv, parsedOptions }) => {
  * Register command handlers
  *
  */
-export default (commandTree) => {
+export default commandTree => {
   commandTree.listen(`/wsk/on`, on, { docs: 'Create an OpenWhisk rule' })
 }

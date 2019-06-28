@@ -1,804 +1,737 @@
 {
-    "apiVersion": "operators.coreos.com/v1alpha1",
-    "kind": "ClusterServiceVersion",
-    "metadata": {
-        "annotations": {
-            "alm-examples": "[{\"apiVersion\":\"couchbase.com/v1\",\"kind\":\"CouchbaseCluster\",\"metadata\":{\"name\":\"cb-example\",\"namespace\":\"default\"},\"spec\":{\"authSecret\":\"cb-example-auth\",\"baseImage\":\"registry.connect.redhat.com/couchbase/server\",\"buckets\":[{\"conflictResolution\":\"seqno\",\"enableFlush\":true,\"evictionPolicy\":\"fullEviction\",\"ioPriority\":\"high\",\"memoryQuota\":128,\"name\":\"default\",\"replicas\":1,\"type\":\"couchbase\"}],\"cluster\":{\"analyticsServiceMemoryQuota\":1024,\"autoFailoverMaxCount\":3,\"autoFailoverOnDataDiskIssues\":true,\"autoFailoverOnDataDiskIssuesTimePeriod\":120,\"autoFailoverServerGroup\":false,\"autoFailoverTimeout\":120,\"clusterName\":\"cb-example\",\"dataServiceMemoryQuota\":256,\"eventingServiceMemoryQuota\":256,\"indexServiceMemoryQuota\":256,\"indexStorageSetting\":\"memory_optimized\",\"searchServiceMemoryQuota\":256},\"servers\":[{\"name\":\"all_services\",\"services\":[\"data\",\"index\",\"query\",\"search\",\"eventing\",\"analytics\"],\"size\":3}],\"version\":\"5.5.2-1\"}}]",
-            "capabilities": "Full Lifecycle",
-            "categories": "Database, OpenShift Optional",
-            "certified": "true",
-            "containerImage": "registry.connect.redhat.com/couchbase/operator:1.1.0-1",
-            "createdAt": "2019/03/21",
-            "description": "An operator to create and manage a Couchbase Cluster",
-            "olm.operatorGroup": "global-operators",
-            "olm.operatorNamespace": "openshift-operators",
-            "olm.targetNamespaces": "",
-            "support": "Couchbase, Inc"
-        },
-        "creationTimestamp": "2019-05-28T17:38:52Z",
-        "generation": 1,
-        "labels": {
-            "olm.api.4c8c1b8b0550a6c7": "provided"
-        },
-        "name": "couchbase-operator.v1.1.0",
-        "namespace": "openshift-operators",
-        "resourceVersion": "50065129",
-        "selfLink": "/apis/operators.coreos.com/v1alpha1/namespaces/openshift-operators/clusterserviceversions/couchbase-operator.v1.1.0",
-        "uid": "75448f65-816f-11e9-bd35-0ad10d9d0886"
+  "apiVersion": "operators.coreos.com/v1alpha1",
+  "kind": "ClusterServiceVersion",
+  "metadata": {
+    "annotations": {
+      "alm-examples": "[{\"apiVersion\":\"couchbase.com/v1\",\"kind\":\"CouchbaseCluster\",\"metadata\":{\"name\":\"cb-example\",\"namespace\":\"default\"},\"spec\":{\"authSecret\":\"cb-example-auth\",\"baseImage\":\"registry.connect.redhat.com/couchbase/server\",\"buckets\":[{\"conflictResolution\":\"seqno\",\"enableFlush\":true,\"evictionPolicy\":\"fullEviction\",\"ioPriority\":\"high\",\"memoryQuota\":128,\"name\":\"default\",\"replicas\":1,\"type\":\"couchbase\"}],\"cluster\":{\"analyticsServiceMemoryQuota\":1024,\"autoFailoverMaxCount\":3,\"autoFailoverOnDataDiskIssues\":true,\"autoFailoverOnDataDiskIssuesTimePeriod\":120,\"autoFailoverServerGroup\":false,\"autoFailoverTimeout\":120,\"clusterName\":\"cb-example\",\"dataServiceMemoryQuota\":256,\"eventingServiceMemoryQuota\":256,\"indexServiceMemoryQuota\":256,\"indexStorageSetting\":\"memory_optimized\",\"searchServiceMemoryQuota\":256},\"servers\":[{\"name\":\"all_services\",\"services\":[\"data\",\"index\",\"query\",\"search\",\"eventing\",\"analytics\"],\"size\":3}],\"version\":\"5.5.2-1\"}}]",
+      "capabilities": "Full Lifecycle",
+      "categories": "Database, OpenShift Optional",
+      "certified": "true",
+      "containerImage": "registry.connect.redhat.com/couchbase/operator:1.1.0-1",
+      "createdAt": "2019/03/21",
+      "description": "An operator to create and manage a Couchbase Cluster",
+      "olm.operatorGroup": "global-operators",
+      "olm.operatorNamespace": "openshift-operators",
+      "olm.targetNamespaces": "",
+      "support": "Couchbase, Inc"
     },
-    "spec": {
-        "apiservicedefinitions": {},
-        "customresourcedefinitions": {
-            "owned": [
-                {
-                    "description": "Manages Couchbase clusters",
-                    "displayName": "Couchbase Cluster",
-                    "kind": "CouchbaseCluster",
-                    "name": "couchbaseclusters.couchbase.com",
-                    "resources": [
-                        {
-                            "kind": "Service",
-                            "name": "",
-                            "version": "v1"
-                        },
-                        {
-                            "kind": "Pod",
-                            "name": "",
-                            "version": "v1"
-                        }
-                    ],
-                    "specDescriptors": [
-                        {
-                            "description": "The name of the secret object that stores the admin credentials.",
-                            "displayName": "Auth Secret",
-                            "path": "authSecret",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:io.kubernetes:Secret"
-                            ]
-                        },
-                        {
-                            "description": "The name of the secret object that stores the server's TLS certificate.",
-                            "displayName": "Server TLS Secret",
-                            "path": "tls.static.member.serverSecret",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:io.kubernetes:Secret"
-                            ]
-                        },
-                        {
-                            "description": "The name of the secret object that stores the Operator's TLS certificate.",
-                            "displayName": "Operator TLS Secret",
-                            "path": "tls.static.operatorSecret",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:io.kubernetes:Secret"
-                            ]
-                        },
-                        {
-                            "description": "Specifies if the Operator will manage this cluster.",
-                            "displayName": "Paused",
-                            "path": "paused",
-                            "value": false,
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-                            ]
-                        },
-                        {
-                            "description": "Specifies if the Couchbase Server Web Console will be exposed externally.",
-                            "displayName": "Expose Console",
-                            "path": "exposeAdminConsole",
-                            "value": false,
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-                            ]
-                        },
-                        {
-                            "description": "Specifies whether or not two pods in this cluster can be deployed on the same Kubernetes node.",
-                            "displayName": "Anti Affinity",
-                            "path": "antiAffinity",
-                            "value": false,
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-                            ]
-                        },
-                        {
-                            "description": "Specifies if update notifications will be displayed in the Couchbase UI.",
-                            "displayName": "Show Update Notifications",
-                            "path": "softwareUpdateNotifications",
-                            "value": false,
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-                            ]
-                        },
-                        {
-                            "description": "Specifies if the Operator will create or delete buckets.",
-                            "displayName": "Disable Bucket Management",
-                            "path": "disableBucketManagement",
-                            "value": false,
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-                            ]
-                        },
-                        {
-                            "description": "The desired number of member Pods for the Couchbase cluster.",
-                            "displayName": "Size",
-                            "path": "servers[0].size",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:podCount"
-                            ]
-                        },
-                        {
-                            "description": "The maximum number of failover events tolerated before manual intervention is required.",
-                            "displayName": "Auto Failover Max Count",
-                            "path": "cluster.autoFailoverMaxCount",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:slider",
-                                "urn:alm:descriptor:com.tectonic.ui:sliderStart:1"
-                            ]
-                        },
-                        {
-                            "description": "Limits describes the minimum/maximum amount of compute resources required/allowed.",
-                            "displayName": "Resource Requirements",
-                            "path": "servers[0].pod.resources",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:resourceRequirements"
-                            ]
-                        }
-                    ],
-                    "statusDescriptors": [
-                        {
-                            "description": "The desired number of member Pods for the deployment.",
-                            "displayName": "Size",
-                            "path": "size",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:podCount"
-                            ]
-                        },
-                        {
-                            "description": "The current status of the Couchbase cluster.",
-                            "displayName": "Status",
-                            "path": "phase",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:io.kubernetes.phase"
-                            ]
-                        },
-                        {
-                            "description": "Explanation for the current status of the application.",
-                            "displayName": "Status Details",
-                            "path": "reason",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:io.kubernetes.phase:reason"
-                            ]
-                        },
-                        {
-                            "description": "The status of each of the member Pods for the Couchbase cluster.",
-                            "displayName": "Member Status",
-                            "path": "members",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:com.tectonic.ui:podStatuses"
-                            ]
-                        },
-                        {
-                            "description": "The current version of the Couchbase cluster.",
-                            "displayName": "Current Version",
-                            "path": "currentVersion"
-                        },
-                        {
-                            "description": "The cluster identifier as provided by the Couchbase cluster.",
-                            "displayName": "Cluster ID",
-                            "path": "clusterID"
-                        },
-                        {
-                            "description": "Specifies if the Operator is currently managing this cluster.",
-                            "displayName": "Control Paused",
-                            "path": "controlPaused"
-                        },
-                        {
-                            "description": "The port that the web console can be accessed on from any node in the Kubernetes cluster.",
-                            "displayName": "Admin Console Port",
-                            "path": "adminConsolePort"
-                        },
-                        {
-                            "description": "The SSL port that the web console can be accessed on from any node in the Kubernetes cluster.",
-                            "displayName": "SSL Admin Console Port",
-                            "path": "adminConsolePortSSL"
-                        },
-                        {
-                            "description": "Conditions for the cluster",
-                            "displayName": "Conditions",
-                            "path": "conditions",
-                            "x-descriptors": [
-                                "urn:alm:descriptor:io.kubernetes.conditions"
-                            ]
-                        }
-                    ],
-                    "version": "v1"
-                }
-            ]
-        },
-        "description": "The Couchbase Autonomous Operator allows users to easily deploy, manage, and maintain Couchbase deployments on OpenShift. By installing this integration you will be able to deply Couchbase Server clusters with a single command.\n\n## Supported Features\n\n* **Automated cluster provisioning** - Deploying a Couchbase Cluster has never been easier. Fill out a Couchbase specific configuration and let the Couchbase Operator take care of provisioning nodes and setting up cluster to your exact specification.\n\n* **On-demand scalability** - Automatically scale your cluster up or down by changing a simple configuration parameter and let the Couchbase Operator handle provisioning of new nodes and joining them into the cluster.\n\n* **Auto-recovery** - Detect Couchbase node failures, rebalance out bad nodes, and bring the cluster back up to the desired capacity. Auto-recovery is completely automated so you can sleep easy through the night knowing that the Couchbase Operator will handle any failures.\n\n* **Geo-distribution** - Replicate your data between datacenters to move data closer to the users who consume it and protect against disaster scenarios where an entire datacenter becomes unavailable.\n\n* **Persistent storage** - Define persistent network-attached storage for each node in your cluster to allow pods to be recovered even if the node they were running on is no longer available.\n\n* **Rack/zone awareness** - Tell the Couchbase Operator about availability zones in your datacenter and let the operator take care of ensuring that nodes in your cluster are deployed equally across each zone.\n\n* **Supportability** - When things go wrong, use the cbopinfo tool provided with the Couchbase Operator to collect relevant data about your Couchbase deployment so that you can quickly address issues.\n\n* **Centralized configuration management** - Manage your configuration centrally with OpenShift. Updates to the configuration are watched by the Couchbase Operator and actions are taken to make the target cluster match the desired configuration.\n## Required Parameters\n* `authSecret` - provide the name of a secret that contains two keys for the `username` and `password` of the super user ([documentation](https://docs.couchbase.com/operator/1.1/couchbase-cluster-config.html))\n\n## About Couchbase Server\n\nBuilt on the most powerful NoSQL technology, Couchbase Server delivers unparalleled performance at scale, in any cloud. With features like memory-first architecture, geo-distributed deployments, and workload isolation, Couchbase Server excels at supporting mission-critical applications at scale while maintaining submillisecond latencies and 99.999% availability. Plus, with the most comprehensive SQL-compatible query language (N1QL), migrating from RDBMS to Couchbase Server is easy with ANSI joins.\n",
-        "displayName": "Couchbase Operator",
-        "icon": [
+    "creationTimestamp": "2019-05-28T17:38:52Z",
+    "generation": 1,
+    "labels": {
+      "olm.api.4c8c1b8b0550a6c7": "provided"
+    },
+    "name": "couchbase-operator.v1.1.0",
+    "namespace": "openshift-operators",
+    "resourceVersion": "50065129",
+    "selfLink": "/apis/operators.coreos.com/v1alpha1/namespaces/openshift-operators/clusterserviceversions/couchbase-operator.v1.1.0",
+    "uid": "75448f65-816f-11e9-bd35-0ad10d9d0886"
+  },
+  "spec": {
+    "apiservicedefinitions": {},
+    "customresourcedefinitions": {
+      "owned": [
+        {
+          "description": "Manages Couchbase clusters",
+          "displayName": "Couchbase Cluster",
+          "kind": "CouchbaseCluster",
+          "name": "couchbaseclusters.couchbase.com",
+          "resources": [
             {
-                "base64data": "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",
-                "mediatype": "image/png"
+              "kind": "Service",
+              "name": "",
+              "version": "v1"
+            },
+            {
+              "kind": "Pod",
+              "name": "",
+              "version": "v1"
             }
-        ],
-        "install": {
+          ],
+          "specDescriptors": [
+            {
+              "description": "The name of the secret object that stores the admin credentials.",
+              "displayName": "Auth Secret",
+              "path": "authSecret",
+              "x-descriptors": ["urn:alm:descriptor:io.kubernetes:Secret"]
+            },
+            {
+              "description": "The name of the secret object that stores the server's TLS certificate.",
+              "displayName": "Server TLS Secret",
+              "path": "tls.static.member.serverSecret",
+              "x-descriptors": ["urn:alm:descriptor:io.kubernetes:Secret"]
+            },
+            {
+              "description": "The name of the secret object that stores the Operator's TLS certificate.",
+              "displayName": "Operator TLS Secret",
+              "path": "tls.static.operatorSecret",
+              "x-descriptors": ["urn:alm:descriptor:io.kubernetes:Secret"]
+            },
+            {
+              "description": "Specifies if the Operator will manage this cluster.",
+              "displayName": "Paused",
+              "path": "paused",
+              "value": false,
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
+              ]
+            },
+            {
+              "description": "Specifies if the Couchbase Server Web Console will be exposed externally.",
+              "displayName": "Expose Console",
+              "path": "exposeAdminConsole",
+              "value": false,
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
+              ]
+            },
+            {
+              "description": "Specifies whether or not two pods in this cluster can be deployed on the same Kubernetes node.",
+              "displayName": "Anti Affinity",
+              "path": "antiAffinity",
+              "value": false,
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
+              ]
+            },
+            {
+              "description": "Specifies if update notifications will be displayed in the Couchbase UI.",
+              "displayName": "Show Update Notifications",
+              "path": "softwareUpdateNotifications",
+              "value": false,
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
+              ]
+            },
+            {
+              "description": "Specifies if the Operator will create or delete buckets.",
+              "displayName": "Disable Bucket Management",
+              "path": "disableBucketManagement",
+              "value": false,
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
+              ]
+            },
+            {
+              "description": "The desired number of member Pods for the Couchbase cluster.",
+              "displayName": "Size",
+              "path": "servers[0].size",
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:podCount"]
+            },
+            {
+              "description": "The maximum number of failover events tolerated before manual intervention is required.",
+              "displayName": "Auto Failover Max Count",
+              "path": "cluster.autoFailoverMaxCount",
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:slider",
+                "urn:alm:descriptor:com.tectonic.ui:sliderStart:1"
+              ]
+            },
+            {
+              "description": "Limits describes the minimum/maximum amount of compute resources required/allowed.",
+              "displayName": "Resource Requirements",
+              "path": "servers[0].pod.resources",
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:resourceRequirements"
+              ]
+            }
+          ],
+          "statusDescriptors": [
+            {
+              "description": "The desired number of member Pods for the deployment.",
+              "displayName": "Size",
+              "path": "size",
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:podCount"]
+            },
+            {
+              "description": "The current status of the Couchbase cluster.",
+              "displayName": "Status",
+              "path": "phase",
+              "x-descriptors": ["urn:alm:descriptor:io.kubernetes.phase"]
+            },
+            {
+              "description": "Explanation for the current status of the application.",
+              "displayName": "Status Details",
+              "path": "reason",
+              "x-descriptors": ["urn:alm:descriptor:io.kubernetes.phase:reason"]
+            },
+            {
+              "description": "The status of each of the member Pods for the Couchbase cluster.",
+              "displayName": "Member Status",
+              "path": "members",
+              "x-descriptors": [
+                "urn:alm:descriptor:com.tectonic.ui:podStatuses"
+              ]
+            },
+            {
+              "description": "The current version of the Couchbase cluster.",
+              "displayName": "Current Version",
+              "path": "currentVersion"
+            },
+            {
+              "description": "The cluster identifier as provided by the Couchbase cluster.",
+              "displayName": "Cluster ID",
+              "path": "clusterID"
+            },
+            {
+              "description": "Specifies if the Operator is currently managing this cluster.",
+              "displayName": "Control Paused",
+              "path": "controlPaused"
+            },
+            {
+              "description": "The port that the web console can be accessed on from any node in the Kubernetes cluster.",
+              "displayName": "Admin Console Port",
+              "path": "adminConsolePort"
+            },
+            {
+              "description": "The SSL port that the web console can be accessed on from any node in the Kubernetes cluster.",
+              "displayName": "SSL Admin Console Port",
+              "path": "adminConsolePortSSL"
+            },
+            {
+              "description": "Conditions for the cluster",
+              "displayName": "Conditions",
+              "path": "conditions",
+              "x-descriptors": ["urn:alm:descriptor:io.kubernetes.conditions"]
+            }
+          ],
+          "version": "v1"
+        }
+      ]
+    },
+    "description": "The Couchbase Autonomous Operator allows users to easily deploy, manage, and maintain Couchbase deployments on OpenShift. By installing this integration you will be able to deply Couchbase Server clusters with a single command.\n\n## Supported Features\n\n* **Automated cluster provisioning** - Deploying a Couchbase Cluster has never been easier. Fill out a Couchbase specific configuration and let the Couchbase Operator take care of provisioning nodes and setting up cluster to your exact specification.\n\n* **On-demand scalability** - Automatically scale your cluster up or down by changing a simple configuration parameter and let the Couchbase Operator handle provisioning of new nodes and joining them into the cluster.\n\n* **Auto-recovery** - Detect Couchbase node failures, rebalance out bad nodes, and bring the cluster back up to the desired capacity. Auto-recovery is completely automated so you can sleep easy through the night knowing that the Couchbase Operator will handle any failures.\n\n* **Geo-distribution** - Replicate your data between datacenters to move data closer to the users who consume it and protect against disaster scenarios where an entire datacenter becomes unavailable.\n\n* **Persistent storage** - Define persistent network-attached storage for each node in your cluster to allow pods to be recovered even if the node they were running on is no longer available.\n\n* **Rack/zone awareness** - Tell the Couchbase Operator about availability zones in your datacenter and let the operator take care of ensuring that nodes in your cluster are deployed equally across each zone.\n\n* **Supportability** - When things go wrong, use the cbopinfo tool provided with the Couchbase Operator to collect relevant data about your Couchbase deployment so that you can quickly address issues.\n\n* **Centralized configuration management** - Manage your configuration centrally with OpenShift. Updates to the configuration are watched by the Couchbase Operator and actions are taken to make the target cluster match the desired configuration.\n## Required Parameters\n* `authSecret` - provide the name of a secret that contains two keys for the `username` and `password` of the super user ([documentation](https://docs.couchbase.com/operator/1.1/couchbase-cluster-config.html))\n\n## About Couchbase Server\n\nBuilt on the most powerful NoSQL technology, Couchbase Server delivers unparalleled performance at scale, in any cloud. With features like memory-first architecture, geo-distributed deployments, and workload isolation, Couchbase Server excels at supporting mission-critical applications at scale while maintaining submillisecond latencies and 99.999% availability. Plus, with the most comprehensive SQL-compatible query language (N1QL), migrating from RDBMS to Couchbase Server is easy with ANSI joins.\n",
+    "displayName": "Couchbase Operator",
+    "icon": [
+      {
+        "base64data": "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",
+        "mediatype": "image/png"
+      }
+    ],
+    "install": {
+      "spec": {
+        "deployments": [
+          {
+            "name": "couchbase-operator",
             "spec": {
-                "deployments": [
+              "replicas": 1,
+              "selector": {
+                "matchLabels": {
+                  "app": "couchbase-operator"
+                }
+              },
+              "template": {
+                "metadata": {
+                  "labels": {
+                    "app": "couchbase-operator"
+                  }
+                },
+                "spec": {
+                  "containers": [
                     {
-                        "name": "couchbase-operator",
-                        "spec": {
-                            "replicas": 1,
-                            "selector": {
-                                "matchLabels": {
-                                    "app": "couchbase-operator"
-                                }
-                            },
-                            "template": {
-                                "metadata": {
-                                    "labels": {
-                                        "app": "couchbase-operator"
-                                    }
-                                },
-                                "spec": {
-                                    "containers": [
-                                        {
-                                            "args": [
-                                                "-enable-upgrades=false"
-                                            ],
-                                            "command": [
-                                                "couchbase-operator"
-                                            ],
-                                            "env": [
-                                                {
-                                                    "name": "MY_POD_NAMESPACE",
-                                                    "valueFrom": {
-                                                        "fieldRef": {
-                                                            "fieldPath": "metadata.namespace"
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    "name": "MY_POD_NAME",
-                                                    "valueFrom": {
-                                                        "fieldRef": {
-                                                            "fieldPath": "metadata.name"
-                                                        }
-                                                    }
-                                                }
-                                            ],
-                                            "image": "registry.connect.redhat.com/couchbase/operator:1.1.0-1",
-                                            "name": "couchbase-operator",
-                                            "ports": [
-                                                {
-                                                    "containerPort": 8080,
-                                                    "name": "readiness-port"
-                                                }
-                                            ],
-                                            "readinessProbe": {
-                                                "failureThreshold": 19,
-                                                "httpGet": {
-                                                    "path": "/readyz",
-                                                    "port": "readiness-port"
-                                                },
-                                                "initialDelaySeconds": 3,
-                                                "periodSeconds": 3
-                                            }
-                                        }
-                                    ],
-                                    "serviceAccountName": "couchbase-operator"
-                                }
+                      "args": ["-enable-upgrades=false"],
+                      "command": ["couchbase-operator"],
+                      "env": [
+                        {
+                          "name": "MY_POD_NAMESPACE",
+                          "valueFrom": {
+                            "fieldRef": {
+                              "fieldPath": "metadata.namespace"
                             }
+                          }
+                        },
+                        {
+                          "name": "MY_POD_NAME",
+                          "valueFrom": {
+                            "fieldRef": {
+                              "fieldPath": "metadata.name"
+                            }
+                          }
                         }
+                      ],
+                      "image": "registry.connect.redhat.com/couchbase/operator:1.1.0-1",
+                      "name": "couchbase-operator",
+                      "ports": [
+                        {
+                          "containerPort": 8080,
+                          "name": "readiness-port"
+                        }
+                      ],
+                      "readinessProbe": {
+                        "failureThreshold": 19,
+                        "httpGet": {
+                          "path": "/readyz",
+                          "port": "readiness-port"
+                        },
+                        "initialDelaySeconds": 3,
+                        "periodSeconds": 3
+                      }
                     }
+                  ],
+                  "serviceAccountName": "couchbase-operator"
+                }
+              }
+            }
+          }
+        ],
+        "permissions": [
+          {
+            "rules": [
+              {
+                "apiGroups": ["couchbase.com"],
+                "resources": ["couchbaseclusters"],
+                "verbs": ["*"]
+              },
+              {
+                "apiGroups": ["storage.k8s.io"],
+                "resources": ["storageclasses"],
+                "verbs": ["get"]
+              },
+              {
+                "apiGroups": ["apiextensions.k8s.io"],
+                "resources": ["customresourcedefinitions"],
+                "verbs": ["*"]
+              },
+              {
+                "apiGroups": [""],
+                "resources": [
+                  "pods",
+                  "services",
+                  "endpoints",
+                  "persistentvolumeclaims",
+                  "events",
+                  "secrets"
                 ],
-                "permissions": [
-                    {
-                        "rules": [
-                            {
-                                "apiGroups": [
-                                    "couchbase.com"
-                                ],
-                                "resources": [
-                                    "couchbaseclusters"
-                                ],
-                                "verbs": [
-                                    "*"
-                                ]
-                            },
-                            {
-                                "apiGroups": [
-                                    "storage.k8s.io"
-                                ],
-                                "resources": [
-                                    "storageclasses"
-                                ],
-                                "verbs": [
-                                    "get"
-                                ]
-                            },
-                            {
-                                "apiGroups": [
-                                    "apiextensions.k8s.io"
-                                ],
-                                "resources": [
-                                    "customresourcedefinitions"
-                                ],
-                                "verbs": [
-                                    "*"
-                                ]
-                            },
-                            {
-                                "apiGroups": [
-                                    ""
-                                ],
-                                "resources": [
-                                    "pods",
-                                    "services",
-                                    "endpoints",
-                                    "persistentvolumeclaims",
-                                    "events",
-                                    "secrets"
-                                ],
-                                "verbs": [
-                                    "*"
-                                ]
-                            },
-                            {
-                                "apiGroups": [
-                                    ""
-                                ],
-                                "resources": [
-                                    "persistentvolumes"
-                                ],
-                                "verbs": [
-                                    "get",
-                                    "watch"
-                                ]
-                            },
-                            {
-                                "apiGroups": [
-                                    "apps"
-                                ],
-                                "resources": [
-                                    "deployments"
-                                ],
-                                "verbs": [
-                                    "*"
-                                ]
-                            },
-                            {
-                                "apiGroups": [
-                                    ""
-                                ],
-                                "resources": [
-                                    "secrets"
-                                ],
-                                "verbs": [
-                                    "get"
-                                ]
-                            }
-                        ],
-                        "serviceAccountName": "couchbase-operator"
-                    }
-                ]
-            },
-            "strategy": "deployment"
-        },
-        "installModes": [
-            {
-                "supported": true,
-                "type": "OwnNamespace"
-            },
-            {
-                "supported": true,
-                "type": "SingleNamespace"
-            },
-            {
-                "supported": false,
-                "type": "MultiNamespace"
-            },
-            {
-                "supported": true,
-                "type": "AllNamespaces"
-            }
-        ],
-        "keywords": [
-            "couchbase",
-            "database",
-            "key value",
-            "nosql",
-            "open source"
-        ],
-        "labels": {
-            "alm-owner-etcd": "couchbaseoperator",
-            "operated-by": "couchbaseoperator"
-        },
-        "links": [
-            {
-                "name": "Couchbase",
-                "url": "https://www.couchbase.com"
-            },
-            {
-                "name": "Documentation",
-                "url": "https://docs.couchbase.com/operator/1.1/operator-config.html"
-            },
-            {
-                "name": "Downloads",
-                "url": "https://www.couchbase.com/downloads"
-            }
-        ],
-        "maintainers": [
-            {
-                "email": "support@couchbase.com",
-                "name": "Couchbase"
-            }
-        ],
-        "maturity": "stable",
-        "provider": {
-            "name": "Couchbase"
-        },
-        "selector": {
-            "matchLabels": {
-                "alm-owner-etcd": "couchbaseoperator",
-                "operated-by": "couchbaseoperator"
-            }
-        },
-        "version": "1.1.0"
+                "verbs": ["*"]
+              },
+              {
+                "apiGroups": [""],
+                "resources": ["persistentvolumes"],
+                "verbs": ["get", "watch"]
+              },
+              {
+                "apiGroups": ["apps"],
+                "resources": ["deployments"],
+                "verbs": ["*"]
+              },
+              {
+                "apiGroups": [""],
+                "resources": ["secrets"],
+                "verbs": ["get"]
+              }
+            ],
+            "serviceAccountName": "couchbase-operator"
+          }
+        ]
+      },
+      "strategy": "deployment"
     },
-    "status": {
-        "certsLastUpdated": null,
-        "certsRotateAt": null,
-        "conditions": [
-            {
-                "lastTransitionTime": "2019-05-28T17:38:53Z",
-                "lastUpdateTime": "2019-05-28T17:38:53Z",
-                "message": "requirements not yet checked",
-                "phase": "Pending",
-                "reason": "RequirementsUnknown"
-            },
-            {
-                "lastTransitionTime": "2019-05-28T17:38:53Z",
-                "lastUpdateTime": "2019-05-28T17:38:53Z",
-                "message": "one or more requirements couldn't be found",
-                "phase": "Pending",
-                "reason": "RequirementsNotMet"
-            },
-            {
-                "lastTransitionTime": "2019-05-28T17:38:55Z",
-                "lastUpdateTime": "2019-05-28T17:38:55Z",
-                "message": "all requirements found, attempting install",
-                "phase": "InstallReady",
-                "reason": "AllRequirementsMet"
-            },
-            {
-                "lastTransitionTime": "2019-05-28T17:38:56Z",
-                "lastUpdateTime": "2019-05-28T17:38:56Z",
-                "message": "waiting for install components to report healthy",
-                "phase": "Installing",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-05-28T17:38:56Z",
-                "lastUpdateTime": "2019-05-28T17:38:57Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Installing",
-                "reason": "InstallWaiting"
-            },
-            {
-                "lastTransitionTime": "2019-05-28T17:39:24Z",
-                "lastUpdateTime": "2019-05-28T17:39:24Z",
-                "message": "install strategy completed with no errors",
-                "phase": "Succeeded",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-08T07:07:19Z",
-                "lastUpdateTime": "2019-06-08T07:07:19Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Failed",
-                "reason": "ComponentUnhealthy"
-            },
-            {
-                "lastTransitionTime": "2019-06-08T07:07:21Z",
-                "lastUpdateTime": "2019-06-08T07:07:21Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Pending",
-                "reason": "NeedsReinstall"
-            },
-            {
-                "lastTransitionTime": "2019-06-08T07:07:22Z",
-                "lastUpdateTime": "2019-06-08T07:07:22Z",
-                "message": "all requirements found, attempting install",
-                "phase": "InstallReady",
-                "reason": "AllRequirementsMet"
-            },
-            {
-                "lastTransitionTime": "2019-06-08T07:07:23Z",
-                "lastUpdateTime": "2019-06-08T07:07:23Z",
-                "message": "waiting for install components to report healthy",
-                "phase": "Installing",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-08T07:07:23Z",
-                "lastUpdateTime": "2019-06-08T07:07:26Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Installing",
-                "reason": "InstallWaiting"
-            },
-            {
-                "lastTransitionTime": "2019-06-08T07:08:40Z",
-                "lastUpdateTime": "2019-06-08T07:08:40Z",
-                "message": "install strategy completed with no errors",
-                "phase": "Succeeded",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-09T02:09:09Z",
-                "lastUpdateTime": "2019-06-09T02:09:09Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Failed",
-                "reason": "ComponentUnhealthy"
-            },
-            {
-                "lastTransitionTime": "2019-06-09T02:09:10Z",
-                "lastUpdateTime": "2019-06-09T02:09:10Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Pending",
-                "reason": "NeedsReinstall"
-            },
-            {
-                "lastTransitionTime": "2019-06-09T02:09:12Z",
-                "lastUpdateTime": "2019-06-09T02:09:12Z",
-                "message": "all requirements found, attempting install",
-                "phase": "InstallReady",
-                "reason": "AllRequirementsMet"
-            },
-            {
-                "lastTransitionTime": "2019-06-09T02:09:14Z",
-                "lastUpdateTime": "2019-06-09T02:09:14Z",
-                "message": "waiting for install components to report healthy",
-                "phase": "Installing",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-09T02:09:14Z",
-                "lastUpdateTime": "2019-06-09T02:09:16Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Installing",
-                "reason": "InstallWaiting"
-            },
-            {
-                "lastTransitionTime": "2019-06-09T02:10:21Z",
-                "lastUpdateTime": "2019-06-09T02:10:21Z",
-                "message": "install strategy completed with no errors",
-                "phase": "Succeeded",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T05:18:26Z",
-                "lastUpdateTime": "2019-06-10T05:18:26Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Failed",
-                "reason": "ComponentUnhealthy"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T05:18:28Z",
-                "lastUpdateTime": "2019-06-10T05:18:28Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Pending",
-                "reason": "NeedsReinstall"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T05:18:30Z",
-                "lastUpdateTime": "2019-06-10T05:18:30Z",
-                "message": "all requirements found, attempting install",
-                "phase": "InstallReady",
-                "reason": "AllRequirementsMet"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T05:18:32Z",
-                "lastUpdateTime": "2019-06-10T05:18:32Z",
-                "message": "waiting for install components to report healthy",
-                "phase": "Installing",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T05:18:32Z",
-                "lastUpdateTime": "2019-06-10T05:18:34Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Installing",
-                "reason": "InstallWaiting"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T05:19:25Z",
-                "lastUpdateTime": "2019-06-10T05:19:25Z",
-                "message": "install strategy completed with no errors",
-                "phase": "Succeeded",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T23:05:32Z",
-                "lastUpdateTime": "2019-06-10T23:05:32Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Failed",
-                "reason": "ComponentUnhealthy"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T23:05:33Z",
-                "lastUpdateTime": "2019-06-10T23:05:33Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Pending",
-                "reason": "NeedsReinstall"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T23:05:34Z",
-                "lastUpdateTime": "2019-06-10T23:05:34Z",
-                "message": "all requirements found, attempting install",
-                "phase": "InstallReady",
-                "reason": "AllRequirementsMet"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T23:05:36Z",
-                "lastUpdateTime": "2019-06-10T23:05:36Z",
-                "message": "waiting for install components to report healthy",
-                "phase": "Installing",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T23:05:36Z",
-                "lastUpdateTime": "2019-06-10T23:05:37Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Installing",
-                "reason": "InstallWaiting"
-            },
-            {
-                "lastTransitionTime": "2019-06-10T23:06:38Z",
-                "lastUpdateTime": "2019-06-10T23:06:38Z",
-                "message": "install strategy completed with no errors",
-                "phase": "Succeeded",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-11T04:19:09Z",
-                "lastUpdateTime": "2019-06-11T04:19:09Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Failed",
-                "reason": "ComponentUnhealthy"
-            },
-            {
-                "lastTransitionTime": "2019-06-11T04:19:39Z",
-                "lastUpdateTime": "2019-06-11T04:19:39Z",
-                "message": "install strategy completed with no errors",
-                "phase": "Succeeded",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-14T21:06:53Z",
-                "lastUpdateTime": "2019-06-14T21:06:53Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Failed",
-                "reason": "ComponentUnhealthy"
-            },
-            {
-                "lastTransitionTime": "2019-06-14T21:06:54Z",
-                "lastUpdateTime": "2019-06-14T21:06:54Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Pending",
-                "reason": "NeedsReinstall"
-            },
-            {
-                "lastTransitionTime": "2019-06-14T21:06:55Z",
-                "lastUpdateTime": "2019-06-14T21:06:55Z",
-                "message": "all requirements found, attempting install",
-                "phase": "InstallReady",
-                "reason": "AllRequirementsMet"
-            },
-            {
-                "lastTransitionTime": "2019-06-14T21:06:56Z",
-                "lastUpdateTime": "2019-06-14T21:06:56Z",
-                "message": "waiting for install components to report healthy",
-                "phase": "Installing",
-                "reason": "InstallSucceeded"
-            },
-            {
-                "lastTransitionTime": "2019-06-14T21:06:56Z",
-                "lastUpdateTime": "2019-06-14T21:06:58Z",
-                "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
-                "phase": "Installing",
-                "reason": "InstallWaiting"
-            },
-            {
-                "lastTransitionTime": "2019-06-14T21:07:27Z",
-                "lastUpdateTime": "2019-06-14T21:07:27Z",
-                "message": "install strategy completed with no errors",
-                "phase": "Succeeded",
-                "reason": "InstallSucceeded"
-            }
-        ],
+    "installModes": [
+      {
+        "supported": true,
+        "type": "OwnNamespace"
+      },
+      {
+        "supported": true,
+        "type": "SingleNamespace"
+      },
+      {
+        "supported": false,
+        "type": "MultiNamespace"
+      },
+      {
+        "supported": true,
+        "type": "AllNamespaces"
+      }
+    ],
+    "keywords": ["couchbase", "database", "key value", "nosql", "open source"],
+    "labels": {
+      "alm-owner-etcd": "couchbaseoperator",
+      "operated-by": "couchbaseoperator"
+    },
+    "links": [
+      {
+        "name": "Couchbase",
+        "url": "https://www.couchbase.com"
+      },
+      {
+        "name": "Documentation",
+        "url": "https://docs.couchbase.com/operator/1.1/operator-config.html"
+      },
+      {
+        "name": "Downloads",
+        "url": "https://www.couchbase.com/downloads"
+      }
+    ],
+    "maintainers": [
+      {
+        "email": "support@couchbase.com",
+        "name": "Couchbase"
+      }
+    ],
+    "maturity": "stable",
+    "provider": {
+      "name": "Couchbase"
+    },
+    "selector": {
+      "matchLabels": {
+        "alm-owner-etcd": "couchbaseoperator",
+        "operated-by": "couchbaseoperator"
+      }
+    },
+    "version": "1.1.0"
+  },
+  "status": {
+    "certsLastUpdated": null,
+    "certsRotateAt": null,
+    "conditions": [
+      {
+        "lastTransitionTime": "2019-05-28T17:38:53Z",
+        "lastUpdateTime": "2019-05-28T17:38:53Z",
+        "message": "requirements not yet checked",
+        "phase": "Pending",
+        "reason": "RequirementsUnknown"
+      },
+      {
+        "lastTransitionTime": "2019-05-28T17:38:53Z",
+        "lastUpdateTime": "2019-05-28T17:38:53Z",
+        "message": "one or more requirements couldn't be found",
+        "phase": "Pending",
+        "reason": "RequirementsNotMet"
+      },
+      {
+        "lastTransitionTime": "2019-05-28T17:38:55Z",
+        "lastUpdateTime": "2019-05-28T17:38:55Z",
+        "message": "all requirements found, attempting install",
+        "phase": "InstallReady",
+        "reason": "AllRequirementsMet"
+      },
+      {
+        "lastTransitionTime": "2019-05-28T17:38:56Z",
+        "lastUpdateTime": "2019-05-28T17:38:56Z",
+        "message": "waiting for install components to report healthy",
+        "phase": "Installing",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-05-28T17:38:56Z",
+        "lastUpdateTime": "2019-05-28T17:38:57Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Installing",
+        "reason": "InstallWaiting"
+      },
+      {
+        "lastTransitionTime": "2019-05-28T17:39:24Z",
+        "lastUpdateTime": "2019-05-28T17:39:24Z",
+        "message": "install strategy completed with no errors",
+        "phase": "Succeeded",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-08T07:07:19Z",
+        "lastUpdateTime": "2019-06-08T07:07:19Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Failed",
+        "reason": "ComponentUnhealthy"
+      },
+      {
+        "lastTransitionTime": "2019-06-08T07:07:21Z",
+        "lastUpdateTime": "2019-06-08T07:07:21Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Pending",
+        "reason": "NeedsReinstall"
+      },
+      {
+        "lastTransitionTime": "2019-06-08T07:07:22Z",
+        "lastUpdateTime": "2019-06-08T07:07:22Z",
+        "message": "all requirements found, attempting install",
+        "phase": "InstallReady",
+        "reason": "AllRequirementsMet"
+      },
+      {
+        "lastTransitionTime": "2019-06-08T07:07:23Z",
+        "lastUpdateTime": "2019-06-08T07:07:23Z",
+        "message": "waiting for install components to report healthy",
+        "phase": "Installing",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-08T07:07:23Z",
+        "lastUpdateTime": "2019-06-08T07:07:26Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Installing",
+        "reason": "InstallWaiting"
+      },
+      {
+        "lastTransitionTime": "2019-06-08T07:08:40Z",
+        "lastUpdateTime": "2019-06-08T07:08:40Z",
+        "message": "install strategy completed with no errors",
+        "phase": "Succeeded",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-09T02:09:09Z",
+        "lastUpdateTime": "2019-06-09T02:09:09Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Failed",
+        "reason": "ComponentUnhealthy"
+      },
+      {
+        "lastTransitionTime": "2019-06-09T02:09:10Z",
+        "lastUpdateTime": "2019-06-09T02:09:10Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Pending",
+        "reason": "NeedsReinstall"
+      },
+      {
+        "lastTransitionTime": "2019-06-09T02:09:12Z",
+        "lastUpdateTime": "2019-06-09T02:09:12Z",
+        "message": "all requirements found, attempting install",
+        "phase": "InstallReady",
+        "reason": "AllRequirementsMet"
+      },
+      {
+        "lastTransitionTime": "2019-06-09T02:09:14Z",
+        "lastUpdateTime": "2019-06-09T02:09:14Z",
+        "message": "waiting for install components to report healthy",
+        "phase": "Installing",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-09T02:09:14Z",
+        "lastUpdateTime": "2019-06-09T02:09:16Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Installing",
+        "reason": "InstallWaiting"
+      },
+      {
+        "lastTransitionTime": "2019-06-09T02:10:21Z",
+        "lastUpdateTime": "2019-06-09T02:10:21Z",
+        "message": "install strategy completed with no errors",
+        "phase": "Succeeded",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T05:18:26Z",
+        "lastUpdateTime": "2019-06-10T05:18:26Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Failed",
+        "reason": "ComponentUnhealthy"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T05:18:28Z",
+        "lastUpdateTime": "2019-06-10T05:18:28Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Pending",
+        "reason": "NeedsReinstall"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T05:18:30Z",
+        "lastUpdateTime": "2019-06-10T05:18:30Z",
+        "message": "all requirements found, attempting install",
+        "phase": "InstallReady",
+        "reason": "AllRequirementsMet"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T05:18:32Z",
+        "lastUpdateTime": "2019-06-10T05:18:32Z",
+        "message": "waiting for install components to report healthy",
+        "phase": "Installing",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T05:18:32Z",
+        "lastUpdateTime": "2019-06-10T05:18:34Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Installing",
+        "reason": "InstallWaiting"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T05:19:25Z",
+        "lastUpdateTime": "2019-06-10T05:19:25Z",
+        "message": "install strategy completed with no errors",
+        "phase": "Succeeded",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T23:05:32Z",
+        "lastUpdateTime": "2019-06-10T23:05:32Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Failed",
+        "reason": "ComponentUnhealthy"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T23:05:33Z",
+        "lastUpdateTime": "2019-06-10T23:05:33Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Pending",
+        "reason": "NeedsReinstall"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T23:05:34Z",
+        "lastUpdateTime": "2019-06-10T23:05:34Z",
+        "message": "all requirements found, attempting install",
+        "phase": "InstallReady",
+        "reason": "AllRequirementsMet"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T23:05:36Z",
+        "lastUpdateTime": "2019-06-10T23:05:36Z",
+        "message": "waiting for install components to report healthy",
+        "phase": "Installing",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T23:05:36Z",
+        "lastUpdateTime": "2019-06-10T23:05:37Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Installing",
+        "reason": "InstallWaiting"
+      },
+      {
+        "lastTransitionTime": "2019-06-10T23:06:38Z",
+        "lastUpdateTime": "2019-06-10T23:06:38Z",
+        "message": "install strategy completed with no errors",
+        "phase": "Succeeded",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-11T04:19:09Z",
+        "lastUpdateTime": "2019-06-11T04:19:09Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Failed",
+        "reason": "ComponentUnhealthy"
+      },
+      {
+        "lastTransitionTime": "2019-06-11T04:19:39Z",
+        "lastUpdateTime": "2019-06-11T04:19:39Z",
+        "message": "install strategy completed with no errors",
+        "phase": "Succeeded",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-14T21:06:53Z",
+        "lastUpdateTime": "2019-06-14T21:06:53Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Failed",
+        "reason": "ComponentUnhealthy"
+      },
+      {
+        "lastTransitionTime": "2019-06-14T21:06:54Z",
+        "lastUpdateTime": "2019-06-14T21:06:54Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Pending",
+        "reason": "NeedsReinstall"
+      },
+      {
+        "lastTransitionTime": "2019-06-14T21:06:55Z",
+        "lastUpdateTime": "2019-06-14T21:06:55Z",
+        "message": "all requirements found, attempting install",
+        "phase": "InstallReady",
+        "reason": "AllRequirementsMet"
+      },
+      {
+        "lastTransitionTime": "2019-06-14T21:06:56Z",
+        "lastUpdateTime": "2019-06-14T21:06:56Z",
+        "message": "waiting for install components to report healthy",
+        "phase": "Installing",
+        "reason": "InstallSucceeded"
+      },
+      {
+        "lastTransitionTime": "2019-06-14T21:06:56Z",
+        "lastUpdateTime": "2019-06-14T21:06:58Z",
+        "message": "installing: Waiting: waiting for deployment couchbase-operator to become ready: Waiting for rollout to finish: 0 of 1 updated replicas are available...\n",
+        "phase": "Installing",
+        "reason": "InstallWaiting"
+      },
+      {
         "lastTransitionTime": "2019-06-14T21:07:27Z",
         "lastUpdateTime": "2019-06-14T21:07:27Z",
         "message": "install strategy completed with no errors",
         "phase": "Succeeded",
-        "reason": "InstallSucceeded",
-        "requirementStatus": [
-            {
-                "group": "operators.coreos.com",
-                "kind": "ClusterServiceVersion",
-                "message": "CSV missing minimum kube version specification",
-                "name": "couchbase-operator.v1.1.0",
-                "status": "NotPresent",
-                "version": "v1alpha1"
-            },
-            {
-                "group": "apiextensions.k8s.io",
-                "kind": "CustomResourceDefinition",
-                "message": "CRD is present and Established condition is true",
-                "name": "couchbaseclusters.couchbase.com",
-                "status": "Present",
-                "uuid": "75464304-816f-11e9-bd35-0ad10d9d0886",
-                "version": "v1beta1"
-            },
-            {
-                "dependents": [
-                    {
-                        "group": "rbac.authorization.k8s.io",
-                        "kind": "PolicyRule",
-                        "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"couchbase.com\"],\"resources\":[\"couchbaseclusters\"]}",
-                        "status": "Satisfied",
-                        "version": "v1beta1"
-                    },
-                    {
-                        "group": "rbac.authorization.k8s.io",
-                        "kind": "PolicyRule",
-                        "message": "namespaced rule:{\"verbs\":[\"get\"],\"apiGroups\":[\"storage.k8s.io\"],\"resources\":[\"storageclasses\"]}",
-                        "status": "Satisfied",
-                        "version": "v1beta1"
-                    },
-                    {
-                        "group": "rbac.authorization.k8s.io",
-                        "kind": "PolicyRule",
-                        "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"apiextensions.k8s.io\"],\"resources\":[\"customresourcedefinitions\"]}",
-                        "status": "Satisfied",
-                        "version": "v1beta1"
-                    },
-                    {
-                        "group": "rbac.authorization.k8s.io",
-                        "kind": "PolicyRule",
-                        "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"\"],\"resources\":[\"pods\",\"services\",\"endpoints\",\"persistentvolumeclaims\",\"events\",\"secrets\"]}",
-                        "status": "Satisfied",
-                        "version": "v1beta1"
-                    },
-                    {
-                        "group": "rbac.authorization.k8s.io",
-                        "kind": "PolicyRule",
-                        "message": "namespaced rule:{\"verbs\":[\"get\",\"watch\"],\"apiGroups\":[\"\"],\"resources\":[\"persistentvolumes\"]}",
-                        "status": "Satisfied",
-                        "version": "v1beta1"
-                    },
-                    {
-                        "group": "rbac.authorization.k8s.io",
-                        "kind": "PolicyRule",
-                        "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"apps\"],\"resources\":[\"deployments\"]}",
-                        "status": "Satisfied",
-                        "version": "v1beta1"
-                    },
-                    {
-                        "group": "rbac.authorization.k8s.io",
-                        "kind": "PolicyRule",
-                        "message": "namespaced rule:{\"verbs\":[\"get\"],\"apiGroups\":[\"\"],\"resources\":[\"secrets\"]}",
-                        "status": "Satisfied",
-                        "version": "v1beta1"
-                    }
-                ],
-                "group": "",
-                "kind": "ServiceAccount",
-                "message": "",
-                "name": "couchbase-operator",
-                "status": "Present",
-                "version": "v1"
-            }
-        ]
-    }
+        "reason": "InstallSucceeded"
+      }
+    ],
+    "lastTransitionTime": "2019-06-14T21:07:27Z",
+    "lastUpdateTime": "2019-06-14T21:07:27Z",
+    "message": "install strategy completed with no errors",
+    "phase": "Succeeded",
+    "reason": "InstallSucceeded",
+    "requirementStatus": [
+      {
+        "group": "operators.coreos.com",
+        "kind": "ClusterServiceVersion",
+        "message": "CSV missing minimum kube version specification",
+        "name": "couchbase-operator.v1.1.0",
+        "status": "NotPresent",
+        "version": "v1alpha1"
+      },
+      {
+        "group": "apiextensions.k8s.io",
+        "kind": "CustomResourceDefinition",
+        "message": "CRD is present and Established condition is true",
+        "name": "couchbaseclusters.couchbase.com",
+        "status": "Present",
+        "uuid": "75464304-816f-11e9-bd35-0ad10d9d0886",
+        "version": "v1beta1"
+      },
+      {
+        "dependents": [
+          {
+            "group": "rbac.authorization.k8s.io",
+            "kind": "PolicyRule",
+            "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"couchbase.com\"],\"resources\":[\"couchbaseclusters\"]}",
+            "status": "Satisfied",
+            "version": "v1beta1"
+          },
+          {
+            "group": "rbac.authorization.k8s.io",
+            "kind": "PolicyRule",
+            "message": "namespaced rule:{\"verbs\":[\"get\"],\"apiGroups\":[\"storage.k8s.io\"],\"resources\":[\"storageclasses\"]}",
+            "status": "Satisfied",
+            "version": "v1beta1"
+          },
+          {
+            "group": "rbac.authorization.k8s.io",
+            "kind": "PolicyRule",
+            "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"apiextensions.k8s.io\"],\"resources\":[\"customresourcedefinitions\"]}",
+            "status": "Satisfied",
+            "version": "v1beta1"
+          },
+          {
+            "group": "rbac.authorization.k8s.io",
+            "kind": "PolicyRule",
+            "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"\"],\"resources\":[\"pods\",\"services\",\"endpoints\",\"persistentvolumeclaims\",\"events\",\"secrets\"]}",
+            "status": "Satisfied",
+            "version": "v1beta1"
+          },
+          {
+            "group": "rbac.authorization.k8s.io",
+            "kind": "PolicyRule",
+            "message": "namespaced rule:{\"verbs\":[\"get\",\"watch\"],\"apiGroups\":[\"\"],\"resources\":[\"persistentvolumes\"]}",
+            "status": "Satisfied",
+            "version": "v1beta1"
+          },
+          {
+            "group": "rbac.authorization.k8s.io",
+            "kind": "PolicyRule",
+            "message": "namespaced rule:{\"verbs\":[\"*\"],\"apiGroups\":[\"apps\"],\"resources\":[\"deployments\"]}",
+            "status": "Satisfied",
+            "version": "v1beta1"
+          },
+          {
+            "group": "rbac.authorization.k8s.io",
+            "kind": "PolicyRule",
+            "message": "namespaced rule:{\"verbs\":[\"get\"],\"apiGroups\":[\"\"],\"resources\":[\"secrets\"]}",
+            "status": "Satisfied",
+            "version": "v1beta1"
+          }
+        ],
+        "group": "",
+        "kind": "ServiceAccount",
+        "message": "",
+        "name": "couchbase-operator",
+        "status": "Present",
+        "version": "v1"
+      }
+    ]
+  }
 }

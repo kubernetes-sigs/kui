@@ -48,7 +48,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
   readyState = ReadyState.OPEN
   private otherSide: InProcessChannel
 
-  constructor (otherSide?: InProcessChannel) {
+  constructor(otherSide?: InProcessChannel) {
     super()
 
     if (otherSide) {
@@ -58,7 +58,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
     }
   }
 
-  async init () {
+  async init() {
     debug('IPC init')
     await onConnection(await disableBashSessions())(this.otherSide)
 
@@ -68,7 +68,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
   }
 
   /** emit 'message' on the other side */
-  send (msg: string) {
+  send(msg: string) {
     if (this.otherSide.readyState === ReadyState.OPEN) {
       try {
         this.otherSide.emit('message', msg)
@@ -79,7 +79,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  removeEventListener (eventType: string, handler: any) {
+  removeEventListener(eventType: string, handler: any) {
     this.off(eventType, handler)
   }
 }
@@ -88,11 +88,12 @@ export class InProcessChannel extends EventEmitter implements Channel {
  * Thin wrapper on top of WebView postMessage
  *
  */
-export class WebViewChannelRendererSide extends EventEmitter implements Channel {
+export class WebViewChannelRendererSide extends EventEmitter
+  implements Channel {
   readyState = ReadyState.OPEN
   private channelId: number
 
-  async init () {
+  async init() {
     debug('IPC init')
     const { body } = await window['webview-proxy']({
       command: 'init',
@@ -108,7 +109,7 @@ export class WebViewChannelRendererSide extends EventEmitter implements Channel 
   }
 
   /** emit 'message' on the other side */
-  send (body: string) {
+  send(body: string) {
     console.log(`SEND ${this.channelId}`)
     window['webview-proxy']({
       command: 'send',
@@ -119,7 +120,7 @@ export class WebViewChannelRendererSide extends EventEmitter implements Channel 
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  removeEventListener (eventType: string, handler: any) {
+  removeEventListener(eventType: string, handler: any) {
     this.off(eventType, handler)
   }
 }

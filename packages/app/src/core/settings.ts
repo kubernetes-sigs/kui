@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
+import {
+  theme as t,
+  env as e,
+  config as c
+} from '@kui-shell/settings/config.json'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let devOverrides: Record<string, any>

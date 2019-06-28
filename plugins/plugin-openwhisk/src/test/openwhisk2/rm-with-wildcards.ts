@@ -22,7 +22,7 @@ const { cli, sidecar } = ui
 const subset = ['foo', 'foo2']
 const actions = subset.concat(['goo'])
 
-describe('Delete using rimraf with wildcards', function (this: common.ISuite) {
+describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -32,11 +32,13 @@ describe('Delete using rimraf with wildcards', function (this: common.ISuite) {
    */
   const create = listToCreate => {
     listToCreate.forEach(actionName => {
-      it('should create an action', () => cli.do(`let ${actionName} = x=>x`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName))
-        .catch(common.oops(this)))
+      it('should create an action', () =>
+        cli
+          .do(`let ${actionName} = x=>x`, this.app)
+          .then(cli.expectJustOK)
+          .then(sidecar.expectOpen)
+          .then(sidecar.expectShowing(actionName))
+          .catch(common.oops(this)))
     })
   }
 
@@ -44,14 +46,19 @@ describe('Delete using rimraf with wildcards', function (this: common.ISuite) {
    * Verify that the given list of action names is indeed gone
    *
    */
-  const verifyDeleted = list => list.forEach(actionName => {
-    it('should NOT find a deleted action', () => cli.do(`action get ${actionName} --no-retry`, this.app)
-      .then(cli.expectError(404))
-      .catch(common.oops(this)))
-    it('should FAIL to delete a non-existent action', () => cli.do(`rimraf ${actionName} --no-retry`, this.app)
-      .then(cli.expectError(404))
-      .catch(common.oops(this)))
-  })
+  const verifyDeleted = list =>
+    list.forEach(actionName => {
+      it('should NOT find a deleted action', () =>
+        cli
+          .do(`action get ${actionName} --no-retry`, this.app)
+          .then(cli.expectError(404))
+          .catch(common.oops(this)))
+      it('should FAIL to delete a non-existent action', () =>
+        cli
+          .do(`rimraf ${actionName} --no-retry`, this.app)
+          .then(cli.expectError(404))
+          .catch(common.oops(this)))
+    })
 
   /**
    * Create actions in the given listToCreate, delete them with `rimraf
@@ -61,37 +68,56 @@ describe('Delete using rimraf with wildcards', function (this: common.ISuite) {
   const recreateDeleteAndVerify = (cmd, listToBeDeleted, listToCreate) => {
     create(listToCreate)
 
-    it(`should delete via rimraf ${cmd}`, () => cli.do(`rimraf ${cmd}`, this.app)
-      .then(cli.expectOKWithCustom({ expect: `deleted ${listToBeDeleted.length} elements`, exact: true }))
-      .then(sidecar.expectClosed)
-      .catch(common.oops(this)))
+    it(`should delete via rimraf ${cmd}`, () =>
+      cli
+        .do(`rimraf ${cmd}`, this.app)
+        .then(
+          cli.expectOKWithCustom({
+            expect: `deleted ${listToBeDeleted.length} elements`,
+            exact: true
+          })
+        )
+        .then(sidecar.expectClosed)
+        .catch(common.oops(this)))
 
     verifyDeleted(listToBeDeleted)
   }
 
   create(actions)
 
-  it('should delete nothing with rimraf zzz*', () => cli.do(`rimraf zzz*`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'deleted 0 elements', exact: true }))
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
-    .catch(common.oops(this)))
+  it('should delete nothing with rimraf zzz*', () =>
+    cli
+      .do(`rimraf zzz*`, this.app)
+      .then(
+        cli.expectOKWithCustom({ expect: 'deleted 0 elements', exact: true })
+      )
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
+      .catch(common.oops(this)))
 
-  it('should delete foo and foo2 with rimraf foo*', () => cli.do(`rimraf foo*`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
-    .catch(common.oops(this)))
+  it('should delete foo and foo2 with rimraf foo*', () =>
+    cli
+      .do(`rimraf foo*`, this.app)
+      .then(
+        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
+      )
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
+      .catch(common.oops(this)))
 
   // goo should still show up in the list and get views
-  it('should list goo', () => cli.do(`list`, this.app)
-    .then(cli.expectOKWithOnly(actions[2]))
-    .catch(common.oops(this)))
-  it('should find a not-deleted action', () => cli.do(`action get ${actions[2]}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actions[2]))
-    .catch(common.oops(this)))
+  it('should list goo', () =>
+    cli
+      .do(`list`, this.app)
+      .then(cli.expectOKWithOnly(actions[2]))
+      .catch(common.oops(this)))
+  it('should find a not-deleted action', () =>
+    cli
+      .do(`action get ${actions[2]}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actions[2]))
+      .catch(common.oops(this)))
 
   // foo and foo2 should be gone
   verifyDeleted(subset)

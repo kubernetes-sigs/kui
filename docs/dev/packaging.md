@@ -4,9 +4,9 @@ Beyond local development of Kui, you may want to package and
 distribute Kui to others. The code base currently supports three
 packaging modes:
 
-  - [Headless](#headless-packaging) &mdash; making a lightweight headless release
-  - [Electron](#electron-packaging) &mdash; building an Electron client app
-  - [Browser](#browser-packaging) &mdash; building for the browser, using [webpack](https://webpack.js.org/)
+- [Headless](#headless-packaging) &mdash; making a lightweight headless release
+- [Electron](#electron-packaging) &mdash; building an Electron client app
+- [Browser](#browser-packaging) &mdash; building for the browser, using [webpack](https://webpack.js.org/)
 
 ## Headless packaging
 
@@ -45,6 +45,7 @@ To build for use in a browser, Kui uses
 [webpack](https://webpack.js.org/).
 
 Option A) Build webpack with [proxy support](../../packages/proxy/doc/proxy-architecture.pdf).
+
 ```bash
 > cd clients/default  # or: cd clients/[your-customized-client]
 > npm run build:proxy
@@ -52,18 +53,20 @@ Option A) Build webpack with [proxy support](../../packages/proxy/doc/proxy-arch
 > ls dist/webpack
 ... lots of *.bundle.js.br files ...
 ```
+
 Option B) Build webpack without proxy support
+
 ```bash
 > cd clients/default  # or: cd clients/[your-customized-client]
 > KUI_USE_PROXY=false npm run build:webpack
 > ls dist/webpack
 ... lots of *.bundle.js.br files ...
 ```
+
 The first time you do so, you will be asked to set up a local https
 certificate. You should see the normal openssl series of prompts; make
 sure that you provide at least one non-empty answer to the self-signed
 certificate prompts, otherwise it will fail in odd ways.
-
 
 After you have built the webpack bundles, you can test them out
 locally:
@@ -76,4 +79,5 @@ https://localhost:9080
 ```
 
 ## Internal Details
+
 See: [Internal Development Details](../../packages/kui-builder/README.md).

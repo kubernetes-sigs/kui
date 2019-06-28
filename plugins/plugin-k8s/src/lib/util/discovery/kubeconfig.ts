@@ -44,7 +44,11 @@ const maybeKUBECONFIG = (file: string): string | void => {
     debug('maybe? KUBECONFIG from %s', file, maybe)
     if (maybe.length > 1) {
       const kubeconfig = maybe.toString().trim()
-      debug('all right! we got a candidate KUBECONFIG from %s', file, kubeconfig)
+      debug(
+        'all right! we got a candidate KUBECONFIG from %s',
+        file,
+        kubeconfig
+      )
       return kubeconfig
     }
   } catch (err) {
@@ -60,11 +64,13 @@ const maybeKUBECONFIG = (file: string): string | void => {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fillInKUBECONFIG = async (env: Record<string, any>) => {
-  if (env.KUBECONFIG === undefined) { // see https://github.com/IBM/kui/issues/1789
+  if (env.KUBECONFIG === undefined) {
+    // see https://github.com/IBM/kui/issues/1789
     const { exists } = await import('fs-extra')
     if (!(await exists(process.env.HOME + '/.kube/config'))) {
       debug('attempting to find KUBECONFIG env var')
-      const kubeconfig = maybeKUBECONFIG('.bash_profile') ||
+      const kubeconfig =
+        maybeKUBECONFIG('.bash_profile') ||
         maybeKUBECONFIG('.profile') ||
         maybeKUBECONFIG('.zshrc') ||
         maybeKUBECONFIG('.zsh_profile') ||

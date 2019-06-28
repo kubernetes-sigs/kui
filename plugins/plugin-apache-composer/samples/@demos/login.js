@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-let main = args => ({ html: `<html><body>please say the magic word.</body></html>` })
+let main = args => ({
+  html: `<html><body>please say the magic word.</body></html>`
+})

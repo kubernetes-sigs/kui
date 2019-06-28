@@ -16,7 +16,11 @@
 
 import * as Debug from 'debug'
 
-import { inBrowser, isHeadless, hasProxy } from '@kui-shell/core/core/capabilities'
+import {
+  inBrowser,
+  isHeadless,
+  hasProxy
+} from '@kui-shell/core/core/capabilities'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
@@ -24,7 +28,15 @@ const debug = Debug('plugins/bash-like/cmds/catchall')
  * Command handler that dispatches to an outer shell
  *
  */
-export const dispatchToShell = async ({ tab, block, command, argvNoOptions, execOptions, parsedOptions, createOutputStream }: EvaluatorArgs) => {
+export const dispatchToShell = async ({
+  tab,
+  block,
+  command,
+  argvNoOptions,
+  execOptions,
+  parsedOptions,
+  createOutputStream
+}: EvaluatorArgs) => {
   debug('handling catchall', command)
 
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
@@ -35,12 +47,13 @@ export const dispatchToShell = async ({ tab, block, command, argvNoOptions, exec
     throw err
   }
 
-  const eOptions = execOptions.raw ? execOptions : Object.assign({}, { stdout: createOutputStream() }, execOptions)
+  const eOptions = execOptions.raw
+    ? execOptions
+    : Object.assign({}, { stdout: createOutputStream() }, execOptions)
 
   if (isHeadless() || execOptions.raw) {
     const { doExec } = await import('./bash-like')
-    const response = await doExec(command, eOptions)
-      .catch(cleanUpError)
+    const response = await doExec(command, eOptions).catch(cleanUpError)
     if (execOptions.raw && typeof response === 'string') {
       try {
         return JSON.parse(response)
@@ -51,8 +64,14 @@ export const dispatchToShell = async ({ tab, block, command, argvNoOptions, exec
     return response
   } else {
     const { doExec } = await import('../../pty/client')
-    return doExec(tab, block as HTMLElement, command.replace(/^!\s+/, ''), argvNoOptions, parsedOptions, eOptions)
-      .catch(cleanUpError)
+    return doExec(
+      tab,
+      block as HTMLElement,
+      command.replace(/^!\s+/, ''),
+      argvNoOptions,
+      parsedOptions,
+      eOptions
+    ).catch(cleanUpError)
   }
 }
 
@@ -60,9 +79,11 @@ export const dispatchToShell = async ({ tab, block, command, argvNoOptions, exec
  * On preload, register the catchall handler
  *
  */
-export const preload = (commandTree) => {
+export const preload = commandTree => {
   if (inBrowser() && !hasProxy()) {
-    debug('skipping catchall registration: in browser and no remote proxy to support it')
+    debug(
+      'skipping catchall registration: in browser and no remote proxy to support it'
+    )
     return
   }
 
@@ -74,5 +95,6 @@ export const preload = (commandTree) => {
     () => true, // we will accept anything
     dispatchToShell, // command handler dispatches to outer shell
     0, // priority
-    { noAuthOk: true, inBrowserOk: true })
+    { noAuthOk: true, inBrowserOk: true }
+  )
 }

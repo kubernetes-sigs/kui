@@ -20,7 +20,9 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 const actionName = `paginator-test-${new Date().getTime()}`
 const actionName2 = `test-paginator-${new Date().getTime()}` // intentionally jumbled w.r.t. actionName
@@ -36,13 +38,17 @@ const NN = 4
  */
 const invokeABunch = (ctx, actionName) => {
   for (let idx = 0; idx < NN; idx++) {
-    it(`should invoke it idx=${idx}`, () => cli.do(`wsk action invoke ${actionName}`, ctx.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => ctx.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID)) // get the activationId
-      .then(activationId => ui.waitForActivation(ctx.app, activationId, { name: actionName })) // wait till activation list shows it
-      .catch(common.oops(ctx)))
+    it(`should invoke it idx=${idx}`, () =>
+      cli
+        .do(`wsk action invoke ${actionName}`, ctx.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(actionName))
+        .then(() => ctx.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID)) // get the activationId
+        .then(activationId =>
+          ui.waitForActivation(ctx.app, activationId, { name: actionName })
+        ) // wait till activation list shows it
+        .catch(common.oops(ctx)))
   }
 }
 
@@ -60,62 +66,91 @@ const testPagination = (ctx: common.ISuite, actionName?: string) => {
   // selector that identifies the REPL output of the command just executed
   const lastBlock = 'repl .repl-block:nth-last-child(2)'
   const tableRows = `${lastBlock} .log-line`
-  const tableRowsFiltered = actionName ? `${tableRows}[data-name="${actionName}"]` : tableRows
+  const tableRowsFiltered = actionName
+    ? `${tableRows}[data-name="${actionName}"]`
+    : tableRows
   const description = `${lastBlock} .list-paginator-description`
   const prevButton = `${lastBlock} .list-paginator-button-prev`
   const nextButton = `${lastBlock} .list-paginator-button-next`
 
-  return cli.do(`$ list --limit ${limit} ${extraArgs}`, app)
-    .then(cli.expectOKWithAny)
-    .then(() => app.client.waitUntil(() => {
-      return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)])
-        .then(([paginatorText, rows]) => {
-          return paginatorText.indexOf(`1\u2013${limit}`) === 0 && // starts with "1-limit" ...
-                        rows.value.length === limit
+  return (
+    cli
+      .do(`$ list --limit ${limit} ${extraArgs}`, app)
+      .then(cli.expectOKWithAny)
+      .then(() =>
+        app.client.waitUntil(() => {
+          return Promise.all([
+            app.client.getText(description),
+            app.client.elements(tableRowsFiltered)
+          ]).then(([paginatorText, rows]) => {
+            return (
+              paginatorText.indexOf(`1\u2013${limit}`) === 0 && // starts with "1-limit" ...
+              rows.value.length === limit
+            )
+          })
         })
-    }))
+      )
 
-  // click next button
-    .then(() => app.client.click(nextButton))
-    .then(() => app.client.waitUntil(() => {
-      return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)])
-        .then(([paginatorText, rows]) => {
-          return paginatorText.indexOf(`${limit + 1}\u2013${limit + limit}`) === 0 && // starts with 'N+1-N+limit+1'
-                        rows.value.length === limit
+      // click next button
+      .then(() => app.client.click(nextButton))
+      .then(() =>
+        app.client.waitUntil(() => {
+          return Promise.all([
+            app.client.getText(description),
+            app.client.elements(tableRowsFiltered)
+          ]).then(([paginatorText, rows]) => {
+            return (
+              paginatorText.indexOf(`${limit + 1}\u2013${limit + limit}`) ===
+                0 && rows.value.length === limit // starts with 'N+1-N+limit+1'
+            )
+          })
         })
-    }))
+      )
 
-  // click prev button
-    .then(() => app.client.click(prevButton))
-    .then(() => app.client.waitUntil(() => {
-      return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)])
-        .then(([paginatorText, rows]) => {
-          return paginatorText.indexOf(`1\u2013${limit}`) === 0 && // starts with "1-limit" ...
-                        rows.value.length === limit
+      // click prev button
+      .then(() => app.client.click(prevButton))
+      .then(() =>
+        app.client.waitUntil(() => {
+          return Promise.all([
+            app.client.getText(description),
+            app.client.elements(tableRowsFiltered)
+          ]).then(([paginatorText, rows]) => {
+            return (
+              paginatorText.indexOf(`1\u2013${limit}`) === 0 && // starts with "1-limit" ...
+              rows.value.length === limit
+            )
+          })
         })
-    }))
+      )
 
-    .catch(common.oops(ctx))
+      .catch(common.oops(ctx))
+  )
 }
 
-describe('Activation list paginator', function (this: common.ISuite) {
+describe('Activation list paginator', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it(`should create an action ${actionName}`, () => cli.do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName)))
+  it(`should create an action ${actionName}`, () =>
+    cli
+      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName)))
 
-  it(`should create an action ${actionName2}`, () => cli.do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2)))
+  it(`should create an action ${actionName2}`, () =>
+    cli
+      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(actionName2)))
 
   invokeABunch(this, actionName)
   it('paginate activations without filter', () => testPagination(this))
 
   invokeABunch(this, actionName2)
-  it(`paginate activations with filter ${actionName}`, () => testPagination(this, actionName))
-  it(`paginate activations with filter ${actionName2}`, () => testPagination(this, actionName2))
+  it(`paginate activations with filter ${actionName}`, () =>
+    testPagination(this, actionName))
+  it(`paginate activations with filter ${actionName2}`, () =>
+    testPagination(this, actionName2))
 })

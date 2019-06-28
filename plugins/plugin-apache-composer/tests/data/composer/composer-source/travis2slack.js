@@ -21,14 +21,17 @@ const composer = require('openwhisk-composer')
 const prefix = 'travis2slack'
 
 const slackConfig = {
-    token: process.env['PATH'],  /* for tests... just some env var that will be defined, it doesn't need to have any meaning */
-    username: 'whiskbot',
-    url: 'https://slack.com/api/chat.postMessage'
+  token:
+    process.env[
+      'PATH'
+    ] /* for tests... just some env var that will be defined, it doesn't need to have any meaning */,
+  username: 'whiskbot',
+  url: 'https://slack.com/api/chat.postMessage'
 }
 
 if (slackConfig.token === undefined) {
-    console.error('SLACK_TOKEN required in environment.')
-    process.exit(-1)
+  console.error('SLACK_TOKEN required in environment.')
+  process.exit(-1)
 }
 
 module.exports = composer.sequence(
@@ -38,10 +41,12 @@ module.exports = composer.sequence(
   composer.retain(
     composer.sequence(
       composer.retry(3, `${prefix}/fetch.log.url`),
-      `${prefix}/analyze.log`)),
-  ({result, params}) => Object.assign(result, params),
+      `${prefix}/analyze.log`
+    )
+  ),
+  ({ result, params }) => Object.assign(result, params),
   `${prefix}/format.for.slack`,
-  composer.retain(
-    composer.literal(slackConfig)),
-  ({result, params}) => Object.assign(result, params),
-  `/whisk.system/slack/post`)
+  composer.retain(composer.literal(slackConfig)),
+  ({ result, params }) => Object.assign(result, params),
+  `/whisk.system/slack/post`
+)

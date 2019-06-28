@@ -19,7 +19,17 @@ import * as Debug from 'debug'
 import { Tab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import drilldown from '../picture-in-picture'
-import { Table, Row, Cell, Icon, TableStyle, WatchableTable, diffTableRows, isWatchableTable, isTable } from '../models/table'
+import {
+  Table,
+  Row,
+  Cell,
+  Icon,
+  TableStyle,
+  WatchableTable,
+  diffTableRows,
+  isWatchableTable,
+  isTable
+} from '../models/table'
 import { applyDiffTable } from '../views/diffTable'
 const debug = Debug('webapp/views/table')
 
@@ -29,10 +39,14 @@ interface TableFormatOptions {
 
 // sort the body of table
 export const sortBody = (rows: Row[]): Row[] => {
-  return rows.sort((a, b) =>
-    (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
-    (a.packageName || '').localeCompare(b.packageName || '') ||
-    a.name.localeCompare(b.name))
+  return rows.sort(
+    (a, b) =>
+      (a.prettyType || a.type || '').localeCompare(
+        b.prettyType || b.type || ''
+      ) ||
+      (a.packageName || '').localeCompare(b.packageName || '') ||
+      a.name.localeCompare(b.name)
+  )
 }
 
 /**
@@ -47,19 +61,24 @@ const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
     header.outerCSS = `${header.outerCSS || ''} header-cell`
 
     if (header.attributes) {
-      header.attributes.forEach(cell => { cell.outerCSS = `${cell.outerCSS || ''} header-cell` })
+      header.attributes.forEach(cell => {
+        cell.outerCSS = `${cell.outerCSS || ''} header-cell`
+      })
     }
   }
   // sort the list, then format each element, then add the results to the resultDom
   // (don't sort lists of activations. i wish there were a better way to do this)
-  return [ header ].concat(noSort ? body : sortBody(body)).filter(x => x)
+  return [header].concat(noSort ? body : sortBody(body)).filter(x => x)
 }
 
 /**
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => (entity: Row): HTMLElement => {
+export const formatOneRowResult = (
+  tab: Tab,
+  options: RowFormatOptions = {}
+) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
@@ -67,7 +86,9 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
   // row selection
   entity.setSelected = () => {
-    const currentSelection = dom.parentNode.querySelector('.selected-row') as HTMLElement
+    const currentSelection = dom.parentNode.querySelector(
+      '.selected-row'
+    ) as HTMLElement
     if (currentSelection) {
       currentSelection.classList.remove('selected-row')
     }
@@ -98,8 +119,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   const entityNameGroup = document.createElement('span')
   entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
   if (entityNameGroup.classList.contains('header-cell')) {
-    entityName.classList.add('header-row');
-    (entityName.parentNode as HTMLElement).classList.add('header-row')
+    entityName.classList.add('header-row')
+    ;(entityName.parentNode as HTMLElement).classList.add('header-row')
   }
   if ((!options || !options.excludePackageName) && entity.packageName) {
     const packagePrefix = document.createElement('span')
@@ -164,7 +185,13 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   } else {
     if (isPopup() || options.usePip) {
       entityNameClickable.onclick = evt => {
-        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+        return drilldown(
+          tab,
+          entity.onclick,
+          undefined,
+          '.custom-content .padding-content',
+          'previous view'
+        )(evt)
       }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
@@ -175,7 +202,21 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
   /** add a cell to the current row of the table view we are generating. "entityName" is the current row */
   const addCellToRow = (theCell: Cell) => {
-    const { className, value, valueDom, innerClassName = '', parent = entityName, onclick, watch, key, fontawesome, css = '', watchLimit = 100000, tag = 'span', tagClass } = theCell
+    const {
+      className,
+      value,
+      valueDom,
+      innerClassName = '',
+      parent = entityName,
+      onclick,
+      watch,
+      key,
+      fontawesome,
+      css = '',
+      watchLimit = 100000,
+      tag = 'span',
+      tagClass
+    } = theCell
     const cell = document.createElement('span')
     const inner = document.createElement(tag)
 
@@ -211,9 +252,15 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
           // use :before and :after; so we need a wrapper
           const iconWrapper = document.createElement('span')
           iconWrapper.setAttribute('data-balloon', theIcon.balloon)
-          iconWrapper.setAttribute('data-balloon-pos', theIcon.balloonPos || 'right')
+          iconWrapper.setAttribute(
+            'data-balloon-pos',
+            theIcon.balloonPos || 'right'
+          )
           if (theIcon.balloonLength) {
-            iconWrapper.setAttribute('data-balloon-length', theIcon.balloonLength)
+            iconWrapper.setAttribute(
+              'data-balloon-length',
+              theIcon.balloonLength
+            )
           }
           iconWrapper.appendChild(icon)
           inner.appendChild(iconWrapper)
@@ -241,12 +288,18 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
         inner.appendChild(container)
       } else {
-        Promise.resolve(valueDom)
-          .then(valueDom => inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString())))
+        Promise.resolve(valueDom).then(valueDom =>
+          inner.appendChild(
+            valueDom.nodeName
+              ? valueDom
+              : document.createTextNode(valueDom.toString())
+          )
+        )
       }
     } else if (value) {
-      Promise.resolve(value)
-        .then(value => inner.appendChild(document.createTextNode(value)))
+      Promise.resolve(value).then(value =>
+        inner.appendChild(document.createTextNode(value))
+      )
     } else {
       console.error('Invalid cell model, no value field')
     }
@@ -254,8 +307,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     parent.appendChild(cell)
 
     if (cell.classList.contains('header-cell')) {
-      parent.classList.add('header-row');
-      (parent.parentNode as HTMLElement).classList.add('header-row')
+      parent.classList.add('header-row')
+      ;(parent.parentNode as HTMLElement).classList.add('header-row')
     }
 
     if (onclick) {
@@ -263,8 +316,15 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       cell.onclick = evt => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup() || options.usePip) {
-          return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
-        } else if (typeof onclick === 'string') { // TODO: define types here carefully
+          return drilldown(
+            tab,
+            onclick,
+            undefined,
+            '.custom-content .padding-content',
+            'previous view'
+          )(evt)
+        } else if (typeof onclick === 'string') {
+          // TODO: define types here carefully
           pexec(onclick, { tab })
         } else {
           onclick(evt)
@@ -273,7 +333,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     }
 
     const pulse = 'repeating-pulse'
-    if (key === 'STATUS' && (css.includes('yellow-background') || innerClassName.includes('yellow-background'))) {
+    if (
+      key === 'STATUS' &&
+      (css.includes('yellow-background') ||
+        innerClassName.includes('yellow-background'))
+    ) {
       cell.classList.add(pulse)
     }
 
@@ -310,8 +374,17 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
         }
 
         try {
-          Promise.resolve(watch(watchLimit - count - 1))
-            .then(({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll = false }) => {
+          Promise.resolve(watch(watchLimit - count - 1)).then(
+            ({
+              value,
+              done = false,
+              css,
+              onclick,
+              others = [],
+              unchanged = false,
+              outerCSS,
+              slowPoll = false
+            }) => {
               if (unchanged) {
                 // nothing to do, yet
                 return
@@ -355,12 +428,18 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
               // update the text
               if (value) {
                 inner.innerText = ''
-                inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
+                inner.appendChild(
+                  value.nodeName
+                    ? value
+                    : document.createTextNode(value.toString())
+                )
               }
 
               // any other cells to update?
               others.forEach(({ key, value, css, fontawesome }) => {
-                const otherInner = parent.querySelector(`.cell-inner[data-key="${key}"]`) as HTMLElement
+                const otherInner = parent.querySelector(
+                  `.cell-inner[data-key="${key}"]`
+                ) as HTMLElement
                 if (otherInner) {
                   otherInner.setAttribute('data-value', value)
                   if (css) {
@@ -370,7 +449,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
                     otherInner.querySelector('i').className = fontawesome
                   } else {
                     otherInner.innerText = ''
-                    otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
+                    otherInner.appendChild(
+                      value.nodeName
+                        ? value
+                        : document.createTextNode(value.toString())
+                    )
                   }
                 }
               })
@@ -393,7 +476,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
                 clearInterval(interval)
                 interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
               }
-            })
+            }
+          )
         } catch (err) {
           console.error('Error watching value', err)
           clearInterval(interval)
@@ -410,7 +494,17 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
   // add any attributes that should appear *before* the name column
   if (entity.beforeAttributes) {
-    entity.beforeAttributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome }) => addCellToRow({ className: outerCSS, value, innerClassName: css, onclick, key, fontawesome }))
+    entity.beforeAttributes.forEach(
+      ({ key, value, css = '', outerCSS = '', onclick, fontawesome }) =>
+        addCellToRow({
+          className: outerCSS,
+          value,
+          innerClassName: css,
+          onclick,
+          key,
+          fontawesome
+        })
+    )
   }
 
   //
@@ -418,23 +512,50 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   //
   if (entity.attributes) {
     // the entity provider wants to take complete control
-    entity.attributes.forEach(({ key, value, css = '', outerCSS = '', watch, watchLimit, onclick, fontawesome, tag }) => {
-      addCellToRow({ className: outerCSS, value, innerClassName: css, onclick, watch, key, fontawesome, watchLimit, tag })
-    })
+    entity.attributes.forEach(
+      ({
+        key,
+        value,
+        css = '',
+        outerCSS = '',
+        watch,
+        watchLimit,
+        onclick,
+        fontawesome,
+        tag
+      }) => {
+        addCellToRow({
+          className: outerCSS,
+          value,
+          innerClassName: css,
+          onclick,
+          watch,
+          key,
+          fontawesome,
+          watchLimit,
+          tag
+        })
+      }
+    )
   } else {
     // otherwise, we have some generic attribute handlers, here
     const addKind = () => {
       if (entity.kind || entity.prettyKind) {
-        addCellToRow({ className: 'entity-kind', value: entity.prettyKind || entity.kind })
+        addCellToRow({
+          className: 'entity-kind',
+          value: entity.prettyKind || entity.kind
+        })
       }
     }
     const addStatus = () => {
       if (entity.status) {
-        const cell = addCellToRow({ className: `entity-rule-status`,
+        const cell = addCellToRow({
+          className: `entity-rule-status`,
           value: 'Pending', // delay status display
           innerClassName: 'repeating-pulse', // css
           tag: 'badge',
-          tagClass: 'gray-background' })
+          tagClass: 'gray-background'
+        })
 
         /** normalize the status badge by capitalization */
         const capitalize = (str: string): string => {
@@ -445,16 +566,20 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
           const badge = cell.querySelector('badge') as HTMLElement
           badge.innerText = capitalize(status)
           badge.classList.remove('gray-background')
-          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
+          badge.classList.add(
+            status === 'active' ? 'green-background' : 'red-background'
+          )
           badge.classList.remove('repeating-pulse')
         })
       }
     }
     const addVersion = () => {
       if (entity.version || entity.prettyVersion) {
-        addCellToRow({ className: 'entity-version hide-with-sidecar',
+        addCellToRow({
+          className: 'entity-version hide-with-sidecar',
           value: entity.prettyVersion || entity.version,
-          innerClassName: 'slightly-deemphasize' })
+          innerClassName: 'slightly-deemphasize'
+        })
       }
     }
 
@@ -466,7 +591,12 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   return dom
 }
 
-export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: HTMLElement, options: TableFormatOptions = {}): void => {
+export const formatTable = (
+  tab: Tab,
+  table: Table | WatchableTable,
+  resultDom: HTMLElement,
+  options: TableFormatOptions = {}
+): void => {
   const tableDom = document.createElement('div')
   tableDom.classList.add('result-table')
 
@@ -487,7 +617,10 @@ export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: 
       const tableScroll = document.createElement('div')
       tableScroll.classList.add('scrollable')
       tableScroll.classList.add('scrollable-auto')
-      tableScroll.setAttribute('data-table-max-rows', typeof table.flexWrap === 'number' ? table.flexWrap.toString() : '8')
+      tableScroll.setAttribute(
+        'data-table-max-rows',
+        typeof table.flexWrap === 'number' ? table.flexWrap.toString() : '8'
+      )
       tableScroll.appendChild(tableDom)
       tableOuter.appendChild(tableScroll)
     } else {
@@ -548,7 +681,8 @@ export const formatTable = (tab: Tab, table: Table | WatchableTable, resultDom: 
   }
 
   if (isWatchableTable(table)) {
-    if (table.watchByDefault) { // TODO: register a button?
+    if (table.watchByDefault) {
+      // TODO: register a button?
       // we'll ping the watcher at most watchLimit times
       let count = table.watchLimit ? table.watchLimit : 100000
 
@@ -627,7 +761,9 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
 
   // row selection
   entity.setSelected = () => {
-    const currentSelection = dom.parentNode.querySelector('.selected-row') as HTMLElement
+    const currentSelection = dom.parentNode.querySelector(
+      '.selected-row'
+    ) as HTMLElement
     if (currentSelection) {
       currentSelection.classList.remove('selected-row')
     }
@@ -658,8 +794,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   const entityNameGroup = document.createElement('span')
   entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
   if (entityNameGroup.classList.contains('header-cell')) {
-    entityName.classList.add('header-row');
-    (entityName.parentNode as HTMLElement).classList.add('header-row')
+    entityName.classList.add('header-row')
+    ;(entityName.parentNode as HTMLElement).classList.add('header-row')
   }
   if ((!options || !options.excludePackageName) && entity.packageName) {
     const packagePrefix = document.createElement('span')
@@ -724,7 +860,13 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   } else {
     if (isPopup()) {
       entityNameClickable.onclick = evt => {
-        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+        return drilldown(
+          tab,
+          entity.onclick,
+          undefined,
+          '.custom-content .padding-content',
+          'previous view'
+        )(evt)
       }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
@@ -734,7 +876,20 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   }
 
   /** add a cell to the current row of the list view we] are generating. "entityName" is the current row */
-  const addCell = (className, value, innerClassName = '', parent = entityName, onclick?, watch?, key?, fontawesome?, css?, watchLimit = 100000, tag = 'span', tagClass?: string) => {
+  const addCell = (
+    className,
+    value,
+    innerClassName = '',
+    parent = entityName,
+    onclick?,
+    watch?,
+    key?,
+    fontawesome?,
+    css?,
+    watchLimit = 100000,
+    tag = 'span',
+    tagClass?: string
+  ) => {
     const cell = document.createElement('span')
     const inner = document.createElement(tag)
 
@@ -755,7 +910,13 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     }
 
     if (fontawesome) {
-      const addIcon = ({ fontawesome, onclick = undefined, balloon = undefined, balloonLength = undefined, balloonPos = 'right' }) => {
+      const addIcon = ({
+        fontawesome,
+        onclick = undefined,
+        balloon = undefined,
+        balloonLength = undefined,
+        balloonPos = 'right'
+      }) => {
         const icon = document.createElement('i')
         icon.className = fontawesome
         icon.classList.add('cell-inner')
@@ -798,8 +959,11 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
 
       inner.appendChild(container)
     } else if (value !== undefined) {
-      Promise.resolve(value)
-        .then(value => inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString())))
+      Promise.resolve(value).then(value =>
+        inner.appendChild(
+          value.nodeName ? value : document.createTextNode(value.toString())
+        )
+      )
     } else {
       console.error('Invalid cell model, no value field')
     }
@@ -807,8 +971,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     parent.appendChild(cell)
 
     if (cell.classList.contains('header-cell')) {
-      parent.classList.add('header-row');
-      (parent.parentNode as HTMLElement).classList.add('header-row')
+      parent.classList.add('header-row')
+      ;(parent.parentNode as HTMLElement).classList.add('header-row')
     }
 
     if (onclick) {
@@ -816,7 +980,13 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
       cell.onclick = evt => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup()) {
-          return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+          return drilldown(
+            tab,
+            onclick,
+            undefined,
+            '.custom-content .padding-content',
+            'previous view'
+          )(evt)
         } else if (typeof onclick === 'string') {
           pexec(onclick, { tab })
         } else {
@@ -860,8 +1030,17 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
         }
 
         try {
-          Promise.resolve(watch(watchLimit - count - 1))
-            .then(({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll = false }) => {
+          Promise.resolve(watch(watchLimit - count - 1)).then(
+            ({
+              value,
+              done = false,
+              css,
+              onclick,
+              others = [],
+              unchanged = false,
+              outerCSS,
+              slowPoll = false
+            }) => {
               if (unchanged) {
                 // nothing to do, yet
                 return
@@ -905,12 +1084,18 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
               // update the text
               if (value) {
                 inner.innerText = ''
-                inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
+                inner.appendChild(
+                  value.nodeName
+                    ? value
+                    : document.createTextNode(value.toString())
+                )
               }
 
               // any other cells to update?
               others.forEach(({ key, value, css, fontawesome }) => {
-                const otherInner = parent.querySelector(`.cell-inner[data-key="${key}"]`) as HTMLElement
+                const otherInner = parent.querySelector(
+                  `.cell-inner[data-key="${key}"]`
+                ) as HTMLElement
                 if (otherInner) {
                   otherInner.setAttribute('data-value', value)
                   if (css) {
@@ -920,7 +1105,11 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
                     otherInner.querySelector('i').className = fontawesome
                   } else {
                     otherInner.innerText = ''
-                    otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
+                    otherInner.appendChild(
+                      value.nodeName
+                        ? value
+                        : document.createTextNode(value.toString())
+                    )
                   }
                 }
               })
@@ -943,7 +1132,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
                 clearInterval(interval)
                 interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
               }
-            })
+            }
+          )
         } catch (err) {
           console.error('Error watching value', err)
           clearInterval(interval)
@@ -960,7 +1150,19 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
 
   // add any attributes that should appear *before* the name column
   if (entity.beforeAttributes) {
-    entity.beforeAttributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome }) => addCell(outerCSS, value, css, undefined, onclick, undefined, key, fontawesome))
+    entity.beforeAttributes.forEach(
+      ({ key, value, css = '', outerCSS = '', onclick, fontawesome }) =>
+        addCell(
+          outerCSS,
+          value,
+          css,
+          undefined,
+          onclick,
+          undefined,
+          key,
+          fontawesome
+        )
+    )
   }
 
   //
@@ -968,9 +1170,33 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   //
   if (entity.attributes) {
     // the entity provider wants to take complete control
-    entity.attributes.forEach(({ key, value, css = '', outerCSS = '', watch, watchLimit, onclick, fontawesome, tag }) => {
-      addCell(outerCSS, value, css, undefined, onclick, watch, key, fontawesome, undefined, watchLimit, tag)
-    })
+    entity.attributes.forEach(
+      ({
+        key,
+        value,
+        css = '',
+        outerCSS = '',
+        watch,
+        watchLimit,
+        onclick,
+        fontawesome,
+        tag
+      }) => {
+        addCell(
+          outerCSS,
+          value,
+          css,
+          undefined,
+          onclick,
+          watch,
+          key,
+          fontawesome,
+          undefined,
+          watchLimit,
+          tag
+        )
+      }
+    )
   } else {
     // otherwise, we have some generic attribute handlers, here
     const addKind = () => {
@@ -980,11 +1206,21 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     }
     const addStatus = () => {
       if (entity.status) {
-        const cell = addCell(`entity-rule-status`,
+        const cell = addCell(
+          `entity-rule-status`,
           'Pending', // delay status display
           'repeating-pulse', // css
           // ugh: i know, this needs to be cleaned up:
-          undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'badge', 'gray-background')
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          'badge',
+          'gray-background'
+        )
 
         /** normalize the status badge by capitalization */
         const capitalize = (str: string): string => {
@@ -995,16 +1231,20 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
           const badge = cell.querySelector('badge') as HTMLElement
           badge.innerText = capitalize(status)
           badge.classList.remove('gray-background')
-          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
+          badge.classList.add(
+            status === 'active' ? 'green-background' : 'red-background'
+          )
           badge.classList.remove('repeating-pulse')
         })
       }
     }
     const addVersion = () => {
       if (entity.version || entity.prettyVersion) {
-        addCell('entity-version hide-with-sidecar',
+        addCell(
+          'entity-version hide-with-sidecar',
           entity.prettyVersion || entity.version,
-          'slightly-deemphasize')
+          'slightly-deemphasize'
+        )
       }
     }
 
@@ -1039,10 +1279,12 @@ export const formatListResult = (tab: Tab, response) => {
     if (response[0] && response[0].noSort) {
       return response
     } else {
-      return response.sort((a, b) =>
-        (a.prettyType || a.type).localeCompare(b.prettyType || b.type) ||
-        (a.packageName || '').localeCompare(b.packageName || '') ||
-        a.name.localeCompare(b.name))
+      return response.sort(
+        (a, b) =>
+          (a.prettyType || a.type).localeCompare(b.prettyType || b.type) ||
+          (a.packageName || '').localeCompare(b.packageName || '') ||
+          a.name.localeCompare(b.name)
+      )
     }
   }
 
@@ -1053,92 +1295,109 @@ export const formatListResult = (tab: Tab, response) => {
  * Format a table of tables view
  *
  */
-export const formatMultiListResult = async (tab: Tab, response, resultDom: Element) => {
+export const formatMultiListResult = async (
+  tab: Tab,
+  response,
+  resultDom: Element
+) => {
   debug('formatMultiListResult', response)
 
-  return Promise.all(response.filter(x => x.length > 0).map(async (table, idx, tables) => {
-    const tableDom = document.createElement('div')
-    tableDom.classList.add('result-table')
+  return Promise.all(
+    response
+      .filter(x => x.length > 0)
+      .map(async (table, idx, tables) => {
+        const tableDom = document.createElement('div')
+        tableDom.classList.add('result-table')
 
-    let container
-    if (table[0].title) {
-      const tableOuterWrapper = document.createElement('div')
-      const tableOuter = document.createElement('div')
-      const titleOuter = document.createElement('div')
-      const titleInner = document.createElement('div')
+        let container
+        if (table[0].title) {
+          const tableOuterWrapper = document.createElement('div')
+          const tableOuter = document.createElement('div')
+          const titleOuter = document.createElement('div')
+          const titleInner = document.createElement('div')
 
-      tableOuterWrapper.classList.add('result-table-outer-wrapper')
-      if (tables.length > 1) {
-        tableOuterWrapper.classList.add('row-selection-context')
-      }
+          tableOuterWrapper.classList.add('result-table-outer-wrapper')
+          if (tables.length > 1) {
+            tableOuterWrapper.classList.add('row-selection-context')
+          }
 
-      if (table[0].style !== undefined) {
-        tableOuter.setAttribute('kui-table-style', TableStyle[table[0].style].toString())
-      }
+          if (table[0].style !== undefined) {
+            tableOuter.setAttribute(
+              'kui-table-style',
+              TableStyle[table[0].style].toString()
+            )
+          }
 
-      tableOuter.appendChild(titleOuter)
-      titleOuter.appendChild(titleInner)
-      tableOuterWrapper.appendChild(tableOuter)
-      resultDom.appendChild(tableOuterWrapper)
+          tableOuter.appendChild(titleOuter)
+          titleOuter.appendChild(titleInner)
+          tableOuterWrapper.appendChild(tableOuter)
+          resultDom.appendChild(tableOuterWrapper)
 
-      if (table[0].flexWrap) {
-        const tableScroll = document.createElement('div')
-        tableScroll.classList.add('scrollable')
-        tableScroll.classList.add('scrollable-auto')
-        tableScroll.setAttribute('data-table-max-rows', typeof table[0].flexWrap === 'number' ? table[0].flexWrap : 8)
-        tableScroll.appendChild(tableDom)
-        tableOuter.appendChild(tableScroll)
-      } else {
-        tableOuter.appendChild(tableDom)
-      }
+          if (table[0].flexWrap) {
+            const tableScroll = document.createElement('div')
+            tableScroll.classList.add('scrollable')
+            tableScroll.classList.add('scrollable-auto')
+            tableScroll.setAttribute(
+              'data-table-max-rows',
+              typeof table[0].flexWrap === 'number' ? table[0].flexWrap : 8
+            )
+            tableScroll.appendChild(tableDom)
+            tableOuter.appendChild(tableScroll)
+          } else {
+            tableOuter.appendChild(tableDom)
+          }
 
-      tableOuter.classList.add('result-table-outer')
-      titleOuter.classList.add('result-table-title-outer')
-      titleInner.classList.add('result-table-title')
-      titleInner.innerText = table[0].title
+          tableOuter.classList.add('result-table-outer')
+          titleOuter.classList.add('result-table-title-outer')
+          titleInner.classList.add('result-table-title')
+          titleInner.innerText = table[0].title
 
-      if (table[0].tableCSS) {
-        tableOuterWrapper.classList.add(table[0].tableCSS)
-      }
+          if (table[0].tableCSS) {
+            tableOuterWrapper.classList.add(table[0].tableCSS)
+          }
 
-      if (table[0].fontawesome) {
-        const awesomeWrapper = document.createElement('div')
-        const awesome = document.createElement('i')
-        awesomeWrapper.appendChild(awesome)
-        titleOuter.appendChild(awesomeWrapper)
+          if (table[0].fontawesome) {
+            const awesomeWrapper = document.createElement('div')
+            const awesome = document.createElement('i')
+            awesomeWrapper.appendChild(awesome)
+            titleOuter.appendChild(awesomeWrapper)
 
-        awesome.className = table[0].fontawesome
+            awesome.className = table[0].fontawesome
 
-        if (table[0].fontawesomeCSS) {
-          awesomeWrapper.classList.add(table[0].fontawesomeCSS)
-          delete table[0].fontawesomeCSS
+            if (table[0].fontawesomeCSS) {
+              awesomeWrapper.classList.add(table[0].fontawesomeCSS)
+              delete table[0].fontawesomeCSS
+            }
+
+            if (table[0].fontawesomeBalloon) {
+              awesomeWrapper.setAttribute(
+                'data-balloon',
+                table[0].fontawesomeBalloon
+              )
+              awesomeWrapper.setAttribute('data-balloon-pos', 'left')
+              delete table[0].fontawesomeBalloon
+            }
+
+            // otherwise, the header row renderer will pick this up
+            delete table[0].fontawesome
+          }
+
+          container = tableOuterWrapper
+        } else {
+          resultDom.appendChild(tableDom)
+          container = tableDom
         }
 
-        if (table[0].fontawesomeBalloon) {
-          awesomeWrapper.setAttribute('data-balloon', table[0].fontawesomeBalloon)
-          awesomeWrapper.setAttribute('data-balloon-pos', 'left')
-          delete table[0].fontawesomeBalloon
+        container.classList.add('big-top-pad')
+
+        // render(table, { echo: false, resultDom: tableDom })
+        const rows = await formatListResult(tab, table)
+        rows.map(row => tableDom.appendChild(row))
+
+        const rowSelection = tableDom.querySelector('.selected-row')
+        if (rowSelection) {
+          tableDom.classList.add('has-row-selection')
         }
-
-        // otherwise, the header row renderer will pick this up
-        delete table[0].fontawesome
-      }
-
-      container = tableOuterWrapper
-    } else {
-      resultDom.appendChild(tableDom)
-      container = tableDom
-    }
-
-    container.classList.add('big-top-pad')
-
-    // render(table, { echo: false, resultDom: tableDom })
-    const rows = await formatListResult(tab, table)
-    rows.map(row => tableDom.appendChild(row))
-
-    const rowSelection = tableDom.querySelector('.selected-row')
-    if (rowSelection) {
-      tableDom.classList.add('has-row-selection')
-    }
-  }))
+      })
+  )
 }

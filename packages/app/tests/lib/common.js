@@ -18,7 +18,10 @@ const ui = require('./ui')
 require('colors')
 
 /** electron targets in travis use the clients/default version */
-exports.expectedVersion = process.env.MOCHA_RUN_TARGET === 'electron' ? '0.0.1' : require('@kui-shell/settings/package.json').version
+exports.expectedVersion =
+  process.env.MOCHA_RUN_TARGET === 'electron'
+    ? '0.0.1'
+    : require('@kui-shell/settings/package.json').version
 
 /**
  * Mimic the request-promise functionality, but with retry
@@ -29,17 +32,25 @@ exports.rp = opts => {
   const withRetry = require('promise-retry')
 
   return withRetry((retry, iter) => {
-    return rp(Object.assign({ timeout: 20000 }, typeof opts === 'string' ? { url: opts } : opts))
-      .catch(err => {
-        const isNormalError = err && (err.statusCode === 400 || err.statusCode === 404 || err.statusCode === 409)
-        if (!isNormalError && (iter < 10)) {
-          console.error(err)
-          retry()
-        } else {
-          console.error(`Error in rp with opts=${JSON.stringify(opts)}`)
-          throw err
-        }
-      })
+    return rp(
+      Object.assign(
+        { timeout: 20000 },
+        typeof opts === 'string' ? { url: opts } : opts
+      )
+    ).catch(err => {
+      const isNormalError =
+        err &&
+        (err.statusCode === 400 ||
+          err.statusCode === 404 ||
+          err.statusCode === 409)
+      if (!isNormalError && iter < 10) {
+        console.error(err)
+        retry()
+      } else {
+        console.error(`Error in rp with opts=${JSON.stringify(opts)}`)
+        throw err
+      }
+    })
   })
 }
 
@@ -53,7 +64,8 @@ exports.rp = opts => {
 const prepareElectron = (fuzz, popup = false) => {
   const Application = require('spectron').Application
   const electron = require('electron') // relative to __dirname
-  const appMain = process.env.APP_MAIN || '../../build/packages/app/src/main/main.js' // relative to the tests/ directory
+  const appMain =
+    process.env.APP_MAIN || '../../build/packages/app/src/main/main.js' // relative to the tests/ directory
 
   const env = {}
   if (fuzz) {
@@ -62,7 +74,7 @@ const prepareElectron = (fuzz, popup = false) => {
 
   const opts = {
     env,
-    chromeDriverArgs: [ '--no-sandbox' ],
+    chromeDriverArgs: ['--no-sandbox'],
     waitTimeout: process.env.TIMEOUT || 20000
   }
 
@@ -79,14 +91,14 @@ const prepareElectron = (fuzz, popup = false) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') {
     console.log(`Testing Webpack against chromium`)
     opts.path = electron // this means spectron will use electron located in node_modules
-    opts.args = [ '../app/tests/lib/main.js' ] // relative to the tests/ directory
+    opts.args = ['../app/tests/lib/main.js'] // relative to the tests/ directory
   } else if (process.env.TEST_FROM_BUILD) {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
     opts.path = process.env.TEST_FROM_BUILD
   } else {
     console.log('Using filesystem-based assets')
     opts.path = electron // this means spectron will use electron located in node_modules
-    opts.args = [ appMain ] // in this mode, we need to specify the main.js to use
+    opts.args = [appMain] // in this mode, we need to specify the main.js to use
   }
 
   if (process.env.CHROMEDRIVER_PORT) {
@@ -121,19 +133,24 @@ exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
     ctx.retries(2) // don't retry the mocha.it in local testing
   }
 
-  return async function () {
+  return async function() {
     if (!noApp) {
       ctx.app = prepareElectron(fuzz, popup)
     }
 
     // start the app, if requested
-    const start = noApp ? () => Promise.resolve() : () => {
-      return ctx.app.start() // this will launch electron
-      // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
-      // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
-        .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
-        .then(() => ui.cli.waitForRepl(ctx.app)) // should have an active repl
-    }
+    const start = noApp
+      ? () => Promise.resolve()
+      : () => {
+          return (
+            ctx.app
+              .start() // this will launch electron
+              // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
+              // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
+              .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
+              .then(() => ui.cli.waitForRepl(ctx.app))
+          ) // should have an active repl
+        }
 
     await start()
     ctx.timeout(process.env.TIMEOUT || 60000)
@@ -168,8 +185,10 @@ exports.after = (ctx, f) => () => {
   // print out log messages from the electron app, if any of the tests
   // failed
   if (anyFailed && ctx.app && ctx.app.client) {
-    ctx.app.client.getRenderProcessLogs().then(logs => logs.forEach(log => {
-      if (log.level === 'SEVERE' && // only console.error messages
+    ctx.app.client.getRenderProcessLogs().then(logs =>
+      logs.forEach(log => {
+        if (
+          log.level === 'SEVERE' && // only console.error messages
           log.message.indexOf('The requested resource was not found') < 0 && // composer file not found
           log.message.indexOf('Error compiling app source') < 0 &&
           log.message.indexOf('ReferenceError') < 0 &&
@@ -178,11 +197,14 @@ exports.after = (ctx, f) => () => {
           log.message.indexOf('UsageError') < 0 && // we probably caused repl usage errors
           log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
           log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
-      ) {
-        const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-        console.log(`${log.source} ${log.level}`.bold.red, logMessage)
-      }
-    }))
+        ) {
+          const logMessage = log.message
+            .substring(log.message.indexOf('%c') + 2)
+            .replace(/%c|%s|"/g, '')
+          console.log(`${log.source} ${log.level}`.bold.red, logMessage)
+        }
+      })
+    )
   }
 
   if (ctx.app && ctx.app.isRunning()) {
@@ -194,27 +216,33 @@ exports.oops = ctx => err => {
   console.log(err)
 
   if (ctx.app) {
-    ctx.app.client.getMainProcessLogs().then(logs => logs.forEach(log => {
-      if (log.indexOf('INFO:CONSOLE') < 0) {
-        // don't log console messages, as these will show up in getRenderProcessLogs
-        console.log('MAIN'.bold.cyan, log)
-      }
-    }))
-    ctx.app.client.getRenderProcessLogs().then(logs => logs.forEach(log => {
-      if (log.message.indexOf('%c') === -1) {
-        console.log('RENDER'.bold.yellow, log.message.red)
-      } else { // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
-        const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-        console.log('RENDER'.bold.yellow, logMessage)
-      }
-    }))
-
-    ctx.app.client.getText(ui.selectors.OOPS)
-      .then(anyErrors => {
-        if (anyErrors) {
-          console.log('Error from the UI'.bold.magenta, anyErrors)
+    ctx.app.client.getMainProcessLogs().then(logs =>
+      logs.forEach(log => {
+        if (log.indexOf('INFO:CONSOLE') < 0) {
+          // don't log console messages, as these will show up in getRenderProcessLogs
+          console.log('MAIN'.bold.cyan, log)
         }
       })
+    )
+    ctx.app.client.getRenderProcessLogs().then(logs =>
+      logs.forEach(log => {
+        if (log.message.indexOf('%c') === -1) {
+          console.log('RENDER'.bold.yellow, log.message.red)
+        } else {
+          // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
+          const logMessage = log.message
+            .substring(log.message.indexOf('%c') + 2)
+            .replace(/%c|%s|"/g, '')
+          console.log('RENDER'.bold.yellow, logMessage)
+        }
+      })
+    )
+
+    ctx.app.client.getText(ui.selectors.OOPS).then(anyErrors => {
+      if (anyErrors) {
+        console.log('Error from the UI'.bold.magenta, anyErrors)
+      }
+    })
   }
   // swap these two if you want to debug failures locally
   // return new Promise((resolve, reject) => setTimeout(() => { reject(err) }, 100000))
@@ -233,8 +261,10 @@ exports.localDescribe = (msg, func) => {
 
 /** only execute the test suite in an environment that has docker */
 exports.dockerDescribe = (msg, func) => {
-  if (process.env.MOCHA_RUN_TARGET !== 'webpack' &&
-      (!process.env.TRAVIS_JOB_ID || process.platform === 'linux')) {
+  if (
+    process.env.MOCHA_RUN_TARGET !== 'webpack' &&
+    (!process.env.TRAVIS_JOB_ID || process.platform === 'linux')
+  ) {
     // currently only linux supports docker when running in travis
     return describe(msg, func)
   }

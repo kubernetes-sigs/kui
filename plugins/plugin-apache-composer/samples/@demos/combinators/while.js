@@ -9,8 +9,12 @@ const { while: While } = require('openwhisk-composer')
  * previous iteration or, for the first iteration, the
  * initial input to the invocation.
  */
-module.exports = While(params => params.n % 2 === 0,
-  params => { params.n /= 2 })
+module.exports = While(
+  params => params.n % 2 === 0,
+  params => {
+    params.n /= 2
+  }
+)
 
 /** e.g. given { n: 28 }, yield { n: 7 } */
 

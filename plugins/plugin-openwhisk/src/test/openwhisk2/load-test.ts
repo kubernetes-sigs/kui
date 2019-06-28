@@ -21,25 +21,42 @@ const { cli } = ui
 
 const actionName = 'foo'
 
-describe('Load tester', function (this: common.ISuite) {
+describe('Load tester', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('create an action', () => cli.do(`let ${actionName} = x=>x`, this.app)
-    .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+  it('create an action', () =>
+    cli
+      .do(`let ${actionName} = x=>x`, this.app)
+      .then(cli.expectJustOK)
+      .catch(common.oops(this)))
 
   const key = 'y'
   const value = 1
-  it('load test it with wsk testing loadtest', () => cli.do(`wsk testing loadtest ${actionName} --numIters 20 --numThreads 1 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===20 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
-    .catch(common.oops(this)))
+  it('load test it with wsk testing loadtest', () =>
+    cli
+      .do(
+        `wsk testing loadtest ${actionName} --numIters 20 --numThreads 1 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===20 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
+        this.app
+      )
+      .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
+      .catch(common.oops(this)))
 
-  it('load test it with lt', () => cli.do(`lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===40 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
-    .catch(common.oops(this)))
+  it('load test it with lt', () =>
+    cli
+      .do(
+        `lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===40 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
+        this.app
+      )
+      .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
+      .catch(common.oops(this)))
 
-  it('load test it with lt with no params', () => cli.do(`lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
-    .catch(common.oops(this)))
+  it('load test it with lt with no params', () =>
+    cli
+      .do(
+        `lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`,
+        this.app
+      )
+      .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
+      .catch(common.oops(this)))
 })

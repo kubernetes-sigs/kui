@@ -49,5 +49,8 @@ const usage = {
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/sample/create/action', createEcho, { usage, noAuthOk: true })
+  commandTree.listen('/sample/create/action', createEcho, {
+    usage,
+    noAuthOk: true
+  })
 }

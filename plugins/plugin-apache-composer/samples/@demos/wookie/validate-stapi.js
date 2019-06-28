@@ -1,4 +1,4 @@
-function main (params) {
+function main(params) {
   // return {status: 'Good', myResult: params}
 
   var answer = params.result.body.page

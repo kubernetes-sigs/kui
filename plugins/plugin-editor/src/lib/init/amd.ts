@@ -36,7 +36,7 @@ let amdRequire
 let initDone
 
 /** from https://github.com/Microsoft/monaco-editor-samples/blob/master/sample-electron/index.html */
-function uriFromPath (_path) {
+function uriFromPath(_path) {
   let pathName = path.resolve(_path).replace(/\\/g, '/')
   if (pathName.length > 0 && pathName.charAt(0) !== '/') {
     pathName = '/' + pathName
@@ -54,74 +54,93 @@ export default (editorWrapper: HTMLElement, options) => {
   // widget
   //
   let editor
-  const ready = () => new Promise((resolve) => {
-    const iter = () => {
-      if (typeof AMDLoader === 'undefined') {
-        setTimeout(iter, 20)
-      } else {
-        if (!amdRequire) {
-          // Save Monaco's amd require and restore Node's require
-          amdRequire = global['require']
-          global['require'] = nodeRequire
+  const ready = () =>
+    new Promise(resolve => {
+      const iter = () => {
+        if (typeof AMDLoader === 'undefined') {
+          setTimeout(iter, 20)
+        } else {
+          if (!amdRequire) {
+            // Save Monaco's amd require and restore Node's require
+            amdRequire = global['require']
+            global['require'] = nodeRequire
 
-          if (!inBrowser()) {
-            const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
+            if (!inBrowser()) {
+              const monacoRoot = path.dirname(
+                require.resolve('monaco-editor/package.json')
+              )
 
-            amdRequire.config({
-              baseUrl: uriFromPath(path.join(monacoRoot, 'min'))
-            })
+              amdRequire.config({
+                baseUrl: uriFromPath(path.join(monacoRoot, 'min'))
+              })
+            }
+
+            // workaround monaco-css not understanding the environment
+            self['module'] = undefined
+
+            // workaround monaco-typescript not understanding the environment
+            // self.process.browser = true
           }
 
-          // workaround monaco-css not understanding the environment
-          self['module'] = undefined
+          if (editor) {
+            return resolve(editor)
+          }
 
-          // workaround monaco-typescript not understanding the environment
-          // self.process.browser = true
+          //
+          // use monaco's AMD module loader to load the monaco editor module
+          //
+          const initEditor = () => {
+            if (!initDone) {
+              // for now, try to disable the built-in Javascript-specific completion helper thingies
+              global[
+                'monaco'
+              ].languages.typescript.javascriptDefaults.setCompilerOptions({
+                noLib: true,
+                allowNonTsExtensions: true
+              })
+
+              // install any custom languages we might have
+              languages(global['monaco']).forEach(({ language, provider }) => {
+                global['monaco'].languages.registerCompletionItemProvider(
+                  language,
+                  provider
+                )
+              })
+
+              // e.g. js-beautify detects global.define and
+              // tries to use it, but in a way that is
+              // incompatible with whatever amd that monaco
+              // incorporates
+              global['define'] = undefined
+
+              initDone = true
+            }
+
+            // see if we are in dark mode
+            const theme = {
+              theme:
+                document
+                  .querySelector('body')
+                  .getAttribute('kui-theme-style') === 'dark'
+                  ? 'vs-dark'
+                  : 'vs'
+            }
+
+            // here we instantiate an editor widget
+            editor = global['monaco'].editor.create(
+              editorWrapper,
+              Object.assign(defaultMonacoOptions(options), theme, options)
+            )
+
+            resolve(editor)
+          } /* initEditor */
+
+          amdRequire(['vs/editor/editor.main'], initEditor)
         }
+      } /* end of iter() */
 
-        if (editor) {
-          return resolve(editor)
-        }
-
-        //
-        // use monaco's AMD module loader to load the monaco editor module
-        //
-        const initEditor = () => {
-          if (!initDone) {
-            // for now, try to disable the built-in Javascript-specific completion helper thingies
-            global['monaco'].languages.typescript.javascriptDefaults.setCompilerOptions({ noLib: true, allowNonTsExtensions: true })
-
-            // install any custom languages we might have
-            languages(global['monaco']).forEach(({ language, provider }) => {
-              global['monaco'].languages.registerCompletionItemProvider(language, provider)
-            })
-
-            // e.g. js-beautify detects global.define and
-            // tries to use it, but in a way that is
-            // incompatible with whatever amd that monaco
-            // incorporates
-            global['define'] = undefined
-
-            initDone = true
-          }
-
-          // see if we are in dark mode
-          const theme = {
-            theme: document.querySelector('body').getAttribute('kui-theme-style') === 'dark' ? 'vs-dark' : 'vs'
-          }
-
-          // here we instantiate an editor widget
-          editor = global['monaco'].editor.create(editorWrapper, Object.assign(defaultMonacoOptions(options), theme, options))
-
-          resolve(editor)
-        } /* initEditor */
-
-        amdRequire(['vs/editor/editor.main'], initEditor)
-      }
-    } /* end of iter() */
-
-    iter()
-  }) /* end of ready() */
+      iter()
+    }) /* end of ready() */
 
   return ready()
 }

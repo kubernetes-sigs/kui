@@ -67,7 +67,9 @@ export default () => {
       debug('flush done')
     } catch (err) {
       if (err.code === 'ENOENT') {
-        debug('we decided not to initialize the store, but a plugin is trying to write to it')
+        debug(
+          'we decided not to initialize the store, but a plugin is trying to write to it'
+        )
       } else {
         console.error(err)
       }

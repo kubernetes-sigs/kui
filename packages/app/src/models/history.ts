@@ -27,7 +27,8 @@ export interface HistoryLine {
   raw?: string
 }
 
-export let lines: HistoryLine[] = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || []
+export let lines: HistoryLine[] =
+  (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || []
 
 let cursor = lines.length // pointer to historic line
 export const getCursor = (): number => cursor
@@ -56,7 +57,10 @@ export const wipe = () => {
 
 /** add a line of repl history */
 export const add = (line: HistoryLine) => {
-  if (lines.length === 0 || JSON.stringify(lines[lines.length - 1]) !== JSON.stringify(line)) {
+  if (
+    lines.length === 0 ||
+    JSON.stringify(lines[lines.length - 1]) !== JSON.stringify(line)
+  ) {
     // don't add sequential duplicates
     lines.push(line)
     store().setItem(key, JSON.stringify(lines))
@@ -75,13 +79,20 @@ export const update = (cursor: number, updateFn) => {
 
 /** return the given line of history */
 export const line = (idx: number): HistoryLine => lines[idx]
-export const lineByIncr = (incr: number): HistoryLine => line(guardedChange(incr))
+export const lineByIncr = (incr: number): HistoryLine =>
+  line(guardedChange(incr))
 
 /** go back/forward one entry */
 export const previous = (): HistoryLine => lineByIncr(-1)
 export const next = (): HistoryLine => lineByIncr(+1)
-export const first = (): HistoryLine => { cursor = 0; return line(cursor) }
-export const last = (): HistoryLine => { cursor = lines.length - 1; return line(cursor) }
+export const first = (): HistoryLine => {
+  cursor = 0
+  return line(cursor)
+}
+export const last = (): HistoryLine => {
+  cursor = lines.length - 1
+  return line(cursor)
+}
 
 type FilterFunction = (line: HistoryLine) => boolean
 
@@ -93,7 +104,10 @@ type FilterFunction = (line: HistoryLine) => boolean
  * search backwards from the given index
  *
  */
-export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: number): number => {
+export const findIndex = (
+  filter: string | RegExp | FilterFunction,
+  startIdx?: number
+): number => {
   let filterFn: FilterFunction
 
   if (typeof filter === 'string') {
@@ -105,7 +119,12 @@ export const findIndex = (filter: string | RegExp | FilterFunction, startIdx?: n
     filterFn = filter
   }
 
-  for (let idx = startIdx !== undefined && startIdx >= 0 ? startIdx : lines.length - 1; idx >= 0; idx--) {
+  for (
+    let idx =
+      startIdx !== undefined && startIdx >= 0 ? startIdx : lines.length - 1;
+    idx >= 0;
+    idx--
+  ) {
     if (filterFn(lines[idx])) {
       return idx
     }

@@ -19,15 +19,23 @@
  *
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, expectedVersion } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  expectedVersion
+} from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
-describe('Version command', function (this: ISuite) {
+describe('Version command', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
-  it('should report proper version', () => cli.do('version', this.app)
-    .then(cli.expectOKWithCustom({ expect: expectedVersion }))
-    .catch(oops(this)))
+  it('should report proper version', () =>
+    cli
+      .do('version', this.app)
+      .then(cli.expectOKWithCustom({ expect: expectedVersion }))
+      .catch(oops(this)))
 })

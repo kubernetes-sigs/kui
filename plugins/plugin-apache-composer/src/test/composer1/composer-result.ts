@@ -24,11 +24,13 @@ import { dirname } from 'path'
 const assert = require('assert')
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
 const seqName1 = 'seq1'
 
-describe('kill composer invocation', function (this: common.ISuite) {
+describe('kill composer invocation', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -44,28 +46,43 @@ describe('kill composer invocation', function (this: common.ISuite) {
   }
 
   // note that we do an implicit-action use of the async command
-  const invokeThenResult = (name, key, value, extraExpect = {}, expectIsIt = false) => {
+  const invokeThenResult = (
+    name,
+    key,
+    value,
+    extraExpect = {},
+    expectIsIt = false
+  ) => {
     const expectedOutput = expect(key, value, extraExpect, expectIsIt)
 
-    it(`should invoke the composition ${name} with ${key}=${value}, then get its result`, () => cli.do(`app invoke -p ${key} ${value}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID))
-      .then(sessionId => cli.do(`session get ${sessionId}`, this.app)
+    it(`should invoke the composition ${name} with ${key}=${value}, then get its result`, () =>
+      cli
+        .do(`app invoke -p ${key} ${value}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name))
         .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID))
-        .then(sessionId2 => assert.strictEqual(sessionId2, sessionId))
-        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-        .then(ui.expectStruct(expectedOutput))
-        .then(() => { console.log('Now issuing app result') })
-        .then(() => cli.do(`session result ${sessionId}`, this.app))
-        .then(cli.expectOKWithCustom({ selector: '.hljs' }))
-        .then(selector => this.app.client.getText(selector))
-        .then(ui.expectStruct(expectedOutput)))
-      .catch(common.oops(this)))
+        .then(sessionId =>
+          cli
+            .do(`session get ${sessionId}`, this.app)
+            .then(cli.expectOK)
+            .then(sidecar.expectOpen)
+            .then(sidecar.expectShowing(name))
+            .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID))
+            .then(sessionId2 => assert.strictEqual(sessionId2, sessionId))
+            .then(() =>
+              this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
+            )
+            .then(ui.expectStruct(expectedOutput))
+            .then(() => {
+              console.log('Now issuing app result')
+            })
+            .then(() => cli.do(`session result ${sessionId}`, this.app))
+            .then(cli.expectOKWithCustom({ selector: '.hljs' }))
+            .then(selector => this.app.client.getText(selector))
+            .then(ui.expectStruct(expectedOutput))
+        )
+        .catch(common.oops(this)))
   }
 
   /* {
@@ -75,12 +92,17 @@ describe('kill composer invocation', function (this: common.ISuite) {
            .catch(common.oops(this)))
     } */
 
-  it('should create a composer sequence', () => cli.do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    // .then(sidecar.expectBadge(badges.sequence))
-    .catch(common.oops(this)))
+  it('should create a composer sequence', () =>
+    cli
+      .do(
+        `app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`,
+        this.app
+      )
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      // .then(sidecar.expectBadge(badges.sequence))
+      .catch(common.oops(this)))
 
   invokeThenResult(seqName1, 'x', 3) // async, then use `app result` to fetch the rsult
 })

@@ -21,7 +21,13 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
-import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from './new'
+import {
+  addVariantSuffix,
+  betterNotExist,
+  defaults,
+  optional,
+  prepareEditorWithAction
+} from './new'
 import { extension, language } from '@kui-shell/plugin-editor/lib/file-types'
 import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
@@ -34,7 +40,8 @@ export const composeUsage = {
   strict: 'compose',
   command: 'compose',
   title: 'New composition',
-  header: 'For quick prototyping of compositions, this command opens an editor in the sidecar.',
+  header:
+    'For quick prototyping of compositions, this command opens an editor in the sidecar.',
   example: 'compose <appName>',
   required: [{ name: '<appName>', docs: 'The name of your new composition' }],
   optional: optional(['nodejs', 'python']).concat([
@@ -101,7 +108,7 @@ const generateAST = (source, localCodePath) => {
  * Add the wskflow visualization component to the given content
  *
  */
-const addWskflow = (tab: Tab) => (opts) => {
+const addWskflow = (tab: Tab) => opts => {
   debug('addWskflow', opts)
 
   if (isHeadless()) return opts
@@ -126,7 +133,9 @@ const addWskflow = (tab: Tab) => (opts) => {
       debug('wskflow updateView', action, ast)
 
       if (ast) {
-        const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
+        const visualize = (await import(
+          '@kui-shell/plugin-wskflow/lib/visualize'
+        )).default
 
         wskflowContainer.classList.add('visible')
         editorDom.classList.add('half-height')
@@ -137,20 +146,19 @@ const addWskflow = (tab: Tab) => (opts) => {
           content.appendChild(wskflowContainer)
         } else {
           debug('handing off to the wskflow plugin')
-          await visualize(tab, ast)
-            .then(({ view }) => {
-              const currentSVG = wskflowContainer.querySelector('svg')
+          await visualize(tab, ast).then(({ view }) => {
+            const currentSVG = wskflowContainer.querySelector('svg')
 
-              if (currentSVG) {
-                const newSVG = view.querySelector('svg')
-                const parent = currentSVG.parentNode
+            if (currentSVG) {
+              const newSVG = view.querySelector('svg')
+              const parent = currentSVG.parentNode
 
-                parent.appendChild(newSVG)
-                parent.removeChild(currentSVG)
-              } else {
-                wskflowContainer.appendChild(view)
-              }
-            })
+              parent.appendChild(newSVG)
+              parent.removeChild(currentSVG)
+            } else {
+              wskflowContainer.appendChild(view)
+            }
+          })
         }
       }
     } finally {
@@ -169,25 +177,27 @@ const addWskflow = (tab: Tab) => (opts) => {
   const tryWskflow = async () => {
     // debug('wskflow editor change handler', lock)
 
-    const mktemp = postfix => new Promise((resolve, reject) => {
-      require('tmp').file({ prefix: 'shell-', postfix }, (err, filepath) => {
-        if (err) {
-          console.error(err)
-          reject(err)
-        } else {
-          resolve(filepath)
-        }
+    const mktemp = postfix =>
+      new Promise((resolve, reject) => {
+        require('tmp').file({ prefix: 'shell-', postfix }, (err, filepath) => {
+          if (err) {
+            console.error(err)
+            reject(err)
+          } else {
+            resolve(filepath)
+          }
+        })
       })
-    })
-    const write = source => new Promise((resolve) => {
-      require('fs').writeFile(filepath, source, async err => {
-        if (err) {
-          console.error(err)
-        } else {
-          resolve()
-        }
+    const write = source =>
+      new Promise(resolve => {
+        require('fs').writeFile(filepath, source, async err => {
+          if (err) {
+            console.error(err)
+          } else {
+            resolve()
+          }
+        })
       })
-    })
 
     const action = getEntity()
     debug('addWskflow action', action)
@@ -240,8 +250,21 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
     // otherwise, we will open the editor showing a template file
     return new Promise((resolve, reject) => {
       const readViaImport = () => {
-        debug('readViaImport', findFile(template), findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
-        resolve(require('raw-loader!@kui-shell/plugin-apache-composer/samples' + findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')).default)
+        debug(
+          'readViaImport',
+          findFile(template),
+          findFile(template).replace(
+            /^.*plugin-apache-composer\/samples(.*)$/,
+            '$1'
+          )
+        )
+        resolve(
+          require('raw-loader!@kui-shell/plugin-apache-composer/samples' +
+            findFile(template).replace(
+              /^.*plugin-apache-composer\/samples(.*)$/,
+              '$1'
+            )).default
+        )
       }
 
       const readViaFilesystem = () => {
@@ -281,18 +304,33 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
  *
  */
 const compositionOptions = baseOptions => {
-  return Object.assign({ type: 'compositions',
-    _kind: 'composition',
-    placeholderFn: defaultPlaceholderFn, // the placeholder impl
-    persister // the persister impl
-  }, baseOptions)
+  return Object.assign(
+    {
+      type: 'compositions',
+      _kind: 'composition',
+      placeholderFn: defaultPlaceholderFn, // the placeholder impl
+      persister // the persister impl
+    },
+    baseOptions
+  )
 }
 
 /**
  * Command handler to create a new action or app
  *
  */
-export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind, placeholder = undefined, placeholderFn = undefined }) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
+export const newAction = ({
+  cmd = 'new',
+  type = 'actions',
+  _kind = defaults.kind,
+  placeholder = undefined,
+  placeholderFn = undefined
+}) => async ({
+  tab,
+  argvNoOptions,
+  parsedOptions: options,
+  execOptions
+}: EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -300,20 +338,29 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   debug('newAction', cmd, name, kind, prettyKind)
 
   // create the initial, placeholder, source code to place in the editor
-  const makePlaceholderCode = placeholderFn || (() => placeholder || placeholders[language(kind)])
+  const makePlaceholderCode =
+    placeholderFn || (() => placeholder || placeholders[language(kind)])
 
   const code = await makePlaceholderCode(Object.assign({ kind }, options))
   debug('placeholder code', code)
 
   // generate AST, if we were given a template
-  const compile = () => type === 'compositions' && options.template
-    ? inBrowser() ? import('@kui-shell/plugin-apache-composer/samples' + findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1'))
-      : generateAST(code, options.template)
-    : Promise.resolve()
+  const compile = () =>
+    type === 'compositions' && options.template
+      ? inBrowser()
+        ? import(
+            '@kui-shell/plugin-apache-composer/samples' +
+              findFile(options.template).replace(
+                /^.*plugin-apache-composer\/samples(.*)$/,
+                '$1'
+              )
+          )
+        : generateAST(code, options.template)
+      : Promise.resolve()
 
   // our placeholder action
-  const makeAction = () => compile()
-    .then(ast => {
+  const makeAction = () =>
+    compile().then(ast => {
       debug('makeAction', ast)
       return {
         name,
@@ -331,7 +378,9 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
   // then send a response back to the repl
   //
   return betterNotExist(name, options)
-    .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
+    .then(() =>
+      Promise.all([makeAction(), openEditor(tab, name, options, execOptions)])
+    )
     .then(prepareEditorWithAction)
     .then(addWskflow(tab))
     .then(respondToRepl(undefined, ['is-modified']))
@@ -339,6 +388,9 @@ export const newAction = ({ cmd = 'new', type = 'actions', _kind = defaults.kind
 
 export default async (commandTree: CommandRegistrar) => {
   // command registration: create new app/composition
-  commandTree.listen('/editor/compose', newAction(compositionOptions({ cmd: 'compose' })),
-    { usage: composeUsage, noAuthOk: true, needsUI: true, inBrowserOk: true })
+  commandTree.listen(
+    '/editor/compose',
+    newAction(compositionOptions({ cmd: 'compose' })),
+    { usage: composeUsage, noAuthOk: true, needsUI: true, inBrowserOk: true }
+  )
 }

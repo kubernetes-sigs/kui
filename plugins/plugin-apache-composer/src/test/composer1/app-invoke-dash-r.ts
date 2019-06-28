@@ -21,34 +21,42 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
 const seqName1 = 'seq1'
 
-describe('app invoke -r', function (this: common.ISuite) {
+describe('app invoke -r', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   for (let idx = 1; idx <= 3; idx++) {
     const name = `foo${idx}`
-    it(`should create an action ${name} via let`, () => cli.do(`let ${name} = x=>x`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(name))
-      .catch(common.oops(this)))
+    it(`should create an action ${name} via let`, () =>
+      cli
+        .do(`let ${name} = x=>x`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing(name))
+        .catch(common.oops(this)))
   }
 
-  it('should create a composer sequence', () => cli.do(`app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName1))
-    .catch(common.oops(this)))
+  it('should create a composer sequence', () =>
+    cli
+      .do(`app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(seqName1))
+      .catch(common.oops(this)))
 
   for (let idx = 0; idx < 5; idx++) {
-    it(`should invoke ${seqName1} with implicit entity idx=${idx}`, () => cli.do(`app invoke -r -p name grumble${idx}`, this.app)
-      .then(cli.expectOKWithCustom({ selector: '.json' }))
-      .then(selector => this.app.client.getText(selector))
-      .then(ui.expectStruct({ name: `grumble${idx}` }))
-      .catch(common.oops(this)))
+    it(`should invoke ${seqName1} with implicit entity idx=${idx}`, () =>
+      cli
+        .do(`app invoke -r -p name grumble${idx}`, this.app)
+        .then(cli.expectOKWithCustom({ selector: '.json' }))
+        .then(selector => this.app.client.getText(selector))
+        .then(ui.expectStruct({ name: `grumble${idx}` }))
+        .catch(common.oops(this)))
   }
 })

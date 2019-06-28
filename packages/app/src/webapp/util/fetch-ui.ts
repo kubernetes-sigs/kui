@@ -76,41 +76,46 @@ const app = {
  * Wait for fetch to complete
  *
  */
-const waitForDone = (notifyOfProgress: boolean, stagingArea: string, doneLock: string) => new Promise((resolve, reject) => {
-  const iter = (idx: number, doneMessageNeeded = false) => {
-    debug('waiting for completion')
+const waitForDone = (
+  notifyOfProgress: boolean,
+  stagingArea: string,
+  doneLock: string
+) =>
+  new Promise((resolve, reject) => {
+    const iter = (idx: number, doneMessageNeeded = false) => {
+      debug('waiting for completion')
 
-    try {
-      fs.stat(doneLock, (err, stats) => {
-        if (stats) {
-          const result = join(stagingArea, appDir, app[process.platform])
-          debug('completed', result)
+      try {
+        fs.stat(doneLock, (err, stats) => {
+          if (stats) {
+            const result = join(stagingArea, appDir, app[process.platform])
+            debug('completed', result)
 
-          if (notifyOfProgress && doneMessageNeeded) {
-            console.log(colors.green(' Done.')) // clear the waiting message with a newline
-          }
-
-          resolve(result)
-        }
-        if (err) {
-          if (notifyOfProgress) {
-            if (idx === 0) {
-              process.stdout.write('Waiting for UI components to download')
-            } else if (idx % 5 === 2) {
-              process.stdout.write('.')
+            if (notifyOfProgress && doneMessageNeeded) {
+              console.log(colors.green(' Done.')) // clear the waiting message with a newline
             }
+
+            resolve(result)
           }
+          if (err) {
+            if (notifyOfProgress) {
+              if (idx === 0) {
+                process.stdout.write('Waiting for UI components to download')
+              } else if (idx % 5 === 2) {
+                process.stdout.write('.')
+              }
+            }
 
-          setTimeout(() => iter(idx + 1, idx === 0), 500)
-        }
-      })
-    } catch (err) {
-      reject(err)
+            setTimeout(() => iter(idx + 1, idx === 0), 500)
+          }
+        })
+      } catch (err) {
+        reject(err)
+      }
     }
-  }
 
-  iter(0)
-})
+    iter(0)
+  })
 
 /**
  * Promisey mkdirp that handles EEXIST gracefully
@@ -142,82 +147,107 @@ const mkdir = (filepath: string): Promise<void> => {
  * download, or initiate a download
  *
  */
-const doneWaitOrFetch = (notifyOfProgress = false) => (stagingAreaBase: string) => new Promise<string>((resolve, reject) => {
-  debug('doneWaitOrFetch', notifyOfProgress, stagingAreaBase)
+const doneWaitOrFetch = (notifyOfProgress = false) => (
+  stagingAreaBase: string
+) =>
+  new Promise<string>((resolve, reject) => {
+    debug('doneWaitOrFetch', notifyOfProgress, stagingAreaBase)
 
-  if (!stagingAreaBase) {
-    return reject(new Error('no staging area specified'))
-  }
-
-  const stagingArea = join(stagingAreaBase, version)
-  debug('stagingArea', stagingArea)
-
-  const doneLock = join(stagingArea, 'fetch-ui.done')
-  const fetchLock = join(stagingArea, 'fetch-ui.lock')
-
-  const handle = (err: Error) => {
-    console.error(err)
-    return fs.rmdir(fetchLock, () => {
-      return fs.rmdir(doneLock, () => {
-        reject(err)
-      })
-    })
-  }
-
-  debug('commencing')
-  mkdir(stagingArea).then(() => fs.stat(doneLock, (err, stats) => {
-    debug('doneLock stat', stats)
-    if (stats) {
-      // already fetched
-      debug('already fetched')
-      waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
+    if (!stagingAreaBase) {
+      return reject(new Error('no staging area specified'))
     }
-    if (err) {
-      return fs.stat(fetchLock, (err, stats) => {
-        if (stats) {
-          // currently fetching
-          debug('currently fetching variant 1')
-          waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
-        }
-        if (err) {
-          return fs.mkdir(fetchLock, err => {
-            if (err && err.code === 'EEXIST') {
-              // currently fetching
-              debug('currently fetching variant 2')
-              waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
-            } else if (err) {
-              handle(err)
-            } else {
-              debug('need to fetch')
 
-              const child = spawn('node', [join(__dirname, 'fetcher.js'),
-                stagingArea,
-                fetchLock,
-                doneLock,
-                url,
-                file
-              ],
-              { stdio: 'inherit', detached: true })
-              child.on('close', (code) => {
-                debug('close', code)
-                if (code !== 0) {
-                  handle(err)
-                }
-              })
-              child.unref()
+    const stagingArea = join(stagingAreaBase, version)
+    debug('stagingArea', stagingArea)
 
-              debug('fetch initiated')
-              waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
-            }
-          })
-        }
+    const doneLock = join(stagingArea, 'fetch-ui.done')
+    const fetchLock = join(stagingArea, 'fetch-ui.lock')
+
+    const handle = (err: Error) => {
+      console.error(err)
+      return fs.rmdir(fetchLock, () => {
+        return fs.rmdir(doneLock, () => {
+          reject(err)
+        })
       })
     }
-  })).catch(reject)
-})
+
+    debug('commencing')
+    mkdir(stagingArea)
+      .then(() =>
+        fs.stat(doneLock, (err, stats) => {
+          debug('doneLock stat', stats)
+          if (stats) {
+            // already fetched
+            debug('already fetched')
+            waitForDone(notifyOfProgress, stagingArea, doneLock).then(
+              resolve,
+              reject
+            )
+          }
+          if (err) {
+            return fs.stat(fetchLock, (err, stats) => {
+              if (stats) {
+                // currently fetching
+                debug('currently fetching variant 1')
+                waitForDone(notifyOfProgress, stagingArea, doneLock).then(
+                  resolve,
+                  reject
+                )
+              }
+              if (err) {
+                return fs.mkdir(fetchLock, err => {
+                  if (err && err.code === 'EEXIST') {
+                    // currently fetching
+                    debug('currently fetching variant 2')
+                    waitForDone(notifyOfProgress, stagingArea, doneLock).then(
+                      resolve,
+                      reject
+                    )
+                  } else if (err) {
+                    handle(err)
+                  } else {
+                    debug('need to fetch')
+
+                    const child = spawn(
+                      'node',
+                      [
+                        join(__dirname, 'fetcher.js'),
+                        stagingArea,
+                        fetchLock,
+                        doneLock,
+                        url,
+                        file
+                      ],
+                      { stdio: 'inherit', detached: true }
+                    )
+                    child.on('close', code => {
+                      debug('close', code)
+                      if (code !== 0) {
+                        handle(err)
+                      }
+                    })
+                    child.unref()
+
+                    debug('fetch initiated')
+                    waitForDone(notifyOfProgress, stagingArea, doneLock).then(
+                      resolve,
+                      reject
+                    )
+                  }
+                })
+              }
+            })
+          }
+        })
+      )
+      .catch(reject)
+  })
 
 export const fetch = doneWaitOrFetch(false)
-export const watch = (stagingArea: string) => ({ wait: () => doneWaitOrFetch(true)(stagingArea) })
+export const watch = (stagingArea: string) => ({
+  wait: () => doneWaitOrFetch(true)(stagingArea)
+})
 
 // if invoked from the CLI, all we do is call main
 if (require.main === module) {
@@ -226,7 +256,8 @@ if (require.main === module) {
   const stagingAreaBase = process.argv[2]
 
   try {
-    watch(stagingAreaBase).wait()
+    watch(stagingAreaBase)
+      .wait()
       .then(() => {
         debug('done')
       })

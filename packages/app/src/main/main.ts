@@ -25,7 +25,11 @@ debug('loading')
  * This is the main entry point to kui
  *
  */
-export const main = (argv: string[], env = process.env, execOptions?: ExecOptions) => {
+export const main = (
+  argv: string[],
+  env = process.env,
+  execOptions?: ExecOptions
+) => {
   const forceUI = !!argv.find(arg => arg === '--ui') || !!env.KUI_POPUP
   const isShell = !!argv.find(arg => arg === 'shell')
   const kuiShell = forceUI || isShell
@@ -34,14 +38,19 @@ export const main = (argv: string[], env = process.env, execOptions?: ExecOption
   if (!isRunningHeadless) {
     // then spawn the electron graphics
     debug('shortcut to graphics')
-    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv)
-    initElectron(strippedArgv,
+    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(
+      argv
+    )
+    initElectron(
+      strippedArgv,
       { isRunningHeadless, forceUI },
       !!(env.subwindowPlease || subwindowPlease),
       env.subwindowPrefs
         ? typeof env.subwindowPrefs === 'string'
-          ? JSON.parse(env.subwindowPrefs) : env.subwindowPrefs
-        : subwindowPrefs)
+          ? JSON.parse(env.subwindowPrefs)
+          : env.subwindowPrefs
+        : subwindowPrefs
+    )
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
     const result = initHeadless(argv, false, isRunningHeadless, execOptions)

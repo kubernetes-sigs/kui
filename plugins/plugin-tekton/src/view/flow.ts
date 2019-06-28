@@ -36,7 +36,13 @@ const debug = Debug('plugins/tekton/view/flow')
  * Format a repl response
  *
  */
-export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: string = safeDump(jsons), filepath?: string) => {
+export default async (
+  tab: Tab,
+  jsons: KubeResource[],
+  run?: PipelineRun,
+  raw: string = safeDump(jsons),
+  filepath?: string
+) => {
   const [graph, graph2doms, injectCSS] = await Promise.all([
     tekton2graph(jsons, filepath, run), // generate the graph model
     import('@kui-shell/plugin-wskflow/lib/graph2doms'), // overlap that work with importing the graph renderer
@@ -51,14 +57,20 @@ export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: s
   content.style.flex = '1'
   content.style.display = 'flex'
 
-  const { controller } = await graph2doms.default(tab, graph, content, graph.runs, {
-    layoutOptions: {
-      'elk.separateConnectedComponents': false,
-      'elk.spacing.nodeNode': 10,
-      'elk.padding': '[top=7.5,left=5,bottom=7.5,right=5]',
-      hierarchyHandling: 'INCLUDE_CHILDREN' // since we have hierarhical edges, i.e. that cross-cut subgraphs
+  const { controller } = await graph2doms.default(
+    tab,
+    graph,
+    content,
+    graph.runs,
+    {
+      layoutOptions: {
+        'elk.separateConnectedComponents': false,
+        'elk.spacing.nodeNode': 10,
+        'elk.padding': '[top=7.5,left=5,bottom=7.5,right=5]',
+        hierarchyHandling: 'INCLUDE_CHILDREN' // since we have hierarhical edges, i.e. that cross-cut subgraphs
+      }
     }
-  })
+  )
   debug('content', content)
 
   const tektonModes: SidecarMode[] = [
@@ -76,7 +88,7 @@ export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: s
     }
   ]
 
-  const badges: Badge[] = [ 'Tekton' ]
+  const badges: Badge[] = ['Tekton']
   if (!run) {
     if (jsons.find(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')) {
       badges.push({
@@ -91,11 +103,19 @@ export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: s
     }
   }
 
-  const startTime = run && run.status && run.status.startTime && new Date(run.status.startTime)
-  const endTime = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
-  const duration = startTime && endTime && (endTime.getTime() - startTime.getTime())
+  const startTime =
+    run && run.status && run.status.startTime && new Date(run.status.startTime)
+  const endTime =
+    run &&
+    run.status &&
+    run.status.completionTime &&
+    new Date(run.status.completionTime)
+  const duration =
+    startTime && endTime && endTime.getTime() - startTime.getTime()
 
-  const { zoomToFitButtons } = await import('@kui-shell/plugin-wskflow/lib/util')
+  const { zoomToFitButtons } = await import(
+    '@kui-shell/plugin-wskflow/lib/util'
+  )
 
   return {
     type: 'custom',
@@ -109,6 +129,8 @@ export default async (tab: Tab, jsons: KubeResource[], run?: PipelineRun, raw: s
     presentation: Presentation.FixedSize,
     content,
     model: jsons,
-    modes: tektonModes.concat(zoomToFitButtons(controller, { visibleWhenShowing: flowMode.mode }))
+    modes: tektonModes.concat(
+      zoomToFitButtons(controller, { visibleWhenShowing: flowMode.mode })
+    )
   }
 }

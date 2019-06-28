@@ -37,7 +37,11 @@ const usage = (type: string, command: string) => ({
   command,
   strict: command,
   required: [
-    { name: 'name', docs: 'Name of the deployed entity to rename', entity: `wsk ${type}` },
+    {
+      name: 'name',
+      docs: 'Name of the deployed entity to rename',
+      entity: `wsk ${type}`
+    },
     { name: 'newName', docs: 'The replacement name to use' }
   ],
   docs: 'Rename an Openwhisk entity',
@@ -48,13 +52,18 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: EvaluatorArgs) => {
+const mv = (type: string) => (op: string) => ({
+  argvNoOptions: argv
+}: EvaluatorArgs) => {
   const idx = argv.indexOf(op) + 1
   const oldName = argv[idx]
   const newName = argv[idx + 1]
 
-  return repl.qfexec(`wsk ${type} ${copy} "${oldName}" "${newName}"`)
-    .then(resp => repl.qexec(`wsk ${type} delete "${oldName}"`).then(() => resp))
+  return repl
+    .qfexec(`wsk ${type} ${copy} "${oldName}" "${newName}"`)
+    .then(resp =>
+      repl.qexec(`wsk ${type} delete "${oldName}"`).then(() => resp)
+    )
 }
 
 /**
@@ -63,10 +72,12 @@ const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: Evaluator
  */
 export default async (commandTree: CommandRegistrar) => {
   // Install the routes. for now, no renaming of packages or triggers or rules
-  ['actions'].forEach(type => {
+  ;['actions'].forEach(type => {
     const handler = mv(type)
     synonyms(type).forEach(syn => {
-      commandTree.listen(`/wsk/${syn}/${CMD}`, handler(CMD), { usage: usage(type, CMD) })
+      commandTree.listen(`/wsk/${syn}/${CMD}`, handler(CMD), {
+        usage: usage(type, CMD)
+      })
     })
   })
 }

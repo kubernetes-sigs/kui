@@ -1,1 +1,1 @@
-let main = x=>x
+let main = x => x

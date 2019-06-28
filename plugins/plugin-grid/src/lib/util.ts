@@ -60,12 +60,15 @@ export const titleWhenNothingSelected = 'Recent Activity'
 const flatten = arrays => [].concat(...arrays)
 
 /** return the path attribute of the given activation */
-export const pathOf = activation => `/${activation.annotations.find(({ key }) => key === 'path').value}`
+export const pathOf = activation =>
+  `/${activation.annotations.find(({ key }) => key === 'path').value}`
 
 /** make a filter by name */
 const acceptAnything = x => x
-const allBut = excludePattern => !excludePattern ? acceptAnything : name => name.indexOf(excludePattern) < 0
-const accept = (includePattern, excluder) => name => name.indexOf(includePattern) >= 0 && excluder(name)
+const allBut = excludePattern =>
+  !excludePattern ? acceptAnything : name => name.indexOf(excludePattern) < 0
+const accept = (includePattern, excluder) => name =>
+  name.indexOf(includePattern) >= 0 && excluder(name)
 const makeFilter = (includePattern, excludePattern) => {
   if (!includePattern && !excludePattern) {
     return acceptAnything
@@ -108,9 +111,13 @@ const filterOutNonActionActivations = filter => activations => {
  *
  */
 const extractTasks = async app => {
-  const composer = await import('@kui-shell/plugin-apache-composer/lib/utility/ast')
+  const composer = await import(
+    '@kui-shell/plugin-apache-composer/lib/utility/ast'
+  )
   const { namespace, name, ast } = app
-  return [ `/${namespace}/${name}` ].concat(!ast ? [] : composer.extractActionsFromAst(ast))
+  return [`/${namespace}/${name}`].concat(
+    !ast ? [] : composer.extractActionsFromAst(ast)
+  )
 }
 
 /**
@@ -123,7 +130,9 @@ const filterByLatencyBucket = options => activations => {
     return activations
   } else {
     // TODO support options.full
-    return activations.filter(_ => latencyBucket(_.end - _.start) === latencyBucket)
+    return activations.filter(
+      _ => latencyBucket(_.end - _.start) === latencyBucket
+    )
   }
 }
 
@@ -154,7 +163,16 @@ const filterBySuccess = ({ success, failure }) => activations => {
  *
  */
 export const fetchActivationData /* FromBackend */ = (N, options) => {
-  const { nocrawl = false, path, filter, include, exclude, skip = 0, batchSize = defaults.batchSize, all } = options
+  const {
+    nocrawl = false,
+    path,
+    filter,
+    include,
+    exclude,
+    skip = 0,
+    batchSize = defaults.batchSize,
+    all
+  } = options
   let { name = '' } = options
 
   // see if the user requested a time range
@@ -180,40 +198,71 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
   const nameFilter = name ? `--name ${name}` : ''
   const uptoArg = upto ? ` --upto ${upto}` : '' // this is part of the openwhisk API; upto a millis since epoch
   const sinceArg = since ? ` --since ${since}` : '' // ibid; after a millis since epoch
-  const fetch = extraSkip => repl.qexec(`wsk activation list ${nameFilter} --skip ${skip + extraSkip} --limit ${batchSize}${uptoArg}${sinceArg}`)
-    .catch(err => {
-      // log but swallow errors, so that we can show the user something... hopefully, at least one of the fetches succeeds
-      console.error(err)
-      return []
-    })
+  const fetch = extraSkip =>
+    repl
+      .qexec(
+        `wsk activation list ${nameFilter} --skip ${skip +
+          extraSkip} --limit ${batchSize}${uptoArg}${sinceArg}`
+      )
+      .catch(err => {
+        // log but swallow errors, so that we can show the user something... hopefully, at least one of the fetches succeeds
+        console.error(err)
+        return []
+      })
 
   debug('name filter', nameFilter || 'none')
   debug('upto', uptoArg || 'none')
   debug('since', sinceArg || 'none')
 
   /** fetch activations without an app/composer filter */
-  const fetchNonApp = async () => Promise.all(new Array(N).fill(0).map((_, idx) => fetch(idx * batchSize)))
-    .then(flatten)
-    .then(filterByLatencyBucket(options))
-    .then(filterBySuccess(options))
-    .then(filterOutNonActionActivations(path || filter || include ? makeFilter(path || filter || include, exclude) : name ? makeFilter(await amendWithNamespace(name), exclude) : acceptAnything))
-    .then(activations => {
-      if (name && activations.length === 0) {
-        // user asked to filter by name, and we found nothing. error out
-        const err = new Error(`No activations of ${name} found`)
-        err['code'] = 404
-        throw err
-      } else {
-        return activations
-      }
-    })
+  const fetchNonApp = async () =>
+    Promise.all(new Array(N).fill(0).map((_, idx) => fetch(idx * batchSize)))
+      .then(flatten)
+      .then(filterByLatencyBucket(options))
+      .then(filterBySuccess(options))
+      .then(
+        filterOutNonActionActivations(
+          path || filter || include
+            ? makeFilter(path || filter || include, exclude)
+            : name
+            ? makeFilter(await amendWithNamespace(name), exclude)
+            : acceptAnything
+        )
+      )
+      .then(activations => {
+        if (name && activations.length === 0) {
+          // user asked to filter by name, and we found nothing. error out
+          const err = new Error(`No activations of ${name} found`)
+          err['code'] = 404
+          throw err
+        } else {
+          return activations
+        }
+      })
 
   if (name && !nocrawl) {
     // then the user asked to filter; first see if this is an app
-    return repl.qexec(`app get "${name}"`)
+    return repl
+      .qexec(`app get "${name}"`)
       .then(extractTasks)
-      .then(tasks => all ? tasks.concat([name]) : tasks) // if options.all, then add the app to the list of actions
-      .then(tasks => Promise.all(tasks.map(task => fetchActivationData(N, { nocrawl: true, name: task, filter, include, exclude, skip, upto, since, batchSize }))))
+      .then(tasks => (all ? tasks.concat([name]) : tasks)) // if options.all, then add the app to the list of actions
+      .then(tasks =>
+        Promise.all(
+          tasks.map(task =>
+            fetchActivationData(N, {
+              nocrawl: true,
+              name: task,
+              filter,
+              include,
+              exclude,
+              skip,
+              upto,
+              since,
+              batchSize
+            })
+          )
+        )
+      )
       .then(flatten)
       .then(filterByLatencyBucket(options))
       .then(filterBySuccess(options))
@@ -245,13 +294,18 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
  */
 export const injectContent = () => {
   if (inBrowser()) {
-    injectCSS({ css: require('@kui-shell/plugin-grid/web/css/table.css'), key: 'grid-visualization.table.css' })
+    injectCSS({
+      css: require('@kui-shell/plugin-grid/web/css/table.css'),
+      key: 'grid-visualization.table.css'
+    })
   } else {
     const root = dirname(require.resolve('@kui-shell/plugin-grid/package.json'))
     injectCSS(join(root, 'web/css/table.css'))
   }
 
-  injectCSS('https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css') // tooltips
+  injectCSS(
+    'https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css'
+  ) // tooltips
 }
 
 export const injectHTML = (container, file, css = '') => {
@@ -275,7 +329,10 @@ const strong = (container, N) => {
     return element
   }
 }
-export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) => {
+export const displayTimeRange = (
+  { minTime, maxTime, totalCount },
+  container
+) => {
   removeAllDomChildren(container)
 
   if (totalCount === 0) {
@@ -291,12 +348,15 @@ export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) =>
     if (fresh) container.appendChild(document.createTextNode('Showing '))
     strong(container, 1).innerText = totalCount
 
-    if (fresh) container.appendChild(document.createTextNode(' activations from '))
+    if (fresh)
+      container.appendChild(document.createTextNode(' activations from '))
     strong(container, 2).appendChild(prettyPrintTime(minTime, 'short'))
 
     if (fresh) container.appendChild(document.createTextNode(' spanning '))
     // strong(container, 3).innerText = prettyPrintTime(maxTime, 'short')
-    strong(container, 3).innerText = prettyPrintDuration(maxTime - minTime, { compact: true })
+    strong(container, 3).innerText = prettyPrintDuration(maxTime - minTime, {
+      compact: true
+    })
   }
 }
 
@@ -310,8 +370,12 @@ export interface Header {
 }
 export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
   const sidecar = getSidecar(tab)
-  const leftHeader = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
-  const rightHeader = sidecar.querySelector('.header-right-bits .custom-header-content')
+  const leftHeader = sidecar.querySelector(
+    '.sidecar-header-secondary-content .custom-header-content'
+  )
+  const rightHeader = sidecar.querySelector(
+    '.header-right-bits .custom-header-content'
+  )
 
   if (!isRedraw) {
     removeAllDomChildren(leftHeader)
@@ -325,9 +389,20 @@ export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
  * The command handler for visualizing as a table
  *
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type Renderer = (tab: Tab, options: Object, header: Header, uuid: string, isRedraw?: boolean) => void
-export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({ tab, argvNoOptions, parsedOptions: options }: EvaluatorArgs) => {
+export type Renderer = (
+  tab: Tab,
+  options: Object, // eslint-disable-line @typescript-eslint/ban-types
+  header: Header,
+  uuid: string,
+  isRedraw?: boolean
+) => void
+export const visualize = (
+  cmd,
+  viewName: string,
+  draw: Renderer,
+  extraUsage,
+  extraOptions?
+) => ({ tab, argvNoOptions, parsedOptions: options }: EvaluatorArgs) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
@@ -347,7 +422,9 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
     try {
       parseInt(cliN, 10)
     } catch (e) {
-      throw new Error('Please provide an integer value for the --batches argument')
+      throw new Error(
+        'Please provide an integer value for the --batches argument'
+      )
     }
   }
 
@@ -363,8 +440,9 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
     if (N > defaults.maxN) {
       throw new Error(`Please provide a maximum value of ${defaults.maxN}`)
     }
-    return fetchActivationData(N, Object.assign(options, { name: appName }))
-    /* .then(data => {
+    return (
+      fetchActivationData(N, Object.assign(options, { name: appName }))
+        /* .then(data => {
                 if (!isRedraw) {
                     // remember the time range, so that the redraw can
                     // keep the same fixed window of time on every
@@ -382,7 +460,10 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
                 }
                 return data
             }) */
-      .then(draw(tab, options, prepareHeader(tab, isRedraw), ourUUID, isRedraw))
+        .then(
+          draw(tab, options, prepareHeader(tab, isRedraw), ourUUID, isRedraw)
+        )
+    )
   }
 
   return fetchAndDraw().then(response => {
@@ -445,13 +526,27 @@ export const latencyBuckets = [50, 100, 500, 1000, 3500, 3500]
 export const latencyBucket = value => {
   const nBuckets = latencyBuckets.length
   // return Math.min(nBuckets - 1, value < 100 ? ~~(value / (100/6)) : value < 1000 ? 6 + ~~(value / (1000/5)) : value < 7000 ? 11 + ~~(value / (6000/5)) : nBuckets - 1)
-  return Math.min(nBuckets - 1, value < 100 ? ~~(value / (100 / n100)) : value < 1000 ? n100 + ~~(value / (900 / n1000)) : value < 7000 ? n100 + n1000 + ~~(value / (6000 / n7000)) : nBuckets - 1)
+  return Math.min(
+    nBuckets - 1,
+    value < 100
+      ? ~~(value / (100 / n100))
+      : value < 1000
+      ? n100 + ~~(value / (900 / n1000))
+      : value < 7000
+      ? n100 + n1000 + ~~(value / (6000 / n7000))
+      : nBuckets - 1
+  )
 }
-const range = (top, buckets, idx, base = 0) => `${prettyPrintDuration(top / buckets * idx + 1 + base)}-${prettyPrintDuration(top / buckets * (idx + 1) + base)}`
+const range = (top, buckets, idx, base = 0) =>
+  `${prettyPrintDuration(
+    (top / buckets) * idx + 1 + base
+  )}-${prettyPrintDuration((top / buckets) * (idx + 1) + base)}`
 const bucketRanges = []
 for (let idx = 0; idx < n100; idx++) bucketRanges.push(range(100, n100, idx))
-for (let idx = 0; idx < n1000; idx++) bucketRanges.push(range(900, n1000, idx, 100))
-for (let idx = 0; idx < n7000; idx++) bucketRanges.push(range(6000, n7000, idx, 1000))
+for (let idx = 0; idx < n1000; idx++)
+  bucketRanges.push(range(900, n1000, idx, 100))
+for (let idx = 0; idx < n7000; idx++)
+  bucketRanges.push(range(6000, n7000, idx, 1000))
 export const latencyBucketRange = bucket => {
   return bucketRanges[bucket]
 }
@@ -467,11 +562,21 @@ export const optionsToString = (options, except?) => {
   let str = ''
   for (const key in options) {
     // underscore comes from minimist
-    if (key !== '_' && options[key] !== undefined && key !== 'name' && key !== 'theme' && key !== 'timeline' && key !== 't' &&
-            (!except || !except.find(_ => _ === key))) {
+    if (
+      key !== '_' &&
+      options[key] !== undefined &&
+      key !== 'name' &&
+      key !== 'theme' &&
+      key !== 'timeline' &&
+      key !== 't' &&
+      (!except || !except.find(_ => _ === key))
+    ) {
       const dash = key.length === 1 ? '-' : '--'
       const prefix = options[key] === false ? 'no-' : '' // e.g. --no-help
-      const value = options[key] === true || options[key] === false ? '' : ` ${options[key]}`
+      const value =
+        options[key] === true || options[key] === false
+          ? ''
+          : ` ${options[key]}`
 
       if (!(dash === '-' && options[key] === false)) {
         // avoid -no-q, i.e. single dash

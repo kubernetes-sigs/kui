@@ -37,7 +37,8 @@ const defaultOptions = {
 const serialize = options => {
   let S = ''
   for (const key in options) {
-    if (key.length > 1) { // ignore single-letter alias keys
+    if (key.length > 1) {
+      // ignore single-letter alias keys
       if (options[key] === true) {
         S += ` --${key}`
       } else {
@@ -50,7 +51,8 @@ const serialize = options => {
 
 /** some utility routines over annotations */
 const getAnnotation = (entity, key, defaultValue) => {
-  const annotation = entity.annotations && entity.annotations.find(kv => kv.key === key)
+  const annotation =
+    entity.annotations && entity.annotations.find(kv => kv.key === key)
   return (annotation && annotation.value) || defaultValue
 }
 
@@ -59,38 +61,65 @@ const isFromIncludedPackage = packageRegex => activations => {
   if (!packageRegex) {
     return activations
   } else {
-    const regex = new RegExp(`.*/${packageRegex.replace('*', '.*').replace('/', '\\/')}.*`)
-    return activations.filter(activation => getAnnotation(activation, 'path', '').match(regex))
+    const regex = new RegExp(
+      `.*/${packageRegex.replace('*', '.*').replace('/', '\\/')}.*`
+    )
+    return activations.filter(activation =>
+      getAnnotation(activation, 'path', '').match(regex)
+    )
   }
 }
 
 /** filter the given list of activations to exclude those caused by a sequence */
-const doesNotHaveAnnotation = (key, value) => entity => !(entity.annotations && entity.annotations.find(kv => kv.key === key && kv.value === value))
-const excludeIfCausedBySequence = activations => activations.filter(doesNotHaveAnnotation('causedBy', 'sequence'))
+const doesNotHaveAnnotation = (key, value) => entity =>
+  !(
+    entity.annotations &&
+    entity.annotations.find(kv => kv.key === key && kv.value === value)
+  )
+const excludeIfCausedBySequence = activations =>
+  activations.filter(doesNotHaveAnnotation('causedBy', 'sequence'))
 
 /** a filter function that accepts anything */
 const acceptAll = x => x
 
 /** a filter function that accepts only activations with a failure response */
-const hasErrorResult = activations => Promise.all(activations.map(activation => repl.qexec(`wsk activation get ${activation.activationId}`)))
-  .then(activations => activations.filter(activation => !activation['response'].success))
+const hasErrorResult = activations =>
+  Promise.all(
+    activations.map(activation =>
+      repl.qexec(`wsk activation get ${activation.activationId}`)
+    )
+  ).then(activations =>
+    activations.filter(activation => !activation['response'].success)
+  )
 
 /** here is the module */
 export default (commandTree, wsk) => {
-  const rootsDocs = { docs: `List the root-most activations, i.e. exclude components of sequences` }
-  const rootsDocsShortcut = { docs: `[Export Shortcut] List the root-most activations; shortcut for "wsk activation roots"` }
-  const rootsWithErrorsDocs = { docs: `As with roots, but showing only those root activations with errors` }
-  const rootsWithErrorsDocsShortcut = { docs: `[Export Shortcut] Root activations with errors` }
+  const rootsDocs = {
+    docs: `List the root-most activations, i.e. exclude components of sequences`
+  }
+  const rootsDocsShortcut = {
+    docs: `[Export Shortcut] List the root-most activations; shortcut for "wsk activation roots"`
+  }
+  const rootsWithErrorsDocs = {
+    docs: `As with roots, but showing only those root activations with errors`
+  }
+  const rootsWithErrorsDocsShortcut = {
+    docs: `[Export Shortcut] Root activations with errors`
+  }
 
   const roots = (op, filterFn = acceptAll) => ({ block, argv: fullArgv }) => {
-    const options = Object.assign({},
+    const options = Object.assign(
+      {},
       defaultOptions, // defaults, potentially overridden by minimist...
-      minimist(fullArgv.splice(fullArgv.indexOf(op) + 1),
-        { alias: { l: 'limit', s: 'skip' } }))
+      minimist(fullArgv.splice(fullArgv.indexOf(op) + 1), {
+        alias: { l: 'limit', s: 'skip' }
+      })
+    )
     const argv = options._
     delete options._
 
-    return repl.qexec(`wsk activations list ${serialize(options)}`, block)
+    return repl
+      .qexec(`wsk activations list ${serialize(options)}`, block)
       .then(excludeIfCausedBySequence)
       .then(isFromIncludedPackage(argv[0]))
       .then(filterFn)
@@ -98,17 +127,33 @@ export default (commandTree, wsk) => {
 
   // Install the routes
   wsk.synonyms('activations').forEach(syn => {
-    const rootsCmd = commandTree.listen(`/wsk/${syn}/roots`, roots('roots'), rootsDocs)
+    const rootsCmd = commandTree.listen(
+      `/wsk/${syn}/roots`,
+      roots('roots'),
+      rootsDocs
+    )
 
     rootSynonyms.forEach(op => {
       commandTree.synonym(`/wsk/${syn}/${op}`, roots(op), rootsCmd)
     })
     commandTree.listen(`/wsk/$$`, roots('$$'), rootsDocsShortcut)
 
-    const rootsWithErrorsCmd = commandTree.listen(`/wsk/${syn}/roots!`, roots('roots!', hasErrorResult), rootsWithErrorsDocs)
+    const rootsWithErrorsCmd = commandTree.listen(
+      `/wsk/${syn}/roots!`,
+      roots('roots!', hasErrorResult),
+      rootsWithErrorsDocs
+    )
     rootSynonyms.forEach(op => {
-      commandTree.synonym(`/wsk/${syn}/${op}!`, roots(`${op}!`), rootsWithErrorsCmd)
+      commandTree.synonym(
+        `/wsk/${syn}/${op}!`,
+        roots(`${op}!`),
+        rootsWithErrorsCmd
+      )
     })
-    commandTree.listen(`/wsk/$$!`, roots('$$!', hasErrorResult), rootsWithErrorsDocsShortcut)
+    commandTree.listen(
+      `/wsk/$$!`,
+      roots('$$!', hasErrorResult),
+      rootsWithErrorsDocsShortcut
+    )
   })
 }

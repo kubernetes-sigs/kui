@@ -19,59 +19,92 @@
  *
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, localIt } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  localIt
+} from '@kui-shell/core/tests/lib/common'
 
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
 
-describe('Comments and blank line handling', function (this: ISuite) {
+describe('Comments and blank line handling', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
-  it('should handle blank lines', () => cli.do('', this.app)
-    .then(cli.expectBlank))
+  it('should handle blank lines', () =>
+    cli.do('', this.app).then(cli.expectBlank))
 
-  it('should handle blank lines with prefix whitespace', () => cli.do('    ', this.app)
-    .then(cli.expectBlank))
+  it('should handle blank lines with prefix whitespace', () =>
+    cli.do('    ', this.app).then(cli.expectBlank))
 
-  it('should handle comment-only lines', () => cli.do('# hello', this.app)
-    .then(cli.expectBlank))
+  it('should handle comment-only lines', () =>
+    cli.do('# hello', this.app).then(cli.expectBlank))
 
-  it('should handle comment-only lines with surrounding whitespace', () => cli.do('  #hello  ', this.app)
-    .then(cli.expectBlank))
+  it('should handle comment-only lines with surrounding whitespace', () =>
+    cli.do('  #hello  ', this.app).then(cli.expectBlank))
 
-  localIt('should handle a command with suffix comment', () => cli.do(`open ../../README.md  #hello  `, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('Kui Shell', undefined, undefined, 'README.md')))
+  localIt('should handle a command with suffix comment', () =>
+    cli
+      .do(`open ../../README.md  #hello  `, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(
+        sidecar.expectShowing('Kui Shell', undefined, undefined, 'README.md')
+      )
+  )
 
-  localIt('should handle a command with suffix comment', () => cli.do(`open ../../LICENSE ### ### # #    hello  `, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('LICENSE')))
+  localIt('should handle a command with suffix comment', () =>
+    cli
+      .do(`open ../../LICENSE ### ### # #    hello  `, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('LICENSE'))
+  )
 
-  localIt('should handle a commented-out command', () => cli.do(`#open ../../README.md`, this.app)
-    .then(cli.expectBlank)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
+  localIt('should handle a commented-out command', () =>
+    cli
+      .do(`#open ../../README.md`, this.app)
+      .then(cli.expectBlank)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('LICENSE'))
+  ) // we should still showing LICENSE file in sidecar
 
-  localIt('should handle a commented-out command with intermingled whitespace', () => cli.do(`#     open ../../README.md`, this.app)
-    .then(cli.expectBlank)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
+  localIt(
+    'should handle a commented-out command with intermingled whitespace',
+    () =>
+      cli
+        .do(`#     open ../../README.md`, this.app)
+        .then(cli.expectBlank)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing('LICENSE'))
+  ) // we should still showing LICENSE file in sidecar
 
-  localIt('should handle a commented-out command with suffix comment', () => cli.do(`#open ../../README.md ### ### # #    hello  `, this.app)
-    .then(cli.expectBlank)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
+  localIt('should handle a commented-out command with suffix comment', () =>
+    cli
+      .do(`#open ../../README.md ### ### # #    hello  `, this.app)
+      .then(cli.expectBlank)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('LICENSE'))
+  ) // we should still showing LICENSE file in sidecar
 
-  localIt('should handle a commented-out parse-error', () => cli.do(`#openfoobar ../../README.md ### ### # #    hello  `, this.app)
-    .then(cli.expectBlank)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
+  localIt('should handle a commented-out parse-error', () =>
+    cli
+      .do(`#openfoobar ../../README.md ### ### # #    hello  `, this.app)
+      .then(cli.expectBlank)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('LICENSE'))
+  ) // we should still showing LICENSE file in sidecar
 
-  localIt('should handle a commented-out parse-error 2', () => cli.do(`#open ../../README.md =))))- -(((( x=>x ### ### # #    hello  `, this.app)
-    .then(cli.expectBlank)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('LICENSE'))) // we should still showing LICENSE file in sidecar
+  localIt('should handle a commented-out parse-error 2', () =>
+    cli
+      .do(
+        `#open ../../README.md =))))- -(((( x=>x ### ### # #    hello  `,
+        this.app
+      )
+      .then(cli.expectBlank)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('LICENSE'))
+  ) // we should still showing LICENSE file in sidecar
 })

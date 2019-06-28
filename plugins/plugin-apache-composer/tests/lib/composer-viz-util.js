@@ -20,7 +20,9 @@ const ui = require('@kui-shell/core/tests/lib/ui')
 const cli = ui.cli
 const sidecar = ui.sidecar
 
-const ROOT = path.dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = path.dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
 /**
  * Helper to find an input file
@@ -38,10 +40,14 @@ const composerErrorInput = file => input(file, 'composer-source-expect-errors')
  *
  */
 const verifyNodeExists = (name, isDeployed = false) => app => {
-  const selector = `#wskflowSVG .node[data-name="/_/${name}"][data-deployed="${isDeployed ? 'deployed' : 'not-deployed'}"]`
+  const selector = `#wskflowSVG .node[data-name="/_/${name}"][data-deployed="${
+    isDeployed ? 'deployed' : 'not-deployed'
+  }"]`
   console.error(`CHECKING NODE ${name} ${selector}`)
-  return app.client.waitUntil(() => app.client.elements(selector)
-    .then(nodes => nodes.value.length === 1))
+  return app.client
+    .waitUntil(() =>
+      app.client.elements(selector).then(nodes => nodes.value.length === 1)
+    )
     .then(() => app)
 }
 
@@ -49,38 +55,50 @@ const verifyNodeExists = (name, isDeployed = false) => app => {
 const verifyNodeStatusExists = (name, status) => app => {
   const selector = `#wskflowSVG .node[data-name="/_/${name}"][data-status="${status}"]`
   console.error(`CHECKING NODE ${name} ${selector}`)
-  return app.client.waitUntil(() => app.client.elements(selector)
-    .then(nodes => {
-      console.error(`GOT ${nodes.value.length} NODES`)
-      return nodes
-    })
-    .then(nodes => nodes.value.length === 1))
+  return app.client
+    .waitUntil(() =>
+      app.client
+        .elements(selector)
+        .then(nodes => {
+          console.error(`GOT ${nodes.value.length} NODES`)
+          return nodes
+        })
+        .then(nodes => nodes.value.length === 1)
+    )
     .then(() => app)
     .catch(err => {
       // see if the data-status query is the problem
       const selector = `#wskflowSVG .node`
       console.error(`BACKUP CHECK ${name} ${selector}`)
-      return app.client.waitUntil(() => app.client.getText(selector)
-        .then(nodes => {
-          console.error(`GOTb ${nodes.length} NODES`)
-          console.error(nodes)
+      return app.client.waitUntil(() =>
+        app.client
+          .getText(selector)
+          .then(nodes => {
+            console.error(`GOTb ${nodes.length} NODES`)
+            console.error(nodes)
 
-          return app.client.getAttribute(selector, 'data-name')
-            .then(nodes => {
-              console.error(`GOTc ${nodes.length} NODES`)
-              console.error(nodes)
-            })
-        })
-        .catch(() => true)
-        .then(() => {
-          throw err
-        }))
+            return app.client
+              .getAttribute(selector, 'data-name')
+              .then(nodes => {
+                console.error(`GOTc ${nodes.length} NODES`)
+                console.error(nodes)
+              })
+          })
+          .catch(() => true)
+          .then(() => {
+            throw err
+          })
+      )
     })
 }
 
 const verifyNodeExistsById = id => app => {
-  return app.client.waitUntil(() => app.client.elements(`#wskflowSVG #${id}`)
-    .then(nodes => nodes.value.length === 1))
+  return app.client
+    .waitUntil(() =>
+      app.client
+        .elements(`#wskflowSVG #${id}`)
+        .then(nodes => nodes.value.length === 1)
+    )
     .then(() => app)
 }
 
@@ -91,8 +109,10 @@ const verifyNodeExistsById = id => app => {
 const verifyEdgeExists = (from, to) => app => {
   const selector = `#wskflowSVG path[data-from-name="/_/${from}"][data-to-name="/_/${to}"]`
   console.error(`CHECKING EDGE ${from} ${to} ${selector}`)
-  return app.client.waitUntil(() => app.client.elements(selector)
-    .then(edges => edges.value.length === 1))
+  return app.client
+    .waitUntil(() =>
+      app.client.elements(selector).then(edges => edges.value.length === 1)
+    )
     .then(() => app)
 }
 
@@ -103,7 +123,8 @@ const verifyEdgeExists = (from, to) => app => {
 const verifyOutgoingEdgeExists = from => app => {
   const selector = `#wskflowSVG path[data-from-name="/_/${from}"]`
   console.error(`CHECKING OUTGOING EDGE ${from} ${selector}`)
-  return app.client.elements(selector)
+  return app.client
+    .elements(selector)
     .then(edges => assert.strictEqual(edges.value.length, 1))
     .then(() => app)
 }
@@ -113,47 +134,54 @@ const verifyOutgoingEdgeExists = from => app => {
  *
  */
 const verifyNodeAbsence = (name, isDeployed = false, timeout = 2000) => app => {
-  const selector = `#wskflowSVG .node[data-name="/_/${name}"][data-deployed="${isDeployed ? 'deployed' : 'not-deployed'}"]`
+  const selector = `#wskflowSVG .node[data-name="/_/${name}"][data-deployed="${
+    isDeployed ? 'deployed' : 'not-deployed'
+  }"]`
   console.error(`CHECKING NODE ABSENCE ${name} ${selector}`)
-  return app.client.waitForExist(selector, timeout, true)
-    .then(() => app)
+  return app.client.waitForExist(selector, timeout, true).then(() => app)
 }
 
 /**
-  * Look for any suspicious node labels
-  *
-  */
-const verifyNodeLabelsAreSane = app => app.client.getText(`#wskflowSVG .node text`)
-  .then(labels => typeof labels === 'string' ? [labels] : labels)
-  .then(labels => labels.forEach(label => assert.ok(label.indexOf('[object Object]') < 0)))
-  .then(() => app)
+ * Look for any suspicious node labels
+ *
+ */
+const verifyNodeLabelsAreSane = app =>
+  app.client
+    .getText(`#wskflowSVG .node text`)
+    .then(labels => (typeof labels === 'string' ? [labels] : labels))
+    .then(labels =>
+      labels.forEach(label => assert.ok(label.indexOf('[object Object]') < 0))
+    )
+    .then(() => app)
 
 /**
  * Ensure that the basic attributes of the rendered graph are correct
  *
  */
-const verifyTheBasicStuff = (file) => _ => Promise.resolve(_)
-  .then(cli.expectOK)
-  .then(sidecar.expectOpen)
-  .then(sidecar.expectShowing(file))
-  // .then(sidecar.expectBadge(badges[badge]))
-  .then(verifyNodeExistsById('Entry'))
-  .then(verifyNodeExistsById('Exit'))
-  .then(verifyNodeLabelsAreSane)
+const verifyTheBasicStuff = file => _ =>
+  Promise.resolve(_)
+    .then(cli.expectOK)
+    .then(sidecar.expectOpen)
+    .then(sidecar.expectShowing(file))
+    // .then(sidecar.expectBadge(badges[badge]))
+    .then(verifyNodeExistsById('Entry'))
+    .then(verifyNodeExistsById('Exit'))
+    .then(verifyNodeLabelsAreSane)
 
 /**
  * Ensure that the given rule is displayed
  *
  */
-const expectRule = ({ triggerName, actionName }) => app => app.client.waitUntil(async () => {
-  try {
-    await verifyNodeExists(actionName, true) // isDeployed=true
-    await verifyEdgeExists('Entry', triggerName)
-    return true
-  } catch (err) {
-    return false
-  }
-})
+const expectRule = ({ triggerName, actionName }) => app =>
+  app.client.waitUntil(async () => {
+    try {
+      await verifyNodeExists(actionName, true) // isDeployed=true
+      await verifyEdgeExists('Entry', triggerName)
+      return true
+    } catch (err) {
+      return false
+    }
+  })
 
 module.exports = {
   input,

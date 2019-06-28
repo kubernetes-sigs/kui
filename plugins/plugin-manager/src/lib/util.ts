@@ -34,7 +34,9 @@ export const success = (operation, availableMessage, updatedCommands) => {
   if (operation !== false) {
     const installed = operation ? `The plugin has been ${operation}.` : ''
 
-    msg.appendChild(document.createTextNode(isHeadless() ? colors.blue(installed) : installed))
+    msg.appendChild(
+      document.createTextNode(isHeadless() ? colors.blue(installed) : installed)
+    )
     if (!isHeadless()) {
       msg.appendChild(document.createTextNode(' Please '))
       msg.appendChild(clicky)
@@ -44,7 +46,10 @@ export const success = (operation, availableMessage, updatedCommands) => {
 
   clicky.innerText = 'reload'
   clicky.className = 'clickable clickable-blatant'
-  clicky.onclick = () => require('electron').remote.getCurrentWindow().reload()
+  clicky.onclick = () =>
+    require('electron')
+      .remote.getCurrentWindow()
+      .reload()
 
   if (availableMessage && updatedCommands && updatedCommands.length > 0) {
     const available = document.createElement('div')

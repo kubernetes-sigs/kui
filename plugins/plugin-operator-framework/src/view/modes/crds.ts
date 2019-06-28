@@ -19,9 +19,15 @@ import * as Debug from 'debug'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
+import {
+  outerCSSForKey,
+  cssForKey
+} from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import {
+  Resource,
+  KubeResource
+} from '@kui-shell/plugin-k8s/lib/model/resource'
 
 const debug = Debug('plugin/operator-framework/view/modes/crds')
 
@@ -54,12 +60,14 @@ interface CRDBearer extends KubeResource {
   }
 }
 
-function isCRDBearer (resource: KubeResource): resource is CRDBearer {
+function isCRDBearer(resource: KubeResource): resource is CRDBearer {
   const bearer = resource as CRDBearer
-  return bearer !== undefined &&
+  return (
+    bearer !== undefined &&
     bearer.spec !== undefined &&
     bearer.spec.customresourcedefinitions !== undefined &&
     bearer.spec.customresourcedefinitions.owned !== undefined
+  )
 }
 
 /**
@@ -92,7 +100,7 @@ interface Parameters {
   resource: Resource<CRDBearer>
 }
 
-function toTable (resource: CRDBearer): Table {
+function toTable(resource: CRDBearer): Table {
   return {
     title: 'CRDs',
     header: {
@@ -111,7 +119,12 @@ function toTable (resource: CRDBearer): Table {
       css: cssForKey.NAME,
       attributes: [
         { key: 'KIND', value: spec.kind },
-        { key: 'VERSION', value: spec.version, outerCSS: outerCSSForKey.AGE, css: cssForKey.AGE },
+        {
+          key: 'VERSION',
+          value: spec.version,
+          outerCSS: outerCSSForKey.AGE,
+          css: cssForKey.AGE
+        },
         { key: 'DESCRIPTION', value: spec.description, css: 'pre-wrap' }
       ]
     }))

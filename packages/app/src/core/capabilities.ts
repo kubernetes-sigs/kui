@@ -67,7 +67,9 @@ export const hasProxy = () => state.hasProxy
  * Assert that Kui is supported by a remote proxy
  *
  */
-export const assertHasProxy = () => { state.hasProxy = true }
+export const assertHasProxy = () => {
+  state.hasProxy = true
+}
 
 /**
  * Update the media, e.g. to indicate that we are running in a browser
@@ -127,7 +129,8 @@ export const setValidCredentials = (creds: CredentialsMap): void => {
  * Do we have valid credentials to interface with the given provider?
  *
  */
-export const hasAuth = (provider: string): boolean => !!state.validCredentials[provider]
+export const hasAuth = (provider: string): boolean =>
+  !!state.validCredentials[provider]
 
 /**
  * Do we have access to a local system?

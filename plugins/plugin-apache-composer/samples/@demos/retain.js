@@ -6,8 +6,7 @@ const composer = require('openwhisk-composer')
  * params are passed to sequence, then combined with the
  * result of the sequence into a pair {params,result}.
  */
-module.exports = composer.retain(_ => ({ x: _.x + 1 }),
-  _ => ({ x: _.x + 2 }))
+module.exports = composer.retain(_ => ({ x: _.x + 1 }), _ => ({ x: _.x + 2 }))
 
 /**
  * e.g. input:  { x: 0 }

@@ -26,46 +26,60 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
+)
 
 // TODO: webpack test
-localDescribe('Create a sequence, list it, delete it', function (this: common.ISuite) {
+localDescribe('Create a sequence, list it, delete it', function(
+  this: common.ISuite
+) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   const rm = ui.aliases.remove[0]
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo')))
-  it('should create a second action', () => cli.do(`action create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('foo2')))
+  it('should create an action', () =>
+    cli
+      .do(`action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo')))
+  it('should create a second action', () =>
+    cli
+      .do(`action create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('foo2')))
 
-  it('should create a sequence', () => cli.do(`action create --sequence sss foo,foo2`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing('sss')))
+  it('should create a sequence', () =>
+    cli
+      .do(`action create --sequence sss foo,foo2`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('sss')))
 
   // list it
-  it(`should find the new sequence with "list"`, () => cli.do('action list', this.app).then(cli.expectOKWith('sss')))
+  it(`should find the new sequence with "list"`, () =>
+    cli.do('action list', this.app).then(cli.expectOKWith('sss')))
 
   // delete the actions, keeping the sequence around
-  it(`should delete the newly created action using "${rm}"`, () => cli.do(`action ${rm} foo`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
-  it(`should delete the other newly created action using "${rm}"`, () => cli.do(`action ${rm} foo2`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
+  it(`should delete the newly created action using "${rm}"`, () =>
+    cli
+      .do(`action ${rm} foo`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
+  it(`should delete the other newly created action using "${rm}"`, () =>
+    cli
+      .do(`action ${rm} foo2`, this.app)
+      .then(cli.expectOK)
+      .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
 
   // now try clicking on one of the sequence component bubbles
   it('should show action after clicking on bubble', async () => {
     await this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
-    return sidecar.expectOpen(this.app)
-      .then(sidecar.expectShowing('sss')) // since the action was deleted
+    return sidecar.expectOpen(this.app).then(sidecar.expectShowing('sss')) // since the action was deleted
   })
   // TODO check for error message "action not found"
 })

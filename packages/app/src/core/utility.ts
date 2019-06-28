@@ -29,10 +29,19 @@ export const optionsToString = (options: Options) => {
   let str = ''
   for (const key in options) {
     // underscore comes from minimist
-    if (key !== '_' && options[key] !== undefined && key !== 'name' && key !== 'theme' && typeof options[key] !== 'object') {
+    if (
+      key !== '_' &&
+      options[key] !== undefined &&
+      key !== 'name' &&
+      key !== 'theme' &&
+      typeof options[key] !== 'object'
+    ) {
       const dash = key.length === 1 ? '-' : '--'
       const prefix = options[key] === false ? 'no-' : '' // e.g. --no-help
-      const value = options[key] === true || options[key] === false ? '' : ` ${options[key]}`
+      const value =
+        options[key] === true || options[key] === false
+          ? ''
+          : ` ${options[key]}`
 
       if (!(dash === '-' && options[key] === false)) {
         // avoid -no-q, i.e. single dash
@@ -49,7 +58,10 @@ export const optionsToString = (options: Options) => {
  *
  */
 export const hasUnknownOptions = (options: Options, expected: string[]) => {
-  const M = expected.reduce((M, key) => { M[key] = true; return M }, {})
+  const M = expected.reduce((M, key) => {
+    M[key] = true
+    return M
+  }, {})
   for (const opt in options) {
     // underscore comes from minimist
     if (opt !== '_' && !M[opt]) {

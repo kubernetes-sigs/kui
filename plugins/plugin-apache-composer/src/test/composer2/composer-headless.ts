@@ -33,8 +33,10 @@ interface Response {
 }
 
 const expect = {
-
-  appList: ({ name, packageName }) => ({ code: actualCode, output: actualOutput }) => {
+  appList: ({ name, packageName }) => ({
+    code: actualCode,
+    output: actualOutput
+  }) => {
     assert.strictEqual(actualCode, 0)
     const lines = actualOutput.split('\n')
     assert.strictEqual(lines[0].replace(/\s+/g, ' ').trim(), 'name type')
@@ -57,7 +59,10 @@ const expect = {
     return actualOutput
   },
 
-  json: ({ expectedOutput, expectedKeys }) => ({ code: actualCode, output: actualOutput }) => {
+  json: ({ expectedOutput, expectedKeys }) => ({
+    code: actualCode,
+    output: actualOutput
+  }) => {
     assert.strictEqual(actualCode, 0)
     actualOutput = JSON.parse(actualOutput)
 
@@ -83,268 +88,454 @@ const expect = {
 class Validation {
   ctx: common.ISuite
 
-  constructor (ctx: common.ISuite) {
+  constructor(ctx: common.ISuite) {
     this.ctx = ctx
   }
 
-  appList ({ name, packageName = '', namespace = '' }) {
+  appList({ name, packageName = '', namespace = '' }) {
     if (namespace !== '') {
-      it(`validate app list /${namespace}`, () => cli.do(`app list /${namespace}`)
-        .then(expect.appList({ name, packageName }))
-        .catch(common.oops(this.ctx)))
+      it(`validate app list /${namespace}`, () =>
+        cli
+          .do(`app list /${namespace}`)
+          .then(expect.appList({ name, packageName }))
+          .catch(common.oops(this.ctx)))
     }
 
     if (packageName !== '') {
-      it(`validate app list ${packageName}/`, () => cli.do(`app list ${packageName}/`)
-        .then(expect.appList({ name, packageName }))
-        .catch(common.oops(this.ctx)))
+      it(`validate app list ${packageName}/`, () =>
+        cli
+          .do(`app list ${packageName}/`)
+          .then(expect.appList({ name, packageName }))
+          .catch(common.oops(this.ctx)))
     }
 
-    it(`validate app list`, () => cli.do(`app list`)
-      .then(expect.appList({ name, packageName }))
-      .catch(common.oops(this.ctx)))
+    it(`validate app list`, () =>
+      cli
+        .do(`app list`)
+        .then(expect.appList({ name, packageName }))
+        .catch(common.oops(this.ctx)))
   }
 
   // every app invoke commands are converted to blocking invocation and only displays the response result
-  invoke ({ name, params = '', output, packageName = '', namespace = '' }) {
+  invoke({ name, params = '', output, packageName = '', namespace = '' }) {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
-    const invokers = [`app invoke ${name} ${params}`,
+    const invokers = [
+      `app invoke ${name} ${params}`,
       `app invoke ${name} -b ${params}`,
       `app invoke ${name} -r ${params}`,
       `app invoke ${name} -br ${params}`,
       `app invoke ${name} --result ${params}`,
-      `app invoke ${name} --blocking --result ${params}`]
+      `app invoke ${name} --blocking --result ${params}`
+    ]
 
     invokers.forEach(invoker => {
-      it(`validate ${invoker}`, () => cli.do(invoker)
-        .then(expect.json({ expectedOutput: output, expectedKeys: undefined }))
-        .catch(common.oops(this.ctx)))
+      it(`validate ${invoker}`, () =>
+        cli
+          .do(invoker)
+          .then(
+            expect.json({ expectedOutput: output, expectedKeys: undefined })
+          )
+          .catch(common.oops(this.ctx)))
     })
   }
 
-  async ({ name, packageName = '', namespace = '' }) {
+  async({ name, packageName = '', namespace = '' }) {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
-    it(`validate async ${name}`, () => cli.do(`app async ${name}`)
-      .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
-      .catch(common.oops(this.ctx)))
+    it(`validate async ${name}`, () =>
+      cli
+        .do(`app async ${name}`)
+        .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
+        .catch(common.oops(this.ctx)))
 
-    it(`validate async ${name} ; session get ; session list`, () => cli.do(`app async ${name}`)
-      .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
-      .then(line => { // session get
-        const match = line.match(/with id (.*)[\s]*$/)
-        assert.ok(match)
-        assert.strictEqual(match.length, 2)
-        const sessionId = match[1]
+    it(`validate async ${name} ; session get ; session list`, () =>
+      cli
+        .do(`app async ${name}`)
+        .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
+        .then(line => {
+          // session get
+          const match = line.match(/with id (.*)[\s]*$/)
+          assert.ok(match)
+          assert.strictEqual(match.length, 2)
+          const sessionId = match[1]
 
-        return new Promise((resolve, reject) => {
-          const fetch = (retry) => cli.do(`session get ${sessionId}`)
-            .then(response => {
-              if (response.code === 404 - 256) { // retry on 404, because the session might not yet be available
-                if (retry < 5) {
-                  console.error(`${retry} retry session get ${name} when 404`)
-                  setTimeout(function () { fetch(retry + 1) }, 2000)
-                } else {
-                  throw new Error(response.stderr)
-                }
-              } else {
-                expect.json({ expectedOutput: undefined, expectedKeys: ['activationId', 'annotations', 'duration', 'end', 'logs', 'name', 'namespace', 'response', 'start', 'subject'] })(response)
-                resolve(sessionId)
-              }
-            }).catch(reject)
+          return new Promise((resolve, reject) => {
+            const fetch = retry =>
+              cli
+                .do(`session get ${sessionId}`)
+                .then(response => {
+                  if (response.code === 404 - 256) {
+                    // retry on 404, because the session might not yet be available
+                    if (retry < 5) {
+                      console.error(
+                        `${retry} retry session get ${name} when 404`
+                      )
+                      setTimeout(function() {
+                        fetch(retry + 1)
+                      }, 2000)
+                    } else {
+                      throw new Error(response.stderr)
+                    }
+                  } else {
+                    expect.json({
+                      expectedOutput: undefined,
+                      expectedKeys: [
+                        'activationId',
+                        'annotations',
+                        'duration',
+                        'end',
+                        'logs',
+                        'name',
+                        'namespace',
+                        'response',
+                        'start',
+                        'subject'
+                      ]
+                    })(response)
+                    resolve(sessionId)
+                  }
+                })
+                .catch(reject)
 
-          fetch(0)
+            fetch(0)
+          })
         })
-      })
-      .then(sessionId => { // session list
-        return new Promise((resolve, reject) => {
-          const fetchList = (retry) => cli.do(`session list`)
-            .then(response => {
-              const lines = response.output.split(/\n/)
-              const names = name.split('/')
-              const nameWithoutPackage = names[names.length - 1]
+        .then(sessionId => {
+          // session list
+          return new Promise((resolve, reject) => {
+            const fetchList = retry =>
+              cli
+                .do(`session list`)
+                .then(response => {
+                  const lines = response.output.split(/\n/)
+                  const names = name.split('/')
+                  const nameWithoutPackage = names[names.length - 1]
 
-              cli.expectOK('activationId name', { exact: true, skipLines: 0, squish: true })({ code: response.code, output: lines[0] }) // check the title line
-              if (lines.indexOf(`${sessionId} ${nameWithoutPackage}`) === -1) { // Retry when not found, becuase the session might not yet be available for listing
-                if (retry < 10) {
-                  console.error(`${retry} retry session list when not found ${sessionId} ${nameWithoutPackage}`)
-                  debug('session list result', lines)
-                  setTimeout(function () { fetchList(retry + 1) }, 2000)
-                } else {
-                  throw Error(`session list could not find session id: ${sessionId}`)
-                }
-              } else {
-                resolve()
-              }
-            }).catch(reject)
+                  cli.expectOK('activationId name', {
+                    exact: true,
+                    skipLines: 0,
+                    squish: true
+                  })({ code: response.code, output: lines[0] }) // check the title line
+                  if (
+                    lines.indexOf(`${sessionId} ${nameWithoutPackage}`) === -1
+                  ) {
+                    // Retry when not found, becuase the session might not yet be available for listing
+                    if (retry < 10) {
+                      console.error(
+                        `${retry} retry session list when not found ${sessionId} ${nameWithoutPackage}`
+                      )
+                      debug('session list result', lines)
+                      setTimeout(function() {
+                        fetchList(retry + 1)
+                      }, 2000)
+                    } else {
+                      throw Error(
+                        `session list could not find session id: ${sessionId}`
+                      )
+                    }
+                  } else {
+                    resolve()
+                  }
+                })
+                .catch(reject)
 
-          fetchList(0)
+            fetchList(0)
+          })
         })
-      })
-      .catch(common.oops(this.ctx)))
+        .catch(common.oops(this.ctx)))
   }
 
-  appGet ({ name, packageName = '', namespace = '' }) {
+  appGet({ name, packageName = '', namespace = '' }) {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
-    const expectedKeys = ['annotations', 'limits', 'name', 'namespace', 'parameters', 'kind']
+    const expectedKeys = [
+      'annotations',
+      'limits',
+      'name',
+      'namespace',
+      'parameters',
+      'kind'
+    ]
     if (packageName !== '') expectedKeys.push('packageName')
 
-    it(`validate app get ${name}`, () => cli.do(`app get ${name}`)
-      .then(expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys }))
-      .catch(common.oops(this.ctx)))
+    it(`validate app get ${name}`, () =>
+      cli
+        .do(`app get ${name}`)
+        .then(
+          expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys })
+        )
+        .catch(common.oops(this.ctx)))
   }
 
-  do ({ name, packageName = '', namespace = '', output, params = '', outputWithParams = {} }) {
+  do({
+    name,
+    packageName = '',
+    namespace = '',
+    output,
+    params = '',
+    outputWithParams = {}
+  }) {
     this.appList({ name, packageName, namespace })
     this.invoke({ name, output, packageName, namespace })
-    if (params) this.invoke({ name, params, output: outputWithParams, packageName, namespace })
+    if (params)
+      this.invoke({
+        name,
+        params,
+        output: outputWithParams,
+        packageName,
+        namespace
+      })
     this.async({ name, packageName, namespace })
     this.appGet({ name, packageName, namespace })
   }
 }
 
-describe('Composer Headless Test', function (this: common.ISuite) {
+describe('Composer Headless Test', function(this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
-  describe('should create simple composition from @demos', function (this: common.ISuite) {
-    it('app create test1 @demos/hello.js', () => cli.do('app create test1 @demos/hello.js')
-      .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
-      .catch(common.oops(this)))
-    new Validation(this).do({ name: 'test1', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
+  describe('should create simple composition from @demos', function(this: common.ISuite) {
+    it('app create test1 @demos/hello.js', () =>
+      cli
+        .do('app create test1 @demos/hello.js')
+        .then(
+          cli.expectOK('ok: updated composition /_/test1\n', { exact: true })
+        )
+        .catch(common.oops(this)))
+    new Validation(this).do({
+      name: 'test1',
+      output: { msg: 'hello world!' },
+      params: '-p name Users',
+      outputWithParams: { msg: 'hello Users!' }
+    })
   })
 
-  describe('app list options', function (this: common.ISuite) {
-    it('should get empty result by app list --limit 0', () => cli.do('app list --limit 0')
-      .then(cli.expectOK('', { exact: true }))
-      .catch(common.oops(this)))
+  describe('app list options', function(this: common.ISuite) {
+    it('should get empty result by app list --limit 0', () =>
+      cli
+        .do('app list --limit 0')
+        .then(cli.expectOK('', { exact: true }))
+        .catch(common.oops(this)))
 
-    it('should get 1 by app list --count', () => cli.do('app list --count')
-      .then(cli.expectOK('1\n', { exact: true }))
-      .catch(common.oops(this)))
+    it('should get 1 by app list --count', () =>
+      cli
+        .do('app list --count')
+        .then(cli.expectOK('1\n', { exact: true }))
+        .catch(common.oops(this)))
 
-    it('should get test1 by app list --limit 1', () => cli.do('app list --limit 1')
-      .then(expect.appList({ name: 'test1', packageName: '' }))
-      .catch(common.oops(this)))
+    it('should get test1 by app list --limit 1', () =>
+      cli
+        .do('app list --limit 1')
+        .then(expect.appList({ name: 'test1', packageName: '' }))
+        .catch(common.oops(this)))
 
-    it('should get empty result by app list --skip 1', () => cli.do('app list --skip 1')
-      .then(cli.expectOK('', { exact: true }))
-      .catch(common.oops(this)))
+    it('should get empty result by app list --skip 1', () =>
+      cli
+        .do('app list --skip 1')
+        .then(cli.expectOK('', { exact: true }))
+        .catch(common.oops(this)))
   })
 
-  describe('should create composition with package', function (this: common.ISuite) {
-    it('should fail with 404 when creating composition with non-existing package', () => cli.do('app create testing/subtest1 @demos/hello.js')
-      .then(cli.expectError(cli.exitCode(404)))
-      .catch(common.oops(this)))
+  describe('should create composition with package', function(this: common.ISuite) {
+    it('should fail with 404 when creating composition with non-existing package', () =>
+      cli
+        .do('app create testing/subtest1 @demos/hello.js')
+        .then(cli.expectError(cli.exitCode(404)))
+        .catch(common.oops(this)))
 
-    it('should create package first', () => cli.do('wsk package create testing')
-      .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
-      .catch(common.oops(this)))
-
-    it('validate app create testing/subtest1 @demos/hello.js', () => cli.do('app create testing/subtest1 @demos/hello.js')
-      .then(cli.expectOK('ok: updated composition /_/testing/subtest1\n', { exact: true }))
-      .catch(common.oops(this)))
-
-    new Validation(this).do({ name: 'subtest1', packageName: 'testing', output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
-  })
-
-  if (ui.expectedNamespace()) {
-    describe('should create composition with namespace', function (this: common.ISuite) {
-      it('should create package first', () => cli.do('wsk package update testing')
+    it('should create package first', () =>
+      cli
+        .do('wsk package create testing')
         .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
         .catch(common.oops(this)))
 
-      it('validate app create with namespace', () => cli.do(`app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`)
-        .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
+    it('validate app create testing/subtest1 @demos/hello.js', () =>
+      cli
+        .do('app create testing/subtest1 @demos/hello.js')
+        .then(
+          cli.expectOK('ok: updated composition /_/testing/subtest1\n', {
+            exact: true
+          })
+        )
         .catch(common.oops(this)))
-      new Validation(this).do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { msg: 'hello world!' }, params: '-p name Users', outputWithParams: { msg: 'hello Users!' } })
+
+    new Validation(this).do({
+      name: 'subtest1',
+      packageName: 'testing',
+      output: { msg: 'hello world!' },
+      params: '-p name Users',
+      outputWithParams: { msg: 'hello Users!' }
+    })
+  })
+
+  if (ui.expectedNamespace()) {
+    describe('should create composition with namespace', function(this: common.ISuite) {
+      it('should create package first', () =>
+        cli
+          .do('wsk package update testing')
+          .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
+          .catch(common.oops(this)))
+
+      it('validate app create with namespace', () =>
+        cli
+          .do(
+            `app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`
+          )
+          .then(
+            cli.expectOK(
+              `ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`,
+              { exact: true }
+            )
+          )
+          .catch(common.oops(this)))
+      new Validation(this).do({
+        name: 'subtest2',
+        packageName: 'testing',
+        namespace: ui.expectedNamespace(),
+        output: { msg: 'hello world!' },
+        params: '-p name Users',
+        outputWithParams: { msg: 'hello Users!' }
+      })
     })
   }
 
-  describe('should fail when creating composition from non-exisiting file', function (this: common.ISuite) {
-    it('fails app create error error.js', () => cli.do('app create error error.js')
-      .then(cli.expectError(1))
-      .catch(common.oops(this)))
+  describe('should fail when creating composition from non-exisiting file', function(this: common.ISuite) {
+    it('fails app create error error.js', () =>
+      cli
+        .do('app create error error.js')
+        .then(cli.expectError(1))
+        .catch(common.oops(this)))
   })
 
-  describe('should create compostion and dependent actions with implicity entity', function (this: common.ISuite) {
-    it('validate app create test2 @demos/if.js', () => cli.do('app create test2 @demos/if.js')
-      .then(cli.expectOK('ok: updated composition /_/test2\n', { exact: true }))
-      .catch(common.oops(this)))
+  describe('should create compostion and dependent actions with implicity entity', function(this: common.ISuite) {
+    it('validate app create test2 @demos/if.js', () =>
+      cli
+        .do('app create test2 @demos/if.js')
+        .then(
+          cli.expectOK('ok: updated composition /_/test2\n', { exact: true })
+        )
+        .catch(common.oops(this)))
 
-    it('validate app invoke test2 fails', () => cli.do('app invoke test2')
-      .then(res => res.output.indexOf('Failed to resolve action') !== -1)
-      .catch(common.oops(this)))
+    it('validate app invoke test2 fails', () =>
+      cli
+        .do('app invoke test2')
+        .then(res => res.output.indexOf('Failed to resolve action') !== -1)
+        .catch(common.oops(this)))
   })
 
-  describe('should update simple composition', function (this: common.ISuite) {
-    it('validate app update test1 @demos/let.js', () => cli.do('app update test1 @demos/let.js')
-      .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
-      .catch(common.oops(this)))
+  describe('should update simple composition', function(this: common.ISuite) {
+    it('validate app update test1 @demos/let.js', () =>
+      cli
+        .do('app update test1 @demos/let.js')
+        .then(
+          cli.expectOK('ok: updated composition /_/test1\n', { exact: true })
+        )
+        .catch(common.oops(this)))
     new Validation(this).do({ name: 'test1', output: { ok: true } })
   })
 
-  describe('should update simple composition with packageName', function (this: common.ISuite) {
-    it('validate app update testing/subtest1 @demos/let.js', () => cli.do('app update testing/subtest1 @demos/let.js')
-      .then(cli.expectOK('ok: updated composition /_/testing/subtest1\n', { exact: true }))
-      .catch(common.oops(this)))
-    new Validation(this).do({ name: 'subtest1', packageName: 'testing', output: { ok: true } })
+  describe('should update simple composition with packageName', function(this: common.ISuite) {
+    it('validate app update testing/subtest1 @demos/let.js', () =>
+      cli
+        .do('app update testing/subtest1 @demos/let.js')
+        .then(
+          cli.expectOK('ok: updated composition /_/testing/subtest1\n', {
+            exact: true
+          })
+        )
+        .catch(common.oops(this)))
+    new Validation(this).do({
+      name: 'subtest1',
+      packageName: 'testing',
+      output: { ok: true }
+    })
   })
 
   if (ui.expectedNamespace()) {
-    describe('should update simple composition with namespace', function (this: common.ISuite) {
-      it('should create package first', () => cli.do('wsk package update testing')
-        .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
-        .catch(common.oops(this)))
+    describe('should update simple composition with namespace', function(this: common.ISuite) {
+      it('should create package first', () =>
+        cli
+          .do('wsk package update testing')
+          .then(cli.expectOK('ok: updated package testing\n', { exact: true }))
+          .catch(common.oops(this)))
 
-      it(`validate app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`, () => cli.do(`app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`)
-        .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
-        .catch(common.oops(this)))
-      new Validation(this).do({ name: 'subtest2', packageName: 'testing', namespace: ui.expectedNamespace(), output: { ok: true } })
+      it(`validate app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`, () =>
+        cli
+          .do(
+            `app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`
+          )
+          .then(
+            cli.expectOK(
+              `ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`,
+              { exact: true }
+            )
+          )
+          .catch(common.oops(this)))
+      new Validation(this).do({
+        name: 'subtest2',
+        packageName: 'testing',
+        namespace: ui.expectedNamespace(),
+        output: { ok: true }
+      })
     })
   }
 
-  describe('should fail when updating with non-existing path', function (this: common.ISuite) {
-    it('should fail when updating with non-existing path', () => cli.do('app update test2 @demos/dummy.js')
-      .then(cli.expectError(1))
-      .catch(common.oops(this)))
+  describe('should fail when updating with non-existing path', function(this: common.ISuite) {
+    it('should fail when updating with non-existing path', () =>
+      cli
+        .do('app update test2 @demos/dummy.js')
+        .then(cli.expectError(1))
+        .catch(common.oops(this)))
   })
 
-  describe('should delete tests', function (this: common.ISuite) {
-    it('validate app delete test1', () => cli.do('app delete test1')
-      .then(cli.expectOK())
-      .catch(common.oops(this)))
-
-    it('validate app delete test2', () => cli.do('app delete test2')
-      .then(cli.expectOK())
-      .catch(common.oops(this)))
-
-    it('validate app delete testing/subtest1', () => cli.do('app delete testing/subtest1')
-      .then(cli.expectOK())
-      .catch(common.oops(this)))
-
-    if (ui.expectedNamespace()) {
-      it(`validate app delete /${ui.expectedNamespace()}/testing/subtest2`, () => cli.do(`app delete /${ui.expectedNamespace()}/testing/subtest2`)
+  describe('should delete tests', function(this: common.ISuite) {
+    it('validate app delete test1', () =>
+      cli
+        .do('app delete test1')
         .then(cli.expectOK())
         .catch(common.oops(this)))
+
+    it('validate app delete test2', () =>
+      cli
+        .do('app delete test2')
+        .then(cli.expectOK())
+        .catch(common.oops(this)))
+
+    it('validate app delete testing/subtest1', () =>
+      cli
+        .do('app delete testing/subtest1')
+        .then(cli.expectOK())
+        .catch(common.oops(this)))
+
+    if (ui.expectedNamespace()) {
+      it(`validate app delete /${ui.expectedNamespace()}/testing/subtest2`, () =>
+        cli
+          .do(`app delete /${ui.expectedNamespace()}/testing/subtest2`)
+          .then(cli.expectOK())
+          .catch(common.oops(this)))
     }
   })
 
-  describe('error handling with non-exisiting composition', function (this: common.ISuite) {
-    it('should 404 when invoking deleted composition', () => cli.do('app invoke test2')
-      .then(cli.expectError(cli.exitCode(404)))
-      .catch(common.oops(this)))
+  describe('error handling with non-exisiting composition', function(this: common.ISuite) {
+    it('should 404 when invoking deleted composition', () =>
+      cli
+        .do('app invoke test2')
+        .then(cli.expectError(cli.exitCode(404)))
+        .catch(common.oops(this)))
 
-    it('should 404 when invoking non-existent composition', () => cli.do('app invoke dummy')
-      .then(cli.expectError(cli.exitCode(404)))
-      .catch(common.oops(this)))
+    it('should 404 when invoking non-existent composition', () =>
+      cli
+        .do('app invoke dummy')
+        .then(cli.expectError(cli.exitCode(404)))
+        .catch(common.oops(this)))
 
-    it('should 404 when deleting non-existent composition', () => cli.do('app delete dummy')
-      .then(cli.expectError(cli.exitCode(404)))
-      .catch(common.oops(this)))
+    it('should 404 when deleting non-existent composition', () =>
+      cli
+        .do('app delete dummy')
+        .then(cli.expectError(cli.exitCode(404)))
+        .catch(common.oops(this)))
   })
 })

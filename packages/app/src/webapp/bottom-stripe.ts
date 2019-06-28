@@ -20,7 +20,13 @@ import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { isTable } from './models/table'
 import { formatTable } from './views/table'
-import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
+import {
+  getSidecar,
+  showCustom,
+  isCustomSpec,
+  CustomSpec,
+  insertView
+} from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
@@ -39,14 +45,23 @@ const debug = Debug('webapp/picture-in-picture')
  * across remote proxies, and thus is preferable to the former.
  *
  */
-type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
-type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
+type DirectViewController =
+  | string
+  | DirectViewControllerFunction
+  | DirectViewControllerSpec
+  | DirectViewEntity
+type DirectViewControllerFunction = (
+  tab: Tab,
+  entity: object
+) => PromiseLike<object> | object | void
 
 interface DirectViewEntity extends CustomSpec {
   isEntity: boolean
 }
 
-function isDirectViewEntity (direct: DirectViewController): direct is DirectViewEntity {
+function isDirectViewEntity(
+  direct: DirectViewController
+): direct is DirectViewEntity {
   const entity = direct as DirectViewEntity
   return entity.isEntity !== undefined
 }
@@ -62,13 +77,23 @@ interface DirectViewControllerSpec {
  * Call a "direct" impl
  *
  */
-const callDirect = async (tab: Tab, makeView: DirectViewController, entity, execOptions: ExecOptions) => {
+const callDirect = async (
+  tab: Tab,
+  makeView: DirectViewController,
+  entity,
+  execOptions: ExecOptions
+) => {
   if (typeof makeView === 'string') {
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
       return repl.pexec(makeView, execOptions)
     } else {
-      return repl.qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
+      return repl.qexec(
+        makeView,
+        undefined,
+        undefined,
+        Object.assign({}, execOptions, { rethrowErrors: true })
+      )
     }
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
@@ -78,7 +103,9 @@ const callDirect = async (tab: Tab, makeView: DirectViewController, entity, exec
     const combined = Object.assign({}, entity, makeView)
     return combined
   } else {
-    const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
+    const provider = await import(
+      `@kui-shell/plugin-${makeView.plugin}/${makeView.module}`
+    )
     return provider[makeView.operation](tab, makeView.parameters)
   }
 }
@@ -144,23 +171,59 @@ export const rawCSS = {
 }
 export const css = {
   buttons: (tab: Tab) => sidecarSelector(tab, rawCSS.buttons),
-  backContainer: (tab: Tab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
-  backButton: (tab: Tab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
+  backContainer: (tab: Tab) =>
+    sidecarSelector(
+      tab,
+      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'
+    ), // houses the back button text and <<
+  backButton: (tab: Tab) =>
+    sidecarSelector(
+      tab,
+      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'
+    ), // houses the back button text
   button: 'sidecar-bottom-stripe-button',
   buttonActingAsButton: 'sidecar-bottom-stripe-button-as-button',
   buttonActingAsRadioButton: 'sidecar-bottom-stripe-button-as-radio-button',
-  modeContainer: (tab: Tab) => sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
+  modeContainer: (tab: Tab) =>
+    sidecarSelector(
+      tab,
+      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'
+    ),
   active: 'sidecar-bottom-stripe-button-active',
   selected: 'selected',
   hidden: 'hidden'
 }
 
-const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, entity, show: string) => {
-  const { mode, label, flush, selected, selectionController, visibleWhen,
+const _addModeButton = (
+  tab: Tab,
+  bottomStripe: Element,
+  opts: SidecarMode,
+  entity,
+  show: string
+) => {
+  const {
+    mode,
+    label,
+    flush,
+    selected,
+    selectionController,
+    visibleWhen,
     leaveBottomStripeAlone = false,
-    fontawesome, labelBelow, // show label below the fontawesome?
-    balloon, balloonLength, data, command = () => mode, direct, execOptions,
-    defaultMode, actAsButton, radioButton = false, echo = false, noHistory = true, replSilence = true } = opts
+    fontawesome,
+    labelBelow, // show label below the fontawesome?
+    balloon,
+    balloonLength,
+    data,
+    command = () => mode,
+    direct,
+    execOptions,
+    defaultMode,
+    actAsButton,
+    radioButton = false,
+    echo = false,
+    noHistory = true,
+    replSilence = true
+  } = opts
 
   // create the button dom, and attach it
   const button = document.createElement('div')
@@ -194,7 +257,10 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
     }
   }
 
-  if ((((!show || show === 'default') && defaultMode) || show === mode) && !actAsButton) {
+  if (
+    (((!show || show === 'default') && defaultMode) || show === mode) &&
+    !actAsButton
+  ) {
     button.classList.add(css.active)
   }
   button.setAttribute('data-mode', mode)
@@ -229,7 +295,9 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
 
   let container = bottomStripe
   if (flush === 'right' || flush === 'weak') {
-    let fillContainer = bottomStripe.querySelector('.fill-container.flush-right')
+    let fillContainer = bottomStripe.querySelector(
+      '.fill-container.flush-right'
+    )
     if (!fillContainer) {
       fillContainer = document.createElement('div')
       fillContainer.className = 'fill-container flush-right'
@@ -265,7 +333,9 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
           }
           button.classList.add(css.active)
 
-          const visibleWhens = bottomStripe.querySelectorAll('.sidecar-bottom-stripe-button[data-visible-when]')
+          const visibleWhens = bottomStripe.querySelectorAll(
+            '.sidecar-bottom-stripe-button[data-visible-when]'
+          )
           for (let idx = 0; idx < visibleWhens.length; idx++) {
             const otherButton = visibleWhens[idx] as HTMLElement
             const when = otherButton.getAttribute('data-visible-when')
@@ -279,7 +349,9 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
           if (radioButton) {
             button.classList.toggle(css.selected)
           } else {
-            const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
+            const currentSelected = bottomStripe.querySelector(
+              `.${css.selected}`
+            )
             if (currentSelected) {
               currentSelected.classList.remove(css.selected)
             }
@@ -293,27 +365,43 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
         try {
           const view = await callDirect(tab, direct, entity, execOptions)
           if (view && !actAsButton) {
-            if (isTable(view) || isDirectViewEntity(direct) || leaveBottomStripeAlone) {
+            if (
+              isTable(view) ||
+              isDirectViewEntity(direct) ||
+              leaveBottomStripeAlone
+            ) {
               changeActiveButton()
             }
 
             if (typeof view === 'string') {
               const dom = document.createElement('div')
-              dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+              dom.classList.add(
+                'padding-content',
+                'scrollable',
+                'scrollable-auto'
+              )
               dom.innerText = view
               insertView(tab)(dom)
             } else if (view.nodeName) {
               const dom = document.createElement('div')
-              dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+              dom.classList.add(
+                'padding-content',
+                'scrollable',
+                'scrollable-auto'
+              )
               dom.appendChild(view)
               insertView(tab)(dom)
             } else if (isCustomSpec(view)) {
-            // Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
+              // Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
               showCustom(tab, view, { leaveBottomStripeAlone })
             } else if (isTable(view)) {
               const dom1 = document.createElement('div')
               const dom2 = document.createElement('div')
-              dom1.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+              dom1.classList.add(
+                'padding-content',
+                'scrollable',
+                'scrollable-auto'
+              )
               dom2.classList.add('result-as-table', 'repl-result')
               dom1.appendChild(dom2)
               formatTable(tab, view, dom2, { usePip: true })
@@ -321,7 +409,9 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
             }
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
-              const button = bottomStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
+              const button = bottomStripe.querySelector(
+                `.sidecar-bottom-stripe-button[data-mode="${mode}"]`
+              )
               if (button) {
                 if (disabled) {
                   button.classList.add('disabled')
@@ -355,13 +445,21 @@ const _addModeButton = (tab: Tab, bottomStripe: Element, opts: SidecarMode, enti
   return button
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const addModeButton = (tab: Tab, mode: SidecarMode, entity: Record<string, any>) => {
+export const addModeButton = (
+  tab: Tab,
+  mode: SidecarMode,
+  entity: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+) => {
   const bottomStripe = css.modeContainer(tab)
   return _addModeButton(tab, bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], entity, options?: BottomStripOptions) => {
+export const addModeButtons = (
+  tab: Tab,
+  modesUnsorted: SidecarMode[] = [],
+  entity,
+  options?: BottomStripOptions
+) => {
   // consult the view registrar for registered view modes
   // relevant to this resource
   const command = ''
@@ -371,9 +469,11 @@ export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], enti
   // means place to the right, unless there are no flush:right|weak
   // buttons.
   const modes = modesUnsorted.sort((a, b) => {
-    if (a.flush === b.flush ||
-        (a.flush === 'weak' && b.flush === 'right') ||
-        (a.flush === 'right' && b.flush === 'weak')) {
+    if (
+      a.flush === b.flush ||
+      (a.flush === 'weak' && b.flush === 'right') ||
+      (a.flush === 'right' && b.flush === 'weak')
+    ) {
       // then use the natural order of a versus b: a mode model can
       // optionally specify a numeric sort order; if not specified,
       // then use the order as given
@@ -388,26 +488,25 @@ export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], enti
   })
 
   // if we have *only* flush-right buttons, then do not flush-right any of them
-  const nFlushRight = modes.reduce(
-    (count, { flush }) => {
-      count += flush === 'right' ? 1 : 0
-      return count
-    },
-    0
-  )
-  const nFlushLeft = modes.reduce(
-    (count, { flush }) => {
-      count += flush !== 'weak' && flush !== 'right' ? 1 : 0
-      return count
-    },
-    0
-  )
+  const nFlushRight = modes.reduce((count, { flush }) => {
+    count += flush === 'right' ? 1 : 0
+    return count
+  }, 0)
+  const nFlushLeft = modes.reduce((count, { flush }) => {
+    count += flush !== 'weak' && flush !== 'right' ? 1 : 0
+    return count
+  }, 0)
   if (nFlushRight > 0 && nFlushLeft === 0) {
     modes.forEach(_ => delete _.flush)
   }
 
   // for going back
-  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity, show: string) => {
+  const addModeButtons = (
+    tab: Tab,
+    modes: SidecarMode[],
+    entity,
+    show: string
+  ) => {
     const bottomStripe = css.modeContainer(tab)
     removeAllDomChildren(bottomStripe)
 
@@ -420,7 +519,8 @@ export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], enti
     bottomStripe['capture'] = () => {
       // capture the current selection
       const currentSelection = bottomStripe.querySelector(`.${css.active}`)
-      const currentShow = currentSelection && currentSelection.getAttribute('data-mode')
+      const currentShow =
+        currentSelection && currentSelection.getAttribute('data-mode')
       const show = currentShow || (options && options.show)
 
       // to avoid stale buttons from showing up while the new view renders
@@ -431,7 +531,9 @@ export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], enti
   }
 
   const defaultMode = modes && modes.find(({ defaultMode }) => defaultMode)
-  const show = (options && options.show) || (defaultMode && (defaultMode.mode || defaultMode.label))
+  const show =
+    (options && options.show) ||
+    (defaultMode && (defaultMode.mode || defaultMode.label))
 
   addModeButtons(tab, modes, entity, show)
 

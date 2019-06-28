@@ -17,10 +17,12 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli } from '@kui-shell/core/tests/lib/headless'
 
-describe('bash-like host catchall', function (this: common.ISuite) {
+describe('bash-like host catchall', function(this: common.ISuite) {
   before(common.before(this, { noApp: true }))
 
-  it('should show some output for host google.com', () => cli.do('host google.com')
-    .then(cli.expectOK('has address'))
-    .catch(common.oops(this)))
+  it('should show some output for host google.com', () =>
+    cli
+      .do('host google.com')
+      .then(cli.expectOK('has address'))
+      .catch(common.oops(this)))
 })

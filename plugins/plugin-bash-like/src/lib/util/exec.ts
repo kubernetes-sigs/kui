@@ -19,7 +19,14 @@ import { asSidecarEntity } from '../util/sidecar-support'
 /** does the given strong span a large number of lines? */
 export const reallyLong = str => str.split(/[\n\r]/).length > 20
 
-export const handleNonZeroExitCode = (command: string, exitCode: number, rawOut: string, rawErr: string, execOptions, parentNode?: Element) => {
+export const handleNonZeroExitCode = (
+  command: string,
+  exitCode: number,
+  rawOut: string,
+  rawErr: string,
+  execOptions,
+  parentNode?: Element
+) => {
   // e.g. `git` with no arguments yields an exit code of 1, but
   // dumps the usage to stdout, not stderr
   const stderr = rawErr.length === 0 ? rawOut : rawErr
@@ -38,8 +45,10 @@ export const handleNonZeroExitCode = (command: string, exitCode: number, rawOut:
     }
 
     if (execOptions.stderr) error['code'] = parentNode
-    else if (stderr.match(/File exists/i)) error['code'] = 409 // re: i18n, this is for tests
-    else if (exitCode !== 127 && stderr.match(/not found/i)) error['code'] = 404 // re: i18n, this is for tests
+    else if (stderr.match(/File exists/i)) error['code'] = 409
+    // re: i18n, this is for tests
+    else if (exitCode !== 127 && stderr.match(/not found/i)) error['code'] = 404
+    // re: i18n, this is for tests
     else error['code'] = exitCode
 
     throw error

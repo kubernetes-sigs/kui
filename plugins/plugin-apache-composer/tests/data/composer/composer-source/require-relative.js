@@ -16,5 +16,4 @@
 
 const composer = require('openwhisk-composer')
 
-module.exports = composer.sequence(require('./echo')(1),
-                                   require('./echo')(2))
+module.exports = composer.sequence(require('./echo')(1), require('./echo')(2))

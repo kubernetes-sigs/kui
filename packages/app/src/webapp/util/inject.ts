@@ -28,10 +28,12 @@ interface StylesheetFile {
   path: string
   key: string
 }
-function isAStylesheetDirect (object: StylesheetSpec): object is StylesheetDirect {
+function isAStylesheetDirect(
+  object: StylesheetSpec
+): object is StylesheetDirect {
   return typeof object !== 'string' && 'css' in object && 'key' in object
 }
-function isAStylesheetFile (object: StylesheetSpec): object is StylesheetFile {
+function isAStylesheetFile(object: StylesheetSpec): object is StylesheetFile {
   return typeof object !== 'string' && 'path' in object && 'key' in object
 }
 
@@ -51,9 +53,10 @@ export const injectCSS = (file: StylesheetSpec): void => {
   const contentType = 'text/css'
   const rel = 'stylesheet'
 
-  const id = isAStylesheetDirect(file) || isAStylesheetFile(file)
-    ? `injected-css-${file.key}`
-    : `injected-css-${file}`
+  const id =
+    isAStylesheetDirect(file) || isAStylesheetFile(file)
+      ? `injected-css-${file.key}`
+      : `injected-css-${file}`
 
   if (!document.getElementById(id)) {
     // this will be either a <style> or a <link>
@@ -71,9 +74,13 @@ export const injectCSS = (file: StylesheetSpec): void => {
       link = document.createElement('link')
       link.rel = rel
       if (isAStylesheetFile(file)) {
-        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file.path}`
+        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${
+          file.path
+        }`
       } else {
-        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file}`
+        link.href = `${
+          window['mediaUri'] ? window['mediaUri'] + '/' : ''
+        }${file}`
       }
     }
 
@@ -104,55 +111,57 @@ export const uninjectCSS = ({ key }): void => {
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const injectScript = (url: any): Promise<any> => new Promise((resolve) => {
-  const type = 'script'
-  const id = `injected-${type}-${url.key || url}`
+export const injectScript = (url: any): Promise<any> =>
+  new Promise(resolve => {
+    const type = 'script'
+    const id = `injected-${type}-${url.key || url}`
 
-  if (!document.getElementById(id)) {
-    // we haven't yet injected the script
-    const link = document.createElement('script')
-    link.id = id
+    if (!document.getElementById(id)) {
+      // we haven't yet injected the script
+      const link = document.createElement('script')
+      link.id = id
 
-    if (url.src) {
-      debug('injecting raw script')
-      link.appendChild(document.createTextNode(url.src))
+      if (url.src) {
+        debug('injecting raw script')
+        link.appendChild(document.createTextNode(url.src))
+      } else {
+        debug('injecting remote script')
+        link.async = true
+        link.src = url
+        link.addEventListener('load', () => {
+          debug('injected script', url, id, link)
+          // done!
+          resolve()
+        })
+      }
+
+      document.getElementsByTagName('head')[0].appendChild(link)
     } else {
-      debug('injecting remote script')
-      link.async = true
-      link.src = url
-      link.addEventListener('load', () => {
-        debug('injected script', url, id, link)
-        // done!
-        resolve()
-      })
+      // otherwise, we've already injected the script
+      resolve()
     }
-
-    document.getElementsByTagName('head')[0].appendChild(link)
-  } else {
-    // otherwise, we've already injected the script
-    resolve()
-  }
-})
+  })
 
 /**
  * Inject HTML stored in the given local file
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const loadHTML = (file: any): Promise<string> => new Promise(async (resolve, reject) => {
-  if (file.html) {
-    // then we have the raw content already
-    debug('loadHTML from string')
-    resolve(file.html)
-  } else {
-    debug('loadHTML from file', file)
-    const { readFile } = await import('fs')
-    return readFile(file, (err, data) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data.toString())
-      }
-    })
-  }
-})
+export const loadHTML = (file: any): Promise<string> =>
+  new Promise(async (resolve, reject) => {
+    if (file.html) {
+      // then we have the raw content already
+      debug('loadHTML from string')
+      resolve(file.html)
+    } else {
+      debug('loadHTML from file', file)
+      const { readFile } = await import('fs')
+      return readFile(file, (err, data) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(data.toString())
+        }
+      })
+    }
+  })

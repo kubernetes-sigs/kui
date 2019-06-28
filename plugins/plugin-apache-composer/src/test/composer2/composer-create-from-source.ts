@@ -22,11 +22,13 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname, join } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
+const ROOT = dirname(
+  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
+)
 
 const srcDir = `${ROOT}/data/composer/composer-source` // inputs for create-from-source
 
-describe('composer create from source', function (this: common.ISuite) {
+describe('composer create from source', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -36,12 +38,14 @@ describe('composer create from source', function (this: common.ISuite) {
 
     // echo.js is used by require-relative.js, it isn't a composition on its own
     if (file.endsWith('.js') && file !== 'echo.js') {
-      it(`should create a composer sequence from source ${file}`, () => cli.do(`app create ${name} ${join(srcDir, file)}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(name))
-        // .then(sidecar.expectBadge(badges.composerLib))
-        .catch(common.oops(this)))
+      it(`should create a composer sequence from source ${file}`, () =>
+        cli
+          .do(`app create ${name} ${join(srcDir, file)}`, this.app)
+          .then(cli.expectOK)
+          .then(sidecar.expectOpen)
+          .then(sidecar.expectShowing(name))
+          // .then(sidecar.expectBadge(badges.composerLib))
+          .catch(common.oops(this)))
     }
   })
 })
