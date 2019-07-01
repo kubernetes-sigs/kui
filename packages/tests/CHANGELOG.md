@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.0.31 (2019-07-01)
+
+
+### Bug Fixes
+
+* **packages/tests:** regression in LAYER env var ([df217af](https://github.com-personal/ruanxianzhi/kui/commit/df217af))
+* **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com-personal/ruanxianzhi/kui/commit/1f7c263)), closes [#510](https://github.com-personal/ruanxianzhi/kui/issues/510) [#425](https://github.com-personal/ruanxianzhi/kui/issues/425)
+* **test:** refactor /tests ([98f6096](https://github.com-personal/ruanxianzhi/kui/commit/98f6096)), closes [#496](https://github.com-personal/ruanxianzhi/kui/issues/496)
+
+
+
+
+
 ## 0.0.30 (2019-06-17)
 
 

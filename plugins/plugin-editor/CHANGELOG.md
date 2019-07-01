@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.24.0 (2019-07-01)
+
+
+### Bug Fixes
+
+* **packages/app:** first column with sidecar open can be scrunched ([bee82d1](https://github.com/IBM/kui/commit/bee82d1)), closes [#1694](https://github.com/IBM/kui/issues/1694)
+* **plugins/plugin-editor:** fixed the zooming issue in monaco-editor ([117fe7e](https://github.com/IBM/kui/commit/117fe7e)), closes [#1565](https://github.com/IBM/kui/issues/1565)
+* multiple fixes for tab management ([c125f7f](https://github.com/IBM/kui/commit/c125f7f)), closes [#1493](https://github.com/IBM/kui/issues/1493)
+* **plugins/plugin-core-support:** tab completion of dirs versus ~ ([c6190c5](https://github.com/IBM/kui/commit/c6190c5)), closes [#1483](https://github.com/IBM/kui/issues/1483)
+* **plugins/plugin-editor:** bugs in editor theme switching ([44dab97](https://github.com/IBM/kui/commit/44dab97)), closes [#1152](https://github.com/IBM/kui/issues/1152)
+* **plugins/plugin-editor:** editor plugin hard-wires font size ([c35caf1](https://github.com/IBM/kui/commit/c35caf1)), closes [#1349](https://github.com/IBM/kui/issues/1349)
+* **plugins/plugin-editor:** editor test race condition ([c9daca2](https://github.com/IBM/kui/commit/c9daca2)), closes [#1363](https://github.com/IBM/kui/issues/1363)
+* **plugins/plugin-k8s:** kedit versus empty final paragraph yamls ([5755530](https://github.com/IBM/kui/commit/5755530)), closes [#1409](https://github.com/IBM/kui/issues/1409)
+* clicks on sidecar header etc. result in prompt losing focus ([2f78dfc](https://github.com/IBM/kui/commit/2f78dfc)), closes [#610](https://github.com/IBM/kui/issues/610)
+* cross-editing between form and monaco issues for kedit ([6076653](https://github.com/IBM/kui/commit/6076653)), closes [#990](https://github.com/IBM/kui/issues/990)
+* editor sometimes doesn't show vertical "icon" text ([d0a1d70](https://github.com/IBM/kui/commit/d0a1d70)), closes [#1113](https://github.com/IBM/kui/issues/1113)
+* editor swallows escape sidecar toggle ([0fb4f2e](https://github.com/IBM/kui/commit/0fb4f2e)), closes [#1317](https://github.com/IBM/kui/issues/1317)
+* expose webpack hash to plugins ([c37bcbf](https://github.com/IBM/kui/commit/c37bcbf)), closes [#1350](https://github.com/IBM/kui/issues/1350)
+* improved log rendering, especially for istio ([dca663a](https://github.com/IBM/kui/commit/dca663a)), closes [#1017](https://github.com/IBM/kui/issues/1017)
+* improved support for long vertical "resource type" sidecar header ([73ac7b4](https://github.com/IBM/kui/commit/73ac7b4)), closes [#780](https://github.com/IBM/kui/issues/780)
+* kedit breakage ([e237336](https://github.com/IBM/kui/commit/e237336)), closes [#982](https://github.com/IBM/kui/issues/982)
+* paste in editor results in loss of editor focus ([f4ef055](https://github.com/IBM/kui/commit/f4ef055)), closes [#847](https://github.com/IBM/kui/issues/847)
+* refinements to kedit ([13ae0bf](https://github.com/IBM/kui/commit/13ae0bf)), closes [#986](https://github.com/IBM/kui/issues/986)
+* webpack versus editor ([956a72f](https://github.com/IBM/kui/commit/956a72f)), closes [#1333](https://github.com/IBM/kui/issues/1333)
+* wskflow versus popup mode ([629bf44](https://github.com/IBM/kui/commit/629bf44)), closes [#1107](https://github.com/IBM/kui/issues/1107)
+* **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com/IBM/kui/commit/1f7c263)), closes [#510](https://github.com/IBM/kui/issues/510) [#425](https://github.com/IBM/kui/issues/425)
+* **plugin-openwhisk:** separate out the editor parts from plugin-openwhisk ([8195220](https://github.com/IBM/kui/commit/8195220)), closes [#437](https://github.com/IBM/kui/issues/437) [#441](https://github.com/IBM/kui/issues/441)
+* **plugins-editor, plugins-openwhisk-editor-extensions:** fixes for lock/unlock and deploy n editor ([d0801a1](https://github.com/IBM/kui/commit/d0801a1)), closes [#472](https://github.com/IBM/kui/issues/472)
+* **plugins/plugin-editor:** add missing deps to package.json ([63bc382](https://github.com/IBM/kui/commit/63bc382)), closes [#587](https://github.com/IBM/kui/issues/587)
+* **plugins/plugin-editor:** editor plugin not properly rendering markdown ([2f99bbc](https://github.com/IBM/kui/commit/2f99bbc)), closes [#763](https://github.com/IBM/kui/issues/763)
+* **plugins/plugin-editor:** editor versus light theme ([df77289](https://github.com/IBM/kui/commit/df77289)), closes [#983](https://github.com/IBM/kui/issues/983)
+* **plugins/plugin-editor:** improve key-value coloration in editor ([77c7b93](https://github.com/IBM/kui/commit/77c7b93)), closes [#765](https://github.com/IBM/kui/issues/765)
+* **plugins/plugin-editor:** improved dark mode for editor ([8a7fd03](https://github.com/IBM/kui/commit/8a7fd03)), closes [#533](https://github.com/IBM/kui/issues/533) [#530](https://github.com/IBM/kui/issues/530)
+* **plugins/plugin-editor:** monaco-editor scrollbar positioning issues ([bf1245e](https://github.com/IBM/kui/commit/bf1245e)), closes [#753](https://github.com/IBM/kui/issues/753)
+* **plugins/plugin-k8s:** k get namespace does not show green for Active ([6146269](https://github.com/IBM/kui/commit/6146269)), closes [#782](https://github.com/IBM/kui/issues/782)
+* more dark mode tweaks, including for editor text ([1d353ae](https://github.com/IBM/kui/commit/1d353ae)), closes [#554](https://github.com/IBM/kui/issues/554)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+
+
+### Features
+
+* --ui should open repl-free windows ([088c24f](https://github.com/IBM/kui/commit/088c24f)), closes [#830](https://github.com/IBM/kui/issues/830)
+* kiali graph ([d51e3e1](https://github.com/IBM/kui/commit/d51e3e1)), closes [#965](https://github.com/IBM/kui/issues/965) [#966](https://github.com/IBM/kui/issues/966)
+* tekton pipelinerun view ([565a94c](https://github.com/IBM/kui/commit/565a94c)), closes [#1448](https://github.com/IBM/kui/issues/1448)
+* tekton pipelinerun view ([615f2bb](https://github.com/IBM/kui/commit/615f2bb)), closes [#1448](https://github.com/IBM/kui/issues/1448)
+* **plugins/plugin-k8s:** kubectl describe refinements ([6b6e8c5](https://github.com/IBM/kui/commit/6b6e8c5)), closes [#756](https://github.com/IBM/kui/issues/756)
+* use editor more widely ([fe063de](https://github.com/IBM/kui/commit/fe063de)), closes [#532](https://github.com/IBM/kui/issues/532)
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+
+
+
+
+
 # 0.23.0 (2019-06-17)
 
 

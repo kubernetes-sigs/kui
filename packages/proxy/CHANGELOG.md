@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.35.0 (2019-07-01)
+
+
+### Bug Fixes
+
+* **packages/proxy:** fix helm running in webpack+proxy clients ([deac3f7](https://github.com/IBM/kui/commit/deac3f7)), closes [#1840](https://github.com/IBM/kui/issues/1840)
+* **packages/proxy:** proxy build fails for non-bluemix, non-kubernetes users ([2a70aae](https://github.com/IBM/kui/commit/2a70aae)), closes [#1647](https://github.com/IBM/kui/issues/1647)
+* webpack versus editor ([956a72f](https://github.com/IBM/kui/commit/956a72f)), closes [#1333](https://github.com/IBM/kui/issues/1333)
+* webpack+proxy versus pty ([0f8a19a](https://github.com/IBM/kui/commit/0f8a19a)), closes [#1170](https://github.com/IBM/kui/issues/1170)
+* **kui-builder:** improve webpack building process for external clients ([14763ca](https://github.com/IBM/kui/commit/14763ca)), closes [#433](https://github.com/IBM/kui/issues/433)
+* **packages/proxy:** fix the issue that external proxy build can't find .keys ([a753abb](https://github.com/IBM/kui/commit/a753abb)), closes [#857](https://github.com/IBM/kui/issues/857)
+* **packages/proxy:** send error from proxy in case that error.message is not defined ([863a531](https://github.com/IBM/kui/commit/863a531)), closes [#867](https://github.com/IBM/kui/issues/867)
+* **proxy:** improve support for building proxy server from an external custom client ([177fac8](https://github.com/IBM/kui/commit/177fac8)), closes [#438](https://github.com/IBM/kui/issues/438)
+* fixes for auth in browser+proxy mode ([a441c33](https://github.com/IBM/kui/commit/a441c33)), closes [#287](https://github.com/IBM/kui/issues/287) [#286](https://github.com/IBM/kui/issues/286) [#289](https://github.com/IBM/kui/issues/289)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **proxy:** we weren't handling execOptions undefined ([5a31f8d](https://github.com/IBM/kui/commit/5a31f8d)), closes [#291](https://github.com/IBM/kui/issues/291)
+
+
+### Features
+
+* **packages/proxy:** allow builders to choose kubectl verison for proxy ([61cb254](https://github.com/IBM/kui/commit/61cb254)), closes [#1806](https://github.com/IBM/kui/issues/1806)
+* allow PTY websockets to piggyback on an existing https server ([4aeced5](https://github.com/IBM/kui/commit/4aeced5)), closes [#1183](https://github.com/IBM/kui/issues/1183)
+* **plugins/plugin-k8s:** support a gamut of helm client versions in proxy ([abc00d8](https://github.com/IBM/kui/commit/abc00d8)), closes [#570](https://github.com/IBM/kui/issues/570)
+* **webpack:** dockerized webpack build ([bc65dc2](https://github.com/IBM/kui/commit/bc65dc2)), closes [#274](https://github.com/IBM/kui/issues/274)
+* kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
+
+
+
+
+
 # 0.34.0 (2019-06-17)
 
 

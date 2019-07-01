@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.24.0 (2019-07-01)
+
+
+### Bug Fixes
+
+* multiple fixes for tab management ([c125f7f](https://github.com/IBM/kui/commit/c125f7f)), closes [#1493](https://github.com/IBM/kui/issues/1493)
+* **plugins/plugin-core-support:** tab completion of dirs versus ~ ([c6190c5](https://github.com/IBM/kui/commit/c6190c5)), closes [#1483](https://github.com/IBM/kui/issues/1483)
+* improvements for wskflow zoom buttons ([91a2590](https://github.com/IBM/kui/commit/91a2590)), closes [#1453](https://github.com/IBM/kui/issues/1453)
+* **plugins/plugin-wskflow:** don't override bash "source" command ([f807626](https://github.com/IBM/kui/commit/f807626)), closes [#1302](https://github.com/IBM/kui/issues/1302)
+* apache-composer versus webpack fixes ([0a97daf](https://github.com/IBM/kui/commit/0a97daf)), closes [#584](https://github.com/IBM/kui/issues/584)
+* node-pty versus electron ([1263c74](https://github.com/IBM/kui/commit/1263c74)), closes [#1155](https://github.com/IBM/kui/issues/1155)
+* wskflow theming and css cleanup ([28fed89](https://github.com/IBM/kui/commit/28fed89)), closes [#1025](https://github.com/IBM/kui/issues/1025)
+* wskflow versus popup mode ([629bf44](https://github.com/IBM/kui/commit/629bf44)), closes [#1107](https://github.com/IBM/kui/issues/1107)
+* **apache-composer:** compose yoyo -t @demos/if.js broken in webpack mode ([14ac816](https://github.com/IBM/kui/commit/14ac816)), closes [#332](https://github.com/IBM/kui/issues/332)
+* **plugin-wskflow:** add preview notice to sidecar header ([a65cae5](https://github.com/IBM/kui/commit/a65cae5)), closes [#455](https://github.com/IBM/kui/issues/455) [#386](https://github.com/IBM/kui/issues/386)
+* **plugins/plugin-wskflow:** fix for overflowing inline function labels ([278d2cd](https://github.com/IBM/kui/commit/278d2cd)), closes [#737](https://github.com/IBM/kui/issues/737)
+* **plugins/plugin-wskflow:** fix for Y and N coloring in wskflow ([5da48d8](https://github.com/IBM/kui/commit/5da48d8)), closes [#529](https://github.com/IBM/kui/issues/529)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **wskflow:** fix for preview [@demos](https://github.com/demos) in webpack mode ([adc685f](https://github.com/IBM/kui/commit/adc685f)), closes [#329](https://github.com/IBM/kui/issues/329)
+
+
+### Features
+
+* **plugins/plugin-tekton:** tekton trace view ([e9a9872](https://github.com/IBM/kui/commit/e9a9872)), closes [#1580](https://github.com/IBM/kui/issues/1580)
+* tekton pipelinerun view ([565a94c](https://github.com/IBM/kui/commit/565a94c)), closes [#1448](https://github.com/IBM/kui/issues/1448)
+* tekton pipelinerun view ([615f2bb](https://github.com/IBM/kui/commit/615f2bb)), closes [#1448](https://github.com/IBM/kui/issues/1448)
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+* **plugins-plugin-tekton:** intial tekton pipeline views ([0d18858](https://github.com/IBM/kui/commit/0d18858)), closes [#1371](https://github.com/IBM/kui/issues/1371)
+* **plugins/plugin-tekton:** add task and step drilldowns to tekton flow view ([bcadca4](https://github.com/IBM/kui/commit/bcadca4)), closes [#1462](https://github.com/IBM/kui/issues/1462)
+* **plugins/plugin-tekton:** tekton support for step visualization ([b176899](https://github.com/IBM/kui/commit/b176899)), closes [#1448](https://github.com/IBM/kui/issues/1448)
+* add a few more themes ([92199d3](https://github.com/IBM/kui/commit/92199d3)), closes [#608](https://github.com/IBM/kui/issues/608)
+
+
+
+
+
 # 0.23.0 (2019-06-17)
 
 
