@@ -21,8 +21,7 @@ import {
   oops,
   remoteIt
 } from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli } = ui
+import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 
 const resetTheme = (ctx: ISuite) => {
   it('should reset theme preference', () =>
@@ -107,18 +106,18 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (
   ctx: ISuite,
   nClicks = 1
 ) => {
-  it(`should click on theme button and present theme list, then click on ${clickOn.name}`, async () => {
+  it(`should click on help button, then theme link, then present theme list, then click on ${clickOn.name}`, async () => {
     try {
-      ctx.app.client.click('#help-button')
+      await ctx.app.client.click('#help-button')
       await ctx.app.client.waitForVisible(
         '#tutorialPane .tutorial-content-command[data-command="themes"]'
       )
-      ctx.app.client.click(
+      await ctx.app.client.click(
         '#tutorialPane .tutorial-content-command[data-command="themes"]'
       )
 
-      const checkMarkCell = `.entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
-      const nameCell = `.entity.theme[data-name="${clickOn.name}"] > div > .clickable`
+      const checkMarkCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
+      const nameCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] > div > .clickable`
 
       await ctx.app.client.waitForVisible(checkMarkCell)
       await ctx.app.client.waitForVisible(nameCell)

@@ -6,6 +6,9 @@
 
     <link href="${fonts}" rel="stylesheet" type="text/css">
 
+    <link href="https://unpkg.com/carbon-components/css/carbon-components.min.css" rel="stylesheet" type="text/css">
+    <link href="${cssHome}carbon-overrides.css" rel="stylesheet" type="text/css" >
+
     <link href="${cssHome}not-electron.css" rel="stylesheet" type="text/css" >
     <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" >
     <link href="${cssHome}${tabStripe}" rel="stylesheet" type="text/css" >
@@ -68,7 +71,6 @@
       <div class='tab-container'>
       <tab data-tab-index="1" class='visible'>
       <repl class="repl" id="main-repl">
-        <div class="horizontal-landing-zone"></div>
 	<div class="repl-inner zoomable">
 	  <div class="repl-block repl-initial" data-base-class="repl-block" data-input-count="0">
 	    <div class="repl-input">
@@ -93,7 +95,6 @@
 
       <sidecar id='sidecar'>
 	<header class='sidecar-header'>
-          <div class='sidecar-header-icon-wrapper'><div class='sidecar-header-icon'></div></div>
           <div class='header-main-content'>
             <div class='header-top-bits'>
 	      <div class='header-left-bits'>
@@ -134,45 +135,17 @@
                 <div class='custom-header-content'></div>
 	      </div> <!-- header-right-bits -->
             </div> <!-- header-top-bits -->
-            <div class='sidecar-header-secondary-content'>
-	      <div class='action-content'>
-                <span class='kind'></span>
-	        <!--<div class='kind-content'>This is a <span class='kind'></span> action</div>-->
-                <!--<a class='entity-web-export-url' target='_blank'>View in Browser</a>-->
-                <!--<span id='version'></span>-->
-	      </div>
-	      <div class='activation-content'>
-	        <div class='kind-content'>
-		  This call started <strong class='activation-start'></strong>
-	        </div>
-	      </div>
-	      <div class='package-content'>
-	        <div class='kind-content'>This is a package
-		  <!-- binding signifier -->
-		  <span class='package-binding-signifier'>binding of
-		    <span class='package-binding-of'></span>
-		  </span>
-		  with
-		  <span class='count-with-label package-action-count'>
-		    <span class='package-content-count'></span>
-		    <span class='label-plural'>actions</span><span class='label-singular'>action</span>, and
-		  </span>
-		  <span class='count-with-label package-feed-count'>
-		    <span class='package-content-count'></span> 
-		    <span class='label-plural'>feeds</span><span class='label-singular'>feed</span>
-		  </span> 
-	        </div>
-	      </div>
-	      <div class='rule-content'>
-	        <div class='kind-content'>This is a rule</div>
-	      </div>
-	      <div class='trigger-content'>
-	        <div class='kind-content'><!--This is a trigger-->
-                  <span class='feed-content'></span>
-                </div>
-	      </div>
-              <div class='custom-header-content'></div>
-	    </div> <!-- secondary content -->
+
+            <!-- sidecar tabs -->
+            <div class='sidecar-top-stripe zoomable'>
+              <div class='sidecar-bottom-stripe-left-bits'>
+                <div class='sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container'>
+                  <div class='bx--tabs'>
+                    <ul class='bx--tabs__nav bx--tabs__nav--hidden'></ul>
+                  </div>
+                </div> <!-- mode switch buttons -->
+              </div>
+            </div>
           </div> <!-- main content -->
 	</header>
         <div class='custom-content zoomable'></div>
@@ -212,38 +185,84 @@
                 <div class='sidecar-bottom-stripe-back-inner-bits'></div>
               </div>
             </div> <!-- back button -->
-            <div class='sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container'></div> <!-- mode switch buttons -->
+
+            <div class='sidecar-header-icon-wrapper'><div class='sidecar-header-icon'></div></div>
+
+            <div class='sidecar-header-secondary-content'>
+	      <div class='action-content'>
+                <span class='kind'></span>
+	        <!--<div class='kind-content'>This is a <span class='kind'></span> action</div>-->
+                <!--<a class='entity-web-export-url' target='_blank'>View in Browser</a>-->
+                <!--<span id='version'></span>-->
+	      </div>
+	      <div class='activation-content'>
+	        <div class='kind-content'>
+		  This call started <strong class='activation-start'></strong>
+	        </div>
+	      </div>
+	      <div class='package-content'>
+	        <div class='kind-content'>This is a package
+		  <!-- binding signifier -->
+		  <span class='package-binding-signifier'>binding of
+		    <span class='package-binding-of'></span>
+		  </span>
+		  with
+		  <span class='count-with-label package-action-count'>
+		    <span class='package-content-count'></span>
+		    <span class='label-plural'>actions</span><span class='label-singular'>action</span>, and
+		  </span>
+		  <span class='count-with-label package-feed-count'>
+		    <span class='package-content-count'></span> 
+		    <span class='label-plural'>feeds</span><span class='label-singular'>feed</span>
+		  </span> 
+	        </div>
+	      </div>
+	      <div class='rule-content'>
+	        <div class='kind-content'>This is a rule</div>
+	      </div>
+	      <div class='trigger-content'>
+	        <div class='kind-content'><!--This is a trigger-->
+                  <span class='feed-content'></span>
+                </div>
+	      </div>
+              <div class='custom-header-content'></div>
+	    </div> <!-- secondary content -->
+
+            <!-- flush-right buttons go here -->
+            <div class='sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container'></div>
           </div>
           
-          <!-- screenshot button -->
-          <div class='sidecar-screenshot-button sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize screenshot-button'
-               data-balloon='Capture Screenshot' data-balloon-length="medium" data-balloon-pos="up-right">
-            <div class='graphical-icon'>
-              <i class='fas fa-camera'></i>
+          <div class='sidecar-bottom-stripe-right-bits'>
+            <!-- screenshot button -->
+            <div class='sidecar-screenshot-button sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize screenshot-button'
+                 data-balloon='Capture Screenshot' data-balloon-length="medium" data-balloon-pos="up-right">
+              <div class='graphical-icon'>
+                <i class='fas fa-camera'></i>
+              </div>
             </div>
-          </div>
 
-          <!-- maximize button -->
-          <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize toggle-sidecar-maximization-button'>
-            <span class='maximize-button-label'><div class='graphical-icon' data-balloon='Expand to full width' data-balloon-length="medium" data-balloon-pos="up-right"><i class='far fa-window-maximize'></i></div></span>
-            <span class='unmaximize-button-label'><div class='graphical-icon' data-balloon='Restore split screen' data-balloon-length="medium" data-balloon-pos="up-right"><i class='fas fa-columns'></i></div></span>
-          </div>
-
-          <!-- close button -->
-          <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button'
-               data-balloon="Expose the command line" data-balloon-length="long" data-balloon-pos="up-right">
-            <div class='graphical-icon'>
-              <i class='fas fa-angle-double-right'></i>
+            <!-- maximize button -->
+            <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize toggle-sidecar-maximization-button'>
+              <span class='maximize-button-label'><div class='graphical-icon' data-balloon='Expand to full width' data-balloon-length="medium" data-balloon-pos="up-right"><i class='far fa-window-maximize'></i></div></span>
+              <span class='unmaximize-button-label'><div class='graphical-icon' data-balloon='Restore split screen' data-balloon-length="medium" data-balloon-pos="up-right"><i class='fas fa-columns'></i></div></span>
             </div>
-          </div>
 
-          <!-- Quit/Done button -->
-          <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-quit'
-               data-balloon='Close this popup' data-balloon-length="medium" data-balloon-pos="up-right">
-            <div class="graphical-icon">
-              <i class="fas fa-sign-out-alt"></i>
+            <!-- close button -->
+            <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button'
+                 data-balloon="Minimize the sidecar" data-balloon-length="long" data-balloon-pos="up-right">
+              <div class='graphical-icon'>
+                <i class='fas fa-angle-double-right'></i>
+              </div>
             </div>
-          </div>
+
+            <!-- Quit/Done button -->
+            <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-quit'
+                 data-balloon='Close this popup' data-balloon-length="medium" data-balloon-pos="up-right">
+              <div class="graphical-icon">
+                <i class="fas fa-sign-out-alt"></i>
+              </div>
+            </div>
+          </div> <!-- sidecar stripe right bits -->
 
         </div>
 

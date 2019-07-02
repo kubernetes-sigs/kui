@@ -39,6 +39,7 @@ const mode: SidecarMode = {
           type: 'custom',
           isEntity: true,
           contentType: 'yaml',
+          resource: model || models,
           content: safeDump(model || models)
         },
         model || {}

@@ -974,6 +974,7 @@ const isSimpleComposition = ir => {
   return isShort && atMostOneNonFunction
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function fsm2graph(
   tab: Tab,
   ir: AST.Node,
@@ -981,7 +982,6 @@ export default async function fsm2graph(
   acts?: ActivationLike[],
   options?,
   rule?
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   // console.log(ir, containerElement, acts);
 
@@ -1113,7 +1113,7 @@ export default async function fsm2graph(
         if (notDeployed.length > 0 && !renderState.activations) {
           const container = sidecarSelector(
             tab,
-            '.sidecar-header .sidecar-header-secondary-content .custom-header-content'
+            '.sidecar-header-secondary-content .custom-header-content'
           )
           if (container && (!options || !options.noHeader)) {
             removeAllDomChildren(container)
@@ -1157,16 +1157,13 @@ export default async function fsm2graph(
 
             const actionStr =
               notDeployed.length === 1 ? 'component' : 'components'
-            text.innerText = `This composition depends on ${notDeployed.length} undeployed ${actionStr}`
+            text.innerText = `depends on ${notDeployed.length} undeployed ${actionStr}`
 
-            const pre = notDeployed.length > 2 ? 'e.g. ' : ''
-            const examplesOfNotDeployed = notDeployed
-              .slice(0, 2)
-              .map(_ => _.substring(_.lastIndexOf('/') + 1))
-              .join(', ')
+            /* const pre = notDeployed.length > 2 ? 'e.g. ' : ''
+            const examplesOfNotDeployed = notDeployed.slice(0, 2).map(_ => _.substring(_.lastIndexOf('/') + 1)).join(', ')
             const post = notDeployed.length > 2 ? ', \u2026' : '' // horizontal ellipsis
 
-            examples.innerText = `(${pre}${examplesOfNotDeployed}${post})`
+            examples.innerText = `(${pre}${examplesOfNotDeployed}${post})` */
           }
         }
       })

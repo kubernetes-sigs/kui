@@ -56,7 +56,7 @@ function headless {
 
 # create the self-signed certificate
 function cert {
-  if [ "$KUI_USE_HTTP" != "true" ]; then
+  if [ "$KUI_USE_HTTP" != "true" ] && [ -d "$BUILDER_HOME/../webpack" ]; then
     pushd "$BUILDER_HOME/../webpack" > /dev/null
     CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
     cp -a "$CLIENT_HOME"/.keys "$STAGING_DIR"/app/bin

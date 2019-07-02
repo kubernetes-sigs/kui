@@ -70,6 +70,7 @@ body[kui-theme-style="dark"] .screenshot-check-icon {
     justify-content: flex-end;
     align-items: center;
     border-top-color: var(--color-base04);
+    padding: 0 1em;
 }
 
 #screenshot-captured .screenshot-image {

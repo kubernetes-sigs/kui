@@ -90,13 +90,6 @@ export default () => {
     }
   })
 
-  // horizontal landing zone clicks should keep the repl prompt focused
-  ;(repl.querySelector(
-    '.horizontal-landing-zone'
-  ) as HTMLElement).addEventListener('click', (evt: MouseEvent) => {
-    getPromptFromTarget(evt.srcElement).focus()
-  })
-
   // sidecar header clicks should keep the repl prompt focused
   const sidecar = document.querySelector('tab.visible sidecar') as HTMLElement
   let promptHasFocusBeforeClick = false

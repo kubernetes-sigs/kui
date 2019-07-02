@@ -180,15 +180,6 @@ sidecar .sidecar-header-name-content {
     -webkit-app-region: unset;
 }
 
-.horizontal-landing-zone {
-    display: none;
-    flex-basis: 1.5em;
-    -webkit-app-region: drag;
-}
-body.subwindow .repl .horizontal-landing-zone {
-    flex-basis: 3em;
-}
-                                                                
 .repl {
     padding-top: 0;
 }
