@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -345,14 +345,12 @@ export const displayTimeRange = (
       container.innerText = ''
     }
 
-    if (fresh) container.appendChild(document.createTextNode('Showing '))
     strong(container, 1).innerText = totalCount
 
-    if (fresh)
-      container.appendChild(document.createTextNode(' activations from '))
+    if (fresh) container.appendChild(document.createTextNode(' activations | '))
     strong(container, 2).appendChild(prettyPrintTime(minTime, 'short'))
 
-    if (fresh) container.appendChild(document.createTextNode(' spanning '))
+    if (fresh) container.appendChild(document.createTextNode(' | '))
     // strong(container, 3).innerText = prettyPrintTime(maxTime, 'short')
     strong(container, 3).innerText = prettyPrintDuration(maxTime - minTime, {
       compact: true
@@ -389,9 +387,10 @@ export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
  * The command handler for visualizing as a table
  *
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type Renderer = (
   tab: Tab,
-  options: Object, // eslint-disable-line @typescript-eslint/ban-types
+  options: Record<string, any>,
   header: Header,
   uuid: string,
   isRedraw?: boolean

@@ -31,6 +31,7 @@
   },
   "kui": {
     "electron": false,
+    "proxy": false,
     "webpack": false
   },
   "devDependencies": {

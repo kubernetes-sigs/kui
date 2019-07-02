@@ -10,6 +10,11 @@ html, body, .page, .main, .repl, sidecar {
     overflow-x: hidden;
 }
 body {
+    font-size: 1em;
+    letter-spacing: unset;
+    font-weight: 400;
+    text-rendering: unset;
+    -webkit-font-smoothing: unset;
     margin: 0;
     overflow: hidden;
     user-select: none;
@@ -67,6 +72,7 @@ body .page > .header {
 .header-top-bits {
     display: flex;
     flex: 1;
+    padding-left: 1em;
 }
 .header .clickable, .header .clickable:hover {
     text-decoration: none;
@@ -712,7 +718,7 @@ sidecar.visible {
     flex: 6;
     z-index: 1; /* float above the repl */
     transition-duration: 600ms; /* a bit slower coming out */
-    border-left: 1px solid var(--color-ui-03);
+    border-left: 1px solid var(--color-ui-04);
 }
 body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
     border-left-color: var(--color-ui-04);
@@ -730,17 +736,16 @@ body[kui-theme-style="dark"] sidecar:not(.minimized) .sidecar-bottom-stripe {
     border-top: 1px solid var(--color-ui-03);
 }
 .sidecar-bottom-stripe {
-    padding: 0 1em;
-    flex-basis: 3em;
-    min-height: 3rem; /* important for screenshot, which tries to maximally squish the sidecar height */
+    flex-basis: 2.25em;
+    min-height: 2.25rem; /* important for screenshot, which tries to maximally squish the sidecar height */
     display: flex;
     z-index: 5;
-    font-weight: 300;
+    background-color: var(--color-stripe-02);
 }
 sidecar .sidecar-bottom-stripe > div {
     font-size: 0.875em;
 }
-sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits, sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
+sidecar .sidecar-bottom-stripe-left-bits, sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
     /* button container in sidecar bottom stripe */
     flex: 1;
     display: flex;
@@ -748,17 +753,15 @@ sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits, sidecar .sideca
 .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
     align-items: center;
 }
-sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
+sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
     /* back button container in sidecar bottom stripe */
     flex: 0 0 0%;
     min-width: 0;
 }
-sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
+sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
     flex: initial;
-    margin-right: 1em;
-}
-sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-close {
-    text-align: right;
+    margin-right: 0;
+    padding: 0 calc(1em - 0.375em); /* the button inside has 0.375em padding left-right */
 }
 sidecar .sidecar-bottom-stripe-close-icon {
     letter-spacing: -1ex;
@@ -786,24 +789,22 @@ body:not(.subwindow) .sidecar-full-screen sidecar .sidecar-bottom-stripe-maximiz
     width: 0;
     height: 0;
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button-return-to::first-letter, .sidecar-bottom-stripe .sidecar-bottom-stripe-button[data-mode] {
+.sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-return-to::first-letter, .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button[data-mode] {
     /* for bottom mode-switching buttons, capitalize the text; for actual buttons, keep the capitalization as it was given */
     text-transform: capitalize;
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button {
-    padding: 1ex 0.4375rem; /* rem important to avoid oddities when font zooming */
-    border-bottom: 2px solid transparent; /* will change color on hover */
+sidecar .sidecar-bottom-stripe-button {
     transition: all 150ms ease-in-out, border-color 300ms ease-in-out;
 }
 sidecar .sidecar-header .limits {
     /* don't show limits in header for now */
     display: none;
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover, .sidecar-bottom-stripe .sidecar-bottom-stripe-button.hover {
+sidecar .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover, sidecar .sidecar-bottom-stripe-button.hover {
     cursor: pointer;
     opacity: 1;
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active).force-no-hover:hover, .sidecar-bottom-stripe .sidecar-bottom-stripe-button.force-no-hover.hover {
+sidecar .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active).force-no-hover:hover, sidecar .sidecar-bottom-stripe-button.force-no-hover.hover {
     /* e.g. the screenshot plugin wants to disallow tooltips on the
    "capture screenshot" button while capturing a screenshot! */
     color: inherit !important;
@@ -819,8 +820,8 @@ body.os-win32 sidecar .sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-
 sidecar .sidecar-bottom-stripe-back-bits, .sidecar-bottom-stripe .fill-container {
     /* back button in sidecar bottom stripe */
     border-right: 1px dotted hsla(240, 2%, 90%, 0.5);
-    padding-right: 0.4375rem;
-    margin-right: 0.4375rem;
+    padding-right: 0.475rem;
+    margin-right: 0.475rem;
 }
 sidecar .sidecar-bottom-stripe-back-bits > div {
     transition: all 150ms ease-in-out;
@@ -849,10 +850,9 @@ sidecar .custom-content {
 }
 sidecar .sidecar-header {
     display: flex;
-    border-bottom: 1px solid var(--color-content-divider);
     background-color: var(--color-ui-01);
-    flex-basis: 9rem;
-    min-height: 9rem; /* see shell issue #712 */
+    flex-basis: 8rem;
+    min-height:  8rem; /* see shell issue #712 */
     transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
 }
 sidecar .sidecar-header .header-main-content {
@@ -862,7 +862,7 @@ sidecar .sidecar-header .header-main-content {
 
     /* this is needed, as we rotate the "sidecar-header-icon", which confuses chrome in terms of width occupancy;
        see sidecar .sidecar-header-icon-wrapper; the 4em parts must match! */
-    width: calc(100% - 4em);
+    /* width: calc(100% - 4em); */
 
     /* this is needed to work around firefox's odd behavior with nested
    flex boxes versus text-overflow; see
@@ -903,28 +903,21 @@ sidecar .sidecar-header-text {
     justify-content: center;
 }
 sidecar .sidecar-header-icon {
-    font-size: 2em;
-    height: 4.5rem;
-    width: 4.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     text-transform: uppercase;
 }
 sidecar .sidecar-header-icon-wrapper {
-    width: 4em; /* see the sidecar .sidecar-header .header-main-content calc(100% - 4em); the 4em parts must match! */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: flex;
+    padding: 0 1em;
+    border-right: 1px dotted hsla(240, 2%, 90%, 0.5);
+    margin-right: 1em;
 }
 sidecar .header-left-bits {
     align-items: stretch;
 }
 sidecar .sidecar-header-icon {
-    transform: rotate(-90deg);
-    transform-origin: center;
-    width: 100%;
-    height: 100%;
     font-size: 0.875rem;
     font-weight: 400;
     letter-spacing: 1px;
@@ -967,12 +960,13 @@ sidecar .sidecar-header badge.clickable:hover {
     filter: brightness(1.1);
 }
 sidecar .sidecar-header-name-content {
-    overflow: hidden;
+    overflow-x: hidden;
 }
 sidecar .sidecar-header-name-content .entity-name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    height: 1.25em; /* prevent vertical cropping on chrome */
 
     /* these two rules help us to simulate left-ellision */
     /* direction: rtl;
@@ -986,11 +980,10 @@ sidecar .sidecar-header-name-content > span {
     white-space: nowrap;
 }
 sidecar .sidecar-header-name .package-prefix {
-    font-size: 1rem;
+    font-size: 0.875rem;
     max-width: none;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    opacity: 1;
+    letter-spacing: 1.6px;
 }
 sidecar.entity-is-activations .sidecar-header-name .activation-id {
     font-family: var(--font-monospace);
@@ -1013,8 +1006,9 @@ sidecar.entity-is-activations .sidecar-header-name  .sidecar-header-name-content
 }
 sidecar .sidecar-header-secondary-content {
     font-size: 0.875rem;
-    color: var(--color-text-02);
-    margin: 0 1em 0.75em 0;
+    display: flex;
+    align-items: center;
+    opacity: 0.875;
 }
 sidecar .sidecar-header-secondary-content .kind-content {
     overflow: hidden;
@@ -1950,9 +1944,6 @@ body.subwindow .scrollable-auto {
 body.subwindow .result-as-table.result-as-multi-table-flex-wrap {
     display: initial;
 }
-body.subwindow .repl .horizontal-landing-zone {
-    width: 100%;
-}
 body.subwindow .repl.sidecar-visible {
     display: none;
     flex: 0;
@@ -2331,23 +2322,23 @@ sidecar.minimized {
     opacity: 0.9;
 }
 sidecar.minimized header.sidecar-header {
-    flex: 1;
-    background: var(--color-stripe-02);
-    border: none;
+    display: none;
 }
 sidecar.minimized .header-left-bits {
     overflow: visible;
 }
 sidecar.minimized .sidecar-header-icon-wrapper {
-    width: auto;
+    width: 2em;
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    margin: -1.75em 0;
+    margin: 0.375em 0;
     overflow: unset; /* see overflow:hidden for sidecar .sidecar-header-icon-wrapper */
+    border: none;
+    padding: 0;
 }
 sidecar.minimized .sidecar-header-icon {
-    width: initial;
+    width: 0;
     height: 2em;
     flex: 1;
     transform-origin: 0% 0%;
@@ -2355,7 +2346,7 @@ sidecar.minimized .sidecar-header-icon {
 }
 sidecar.minimized header.sidecar-header .sidecar-header-secondary-content, sidecar.minimized header.sidecar-header .sidecar-header-right-bits,
 sidecar.minimized .sidecar-header-name, sidecar.minimized .custom-content, sidecar.minimized .sidecar-content,
-sidecar.minimized .sidecar-bottom-stripe-left-bits, sidecar.minimized .header-right-bits {
+sidecar.minimized .sidecar-bottom-stripe-left-bits > div:not(.sidecar-header-icon-wrapper), sidecar.minimized .header-right-bits {
     display: none;
     flex: 0;
     opacity: 0;
@@ -2363,10 +2354,16 @@ sidecar.minimized .sidecar-bottom-stripe-left-bits, sidecar.minimized .header-ri
     width: 0;
     height: 0;
 }
+sidecar.minimized .sidecar-header-icon-wrapper .sidecar-header-icon {
+    transform: rotate(-90deg);
+    transform-origin: center;
+}
 sidecar.minimized .sidecar-bottom-stripe {
-    align-items: flex-end;
+    align-items: center;
     padding: 0 0.375em;
     box-shadow: none;
+    flex: 1;
+    flex-direction: column;
 }
 sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
     /*flex: 0;*/
@@ -2586,7 +2583,7 @@ sidecar .page-content pre > code {
 
 body {
     font-family: var(--font-sans-serif);
-    background: var(--color-ui-01);
+    background-color: var(--color-ui-01);
     color: var(--color-text-01);
 }
 
@@ -2722,7 +2719,12 @@ badge.clickable:not(.badge-as-fontawesome):hover {
 body[kui-theme-style="dark"] .sidecar-bottom-stripe {
     color: var(--color-text-01);
 }
-
+.sidecar-bottom-stripe-right-bits {
+    display: flex;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button {
+    padding: 0 0.4375em;
+}
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button.sidecar-bottom-stripe-button-active {
     border-bottom-color: var(--color-brand-02);
 }
@@ -2738,7 +2740,7 @@ sidecar .header-right-bits {
 }
 
 sidecar .sidecar-header-icon {
-    color: var(--color-brand-02);
+    color: var(--color-base0C);
 }
 
 .package-prefix {
@@ -2845,16 +2847,6 @@ sidecar .custom-content .log-field pre > code {
 }
 .dir-listing-is-link {
     color: var(--color-brand-03);
-}
-
-.bx--link {
-    font-weight: 600;
-    color: var(--color-brand-01);
-    text-decoration: underline;
-    transition: 250ms;
-}
-.bx--link:hover {
-    color: var(--color-hover-primary-text);
 }
 
 body {

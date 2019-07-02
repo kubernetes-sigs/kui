@@ -74,7 +74,7 @@ selectors.SIDECAR_LIMIT = type =>
   `${selectors.SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
 selectors.SIDECAR_BADGES = `${selectors.SIDECAR} .sidecar-header .badges`
 selectors.SIDECAR_CUSTOM_CONTENT = `${selectors.SIDECAR} .custom-content`
-selectors.SIDECAR_MODE_BUTTONS = `${selectors.SIDECAR} .sidecar-bottom-stripe .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
+selectors.SIDECAR_MODE_BUTTONS = `${selectors.SIDECAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 selectors.SIDECAR_MODE_BUTTON = mode =>
   `${selectors.SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
 selectors.SIDECAR_BACK_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
@@ -88,6 +88,7 @@ selectors.PROCESSING_N = N => `${selectors.PROMPT_BLOCK_N(N)}.processing`
 selectors.CURRENT_PROMPT = `${selectors.CURRENT_PROMPT_BLOCK} input`
 selectors.PROMPT_N = N => `${selectors.PROMPT_BLOCK_N(N)} input`
 selectors.OUTPUT_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result`
+selectors.OUTPUT_LAST = `${selectors.PROMPT_BLOCK}:nth-last-child(2) .repl-result`
 selectors.LIST_RESULTS_N = N =>
   `${selectors.PROMPT_BLOCK_N(N)} .repl-result .entity:not(.header-row)`
 selectors.LIST_RESULTS_BY_NAME_N = N =>
@@ -513,7 +514,7 @@ exports.sidecar = {
         .waitForVisible(
           `${selectors.SIDECAR_MODE_BUTTON(
             expectedMode
-          )}.sidecar-bottom-stripe-button-active`
+          )}.bx--tabs__nav-item--selected`
         )
         .then(() => app)
     }),

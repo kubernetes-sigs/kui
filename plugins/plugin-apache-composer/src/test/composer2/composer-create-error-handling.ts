@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,7 @@ describe('app create error handling', function(this: common.ISuite) {
         app.client.waitUntil(async () => {
           const ok: boolean = await app.client
             .getText('.wskflow-undeployed-action-warning-text')
-            .then(
-              expectedText =>
-                expectedText ===
-                'This composition depends on 3 undeployed components'
-            )
+            .then(expectedText => /3 undeployed components/.test(expectedText))
           return ok
         }, 2000)
       )

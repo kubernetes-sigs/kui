@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ interface BottomStripOptions {
 }
 
 export const rawCSS = {
-  buttons: '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits'
+  buttons: '.sidecar-top-stripe .sidecar-bottom-stripe-left-bits'
 }
 export const css = {
   buttons: (tab: Tab) => sidecarSelector(tab, rawCSS.buttons),
@@ -182,20 +182,28 @@ export const css = {
       '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'
     ), // houses the back button text
   button: 'sidecar-bottom-stripe-button',
+  tab: ['bx--tabs__nav-item', 'sidecar-bottom-stripe-button'],
+  buttonAction: 'bx--tabs__nav-link',
   buttonActingAsButton: 'sidecar-bottom-stripe-button-as-button',
   buttonActingAsRadioButton: 'sidecar-bottom-stripe-button-as-radio-button',
   modeContainer: (tab: Tab) =>
     sidecarSelector(
       tab,
+      '.sidecar-top-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits .bx--tabs__nav'
+    ),
+  bottomContainer: (tab: Tab) =>
+    sidecarSelector(
+      tab,
       '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'
     ),
-  active: 'sidecar-bottom-stripe-button-active',
+  active: 'bx--tabs__nav-item--selected',
   selected: 'selected',
   hidden: 'hidden'
 }
 
 const _addModeButton = (
   tab: Tab,
+  modeStripe: Element,
   bottomStripe: Element,
   opts: SidecarMode,
   entity,
@@ -226,7 +234,12 @@ const _addModeButton = (
   } = opts
 
   // create the button dom, and attach it
-  const button = document.createElement('div')
+  const isTab = !(flush === 'right' || flush === 'weak')
+  const button = document.createElement(isTab ? 'li' : 'div')
+  const buttonAction = document.createElement(isTab ? 'a' : 'span')
+  button.appendChild(buttonAction)
+  button.setAttribute('role', 'presentation')
+  buttonAction.setAttribute('role', 'tab')
 
   if (visibleWhen && visibleWhen !== show) {
     // only visible when a specific mode is active!
@@ -235,7 +248,6 @@ const _addModeButton = (
     button.setAttribute('data-visible-when', visibleWhen)
   }
 
-  button.classList.add(css.button)
   if (actAsButton) {
     // some plugins want to add buttons, not mode-switchers to the bottom bar
     // let's make them behave a bit more like buttons
@@ -290,11 +302,11 @@ const _addModeButton = (
       iconContainer.appendChild(labelContainer)
     }
   } else {
-    button.innerText = label || mode
+    buttonAction.innerText = label || mode
   }
 
-  let container = bottomStripe
-  if (flush === 'right' || flush === 'weak') {
+  let container = modeStripe
+  if (!isTab) {
     let fillContainer = bottomStripe.querySelector(
       '.fill-container.flush-right'
     )
@@ -302,8 +314,16 @@ const _addModeButton = (
       fillContainer = document.createElement('div')
       fillContainer.className = 'fill-container flush-right'
     }
-    container.appendChild(fillContainer)
+    button.classList.add(css.button)
+    bottomStripe.appendChild(fillContainer)
     container = fillContainer
+  } else {
+    if (Array.isArray(css.tab)) {
+      css.tab.forEach(_ => button.classList.add(_))
+    } else {
+      button.classList.add(css.tab)
+    }
+    buttonAction.classList.add(css.buttonAction)
   }
   container.appendChild(button)
 
@@ -327,7 +347,7 @@ const _addModeButton = (
       // change the active button
       const changeActiveButton = () => {
         if (!actAsButton) {
-          const currentActive = bottomStripe.querySelector(`.${css.active}`)
+          const currentActive = modeStripe.querySelector(`.${css.active}`)
           if (currentActive) {
             currentActive.classList.remove(css.active)
           }
@@ -409,7 +429,7 @@ const _addModeButton = (
             }
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
-              const button = bottomStripe.querySelector(
+              const button = modeStripe.querySelector(
                 `.sidecar-bottom-stripe-button[data-mode="${mode}"]`
               )
               if (button) {
@@ -445,13 +465,15 @@ const _addModeButton = (
   return button
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const addModeButton = (
   tab: Tab,
   mode: SidecarMode,
-  entity: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+  entity: Record<string, any>
 ) => {
-  const bottomStripe = css.modeContainer(tab)
-  return _addModeButton(tab, bottomStripe, mode, entity, undefined)
+  const modeStripe = css.modeContainer(tab)
+  const bottomStripe = css.bottomContainer(tab)
+  return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined)
 }
 
 export const addModeButtons = (
@@ -507,18 +529,20 @@ export const addModeButtons = (
     entity,
     show: string
   ) => {
-    const bottomStripe = css.modeContainer(tab)
+    const modeStripe = css.modeContainer(tab)
+    const bottomStripe = css.bottomContainer(tab)
+    removeAllDomChildren(modeStripe)
     removeAllDomChildren(bottomStripe)
 
     if (modes) {
       modes.forEach(mode => {
-        _addModeButton(tab, bottomStripe, mode, entity, show)
+        _addModeButton(tab, modeStripe, bottomStripe, mode, entity, show)
       })
     }
 
     bottomStripe['capture'] = () => {
       // capture the current selection
-      const currentSelection = bottomStripe.querySelector(`.${css.active}`)
+      const currentSelection = modeStripe.querySelector(`.${css.active}`)
       const currentShow =
         currentSelection && currentSelection.getAttribute('data-mode')
       const show = currentShow || (options && options.show)

@@ -23,7 +23,7 @@ body.subwindow .activation-viz-plugin {
     margin-top: 2em;
 }*/
 .activation-viz-plugin .data-table {
-    font-family: "Fira Mono";
+    font-family: var(--font-monospace);
     table-layout: fixed;
     border-spacing: 0;
     border-collapse: collapse;
@@ -35,6 +35,7 @@ body.subwindow .activation-viz-plugin {
 }
 .activation-viz-plugin .data-table.table-header {
     border-bottom: 1px solid var(--color-ui-05);
+    margin-top: 1em;
 }
 .activation-viz-plugin .data-table th {
     cursor: pointer;
@@ -97,6 +98,7 @@ body.subwindow .activation-viz-plugin {
 }*/
 .activation-viz-plugin .data-table td {
     height: 3em;
+    vertical-align: middle;
 }
 .activation-viz-plugin .data-table:not(.table-header) td {
     border: 1px solid var(--color-ui-04);
@@ -232,6 +234,7 @@ body.subwindow .activation-viz-plugin {
     padding-left: 0;
 }
 .activation-viz-plugin .data-table td.cell-stats .stat-bar-wrapper {
+    height: 3em;
     position: relative;
     display: flex;
     align-items: center;
@@ -244,6 +247,8 @@ body.subwindow .activation-viz-plugin {
 }
 .activation-viz-plugin .data-table td.cell-stats .stat-median-dot, .activation-viz-plugin.show-outliers .outlier-dot {
     position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     width: 0.6125em;
     height: 1.25em;
     background: #fdbf6f; /* colorbrewer, to match grid theme */
@@ -287,7 +292,9 @@ body.subwindow .activation-viz-plugin {
 }
 .activation-viz-plugin .data-table td.cell-stats .stat-indicator {
     position: absolute;
-    color: var(--color-text-02);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-against-dark-bg);
     font-size: 0.7em;
 }
 .activation-viz-plugin .data-table td.cell-stats .stat-bar:hover {
@@ -295,6 +302,8 @@ body.subwindow .activation-viz-plugin {
 }
 .activation-viz-plugin .data-table td.cell-stats .stat-bar {
     position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     background: var(--color-latency-0);
     height: 1.25em;  /* matches activation list height: .log-lines .log-line .log-line-bar in ui.css */
     transition: all 150ms ease-in-out, outline 300ms ease-in-out;
@@ -499,7 +508,6 @@ body.subwindow .activation-viz-plugin {
     font-family: var(--font-sans-serif);
     font-weight: 400;
     margin-bottom: 0.125em;
-    /* min-width: 8em; */
 }
 .grid-label > div {
     display: flex;
@@ -630,7 +638,6 @@ body.subwindow .activation-viz-plugin {
     paddingLeft: '1ex'
 }
 body .activation-viz-plugin.grid-header-key {
-    height: 8em;
     width: calc(1.1 * 8 * 2.25vw); /* 7 cells in legend, plus 1 for slop, 1.1x for some more */
     font-size: 0.875em;
     padding: 0;

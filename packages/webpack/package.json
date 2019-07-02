@@ -53,7 +53,8 @@
   },
   "kui": {
     "headless": false,
-    "electron": false
+    "electron": false,
+    "proxy": false
   },
   "publishConfig": {
     "access": "public"
