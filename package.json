@@ -28,16 +28,14 @@
     }
   },
   "lint-staged": {
-    "linters": {
-      "**/*.{js,json,md,ts}": [
-        "prettier --write",
-        "git add"
-      ],
-      "**/*.{js,ts}": [
-        "eslint --fix",
-        "git add"
-      ]
-    }
+    "**/*.{js,json,md,ts}": [
+      "prettier --write",
+      "git add"
+    ],
+    "**/*.{js,ts}": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
