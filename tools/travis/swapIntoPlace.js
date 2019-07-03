@@ -26,8 +26,8 @@ const createBucket = (cos, Bucket) => {
 }
 
 /** we decided not to do a swap */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const main = ({ secrets, value }) => {
-  // eslint-disable-line
   // WARNING: this has to match the BRANCH= part in .travis.yml
   const TRAVIS_JOB_NUMBER = value.number
   const Bucket = `kui-dev.${TRAVIS_JOB_NUMBER}`

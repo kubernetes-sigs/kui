@@ -102,7 +102,7 @@ const ast = {
       function: {
         exec: {
           kind: 'nodejs:default',
-          code: 'args => ({\n    ok: false\n  })'
+          code: '() => ({\n    ok: false\n  })'
         }
       }
     }
@@ -138,7 +138,7 @@ const ast = {
       function: {
         exec: {
           kind: 'nodejs:default',
-          code: 'args => ({ ok: false })'
+          code: '() => ({ ok: false })'
         }
       }
     }
@@ -157,7 +157,7 @@ const ast = {
             function: {
               exec: {
                 kind: 'nodejs:default',
-                code: '_ => ({ ok: secret === 42 })'
+                code: '() => ({ ok: secret === 42 })'
               }
             }
           }
@@ -168,7 +168,7 @@ const ast = {
         function: {
           exec: {
             kind: 'nodejs:default',
-            code: "_ => ({\n  ok: typeof secret === 'undefined'\n})"
+            code: "() => ({\n  ok: typeof secret === 'undefined'\n})"
           }
         }
       }

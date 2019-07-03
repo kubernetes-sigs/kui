@@ -108,7 +108,7 @@ class CLI {
    *
    */
   do(cmd, env = {}, { errOk = undefined } = {}) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const command = `${this.exe} ${cmd} --no-color`
       debug('executing command', command)
 
@@ -173,7 +173,7 @@ class CLI {
   }
 
   expectOKWithAny() {
-    return args => {
+    return () => {
       return this.expectOK()
     }
   }

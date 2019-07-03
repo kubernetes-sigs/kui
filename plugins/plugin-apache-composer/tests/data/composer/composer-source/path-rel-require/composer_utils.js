@@ -12,9 +12,9 @@ function isOptionsCall(args) {
 
 exports.isOptionsCall = isOptionsCall
 
-exports.addMetricAggregator = function(metrics_aggregator, action) {
+exports.addMetricAggregator = function(metricsAggregator, action) {
   return function(args) {
-    return action(args, metrics_aggregator)
+    return action(args, metricsAggregator)
   }
 }
 
@@ -36,42 +36,12 @@ exports.MetricsAggregator = function() {
   }
 }
 
-exports.TimeOutPromise = function(
-  internal_promise,
-  metrics_aggregator,
-  origin,
-  time_out_in_milliseconds
-) {
-  return new Promise((resolve, reject) => {
-    let timeout = setTimeout(function() {
-      return reject(
-        WebErrorResponseBuilder.withStatusCode(504)
-          .withError('SERVER_TIMEOUT')
-          .withDescription(
-            `Request timed out. ${JSON.stringify(metrics_aggregator.finish())}`
-          )
-          .withOrigin(origin)
-          .build()
-      )
-    }, time_out_in_milliseconds)
-    internal_promise.then(
-      result => {
-        clearTimeout(timeout)
-        return resolve(result)
-      },
-      error => {
-        clearTimeout(timeout)
-        return reject(error)
-      }
-    )
-  })
-}
-
 const WebErrorResponseBuilder = (function() {
   let value = {}
   return {
-    withStatusCode: function(status_code) {
-      value.status_code = status_code
+    withStatusCode: function(statusCode) {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      value.status_code = statusCode
       return this
     },
     withError: function(error) {
@@ -96,6 +66,7 @@ const WebErrorResponseBuilder = (function() {
         'access-control-allow-credentials': 'true',
         'Content-Type': 'application/json'
       }
+      // eslint-disable-next-line node/no-deprecated-api
       result.body = new Buffer(
         JSON.stringify({
           code: value.status_code,
@@ -108,5 +79,36 @@ const WebErrorResponseBuilder = (function() {
     }
   }
 })()
+
+exports.TimeOutPromise = function(
+  internalPromise,
+  metricsAggregator,
+  origin,
+  timeOutInMilliseconds
+) {
+  return new Promise((resolve, reject) => {
+    let timeout = setTimeout(function() {
+      return reject(
+        WebErrorResponseBuilder.withStatusCode(504)
+          .withError('SERVER_TIMEOUT')
+          .withDescription(
+            `Request timed out. ${JSON.stringify(metricsAggregator.finish())}`
+          )
+          .withOrigin(origin)
+          .build()
+      )
+    }, timeOutInMilliseconds)
+    internalPromise.then(
+      result => {
+        clearTimeout(timeout)
+        return resolve(result)
+      },
+      error => {
+        clearTimeout(timeout)
+        return reject(error)
+      }
+    )
+  })
+}
 
 exports.WebErrorResponseBuilder = WebErrorResponseBuilder

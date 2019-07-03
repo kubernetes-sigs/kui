@@ -24,7 +24,7 @@ const { moduleExists } = require('./module-exists')
  *
  */
 module.exports = (env, overrides) =>
-  new Promise((resolve, reject) => {
+  new Promise(resolve => {
     debug('parsing options', env, overrides)
 
     // the former is for npm install mode

@@ -110,9 +110,7 @@ const expectOK = (appAndCount, opt) => {
   return (
     app.client
       .waitForVisible(selectors.PROMPT_N(N), timeout) // wait for the next prompt to appear
-      .then(nextPrompt =>
-        app.client.getAttribute(selectors.PROMPT_N(N), 'placeholder')
-      ) // it should have a placeholder text
+      .then(() => app.client.getAttribute(selectors.PROMPT_N(N), 'placeholder')) // it should have a placeholder text
       // .then(attr => assert.strictEqual(attr, constants.CLI_PLACEHOLDER)) //      ... verify that
       .then(() => app.client.getValue(selectors.PROMPT_N(N), timeout)) // it should have an empty value
       .then(promptValue => {
@@ -334,7 +332,7 @@ exports.cli = {
         // use .textContent as a backup plan
         return exports.cli
           .expectOKWithTextContent(expect, exact)(res)
-          .catch(err2 => {
+          .catch(() => {
             throw err1
           })
       })
@@ -597,75 +595,6 @@ exports.getValueFromMonaco = async (app /*: Application */, prefix = '') => {
     .then(_ => _.value)
 }
 
-/** is the given struct2 the same as the given struct2 (given as a string) */
-exports.expectStruct = (
-  struct1,
-  noParse = false,
-  failFast = true
-) => string => {
-  try {
-    const ok = sameStruct(struct1, noParse ? string : JSON.parse(string))
-    if (failFast) {
-      assert.ok(ok)
-    }
-    return ok
-  } catch (err) {
-    console.error('Error comparing structs for actual value=' + string)
-    throw err
-  }
-}
-exports.expectYAML = (struct1, subset = false, failFast = true) => string => {
-  try {
-    const struct2 = require('js-yaml').safeLoad(string)
-    const ok = sameStruct(struct1, struct2, subset)
-    if (failFast) {
-      assert.ok(ok)
-    }
-    return ok
-  } catch (err) {
-    console.error('Error comparing subset for actual value=' + string)
-    throw err
-  }
-}
-exports.expectYAMLSubset = (struct1, failFast = true) =>
-  exports.expectYAML(struct1, true, failFast)
-exports.expectSubset = (struct1, failFast = true) => string => {
-  try {
-    const ok = sameStruct(struct1, JSON.parse(string), true)
-    if (failFast) {
-      assert.ok(ok)
-    }
-    return true
-  } catch (err) {
-    console.error('Error comparing subset for actual value=' + string)
-    throw err
-  }
-}
-
-/** is the given actual array the same as the given expected array? */
-exports.expectArray = (expected, failFast = true) => actual => {
-  if (!Array.isArray(actual)) {
-    // webdriver.io's getText will return a singleton if there is only one match
-    actual = [actual]
-  }
-
-  const ok =
-    actual.length === expected.length &&
-    actual.every(function(u, i) {
-      return u === expected[i]
-    })
-
-  if (!ok) {
-    console.error(`array mismatch; expected=${expected} actual=${actual}`)
-  }
-
-  if (failFast) {
-    assert.ok(ok)
-  } else {
-    return ok
-  }
-}
-
 /**
  * subset means that it is ok for struct1 to be a subset of struct2
  * so: every key in struct1 must be in struct2, but not vice versa
@@ -750,6 +679,75 @@ const sameStruct = (struct1, struct2, subset = false) => {
   return true
 }
 
+/** is the given struct2 the same as the given struct2 (given as a string) */
+exports.expectStruct = (
+  struct1,
+  noParse = false,
+  failFast = true
+) => string => {
+  try {
+    const ok = sameStruct(struct1, noParse ? string : JSON.parse(string))
+    if (failFast) {
+      assert.ok(ok)
+    }
+    return ok
+  } catch (err) {
+    console.error('Error comparing structs for actual value=' + string)
+    throw err
+  }
+}
+exports.expectYAML = (struct1, subset = false, failFast = true) => string => {
+  try {
+    const struct2 = require('js-yaml').safeLoad(string)
+    const ok = sameStruct(struct1, struct2, subset)
+    if (failFast) {
+      assert.ok(ok)
+    }
+    return ok
+  } catch (err) {
+    console.error('Error comparing subset for actual value=' + string)
+    throw err
+  }
+}
+exports.expectYAMLSubset = (struct1, failFast = true) =>
+  exports.expectYAML(struct1, true, failFast)
+exports.expectSubset = (struct1, failFast = true) => string => {
+  try {
+    const ok = sameStruct(struct1, JSON.parse(string), true)
+    if (failFast) {
+      assert.ok(ok)
+    }
+    return true
+  } catch (err) {
+    console.error('Error comparing subset for actual value=' + string)
+    throw err
+  }
+}
+
+/** is the given actual array the same as the given expected array? */
+exports.expectArray = (expected, failFast = true) => actual => {
+  if (!Array.isArray(actual)) {
+    // webdriver.io's getText will return a singleton if there is only one match
+    actual = [actual]
+  }
+
+  const ok =
+    actual.length === expected.length &&
+    actual.every(function(u, i) {
+      return u === expected[i]
+    })
+
+  if (!ok) {
+    console.error(`array mismatch; expected=${expected} actual=${actual}`)
+  }
+
+  if (failFast) {
+    assert.ok(ok)
+  } else {
+    return ok
+  }
+}
+
 /** validate an activationId */
 const activationIdPattern = /^\w{12}$/
 exports.expectValidActivationId = () => activationId =>
@@ -818,14 +816,13 @@ const waitForActivationOrSession = entityType => (
     return exports.cli
       .do(`wsk ${entityType} list ${name}`, app)
       .then(exports.cli.expectOKWithCustom({ passthrough: true }))
-      .then(N =>
-        app.client.getText(
-          `${exports.selectors.LIST_RESULTS_N(
-            N
-          )} .activationId[data-activation-id="${activationId}"]`
-        )
-          ? true
-          : false
+      .then(
+        N =>
+          !!app.client.getText(
+            `${exports.selectors.LIST_RESULTS_N(
+              N
+            )} .activationId[data-activation-id="${activationId}"]`
+          )
       )
   })
 }

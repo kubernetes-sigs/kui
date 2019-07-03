@@ -30,10 +30,11 @@ module.exports = composer.let(
     },
     composer.try(
       composer.sequence(
-        _ => ({
+        () => ({
           dbname: db,
           doc: {
             _id: name,
+            // eslint-disable-next-line @typescript-eslint/camelcase
             display_name: name,
             userID: userID,
             onSuccess: true
@@ -41,7 +42,7 @@ module.exports = composer.let(
           overwrite: false
         }),
         `${cloudantBinding}/write`,
-        _ => ({
+        () => ({
           message:
             'Hi, ' +
             name +
@@ -51,7 +52,7 @@ module.exports = composer.let(
       // write failed.  Try to figure out why
       composer.try(
         composer.sequence(
-          p => ({ dbname: db, docid: name }),
+          () => ({ dbname: db, docid: name }),
           `${cloudantBinding}/read-document`,
           doc => ({
             message:
@@ -62,7 +63,7 @@ module.exports = composer.let(
               '`'
           })
         ),
-        _ => ({
+        () => ({
           message:
             "I'm sorry. There was an error updating Cloudant. Try again later."
         })

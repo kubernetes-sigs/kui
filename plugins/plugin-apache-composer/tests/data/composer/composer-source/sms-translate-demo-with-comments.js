@@ -27,7 +27,7 @@ module.exports = /** COMMENT */ composer.sequence(
           )
         ),
 
-        err => ({ payload: 'Sorry, we cannot translate your text' })
+        () => ({ payload: 'Sorry, we cannot translate your text' })
       )
     )
   ),
@@ -38,4 +38,4 @@ module.exports = /** COMMENT */ composer.sequence(
 /* COMMENT */
 
 /* COMMENT */ // COMMENT
-//COMMENT
+// COMMENT

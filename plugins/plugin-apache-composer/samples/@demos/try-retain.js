@@ -30,5 +30,5 @@ const base64ify = args => ({
 
 module.exports = Try(
   /* try */ Seq(Retain('validate'), base64ify),
-  /* catch */ args => ({ ok: false })
+  /* catch */ () => ({ ok: false })
 )

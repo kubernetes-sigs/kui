@@ -4,7 +4,7 @@
   "description": "This is the monorepo for Kui, the hybrid command-line/GUI electron-based Kubernetes tool",
   "main": "build/packages/app/src/main/main.js",
   "scripts": {
-    "lint": "eslint '**/*.ts'",
+    "lint": "eslint '**/*.{js,ts}'",
     "format": "prettier --write '**/*.{js,json,md,ts}'",
     "test": "cd packages/tests && npm run test",
     "compile": "MONOREPO_MODE=true CLIENT_HOME=./clients/default ./packages/kui-builder/bin/compile.sh",
@@ -33,7 +33,7 @@
         "prettier --write",
         "git add"
       ],
-      "**/*.ts": [
+      "**/*.{js,ts}": [
         "eslint --fix",
         "git add"
       ]

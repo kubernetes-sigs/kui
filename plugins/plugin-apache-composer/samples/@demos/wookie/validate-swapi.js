@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function main(params) {
   // return {status: 'Good', myResult: params.result.body}
 

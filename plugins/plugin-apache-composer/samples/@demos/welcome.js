@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let main = args => ({
   html: `<html><body>welcome ${args.name}!</body></html>`
 })

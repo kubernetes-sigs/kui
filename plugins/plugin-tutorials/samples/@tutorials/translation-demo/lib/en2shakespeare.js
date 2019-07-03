@@ -2,6 +2,7 @@
 
 const request = require('request')
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function main(params) {
   // eslint-disable-line
   var options = {

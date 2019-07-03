@@ -23,7 +23,7 @@ function foo() {
     fs.readFileSync(path.join(__dirname, 'author-map.json'), 'utf8')
   )
   return composer.let({ am: authorMap }, p => {
-    return am[p.author] == undefined ? {} : am[p.author]
+    return am[p.author] === undefined ? {} : am[p.author]
   })
 }
 
