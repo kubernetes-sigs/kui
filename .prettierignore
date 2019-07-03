@@ -1,4 +1,6 @@
 build/
+clients/**/*/dist/
+packages/app/dist/
 node_modules/
 *.d.ts
 package-lock.json
