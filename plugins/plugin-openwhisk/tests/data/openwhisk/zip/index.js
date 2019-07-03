@@ -1,5 +1,5 @@
-const fs = require('fs'),
-  path = require('path')
+const fs = require('fs')
+const path = require('path')
 
 exports.main = params =>
   new Promise((resolve, reject) => {

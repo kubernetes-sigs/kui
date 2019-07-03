@@ -1236,7 +1236,6 @@ export default function graph2doms(
         // note that svg z-index is document order, literally
         while ((parent = queue.pop()) != null) {
           nodes.push(parent)
-
           ;(parent.children || []).forEach(function(c) {
             c.x += parent.x
             c.y += parent.y

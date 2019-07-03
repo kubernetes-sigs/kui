@@ -35,7 +35,7 @@ module.exports = composer.sequence(
   composer.retain(
     composer.sequence(
       args => ({ payload: args.payload }),
-      composer.try(translate(), err => ({
+      composer.try(translate(), () => ({
         payload: 'Sorry, we cannot translate your text'
       }))
     )

@@ -18,6 +18,6 @@ const composer = require('openwhisk-composer')
 
 module.exports = composer.if(
   p => p.condition,
-  composer.sequence(p => ({ path: true })),
-  composer.sequence(p => ({ path: false }))
+  composer.sequence(() => ({ path: true })),
+  composer.sequence(() => ({ path: false }))
 )

@@ -25,7 +25,7 @@ module.exports = composer.sequence(
           )
         ),
 
-        err => ({ payload: 'Sorry, we cannot translate your text' })
+        () => ({ payload: 'Sorry, we cannot translate your text' })
       )
     )
   ),

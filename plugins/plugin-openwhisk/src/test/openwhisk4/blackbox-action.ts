@@ -70,7 +70,11 @@ describe('blackbox actions', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb4'))
-      .then(sidecar.expectSource('const main = x => x'))
+      .then(
+        sidecar.expectSource(
+          '// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'
+        )
+      )
       .catch(common.oops(this)))
 
   it('should create a package', () =>
@@ -90,7 +94,11 @@ describe('blackbox actions', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb4', undefined, undefined, 'ppp'))
-      .then(sidecar.expectSource('const main = x => x'))
+      .then(
+        sidecar.expectSource(
+          '// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'
+        )
+      )
       .catch(common.oops(this)))
 
   it(`should invoke bb2`, () =>

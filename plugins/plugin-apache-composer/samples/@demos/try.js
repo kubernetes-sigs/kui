@@ -9,7 +9,7 @@ module.exports = Try(
   'validate',
 
   // if that fails, execute this inline function
-  args => ({
+  () => ({
     ok: false
   })
 )

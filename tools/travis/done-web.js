@@ -14,8 +14,8 @@ function composition(namespace, pkgname, shortname) {
   )}/packages/${encodeURIComponent(pkgname)}/compositions${suffix}`
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const main = params => {
-  // eslint-disable-line
   console.log(params)
 
   const namespace = process.env.__OW_NAMESPACE

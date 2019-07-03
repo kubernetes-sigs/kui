@@ -149,6 +149,7 @@ module.exports = {
   target: 'web',
   node: {
     fs: 'empty',
+    // eslint-disable-next-line @typescript-eslint/camelcase
     child_process: 'empty',
     'node-docker-api': 'empty',
     'docker-modem': 'empty',

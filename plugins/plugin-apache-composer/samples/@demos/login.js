@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-let main = args => ({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let main = () => ({
   html: `<html><body>please say the magic word.</body></html>`
 })

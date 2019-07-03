@@ -5,8 +5,8 @@ const AWS = require('ibm-cos-sdk')
 const needle = require('needle')
 
 /** we decided not to do a swap */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const main = _ => {
-  // eslint-disable-line
   debug('_', _)
   const { secrets, value } = _
   debug('value', value)

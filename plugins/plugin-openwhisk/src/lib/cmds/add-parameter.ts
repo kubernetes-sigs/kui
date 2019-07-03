@@ -324,16 +324,18 @@ export default async (commandTree: CommandRegistrar) => {
   // docs
   //
   const docs = {
-    set: attr =>
-      mkDocs(`Modify ${attr} by adding or updating a key-value pair`),
-    unset: attr => mkDocs(`Modify ${attr} by removing a key`),
-    push: attr =>
-      mkDocs(`Modify ${attr} by pushing a new value onto an array-valued entry`)
-  }
+      set: attr =>
+        mkDocs(`Modify ${attr} by adding or updating a key-value pair`),
+      unset: attr => mkDocs(`Modify ${attr} by removing a key`),
+      push: attr =>
+        mkDocs(
+          `Modify ${attr} by pushing a new value onto an array-valued entry`
+        )
+    }
 
-  //
-  // register command handlers
-  //
+    //
+    // register command handlers
+    //
   ;['actions', 'triggers', 'packages'].forEach(type => {
     synonyms(type).forEach(syn => {
       const doAdd = add(type)

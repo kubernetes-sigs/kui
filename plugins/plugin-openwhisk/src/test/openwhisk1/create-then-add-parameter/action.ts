@@ -344,7 +344,7 @@ localDescribe(
         .then(text =>
           assert.strictEqual(
             text.replace(/\s+/g, ''),
-            "functionmain(params){return{name:'Step1'+params.name}}"
+            "//eslint-disable-next-line@typescript-eslint/no-unused-varsfunctionmain(params){return{name:'Step1'+params.name}}"
           )
         ))
   }

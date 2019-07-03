@@ -35,7 +35,7 @@ module.exports = (server, port) => {
   debug('initializing proxy executor', port)
 
   const exec = commandExtractor =>
-    async function(req, res, next) {
+    async function(req, res) {
       // debug('hostname', req.hostname)
       // debug('headers', req.headers)
 

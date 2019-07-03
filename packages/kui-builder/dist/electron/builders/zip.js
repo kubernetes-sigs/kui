@@ -26,7 +26,7 @@ const out = `${BUILDDIR}/${PRODUCT_NAME}-darwin-x64.zip`
 debug('input file', dir)
 debug('output file', out)
 
-zip({ dir, out }, (err, res) => {
+zip({ dir, out }, err => {
   if (err) {
     console.error(err)
     process.exit(1)
