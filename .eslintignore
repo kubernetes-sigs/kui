@@ -1,5 +1,6 @@
 build/
-**/*/dist/
+clients/**/*/dist/
+packages/app/dist/
 **/*/node_modules/
 **/*.d.ts
 plugins/plugin-apache-composer/tests/data/composer/composer-source-expect-errors/if-bad.js
