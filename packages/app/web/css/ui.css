@@ -289,6 +289,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     text-overflow: ellipsis;
     display: flex;
     align-items: center;
+    filter: grayscale(0.5) opacity(0.875);
 }
 .repl-prompt .repl-selection {
     font-size: 80%;
@@ -299,10 +300,29 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 }
 .repl-prompt-righty {
     display: flex;
+    border-color: transparent var(--color-base0D);
+    border-style: solid;
+    border-width: 0.55em 0px 0.55em 0.55em;
+    height: 0px;
+    width: 0px;
+    font-size: 1rem;
+    transition: border-color 150ms ease-in-out;
+}
+body[kui-theme-style="light"] .repl-context {
+    color: var(--color-text-against-dark-bg);
 }
 .repl-context {
-    font-size: 0.875em;
+    font-size: 0.75em;
     font-weight: 500;
+    color: var(--color-base00);
+    background-color: var(--color-base0D);
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    padding-left: 4px;
+    height: 1.1rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 150ms ease-in-out;
 }
 repl .repl-block.using-custom-prompt .repl-prompt-righty > i, repl .repl-block.using-custom-prompt .repl-context {
     display: none;
@@ -719,8 +739,8 @@ sidecar.visible {
     flex: 6;
     z-index: 1; /* float above the repl */
     transition-duration: 600ms; /* a bit slower coming out */
-    border-left: 1px solid var(--color-ui-03);
-    border-top: 1px solid var(--color-ui-03);
+    border-left: 1px solid var(--color-ui-04);
+    border-top: 1px solid var(--color-ui-04);
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
     border-top-right-radius: 6px;
@@ -865,6 +885,13 @@ sidecar .sidecar-header {
     flex-basis: 9rem;
     min-height:  9rem; /* see shell issue #712 */
     transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
+}
+sidecar ul.bx--tabs__nav.bx--tabs__nav--hidden:empty {
+    /* draw a bottom border for the sidecar header if we have no mode
+   bottoms; we need to do this on the ul.bx--tabs, because we don't
+   want to draw the bottom border if the sidecar is showing tabs;
+   hence the :empty qualifier */
+    border-bottom: 1px solid var(--color-content-divider);
 }
 sidecar .sidecar-header .header-main-content {
     flex: 1;
@@ -1423,7 +1450,7 @@ code.fancy-code, code.fancy-code.hljs {
     margin-top: 1em;
 }
 .repl .big-top-pad > div, .big-top-pad:not(:first-child) > div {
-    padding-top: 0.75em;
+    padding-top: 0.25em;
 }
 .repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div, body.subwindow .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
     padding-right: 2em;
@@ -3034,7 +3061,7 @@ body {
 
 .result-as-table .result-table[kui-table-style="Light"] {
     border: none;
-    margin-top: 0.5em;
+    margin-top: 0;
 }
 .result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell, .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
     background: none;

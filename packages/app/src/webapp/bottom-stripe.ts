@@ -509,19 +509,6 @@ export const addModeButtons = (
     }
   })
 
-  // if we have *only* flush-right buttons, then do not flush-right any of them
-  const nFlushRight = modes.reduce((count, { flush }) => {
-    count += flush === 'right' ? 1 : 0
-    return count
-  }, 0)
-  const nFlushLeft = modes.reduce((count, { flush }) => {
-    count += flush !== 'weak' && flush !== 'right' ? 1 : 0
-    return count
-  }, 0)
-  if (nFlushRight > 0 && nFlushLeft === 0) {
-    modes.forEach(_ => delete _.flush)
-  }
-
   // for going back
   const addModeButtons = (
     tab: Tab,

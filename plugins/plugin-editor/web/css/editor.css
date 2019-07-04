@@ -19,6 +19,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    height: 1.25em; /* prevent vertical cropping on chrome */
 }
 
 .monaco-editor-wrapper {
