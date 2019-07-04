@@ -31,12 +31,10 @@ const { cli } = ui
 /** expect the given folder within the help tree */
 // NOTE: Mengting Yan: webdriverio getText in linux chromium seems to return all texts of a heading element in a single line, fix me if it's not true
 export const header = folder => `Shell Docs
-/
 ${folder}`
 
 /** expect the given sub-folder */
 export const header2 = (folder1, folder2) => `${header(folder1)}
-/
 ${folder2}`
 
 /** helper method, used in the tests below: ask for help */

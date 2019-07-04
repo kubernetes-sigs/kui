@@ -189,7 +189,9 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
     item.appendChild(dom)
 
     if (!options.noSlash) {
-      item.appendChild(span('/', 'bx--breadcrumb-item--slash'))
+      item.appendChild(
+        span(isHeadless() ? '/' : '', 'bx--breadcrumb-item--slash')
+      )
     }
 
     if (cmd) {
@@ -603,7 +605,7 @@ const format = async (
         const docsCell = row.insertCell(-1)
         const cmdPart = span(
           label && label.replace(/=/g, '=\u00ad'),
-          'pre-wrap not-very-wide'
+          'pre-wrap'
         )
         const dirPart = isDir && label && span('/')
         const examplePart =
