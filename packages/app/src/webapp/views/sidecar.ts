@@ -259,8 +259,6 @@ export const renderField = async (
         if (match[3].indexOf('{') >= 0) {
           // possibly JSON?
           try {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const obj = JSON.parse(match[3])
             const beautify = require('js-beautify').js_beautify
             const prettier = beautify(match[3], { indent_size: 2 })
             mesg.innerHTML = hljs.highlight('javascript', prettier).value
