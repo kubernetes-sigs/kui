@@ -161,7 +161,8 @@ const failure = (quit, execOptions?: ExecOptions) => async (
  * Insufficient arguments provided?
  *
  */
-const insufficientArgs = (argv: string[]) => argv.length === 0
+const insufficientArgs = (argv: string[]) =>
+  argv.length === 0 || (argv.length === 1 && /(-h)|(--help)/.test(argv[0]))
 
 /**
  * Opens the full UI

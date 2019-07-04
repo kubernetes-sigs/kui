@@ -24,7 +24,6 @@ const { localDescribe } = common
 
 /** expect the given folder within the help tree */
 export const header = folder => `Shell Docs
-/
 ${folder}`
 
 /**

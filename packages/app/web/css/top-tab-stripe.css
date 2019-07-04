@@ -36,7 +36,6 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     background: var(--color-stripe-01);
     display: flex;
     flex-direction: column;
-    -webkit-app-region: drag;
     transition: background-color 300ms ease-in-out;
 }
 
@@ -44,9 +43,6 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     overflow: auto;
 }
 
-.left-tab-stripe-bottom-buttons .left-tab-stripe-button {
-    margin: 1.375em 0;
-}
 .left-tab-stripe-button:not([data-tab-button-index]) i {
     color: rgba(255,255,255,0.5) !important;
 }
@@ -54,46 +50,19 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     content: ''
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
-    background: transparent;
+    background: rgba(255,255,255,0.0875);
 }
 .left-tab-stripe-button i {
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3em;
-    transition: filter 300ms ease-in-out, color 300ms ease-in-out;
-    /* border-radius: 3px / 6px;
-    border: 9px solid transparent; */
-}
-.left-tab-stripe-button:nth-child(8n+1) i {
-    color: var(--color-tab-01);
-}
-.left-tab-stripe-button:nth-child(8n+2) i {
-    color: var(--color-tab-02);
-}
-.left-tab-stripe-button:nth-child(8n+3) i {
-    color: var(--color-tab-03);
-}
-.left-tab-stripe-button:nth-child(8n+4) i {
-    color: var(--color-tab-04);
-}
-.left-tab-stripe-button:nth-child(8n+5) i {
-    color: var(--color-tab-05);
-}
-.left-tab-stripe-button:nth-child(8n+6) i {
-    color: var(--color-tab-06);
-}
-.left-tab-stripe-button:nth-child(8n+7) i {
-    color: var(--color-tab-07);
-}
-.left-tab-stripe-button:nth-child(8n+8) i {
-    color: var(--color-tab-08);
+    transition: filter 300ms ease-in-out, color 300ms ease-in-out, background-color 300ms ease-in-out;
 }
 
 /* these two rules give us the tab index label that appears inside of the tabs */
 .left-tab-stripe-buttons .left-tab-stripe-button {
     counter-increment: tab-index;
-    -webkit-app-region: no-drag;
 }
 .left-tab-stripe-buttons .left-tab-stripe-button-closer {
     content: '\d7'; /* unicode multiplication sign */
@@ -108,6 +77,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer {
     color: var(--color-text-02);
+    cursor: pointer;
 }
 .left-tab-stripe-buttons .left-tab-stripe-button .left-tab-stripe-button-closer:hover {
     background: var(--color-ui-04);
@@ -123,9 +93,6 @@ body[kui-theme-style="dark"] .left-tab-stripe-buttons .left-tab-stripe-button:no
     background: var(--color-base01);
 }
 
-.left-tab-stripe-button.smaller-button i {
-    font-size: 2em;
-}
 body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i {
     filter: grayscale(0.5) opacity(0.5);
 }
@@ -134,9 +101,6 @@ body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i
 }
 .left-tab-stripe-bottom-buttons i {
     filter: grayscale(0.5);
-}
-.left-tab-stripe-button-selected {
-    color: var(--color-text-01)
 }
 .left-tab-stripe-button:not([data-tab-button-index]):not(.left-tab-stripe-button-selected) > i:hover {
     color: var(--color-base06) !important;
@@ -161,34 +125,18 @@ body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i
     direction: rtl;
 }
 
-.sidecar-header span {
-    -webkit-app-region: no-drag;
-}
-.sidecar-header div, .sidecar-bottom-stripe {
-    -webkit-app-region: drag;
-}
-sidecar .sidecar-header-name-content {
-    -webkit-app-region: unset;
-}
-
 .repl {
     padding-top: 0;
 }
-.repl-input, .repl-output {
-    padding: 0 0 0 0.375rem;
-    transition: padding 150ms ease-in-out;
-}
 .repl-output {
     padding-top: 0.375rem;
+    padding-left: 0.375rem;
 }
 .repl-result > div, .repl:not(.sidecar-visible) .repl-result .result-table-outer {
     padding-right: 0.375rem;
 }
 .repl-prompt-right-elements {
     padding-right: 0.375rem;
-}
-.repl.sidecar-visible .repl-input, .repl.sidecar-visible .repl-output {
-    padding-left: 0.375rem;
 }
 .repl.sidecar-visible .repl-output {
     padding-right: 0.375rem;
@@ -202,13 +150,12 @@ sidecar .sidecar-header-name-content {
 #help-button.left-tab-stripe-button i {
     color: var(--color-base0D) !important;
 }
+#help-button:hover {
+    background-color: rgba(255,255,255,0.075);
+    cursor: pointer;
+}
 #help-button.left-tab-stripe-button:hover i {
     color: var(--color-brand-02) !important;
-}
-
-
-body.os-darwin .left-tab-stripe {
-    padding-left: calc(78px + 1em);
 }
 
 .main {
@@ -216,10 +163,9 @@ body.os-darwin .left-tab-stripe {
 }
 
 .left-tab-stripe {
-    height: 36px;
+    height: 32px;
     flex-direction: row;
     padding: 0;
-    padding-left: 1em;
     flex-basis: auto;
 }
 
@@ -235,11 +181,12 @@ body.os-darwin .left-tab-stripe {
     align-items: center;
     justify-content: center;
     background: var(--color-base02);
-    min-width: 8em;
+    min-width: 12em;
     margin: 0;
     border: 1px solid transparent;
     border-bottom: none;
-    border-top: 2px solid transparent;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
     transition: border 300ms ease-in-out;
 }
 
@@ -255,21 +202,15 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
     color: var(--color-text-02);
 }
 
-.left-tab-stripe-button:not(.left-tab-stripe-button-selected) + .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label, .left-tab-stripe-button:not(.left-tab-stripe-button-selected):first-child .left-tab-stripe-button-label {
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected) + .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label {
     border-left-color: rgba(255,255,255,0.35);
-}
-.left-tab-stripe-button:not(.left-tab-stripe-button-selected):last-child .left-tab-stripe-button-label {
-    border-right-color: rgba(255,255,255,0.35);
 }
 
 .left-tab-stripe-button-selected {
     background: var(--color-ui-01);
     border-color: var(--color-base03);
-    border-top-color: var(--color-content-divider);
-}
-.left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected):hover {
-    /* hover effect for not-selected tabs */
-    border-top-color: rgba(255,255,255,0.35);
+    opacity: 0.975;
+    border-bottom: 1px inset;
 }
 
 .left-tab-stripe-button > i {
@@ -306,20 +247,21 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
 
 .left-tab-stripe-bottom-buttons {
     flex: 1;
-    padding-right: 0.5em;
     display: flex;
 }
 
 #new-tab-button {
     flex: 1;
     justify-content: flex-start;
+    -webkit-font-smoothing: antialiased;
+    border-right: 1px solid rgba(255,255,255,0.35);
 }
 
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
     margin: 0;
     min-width: unset;
     padding: 0;
-    padding-left: 0.5em;
+    padding: 0 0.375em;
     background: none;
     justify-content: center;
 }
@@ -330,7 +272,9 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
 
 .left-tab-stripe-button.smaller-button i {
     font-size: 1.25em;
-    filter: none !important;
+}
+.left-tab-stripe-button.smaller-button i.fas {
+    font-size: 0.875em;
 }
 
 body {

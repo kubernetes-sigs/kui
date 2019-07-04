@@ -49,3 +49,16 @@ body[kui-theme-style] .bx--link:hover {
     color: var(--color-hover-primary-text);
 }
 
+/** breadcrumbs */
+body[kui-theme-style] .bx--breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    font-family: var(--font-sans-serif);
+    margin: 0 0 1em;
+}
+body[kui-theme-style] .bx--breadcrumb-item .bx--link {
+    color: var(--color-brand-01);
+    font-weight: 300;
+    font-size: 1em;
+    text-decoration: none;
+}
