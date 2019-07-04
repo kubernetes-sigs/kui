@@ -387,9 +387,9 @@ export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
  * The command handler for visualizing as a table
  *
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type Renderer = (
   tab: Tab,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   options: Record<string, any>,
   header: Header,
   uuid: string,
