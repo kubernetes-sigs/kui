@@ -465,10 +465,10 @@ const _addModeButton = (
   return button
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const addModeButton = (
   tab: Tab,
   mode: SidecarMode,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   entity: Record<string, any>
 ) => {
   const modeStripe = css.modeContainer(tab)

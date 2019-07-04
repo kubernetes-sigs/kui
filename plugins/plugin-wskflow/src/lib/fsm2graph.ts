@@ -974,7 +974,6 @@ const isSimpleComposition = ir => {
   return isShort && atMostOneNonFunction
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function fsm2graph(
   tab: Tab,
   ir: AST.Node,
@@ -982,6 +981,7 @@ export default async function fsm2graph(
   acts?: ActivationLike[],
   options?,
   rule?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   // console.log(ir, containerElement, acts);
 
