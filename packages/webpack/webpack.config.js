@@ -60,13 +60,15 @@ const builderHome =
     : path.join(stageDir, 'node_modules/@kui-shell/builder')
 console.log('builderHome', builderHome)
 
-if (!process.env.CLIENT_HOME && process.env.KUI_MONO_HOME) {
-  process.env.CLIENT_HOME = path.join(
-    process.env.KUI_MONO_HOME,
-    'clients/default'
-  )
-} else {
-  process.env.CLIENT_HOME = stageDir
+if (!process.env.CLIENT_HOME) {
+  if (process.env.KUI_MONO_HOME) {
+    process.env.CLIENT_HOME = path.join(
+      process.env.KUI_MONO_HOME,
+      'clients/default'
+    )
+  } else {
+    process.env.CLIENT_HOME = stageDir
+  }
 }
 console.log('clientHome', process.env.CLIENT_HOME)
 

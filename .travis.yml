@@ -45,6 +45,7 @@ env:
     - TRAVIS_HELM_VERSION=2.13.0
     - WEBPACK_CLIENT_URL="http://localhost:9080/"
     - WEB_COMPRESS=none
+    - RUNNING_KUI_TEST=true
     - KUI_USE_HTTP=true
     - TEST_ORG=testorg
     - TEST_SPACE=testspace

@@ -40,6 +40,13 @@ echo "$(tput setaf 3)building webpack client plus docker image$(tput sgr0)" # ye
 
 export KUI_MONO_HOME="$ROOTDIR"
 nice -15 npm run build:webpack
+
+# verify that the custom css has been injected into the index.html
+# see https://github.com/IBM/kui/issues/1886
+# _test.css has to match the value in the `css` field of clients/default/theme/theme.json
+grep "link href=\"_test.css\"" dist/webpack/index.html
+
+# capture the exit code prior to the final echo
 CODE=$!
 
 echo "$(tput setaf 2)ok: webpack client built successfully$(tput sgr0)" # green text
