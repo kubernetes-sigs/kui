@@ -210,7 +210,12 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
     background: var(--color-ui-01);
     border-color: var(--color-base03);
     opacity: 0.975;
-    border-bottom: 1px inset;
+    border-bottom: 1px inset var(--color-ui-03);
+    filter: opacity(0.975) grayscale(0.5) brightness(1.1);
+}
+body[kui-theme-style="light"] .left-tab-stripe-button-selected {
+    border-bottom-color: var(--color-ui-04);
+    filter: opacity(0.975) grayscale(0.5) brightness(0.975);
 }
 
 .left-tab-stripe-button > i {
@@ -254,7 +259,7 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
     flex: 1;
     justify-content: flex-start;
     -webkit-font-smoothing: antialiased;
-    border-right: 1px solid rgba(255,255,255,0.35);
+    border-right: 1px solid rgba(255,255,255,0.25);
 }
 
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
