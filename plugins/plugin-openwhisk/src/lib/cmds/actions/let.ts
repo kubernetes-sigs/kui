@@ -478,7 +478,7 @@ const webAssetTransformer = (location, text, extension) => {
     `function main(params) { const hostRelativeRoot = getHostRelativeRoot(); const referer = getReferer(hostRelativeRoot); const getParams = () => { delete params.__ow_headers; delete params.__ow_path; delete params.__ow_method; return params; }; return { ${headers} ${contentType}: \`` +
     xform(text || readFileSync(expandHomeDir(location))) +
     '`} }'
-  ) // eslint-disable-line
+  )
 }
 
 /**

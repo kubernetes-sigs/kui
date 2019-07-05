@@ -68,7 +68,9 @@ const cleanAll = (
   api_key = !noDefault &&
     (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)
 ) => {
-  if (!api_key) return Promise.resolve(true) // eslint-disable-line
+  if (!api_key) {
+    return Promise.resolve(true)
+  }
 
   const opts = {
     apihost,
