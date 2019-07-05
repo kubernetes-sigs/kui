@@ -287,8 +287,12 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     overflow: hidden;
     display: flex;
     align-items: center;
-    border-left: 1px solid var(--color-stripe-02);
+    border-left: 1px solid var(--color-ui-04);
     -webkit-font-smoothing: antialiased;
+    filter: saturate(2) brightness(1.1);
+}
+body[kui-theme-style="light"] .repl-prompt {
+    filter: saturate(2) brightness(0.9);
 }
 .repl-prompt .repl-selection {
     font-size: 80%;
@@ -299,22 +303,21 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 }
 .repl-prompt-righty {
     display: flex;
-    border-color: transparent var(--color-stripe-02);
+    transition: border-color 150ms ease-in-out;
+}
+.repl-block:not(.using-custom-prompt) .repl-prompt-righty {
+    border-color: transparent var(--color-ui-04);
     border-style: solid;
     border-width: 0.6em 0px 0.6em 0.6em; /* 50% of  height: for repl-context */
     height: 0px;
     width: 0px;
     font-size: 1rem;
-    transition: border-color 150ms ease-in-out;
-}
-body[kui-theme-style="light"] .repl-context {
-    color: var(--color-text-against-dark-bg);
 }
 .repl-context {
     font-size: 0.6875em;
     font-weight: 500;
     color: var(--color-text-01);
-    background-color: var(--color-stripe-02);
+    background-color: var(--color-ui-04);
     border-left: 1px solid var(--color-base0D);
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
@@ -748,12 +751,10 @@ sidecar.visible {
     flex: 6;
     z-index: 1; /* float above the repl */
     transition-duration: 600ms; /* a bit slower coming out */
-    border-left: 1px solid var(--color-ui-04);
-    border-top: 1px solid var(--color-ui-04);
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-    border-top-right-radius: 6px;
-    height: calc(100% - 1ex);
+    border: 1px solid var(--color-ui-04);
+    border-right: none;
+    border-radius: 3px / 6px;
+    height: calc(100% - 2ex);
     margin-top: 1ex;
     box-shadow: 0px 0px 1px var(--color-ui-04);
 }
