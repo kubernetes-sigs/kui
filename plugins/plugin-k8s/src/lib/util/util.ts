@@ -101,8 +101,7 @@ export class StatusError extends Error {}
 export class TryLaterError extends StatusError {}
 
 export class NotFoundError extends StatusError {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  code: any
+  code: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(message: string, code: any = 404) {

@@ -473,8 +473,8 @@ const webAssetTransformer = (location, text, extension) => {
 
   return (
     "const stripSlash = s => s.substring(0, s.lastIndexOf('/'))\n" +
-    'const getHostRelativeRoot = () => `/api/v1/web${stripSlash(stripSlash(process.env.__OW_ACTION_NAME))}`\n' + // eslint-disable-line
-    'const getReferer = hostRelativeRoot => `${process.env.__OW_API_HOST}${hostRelativeRoot}`\n' + // eslint-disable-line
+    'const getHostRelativeRoot = () => `/api/v1/web${stripSlash(stripSlash(process.env.__OW_ACTION_NAME))}`\n' + // eslint-disable-line no-template-curly-in-string
+    'const getReferer = hostRelativeRoot => `${process.env.__OW_API_HOST}${hostRelativeRoot}`\n' + // eslint-disable-line no-template-curly-in-string
     `function main(params) { const hostRelativeRoot = getHostRelativeRoot(); const referer = getReferer(hostRelativeRoot); const getParams = () => { delete params.__ow_headers; delete params.__ow_path; delete params.__ow_method; return params; }; return { ${headers} ${contentType}: \`` +
     xform(text || readFileSync(expandHomeDir(location))) +
     '`} }'

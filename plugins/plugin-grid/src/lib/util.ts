@@ -389,8 +389,7 @@ export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
  */
 export type Renderer = (
   tab: Tab,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  options: Record<string, any>,
+  options: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   header: Header,
   uuid: string,
   isRedraw?: boolean

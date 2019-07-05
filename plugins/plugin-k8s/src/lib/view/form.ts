@@ -58,8 +58,7 @@ const update = (
 interface FormAmendments extends HTMLElement {
   value: string
   __kuiPath: string[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  __kuiParent: Record<string, any>
+  __kuiParent: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 type ChoiceInput = HTMLInputElement & FormAmendments

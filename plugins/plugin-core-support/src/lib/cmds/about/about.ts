@@ -131,8 +131,7 @@ const aboutWindow = async () => {
   bottomContent.classList.add('about-window-bottom-content')
   flexContent.appendChild(bottomContent)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  type OnClickHandler = () => any
+  type OnClickHandler = () => any // eslint-disable-line @typescript-eslint/no-explicit-any
   const iconify = (
     fontawesome: string,
     title: string,
