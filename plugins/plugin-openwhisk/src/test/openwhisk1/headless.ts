@@ -16,10 +16,6 @@
 
 import * as assert from 'assert'
 
-// for now, use require, to support headless from bx tests
-import { Suite } from 'mocha'
-import { Application } from 'spectron'
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
@@ -27,10 +23,6 @@ import { cli } from '@kui-shell/core/tests/lib/headless'
 
 import { dirname, join } from 'path'
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
-interface ISuite extends Suite {
-  app: Application
-}
 const { localDescribe } = common
 const ROOT = dirname(
   require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
@@ -40,12 +32,6 @@ export const {
   version: expectedVersion
   // eslint-disable-next-line @typescript-eslint/no-var-requires
 } = require('@kui-shell/settings/package.json')
-
-interface Response {
-  code: number
-  output: string
-  stderr?: string
-}
 
 localDescribe('Headless mode', function(this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
