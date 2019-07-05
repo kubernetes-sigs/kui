@@ -88,6 +88,26 @@ changes the product name to "Kui Fun Shell", and changes the UI
 theme to use a [material design](https://material.io/) color
 scheme.
 
+## Injecting Custom CSS
+
+You may inject custom CSS files into the index.html build. In your
+`theme.json`, define the variable `css` as either a string or an array
+of strings. Each string may be either a reference to a file inside of
+your `theme/css/` subdirectory, or to a remote URL.
+
+```json
+{
+  "css": ["my.css", "https://my.cdn.com/my.css"]
+}
+```
+
+In this example, the former will retrieve a file from
+`theme/css/my.css`, and the latter will result in your custom client
+fetching the remote CSS file.
+
+If you wish to inject a CSS file only during test execution, preface
+the file name with `_test`, e.g. `_test.css`.
+
 ## Injecting Build-time Values
 
 Via a `config.json`, you have the opportunity to inject

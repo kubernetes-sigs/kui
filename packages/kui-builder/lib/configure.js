@@ -15,6 +15,7 @@
  */
 
 const debug = require('debug')('kui-builder/configure')
+const url = require('url')
 const path = require('path')
 const fs = require('fs-extra')
 const colors = require('colors/safe')
@@ -62,6 +63,37 @@ const evaluateMacros = settings => str => {
   }
 
   return str
+}
+
+/**
+ * Inject custom CSS
+ *
+ */
+const injectCSS = (env, settings) => str => {
+  debug('injectCSS', settings)
+  task(`injectCSS ${settings.css}`, str)
+
+  if (settings.css) {
+    const format = css => {
+      // only inject test css if we are running a test
+      if (!/^_test/.test(css) || process.env.RUNNING_KUI_TEST !== undefined) {
+        const href = /^http/.test(css) ? css : `${env.cssHome}${css}`
+        return `<link href="${href}" rel="stylesheet" type="text/css">`
+      } else {
+        return ''
+      }
+    }
+
+    const css = Array.isArray(settings.css)
+      ? settings.css.reduce((links, css) => {
+          return `${links}\n${format(css)}`
+        }, '')
+      : format(settings.css)
+
+    return str.replace('<head>', `<head>${css}`)
+  } else {
+    return str
+  }
 }
 
 /**
@@ -149,6 +181,7 @@ const doBuild = settings => () =>
     readIndex(settings)
       .then(evaluateMacros(settings.env))
       .then(evaluateMacros(settings.theme))
+      .then(injectCSS(settings.env, settings.theme))
       .then(writeIndex(settings))
   ])
 

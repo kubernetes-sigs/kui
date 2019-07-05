@@ -292,7 +292,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     filter: saturate(2) brightness(1.1);
 }
 body[kui-theme-style="light"] .repl-prompt {
-    filter: saturate(2) brightness(0.9);
+    filter: saturate(2) brightness(0.8);
 }
 .repl-prompt .repl-selection {
     font-size: 80%;
@@ -308,7 +308,7 @@ body[kui-theme-style="light"] .repl-prompt {
 .repl-block:not(.using-custom-prompt) .repl-prompt-righty {
     border-color: transparent var(--color-ui-04);
     border-style: solid;
-    border-width: 0.6em 0px 0.6em 0.6em; /* 50% of  height: for repl-context */
+    border-width: 0.55em 0px 0.55em 0.55em; /* 50% of  height: for repl-context */
     height: 0px;
     width: 0px;
     font-size: 1rem;
@@ -318,11 +318,11 @@ body[kui-theme-style="light"] .repl-prompt {
     font-weight: 500;
     color: var(--color-text-01);
     background-color: var(--color-ui-04);
-    border-left: 1px solid var(--color-base0D);
+    border-left: 1px solid var(--color-ui-03);
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
     padding-left: 4px;
-    height: 1.2rem;
+    height: 1.1rem;
     display: flex;
     align-items: center;
     transition: background-color 150ms ease-in-out;
