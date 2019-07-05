@@ -999,7 +999,7 @@ export default async function fsm2graph(
             // a conductor path log
             let path = log.substring(log.lastIndexOf(' ') + 1)
             // replace all [,],.in path to - to use as a id, as css selector cannot have those characters
-            path = path.replace(/[\[\.]/g, '-').replace(/\]/g, '') // eslint-disable-line
+            path = path.replace(/[\[\.]/g, '-').replace(/\]/g, '') // eslint-disable-line no-useless-escape
             if (renderState.visited[path] === undefined)
               renderState.visited[path] = []
             renderState.visited[path].push(index)

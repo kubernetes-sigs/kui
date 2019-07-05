@@ -33,8 +33,7 @@ export function currentSelection(tab: Tab) {
 
 export interface ActivationResponse {
   success: boolean
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  result: Object
+  result: Object // eslint-disable-line @typescript-eslint/ban-types
 }
 
 export interface Activation {
