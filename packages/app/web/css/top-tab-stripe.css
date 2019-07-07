@@ -33,8 +33,8 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     display: flex;
     flex-basis: 32px;
     min-width: 0;
-    background: var(--color-stripe-01);
-    transition: background-color 300ms ease-in-out;
+    background-color: var(--color-stripe-01);
+    transition: background-color 150ms ease-in-out;
 }
 
 .left-tab-stripe-buttons {
@@ -55,7 +55,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     align-items: center;
     justify-content: center;
     font-size: 3em;
-    transition: filter 300ms ease-in-out, color 300ms ease-in-out, background-color 300ms ease-in-out;
+    transition: filter 150ms ease-in-out, color 150ms ease-in-out, background-color 150ms ease-in-out;
 }
 
 /* these two rules give us the tab index label that appears inside of the tabs */
@@ -144,6 +144,7 @@ body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: rgba(0,0,0,0.075);
 }
 #help-button:hover {
     background-color: rgba(255,255,255,0.075);
@@ -175,7 +176,7 @@ body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i
     border-bottom: none;
     border-top-left-radius: 1px 2px;
     border-top-right-radius: 1px 2px;
-    transition: all 300ms ease-in-out;
+    transition: all 150ms ease-in-out;
 }
 
 .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label {
@@ -198,7 +199,7 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
     background: var(--color-ui-01);
     border-color: var(--color-base03);
     opacity: 0.95;
-    border-bottom: 1px inset var(--color-ui-03);
+    border-bottom: 1px inset var(--color-ui-02);
     filter: opacity(0.975) grayscale(0.5) brightness(1.1);
     margin-top: 1px;
 }
@@ -248,7 +249,7 @@ body[kui-theme-style="light"] .left-tab-stripe-button-selected {
     flex: 1;
     justify-content: flex-start;
     -webkit-font-smoothing: antialiased;
-    border-right: 1px solid rgba(255,255,255,0.25);
+    border-right: 1px inset rgba(128,128,128,0.5);
 }
 
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
@@ -269,8 +270,4 @@ body[kui-theme-style="light"] .left-tab-stripe-button-selected {
 }
 .left-tab-stripe-button.smaller-button i.fas {
     font-size: 0.75em;
-}
-
-body {
-    --color-stripe-01: var(--color-base02);
 }
