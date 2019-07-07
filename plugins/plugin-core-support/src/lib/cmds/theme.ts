@@ -100,13 +100,9 @@ const getDefaultTheme = () => {
 const list = async (): Promise<Table> => {
   const header: Row = {
     type: 'theme',
-    outerCSS: 'header-cell very-narrow',
-    name: 'CURRENT',
-    css: '',
-    attributes: [
-      { value: 'THEME', outerCSS: 'header-cell' },
-      { value: 'STYLE', outerCSS: 'header-cell' }
-    ]
+    name: '',
+    outerCSS: 'not-a-name',
+    attributes: [{ value: 'THEME' }, { value: 'STYLE' }]
   }
 
   const currentTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
@@ -118,8 +114,8 @@ const list = async (): Promise<Table> => {
         type: 'theme',
         name: theme.name,
         fontawesome: 'fas fa-check',
+        outerCSS: 'not-a-name',
         css: 'selected-entity',
-        outerCSS: 'very-narrow',
         rowCSS: theme.name === currentTheme && 'selected-row',
         attributes: [
           {
