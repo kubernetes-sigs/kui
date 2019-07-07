@@ -45,6 +45,7 @@
   ],
   "css": ["_test.css"],
   "tabStripe": "top-tab-stripe.css",
+  "tableStyle": "Medium",
   "appIcon": "icons/png/kui.png",
   "largeIcon": "icons/svg/kui.svg",
   "favicon": "icons/ico/kui.ico",

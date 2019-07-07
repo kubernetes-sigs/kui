@@ -20,6 +20,8 @@ import {
   config as c
 } from '@kui-shell/settings/config.json'
 
+import { TableStyle } from '@kui-shell/core/webapp/models/table'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let devOverrides: Record<string, any>
 try {
@@ -33,6 +35,8 @@ interface Theme {
   gettingStarted?: string
   ogDescription?: string
 
+  tableStyle?: keyof typeof TableStyle
+
   largeIcon: string
 
   userAgent?: string
@@ -41,6 +45,6 @@ interface Theme {
   themes: { name: string; css: string; description?: string; style: string }[]
 }
 
-export const theme: Theme = t
+export const theme: Theme = t as Theme
 export const env = e
 export const config = Object.assign({}, c, devOverrides)

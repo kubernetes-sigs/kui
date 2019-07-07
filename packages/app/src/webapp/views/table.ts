@@ -31,6 +31,8 @@ import {
   isTable
 } from '../models/table'
 import { applyDiffTable } from '../views/diffTable'
+import { theme } from '@kui-shell/core/core/settings'
+
 const debug = Debug('webapp/views/table')
 
 interface TableFormatOptions {
@@ -591,6 +593,18 @@ export const formatOneRowResult = (
   return dom
 }
 
+/**
+ * Set the table style attribute for the given table container
+ *
+ */
+function setStyle(tableDom: HTMLElement, table: Table) {
+  if (table.style !== undefined) {
+    tableDom.setAttribute('kui-table-style', TableStyle[table.style].toString())
+  } else if (theme.tableStyle) {
+    tableDom.setAttribute('kui-table-style', theme.tableStyle)
+  }
+}
+
 export const formatTable = (
   tab: Tab,
   table: Table | WatchableTable,
@@ -671,9 +685,7 @@ export const formatTable = (
   const rows = prepareRows.map(formatOneRowResult(tab, options))
   rows.map(row => tableDom.appendChild(row))
 
-  if (table.style !== undefined) {
-    tableDom.setAttribute('kui-table-style', TableStyle[table.style].toString())
-  }
+  setStyle(tableDom, table)
 
   const rowSelection = tableDom.querySelector('.selected-row')
   if (rowSelection) {
