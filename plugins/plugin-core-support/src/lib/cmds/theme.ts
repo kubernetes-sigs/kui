@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
@@ -145,7 +145,13 @@ const list = async (): Promise<Table> => {
     }
   )
 
-  return new Table({ type: 'theme', noSort: true, header, body })
+  return new Table({
+    type: 'theme',
+    noSort: true,
+    header,
+    body,
+    style: TableStyle.Light
+  })
 }
 
 /**
