@@ -9,7 +9,7 @@
  }
 
 .tab-completion-temporary .tab-completion-scroll-container > div {
-    padding: 1em 1.5em 1em 1em;
+    padding: 0.875em 1em;
     text-decoration: none;
 
     overflow: hidden;
@@ -53,8 +53,8 @@
 
 /* selection */
 .tab-completion-temporary .tab-completion-scroll-container > div.selected, .tab-completion-temporary .tab-completion-scroll-container > div:hover {
-    background-color: var(--color-ui-05);
-    border-left-color: var(--color-base05);
+    background-color: rgba(128,128,128,0.2);
+    border-left-color: rgba(128,128,128,0.5);
 }
 .tab-completion-temporary:hover .tab-completion-scroll-container > div.selected:not(:hover) {
     background-color: transparent;
