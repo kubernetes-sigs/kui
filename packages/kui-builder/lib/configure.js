@@ -15,7 +15,6 @@
  */
 
 const debug = require('debug')('kui-builder/configure')
-const url = require('url')
 const path = require('path')
 const fs = require('fs-extra')
 const colors = require('colors/safe')
