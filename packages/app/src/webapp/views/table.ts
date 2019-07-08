@@ -164,6 +164,7 @@ export const formatOneRowResult = (
     icon.className = entity.fontawesome
     icon.classList.add('cell-inner')
   } else if (typeof name === 'string') {
+    entityNameClickable.title = name
     entityNameClickable.innerText = name
   } else {
     entityNameClickable.appendChild(name)
@@ -299,9 +300,10 @@ export const formatOneRowResult = (
         )
       }
     } else if (value) {
-      Promise.resolve(value).then(value =>
+      Promise.resolve(value).then(value => {
+        inner.title = value
         inner.appendChild(document.createTextNode(value))
-      )
+      })
     } else {
       console.error('Invalid cell model, no value field')
     }
@@ -849,6 +851,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     icon.className = entity.fontawesome
     icon.classList.add('cell-inner')
   } else if (typeof name === 'string') {
+    entityNameClickable.title = name
     entityNameClickable.innerText = name
   } else {
     entityNameClickable.appendChild(name)
