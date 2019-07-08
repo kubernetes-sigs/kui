@@ -25,7 +25,7 @@ debug('loading')
  * This is the main entry point to kui
  *
  */
-export const main = (
+export const main = async (
   argv: string[],
   env = process.env,
   execOptions?: ExecOptions
@@ -53,10 +53,25 @@ export const main = (
     )
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
-    const result = initHeadless(argv, false, isRunningHeadless, execOptions)
+    const result = await initHeadless(
+      argv,
+      false,
+      isRunningHeadless,
+      execOptions
+    )
     if (env.KUI_REPL_MODE) {
-      debug('returning repl mode result')
-      return result
+      if (env.KUI_REPL_MODE === 'stdout') {
+        debug('emitting repl mode result')
+        console.log(
+          JSON.stringify({
+            type: typeof result,
+            response: result
+          })
+        )
+      } else {
+        debug('returning repl mode result', env.KUI_REPL_MODE)
+        return result
+      }
     }
   }
 
@@ -73,5 +88,9 @@ export const main = (
 // to bootstrap things, as follows:
 if (require.main === module) {
   debug('it looks like this is the main entry point, rather than a require')
-  main(process.argv, process.env)
+  main(
+    process.argv,
+    process.env,
+    process.env.KUI_EXEC_OPTIONS && JSON.parse(process.env.KUI_EXEC_OPTIONS)
+  )
 }
