@@ -15,15 +15,77 @@
  */
 
 const debug = require('debug')('proxy/exec')
+const { exec, spawn } = require('child_process')
 const express = require('express')
 
-process.env.KUI_HEADLESS = true
-process.env.KUI_REPL_MODE = true
-
-const { main } = require('../../kui/node_modules/@kui-shell/core')
+/* const { main } = require('../../kui/node_modules/@kui-shell/core')
 const {
   setValidCredentials
-} = require('../../kui/node_modules/@kui-shell/core/core/capabilities')
+} = require('../../kui/node_modules/@kui-shell/core/core/capabilities') */
+
+const mainPath = require.resolve('../../kui/node_modules/@kui-shell/core')
+const {
+  main: wssMain
+} = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/server')
+const {
+  StdioChannelWebsocketSide
+} = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/stdio-channel')
+
+let serverIdx = 0
+
+/** thin wrapper on child_process.exec */
+function main(cmdline, env, execOptions, server, port, host) {
+  return new Promise(async (resolve, reject) => {
+    const options = {
+      env: Object.assign(env, {
+        DEVMODE: true,
+        KUI_HEADLESS: true,
+        KUI_REPL_MODE: 'stdout',
+        KUI_EXEC_OPTIONS: JSON.stringify(execOptions)
+      })
+    }
+
+    const wsOpen = cmdline === 'bash websocket open'
+    if (wsOpen) {
+      const N = serverIdx++
+      const { wss } = await wssMain(N, server, port)
+      const child = spawn(
+        'node',
+        [mainPath, 'bash', 'websocket', 'stdio'],
+        options
+      )
+
+      child.on('error', err => {
+        reject(err)
+      })
+
+      child.on('exit', code => {
+        debug('subprocess exit', code)
+      })
+
+      const channel = new StdioChannelWebsocketSide(wss)
+      await channel.init(child)
+
+      channel.on('open', () => {
+        const proto = process.env.KUI_USE_HTTP === 'true' ? 'ws' : 'wss'
+        resolve({ type: 'string', response: `${proto}://${host}/bash/${N}` })
+      })
+    } else {
+      exec(`node "${mainPath}" ${cmdline}`, (err, stdout, stderr) => {
+        if (stderr) {
+          console.error(stderr)
+        }
+
+        if (err) {
+          reject(err)
+        } else {
+          debug('stdout', stdout)
+          resolve(JSON.parse(stdout))
+        }
+      })
+    }
+  })
+}
 
 /**
  *
@@ -46,22 +108,25 @@ module.exports = (server, port) => {
         // so that our catch (err) below is used upon command execution failure
         execOptions.rethrowErrors = true
 
-        if (execOptions && execOptions.credentials) {
+        /* if (execOptions && execOptions.credentials) {
           // FIXME this should not be a global
           setValidCredentials(execOptions.credentials)
-        }
+        } */
 
-        const execOptionsWithServer = Object.assign({}, execOptions, {
+        /* const execOptionsWithServer = Object.assign({}, execOptions, {
           server,
           port,
           host: req.headers.host
-        })
-        const response = await main(
-          ['', ...command.split(' ')],
+        }) */
+        const { type, response } = await main(
+          command,
           process.env,
-          execOptionsWithServer
+          execOptions,
+          server,
+          port,
+          req.headers.host
         )
-        if (typeof response === 'string') {
+        if (type !== 'object') {
           res.send(response)
         } else {
           const code = response.code || response.statusCode || 200

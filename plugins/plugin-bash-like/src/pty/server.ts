@@ -23,7 +23,12 @@ import { join } from 'path'
 import { exec } from 'child_process'
 import { createServer, Server } from 'https'
 
+// for types
+import { Socket } from 'net'
+import { IncomingMessage } from 'http'
+
 import { Channel } from './channel'
+import { StdioChannelKuiSide } from './stdio-channel'
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -31,7 +36,7 @@ let portRange = 8083
 const servers = []
 
 /** handler for shell/pty exit */
-type ExitHandler = (exitCode: number) => Promise<void>
+export type ExitHandler = (exitCode: number) => void
 
 /**
  * Allocate a port
@@ -144,7 +149,6 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
-    // console.log('message', data)
     try {
       const msg: {
         type: string
@@ -263,31 +267,41 @@ export const main = async (
       }
 
       if (preexistingPort) {
-        cachedWss = new WebSocket.Server({ noServer: true })
-        servers.push({ wss: cachedWss })
+        const wss = new WebSocket.Server({ noServer: true })
+        servers.push({ wss })
 
-        server.on('upgrade', function upgrade(request, socket, head) {
-          console.log('upgrade')
-          cachedWss.handleUpgrade(request, socket, head, function done(ws) {
-            console.log('handleUpgrade')
-            cachedWss.emit('connection', ws, request)
-          })
-        })
+        // only handle upgrades for the "N" index we own
+        const doUpgrade = (
+          request: IncomingMessage,
+          socket: Socket,
+          head: Buffer
+        ) => {
+          const match = request.url.match(/\/bash\/([0-9]+)/)
+          const yourN = match && parseInt(match[1], 10) // do we own this upgrade?
+          if (yourN === N) {
+            server.removeListener('upgrade', doUpgrade)
+            wss.handleUpgrade(request, socket, head, function done(
+              ws: WebSocket
+            ) {
+              wss.emit('connection', ws, request)
+            })
+          }
+        }
+        server.on('upgrade', doUpgrade)
 
-        cachedPort = preexistingPort
-        resolve({ port: cachedPort, exitNow })
+        resolve({ wss, port: cachedPort, exitNow })
       } else {
         cachedPort = await getPort()
         const server = createDefaultServer()
         server.listen(cachedPort, async () => {
-          cachedWss = new WebSocket.Server({ server })
+          const wss = (cachedWss = new WebSocket.Server({ server }))
           servers.push({ wss: cachedWss, server })
-          resolve({ port: cachedPort, exitNow })
+          resolve({ wss, port: cachedPort, exitNow })
         })
       }
-    }).then(({ port, exitNow }) => {
-      cachedWss.on('connection', onConnection(exitNow))
-      return port
+    }).then(({ wss, port, exitNow }) => {
+      wss.on('connection', onConnection(exitNow))
+      return { wss, port }
     })
   }
 }
@@ -299,6 +313,22 @@ export const main = async (
 let count = 0
 // const children = []
 export default (commandTree: CommandRegistrar) => {
+  commandTree.listen(
+    '/bash/websocket/stdio',
+    () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          await new StdioChannelKuiSide().init(() => {
+            console.error('done with stdiochannel')
+            resolve()
+          })
+        } catch (err) {
+          reject(err)
+        }
+      }),
+    { noAuthOk: true }
+  )
+
   commandTree.listen(
     '/bash/websocket/open',
     ({ execOptions }) =>
@@ -315,7 +345,7 @@ export default (commandTree: CommandRegistrar) => {
         }
 
         if (execOptions.isProxied) {
-          console.log(`do we have a port? ${execOptions['port']}`)
+          // console.log(`do we have a port? ${execOptions['port']}`)
           return main(N, execOptions['server'], execOptions['port'])
             .then(resolveWithHost)
             .catch(reject)

@@ -190,7 +190,7 @@ module.exports = {
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*' },
     compress: true,
-    liveReload: false,
+    liveReload: true,
     overlay: { errors: true },
     watchOptions: {
       poll: 1000,
