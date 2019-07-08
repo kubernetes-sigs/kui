@@ -287,11 +287,15 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     -webkit-font-smoothing: antialiased;
     filter: saturate(2) brightness(1.1);
     --color-prompt-text: var(--color-text-01);
-    --color-prompt-background: rgba(255,255,255,0.1);
+    --color-prompt-background: rgba(255,255,255,0.125);
+}
+body.not-electron .repl-context {
+    /* no context in webpack mode */
+    display: none;
 }
 body[kui-theme-style="light"] .repl-prompt {
     --color-prompt-background: var(--color-base02);
-    filter: saturate(2) brightness(1.2) contrast(1.1);
+    filter: saturate(1.1) brightness(1.2) contrast(1.1);
 }
 .repl-prompt .repl-selection {
     font-size: 80%;
@@ -304,10 +308,10 @@ body[kui-theme-style="light"] .repl-prompt {
     display: flex;
     transition: border-color 150ms ease-in-out;
 }
-.repl-block:not(.using-custom-prompt) .repl-prompt-righty {
+body.in-electron .repl-block:not(.using-custom-prompt) .repl-prompt-righty {
     border-color: transparent var(--color-prompt-background);
     border-style: solid;
-    border-width: 0.55em 0px 0.55em 0.55em; /* 50% of  height: for repl-context */
+    border-width: 0.5em 0px 0.5em 0.5em; /* 50% of  height: for repl-context */
     height: 0px;
     width: 0px;
     font-size: 1rem;
@@ -320,8 +324,9 @@ body[kui-theme-style="light"] .repl-prompt {
     border-left: 1px solid var(--color-ui-03);
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
-    padding-left: 4px;
-    height: 1.1rem;
+    padding-left: 5px;
+    padding-right: 1px;
+    height: 1rem;
     display: flex;
     align-items: center;
     transition: background-color 150ms ease-in-out;
@@ -746,11 +751,8 @@ sidecar.visible {
     flex: 6;
     z-index: 1; /* float above the repl */
     transition-duration: 600ms; /* a bit slower coming out */
-    border: 1px solid var(--color-ui-04);
-    border-right: none;
+    border-left: 1px solid var(--color-ui-04);
     border-radius: 2px / 4px;
-    height: calc(100% - 0.75em);
-    margin-top: 0.375em;
     box-shadow: 0px 0px 3px var(--color-ui-04);
 }
 body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
