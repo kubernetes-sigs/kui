@@ -15,6 +15,8 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('core/command-tree')
+debug('loading')
 
 import {
   CommandHandler,
@@ -37,8 +39,6 @@ import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
 import { Tab } from '../webapp/cli'
-
-const debug = Debug('core/command-tree')
 
 /**
  * The command tree module

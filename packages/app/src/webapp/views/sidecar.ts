@@ -17,6 +17,8 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
+const debug = Debug('webapp/views/sidecar')
+debug('loading')
 
 import * as prettyPrintDuration from 'pretty-ms'
 
@@ -38,7 +40,7 @@ import {
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
 
-const debug = Debug('webapp/views/sidecar')
+debug('finished loading modules')
 
 declare let hljs
 

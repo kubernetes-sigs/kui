@@ -18,6 +18,7 @@
 
 import * as Debug from 'debug'
 const debug = Debug('core/capabilities')
+debug('loading')
 
 /**
  * Are we running headless, in electron, or in a browser?

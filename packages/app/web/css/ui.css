@@ -2063,10 +2063,6 @@ body.subwindow .header .header-right-bits .toggle-visibility-on-hover {
 body.subwindow .header .header-right-bits .toggle-visibility-on-hover .visible-on-hover {
     display: none;
 }
-body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-header-icon-wrapper, sidecar.no-icon .sidecar-header-icon-wrapper {
-    width: 78px;
-    margin-top: 1.5rem;
-}
 sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
     display: none;
 }

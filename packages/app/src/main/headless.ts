@@ -17,13 +17,12 @@
 /* eslint-disable prefer-rest-params, prefer-spread */
 
 import * as Debug from 'debug'
+const debug = Debug('main/headless')
+debug('loading')
 
-import * as colors from 'colors/safe'
-
-import * as repl from '../core/repl'
+import { installOopsHandler, exec } from '../core/repl'
 import mimicDom from '../util/mimic-dom'
 import { preload, init as pluginsInit } from '../core/plugins'
-import { print, setGraphicalShellIsOpen } from './headless-pretty-print'
 import { CodedError } from '../models/errors'
 import UsageError from '../core/usage-error'
 import { ExecOptions } from '../models/execOptions'
@@ -31,8 +30,6 @@ import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 // set the headless capability
 import { Media, setMedia } from '../core/capabilities'
-const debug = Debug('main/headless')
-debug('loading')
 setMedia(Media.Headless)
 
 // by default, we'll exit with an exit code of 0 when success is
@@ -41,8 +38,9 @@ setMedia(Media.Headless)
 let exitCode = 0
 
 // electron pops up a window by default, for uncaught exceptions
-process.on('uncaughtException', (err: Error) => {
+process.on('uncaughtException', async (err: Error) => {
   debug('uncaughtException')
+  const colors = await import('colors/safe')
   console.error(colors.red(err.toString()))
   process.exit(1)
 })
@@ -83,6 +81,7 @@ const success = quit => async out => {
     return out
   }
 
+  const { print } = await import('./headless-pretty-print')
   await print(out, log, process.stdout)
 
   if (!graphicalShellIsOpen) {
@@ -123,6 +122,7 @@ const failure = (quit, execOptions?: ExecOptions) => async (
       }
 
       if (typeof msg === 'string') {
+        const colors = await import('colors/safe')
         if (process.env.TEST_INCLUDE_CODE && err.statusCode) {
           // client asked for the code and the message
           error(colors.blue(err.statusCode.toString()) + ' ' + colors.red(msg))
@@ -131,6 +131,7 @@ const failure = (quit, execOptions?: ExecOptions) => async (
           error(colors.red(msg))
         }
       } else {
+        const { print } = await import('./headless-pretty-print')
         completion =
           print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
       }
@@ -169,13 +170,14 @@ const insufficientArgs = (argv: string[]) =>
  *
  */
 let electronCreateWindowFn
-export const createWindow = (
+export const createWindow = async (
   argv: string[],
   subwindowPlease: boolean,
   subwindowPrefs: ISubwindowPrefs
 ) => {
   try {
     graphicalShellIsOpen = true
+    const { setGraphicalShellIsOpen } = await import('./headless-pretty-print')
     setGraphicalShellIsOpen()
 
     const commandLine = argv
@@ -218,6 +220,10 @@ export const main = async (
 ) => {
   debug('main')
 
+  // get this started right away, to amortize the cost of loading the
+  // prescan model; this saves us around 5ms as of 20190709
+  const waitForPlugins = pluginsInit()
+
   const ourCommandContext = rawArgv.find(_ => !!_.match(commandContextPattern))
   debug('commandContext', ourCommandContext)
   if (!commandContext && ourCommandContext) {
@@ -240,7 +246,7 @@ export const main = async (
   debug('argv', argv)
 
   const { quit } = app
-  repl.installOopsHandler(() => failure(quit, execOptions)) // TODO should be repl.installOopsHandler
+  installOopsHandler(() => failure(quit, execOptions)) // TODO should be repl.installOopsHandler
 
   electronCreateWindowFn = mainFunctions.createWindow
 
@@ -252,25 +258,8 @@ export const main = async (
    *
    */
   const evaluate = (cmd: string) =>
-    Promise.resolve(repl.exec(cmd, execOptions)).then(success(quit))
+    Promise.resolve(exec(cmd, execOptions)).then(success(quit))
 
-  console.log = function() {
-    if (
-      arguments[0] !== undefined &&
-      (!arguments[0].indexOf ||
-        (arguments[0].indexOf('::') < 0 &&
-          arguments[0].indexOf('Resolving') < 0 &&
-          arguments[0].indexOf('using implicit context') < 0 &&
-          arguments[0].indexOf('Using timeout') < 0 &&
-          arguments[0].indexOf('Updates') < 0 &&
-          arguments[0].indexOf("Couldn't set selectedTextBackgroundColor") <
-            0 &&
-          arguments[0].indexOf('Unresolved') < 0 &&
-          arguments[0].indexOf('Processing catch-alls') < 0))
-    ) {
-      log.apply(undefined, arguments)
-    }
-  }
   const trace = console.trace
   console.trace = () => {
     const tmp = console.error
@@ -278,8 +267,9 @@ export const main = async (
     trace()
     console.error = tmp
   }
-  console.error = function() {
+  console.error = async function() {
     if (!noAuth && typeof arguments[0] === 'string') {
+      const colors = await import('colors/safe')
       const args = Object.keys(arguments).map(key => {
         if (typeof arguments[key] === 'string') {
           const color = arguments[key].match(/warning:/i) ? 'yellow' : 'red'
@@ -314,7 +304,7 @@ export const main = async (
 
   /** main work starts here */
   debug('bootstrap')
-  return pluginsInit(/* { app } */)
+  return waitForPlugins
     .then(async () => {
       debug('plugins initialized')
 
@@ -325,6 +315,9 @@ export const main = async (
         return failure(quit, execOptions)(err)
       }
 
+      // warning: this must occur before insufficientArgs as,
+      // currently, the help command is registered as a preload
+      // handler. i'm not sure why, but that's how it works right now.
       debug('invoking plugin preloader')
       await preload()
       debug('invoking plugin preloader... done')
@@ -353,3 +346,66 @@ export const main = async (
     })
     .catch(failure(quit, execOptions))
 }
+
+/**
+ * Bootstrap headless mode
+ *
+ */
+export async function initHeadless(
+  argv: string[],
+  force = false,
+  isRunningHeadless = false,
+  execOptions?: ExecOptions
+) {
+  if (/* noHeadless !== true && */ force || isRunningHeadless) {
+    debug('initHeadless')
+
+    const app = {
+      quit: () => process.exit(0)
+    }
+
+    //
+    // HEADLESS MODE
+    //
+    try {
+      return main(
+        app,
+        {
+          createWindow: async (
+            executeThisArgvPlease: string[],
+            subwindowPlease: boolean,
+            subwindowPrefs: ISubwindowPrefs
+          ) => {
+            // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
+            // because this will be called for cases where we want a headless -> GUI transition
+            const { createWindow: createElectronWindow } = await import(
+              './spawn-electron'
+            )
+            return createElectronWindow(
+              true,
+              executeThisArgvPlease,
+              subwindowPlease,
+              subwindowPrefs
+            )
+          }
+        },
+        argv,
+        execOptions
+      )
+    } catch (err) {
+      // oof, something real bad happened
+      console.error('Internal Error, please report this bug:')
+      console.error(err)
+      if (!process.env.KUI_REPL_MODE) {
+        process.exit(1)
+      } else {
+        throw err
+      }
+    }
+  } else {
+    // in case the second argument isn't undefined...
+    /* if (noHeadless !== true) {
+      executeThisArgvPlease = undefined
+    } */
+  }
+} /* initHeadless */

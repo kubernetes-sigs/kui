@@ -15,13 +15,11 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('plugins/openwhisk-editor-extensions/preload')
+debug('loading')
 
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-
-import { persisters } from './lib/cmds/new'
-const debug = Debug('plugins/openwhisk-editor-extensions/preload')
-debug('loading')
 
 debug('done loading prereqs')
 
@@ -39,6 +37,8 @@ export default async () => {
     const { currentSelection } = await import(
       '@kui-shell/core/webapp/views/sidecar'
     )
+
+    const { persisters } = await import('./lib/cmds/new')
 
     const getEntity = (tab: Tab) => {
       const entity = currentSelection(tab)

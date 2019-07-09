@@ -15,6 +15,7 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "no-undef": "off",
+    "import/first": "off",
     "@typescript-eslint/camelcase": [
       "error",
       {

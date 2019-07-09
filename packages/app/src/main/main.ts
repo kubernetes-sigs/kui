@@ -15,11 +15,10 @@
  */
 
 import * as Debug from 'debug'
-
-import { ExecOptions } from '../models/execOptions'
-import { getCommand, initElectron, initHeadless } from './spawn-electron'
 const debug = Debug('main/main')
 debug('loading')
+
+import { ExecOptions } from '../models/execOptions'
 
 /**
  * This is the main entry point to kui
@@ -38,6 +37,7 @@ export const main = async (
   if (!isRunningHeadless) {
     // then spawn the electron graphics
     debug('shortcut to graphics')
+    const { getCommand, initElectron } = await import('./spawn-electron')
     const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(
       argv
     )
@@ -53,6 +53,7 @@ export const main = async (
     )
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
+    const { initHeadless } = await import('./headless')
     const result = await initHeadless(
       argv,
       false,

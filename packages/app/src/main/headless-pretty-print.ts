@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { fstatSync } from 'fs'
+import * as Debug from 'debug'
+const debug = Debug('main/headless-pretty-print')
+debug('loading')
+
 import * as colors from 'colors/safe'
 
 import { ElementMimic } from '../util/mimic-dom'
-
-const debug = require('debug')('main/headless-pretty-print')
-debug('loading')
 
 const log = console.log
 const error = console.error
@@ -38,8 +38,7 @@ const rawOutput = process.argv.find(_ => _ === '--raw-output') // don't try to p
  * the user specified --color=always.
  *
  */
-const stdoutIsFIFO =
-  process.platform !== 'win32' && fstatSync && fstatSync(1).isFIFO() // 1 is the file descriptor for stdout
+const stdoutIsFIFO = process.platform !== 'win32' && process.stdout.isTTY
 const noColor = neverColor || (stdoutIsFIFO && !colorAlways)
 debug('stdoutIsFIFO', stdoutIsFIFO, noColor)
 

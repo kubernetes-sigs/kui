@@ -15,18 +15,11 @@
  */
 
 import * as Debug from 'debug'
-
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import registerSidecarMode from '@kui-shell/core/webapp/views/registrar/modes'
-import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
-
-import { podMode } from './lib/view/modes/pods'
-import { conditionsMode } from './lib/view/modes/conditions'
-import { containersMode } from './lib/view/modes/containers'
-import { lastAppliedMode } from './lib/view/modes/last-applied'
-import registerTabCompletion from './lib/tab-completion'
-
 const debug = Debug('plugins/k8s/preload')
+debug('loading')
+
+import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 /**
  * This is the capabilities registraion
@@ -45,9 +38,26 @@ export const registerCapability: CapabilityRegistration = async () => {
  *
  */
 export default async () => {
-  registerSidecarMode(podMode) // show pods of deployments
-  registerSidecarMode(containersMode) // show containers of pods
-  registerSidecarMode(conditionsMode) // show conditions of a variety of resource kinds
-  registerSidecarMode(lastAppliedMode) // show a last applied configuration tab
-  registerTabCompletion()
+  if (!isHeadless()) {
+    const registerSidecarMode = (await import(
+      '@kui-shell/core/webapp/views/registrar/modes'
+    )).default
+    Promise.all([
+      import('./lib/view/modes/pods')
+        .then(_ => _.podMode)
+        .then(registerSidecarMode), // show pods of deployments
+      import('./lib/view/modes/containers')
+        .then(_ => _.containersMode)
+        .then(registerSidecarMode), // show containers of pods
+      import('./lib/view/modes/conditions')
+        .then(_ => _.conditionsMode)
+        .then(registerSidecarMode), // show conditions of a variety of resource kinds
+      import('./lib/view/modes/last-applied')
+        .then(_ => _.lastAppliedMode)
+        .then(registerSidecarMode), // show a last applied configuration tab
+      import('./lib/tab-completion').then(_ => _.default())
+    ])
+  }
 }
+
+debug('finished loading')

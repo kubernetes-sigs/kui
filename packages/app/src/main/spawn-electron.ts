@@ -15,14 +15,12 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('main/spawn-electron')
+debug('loading')
 
 import windowDefaults from '../webapp/defaults'
 import { ExecOptions } from '../models/execOptions'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
-
-import * as colors from 'colors/safe'
-const debug = Debug('main/spawn-electron')
-debug('loading')
 
 /**
  * Keep a global reference of the window object, if you don't, the window will
@@ -38,7 +36,7 @@ let nWindows = 0
 let electron
 let app
 
-function createWindow(
+export function createWindow(
   noHeadless = false,
   executeThisArgvPlease?: string[],
   subwindowPlease?: boolean,
@@ -449,66 +447,6 @@ export const getCommand = (argv: string[]): Command => {
 }
 
 /**
- * Bootstrap headless mode
- *
- */
-export async function initHeadless(
-  argv: string[],
-  force = false,
-  isRunningHeadless = false,
-  execOptions?: ExecOptions
-) {
-  if (/* noHeadless !== true && */ force || isRunningHeadless) {
-    debug('initHeadless')
-
-    app = {
-      quit: () => process.exit(0)
-    }
-
-    //
-    // HEADLESS MODE
-    //
-    try {
-      return (await import('./headless')).main(
-        app,
-        {
-          createWindow: (
-            executeThisArgvPlease: string[],
-            subwindowPlease: boolean,
-            subwindowPrefs: ISubwindowPrefs
-          ) => {
-            // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
-            // because this will be called for cases where we want a headless -> GUI transition
-            return createWindow(
-              true,
-              executeThisArgvPlease,
-              subwindowPlease,
-              subwindowPrefs
-            )
-          }
-        },
-        argv,
-        execOptions
-      )
-    } catch (err) {
-      // oof, something real bad happened
-      console.error('Internal Error, please report this bug:')
-      console.error(err)
-      if (!process.env.KUI_REPL_MODE) {
-        process.exit(1)
-      } else {
-        throw err
-      }
-    }
-  } else {
-    // in case the second argument isn't undefined...
-    /* if (noHeadless !== true) {
-      executeThisArgvPlease = undefined
-    } */
-  }
-} /* initHeadless */
-
-/**
  * Spawn electron
  *
  */
@@ -575,6 +513,7 @@ export async function initElectron(
      */
     const maybeSpawnGraphics = async () => {
       if (!forceUI && !app) {
+        const { initHeadless } = await import('./headless')
         await initHeadless(process.argv, true)
       } else {
         const { fetch, watch } = await import('../webapp/util/fetch-ui')
@@ -590,6 +529,7 @@ export async function initElectron(
       if (app.graphics) {
         promise = spawnGraphics()
       } else {
+        const colors = await import('colors/safe')
         console.log(colors.red('Graphical components are not installed.'))
         process.exit(126)
       }

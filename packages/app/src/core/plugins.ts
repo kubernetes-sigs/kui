@@ -15,6 +15,8 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('core/plugins')
+debug('loading')
 
 import * as commandTree from './command-tree'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
@@ -25,8 +27,6 @@ import { Disambiguator, CatchAllHandler } from '../models/command'
  *
  */
 import preloader from './preloader'
-const debug = Debug('core/plugins')
-debug('loading')
 
 debug('modules loaded')
 
@@ -613,6 +613,7 @@ export const init = async () => {
 
   // global
   prescan = (await loadPrescan(pluginRoot)) as PrescanModel
+  debug('prescan loaded')
 
   // disabled: userData plugins
   /* .then(builtins => loadPrescan(path.join(app.getPath('userData'), 'plugins'))

@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/bash-like/preload')
+debug('loading')
+
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-import registerGitTabCompletion from './lib/tab-completion/git'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
 /**
  * This is the module
  *
  */
-export default (commandTree: CommandRegistrar) => {
-  registerGitTabCompletion()
+export default async (commandTree: CommandRegistrar) => {
+  if (!isHeadless()) {
+    const registerGitTabCompletion = await import('./lib/tab-completion/git')
+    registerGitTabCompletion.default()
+  }
+
   return registerCatchAll(commandTree)
 }
+
+debug('finished loading')

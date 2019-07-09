@@ -144,7 +144,7 @@ const injectTheme = (editorWrapper?: Element, force = false) => {
 }
 
 export const preload = () => {
-  injectTheme()
+  setTimeout(injectTheme, 0)
   pre = true
 }
 

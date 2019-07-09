@@ -22,6 +22,8 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
+const debug = Debug('core/repl')
+debug('loading')
 
 import {
   CommandTreeResolution,
@@ -49,12 +51,8 @@ import {
   hasAuth as hasAuthCapability
 } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
-import pictureInPicture from '../webapp/picture-in-picture' // FIXME
-import { currentSelection, maybeHideEntity } from '../webapp/views/sidecar' // FIXME
 import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
-const debug = Debug('core/repl')
-debug('loading')
 
 import minimist = require('yargs-parser')
 import cli = require('../webapp/cli')
@@ -361,7 +359,8 @@ class InProcessExecutor implements Executor {
     if (execOptions && execOptions.pip) {
       const { container, returnTo } = execOptions.pip
       try {
-        return pictureInPicture(
+        const { drilldown } = await import('../webapp/picture-in-picture') // FIXME
+        return drilldown(
           tab,
           commandUntrimmed,
           undefined,
@@ -736,6 +735,9 @@ class InProcessExecutor implements Executor {
               const implicitIdx = required.findIndex(
                 ({ implicitOK }) => implicitOK !== undefined
               )
+              const { currentSelection } = await import(
+                '../webapp/views/sidecar'
+              ) // FIXME
               const selection = currentSelection(tab)
 
               let nActualArgsWithImplicit = nActualArgs
@@ -924,7 +926,7 @@ class InProcessExecutor implements Executor {
               return response
             }
           })
-          .then(response => {
+          .then(async response => {
             if (execOptions.rawResponse) {
               return response
             }
@@ -942,6 +944,9 @@ class InProcessExecutor implements Executor {
             }
 
             if (response.verb === 'delete') {
+              const { maybeHideEntity } = await import(
+                '../webapp/views/sidecar'
+              ) // FIXME
               if (maybeHideEntity(tab, response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
               }

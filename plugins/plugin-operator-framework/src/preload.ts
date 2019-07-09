@@ -14,21 +14,36 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/operator-framework/preload')
+debug('loading')
+
+import { isHeadless } from '@kui-shell/core/core/capabilities'
+
 import registerSidecarMode from '@kui-shell/core/webapp/views/registrar/modes'
 import registerSidecarBadge from '@kui-shell/core/webapp/views/registrar/badges'
-
-import { crdsMode } from './view/modes/crds'
-import { iconBadge } from './view/modes/icon'
-import { packagesMode } from './view/modes/packages'
-import { descriptionMode } from './view/modes/description'
 
 /**
  * This is the module
  *
  */
 export default async () => {
-  registerSidecarMode(crdsMode) // show any owned crds
-  registerSidecarMode(packagesMode) // show packages of OperatorSource
-  registerSidecarMode(descriptionMode) // show description
-  registerSidecarBadge(iconBadge) // olm icon
+  if (!isHeadless()) {
+    return Promise.all([
+      import('./view/modes/crds')
+        .then(_ => _.crdsMode)
+        .then(registerSidecarMode), // show any owned crds
+      import('./view/modes/packages')
+        .then(_ => _.packagesMode)
+        .then(registerSidecarMode), // show packages of OperatorSource
+      import('./view/modes/description')
+        .then(_ => _.descriptionMode)
+        .then(registerSidecarMode), // show description
+      import('./view/modes/icon')
+        .then(_ => _.iconBadge)
+        .then(registerSidecarBadge) // olm icon
+    ])
+  }
 }
+
+debug('finished loading')

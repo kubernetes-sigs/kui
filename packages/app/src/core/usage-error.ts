@@ -17,13 +17,13 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
+const debug = Debug('core/usage-error')
+debug('loading')
 
 import { isHeadless } from './capabilities'
-import pip from '@kui-shell/core/webapp/picture-in-picture'
 import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
 import { isHTML } from '../util/types'
-const debug = Debug('core/usage-error')
 import repl = require('@kui-shell/core/core/repl')
 
 interface UsageOptions {
@@ -690,7 +690,10 @@ const format = async (
                 )
               } else {
                 if (drilldownWithPip) {
-                  return pip(
+                  const { drilldown } = await import(
+                    '@kui-shell/core/webapp/picture-in-picture'
+                  )
+                  return drilldown(
                     cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
                     commandForExec(
                       command,

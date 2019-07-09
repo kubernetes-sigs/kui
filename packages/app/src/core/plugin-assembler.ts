@@ -39,13 +39,7 @@ const prescanned = (): string => require.resolve('@kui-shell/prescan')
 const writeToFile = async (modules: plugins.PrescanModel): Promise<void> => {
   debug('writeToFile', process.cwd(), prescanned())
 
-  let str
-  if (process.env.UGLIFY) {
-    str = JSON.stringify(modules)
-  } else {
-    str = JSON.stringify(modules, undefined, 4)
-  }
-
+  const str = JSON.stringify(modules)
   await fs.writeFile(prescanned(), str)
 }
 
