@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table } from '../webapp/models/table'
+import { Table, MultiTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 import { SidecarMode } from '../webapp/bottom-stripe'
 
@@ -112,3 +112,4 @@ export type Entity =
   | boolean
   | any[] // eslint-disable-line @typescript-eslint/no-explicit-any
   | Table
+  | MultiTable

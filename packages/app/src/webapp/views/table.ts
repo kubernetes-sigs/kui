@@ -20,17 +20,21 @@ import { Tab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
 import {
   Table,
+  MultiTable,
   Row,
   Cell,
   Icon,
   TableStyle,
   WatchableTable,
   diffTableRows,
-  isWatchableTable,
+  isMultiTable,
   isTable
 } from '../models/table'
+import { isWatchable } from '../models/basicModels'
 import { applyDiffTable } from '../views/diffTable'
 import { theme } from '@kui-shell/core/core/settings'
+import { _split as split, Split } from '@kui-shell/core/core/repl'
+import minimist = require('yargs-parser')
 
 const debug = Debug('webapp/views/table')
 
@@ -39,6 +43,14 @@ debug('tablePollingInterval', tablePollingInterval)
 
 interface TableFormatOptions {
   usePip?: boolean
+}
+
+/** groups of States that mark desired final outcomes */
+// NOTE: This is a copy from kubectl plguin, and we should port models/states in kubectl plugin to the core
+enum FinalState {
+  NotPendingLike,
+  OnlineLike,
+  OfflineLike
 }
 
 // sort the body of table
@@ -73,6 +85,131 @@ const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
   // sort the list, then format each element, then add the results to the resultDom
   // (don't sort lists of activations. i wish there were a better way to do this)
   return [header].concat(noSort ? body : sortBody(body)).filter(x => x)
+}
+
+const registerWatcher = (
+  tab: Tab,
+  watchLimit: number = 100000,
+  command: string,
+  resultDom: HTMLElement,
+  tableViewInfo: TableViewInfo | TableViewInfo[]
+) => {
+  // the current watch interval; used for clear/reset/stop
+  let interval: NodeJS.Timeout // eslint-disable-line prefer-const
+
+  const stopWatching = () => {
+    debug('stopWatching')
+    clearInterval(interval)
+  }
+
+  const processRefreshResponse = (response: Table | MultiTable) => {
+    let reachedFinalState = false
+
+    if (isTable(response)) {
+      if (!response.body.some(row => !row.done)) {
+        // stop watching if all resources have reached to the finial state
+        reachedFinalState = true
+      }
+
+      return { table: prepareTable(tab, response), reachedFinalState }
+    } else if (isMultiTable(response)) {
+      let allDone = true // allDone is used to indicate if all resources have reached to the final state
+
+      const newRowModels = response.tables.map(table => {
+        if (table.body.some(row => !row.done)) {
+          allDone = false
+        }
+
+        return prepareTable(tab, table)
+      })
+
+      return { tables: newRowModels, reachedFinalState: allDone }
+    } else {
+      console.error('refresh result is not a table', response)
+      throw new Error('refresh result is not a table')
+    }
+  }
+
+  const refreshTable = async () => {
+    debug(`refresh with ${command}`)
+    let processedTableRow: Row[] = []
+    let processedMultiTableRow: Row[][] = []
+
+    try {
+      const response = await qexec(command)
+
+      const processedResponse = processRefreshResponse(response)
+
+      processedTableRow = processedResponse.table
+      processedMultiTableRow = processedResponse.tables
+
+      // stop watching if all resources in the table reached to the finial state
+      if (processedResponse.reachedFinalState) {
+        stopWatching()
+      }
+    } catch (err) {
+      if (err.code === 404) {
+        // parse the refresh command
+        const { A: argv } = split(command, true, true) as Split
+        const options = minimist(argv)
+
+        if (
+          options['final-state'] &&
+          FinalState[options['finalState']] === 'OfflineLike'
+        ) {
+          debug(
+            'resource not found after status check, but that is ok because that is what we wanted'
+          )
+          stopWatching()
+        }
+      } else {
+        while (resultDom.firstChild) {
+          resultDom.removeChild(resultDom.firstChild)
+        }
+        stopWatching()
+        throw err
+      }
+    }
+
+    const applyRefreshResult = (
+      newRowModel: Row[],
+      tableViewInfo: TableViewInfo
+    ) => {
+      const diffs = diffTableRows(tableViewInfo.rowsModel, newRowModel)
+      applyDiffTable(
+        diffs,
+        tab,
+        tableViewInfo.renderedTable,
+        tableViewInfo.renderedRows,
+        tableViewInfo.rowsModel
+      )
+    }
+
+    if (Array.isArray(tableViewInfo)) {
+      processedMultiTableRow.forEach((newRowModel, index) => {
+        applyRefreshResult(newRowModel, tableViewInfo[index])
+      })
+    } else {
+      applyRefreshResult(processedTableRow, tableViewInfo)
+    }
+  }
+
+  const watchIt = () => {
+    if (--watchLimit < 0) {
+      debug('watchLimit exceeded')
+      stopWatching()
+    } else {
+      try {
+        Promise.resolve(refreshTable()) // or refreshTables
+      } catch (err) {
+        console.error('Error refreshing table', err)
+        stopWatching()
+      }
+    }
+  }
+
+  // establish the initial watch interval
+  interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
 }
 
 /**
@@ -617,155 +754,122 @@ function setStyle(tableDom: HTMLElement, table: Table) {
   }
 }
 
+// This helps multi-table view handler to use the the processed data from single-table view handler
+interface TableViewInfo {
+  renderedRows: HTMLElement[]
+  rowsModel: Row[]
+  renderedTable: HTMLElement
+  tableModel: Table | WatchableTable
+}
+
 export const formatTable = (
   tab: Tab,
-  table: Table | WatchableTable,
+  response: Table | MultiTable,
   resultDom: HTMLElement,
   options: TableFormatOptions = {}
-): void => {
-  const tableDom = document.createElement('div')
-  tableDom.classList.add('result-table')
+) => {
+  const format = (table: Table) => {
+    const tableDom = document.createElement('div')
+    tableDom.classList.add('result-table')
 
-  let container: HTMLElement
-  if (table.title) {
-    const tableOuterWrapper = document.createElement('div')
-    const tableOuter = document.createElement('div')
-    const titleOuter = document.createElement('div')
-    const titleInner = document.createElement('div')
+    let container: HTMLElement
+    if (table.title) {
+      const tableOuterWrapper = document.createElement('div')
+      const tableOuter = document.createElement('div')
+      const titleOuter = document.createElement('div')
+      const titleInner = document.createElement('div')
 
-    tableOuterWrapper.classList.add('result-table-outer-wrapper')
-    tableOuter.appendChild(titleOuter)
-    titleOuter.appendChild(titleInner)
-    tableOuterWrapper.appendChild(tableOuter)
-    resultDom.appendChild(tableOuterWrapper)
+      tableOuterWrapper.classList.add('result-table-outer-wrapper')
+      tableOuter.appendChild(titleOuter)
+      titleOuter.appendChild(titleInner)
+      tableOuterWrapper.appendChild(tableOuter)
+      resultDom.appendChild(tableOuterWrapper)
 
-    if (table.flexWrap) {
-      const tableScroll = document.createElement('div')
-      tableScroll.classList.add('scrollable')
-      tableScroll.classList.add('scrollable-auto')
-      tableScroll.setAttribute(
-        'data-table-max-rows',
-        typeof table.flexWrap === 'number' ? table.flexWrap.toString() : '8'
-      )
-      tableScroll.appendChild(tableDom)
-      tableOuter.appendChild(tableScroll)
+      if (table.flexWrap) {
+        const tableScroll = document.createElement('div')
+        tableScroll.classList.add('scrollable')
+        tableScroll.classList.add('scrollable-auto')
+        tableScroll.setAttribute(
+          'data-table-max-rows',
+          typeof table.flexWrap === 'number' ? table.flexWrap.toString() : '8'
+        )
+        tableScroll.appendChild(tableDom)
+        tableOuter.appendChild(tableScroll)
+      } else {
+        tableOuter.appendChild(tableDom)
+      }
+
+      tableOuter.classList.add('result-table-outer')
+      titleOuter.classList.add('result-table-title-outer')
+      titleInner.classList.add('result-table-title')
+      titleInner.innerText = table.title
+
+      if (table.tableCSS) {
+        tableOuterWrapper.classList.add(table.tableCSS)
+      }
+
+      if (table.fontawesome) {
+        const awesomeWrapper = document.createElement('div')
+        const awesome = document.createElement('i')
+        awesomeWrapper.appendChild(awesome)
+        titleOuter.appendChild(awesomeWrapper)
+
+        awesome.className = table.fontawesome
+
+        if (table.fontawesomeCSS) {
+          awesomeWrapper.classList.add(table.fontawesomeCSS)
+          delete table.fontawesomeCSS
+        }
+
+        if (table.fontawesomeBalloon) {
+          awesomeWrapper.setAttribute('data-balloon', table.fontawesomeBalloon)
+          awesomeWrapper.setAttribute('data-balloon-pos', 'left')
+          delete table.fontawesomeBalloon
+        }
+
+        // otherwise, the header row renderer will pick this up
+        delete table.fontawesome
+      }
+
+      container = tableOuterWrapper
     } else {
-      tableOuter.appendChild(tableDom)
+      resultDom.appendChild(tableDom)
+      container = tableDom
     }
 
-    tableOuter.classList.add('result-table-outer')
-    titleOuter.classList.add('result-table-title-outer')
-    titleInner.classList.add('result-table-title')
-    titleInner.innerText = table.title
+    container.classList.add('big-top-pad')
 
-    if (table.tableCSS) {
-      tableOuterWrapper.classList.add(table.tableCSS)
+    const prepareRows = prepareTable(tab, table)
+    const rows = prepareRows.map(formatOneRowResult(tab, options))
+    rows.map(row => tableDom.appendChild(row))
+
+    setStyle(tableDom, table)
+
+    const rowSelection = tableDom.querySelector('.selected-row')
+    if (rowSelection) {
+      tableDom.classList.add('has-row-selection')
     }
 
-    if (table.fontawesome) {
-      const awesomeWrapper = document.createElement('div')
-      const awesome = document.createElement('i')
-      awesomeWrapper.appendChild(awesome)
-      titleOuter.appendChild(awesomeWrapper)
-
-      awesome.className = table.fontawesome
-
-      if (table.fontawesomeCSS) {
-        awesomeWrapper.classList.add(table.fontawesomeCSS)
-        delete table.fontawesomeCSS
-      }
-
-      if (table.fontawesomeBalloon) {
-        awesomeWrapper.setAttribute('data-balloon', table.fontawesomeBalloon)
-        awesomeWrapper.setAttribute('data-balloon-pos', 'left')
-        delete table.fontawesomeBalloon
-      }
-
-      // otherwise, the header row renderer will pick this up
-      delete table.fontawesome
+    return {
+      renderedRows: rows,
+      renderedTable: tableDom,
+      rowsModel: prepareRows,
+      tableModel: table
     }
-
-    container = tableOuterWrapper
-  } else {
-    resultDom.appendChild(tableDom)
-    container = tableDom
   }
 
-  container.classList.add('big-top-pad')
+  const tableViewInfo = isMultiTable(response)
+    ? response.tables.map(table => format(table))
+    : format(response)
 
-  const prepareRows = prepareTable(tab, table)
-  const rows = prepareRows.map(formatOneRowResult(tab, options))
-  rows.map(row => tableDom.appendChild(row))
-
-  setStyle(tableDom, table)
-
-  const rowSelection = tableDom.querySelector('.selected-row')
-  if (rowSelection) {
-    tableDom.classList.add('has-row-selection')
-  }
-
-  if (isWatchableTable(table)) {
-    if (table.watchByDefault) {
-      // TODO: register a button?
-      // we'll ping the watcher at most watchLimit times
-      let count = table.watchLimit ? table.watchLimit : 100000
-
-      // the current watch interval; used for clear/reset/stop
-      let interval: NodeJS.Timeout // eslint-disable-line prefer-const
-
-      const stopWatching = () => {
-        debug('stopWatching')
-        clearInterval(interval)
-      }
-
-      const refreshTable = async () => {
-        debug(`refresh with ${table.refreshCommand}`)
-
-        let newPrepareRows: Row[]
-
-        try {
-          const response = await qexec(table.refreshCommand)
-          if (isTable(response)) {
-            newPrepareRows = prepareTable(tab, response)
-          } else {
-            console.error('refresh result is not a table', response)
-            rows.map(row => tableDom.removeChild(row))
-          }
-        } catch (err) {
-          if (err.code === 404) {
-            newPrepareRows = []
-          } else {
-            while (resultDom.firstChild) {
-              resultDom.removeChild(resultDom.firstChild)
-            }
-            stopWatching()
-            throw err
-          }
-        }
-
-        const diffs = diffTableRows(prepareRows, newPrepareRows)
-        // debug('diff table rows', diffs)
-        applyDiffTable(diffs, tab, tableDom, rows, prepareRows)
-      }
-
-      const watchIt = () => {
-        if (--count < 0) {
-          debug('watchLimit exceeded')
-          stopWatching()
-          return
-        }
-
-        try {
-          Promise.resolve(refreshTable())
-        } catch (err) {
-          console.error('Error refreshing table', err)
-          clearInterval(interval)
-        }
-      }
-
-      // establish the initial watch interval
-      interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
-    }
+  if (isWatchable(response) && response.watchByDefault) {
+    registerWatcher(
+      tab,
+      response.watchLimit,
+      response.refreshCommand,
+      resultDom,
+      tableViewInfo
+    )
   }
 }
 

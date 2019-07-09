@@ -39,6 +39,7 @@ import {
 } from '../models/execOptions'
 import * as historyModel from '../models/history'
 import { CodedError, isCodedError } from '../models/errors'
+import { Table, isTable, MultiTable, isMultiTable } from './models/table'
 
 import { element, removeAllDomChildren } from './util/dom'
 import { prettyPrintTime } from './util/time'
@@ -50,7 +51,7 @@ import {
   formatMultiListResult,
   formatTable
 } from './views/table'
-import { Table, isTable, isMultiTable } from './models/table'
+
 import {
   Formattable,
   getSidecar,
@@ -540,7 +541,7 @@ const printTable = async (
  * Stream output to the given block
  *
  */
-export type Streamable = SimpleEntity | Table | Table[] | CustomSpec
+export type Streamable = SimpleEntity | Table | MultiTable | CustomSpec
 export const streamTo = (tab: Tab, block: Element) => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
   // so we can scroll this into view as streaming output arrives
@@ -569,8 +570,8 @@ export const streamTo = (tab: Tab, block: Element) => {
     } else if (isHTML(response)) {
       previousLine = response
       pre.appendChild(previousLine)
-    } else if (Array.isArray(response)) {
-      response.forEach(async _ => printTable(tab, _, resultDom))
+    } else if (isMultiTable(response)) {
+      response.tables.forEach(async _ => printTable(tab, _, resultDom))
       const br = document.createElement('br')
       resultDom.appendChild(br)
     } else if (isTable(response)) {
@@ -1068,7 +1069,10 @@ export const printResults = (
 
           return !customContainer || customContainer.children.length === 0
         }
-      } else if (registeredEntityViews[response.type]) {
+      } else if (
+        isEntitySpec(response) &&
+        registeredEntityViews[response.type]
+      ) {
         // there is a registered entity view handler for this response
         if (
           await registeredEntityViews[response.type](
@@ -1084,7 +1088,7 @@ export const printResults = (
 
         // we rendered the content?
         return resultDom.children.length === 0
-      } else if (response.verb === 'delete') {
+      } else if (isEntitySpec(response) && response.verb === 'delete') {
         if (echo) {
           // we want the 'ok:' part to appear even in popup mode
           if (response.type) {
@@ -1149,16 +1153,19 @@ export const printResults = (
       'result-vertical'
     )
 
-    if (response[0].flexWrap) {
+    const tables = response.tables
+
+    if (tables[0].flexWrap) {
       ;(resultDom.parentNode as HTMLElement).classList.add(
         'result-as-multi-table-flex-wrap'
       )
     }
+
     // multi-table output; false means that the renderer hasn't placed
     // anything in the DOM; it's up to us here
-    promise = Promise.all(
-      response.map(table => formatTable(tab, table, resultDom as HTMLElement))
-    ).then(() => false)
+    promise = Promise.resolve(formatTable(tab, response, resultDom)).then(
+      () => false
+    )
   } else if (Array.isArray(response) && Array.isArray(response[0])) {
     /**
      * multi-table output; false means that the renderer hasn't placed

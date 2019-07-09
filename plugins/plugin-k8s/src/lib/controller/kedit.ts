@@ -185,11 +185,11 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
  * Render the resources as a REPL table
  *
  */
-const showAsTable = (
+const showAsTable = async (
   yamls: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
   filepathAsGiven: string,
   parsedOptions
-): Table => {
+): Promise<Table> => {
   debug('showing as table', yamls)
 
   const ourOptions = {
@@ -206,8 +206,10 @@ const showAsTable = (
     }
   }
 
-  return new Table({
-    body: yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))
+  return Promise.all(
+    yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))
+  ).then(formattedEntities => {
+    return new Table({ body: formattedEntities })
   })
 }
 

@@ -22,6 +22,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import { formatTable as format } from '@kui-shell/core/webapp/views/table'
 import {
   Table,
+  MultiTable,
   isTable,
   isMultiTable
 } from '@kui-shell/core/webapp/models/table'
@@ -85,7 +86,7 @@ const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (
  */
 export const formatTable = (
   tab: Tab,
-  model: Table | Table[],
+  model: Table | MultiTable,
   { usePip = false, viewName = 'previous view', execOptions = {} } = {}
 ): HTMLElement => {
   debug('formatTable model', model)
@@ -98,7 +99,7 @@ export const formatTable = (
     // e.g. establish an attribute [k8s-table="Containers"]
     resultDomOuter.setAttribute(
       attr,
-      isTable(model) ? model.title : model.map(m => m.title).join(' ')
+      isTable(model) ? model.title : model.tables.map(m => m.title).join(' ')
     )
 
     // modify onclick links to use the "picture in picture" drilldown module
@@ -107,7 +108,7 @@ export const formatTable = (
       if (isTable(model)) {
         updateTableForPip(tab, viewName, execOptions)(model)
       } else {
-        model.forEach(updateTableForPip(tab, viewName, execOptions))
+        model.tables.forEach(updateTableForPip(tab, viewName, execOptions))
       }
     }
 
@@ -126,7 +127,7 @@ export const formatTable = (
       format(tab, model, resultDom)
     } else {
       resultDom.classList.add('result-as-multi-table')
-      model.forEach(m => format(tab, m, resultDom))
+      model.tables.forEach(m => format(tab, m, resultDom))
     }
   }
 
