@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/core-support/preload')
+debug('loading')
+
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 
 import help from './lib/cmds/help'
@@ -29,21 +33,27 @@ const registration: PreloadRegistration = async (
   commandTree: CommandRegistrar,
   options?
 ) => {
-  await Promise.all([help(commandTree, options)])
+  const asyncs = [help(commandTree, options)]
 
   if (!isHeadless()) {
-    await Promise.all([
-      import('./lib/cmds/zoom').then(_ => _.default(commandTree)),
-      import('./lib/new-tab').then(_ => _.default(commandTree)),
-      import('./lib/cmds/history/reverse-i-search').then(_ => _.default()),
-      import('./lib/cmds/theme').then(_ => _.preload()),
-      import('./lib/cmds/about/about').then(_ => _.preload()),
-      import('./lib/tab-completion').then(_ => _.default())
-    ])
+    asyncs.push(import('./lib/cmds/zoom').then(_ => _.default(commandTree)))
+    asyncs.push(import('./lib/new-tab').then(_ => _.default(commandTree)))
+    asyncs.push(
+      import('./lib/cmds/history/reverse-i-search').then(_ => _.default())
+    )
+    asyncs.push(import('./lib/cmds/theme').then(_ => _.preload()))
+    asyncs.push(import('./lib/cmds/about/about').then(_ => _.preload()))
+    asyncs.push(import('./lib/tab-completion').then(_ => _.default()))
   }
 
-  if (!isHeadless() && !inBrowser())
-    await import('./lib/text-search').then(_ => _.default()) // in webpack, use the default text-search bar of browser
+  if (!isHeadless() && !inBrowser()) {
+    // in webpack, use the default text-search bar of browser
+    asyncs.push(import('./lib/text-search').then(_ => _.default()))
+  }
+
+  return Promise.all(asyncs)
 }
 
 export default registration
+
+debug('finished loading')

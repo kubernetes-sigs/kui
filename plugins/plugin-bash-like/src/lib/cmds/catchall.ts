@@ -49,7 +49,7 @@ export const dispatchToShell = async ({
 
   const eOptions = execOptions.raw
     ? execOptions
-    : Object.assign({}, { stdout: createOutputStream() }, execOptions)
+    : Object.assign({}, { stdout: await createOutputStream() }, execOptions)
 
   if (isHeadless() || execOptions.raw) {
     const { doExec } = await import('./bash-like')

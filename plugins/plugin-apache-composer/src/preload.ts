@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/apache-composer/preload')
+debug('loading')
+
 import { dirname } from 'path'
 import { addPath } from '@kui-shell/core/core/find-file'
 import initRequirePath from './initRequirePath'
@@ -36,3 +40,5 @@ export default async () => {
     { command: 'preview' }
   )
 }
+
+debug('finished loading')

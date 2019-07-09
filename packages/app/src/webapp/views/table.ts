@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 
 import { Tab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
-import drilldown from '../picture-in-picture'
 import {
   Table,
   Row,
@@ -187,7 +186,8 @@ export const formatOneRowResult = (
     entityNameClickable.classList.remove('clickable')
   } else {
     if (isPopup() || options.usePip) {
-      entityNameClickable.onclick = evt => {
+      entityNameClickable.onclick = async (evt: MouseEvent) => {
+        const { drilldown } = await import('../picture-in-picture')
         return drilldown(
           tab,
           entity.onclick,
@@ -317,9 +317,10 @@ export const formatOneRowResult = (
 
     if (onclick) {
       cell.classList.add('clickable')
-      cell.onclick = evt => {
+      cell.onclick = async (evt: MouseEvent) => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup() || options.usePip) {
+          const { drilldown } = await import('../picture-in-picture')
           return drilldown(
             tab,
             onclick,
@@ -874,7 +875,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     entityNameClickable.classList.remove('clickable')
   } else {
     if (isPopup()) {
-      entityNameClickable.onclick = evt => {
+      entityNameClickable.onclick = async (evt: MouseEvent) => {
+        const { drilldown } = await import('../picture-in-picture')
         return drilldown(
           tab,
           entity.onclick,
@@ -992,9 +994,10 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
 
     if (onclick) {
       cell.classList.add('clickable')
-      cell.onclick = evt => {
+      cell.onclick = async (evt: MouseEvent) => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup()) {
+          const { drilldown } = await import('../picture-in-picture')
           return drilldown(
             tab,
             onclick,

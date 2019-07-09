@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
-import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
+import { Row } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
@@ -30,8 +30,6 @@ import {
 } from '@kui-shell/core/core/userdata'
 import { theme as settings, env } from '@kui-shell/core/core/settings'
 const debug = Debug('plugins/core-support/theme')
-
-import repl = require('@kui-shell/core/core/repl')
 
 /**
  * Key into userdata preference model that indicates that currently selected theme
@@ -97,7 +95,11 @@ const getDefaultTheme = () => {
  * List themes
  *
  */
-const list = async (): Promise<Table> => {
+const list = async () => {
+  const { Row, Table, TableStyle } = await import(
+    '@kui-shell/core/webapp/models/table'
+  )
+
   const header: Row = {
     type: 'theme',
     name: '',
@@ -130,7 +132,10 @@ const list = async (): Promise<Table> => {
       }
 
       const onclick = async () => {
-        await repl.qexec(`theme set ${repl.encodeComponent(theme.name)}`)
+        const { encodeComponent, qexec } = await import(
+          '@kui-shell/core/core/repl'
+        )
+        await qexec(`theme set ${encodeComponent(theme.name)}`)
         row.setSelected()
       }
 
@@ -196,8 +201,7 @@ const switchTo = async (
         getCssFilepathForGivenTheme(themeModel)
       )).toString()
       debug(
-        'using electron to pre-inject CSS before the application loads, from the main process',
-        css
+        'using electron to pre-inject CSS before the application loads, from the main process'
       )
       webContents.insertCSS(css)
       webContents.executeJavaScript(

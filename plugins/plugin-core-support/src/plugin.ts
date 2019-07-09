@@ -25,7 +25,6 @@ import base64 from './lib/cmds/base64'
 import openui from './lib/cmds/open-ui-from-terminal'
 import prompt from './lib/cmds/prompt'
 import sleep from './lib/cmds/sleep'
-import window from './lib/cmds/window'
 import history from './lib/cmds/history/history'
 
 // import updater from './lib/admin/updater'
@@ -35,10 +34,8 @@ import history from './lib/cmds/history/history'
  *
  */
 export default async (commandTree: CommandRegistrar) => {
-  await window(commandTree)
-  await openui(commandTree)
-
   await Promise.all([
+    openui(commandTree),
     run(commandTree),
     quit(commandTree),
     clear(commandTree),
@@ -51,6 +48,7 @@ export default async (commandTree: CommandRegistrar) => {
 
   if (!isHeadless()) {
     await Promise.all([
+      import('./lib/cmds/window').then(_ => _.default(commandTree)),
       import('./lib/cmds/screenshot').then(_ => _.default(commandTree)),
       import('./lib/cmds/theme').then(_ => _.plugin(commandTree))
     ])

@@ -15,6 +15,8 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('webapp/cli')
+debug('loading')
 
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
@@ -61,7 +63,7 @@ import {
 } from './views/sidecar'
 import { SidecarMode } from './bottom-stripe'
 
-const debug = Debug('webapp/cli')
+debug('finished loading modules')
 
 declare let hljs
 

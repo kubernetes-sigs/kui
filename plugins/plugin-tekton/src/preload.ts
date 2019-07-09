@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('plugins/tekton/preload')
+debug('loading')
+
 import { dirname, join } from 'path'
 
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { addPath } from '@kui-shell/core/core/find-file'
 import {
   registerSidecarMode,
@@ -29,15 +34,6 @@ import { isPipeline, isPipelineRun, isTask } from './model/resource'
 /** this is the SidecarMode model for the tekton run view */
 // import runMode from './model/modes/run'
 
-/** this is the SidecarMode model for the tekton flow view */
-import flowMode from './model/modes/flow'
-
-/** this is the SidecarMode model for the tekton trace view */
-import traceMode from './model/modes/trace'
-
-/** this is the SidecarMode model for the tekton pipelinerun logs view */
-import logsMode from './model/modes/logs'
-
 /**
  * A sidecar mode relevancy filter
  *
@@ -48,41 +44,57 @@ function either(
   return (resource: KubeResource) => filters.some(filter => filter(resource))
 }
 
-/** sidecar mode for tekton Flow view */
-const flowSpec = {
-  mode: flowMode,
-  when: either(isPipeline, isPipelineRun, isTask)
-}
+async function registerModes() {
+  const [flowMode, traceMode, logsMode] = await Promise.all([
+    import('./model/modes/flow'), // SidecarMode for the tekton flow view
+    import('./model/modes/trace'), // SidecarMode for the tekton trace view
+    import('./model/modes/logs') // SidecarMode for the tekton pipelinerun logs view
+  ])
 
-/** sidecar mode for tekton Flow view */
-/* const runSpec = {
-  mode: runMode,
-  when: either(isPipelineRun, isTaskRun)
-} */
+  /** sidecar mode for tekton Flow view */
+  const flowSpec = {
+    mode: flowMode.default,
+    when: either(isPipeline, isPipelineRun, isTask)
+  }
 
-/** sidecar mode for tekton Flow view */
-const traceSpec = {
-  mode: traceMode,
-  when: isPipelineRun
-}
+  /** sidecar mode for tekton Flow view */
+  /* const runSpec = {
+     mode: runMode.default,
+     when: either(isPipelineRun, isTaskRun)
+     } */
 
-/** sidecar mode for tekton Flow view */
-const logsSpec = {
-  mode: logsMode,
-  when: isPipelineRun
+  /** sidecar mode for tekton Flow view */
+  const traceSpec = {
+    mode: traceMode.default,
+    when: isPipelineRun
+  }
+
+  /** sidecar mode for tekton Flow view */
+  const logsSpec = {
+    mode: logsMode.default,
+    when: isPipelineRun
+  }
+
+  // registerSidecarMode(runSpec)
+  return Promise.all([
+    registerSidecarMode(flowSpec),
+    registerSidecarMode(traceSpec),
+    registerSidecarMode(logsSpec)
+  ])
 }
 
 /** on preload, register our sidecar modes */
 export default () => {
-  // registerSidecarMode(runSpec)
-  registerSidecarMode(flowSpec)
-  registerSidecarMode(traceSpec)
-  registerSidecarMode(logsSpec)
-
   // register a "special path" that resolves
   const specialPath = join(
     dirname(require.resolve('@kui-shell/plugin-tekton/package.json')),
     'samples/@demos'
   )
   addPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
+
+  if (!isHeadless()) {
+    return registerModes()
+  }
 }
+
+debug('finished loading')

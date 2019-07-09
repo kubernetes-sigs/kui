@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('core/preloader')
+debug('loading')
 
 import * as commandTree from './command-tree'
 import { PrescanModel } from './plugins'
 import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
-const debug = Debug('core/preloader')
-debug('loading')
 
 /**
  * This module allows for plugins to register themselves to be
@@ -28,20 +28,24 @@ debug('loading')
  *
  */
 export default async (prescan: PrescanModel, options) => {
-  debug('init', prescan.preloads)
+  debug('init')
 
   const jobs = Promise.all(
     prescan.preloads.map(async module => {
       // extends the capabilities of Kui
       try {
+        debug('preloading capabilities.1 %s', module.path)
         const registrationRef = await import(
           '@kui-shell/plugin-' + module.path.replace(/^plugin-/, '')
         )
+        debug('preloading capabilities.2 %s', module.path)
         const registration: CapabilityRegistration =
           registrationRef.registerCapability
         if (registration) {
           await registration()
           debug('registered capabilities %s', module.path)
+        } else {
+          debug('no registered capabilities %s', module.path)
         }
       } catch (err) {
         debug('error registering capabilities', module.path, err)
@@ -53,7 +57,7 @@ export default async (prescan: PrescanModel, options) => {
       prescan.preloads.map(async module => {
         // FIXME to support field-installed plugin paths
         try {
-          debug('preloading %s', module.path)
+          debug('preloading misc %s', module.path)
           // NOTE ON @kui-shell relativization: this is important so that
           // webpack can be isntructed to pull in the plugins into the
           // build see the corresponding NOTE in ./plugin-assembler.ts and

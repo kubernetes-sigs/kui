@@ -15,9 +15,8 @@
  */
 
 import * as Debug from 'debug'
-
-import { print } from './headless-pretty-print'
 const debug = Debug('core/main/headless-support')
+debug('loading')
 
 /**
  * This supports commads streaming their output to the console
@@ -26,10 +25,13 @@ const debug = Debug('core/main/headless-support')
  * @see cli.ts for the webapp implementation
  *
  */
-export const streamTo = () => {
+export const streamTo = async () => {
+  const { print } = await import('./headless-pretty-print')
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return async (response: any) => {
+  return (response: any) => {
     debug('streaming response', response)
     print(response)
+    debug('streaming response2')
   }
 }

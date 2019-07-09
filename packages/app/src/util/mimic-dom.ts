@@ -17,10 +17,10 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
-
-import Store from '../main/store'
 const debug = Debug('core/util/mimic-dom')
 debug('loading')
+
+import Store from '../main/store'
 
 /* export interface ElementMimic {
   _isFakeDom: boolean

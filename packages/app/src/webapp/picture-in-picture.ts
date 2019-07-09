@@ -15,14 +15,15 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('webapp/pip')
+debug('loading')
+
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity } from './views/sidecar'
 import Presentation from './views/presentation'
 import { popupListen, Tab } from './cli'
 import { ExecOptions } from '../models/execOptions'
 import { EntitySpec } from '../models/entity'
-const debug = Debug('webapp/pip')
-debug('loading')
 
 import repl = require('../core/repl')
 import bottomStripe = require('./bottom-stripe')
@@ -234,7 +235,7 @@ const capture = (
  *
  */
 type StringProducing = () => Promise<string>
-export default (
+export const drilldown = (
   tab: Tab,
   command: string | EntitySpec | StringProducing,
   highlightThis: Element | Element[],
@@ -333,3 +334,5 @@ export default (
     return showEntity(tab, command, { preserveBackButton: true })
   }
 }
+
+export default drilldown

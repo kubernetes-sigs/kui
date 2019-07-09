@@ -28,6 +28,6 @@ export type PluginRegistration = (
 export type PreloadRegistration = (
   commandTree: CommandRegistrar,
   options?
-) => Promise<void>
+) => Promise<void | void[]>
 
 export type CapabilityRegistration = () => Promise<void>

@@ -15,13 +15,13 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('main/localStorage')
+debug('loading')
 
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 import { userDataDir } from '../core/userdata'
-const debug = Debug('main/localStorage')
-debug('loading')
 
 debug('modules loaded')
 
