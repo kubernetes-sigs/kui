@@ -116,7 +116,12 @@ export const format = async (
       }
     })
   if (headerString) await stdout(headerString)
-  await stdout(resourcesOut)
+
+  await stdout(
+    Array.isArray(resourcesOut) ? { tables: resourcesOut } : resourcesOut
+  )
+
   if (notesString) await stdout(notesString)
+
   return true
 }

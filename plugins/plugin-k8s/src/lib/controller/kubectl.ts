@@ -41,6 +41,7 @@ import { Resource, KubeResource } from '../model/resource'
 import { FinalState } from '../model/states'
 import {
   Table,
+  MultiTable,
   formatWatchableTable,
   isTable,
   isMultiTable
@@ -195,7 +196,7 @@ const table = (
   entity: string,
   options: ParsedOptions,
   execOptions: KubeExecOptions
-): Table | Table[] | HTMLElement | Delete => {
+): Table | MultiTable | HTMLElement | Delete => {
   debug('displaying as table', verb, entityType)
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
@@ -216,13 +217,15 @@ const table = (
       }
       return T
     } else {
-      return preTables.map(preTable => {
-        const T = formatTable(command, verb, entityType, options, preTable)
-        if (execOptions.filter) {
-          T.body = execOptions.filter(T.body)
-        }
-        return T
-      })
+      return {
+        tables: preTables.map(preTable => {
+          const T = formatTable(command, verb, entityType, options, preTable)
+          if (execOptions.filter) {
+            T.body = execOptions.filter(T.body)
+          }
+          return T
+        })
+      }
     }
   } else if (verb === 'delete') {
     debug('returning delete entity for repl')
@@ -518,7 +521,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           return repl
             .qexec(
               `${statusCommand} status ${file || entityType} ${entity ||
-                ''} ${finalState} ${resourceNamespace}`,
+                ''} ${finalState} ${resourceNamespace} --watch`,
               undefined,
               undefined,
               { parameters: execOptions.parameters }
@@ -850,7 +853,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           (isTable(tableModel) || isMultiTable(tableModel))
         ) {
           resolve(
-            formatWatchableTable(tableModel as Table | Table[], {
+            formatWatchableTable(tableModel, {
               refreshCommand: rawCommand.replace(/--watch|-w/g, ''),
               watchByDefault: true
             })

@@ -17,8 +17,8 @@
 import eventBus from '@kui-shell/core/core/events'
 
 import { toOpenWhiskFQN } from '../util/util'
+import { ParsedOptions } from '@kui-shell/core/models/execOptions'
 import {
-  States,
   FinalState,
   watchStatus,
   rendering as stateRendering
@@ -46,10 +46,12 @@ export const formatContextAttr = (context: string, extraCSS?: string) => {
  * Return a repl attribute for the given readiness
  *
  */
-export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
+export const formatEntity = (
+  parsedOptions: ParsedOptions,
+  context?: string
+) => async kubeEntity => {
   debug('formatEntity', kubeEntity)
 
-  const doWatch = true
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
 
   const {
@@ -114,33 +116,27 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
           }
         ]
 
+  const status = await watchStatus(watch, finalState)
+
   const statusAttrs = parsedOptions['no-status']
     ? []
     : [
         {
-          key: 'status',
-          value: States.Pending,
+          key: 'STATUS',
+          value: status.value,
           placeholderValue: true, // allows headless to make an informed rendering decision
           tag: 'badge',
-          watch: !doWatch
-            ? undefined
-            : (iter: number) => {
-                const watchResponse = watchStatus(watch, finalState, iter)
-                watchResponse.then(({ done }) => {
-                  if (done) {
-                    eventBus.removeListener(eventType, listener)
-                  }
-                })
-
-                return watchResponse
-              },
-          outerCSS,
-          css: cssForState(States.Pending)
+          outerCSS: status.outerCSS,
+          css: cssForState(status.value)
         },
 
         {
           key: 'message',
-          value: '',
+          value:
+            status.others &&
+            status.others.find(other => other.key === 'message')
+              ? status.others.find(other => other.key === 'message').value
+              : '',
           css: 'somewhat-smaller-text slightly-deemphasize',
           outerCSS: 'hide-with-sidecar not-too-wide min-width-date-like'
         }
@@ -160,7 +156,10 @@ export const formatEntity = (parsedOptions, context?: string) => kubeEntity => {
     noSort: true,
     onclick: parsedOptions.onclickFn
       ? parsedOptions.onclickFn(kubeEntity)
+      : status.onclick
+      ? status.onclick
       : false,
+    done: status.done,
     attributes
   })
 }

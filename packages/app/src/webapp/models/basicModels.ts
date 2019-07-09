@@ -10,3 +10,7 @@ export interface Watchable {
   watchInterval?: number
   watchLimit?: number
 }
+
+export function isWatchable(model: any): model is Watchable {
+  return model && model.refreshCommand
+}

@@ -62,10 +62,10 @@ export const applyDiffTable = (
           status.className = 'cell-inner red-background'
           status.innerText = 'Offline'
         }
-        const badge = rows[rowDeletion.deleteIndex].querySelector(
-          '.badge-width'
+        const pulse = rows[rowDeletion.deleteIndex].querySelector(
+          '.repeating-pulse'
         ) as HTMLElement
-        if (badge) badge.classList.remove('repeating-pulse')
+        if (pulse) pulse.classList.remove('repeating-pulse')
       })
   }
 

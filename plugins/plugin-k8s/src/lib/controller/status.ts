@@ -22,7 +22,13 @@ import { safeLoadAll as parseYAML } from 'js-yaml'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import {
+  Row,
+  Table,
+  formatWatchableTable,
+  isTable,
+  isMultiTable
+} from '@kui-shell/core/webapp/models/table'
 import { CodedError } from '@kui-shell/core/models/errors'
 
 import { withRetryOn404 } from '../util/retry'
@@ -77,6 +83,11 @@ const usage = (command: string) => ({
       name: '--multi',
       alias: '-m',
       docs: 'Display multi-cluster views as a multiple tables'
+    },
+    {
+      name: '--watch',
+      alias: '-w',
+      docs: 'After listing/getting the requested object, watch for changes'
     }
   ],
   example: `kubectl ${command} @seed/cloud-functions/function/echo.yaml`
@@ -267,7 +278,6 @@ const getStatusForKnownContexts = (
             raw
           )
           .catch(handleError)
-
         debug('fetching crds', name, namespace)
         const crds: CRDResource[] = await repl.qexec(
           `kubectl get --context "${name}" ${inNamespace} crds ${adminCRDFilter} -o json`,
@@ -318,10 +328,12 @@ const getStatusForKnownContexts = (
             : strings.notCurrentContext
 
           if (!parsedOptions.multi) {
-            return resources.map(formatEntity(parsedOptions, name))
+            return Promise.all(resources.map(formatEntity(parsedOptions, name)))
           } else {
             return Promise.all(
-              [
+              resources.map(formatEntity(parsedOptions, name))
+            ).then(rows => {
+              return [
                 headerRow({
                   title: name,
                   fontawesome,
@@ -329,18 +341,9 @@ const getStatusForKnownContexts = (
                   balloon,
                   tableCSS
                 })
-              ].concat(resources.map(formatEntity(parsedOptions, name)))
-            )
+              ].concat(rows)
+            })
           }
-          /* const formattedEntities = resources.map(formatEntity(parsedOptions, name));
-          debug('formattedEntities', name, formattedEntities);
-
-          if (!parsedOptions.multi) {
-          return formattedEntities;
-          } else {
-          return [ headerRow(name, undefined, fontawesome, fontawesomeCSS, balloon, tableCSS) ]
-          .concat(...formattedEntities);
-          } */
         }
       } catch (err) {
         handleError(err)
@@ -675,8 +678,10 @@ const findControlledResources = async (
   if (args.execOptions.raw) {
     return pods
   } else if (pods.length > 0) {
-    return [headerRow({ title: 'pods' })].concat(
-      flatten(pods.map(formatEntity(args.parsedOptions)))
+    return Promise.all(pods.map(formatEntity(args.parsedOptions))).then(
+      formattedEntities => {
+        return [headerRow({ title: 'pods' })].concat(flatten(formattedEntities))
+      }
     )
   } else {
     return []
@@ -725,13 +730,25 @@ export const status = (command: string) => async (
 ): Promise<any> => {
   debug('constructing status', args)
 
+  const doWatch = args.parsedOptions.watch || args.parsedOptions.w
+
+  const refreshCommand = args.command.replace('--watch', '').replace('-w', '')
+
   const direct = await getDirectReferences(command)(args)
 
   debug('getDirectReferences', direct)
   if (Array.isArray(direct)) {
-    return args.parsedOptions.multi || Array.isArray(direct[0])
-      ? direct.map(d => statusTable(d))
-      : statusTable(direct)
+    const statusResult =
+      args.parsedOptions.multi || Array.isArray(direct[0])
+        ? { tables: direct.map(d => statusTable(d)) }
+        : statusTable(direct)
+
+    return doWatch && (isTable(statusResult) || isMultiTable(statusResult))
+      ? formatWatchableTable(statusResult, {
+          refreshCommand,
+          watchByDefault: true
+        })
+      : statusResult
   }
 
   const maybe = await (direct.entities || direct)
@@ -748,29 +765,50 @@ export const status = (command: string) => async (
     if (args.execOptions.raw) {
       return direct
     } else {
-      const formattedEntities = directEntities.map(
-        formatEntity(args.parsedOptions)
-      )
-      if (direct.headerRow) {
-        return statusTable([direct.headerRow].concat(...formattedEntities))
-      } else {
-        return formattedEntities
-      }
+      return Promise.all(
+        directEntities.map(formatEntity(args.parsedOptions))
+      ).then(formattedEntities => {
+        debug('formatted entities', formattedEntities)
+        if (direct.headerRow) {
+          const statusResult = statusTable(
+            [direct.headerRow].concat(...formattedEntities)
+          )
+          return doWatch && isTable(statusResult)
+            ? formatWatchableTable(statusResult, {
+                refreshCommand,
+                watchByDefault: true
+              })
+            : statusResult
+        } else {
+          return formattedEntities
+        }
+      })
     }
   } else {
     if (args.execOptions.raw) {
       return (await direct).concat(controlled)
     } else {
-      const directRows = directEntities.map(formatEntity(args.parsedOptions))
-
-      if (direct.headerRow) {
-        const directTable = statusTable([direct.headerRow].concat(directRows))
-        const controlledTable = statusTable(controlled)
-        return [directTable, controlledTable]
-      } else {
-        console.error('internal error: expected headerRow for direct')
-        return directRows.concat(controlled)
-      }
+      return Promise.all(
+        directEntities.map(formatEntity(args.parsedOptions))
+      ).then(formattedEntities => {
+        if (direct.headerRow) {
+          const directTable = statusTable(
+            [direct.headerRow].concat(formattedEntities)
+          )
+          const controlledTable = statusTable(controlled)
+          const statusResult = { tables: [directTable, controlledTable] }
+          return doWatch &&
+            (isTable(statusResult) || isMultiTable(statusResult))
+            ? formatWatchableTable(statusResult, {
+                refreshCommand,
+                watchByDefault: true
+              })
+            : statusResult
+        } else {
+          console.error('internal error: expected headerRow for direct')
+          return formattedEntities.concat(controlled)
+        }
+      })
     }
   }
 }
