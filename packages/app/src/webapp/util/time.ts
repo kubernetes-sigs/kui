@@ -17,12 +17,7 @@
 import * as prettyPrintDuration from 'pretty-ms'
 
 function isDate(object: Date | string | number): object is Date {
-  return (
-    object &&
-    typeof object !== 'string' &&
-    typeof object !== 'number' &&
-    'getMonth' in object
-  )
+  return object && typeof object !== 'string' && typeof object !== 'number' && 'getMonth' in object
 }
 
 /** due to td styling issues, some CSS attrs are on td > span */
@@ -45,18 +40,12 @@ export const prettyPrintTime = (
   const now = new Date()
   const then = !isDate(timestamp) ? new Date(timestamp) : timestamp
 
-  if (
-    now.getFullYear() === then.getFullYear() &&
-    now.getMonth() === then.getMonth()
-  ) {
+  if (now.getFullYear() === then.getFullYear() && now.getMonth() === then.getMonth()) {
     // same year and month as now
 
     // same day as now: just print the time
     const prev: Date =
-      previousTimestamp &&
-      (!isDate(previousTimestamp)
-        ? new Date(previousTimestamp)
-        : previousTimestamp)
+      previousTimestamp && (!isDate(previousTimestamp) ? new Date(previousTimestamp) : previousTimestamp)
     const prevOnSameDay = !!(
       prev &&
       (prev.getFullYear() === then.getFullYear() &&
@@ -73,9 +62,7 @@ export const prettyPrintTime = (
         } else {
           // very small delta (or we were explicitly asked to print deltas)
           const sign = delta < 0 ? '' : '+' // the minus will appear for us
-          return span(
-            `${sign}${prettyPrintDuration(then.getTime() - prev.getTime())}`
-          )
+          return span(`${sign}${prettyPrintDuration(then.getTime() - prev.getTime())}`)
         }
       } else {
         const res = document.createElement('span')

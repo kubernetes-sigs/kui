@@ -39,11 +39,7 @@ const notCreating = (what: string): void => {
  * @param target the path to the target directory
  *
  */
-const copyDirectory = async (
-  breadcrumb: string,
-  target: string,
-  force: boolean
-) => {
+const copyDirectory = async (breadcrumb: string, target: string, force: boolean) => {
   const targetExists = await exists(target)
   if (!targetExists || force) {
     // note fs-extra's copy of directories copies the *contents*
@@ -86,16 +82,8 @@ export const main = async (argv: string[]) => {
     notCreating('packages/app/src directory')
   }
 
-  copyDirectory(
-    '@kui-shell/builder/examples/plugin-sample/package.json',
-    'plugins/plugin-sample',
-    force
-  )
-  copyDirectory(
-    '@kui-shell/builder/examples/build-configs/default/theme/theme.json',
-    'theme',
-    force
-  )
+  copyDirectory('@kui-shell/builder/examples/plugin-sample/package.json', 'plugins/plugin-sample', force)
+  copyDirectory('@kui-shell/builder/examples/build-configs/default/theme/theme.json', 'theme', force)
 
   creating('reconfiguring package.json')
   // eslint-disable-next-line @typescript-eslint/no-var-requires

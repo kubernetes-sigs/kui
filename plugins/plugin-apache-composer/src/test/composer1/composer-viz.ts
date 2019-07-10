@@ -34,9 +34,7 @@ import {
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /**
  * Define the input files
@@ -61,14 +59,8 @@ const owComposerErr = composerErrorInput('openwhisk-composer-throw-err.js')
 
 const verifyPreviewNoticeExist = (checkExist = true) => (app: Application) => {
   return app.client.waitUntil(async () => {
-    const actualText = await app.client.getText(
-      '.sidecar-header-secondary-content .custom-header-content'
-    )
-    return (
-      /^This is a preview of your composition, it is not yet deployed/.test(
-        actualText
-      ) || !checkExist
-    )
+    const actualText = await app.client.getText('.sidecar-header-secondary-content .custom-header-content')
+    return /^This is a preview of your composition, it is not yet deployed/.test(actualText) || !checkExist
   }, 2000)
 }
 /**
@@ -82,17 +74,12 @@ describe('show the composer visualization without creating openwhisk assets', fu
   it('should show error thrown by openwhisk-composer node_module', () =>
     cli
       .do(`preview ${owComposerErr.path}`, this.app)
-      .then(
-        cli.expectError(0, `no such file or directory, open 'doesnotexist.js'`)
-      )
+      .then(cli.expectError(0, `no such file or directory, open 'doesnotexist.js'`))
       .catch(common.oops(this)))
 
   it('should preview an empty composition', () =>
     cli
-      .do(
-        `app preview ${ROOT}/data/composer/composer-source/empty.js`,
-        this.app
-      )
+      .do(`app preview ${ROOT}/data/composer/composer-source/empty.js`, this.app)
       .then(verifyTheBasicStuff('empty.js'))
       .then(verifyEdgeExists('Entry', 'Exit'))
       .then(verifyPreviewNoticeExist())
@@ -115,13 +102,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   }
 
   /** test: load an FSM */
-  const syns = [
-    'preview',
-    'app viz',
-    'app preview',
-    'wsk app viz',
-    'wsk app preview'
-  ]
+  const syns = ['preview', 'app viz', 'app preview', 'wsk app viz', 'wsk app preview']
   syns.forEach(cmd => {
     it(`show visualization via ${cmd} from FSM file ${fsm.path}`, () =>
       cli
@@ -152,9 +133,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(fsm.file))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct(fsmStruct))
       .catch(common.oops(this)))
 
@@ -165,9 +144,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(fsm.file))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct(fsmStruct))
       .catch(common.oops(this)))
 
@@ -373,17 +350,12 @@ describe('show the composer visualization without creating openwhisk assets', fu
   it(`fail to show visualization for addSubscription with partial -e for env var assignment`, () =>
     cli
       .do(`preview ${addSubscription.path} -e SLACK_TOKEN yo`, this.app)
-      .then(
-        cli.expectError(0, 'CLOUDANT_PACKAGE_BINDING required in environment')
-      )
+      .then(cli.expectError(0, 'CLOUDANT_PACKAGE_BINDING required in environment'))
       .catch(common.oops(this)))
 
   it(`show visualization for addSubscription using -e for env var assignment`, () =>
     cli
-      .do(
-        `preview ${addSubscription.path} -e SLACK_TOKEN yo -e CLOUDANT_PACKAGE_BINDING mo`,
-        this.app
-      )
+      .do(`preview ${addSubscription.path} -e SLACK_TOKEN yo -e CLOUDANT_PACKAGE_BINDING mo`, this.app)
       .then(verifyTheBasicStuff(addSubscription.file))
       .then(verifyNodeExists('write'))
       .then(verifyNodeExists('read-document'))

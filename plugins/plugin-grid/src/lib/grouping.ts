@@ -64,32 +64,20 @@ export const summarizePerformance = (activations, options) => {
   const idx95 = ~~(summaries.length * 0.95)
   const idx99 = ~~(summaries.length * 0.99)
   const idxOutlier = ~~(
-    summaries.length *
-    (options.outliers === undefined || options.outliers === true
-      ? 0.95
-      : options.outliers)
+    summaries.length * (options.outliers === undefined || options.outliers === true ? 0.95 : options.outliers)
   ) // where do we want to draw the line for "is an outlier"?
   const nFast = idx25 + 1
   const fastest = summaries.slice(0, idx25 + 1)
-  const waitAvgForFastest =
-    fastest.reduce((total, { wait }) => total + wait, 0) / nFast
-  const initAvgForFastest =
-    fastest.reduce((total, { init }) => total + init, 0) / nFast
-  const durAvgForFastest =
-    fastest.reduce((total, { executionTime }) => total + executionTime, 0) /
-    nFast
-  const totalAvgForFastest =
-    fastest.reduce((total, { duration }) => total + duration, 0) / nFast
+  const waitAvgForFastest = fastest.reduce((total, { wait }) => total + wait, 0) / nFast
+  const initAvgForFastest = fastest.reduce((total, { init }) => total + init, 0) / nFast
+  const durAvgForFastest = fastest.reduce((total, { executionTime }) => total + executionTime, 0) / nFast
+  const totalAvgForFastest = fastest.reduce((total, { duration }) => total + duration, 0) / nFast
 
   /** why was the given activation so slow? */
   const explainOutlier = activation => {
-    const waitAnno = activation.annotations.find(
-      ({ key }) => key === 'waitTime'
-    )
+    const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime')
     const waitTime = (waitAnno && waitAnno.value) || 0
-    const initAnno = activation.annotations.find(
-      ({ key }) => key === 'initTime'
-    )
+    const initAnno = activation.annotations.find(({ key }) => key === 'initTime')
     const initTime = (initAnno && initAnno.value) || 0
     const start = activation.start - waitTime
     const executionTime = activation.end - activation.start
@@ -128,13 +116,8 @@ export const summarizePerformance = (activations, options) => {
   // outlier activations; make sure not to include degenerate
   // "outliers" that are just the median
   const median = summaries[idx50].duration
-  const outliers = summaries
-    .slice(idxOutlier)
-    .filter(({ duration }) => duration > median)
-  const outlierMax = outliers.reduce(
-    (max, { duration }) => Math.max(max, duration),
-    0
-  )
+  const outliers = summaries.slice(idxOutlier).filter(({ duration }) => duration > median)
+  const outlierMax = outliers.reduce((max, { duration }) => Math.max(max, duration), 0)
 
   return {
     min,
@@ -178,11 +161,7 @@ class SemVer {
   }
 
   _compare(thatVersion) {
-    return (
-      this.version[0] - thatVersion[0] ||
-      this.version[1] - thatVersion[1] ||
-      this.version[2] - thatVersion[2]
-    )
+    return this.version[0] - thatVersion[0] || this.version[1] - thatVersion[1] || this.version[2] - thatVersion[2]
   }
 
   toString() {
@@ -220,10 +199,7 @@ const splitAroundVersion = (version: string): SplitterFunction => {
  *
  */
 const summarizeWhole = (groups, options) => {
-  const allActivations = groups.reduce(
-    (L, group) => L.concat(group.successes || group.activations),
-    []
-  )
+  const allActivations = groups.reduce((L, group) => L.concat(group.successes || group.activations), [])
   const nSuccesses = groups.reduce((S, group) => S + group.nSuccesses, 0)
   const nFailures = groups.reduce((S, group) => S + group.nFailures, 0)
 
@@ -267,12 +243,7 @@ interface Split {
   groupKey: string
 }
 type SplitterFunction = (activation, path: string) => Split
-const addToGroup = (
-  options,
-  totals,
-  splitRequested = false,
-  splitter?: SplitterFunction
-) => (groups, activation) => {
+const addToGroup = (options, totals, splitRequested = false, splitter?: SplitterFunction) => (groups, activation) => {
   const _path = pathOf(activation)
   const path =
     options.subgrouping === 'success'
@@ -284,9 +255,7 @@ const addToGroup = (
         ? latencyBucket(activation.end - activation.start)
         : nLatencyBuckets
       : _path
-  const { version = undefined, groupKey } = !splitRequested
-    ? { groupKey: path }
-    : splitter(activation, path.toString())
+  const { version = undefined, groupKey } = !splitRequested ? { groupKey: path } : splitter(activation, path.toString())
 
   if (options.key && groupKey !== options.key) {
     // we were asked to filter by groupKey
@@ -325,10 +294,8 @@ const addToGroup = (
   else group.nFailures++
 
   totals.totalCount++
-  if (!totals.minTime || activation.start < totals.minTime)
-    totals.minTime = activation.start
-  if (!totals.maxTime || activation.start > totals.maxTime)
-    totals.maxTime = activation.start
+  if (!totals.minTime || activation.start < totals.minTime) totals.minTime = activation.start
+  if (!totals.maxTime || activation.start > totals.maxTime) totals.maxTime = activation.start
 
   return groups
 }
@@ -355,17 +322,11 @@ const filterByOutlieriness = options => ({ activations, statData }) => {
     // check that the user passed a supported options.outliers parameter
     if (!options.hasOwnProperty('outliers') && threshold === undefined) {
       // then the user specified an undefined threhsold
-      throw new Error(
-        `Unsupported threhsold. Supported threhsolds: ${Object.keys(
-          statData.n
-        )}`
-      )
+      throw new Error(`Unsupported threhsold. Supported threhsolds: ${Object.keys(statData.n)}`)
     }
 
     return activations.filter(activation => {
-      const waitAnno = activation.annotations.find(
-        ({ key }) => key === 'waitTime'
-      )
+      const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime')
       const waitTime = (waitAnno && waitAnno.value) || 0
       const executionTime = activation.end - activation.start
       const duration = executionTime + waitTime
@@ -388,9 +349,7 @@ const toArray = (map, options) => {
     const group = groups[groups.push(map[x]) - 1]
 
     group.statData = summarizePerformance(
-      group.successes && group.successes.length > 0
-        ? group.successes
-        : group.failures || group.activations,
+      group.successes && group.successes.length > 0 ? group.successes : group.failures || group.activations,
       options
     )
     group.errorRate = group.nFailures / (group.nSuccesses + group.nFailures)
@@ -413,16 +372,11 @@ const toArray = (map, options) => {
  *   TODO factor this out!!!!
  */
 const costOf = activation => {
-  const limitsAnnotation = activation.annotations.find(
-    ({ key }) => key === 'limits'
-  )
+  const limitsAnnotation = activation.annotations.find(({ key }) => key === 'limits')
   const duration = activation.end - activation.start
   const cost = !limitsAnnotation
     ? 0
-    : (limitsAnnotation.value.memory / 1024) *
-      (Math.ceil(duration / 100) / 10) *
-      0.000017 *
-      1000000
+    : (limitsAnnotation.value.memory / 1024) * (Math.ceil(duration / 100) / 10) * 0.000017 * 1000000
 
   return ~~(cost * 100) / 100
 }
@@ -440,8 +394,7 @@ const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
   const first = activations[activations.length - 1].start
   const last = activations[0].start
   const interval = ~~((last - first) / nBuckets)
-  const bucketize = timestamp =>
-    Math.min(nBuckets - 1, ~~((timestamp - first) / interval))
+  const bucketize = timestamp => Math.min(nBuckets - 1, ~~((timestamp - first) / interval))
 
   const mkActivations = () => {
     const buckets = Array(nBuckets)
@@ -487,18 +440,11 @@ const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
  */
 export const groupByAction = (activations, options) => {
   const splitRequested = options.split
-  const splitter =
-    splitRequested &&
-    (options.split === true
-      ? splitByVersion
-      : splitAroundVersion(options.split))
+  const splitter = splitRequested && (options.split === true ? splitByVersion : splitAroundVersion(options.split))
 
   const totals = { minTime: undefined, maxTime: undefined, totalCount: 0 }
   const timeline = successFailureTimeline(activations, options)
-  const map = activations.reduce(
-    addToGroup(options, totals, splitRequested, splitter),
-    {}
-  )
+  const map = activations.reduce(addToGroup(options, totals, splitRequested, splitter), {})
   const groups = toArray(map, options) // turn the map into an array, for easier consumption
 
   return Object.assign(totals, {

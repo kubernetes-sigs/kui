@@ -45,10 +45,7 @@ const disableDragAndDrop = () => {
 const setDefaultCommandContext = () => {
   const contextString =
     process.env.KAON_CONTEXT ||
-    (typeof window !== 'undefined' &&
-      window.location &&
-      window.location.search &&
-      extractSearchKey('command-context'))
+    (typeof window !== 'undefined' && window.location && window.location.search && extractSearchKey('command-context'))
 
   if (contextString) {
     try {
@@ -90,16 +87,10 @@ export const init = (prefs = {}) => {
       const prefs = electronWindow['subwindow']
       const argv = electronWindow['executeThisArgvPlease']
       const maybeExecuteThis = argv && argv.length > 0 ? argv : undefined
-      const fullShell =
-        maybeExecuteThis &&
-        maybeExecuteThis.length === 1 &&
-        maybeExecuteThis[0] === 'shell'
+      const fullShell = maybeExecuteThis && maybeExecuteThis.length === 1 && maybeExecuteThis[0] === 'shell'
 
       if (maybeExecuteThis && !fullShell) {
-        const command =
-          typeof maybeExecuteThis === 'string'
-            ? maybeExecuteThis
-            : maybeExecuteThis.join(' ')
+        const command = typeof maybeExecuteThis === 'string' ? maybeExecuteThis : maybeExecuteThis.join(' ')
         debug('maybeExecuteThis', maybeExecuteThis, command)
 
         if (prefs && prefs.partialExec) {
@@ -137,9 +128,7 @@ export const preinit = () => {
   if (process.env.___IBM_FSH_FUZZ) {
     // for testing, we sometimes want to monkey patch out certain features
     try {
-      prefs = require('../../core/fuzz-testing').default(
-        process.env.___IBM_FSH_FUZZ
-      )
+      prefs = require('../../core/fuzz-testing').default(process.env.___IBM_FSH_FUZZ)
     } catch (err) {
       debug('fuzz testing raw', process.env.___IBM_FSH_FUZZ)
       console.error('Error parsing fuzz testing prefs', err)
@@ -157,8 +146,7 @@ export const preinit = () => {
     debug('subwindow', subwindow)
     if (subwindow && subwindow.fullscreen !== false) {
       // sidecarOnly = subwindow.sidecarOnly === undefined ? true : subwindow.sidecarOnly
-      document.title =
-        typeof subwindow === 'string' ? subwindow : subwindow.title
+      document.title = typeof subwindow === 'string' ? subwindow : subwindow.title
 
       // set the current mode, if we have one, so that back
       // button can inform the user of what they're going back
@@ -169,8 +157,7 @@ export const preinit = () => {
 
       // body styling
       document.body.classList.add('subwindow')
-      if (subwindow.theme)
-        document.body.classList.add(`theme-${subwindow.theme}`)
+      if (subwindow.theme) document.body.classList.add(`theme-${subwindow.theme}`)
 
       return subwindow
     }

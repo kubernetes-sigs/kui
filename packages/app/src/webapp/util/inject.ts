@@ -28,9 +28,7 @@ interface StylesheetFile {
   path: string
   key: string
 }
-function isAStylesheetDirect(
-  object: StylesheetSpec
-): object is StylesheetDirect {
+function isAStylesheetDirect(object: StylesheetSpec): object is StylesheetDirect {
   return typeof object !== 'string' && 'css' in object && 'key' in object
 }
 function isAStylesheetFile(object: StylesheetSpec): object is StylesheetFile {
@@ -53,10 +51,7 @@ export const injectCSS = (file: StylesheetSpec): void => {
   const contentType = 'text/css'
   const rel = 'stylesheet'
 
-  const id =
-    isAStylesheetDirect(file) || isAStylesheetFile(file)
-      ? `injected-css-${file.key}`
-      : `injected-css-${file}`
+  const id = isAStylesheetDirect(file) || isAStylesheetFile(file) ? `injected-css-${file.key}` : `injected-css-${file}`
 
   if (!document.getElementById(id)) {
     // this will be either a <style> or a <link>
@@ -74,13 +69,9 @@ export const injectCSS = (file: StylesheetSpec): void => {
       link = document.createElement('link')
       link.rel = rel
       if (isAStylesheetFile(file)) {
-        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${
-          file.path
-        }`
+        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file.path}`
       } else {
-        link.href = `${
-          window['mediaUri'] ? window['mediaUri'] + '/' : ''
-        }${file}`
+        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file}`
       }
     }
 

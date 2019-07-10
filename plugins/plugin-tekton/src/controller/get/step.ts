@@ -27,9 +27,7 @@ const usage = {
     { name: 'taskName', docs: 'Name of the enclosing task' },
     { name: 'stepName', docs: 'Name of the step' }
   ],
-  optional: [
-    { name: '--file', alias: '-f', docs: 'Path to resource specification' }
-  ]
+  optional: [{ name: '--file', alias: '-f', docs: 'Path to resource specification' }]
 }
 
 const getStep = async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
@@ -45,8 +43,7 @@ const getStep = async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
     err.code = 404
     throw err
   } else {
-    const step =
-      task.spec.steps && task.spec.steps.find(_ => _.name === stepName)
+    const step = task.spec.steps && task.spec.steps.find(_ => _.name === stepName)
     if (!step) {
       const err: CodedError = new Error('step not found')
       err.code = 404

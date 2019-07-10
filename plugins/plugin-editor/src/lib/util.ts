@@ -22,18 +22,11 @@ import { save, revert } from './persisters'
  * updateEditor
  *
  */
-export const respondToRepl = (extraModes = [], displayOptions = []) => ({
-  getEntity,
-  editor,
-  content,
-  eventBus
-}) => ({
+export const respondToRepl = (extraModes = [], displayOptions = []) => ({ getEntity, editor, content, eventBus }) => ({
   type: 'custom',
   content,
   controlHeaders: ['.header-right-bits'],
-  displayOptions: [`entity-is-${getEntity().type}`, 'edit-mode'].concat(
-    displayOptions
-  ),
+  displayOptions: [`entity-is-${getEntity().type}`, 'edit-mode'].concat(displayOptions),
   badges: [{ title: language(getEntity().exec.kind), css: 'is-kind-like' }],
   noZoom: true,
   modes: extraModes

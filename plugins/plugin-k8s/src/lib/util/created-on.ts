@@ -32,8 +32,7 @@ debug('loading')
 export default (resource: KubeResource): Formatter => {
   const startTime =
     resource &&
-    ((resource.metadata && resource.metadata.creationTimestamp) ||
-      (resource.status && resource.status.startTime))
+    ((resource.metadata && resource.metadata.creationTimestamp) || (resource.status && resource.status.startTime))
   if (startTime) {
     return {
       plugin: 'k8s',
@@ -54,11 +53,8 @@ interface Parameters {
 export const format = (parameters: Parameters): Element => {
   const { resource } = parameters
 
-  const startTime =
-    (resource.status && resource.status.startTime) ||
-    resource.metadata.creationTimestamp
-  const prefixText =
-    resource.status && resource.status.startTime ? 'Started on ' : 'Created on '
+  const startTime = (resource.status && resource.status.startTime) || resource.metadata.creationTimestamp
+  const prefixText = resource.status && resource.status.startTime ? 'Started on ' : 'Created on '
 
   const message = document.createElement('div')
   const datePart = document.createElement('strong')
@@ -68,10 +64,7 @@ export const format = (parameters: Parameters): Element => {
   try {
     datePart.appendChild(prettyPrintTime(Date.parse(startTime)))
   } catch (err) {
-    debug(
-      'error trying to parse this creationTimestamp',
-      resource.metadata.creationTimestamp
-    )
+    debug('error trying to parse this creationTimestamp', resource.metadata.creationTimestamp)
     console.error('error parsing creationTimestamp', err)
     datePart.innerText = resource.metadata.creationTimestamp
   }

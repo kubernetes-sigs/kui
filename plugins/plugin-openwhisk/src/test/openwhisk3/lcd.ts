@@ -21,16 +21,13 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname, normalize } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 localDescribe('Change shell directory via cd', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  it('should execute cd data', () =>
-    cli.do(`cd ${ROOT}/data`, this.app).then(cli.expectOKWithString('data')))
+  it('should execute cd data', () => cli.do(`cd ${ROOT}/data`, this.app).then(cli.expectOKWithString('data')))
 
   it('should create an action in the data directory', () =>
     cli
@@ -41,13 +38,10 @@ localDescribe('Change shell directory via cd', function(this: common.ISuite) {
       .catch(common.oops(this)))
 
   it('should execute cd - to change to previous dir', () =>
-    cli
-      .do(`cd -`, this.app)
-      .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT))))
+    cli.do(`cd -`, this.app).then(cli.expectOKWithString(normalize(process.env.TEST_ROOT))))
 
   // now we should be able to change back to data and re-do the action create
-  it('should execute cd data', () =>
-    cli.do(`cd ${ROOT}/data`, this.app).then(cli.expectOKWithString('data')))
+  it('should execute cd data', () => cli.do(`cd ${ROOT}/data`, this.app).then(cli.expectOKWithString('data')))
 
   it('should create an action in the data directory', () =>
     cli
@@ -58,7 +52,5 @@ localDescribe('Change shell directory via cd', function(this: common.ISuite) {
       .catch(common.oops(this)))
 
   it('should execute cd without arguments', () =>
-    cli
-      .do(`cd`, this.app)
-      .then(cli.expectOKWithString(normalize(process.env.HOME))))
+    cli.do(`cd`, this.app).then(cli.expectOKWithString(normalize(process.env.HOME))))
 })

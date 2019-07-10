@@ -33,8 +33,7 @@ const on = ({ argvNoOptions: argv, parsedOptions }) => {
 
   const trigger = argv[idx]
   const action = argv[idx + 2]
-  const rule =
-    parsedOptions.name || `on_${trigger}_do_${action.replace(/\//g, '_')}`
+  const rule = parsedOptions.name || `on_${trigger}_do_${action.replace(/\//g, '_')}`
 
   return repl
     .qexec(`wsk trigger get ${trigger}`, null, null, { noRetry: true })

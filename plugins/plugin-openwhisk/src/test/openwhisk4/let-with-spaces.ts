@@ -20,9 +20,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const fileWithSpaces = `${ROOT}/data/openwhisk/dir with spaces/foo.js`
 const fileWithSpacesAndQuotes = [
@@ -60,10 +58,7 @@ describe('Create an action via let with spaces', function(this: common.ISuite) {
 
     it(`should create an action with spaces in the filename, variant ${idx}c`, () =>
       cli
-        .do(
-          `let "${actionName3}" = "${fileWithSpacesAndQuotes[idx]}"`,
-          this.app
-        )
+        .do(`let "${actionName3}" = "${fileWithSpacesAndQuotes[idx]}"`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(actionName3)))
@@ -81,49 +76,33 @@ describe('Create an action via let with spaces', function(this: common.ISuite) {
       .do(`let ${packageName1}/${actionName1} = "${fileWithSpaces}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName1, undefined, undefined, packageName1)
-      ))
+      .then(sidecar.expectShowing(actionName1, undefined, undefined, packageName1)))
 
   it('should create a packaged action with spaces, variant 2', () =>
     cli
-      .do(
-        `let "${packageName1}/${actionName2}" = "${fileWithSpaces}"`,
-        this.app
-      )
+      .do(`let "${packageName1}/${actionName2}" = "${fileWithSpaces}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName2, undefined, undefined, packageName1)
-      ))
+      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName1)))
 
   it('should create a packaged action with spaces, variant 3', () =>
     cli
       .do(`let "${packageName1}/${actionName3}" = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName3, undefined, undefined, packageName1)
-      ))
+      .then(sidecar.expectShowing(actionName3, undefined, undefined, packageName1)))
 
   it('should create a packaged action with spaces, variant 4', () =>
     cli
       .do(`let "${packageName2}/${actionName1}" = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName1, undefined, undefined, packageName2)
-      ))
+      .then(sidecar.expectShowing(actionName1, undefined, undefined, packageName2)))
 
   it('should create a packaged action with spaces, variant 5', () =>
     cli
-      .do(
-        `let "${packageName2}/${actionName2}" = "${fileWithSpaces}"`,
-        this.app
-      )
+      .do(`let "${packageName2}/${actionName2}" = "${fileWithSpaces}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName2, undefined, undefined, packageName2)
-      ))
+      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName2)))
 })

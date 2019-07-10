@@ -26,9 +26,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
 localDescribe('Create a sequence, then list it', function(this: common.ISuite) {
@@ -76,16 +74,11 @@ localDescribe('Create a sequence, then list it', function(this: common.ISuite) {
       .then(sidecar.expectShowing('sss3')))
 
   // list tests
-  it(`should find foo with "list"`, () =>
-    cli.do('list', this.app).then(cli.expectOKWith('foo')))
-  it(`should find foo2 "action list"`, () =>
-    cli.do(`action list`, this.app).then(cli.expectOKWith('foo2')))
-  it(`should find sss1 with "action list"`, () =>
-    cli.do(`action list`, this.app).then(cli.expectOKWith('sss1')))
-  it(`should find sss2 with "list"`, () =>
-    cli.do(`list`, this.app).then(cli.expectOKWith('sss2')))
-  it(`should find sss3 with "action list"`, () =>
-    cli.do(`action list`, this.app).then(cli.expectOKWith('sss3')))
+  it(`should find foo with "list"`, () => cli.do('list', this.app).then(cli.expectOKWith('foo')))
+  it(`should find foo2 "action list"`, () => cli.do(`action list`, this.app).then(cli.expectOKWith('foo2')))
+  it(`should find sss1 with "action list"`, () => cli.do(`action list`, this.app).then(cli.expectOKWith('sss1')))
+  it(`should find sss2 with "list"`, () => cli.do(`list`, this.app).then(cli.expectOKWith('sss2')))
+  it(`should find sss3 with "action list"`, () => cli.do(`action list`, this.app).then(cli.expectOKWith('sss3')))
 
   // click on a sequence component bubble
   it('should show action after clicking on bubble', async () => {

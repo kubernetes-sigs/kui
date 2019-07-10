@@ -40,9 +40,7 @@ describe('parameter parsing with quotes', function(this: common.ISuite) {
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing('ppp'))
-        .then(app =>
-          app.client.getText(`${ui.selectors.SIDECAR_PACKAGE_PARAMETERS}`)
-        )
+        .then(app => app.client.getText(`${ui.selectors.SIDECAR_PACKAGE_PARAMETERS}`))
         .then(ui.expectStruct(params))
         .catch(common.oops(this)))
   }

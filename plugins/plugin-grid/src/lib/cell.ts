@@ -83,28 +83,15 @@ export const renderCell = (
   }
 
   if (activation) {
-    cell.onclick = drilldownWith(
-      tab,
-      returnTo,
-      `wsk activation get ${activation.activationId}`,
-      cell
-    )
+    cell.onclick = drilldownWith(tab, returnTo, `wsk activation get ${activation.activationId}`, cell)
 
     // tooltip
-    const result =
-      activation.response &&
-      activation.response.result &&
-      activation.response.result
+    const result = activation.response && activation.response.result && activation.response.result
     const statusCode =
       isFailure &&
       result &&
-      (result.code ||
-        result.statusCode ||
-        (result.error && (result.error.code || result.error.statusCode)))
-    const errorMessage =
-      isFailure &&
-      result &&
-      (result.message || (result.error && result.error.message))
+      (result.code || result.statusCode || (result.error && (result.error.code || result.error.statusCode)))
+    const errorMessage = isFailure && result && (result.message || (result.error && result.error.message))
 
     // failure versus success message for tooltip
     const msg = isFailure
@@ -114,17 +101,14 @@ export const renderCell = (
       : ''
 
     const fmt = 'short'
-    const prettyStart = new Date(activation.start).toLocaleString(
-      navigator.language,
-      {
-        weekday: fmt,
-        month: fmt,
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric'
-      }
-    )
+    const prettyStart = new Date(activation.start).toLocaleString(navigator.language, {
+      weekday: fmt,
+      month: fmt,
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    })
 
     // cell.setAttribute('data-activation-id', activation.activationId)
     cell.id = activation.activationId
@@ -134,9 +118,7 @@ export const renderCell = (
     cell.setAttribute(
       'data-balloon',
       `${
-        options && options.nameInTooltip
-          ? 'Action: ' + activation.name + newline
-          : ''
+        options && options.nameInTooltip ? 'Action: ' + activation.name + newline : ''
       }${prettyStart}${msg}${extraTooltip}`
     )
     cell.setAttribute('data-balloon-pos', options.balloonPos || 'up')

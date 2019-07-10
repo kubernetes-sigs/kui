@@ -15,12 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import {
-  cli,
-  expectYAMLSubset,
-  selectors,
-  sidecar
-} from '@kui-shell/core/tests/lib/ui'
+import { cli, expectYAMLSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
   waitForRed,
@@ -43,9 +38,7 @@ describe('electron describe', function(this: common.ISuite) {
     const getText = (ctx: common.ISuite) => {
       return ctx.app.client
         .execute(() => {
-          return document
-            .querySelector('.monaco-editor-wrapper')
-            ['editor'].getValue()
+          return document.querySelector('.monaco-editor-wrapper')['editor'].getValue()
         })
         .then(res => res.value)
     }
@@ -81,9 +74,7 @@ describe('electron describe', function(this: common.ISuite) {
      *
      */
     const testSummaryTab = async (ctx: common.ISuite) => {
-      await ctx.app.client.click(
-        selectors.SIDECAR_MODE_BUTTON(defaultModeForGet)
-      )
+      await ctx.app.client.click(selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
 
       // expect to see some familiar bits of a pod in the editor under the raw tab
       return ctx.app.client.waitUntil(async () => {
@@ -107,9 +98,7 @@ describe('electron describe', function(this: common.ISuite) {
 
     it(`should fail with 404 for unknown resource type via ${kubectl}`, () => {
       const fakeType = 'yoyoyo1334u890724'
-      return cli
-        .do(`${kubectl} describe ${fakeType} productPage`, this.app)
-        .then(cli.expectError(404))
+      return cli.do(`${kubectl} describe ${fakeType} productPage`, this.app).then(cli.expectError(404))
     })
 
     it(`should create sample pod from URL via ${kubectl}`, () => {

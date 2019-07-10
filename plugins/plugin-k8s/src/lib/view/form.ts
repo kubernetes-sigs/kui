@@ -152,21 +152,13 @@ const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
         const value = struct[key]
         const next = path.concat([key]) // path to this leaf or subtree
 
-        if (
-          typeof value === 'string' ||
-          typeof value === 'boolean' ||
-          typeof value === 'number'
-        ) {
+        if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
           // leaf node
           choices.push({ key, value, path: next, parent: struct })
         } else if (Array.isArray(value)) {
           // not sure what to do with arrays, yet
           if (value.length > 0) {
-            if (
-              typeof value[0] === 'string' ||
-              typeof value[0] === 'number' ||
-              typeof value[0] === 'boolean'
-            ) {
+            if (typeof value[0] === 'string' || typeof value[0] === 'number' || typeof value[0] === 'boolean') {
               // array of strings
               choices.push({
                 key,
@@ -322,10 +314,7 @@ export const generateForm = (tab: Tab) => (
           ? (document.createElement('textarea') as ChoiceTextArea)
           : (document.createElement('input') as ChoiceInput)
       inputPart.className = 'bx--text-input'
-      inputPart.setAttribute(
-        'type',
-        inputType === 'string' ? 'text' : inputType
-      )
+      inputPart.setAttribute('type', inputType === 'string' ? 'text' : inputType)
       inputPart.value = element.value.toString()
       inputPart.setAttribute('defaultValue', inputPart.value)
       inputPart.setAttribute('placeholder', element.placeholder || element.key)

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  KubeResource,
-  KubeStatusCondition,
-  KubeStatus
-} from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource, KubeStatusCondition, KubeStatus } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 /** this is the api version matcher; TODO refactor */
 const tektonAPI = /tekton.dev/
@@ -103,9 +99,7 @@ export interface Task extends TektonKubeResource {
 }
 
 export function isTask(resource: KubeResource): resource is Task {
-  return (
-    resource && tektonAPI.test(resource.apiVersion) && resource.kind === 'Task'
-  )
+  return resource && tektonAPI.test(resource.apiVersion) && resource.kind === 'Task'
 }
 
 export interface Pipeline extends TektonKubeResource {

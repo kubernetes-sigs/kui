@@ -137,37 +137,29 @@ const writeConfig = settings =>
     delete config.build
     debug('writeConfig', configDir, config)
 
-    fs.writeFile(
-      path.join(configDir, 'config.json'),
-      JSON.stringify(config, undefined, 4),
-      err => {
-        if (err) {
-          reject(err)
-        } else {
-          task('write package.json')
+    fs.writeFile(path.join(configDir, 'config.json'), JSON.stringify(config, undefined, 4), err => {
+      if (err) {
+        reject(err)
+      } else {
+        task('write package.json')
 
-          const packageAppPjson = path.join(configDir, '../package.json')
-          const topLevel = moduleExists(packageAppPjson)
-            ? require(packageAppPjson)
-            : require(path.join(process.env.CLIENT_HOME, 'package.json'))
-          const packageJson = Object.assign({}, topLevel, config, {
-            name: '@kui-shell/settings'
-          })
+        const packageAppPjson = path.join(configDir, '../package.json')
+        const topLevel = moduleExists(packageAppPjson)
+          ? require(packageAppPjson)
+          : require(path.join(process.env.CLIENT_HOME, 'package.json'))
+        const packageJson = Object.assign({}, topLevel, config, {
+          name: '@kui-shell/settings'
+        })
 
-          fs.writeFile(
-            path.join(configDir, 'package.json'),
-            JSON.stringify(packageJson, undefined, 4),
-            err => {
-              if (err) {
-                reject(err)
-              } else {
-                resolve()
-              }
-            }
-          )
-        }
+        fs.writeFile(path.join(configDir, 'package.json'), JSON.stringify(packageJson, undefined, 4), err => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
       }
-    )
+    })
   })
 
 /**
@@ -195,10 +187,7 @@ const doWork = settings => {
   info('theme', settings.theme.cssTheme)
   info('buildDir', settings.build.buildDir)
 
-  return Promise.all([
-    fs.mkdirp(settings.build.buildDir),
-    fs.mkdirp(settings.build.configDir)
-  ])
+  return Promise.all([fs.mkdirp(settings.build.buildDir), fs.mkdirp(settings.build.configDir)])
     .then(doBuild(settings))
     .then(() => colors.green('ok:') + ' build successful')
 }
@@ -226,12 +215,9 @@ const main = (env, overrides = {}) => {
  *
  */
 const loadOverrides = (programmaticOverrides = {}) => {
-  let overrideDirectory =
-    process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
+  let overrideDirectory = process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
   if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
-    overrideDirectory =
-      process.env.CLIENT_HOME &&
-      path.resolve(path.join(process.env.CLIENT_HOME, 'theme'))
+    overrideDirectory = process.env.CLIENT_HOME && path.resolve(path.join(process.env.CLIENT_HOME, 'theme'))
     if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
       overrideDirectory = path.resolve(path.join(process.cwd(), 'theme'))
     }
@@ -264,14 +250,9 @@ const loadOverrides = (programmaticOverrides = {}) => {
 
   if (
     process.env.KUI_STAGE &&
-    (!programmaticOverrides ||
-      !programmaticOverrides.build ||
-      !programmaticOverrides.build.buildDir)
+    (!programmaticOverrides || !programmaticOverrides.build || !programmaticOverrides.build.buildDir)
   ) {
-    overrides.build.buildDir = overrides.build.configDir = path.join(
-      process.env.KUI_STAGE,
-      'packages/app/build'
-    )
+    overrides.build.buildDir = overrides.build.configDir = path.join(process.env.KUI_STAGE, 'packages/app/build')
   }
 
   debug('overrides', overrides)

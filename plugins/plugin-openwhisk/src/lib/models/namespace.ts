@@ -73,22 +73,16 @@ const write = model => {
 const writeSelectedNS = selectedNS => {
   if (store().getItem('selectedNS') !== selectedNS) {
     store().setItem('selectedNS', selectedNS)
-    debug(
-      'stored selected namespace to local storage',
-      store().getItem('selectedNS')
-    )
+    debug('stored selected namespace to local storage', store().getItem('selectedNS'))
   }
 }
 
 export const setApiHost = (apiHost = '') => {
-  const apiHostDom = document.querySelector(
-    '#openwhisk-api-host'
-  ) as HTMLElement
+  const apiHostDom = document.querySelector('#openwhisk-api-host') as HTMLElement
 
   // strip off the proto
   const idx = apiHost.indexOf('://')
-  apiHostDom.innerText =
-    idx >= 0 ? apiHost.substring(idx + '://'.length) : apiHost
+  apiHostDom.innerText = idx >= 0 ? apiHost.substring(idx + '://'.length) : apiHost
   // apiHostDom.setAttribute('size', apiHostDom.value.length + 3)
 }
 
@@ -109,9 +103,7 @@ export const setNoNamespace = (provideHelp = true) => {
     return
   }
 
-  const namespaceDom = document.querySelector(
-    '#openwhisk-namespace'
-  ) as HTMLElement
+  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
   namespaceDom.className += ' oops'
   namespaceDom.innerText = 'no auth key!'
   namespaceDom.onclick = () => cli.partial('wsk auth add <your_auth_key>')
@@ -137,9 +129,7 @@ export const setPleaseSelectNamespace = () => {
     return
   }
 
-  const namespaceDom = document.querySelector(
-    '#openwhisk-namespace'
-  ) as HTMLElement
+  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
   namespaceDom.className += ' oops'
   namespaceDom.innerText = 'please select a namespace'
   namespaceDom.removeAttribute('data-value')
@@ -181,17 +171,11 @@ export const setNeedsNamespace = async (err?: Error) => {
   debug('setNeedsNamespace')
   const localSelectedNS = store().getItem('selectedNS')
   if (localSelectedNS) {
-    debug(
-      'user selected one namespace previously, so auto-selecting it from local storage',
-      localSelectedNS
-    )
+    debug('user selected one namespace previously, so auto-selecting it from local storage', localSelectedNS)
     try {
       return await repl.qexec(`auth switch ${localSelectedNS}`)
     } catch (err) {
-      console.error(
-        'The previously selected namespace probably does not align with the currently selected host',
-        err
-      )
+      console.error('The previously selected namespace probably does not align with the currently selected host', err)
 
       // intentionally falling through to "no selected namespace in local storage" ...
     }
@@ -240,9 +224,7 @@ const setNamespace = (namespace: string) => {
 
   // UI bits
   debug(`setNamespace ${namespace}`)
-  const namespaceDom = document.querySelector(
-    '#openwhisk-namespace'
-  ) as HTMLElement
+  const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
   namespaceDom.className = 'clickable' // remove any prior oops
   namespaceDom.onclick = () => repl.pexec('wsk auth list')
   namespaceDom.innerText = namespace
@@ -292,9 +274,7 @@ interface CurrentOptions {
 class DefaultCurrentOptions implements CurrentOptions {
   noNamespaceOk = false // eslint-disable-line @typescript-eslint/explicit-member-accessibility
 }
-export const current = async (
-  opts: CurrentOptions = new DefaultCurrentOptions()
-): Promise<string> => {
+export const current = async (opts: CurrentOptions = new DefaultCurrentOptions()): Promise<string> => {
   const ns = currentNS
   debug('current', ns)
 

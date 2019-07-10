@@ -25,11 +25,7 @@ const localStorageKey = {
  * Model update
  *
  */
-export const setAuth = (
-  kubeconfigString: string,
-  ca: string,
-  cafile: string
-): void => {
+export const setAuth = (kubeconfigString: string, ca: string, cafile: string): void => {
   const auth = {
     kubeconfig: kubeconfigString,
     ca: ca,

@@ -20,12 +20,7 @@ import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { formatTable as format } from '@kui-shell/core/webapp/views/table'
-import {
-  Table,
-  MultiTable,
-  isTable,
-  isMultiTable
-} from '@kui-shell/core/webapp/models/table'
+import { Table, MultiTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 const debug = Debug('k8s/view/formatMultiTable')
 
 /** this will help us with finding our own view instances */
@@ -39,9 +34,7 @@ export const getActiveView = (tab: Tab) => {
  * Update table for picture-in-picture style drilldowns
  *
  */
-const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (
-  table: Table
-) => {
+const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (table: Table) => {
   debug('pip update for table', table)
 
   table.body.forEach(row => {
@@ -49,14 +42,7 @@ const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (
       const command = row.onclick
       debug('command', command)
       row.onclick = (evt: Event) => {
-        return drilldown(
-          tab,
-          command,
-          undefined,
-          getActiveView(tab),
-          viewName,
-          { execOptions }
-        )(evt)
+        return drilldown(tab, command, undefined, getActiveView(tab), viewName, { execOptions })(evt)
       }
     }
 
@@ -65,14 +51,7 @@ const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (
         if (attr.onclick) {
           const command = attr.onclick
           attr.onclick = (evt: Event) => {
-            return drilldown(
-              tab,
-              command,
-              undefined,
-              getActiveView(tab),
-              viewName,
-              { execOptions }
-            )(evt)
+            return drilldown(tab, command, undefined, getActiveView(tab), viewName, { execOptions })(evt)
           }
         }
       })
@@ -97,10 +76,7 @@ export const formatTable = (
     const resultDom = document.createElement('div')
 
     // e.g. establish an attribute [k8s-table="Containers"]
-    resultDomOuter.setAttribute(
-      attr,
-      isTable(model) ? model.title : model.tables.map(m => m.title).join(' ')
-    )
+    resultDomOuter.setAttribute(attr, isTable(model) ? model.title : model.tables.map(m => m.title).join(' '))
 
     // modify onclick links to use the "picture in picture" drilldown module
     if (usePip) {

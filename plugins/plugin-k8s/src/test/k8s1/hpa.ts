@@ -26,9 +26,7 @@ import {
 } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
 const synonyms = ['kubectl']
 
@@ -47,10 +45,7 @@ describe('electron create hpa HorizontalPodAutoscaler', function(this: common.IS
     it(`should create a HorizontalPodAutoscaler hpa via ${kubectl}`, async () => {
       try {
         const selector: string = await cli
-          .do(
-            `${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`,
-            this.app
-          )
+          .do(`${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
           .then(
             cli.expectOKWithCustom({
               selector: selectors.BY_NAME('travelapp-hpa')
@@ -73,10 +68,7 @@ describe('electron create hpa HorizontalPodAutoscaler', function(this: common.IS
 
     it(`should delete the HorizontalPodAutoscaler hpa from URL via ${kubectl}`, () => {
       return cli
-        .do(
-          `${kubectl} delete -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`,
-          this.app
-        )
+        .do(`${kubectl} delete -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
         .then(
           cli.expectOKWithCustom({
             selector: selectors.BY_NAME('travelapp-hpa')

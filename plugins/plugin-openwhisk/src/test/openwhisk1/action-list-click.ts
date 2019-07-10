@@ -51,11 +51,7 @@ describe('create action list it then click to show it again', function(this: com
 
       // click on the row entity, and expect sidecar to show it
       .then(N =>
-        this.app.client.click(
-          `${ui.selectors.OUTPUT_N(
-            N
-          )} .entity[data-name="${actionName}"] .entity-name.clickable`
-        )
+        this.app.client.click(`${ui.selectors.OUTPUT_N(N)} .entity[data-name="${actionName}"] .entity-name.clickable`)
       )
       .then(() => this.app)
       .then(sidecar.expectOpen)
@@ -64,9 +60,7 @@ describe('create action list it then click to show it again', function(this: com
       // also confirm that source matches
       .then(() =>
         this.app.client.waitUntil(async () => {
-          const actualSrc = await this.app.client.getText(
-            ui.selectors.SIDECAR_ACTION_SOURCE
-          )
+          const actualSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
           return actualSrc.trim() === expectedSrc
         })
       )
@@ -75,9 +69,7 @@ describe('create action list it then click to show it again', function(this: com
       .then(() => new Promise(resolve => setTimeout(resolve, 3000)))
       .then(() =>
         this.app.client.waitUntil(async () => {
-          const actualSrc = await this.app.client.getText(
-            ui.selectors.SIDECAR_ACTION_SOURCE
-          )
+          const actualSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
           return actualSrc.trim() === expectedSrc
         })
       )

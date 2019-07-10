@@ -29,16 +29,12 @@ const actionName7 = 'foo7'
 const actionName8 = 'foo8'
 
 // electron 5 seems to require localDescribe on linux
-common.localDescribe('Execute commands via paste', function(
-  this: common.ISuite
-) {
+common.localDescribe('Execute commands via paste', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   it('should paste a single line and enter the newline manually', () =>
-    Promise.resolve(
-      this.app.electron.clipboard.writeText(`let ${actionName} = x=>x`)
-    )
+    Promise.resolve(this.app.electron.clipboard.writeText(`let ${actionName} = x=>x`))
       .then(() => this.app.client.execute(() => document.execCommand('paste')))
       .then(() => cli.do(ui.keys.ENTER, this.app))
       .then(cli.expectJustOK)
@@ -64,11 +60,7 @@ common.localDescribe('Execute commands via paste', function(
 
   it('should paste two lines', () =>
     cli
-      .paste(
-        `let ${actionName4} = x=>x\nlet ${actionName5} = x=>x\n`,
-        this.app,
-        2
-      )
+      .paste(`let ${actionName4} = x=>x\nlet ${actionName5} = x=>x\n`, this.app, 2)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName5))

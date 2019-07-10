@@ -72,13 +72,7 @@ exports.deleteNS = (ctx, ns, theCli = cli) => {
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (
-  kind,
-  theCli = cli,
-  name = '',
-  okToSurvive,
-  inNamespace = ''
-) => app =>
+exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace = '') => app =>
   new Promise(resolve => {
     // fetch the entities
     const fetch = () =>

@@ -72,8 +72,7 @@ export const newUsage = {
   strict: 'new',
   command: 'new',
   title: 'New action',
-  header:
-    'For quick prototyping of actions, this command opens an editor in the sidecar.',
+  header: 'For quick prototyping of actions, this command opens an editor in the sidecar.',
   example: 'new <actionName>',
   required: [{ name: '<actionName>', docs: 'The name of your new action' }],
   optional: optional(['nodejs', 'python', 'php']),
@@ -129,11 +128,7 @@ const failWith409 = () => {
   throw error
 }
 const failIfNot404 = err => {
-  if (
-    err.statusCode !== 404 &&
-    err.message.indexOf('socket hang up') < 0 &&
-    err.statusCode !== 'ENOTFOUND'
-  ) {
+  if (err.statusCode !== 404 && err.message.indexOf('socket hang up') < 0 && err.statusCode !== 'ENOTFOUND') {
     console.error(err)
     throw err
   } else {
@@ -164,8 +159,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
 ): Promise<Entity> => {
   if (name.charAt(0) === '!') {
     const parameterName = name.substring(1)
-    const source =
-      execOptions.parameters && execOptions.parameters[parameterName]
+    const source = execOptions.parameters && execOptions.parameters[parameterName]
     if (source) {
       return Promise.resolve({
         type: 'source',
@@ -176,8 +170,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
         },
         annotations: [],
         persister: execOptions.parameters.persister,
-        gotoReadonlyView: ({ getEntity }) =>
-          lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+        gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
       })
     }
   }
@@ -186,8 +179,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
     .then(check)
     .then(entity =>
       Object.assign({}, entity, {
-        gotoReadonlyView: ({ getEntity }) =>
-          lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+        gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
       })
     )
     .catch(err => {
@@ -251,12 +243,9 @@ export const persisters = {
       // https://github.com/apache/incubator-openwhisk/issues/3237
       delete action.version
 
-      return repl.qexec(
-        `wsk action update "${namespacePart}${action.name}"`,
-        undefined,
-        undefined,
-        { entity: { action } }
-      )
+      return repl.qexec(`wsk action update "${namespacePart}${action.name}"`, undefined, undefined, {
+        entity: { action }
+      })
     }
   }
 }
@@ -272,12 +261,7 @@ export const newAction = ({
   placeholder = undefined,
   placeholderFn = undefined,
   persister = persisters.actions
-} = {}) => async ({
-  tab,
-  argvNoOptions,
-  parsedOptions: options,
-  execOptions
-}: EvaluatorArgs) => {
+} = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -285,8 +269,7 @@ export const newAction = ({
   debug('newAction', cmd, name, kind, prettyKind)
 
   // create the initial, placeholder, source code to place in the editor
-  const makePlaceholderCode =
-    placeholderFn || (() => placeholder || placeholders[language(kind)])
+  const makePlaceholderCode = placeholderFn || (() => placeholder || placeholders[language(kind)])
 
   const code = await makePlaceholderCode(Object.assign({ kind }, options))
 
@@ -313,9 +296,7 @@ export const newAction = ({
   // then send a response back to the repl
   //
   return betterNotExist(name, options)
-    .then(() =>
-      Promise.all([makeAction(), openEditor(tab, name, options, execOptions)])
-    )
+    .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
     .then(prepareEditorWithAction)
     .then(respondToRepl(undefined, ['is-modified']))
 }

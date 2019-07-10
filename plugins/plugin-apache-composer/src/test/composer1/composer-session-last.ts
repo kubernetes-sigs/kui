@@ -21,9 +21,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const seqName1 = 'seq1'
 const seqName2 = 'seq2'
@@ -39,10 +37,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
 
   it('create sequence that invokes without error', () =>
     cli
-      .do(
-        `app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`,
-        this.app
-      )
+      .do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
@@ -55,18 +50,13 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ xxx: 333 }))
       .catch(common.oops(this)))
 
   it('create sequence that invokes WITH ERROR', () =>
     cli
-      .do(
-        `app update ${seqName2} ${ROOT}/data/composer/composer-source/error-sequence.js`,
-        this.app
-      )
+      .do(`app update ${seqName2} ${ROOT}/data/composer/composer-source/error-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName2))
@@ -79,29 +69,15 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
         .do(`session get --last`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
-        .then(
-          sidecar.expectShowing(
-            seqName1,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            500
-          )
-        )
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(sidecar.expectShowing(seqName1, undefined, undefined, undefined, undefined, 500))
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ xxx: 333 }))
         .catch(common.oops(this))
     }))
 
   it('create another sequence that invokes without error', () =>
     cli
-      .do(
-        `app update ${seqName3} ${ROOT}/data/composer/composer-source/echo-sequence.js`,
-        this.app
-      )
+      .do(`app update ${seqName3} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
@@ -114,9 +90,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ zzz: 555 }))
       .catch(common.oops(this)))
 
@@ -126,19 +100,8 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
         .do(`session get --last ${seqName1}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
-        .then(
-          sidecar.expectShowing(
-            seqName1,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            500
-          )
-        )
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(sidecar.expectShowing(seqName1, undefined, undefined, undefined, undefined, 500))
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ xxx: 333 }))
         .catch(common.oops(this))
     }))
@@ -149,19 +112,8 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
         .do(`session get --last`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
-        .then(
-          sidecar.expectShowing(
-            seqName3,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            500
-          )
-        )
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(sidecar.expectShowing(seqName3, undefined, undefined, undefined, undefined, 500))
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ zzz: 555 }))
         .catch(common.oops(this))
     }))
@@ -172,9 +124,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpenWithFailure)
       .then(sidecar.expectShowing(seqName2))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ error: { yyy: 444 } }))
       .catch(common.oops(this)))
 
@@ -184,19 +134,8 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
         .do(`session get --last ${seqName1}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
-        .then(
-          sidecar.expectShowing(
-            seqName1,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            500
-          )
-        )
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(sidecar.expectShowing(seqName1, undefined, undefined, undefined, undefined, 500))
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ xxx: 333 }))
         .catch(common.oops(this))
     }))
@@ -207,19 +146,8 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
         .do(`session get --last-failed`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
-        .then(
-          sidecar.expectShowing(
-            seqName2,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            500
-          )
-        )
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(sidecar.expectShowing(seqName2, undefined, undefined, undefined, undefined, 500))
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ error: { yyy: 444 } }))
         .catch(common.oops(this))
     }))
@@ -230,9 +158,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ zzz: 555 }))
       .catch(common.oops(this)))
 
@@ -242,45 +168,22 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
         .do(`session get --last-failed`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
-        .then(
-          sidecar.expectShowing(
-            seqName2,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            500
-          )
-        )
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(sidecar.expectShowing(seqName2, undefined, undefined, undefined, undefined, 500))
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ error: { yyy: 444 } }))
         .catch(common.oops(this))
     }))
 
   // make sure session get works as the first command after a restart
-  it('should restart', () =>
-    this.app.client.execute('window.location.reload()'))
+  it('should restart', () => this.app.client.execute('window.location.reload()'))
   it(`should show ${seqName2} with session get --last-failed`, () =>
     this.app.client.waitUntil(() => {
       return cli
         .do(`session get --last-failed`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
-        .then(
-          sidecar.expectShowing(
-            seqName2,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            500
-          )
-        )
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(sidecar.expectShowing(seqName2, undefined, undefined, undefined, undefined, 500))
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ error: { yyy: 444 } }))
         .catch(common.oops(this))
     }))

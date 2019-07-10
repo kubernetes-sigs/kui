@@ -72,12 +72,7 @@ export function createWindow(
     debug('we need to spawn electron', subwindowPlease, subwindowPrefs)
     delete subwindowPrefs.synonymFor // circular JSON
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    promise = initElectron(
-      ['--'].concat(executeThisArgvPlease),
-      {},
-      subwindowPlease,
-      subwindowPrefs
-    )
+    promise = initElectron(['--'].concat(executeThisArgvPlease), {}, subwindowPlease, subwindowPrefs)
       .then(async () => {
         electron = await import('electron')
       })
@@ -148,13 +143,7 @@ export function createWindow(
     // open; e.g. one for docs, one for videos...
     const fixedWindows = {}
     const openFixedWindow = opts => {
-      const {
-        type,
-        event,
-        url,
-        size = mainWindow.getBounds(),
-        position = mainWindow.getBounds()
-      } = opts
+      const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
 
       const existing = fixedWindows[type] || {}
       const { window: existingWindow, url: currentURL } = existing
@@ -186,8 +175,7 @@ export function createWindow(
       // BrowserWindow opts doesn't stick; and... this has to be on
       // did-finish-load, for some reason... at least these are true
       // statements for electron 1.6.x
-      const productName = (await import('@kui-shell/settings/config.json'))
-        .theme.productName
+      const productName = (await import('@kui-shell/settings/config.json')).theme.productName
 
       if (mainWindow) {
         mainWindow.setTitle(productName)
@@ -195,18 +183,14 @@ export function createWindow(
 
       if (mainWindow) {
         try {
-          const { switchToPersistedThemeChoice } = await import(
-            '@kui-shell/plugin-core-support/lib/cmds/theme'
-          )
+          const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support/lib/cmds/theme')
           switchToPersistedThemeChoice(mainWindow.webContents)
         } catch (err) {
           debug('theme support not found', err)
           const { theme, env } = await import('@kui-shell/core/core/settings')
           const { readFile } = await import('fs')
           const { join, dirname } = await import('path')
-          const themeModel = theme.themes.find(
-            _ => _.name === theme.defaultTheme
-          )
+          const themeModel = theme.themes.find(_ => _.name === theme.defaultTheme)
           const filepath = join(
             dirname(require.resolve('@kui-shell/settings/package.json')),
             env.cssHome,
@@ -218,9 +202,7 @@ export function createWindow(
               throw err
             } else {
               mainWindow.webContents.insertCSS(data.toString())
-              mainWindow.webContents.executeJavaScript(
-                `document.body.setAttribute('kui-theme', '${themeModel.name}')`
-              )
+              mainWindow.webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${themeModel.name}')`)
               mainWindow.webContents.executeJavaScript(
                 `document.body.setAttribute('kui-theme-style', '${themeModel.style}')`
               )
@@ -253,13 +235,9 @@ export function createWindow(
       }
     })
 
-    let commandContext =
-      executeThisArgvPlease &&
-      executeThisArgvPlease.find(_ => /--command-context/.test(_))
+    let commandContext = executeThisArgvPlease && executeThisArgvPlease.find(_ => /--command-context/.test(_))
     if (commandContext) {
-      executeThisArgvPlease = executeThisArgvPlease.filter(
-        _ => !_.match(/--command-context/)
-      )
+      executeThisArgvPlease = executeThisArgvPlease.filter(_ => !_.match(/--command-context/))
 
       // strip off the leading --, to help with URL window.location.search
       commandContext = commandContext.replace(/^--/, '')
@@ -275,9 +253,7 @@ export function createWindow(
     }
 
     // and load the index.html of the app.
-    const root = require('path').dirname(
-      require.resolve('@kui-shell/settings/package.json')
-    )
+    const root = require('path').dirname(require.resolve('@kui-shell/settings/package.json'))
     const urlSpec = {
       pathname: require('path').join(root, 'index.html'),
       protocol: 'file:',
@@ -316,27 +292,24 @@ export function createWindow(
     // plugin has to pollute main.js
     //
     debug('ipc registration')
-    ipcMain.on(
-      'capture-page-to-clipboard',
-      (event, contentsId: string, rect) => {
-        try {
-          const { clipboard, nativeImage, webContents } = electron
-          webContents.fromId(contentsId).capturePage(rect, image => {
-            try {
-              const buf = image.toPNG()
-              clipboard.writeImage(nativeImage.createFromBuffer(buf))
-              event.sender.send('capture-page-to-clipboard-done', buf)
-            } catch (err) {
-              console.log(err)
-              event.sender.send('capture-page-to-clipboard-done')
-            }
-          })
-        } catch (err) {
-          console.log(err)
-          event.sender.send('capture-page-to-clipboard-done')
-        }
+    ipcMain.on('capture-page-to-clipboard', (event, contentsId: string, rect) => {
+      try {
+        const { clipboard, nativeImage, webContents } = electron
+        webContents.fromId(contentsId).capturePage(rect, image => {
+          try {
+            const buf = image.toPNG()
+            clipboard.writeImage(nativeImage.createFromBuffer(buf))
+            event.sender.send('capture-page-to-clipboard-done', buf)
+          } catch (err) {
+            console.log(err)
+            event.sender.send('capture-page-to-clipboard-done')
+          }
+        })
+      } catch (err) {
+        console.log(err)
+        event.sender.send('capture-page-to-clipboard-done')
       }
-    )
+    })
     // end of screenshot logic
 
     ipcMain.on('synchronous-message', (event, arg: string) => {
@@ -413,9 +386,7 @@ export const getCommand = (argv: string[]): Command => {
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
 
   // re: the -psn bit, opening Kui from macOS Finder adds additional argv -psn; see: https://github.com/IBM/kui/issues/382
-  argv = argv.filter(
-    _ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/)
-  )
+  argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/))
 
   // re: argv.length === 0, this should happen for double-click launches
   const isShell =
@@ -469,9 +440,7 @@ export async function initElectron(
     const spawnGraphics = () => {
       debug('waiting for graphics')
       return app.graphics.wait().then(async graphics => {
-        const argv = command
-          .slice(command.indexOf('--') + 1)
-          .concat(forceUI ? ['--ui'] : [])
+        const argv = command.slice(command.indexOf('--') + 1).concat(forceUI ? ['--ui'] : [])
 
         debug('spawning graphics', graphics, argv)
         try {
@@ -622,12 +591,7 @@ export async function initElectron(
       // Someone tried to run a second instance, open a new window
       // to handle it
       const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
-      debug(
-        'opening window for second instance',
-        commandLine,
-        subwindowPlease,
-        subwindowPrefs
-      )
+      debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
       createWindow(true, argv, subwindowPlease, subwindowPrefs)
     })
     if (!app.requestSingleInstanceLock()) {
@@ -642,12 +606,7 @@ export async function initElectron(
   // Some APIs can only be used after this event occurs.
   app.once('ready', () => {
     debug('opening primary window', command)
-    createWindow(
-      true,
-      command.length > 0 && command,
-      subwindowPlease,
-      subwindowPrefs
-    )
+    createWindow(true, command.length > 0 && command, subwindowPlease, subwindowPrefs)
   })
 
   if (process.env.RUNNING_SHELL_TEST) {

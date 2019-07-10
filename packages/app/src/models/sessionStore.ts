@@ -26,5 +26,4 @@ interface SessionStorage {
  * cannot provide window.sessionStorage.
  *
  */
-export default (): SessionStorage =>
-  window['kuiSessionStorage'] || window.sessionStorage
+export default (): SessionStorage => window['kuiSessionStorage'] || window.sessionStorage

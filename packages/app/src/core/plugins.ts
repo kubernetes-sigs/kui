@@ -56,11 +56,7 @@ let prescan: PrescanModel
  *
  */
 type Filter = (path: string) => boolean
-export const scanForModules = async (
-  dir: string,
-  quiet = false,
-  filter: Filter = () => true
-) => {
+export const scanForModules = async (dir: string, quiet = false, filter: Filter = () => true) => {
   debug('scanForModules %s', dir)
 
   const fs = await import('fs')
@@ -71,13 +67,7 @@ export const scanForModules = async (
     const plugins = {}
     const preloads = {}
 
-    const doScan = ({
-      modules,
-      moduleDir
-    }: {
-      modules: string[]
-      moduleDir: string
-    }) => {
+    const doScan = ({ modules, moduleDir }: { modules: string[]; moduleDir: string }) => {
       modules.forEach(module => {
         const modulePath = path.join(moduleDir, module)
 
@@ -98,10 +88,7 @@ export const scanForModules = async (
             if (!quiet) {
               debug('found')
               console.log(
-                colors.green('  \u2713 ') +
-                  colors[color](filename.replace(/\..*$/, '')) +
-                  '\t' +
-                  path.basename(module)
+                colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
               )
             }
             destMap[module] = pluginPath
@@ -122,11 +109,7 @@ export const scanForModules = async (
               destMap[module] = backupPluginPath
             } else {
               // support for javascript-coded plugins (monorepo)
-              const backupPluginPath = path.join(
-                modulePath,
-                'src/plugin',
-                filename
-              )
+              const backupPluginPath = path.join(modulePath, 'src/plugin', filename)
               debug('lookFor3', filename, backupPluginPath)
 
               if (fs.existsSync(backupPluginPath)) {
@@ -142,11 +125,7 @@ export const scanForModules = async (
                 destMap[module] = backupPluginPath
               } else {
                 // support for javascript-coded plugins (external client)
-                const backupPluginPath = path.join(
-                  modulePath,
-                  'plugin',
-                  filename
-                )
+                const backupPluginPath = path.join(modulePath, 'plugin', filename)
                 debug('lookFor4', filename, backupPluginPath)
 
                 if (fs.existsSync(backupPluginPath)) {
@@ -261,8 +240,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
   }
 
   const pluginLoaderRef = await import(pluginPath)
-  const pluginLoader: PluginRegistration =
-    pluginLoaderRef.default || pluginLoaderRef
+  const pluginLoader: PluginRegistration = pluginLoaderRef.default || pluginLoaderRef
 
   if (typeof pluginLoader === 'function') {
     // invoke the plugin loader
@@ -326,13 +304,8 @@ const topologicalSortForScan = async (
       flat.push(module)
       delete pluginPaths[route]
     } catch (err) {
-      const notFound =
-        err.message.indexOf('Module not found') >= 0 ||
-        err.message.indexOf('Cannot find module') >= 0
-      if (
-        (!notFound || iter > 10) &&
-        (lastError && lastError.message !== err.message)
-      ) {
+      const notFound = err.message.indexOf('Module not found') >= 0 || err.message.indexOf('Cannot find module') >= 0
+      if ((!notFound || iter > 10) && (lastError && lastError.message !== err.message)) {
         //
         // note how we do not print the error if any of three
         // conditions hold (but we still continue iterating)
@@ -362,12 +335,7 @@ const topologicalSortForScan = async (
 
   if (nUnresolved > 0) {
     debug('nUnresolved', nUnresolved, unresolved)
-    return topologicalSortForScan(
-      pluginPaths,
-      iter + 1,
-      lastError,
-      lastErrorAlreadyEmitted
-    )
+    return topologicalSortForScan(pluginPaths, iter + 1, lastError, lastErrorAlreadyEmitted)
   } else {
     debug('topologicalSortForScan done')
   }
@@ -384,26 +352,17 @@ const resolveFromLocalFilesystem = async (opts: LocalOptions = {}) => {
   debug('resolveFromLocalFilesystem')
 
   const path = await import('path')
-  const pluginRootAbsolute =
-    process.env.PLUGIN_ROOT || path.join(__dirname, pluginRoot) // filesystem path for the plugins
+  const pluginRootAbsolute = process.env.PLUGIN_ROOT || path.join(__dirname, pluginRoot) // filesystem path for the plugins
   debug('pluginRootAbsolute', pluginRootAbsolute)
 
   // this scan looks for plugins offered by the client
-  const clientHosted = await scanForModules(
-    opts.pluginRootAbsolute || pluginRootAbsolute
-  )
+  const clientHosted = await scanForModules(opts.pluginRootAbsolute || pluginRootAbsolute)
 
   // this scan looks for plugins npm install'd by the client
   let clientRequired
   try {
-    const secondary = path.dirname(
-      path.dirname(require.resolve('@kui-shell/core/package.json'))
-    )
-    clientRequired = await scanForModules(
-      secondary,
-      false,
-      (filename: string) => !!filename.match(/^plugin-/)
-    )
+    const secondary = path.dirname(path.dirname(require.resolve('@kui-shell/core/package.json')))
+    clientRequired = await scanForModules(secondary, false, (filename: string) => !!filename.match(/^plugin-/))
   } catch (err) {
     if (err.code !== 'ENOENT') {
       console.error('error scanning for client-required plugins', err)
@@ -411,16 +370,8 @@ const resolveFromLocalFilesystem = async (opts: LocalOptions = {}) => {
   }
 
   // we take the union of the client-provided plugins and the client-required plugins
-  const plugins = Object.assign(
-    {},
-    clientHosted.plugins,
-    clientRequired.plugins
-  )
-  const preloads = Object.assign(
-    {},
-    clientHosted.preloads,
-    clientRequired.preloads
-  )
+  const plugins = Object.assign({}, clientHosted.plugins, clientRequired.plugins)
+  const preloads = Object.assign({}, clientHosted.preloads, clientRequired.preloads)
 
   debug('availablePlugins %s', JSON.stringify(plugins))
 
@@ -460,15 +411,9 @@ const prequire = async (route: string, options?: object) => {
             // NOTE ON @kui-shell relativization: this is important so that
             // webpack can be isntructed to pull in the plugins into the build
             // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
-            const registrationRef = await import(
-              '@kui-shell/plugin-' + module.path.replace(/^plugin-/, '')
-            )
-            const registration: PluginRegistration =
-              registrationRef.default || registrationRef
-            const combinedOptions = Object.assign(
-              { usage: prescan.usage, docs: prescan.docs },
-              options
-            )
+            const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
+            const registration: PluginRegistration = registrationRef.default || registrationRef
+            const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 
             resolve(registration(commandTree.proxy(route), combinedOptions))
             debug('prequire success %s', route)
@@ -488,8 +433,7 @@ const prequire = async (route: string, options?: object) => {
 
   return registrar[route]
 }
-export const preload = () =>
-  preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
+export const preload = () => preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
 
 /**
  * Make a plugin resolver from a given prescan model
@@ -541,8 +485,7 @@ const makeResolver = (prescan: PrescanModel) => {
 
   /** a plugin resolver impl */
   const resolver = {
-    isOverridden: (route: string): boolean =>
-      prescan.overrides[route] !== undefined,
+    isOverridden: (route: string): boolean => prescan.overrides[route] !== undefined,
 
     resolveOne,
 
@@ -579,11 +522,7 @@ const makeResolver = (prescan: PrescanModel) => {
         if (route === command) {
           plugin = prescan.commandToPlugin[route]
           break
-        } else if (
-          subtree
-            ? route.indexOf(command) === 0
-            : command.indexOf(`${route}/`) === 0
-        ) {
+        } else if (subtree ? route.indexOf(command) === 0 : command.indexOf(`${route}/`) === 0) {
           if (!matchLen || route.length > matchLen) {
             plugin = prescan.commandToPlugin[route]
             matchLen = route.length
@@ -689,9 +628,7 @@ interface PrescanOptions {
  * Generate a prescan model
  *
  */
-export const generatePrescanModel = async (
-  opts: PrescanOptions
-): Promise<PrescanModel> => {
+export const generatePrescanModel = async (opts: PrescanOptions): Promise<PrescanModel> => {
   debug('generatePrescanModel', opts)
 
   const state = opts.externalOnly && commandTree.startScan()

@@ -33,10 +33,7 @@ const debug = Debug('k8s/view/modes/last-applied')
 function getLastAppliedRaw(resource: KubeResource): string {
   // kube stores the last applied configuration (if any) in a raw json string
   return (
-    resource.metadata.annotations &&
-    resource.metadata.annotations[
-      'kubectl.kubernetes.io/last-applied-configuration'
-    ]
+    resource.metadata.annotations && resource.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']
   )
 }
 
@@ -96,10 +93,7 @@ function toCustomSpec(raw: string): CustomSpec {
   }
 }
 
-export const renderAndViewLastApplied = async (
-  tab: Tab,
-  parameters: Parameters
-) => {
+export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewLastApplied', command, resource)
 

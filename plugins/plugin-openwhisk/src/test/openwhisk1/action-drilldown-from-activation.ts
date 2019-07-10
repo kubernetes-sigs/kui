@@ -42,9 +42,7 @@ describe('activation list, activation get, click on header', function(this: comm
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar
-          .expectOpen(this.app)
-          .then(sidecar.expectShowing(actionName, activationId))
+        return sidecar.expectOpen(this.app).then(sidecar.expectShowing(actionName, activationId))
       })
       .catch(common.oops(this)))
 
@@ -55,9 +53,7 @@ describe('activation list, activation get, click on header', function(this: comm
       .then(sidecar.expectShowing(actionName))
       .then(() =>
         this.app.client.waitUntil(async () => {
-          const actionSrc = await this.app.client.getText(
-            ui.selectors.SIDECAR_ACTION_SOURCE
-          )
+          const actionSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
           return actionSrc.trim() === expectedSrc
         })
       )

@@ -20,9 +20,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
 const actionNameWithSpaces = 'foo foo'
@@ -64,9 +62,7 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   it('should delete them both', () =>
     cli
       .do(`rimraf ${actionName} ${actionName2}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
-      )
+      .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
 
@@ -90,25 +86,19 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
       .do(`let ${packageName}/${actionName} = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName, undefined, undefined, packageName)
-      )
+      .then(sidecar.expectShowing(actionName, undefined, undefined, packageName))
       .catch(common.oops(this)))
   it('should create another packaged action', () =>
     cli
       .do(`let ${packageName}/${actionName2} = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName2, undefined, undefined, packageName)
-      )
+      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName))
       .catch(common.oops(this)))
   it('should delete the package recursively', () =>
     cli
       .do(`package rimraf -r ${packageName}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true })
-      )
+      .then(cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
   it('should FAIL to delete the removed package', () =>
@@ -132,27 +122,15 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   //
   it('should create a packaged action with spaces', () =>
     cli
-      .do(
-        `let "${packageNameWithSpaces}/${actionNameWithSpaces}" = x=>x`,
-        this.app
-      )
+      .do(`let "${packageNameWithSpaces}/${actionNameWithSpaces}" = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(
-          actionNameWithSpaces,
-          undefined,
-          undefined,
-          packageNameWithSpaces
-        )
-      )
+      .then(sidecar.expectShowing(actionNameWithSpaces, undefined, undefined, packageNameWithSpaces))
       .catch(common.oops(this)))
   it('should delete the package recursively', () =>
     cli
       .do(`package rimraf -r "${packageNameWithSpaces}"`, this.app)
-      .then(
-        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
-      )
+      .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
   it('should FAIL to delete the removed package', () =>
@@ -167,10 +145,7 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
       .catch(common.oops(this)))
   it('should NOT find the deleted package action', () =>
     cli
-      .do(
-        `action get "${packageNameWithSpaces}/${actionNameWithSpaces}" --no-retry`,
-        this.app
-      )
+      .do(`action get "${packageNameWithSpaces}/${actionNameWithSpaces}" --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
@@ -201,9 +176,7 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   it('should delete the sequence recursively', () =>
     cli
       .do(`rimraf -r ${seqName}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
-      )
+      .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
 })

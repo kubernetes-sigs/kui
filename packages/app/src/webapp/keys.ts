@@ -44,8 +44,5 @@ export const keys = {
 export const isCursorMovement = (evt: KeyboardEvent): boolean => {
   const code = evt.keyCode
 
-  return (
-    evt.ctrlKey &&
-    (code === keys.A || code === keys.E || code === keys.F || code === keys.B)
-  )
+  return evt.ctrlKey && (code === keys.A || code === keys.E || code === keys.F || code === keys.B)
 }

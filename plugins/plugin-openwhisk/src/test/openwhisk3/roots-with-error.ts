@@ -23,9 +23,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const goodSeqName = '59E47471-F64B-4235-8FF0-00896DDB3AFB'
 const errorSeqName = 'C6F15AE8-0DE7-4C6E-8695-CDF4B9544B13'
@@ -44,19 +42,14 @@ const filter = (L, f) => {
 }
 
 // TODO: webpack test
-localDescribe('List root-most non-erroring activations with $$!', function(
-  this: common.ISuite
-) {
+localDescribe('List root-most non-erroring activations with $$!', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
   // create the component actions
   it('should create an good action', () =>
     cli
-      .do(
-        `wsk action update ${goodActionName} ${ROOT}/data/openwhisk/foo.js`,
-        this.app
-      )
+      .do(`wsk action update ${goodActionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(goodActionName))
@@ -79,10 +72,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(
       .catch(common.oops(this)))
   it('should create a non-erroring sequence with let', () =>
     cli
-      .do(
-        `let ${goodSeqName} = ${goodActionName} -> ${goodActionName}`,
-        this.app
-      )
+      .do(`let ${goodSeqName} = ${goodActionName} -> ${goodActionName}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(goodSeqName))
@@ -102,9 +92,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(goodSeqName))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ name: 'Step1 Step1 nnn' }))
       .catch(common.oops(this)))
 
@@ -121,9 +109,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(errorSeqName))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ error: 'oops' }))
       .catch(common.oops(this)))
 
@@ -138,9 +124,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(
     cli
       .do(`$$!`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N =>
-        this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N))
-      )
+      .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
       .then(namesInList => filter(namesInList, name => name === errorSeqName))
       .then(expectToBeEmpty => assert.strictEqual(expectToBeEmpty.length, 0))
       .catch(common.oops(this)))
@@ -149,9 +133,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(
     cli
       .do(`$$!`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N =>
-        this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N))
-      )
+      .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
       .then(namesInList => filter(namesInList, name => name === goodSeqName))
       .then(expectToBeEmpty => assert.strictEqual(expectToBeEmpty.length, 0))
       .catch(common.oops(this)))

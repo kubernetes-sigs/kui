@@ -7,10 +7,7 @@ const composer = require('openwhisk-composer')
  * helper uses the MASK combinator to "mask out" the n variable.
  */
 function loop(n, composition) {
-  return composer.let(
-    { n },
-    composer.while(() => n-- > 0, composer.mask(composition))
-  )
+  return composer.let({ n }, composer.while(() => n-- > 0, composer.mask(composition)))
 }
 
 /**

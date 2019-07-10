@@ -21,12 +21,6 @@ import { addPath } from '@kui-shell/core/core/find-file'
 export default async () => {
   // give visibility to our @demos directory on the module path
   addPath(
-    dirname(
-      dirname(
-        require.resolve(
-          '@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json'
-        )
-      )
-    )
+    dirname(dirname(require.resolve('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json')))
   )
 }

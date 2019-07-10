@@ -33,18 +33,12 @@ const { localDescribe } = common
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
-const ROOT = path.dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = path.dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 const fooSrc = readFileSync(path.join(ROOT, 'data/openwhisk/foo.js')).toString()
-const foo2Src = readFileSync(
-  path.join(ROOT, 'data/openwhisk/foo2.js')
-).toString()
+const foo2Src = readFileSync(path.join(ROOT, 'data/openwhisk/foo2.js')).toString()
 
 // TODO: webpack test
-localDescribe('Sidecar bottom stripe interactions for actions', function(
-  this: common.ISuite
-) {
+localDescribe('Sidecar bottom stripe interactions for actions', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -52,34 +46,22 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(
   const verify = (name, expectedParams, expectedAnnotations, expectedSrc) => {
     // click on parameters mode button
     it(`should show parameters for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(
-        ui.selectors.SIDECAR_MODE_BUTTON('parameters')
-      )
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('parameters'))
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(
-            `${ui.selectors.SIDECAR_CONTENT} .action-source`
-          )
-        )
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
         .then(ui.expectStruct(expectedParams))
         .catch(common.oops(this))
     })
 
     // click on annotations mode button
     it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(
-        ui.selectors.SIDECAR_MODE_BUTTON('annotations')
-      )
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(
-            `${ui.selectors.SIDECAR_CONTENT} .action-source`
-          )
-        )
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
         .then(ui.expectSubset(expectedAnnotations))
         .catch(common.oops(this))
     })
@@ -90,17 +72,8 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(
-            `${ui.selectors.SIDECAR_CONTENT} .action-source`
-          )
-        )
-        .then(code =>
-          assert.strictEqual(
-            code.replace(/\s+/g, ''),
-            expectedSrc.replace(/\s+/g, '')
-          )
-        )
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+        .then(code => assert.strictEqual(code.replace(/\s+/g, ''), expectedSrc.replace(/\s+/g, '')))
         .catch(common.oops(this))
     })
   }
@@ -108,10 +81,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(
   // create an action, using the implicit entity type
   it(`should create an action ${actionName}`, () =>
     cli
-      .do(
-        `create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`,
-        this.app
-      )
+      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -120,10 +90,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(
   // create an action, using the implicit entity type
   it(`should create an action ${actionName2}`, () =>
     cli
-      .do(
-        `create ${actionName2} ${ROOT}/data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`,
-        this.app
-      )
+      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))

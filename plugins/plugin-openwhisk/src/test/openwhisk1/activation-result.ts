@@ -25,16 +25,12 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = `foo1-${new Date().getTime()}`
 
 // TODO: webpack test
-localDescribe('wsk activation result and wsk activation logs', function(
-  this: common.ISuite
-) {
+localDescribe('wsk activation result and wsk activation logs', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -66,9 +62,7 @@ localDescribe('wsk activation result and wsk activation logs', function(
             .then(sidecar.expectShowing(actionName1, activationId))
             .then(sidecar.expectMode('logs'))
             .then(() => this.app.restart())
-            .then(() =>
-              cli.do(`wsk activation result ${activationId}`, this.app)
-            )
+            .then(() => cli.do(`wsk activation result ${activationId}`, this.app))
             .then(() => sidecar.expectOpen(this.app))
             .then(sidecar.expectShowing(actionName1, activationId))
             .then(sidecar.expectMode('result'))

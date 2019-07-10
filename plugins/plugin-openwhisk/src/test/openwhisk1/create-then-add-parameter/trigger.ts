@@ -38,9 +38,7 @@ describe('Add parameters to triggers', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(triggerName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
       .then(ui.expectStruct({ x: 1 })))
 
   it('should add a parameter with implicit trigger name', () =>
@@ -49,9 +47,7 @@ describe('Add parameters to triggers', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(triggerName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
       .then(ui.expectStruct({ x: 1, y: 1 })))
 
   it('should update a parameter value with implicit trigger name', () =>
@@ -60,8 +56,6 @@ describe('Add parameters to triggers', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(triggerName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
       .then(ui.expectStruct({ x: 2, y: 1 })))
 })

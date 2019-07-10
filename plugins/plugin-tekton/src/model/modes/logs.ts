@@ -36,22 +36,16 @@ const mode: SidecarMode = {
 
     const [taskRuns, pods]: [TaskRun[], Pod[]] = await Promise.all([
       $(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
-      $(
-        `kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`
-      )
+      $(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
     ])
 
     const containers: Row[] = pods.flatMap(pod => {
       const taskName = pod.metadata.labels['tekton.dev/task']
-      const taskRun = taskRuns.find(
-        _ => _.metadata.labels['tekton.dev/task'] === taskName
-      )
+      const taskRun = taskRuns.find(_ => _.metadata.labels['tekton.dev/task'] === taskName)
 
       return pod.spec.containers.map((container, idx) => {
         const { containerID } = pod.status.containerStatuses[idx]
-        const stepRun = taskRun.status.steps.find(
-          _ => _.terminated.containerID === containerID
-        )
+        const stepRun = taskRun.status.steps.find(_ => _.terminated.containerID === containerID)
         const status = stepRun && stepRun.terminated.reason
 
         return {

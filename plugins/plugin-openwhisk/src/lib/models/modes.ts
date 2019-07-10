@@ -17,10 +17,7 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/models/modes')
 
-export const actionSpecificModes = [
-  { mode: 'code', defaultMode: true },
-  { mode: 'limits' }
-]
+export const actionSpecificModes = [{ mode: 'code', defaultMode: true }, { mode: 'limits' }]
 
 /**
  * Add action modes; where=push|unshift

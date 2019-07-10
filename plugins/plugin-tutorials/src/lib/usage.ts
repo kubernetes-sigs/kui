@@ -94,23 +94,18 @@ export const usage = {
     related: [`${entity} api`, `${entity} deps`]
   }),
 
-  imports: projectCommand(
-    'imports',
-    'discover the other modules upon which this module depends',
-    { breadcrumb: 'Module Imports' }
-  ),
-  deps: projectCommand(
-    'deps',
-    'discover the cloud services upon which this module depends',
-    { breadcrumb: 'Service Dependencies' }
-  ),
+  imports: projectCommand('imports', 'discover the other modules upon which this module depends', {
+    breadcrumb: 'Module Imports'
+  }),
+  deps: projectCommand('deps', 'discover the cloud services upon which this module depends', {
+    breadcrumb: 'Service Dependencies'
+  }),
 
   config: {
     strict: 'config',
     command: 'config',
     title: 'Configure',
-    header:
-      'configure a module before deploying, such as setting up credentials',
+    header: 'configure a module before deploying, such as setting up credentials',
     example: example('config'),
     required: importedProject,
     optional: [
@@ -176,11 +171,9 @@ export const usage = {
     related: [`${entity} list`, `${entity} set`]
   }),
 
-  delete: projectCommand(
-    'delete',
-    'delete your local copy of a given imported module',
-    { related: [`${entity} list`] }
-  ),
+  delete: projectCommand('delete', 'delete your local copy of a given imported module', {
+    related: [`${entity} list`]
+  }),
 
   status: syn =>
     projectCommand(syn, "Check on the status of a module's deployment", {
@@ -194,11 +187,9 @@ export const usage = {
       related: [`${entity} list`, `${entity} watch`]
     }),
 
-  watch: projectCommand(
-    'watch',
-    "Monitor the status of a module's deployment",
-    { related: [`${entity} list`, `${entity} status`] }
-  )
+  watch: projectCommand('watch', "Monitor the status of a module's deployment", {
+    related: [`${entity} list`, `${entity} status`]
+  })
 }
 
 /** form a subtree usage model (TODO: this should be moved to a more common spot) */

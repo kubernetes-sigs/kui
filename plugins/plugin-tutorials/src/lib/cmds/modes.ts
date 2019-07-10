@@ -75,15 +75,8 @@ const buttons: Mode[] = [
 export const modes = (defaultMode: string, api, choices): Mode[] => {
   // add the defaultMode attribute to the matching IMode
   const modes: Mode[] = _modes
-    .filter(
-      ({ mode }) =>
-        mode === 'get' ||
-        (mode === 'api' && api) ||
-        (mode === 'config' && choices)
-    )
-    .map(_ =>
-      _.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _
-    )
+    .filter(({ mode }) => mode === 'get' || (mode === 'api' && api) || (mode === 'config' && choices))
+    .map(_ => (_.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _))
 
   // return the modes plus any buttons we want to be flush right
   return modes.concat(buttons)

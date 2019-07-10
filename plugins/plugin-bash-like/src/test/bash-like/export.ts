@@ -42,17 +42,13 @@ localDescribe('export command', function(this: ISuite) {
     cli
       .do('export foo=bar', this.app)
       .then(cli.expectJustOK)
-      .then(() =>
-        cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar'))
-      )
+      .then(() => cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar')))
       .catch(oops(this)))
 
   it('should export foo bar baz with space in string', () =>
     cli
       .do('export foo="bar baz"', this.app)
       .then(cli.expectJustOK)
-      .then(() =>
-        cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar baz'))
-      )
+      .then(() => cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar baz')))
       .catch(oops(this)))
 })

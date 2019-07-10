@@ -41,8 +41,7 @@ const exportCommand = ({ parsedOptions }: EvaluatorArgs) => {
 
 const usage = {
   command: 'export',
-  docs:
-    'Export a variable or function to the environment of all the child processes running in the current shell'
+  docs: 'Export a variable or function to the environment of all the child processes running in the current shell'
 }
 
 /**

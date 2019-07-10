@@ -40,9 +40,7 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ x: 3 })))
 
   it('should create an anonymous function with _ param', () =>
@@ -57,9 +55,7 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ xx: 33 })))
 
   it('should create an anonymous packaged function with () param', () =>
@@ -74,9 +70,7 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ z: 4 })))
 
   it('should create an anonymous packaged function with _ param', () =>
@@ -91,8 +85,6 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName2))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ zz: 44 })))
 })

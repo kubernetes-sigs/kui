@@ -25,9 +25,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 describe('Click on action part of activation sidecar', function(this: common.ISuite) {
   before(openwhisk.before(this))
@@ -66,9 +64,7 @@ describe('Click on action part of activation sidecar', function(this: common.ISu
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar
-          .expectOpen(this.app)
-          .then(sidecar.expectShowing('foo', activationId))
+        return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo', activationId))
       })
       .catch(common.oops(this)))
 
@@ -87,9 +83,7 @@ describe('Click on action part of activation sidecar', function(this: common.ISu
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar
-          .expectOpen(this.app)
-          .then(sidecar.expectShowing('foo', activationId))
+        return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo', activationId))
       })
       .catch(common.oops(this)))
 

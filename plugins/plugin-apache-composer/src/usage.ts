@@ -38,8 +38,7 @@ export const composer = {
 
 export const app = {
   title: 'CRUD Operations',
-  header:
-    'These commands will help you create and invoke Composer applications.',
+  header: 'These commands will help you create and invoke Composer applications.',
   example: 'wsk app <command> or app <command>',
   commandPrefix: 'wsk app',
   available: [
@@ -71,8 +70,7 @@ export const app = {
 
 export const session = {
   title: 'Inspecting Sessions',
-  header:
-    'These commands will help you inspect the activation results of Composer applications.',
+  header: 'These commands will help you inspect the activation results of Composer applications.',
   example: 'wsk session <command>',
   commandPrefix: 'session',
   available: [

@@ -73,43 +73,18 @@ class RenderState {
     }
   }
 
-  addDummy(
-    sources = [],
-    targets,
-    obj,
-    options?,
-    directionS?: string,
-    directionT?: string
-  ) {
+  addDummy(sources = [], targets, obj, options?, directionS?: string, directionT?: string) {
     const dummyId = 'dummy_' + this.dummyCount
     let o
     let port
     this.dummyCount++
-    obj.children.push(
-      this.drawNodeNew(
-        dummyId,
-        options.label || dummyId,
-        options.type || 'Dummy',
-        sources,
-        options
-      )
-    )
+    obj.children.push(this.drawNodeNew(dummyId, options.label || dummyId, options.type || 'Dummy', sources, options))
     if (sources && sources.length > 0) {
       o = this.drawEdgeNew(sources[0], dummyId, obj)
       port = o.targetPort
       obj.edges.push(o)
       for (let i = 1; i < sources.length; i++) {
-        obj.edges.push(
-          this.drawEdgeNew(
-            sources[i],
-            dummyId,
-            obj,
-            undefined,
-            directionS,
-            undefined,
-            port
-          )
-        )
+        obj.edges.push(this.drawEdgeNew(sources[i], dummyId, obj, undefined, directionS, undefined, port))
       }
     }
 
@@ -118,30 +93,14 @@ class RenderState {
       port = o.sourcePort
       obj.edges.push(o)
       for (let i = 1; i < targets.length; i++) {
-        obj.edges.push(
-          this.drawEdgeNew(
-            dummyId,
-            targets[i],
-            obj,
-            undefined,
-            directionT,
-            port,
-            undefined
-          )
-        )
+        obj.edges.push(this.drawEdgeNew(dummyId, targets[i], obj, undefined, directionT, port, undefined))
       }
     }
 
     return dummyId
   }
 
-  drawNodeNew(
-    id: string,
-    label: string,
-    type?: string,
-    properties?,
-    options?: NodeOptions
-  ): Node {
+  drawNodeNew(id: string, label: string, type?: string, properties?, options?: NodeOptions): Node {
     // console.log(id)
     const o: Node = {
       id,
@@ -229,10 +188,7 @@ class RenderState {
         o.name = label
       }
 
-      if (
-        label.lastIndexOf('/') !== -1 &&
-        label.lastIndexOf('/') < label.length - 1
-      ) {
+      if (label.lastIndexOf('/') !== -1 && label.lastIndexOf('/') < label.length - 1) {
         o.label = label.substring(label.lastIndexOf('/') + 1)
       }
       o.height = defaultHeight
@@ -309,15 +265,11 @@ class RenderState {
           properties: {},
           children: [],
           edges: [],
-          visited: this.visited
-            ? this.visited[id2log(`${id}-<handler`)]
-            : undefined
+          visited: this.visited ? this.visited[id2log(`${id}-<handler`)] : undefined
         }
       ]
 
-      o.edges = [
-        this.drawEdgeNew(`${id}-body`, `${id}-handler`, o, undefined, 'RIGHT')
-      ]
+      o.edges = [this.drawEdgeNew(`${id}-body`, `${id}-handler`, o, undefined, 'RIGHT')]
     } else if (o.type === 'Entry' || o.type === 'Exit') {
       o.width = 18
       o.height = 18
@@ -426,13 +378,7 @@ class RenderState {
     }
 
     if (sourcePort === undefined || targetPort === undefined) {
-      debug(
-        'source or target not found',
-        sourceId,
-        targetId,
-        layer,
-        this.graphData
-      )
+      debug('source or target not found', sourceId, targetId, layer, this.graphData)
     }
 
     return {
@@ -441,19 +387,11 @@ class RenderState {
       sourcePort: sourcePort,
       target: targetId,
       targetPort: targetPort,
-      visited: this.visited
-        ? !!(this.visited[sourceId] && this.visited[targetId])
-        : undefined
+      visited: this.visited ? !!(this.visited[sourceId] && this.visited[targetId]) : undefined
     }
   }
 
-  ir2graph(
-    ir: AST.Node,
-    gm: Node,
-    id: string,
-    prevId: string[],
-    options = {}
-  ): string[] {
+  ir2graph(ir: AST.Node, gm: Node, id: string, prevId: string[], options = {}): string[] {
     // ir and graph model
     if (ir.type === 'sequence' || ir.type === 'seq' || Array.isArray(ir)) {
       // for an array of things, prevId is the previous element
@@ -471,13 +409,7 @@ class RenderState {
         if (obj.options && obj.options.helper) {
           // do nothing
         } else {
-          prev = this.ir2graph(
-            obj,
-            gm,
-            `${id}-${count}`,
-            count > 0 ? prev : prevId,
-            options
-          )
+          prev = this.ir2graph(obj, gm, `${id}-${count}`, count > 0 ? prev : prevId, options)
           count++
         }
       })
@@ -490,22 +422,14 @@ class RenderState {
         if (ir.displayLabel) {
           name += `|${ir.displayLabel}`
         }
-        gm.children.push(
-          this.drawNodeNew(id, name, ir.type, undefined, options)
-        )
+        gm.children.push(this.drawNodeNew(id, name, ir.type, undefined, options))
         if (prevId) {
           prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, id, gm)))
         }
         return [id]
       } else if (AST.isFunction(ir)) {
         gm.children.push(
-          this.drawNodeNew(
-            id,
-            ir.function.exec.prettyCode || ir.function.exec.code,
-            ir.type,
-            undefined,
-            options
-          )
+          this.drawNodeNew(id, ir.function.exec.prettyCode || ir.function.exec.code, ir.type, undefined, options)
         )
 
         if (prevId) {
@@ -514,43 +438,21 @@ class RenderState {
         return [id]
       } else if (AST.isConditional(ir)) {
         const firstTestId = gm.children.length
-        const lastTestId = this.ir2graph(
-          ir.test,
-          gm,
-          `${id}-test`,
-          undefined,
-          options
-        )
+        const lastTestId = this.ir2graph(ir.test, gm, `${id}-test`, undefined, options)
         const firstConsId = gm.children.length
-        const lastConsId = this.ir2graph(
-          ir.consequent,
-          gm,
-          `${id}-consequent`,
-          undefined,
-          options
-        )
+        const lastConsId = this.ir2graph(ir.consequent, gm, `${id}-consequent`, undefined, options)
 
         // the if may not have an "else", i.e. "alternate"
         let firstAltId
         let lastAltId
         if (ir.alternate.type !== 'empty') {
           firstAltId = gm.children.length
-          lastAltId = this.ir2graph(
-            ir.alternate,
-            gm,
-            `${id}-alternate`,
-            undefined,
-            options
-          )
+          lastAltId = this.ir2graph(ir.alternate, gm, `${id}-alternate`, undefined, options)
         }
 
         if (prevId) {
           // connect prevId to the first node in test
-          prevId.forEach(pid =>
-            gm.edges.push(
-              this.drawEdgeNew(pid, gm.children[firstTestId].id, gm)
-            )
-          )
+          prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, gm.children[firstTestId].id, gm)))
         }
 
         // connect test to consequence
@@ -561,56 +463,31 @@ class RenderState {
         } else {
           ltid = lastTestId[0]
         }
-        gm.edges.push(
-          this.drawEdgeNew(ltid, gm.children[firstConsId].id, gm, 'true')
-        )
+        gm.edges.push(this.drawEdgeNew(ltid, gm.children[firstConsId].id, gm, 'true'))
         if (lastAltId && lastAltId.length > 0) {
           // may or may not have a alt branch
-          gm.edges.push(
-            this.drawEdgeNew(ltid, gm.children[firstAltId].id, gm, 'false')
-          )
+          gm.edges.push(this.drawEdgeNew(ltid, gm.children[firstAltId].id, gm, 'false'))
         } else {
           lastAltId = [ltid]
         }
 
-        const exitConcentrator = this.addDummy(
-          lastAltId.concat(lastConsId),
-          undefined,
-          gm,
-          options
-        )
+        const exitConcentrator = this.addDummy(lastAltId.concat(lastConsId), undefined, gm, options)
         return [exitConcentrator]
       } else if (AST.isTry(ir)) {
         // insert a compound node for try
-        gm.children.push(
-          this.drawNodeNew(id, 'Try-Catch', 'try_catch', undefined, options)
-        )
+        gm.children.push(this.drawNodeNew(id, 'Try-Catch', 'try_catch', undefined, options))
         if (prevId) {
           prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, id, gm)))
         } else {
-          gm.children[
-            gm.children.length - 1
-          ].properties.compoundNoParents = true
+          gm.children[gm.children.length - 1].properties.compoundNoParents = true
         }
 
         const tryCatchPart = gm.children[gm.children.length - 1]
         const tryPart = tryCatchPart.children[0]
         const catchPart = tryCatchPart.children[1]
 
-        this.ir2graph(
-          ir.body,
-          tryPart,
-          tryPart.id + '-components',
-          undefined,
-          options
-        )
-        this.ir2graph(
-          ir.handler,
-          catchPart,
-          catchPart.id + '-components',
-          undefined,
-          options
-        )
+        this.ir2graph(ir.body, tryPart, tryPart.id + '-components', undefined, options)
+        this.ir2graph(ir.handler, catchPart, catchPart.id + '-components', undefined, options)
 
         return [gm.children[gm.children.length - 1].id]
       } else if (AST.isWhile(ir) || AST.isDoWhile(ir)) {
@@ -621,46 +498,18 @@ class RenderState {
 
         if (AST.isWhile(ir)) {
           firstTestId = gm.children.length
-          lastTestId = this.ir2graph(
-            ir.test,
-            gm,
-            `${id}-test`,
-            undefined,
-            options
-          )
+          lastTestId = this.ir2graph(ir.test, gm, `${id}-test`, undefined, options)
           if (prevId) {
             // connect prevId to the first node in test
-            prevId.forEach(pid =>
-              gm.edges.push(
-                this.drawEdgeNew(pid, gm.children[firstTestId].id, gm)
-              )
-            )
+            prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, gm.children[firstTestId].id, gm)))
           }
           firstBodyId = gm.children.length
-          lastBodyId = this.ir2graph(
-            ir.body,
-            gm,
-            `${id}-body`,
-            undefined,
-            options
-          )
+          lastBodyId = this.ir2graph(ir.body, gm, `${id}-body`, undefined, options)
         } else if (AST.isDoWhile(ir)) {
           firstBodyId = gm.children.length
-          lastBodyId = this.ir2graph(
-            ir.body,
-            gm,
-            `${id}-body`,
-            undefined,
-            options
-          )
+          lastBodyId = this.ir2graph(ir.body, gm, `${id}-body`, undefined, options)
           firstTestId = gm.children.length
-          lastTestId = this.ir2graph(
-            ir.test,
-            gm,
-            `${id}-test`,
-            undefined,
-            options
-          )
+          lastTestId = this.ir2graph(ir.test, gm, `${id}-test`, undefined, options)
         }
 
         // connect test to consequence
@@ -680,9 +529,7 @@ class RenderState {
           lbid = lastBodyId[0]
         }
 
-        gm.edges.push(
-          this.drawEdgeNew(ltid, gm.children[firstBodyId].id, gm, 'true')
-        ) // true edge for test, go to body
+        gm.edges.push(this.drawEdgeNew(ltid, gm.children[firstBodyId].id, gm, 'true')) // true edge for test, go to body
         gm.edges.push(this.drawEdgeNew(lbid, gm.children[firstTestId].id, gm)) // edge loop back to the beginning of test
 
         // for dowhile, add the edge from prev to the body at the end;
@@ -690,136 +537,66 @@ class RenderState {
         // otherwise, it crosses the prev->body and cond-yes->body edges
         if (prevId && (ir.type === 'dowhile' || ir.type === 'dowhile_nosave')) {
           // connect prevId to the first node in test
-          prevId.forEach(pid =>
-            gm.edges.push(
-              this.drawEdgeNew(pid, gm.children[firstBodyId].id, gm)
-            )
-          )
+          prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, gm.children[firstBodyId].id, gm)))
         }
 
         return [ltid]
       } else if (AST.isRetain(ir)) {
-        gm.children.push(
-          this.drawNodeNew(`${id}__origin`, '', ir.type, undefined, options)
-        )
+        gm.children.push(this.drawNodeNew(`${id}__origin`, '', ir.type, undefined, options))
 
         if (prevId) {
-          prevId.forEach(pid =>
-            gm.edges.push(this.drawEdgeNew(pid, `${id}__origin`, gm))
-          )
+          prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, `${id}__origin`, gm)))
         }
-        const lastNodes = this.ir2graph(
-          ir.components,
-          gm,
-          id,
-          [`${id}__origin`],
-          options
-        )
-        gm.children.push(
-          this.drawNodeNew(`${id}__terminus`, '', ir.type, undefined, options)
-        )
+        const lastNodes = this.ir2graph(ir.components, gm, id, [`${id}__origin`], options)
+        gm.children.push(this.drawNodeNew(`${id}__terminus`, '', ir.type, undefined, options))
         if (lastNodes) {
-          lastNodes.forEach(pid =>
-            gm.edges.push(this.drawEdgeNew(pid, `${id}__terminus`, gm))
-          )
+          lastNodes.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, `${id}__terminus`, gm)))
         }
 
-        const forwardingEdge = this.drawEdgeNew(
-          `${id}__origin`,
-          `${id}__terminus`,
-          gm,
-          undefined,
-          'EAST'
-        )
+        const forwardingEdge = this.drawEdgeNew(`${id}__origin`, `${id}__terminus`, gm, undefined, 'EAST')
         // forwardingEdge.labels = [ { text: 'forwarding' } ]
         forwardingEdge.properties = { type: 'retain' }
         gm.edges.push(forwardingEdge)
 
         return [`${id}__terminus`]
       } else if (AST.isRetryOrRepeat(ir)) {
-        gm.children.push(
-          this.drawNodeNew(id, ir.count, ir.type, undefined, options)
-        )
+        gm.children.push(this.drawNodeNew(id, ir.count, ir.type, undefined, options))
         if (prevId) {
           prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, id, gm)))
         }
         // body is in ir.components
-        this.ir2graph(
-          ir.components,
-          gm.children[gm.children.length - 1],
-          `${id}-components`,
-          undefined,
-          options
-        )
+        this.ir2graph(ir.components, gm.children[gm.children.length - 1], `${id}-components`, undefined, options)
 
         return [gm.children[gm.children.length - 1].id]
       } else if (AST.isLet(ir)) {
         // regular let
         const s = JSON.stringify(ir.declarations, undefined, 4)
         gm.children.push(
-          this.drawNodeNew(
-            id,
-            s,
-            ir.type,
-            undefined,
-            Object.assign(options, { value: ir.declarations })
-          )
+          this.drawNodeNew(id, s, ir.type, undefined, Object.assign(options, { value: ir.declarations }))
         )
         if (prevId) {
           prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, id, gm)))
         }
 
-        return this.ir2graph(
-          ir.components,
-          gm,
-          `${id}-components`,
-          [id],
-          options
-        )
+        return this.ir2graph(ir.components, gm, `${id}-components`, [id], options)
       } else if (AST.isLiteral(ir)) {
         const s = JSON.stringify(ir.value, undefined, 4)
-        gm.children.push(
-          this.drawNodeNew(
-            id,
-            s,
-            ir.type,
-            undefined,
-            Object.assign(options, { value: ir.value })
-          )
-        )
+        gm.children.push(this.drawNodeNew(id, s, ir.type, undefined, Object.assign(options, { value: ir.value })))
         if (prevId) {
           prevId.forEach(pid => gm.edges.push(this.drawEdgeNew(pid, id, gm)))
         }
 
         return [id]
       } else if (AST.isFinally(ir)) {
-        const lastBodyNode = this.ir2graph(
-          ir.body,
-          gm,
-          `${id}-body`,
-          prevId,
-          /* undefined, */ options
-        )
-        return this.ir2graph(
-          ir.finalizer,
-          gm,
-          `${id}-finalizer`,
-          lastBodyNode,
-          /* undefined, */ options
-        )
+        const lastBodyNode = this.ir2graph(ir.body, gm, `${id}-body`, prevId, /* undefined, */ options)
+        return this.ir2graph(ir.finalizer, gm, `${id}-finalizer`, lastBodyNode, /* undefined, */ options)
       } else if (AST.isParallelLike(ir)) {
         // par and map
         const label =
-          ir.type === 'map' || ir.type === 'forall'
-            ? 'Parallel Map over Array'
-            : 'Execute Tasks in Parallel'
+          ir.type === 'map' || ir.type === 'forall' ? 'Parallel Map over Array' : 'Execute Tasks in Parallel'
 
         const tooltipHeader =
-          ir.type === 'par' || ir.type === 'parallel'
-            ? 'Parallel'
-            : ir.type === 'map'
-            ? 'Map'
-            : ir.type
+          ir.type === 'par' || ir.type === 'parallel' ? 'Parallel' : ir.type === 'map' ? 'Map' : ir.type
 
         const tooltip =
           ir.type === 'map' || ir.type === 'forall'
@@ -829,13 +606,7 @@ class RenderState {
         let parent = prevId
         if (ir.set) {
           // input set to the parallel construct
-          parent = this.ir2graph(
-            ir.set,
-            gm,
-            `${id}-${ir.type}-set`,
-            parent,
-            options
-          )
+          parent = this.ir2graph(ir.set, gm, `${id}-${ir.type}-set`, parent, options)
         }
 
         // render the "Fork" node
@@ -862,13 +633,7 @@ class RenderState {
           const ellipsis: AST.Literal = { type: 'literal', value: '...' }
           const spreadItOut = [body, body, ellipsis, body]
           exits = spreadItOut.map((component, idx) => {
-            return this.ir2graph(
-              component,
-              gm,
-              `${id}-component-${idx}`,
-              parent,
-              options
-            )[0]
+            return this.ir2graph(component, gm, `${id}-component-${idx}`, parent, options)[0]
           })
         } else {
           // for parallel, render the components as a fan-out
@@ -878,13 +643,7 @@ class RenderState {
           //      \   |   /
           //        Join (we'll render this just below)
           exits = ir.components.map((component, idx) => {
-            return this.ir2graph(
-              component,
-              gm,
-              `${id}-component-${idx}`,
-              parent,
-              options
-            )[0]
+            return this.ir2graph(component, gm, `${id}-component-${idx}`, parent, options)[0]
           })
         }
 
@@ -892,8 +651,7 @@ class RenderState {
         const exitConcentrator = this.addDummy(exits, undefined, gm, {
           label: 'Wait for Completion',
           tooltipHeader: `${tooltipHeader} completion`,
-          tooltip:
-            'Wait for the parallel tasks to complete, and then return an array of results'
+          tooltip: 'Wait for the parallel tasks to complete, and then return an array of results'
         })
         return [exitConcentrator]
       } else if (AST.isComponentBearing(ir)) {
@@ -911,13 +669,7 @@ class RenderState {
         }
 
         // render the components as a sequence
-        this.ir2graph(
-          ir.components,
-          body,
-          `${id}-components`,
-          undefined,
-          options
-        )
+        this.ir2graph(ir.components, body, `${id}-components`, undefined, options)
 
         return [id]
       } else if (typeof ir === 'object') {
@@ -1000,8 +752,7 @@ export default async function fsm2graph(
             let path = log.substring(log.lastIndexOf(' ') + 1)
             // replace all [,],.in path to - to use as a id, as css selector cannot have those characters
             path = path.replace(/[\[\.]/g, '-').replace(/\]/g, '') // eslint-disable-line no-useless-escape
-            if (renderState.visited[path] === undefined)
-              renderState.visited[path] = []
+            if (renderState.visited[path] === undefined) renderState.visited[path] = []
             renderState.visited[path].push(index)
           }
         })
@@ -1012,11 +763,8 @@ export default async function fsm2graph(
       const seg = k.split('-')
       seg.pop() // kick out the last element == get the compound node id
       const path = seg.join('-')
-      if (renderState.visited[path] === undefined)
-        renderState.visited[path] = []
-      renderState.visited[path] = renderState.visited[path].concat(
-        renderState.visited[k]
-      ) // join it back, value is all the items in the child arrays (not sure if it's necessary)
+      if (renderState.visited[path] === undefined) renderState.visited[path] = []
+      renderState.visited[path] = renderState.visited[path].concat(renderState.visited[k]) // join it back, value is all the items in the child arrays (not sure if it's necessary)
     })
     debug('visited nodes:', renderState.visited)
   } else {
@@ -1032,9 +780,7 @@ export default async function fsm2graph(
     debug('using rule as start', rule)
     const start = renderState.drawNodeNew('Entry', 'trigger', 'Entry')
     start.properties.kind = 'trigger'
-    start.properties.kindDetail = rule
-      ? rule.trigger.name
-      : AST.isOn(ir) && ir.trigger
+    start.properties.kindDetail = rule ? rule.trigger.name : AST.isOn(ir) && ir.trigger
     start.width = 24
     renderState.graphData.children.push(start) // insert Entry node
 
@@ -1044,9 +790,7 @@ export default async function fsm2graph(
       ir = ir.components
     }
   } else {
-    renderState.graphData.children.push(
-      renderState.drawNodeNew('Entry', 'start', 'Entry')
-    ) // insert Entry node
+    renderState.graphData.children.push(renderState.drawNodeNew('Entry', 'start', 'Entry')) // insert Entry node
   }
 
   let lastNodes = renderState.ir2graph(
@@ -1059,13 +803,9 @@ export default async function fsm2graph(
   if (lastNodes === undefined) {
     lastNodes = ['Entry']
   }
-  renderState.graphData.children.push(
-    renderState.drawNodeNew('Exit', 'end', 'Exit', lastNodes)
-  ) // insert Exit node
+  renderState.graphData.children.push(renderState.drawNodeNew('Exit', 'end', 'Exit', lastNodes)) // insert Exit node
   lastNodes.forEach(pid =>
-    renderState.graphData.edges.push(
-      renderState.drawEdgeNew(pid, 'Exit', renderState.graphData)
-    )
+    renderState.graphData.edges.push(renderState.drawEdgeNew(pid, 'Exit', renderState.graphData))
   ) // link the end of the graph to Exit
 
   debug('graphData', renderState.graphData)
@@ -1080,15 +820,10 @@ export default async function fsm2graph(
       .then(result => {
         const notDeployed = []
 
-        const graphChildrenStatus = (
-          childrens: Node[],
-          id: string,
-          deployed: boolean
-        ) => {
+        const graphChildrenStatus = (childrens: Node[], id: string, deployed: boolean) => {
           return childrens.forEach((children: Node) => {
             if (children.id === id) children.deployed = deployed
-            else if (children.children)
-              return graphChildrenStatus(children.children, id, deployed)
+            else if (children.children) return graphChildrenStatus(children.children, id, deployed)
           })
         }
 
@@ -1111,10 +846,7 @@ export default async function fsm2graph(
 
         // warn user about not-deployed actions (but only if !activations, i.e. not for session flow)
         if (notDeployed.length > 0 && !renderState.activations) {
-          const container = sidecarSelector(
-            tab,
-            '.sidecar-header-secondary-content .custom-header-content'
-          )
+          const container = sidecarSelector(tab, '.sidecar-header-secondary-content .custom-header-content')
           if (container && (!options || !options.noHeader)) {
             removeAllDomChildren(container)
             const css = {
@@ -1155,8 +887,7 @@ export default async function fsm2graph(
               examples = message.querySelector(`.${css.examples}`)
             }
 
-            const actionStr =
-              notDeployed.length === 1 ? 'component' : 'components'
+            const actionStr = notDeployed.length === 1 ? 'component' : 'components'
             text.innerText = `depends on ${notDeployed.length} undeployed ${actionStr}`
 
             /* const pre = notDeployed.length > 2 ? 'e.g. ' : ''
@@ -1175,10 +906,5 @@ export default async function fsm2graph(
   debug('inserting DOM, calling graph2doms')
 
   const graph2doms = (await import('./graph2doms')).default
-  return graph2doms(
-    tab,
-    renderState.graphData,
-    containerElement,
-    renderState.activations
-  )
+  return graph2doms(tab, renderState.graphData, containerElement, renderState.activations)
 }

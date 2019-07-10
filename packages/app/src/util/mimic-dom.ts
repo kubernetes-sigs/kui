@@ -126,11 +126,7 @@ export class ElementMimic {
 
   recursiveInnerTextLength(): number {
     return (
-      this.innerText.length +
-      this.children.reduce(
-        (sum: number, child) => sum + child.recursiveInnerTextLength(),
-        0
-      )
+      this.innerText.length + this.children.reduce((sum: number, child) => sum + child.recursiveInnerTextLength(), 0)
     )
   }
 

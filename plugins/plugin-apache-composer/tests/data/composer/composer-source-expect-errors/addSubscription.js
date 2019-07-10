@@ -43,29 +43,16 @@ module.exports = composer.let(
         }),
         `${cloudantBinding}/write`,
         () => ({
-          message:
-            'Hi, ' +
-            name +
-            '. I will now notify you when TravisCI jobs for your Apache OpenWhisk PRs complete.'
+          message: 'Hi, ' + name + '. I will now notify you when TravisCI jobs for your Apache OpenWhisk PRs complete.'
         })
       ),
       // write failed.  Try to figure out why
       composer.try(
-        composer.sequence(
-          () => ({ dbname: db, docid: name }),
-          `${cloudantBinding}/read-document`,
-          doc => ({
-            message:
-              "I'm sorry, but <@" +
-              doc.userID +
-              '> is already subscribed to be notified for PRs by `' +
-              name +
-              '`'
-          })
-        ),
+        composer.sequence(() => ({ dbname: db, docid: name }), `${cloudantBinding}/read-document`, doc => ({
+          message: "I'm sorry, but <@" + doc.userID + '> is already subscribed to be notified for PRs by `' + name + '`'
+        })),
         () => ({
-          message:
-            "I'm sorry. There was an error updating Cloudant. Try again later."
+          message: "I'm sorry. There was an error updating Cloudant. Try again later."
         })
       )
     ),

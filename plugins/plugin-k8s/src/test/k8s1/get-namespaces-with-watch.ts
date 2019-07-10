@@ -16,11 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
-import {
-  waitForGreen,
-  waitForRed,
-  createNS as create
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS as create } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 /** name of the namespace */
 const nsName: string = create()
 
@@ -30,11 +26,7 @@ enum Status {
 }
 
 /** after a cli.do (res), wait for a table row with the given status */
-const waitForStatus = async function(
-  this: common.ISuite,
-  status: Status,
-  res
-): Promise<string> {
+const waitForStatus = async function(this: common.ISuite, status: Status, res): Promise<string> {
   const selector = await cli.expectOKWithCustom({
     selector: selectors.BY_NAME(nsName)
   })(res)
@@ -50,14 +42,10 @@ const waitForStatus = async function(
 /** create namespace, and expect status eventually to be green */
 const createNS = async function(this: common.ISuite, kubectl: string) {
   it(`should create namespace from URL via ${kubectl}`, async () => {
-    const waitForOnline: (
-      res: AppAndCount
-    ) => Promise<string> = waitForStatus.bind(this, Status.Online)
+    const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
 
     try {
-      await waitForOnline(
-        await cli.do(`${kubectl} create ns ${nsName}`, this.app)
-      )
+      await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
     } catch (err) {
       common.oops(this)(err)
     }
@@ -68,9 +56,7 @@ const createNS = async function(this: common.ISuite, kubectl: string) {
 const deleteNS = function(this: common.ISuite, kubectl: string) {
   it(`should delete the namespace ${nsName} from URL via ${kubectl}`, async () => {
     try {
-      const waitForOffline: (
-        res: AppAndCount
-      ) => Promise<string> = waitForStatus.bind(this, Status.Offline)
+      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
       const res = await cli.do(`${kubectl} delete ns ${nsName}`, this.app)
 
@@ -91,17 +77,10 @@ const watchNS = function(this: common.ISuite, kubectl: string) {
         const waitForOnline = waitForStatus.bind(this, Status.Online)
         const waitForOffline = waitForStatus.bind(this, Status.Offline)
 
-        const selector1 = await waitForOnline(
-          await cli.do(`${kubectl} create ns ${nsName}`, this.app)
-        )
+        const selector1 = await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
         const selector2 = await waitForOnline(await cli.do(watchCmd, this.app))
-        const selector2ButOffline = selector2.replace(
-          Status.Online,
-          Status.Offline
-        )
-        const selector3 = await waitForOffline(
-          await cli.do(`${kubectl} delete ns ${nsName}`, this.app)
-        )
+        const selector2ButOffline = selector2.replace(Status.Online, Status.Offline)
+        const selector3 = await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
 
         // the create and delete badges had better still exist
         await this.app.client.waitForExist(selector1)
@@ -115,9 +94,7 @@ const watchNS = function(this: common.ISuite, kubectl: string) {
         await this.app.client.waitForExist(selector2ButOffline)
 
         // create again
-        await waitForOnline(
-          await cli.do(`${kubectl} create ns ${nsName}`, this.app)
-        )
+        await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
 
         // the "online" badge from the watch had better now exist again after the create
         // (i.e. we had better actually be watching!)
@@ -127,9 +104,7 @@ const watchNS = function(this: common.ISuite, kubectl: string) {
         await this.app.client.waitForExist(selector2ButOffline, 20000, true)
 
         // delete again
-        await waitForOffline(
-          await cli.do(`${kubectl} delete ns ${nsName}`, this.app)
-        )
+        await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
 
         // the "online" badge from the watch had better *NOT* exist after the delete
         // (i.e. we had better actually be watching!)

@@ -26,9 +26,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     `/wsk/session/result`,
     ({ command }) => {
-      return repl
-        .qfexec(command.replace('session result', 'activation get'))
-        .then(result => result.response.result)
+      return repl.qfexec(command.replace('session result', 'activation get')).then(result => result.response.result)
     },
     { usage: sessionGet('result') }
   )
@@ -44,9 +42,7 @@ export default async (commandTree: CommandRegistrar) => {
             return activations.find(activation => {
               if (
                 activation.annotations &&
-                activation.annotations.find(
-                  ({ key, value }) => key === 'conductor' && value
-                )
+                activation.annotations.find(({ key, value }) => key === 'conductor' && value)
               ) {
                 // find session
                 if (parsedOptions['last-failed']) {
@@ -54,8 +50,7 @@ export default async (commandTree: CommandRegistrar) => {
                   if (activation.statusCode !== 0) {
                     if (typeof parsedOptions['last-failed'] === 'string') {
                       // handle 'session get --last-failed [appName]'
-                      if (activation.name === parsedOptions['last-failed'])
-                        return activation
+                      if (activation.name === parsedOptions['last-failed']) return activation
                     } else {
                       return activation // handle 'session get --last'
                     }
@@ -63,8 +58,7 @@ export default async (commandTree: CommandRegistrar) => {
                 } else {
                   // handle 'session get --last'
                   if (typeof parsedOptions.last === 'string') {
-                    if (activation.name === parsedOptions.last)
-                      return activation // handle 'session get --last [appName]'
+                    if (activation.name === parsedOptions.last) return activation // handle 'session get --last [appName]'
                   } else {
                     return activation // handle 'session get --last'
                   }
@@ -96,17 +90,12 @@ export default async (commandTree: CommandRegistrar) => {
 
         if (last) {
           return repl
-            .qexec(
-              `wsk activation list --limit 1` +
-                (typeof last === 'string' ? ` --name ${last}` : '')
-            )
+            .qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
             .then(activations => {
               if (activations.length === 0) {
                 throw new Error('No such activation found')
               } else {
-                return repl.qexec(
-                  `wsk activation get ${activations[0].activationId}`
-                )
+                return repl.qexec(`wsk activation get ${activations[0].activationId}`)
               }
             })
         }

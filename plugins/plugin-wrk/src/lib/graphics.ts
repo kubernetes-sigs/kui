@@ -15,10 +15,7 @@
  */
 
 import { Tab } from '@kui-shell/core/webapp/cli'
-import {
-  addNameToSidecarHeader,
-  getSidecar
-} from '@kui-shell/core/webapp/views/sidecar'
+import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 import * as chart from './chart'
 import { prettyUrl } from './util'
@@ -66,18 +63,10 @@ export const initUI = ({
  * Form the response to the REPL
  *
  */
-export const response = (
-  tab: Tab,
-  graphics,
-  { url, testName, defaultMode = 'last', label = 'Last Run' }
-) => {
+export const response = (tab: Tab, graphics, { url, testName, defaultMode = 'last', label = 'Last Run' }) => {
   setTimeout(() => chart.init(graphics), 650)
 
-  addNameToSidecarHeader(
-    getSidecar(tab),
-    viewName,
-    `${testName} on ${prettyUrl(url)}`
-  )
+  addNameToSidecarHeader(getSidecar(tab), viewName, `${testName} on ${prettyUrl(url)}`)
 
   return {
     type: 'custom',

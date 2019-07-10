@@ -20,5 +20,4 @@ import { Tab } from '@kui-shell/core/webapp/cli'
  * Select a given element in the currently visible sidecar
  *
  */
-export default (tab: Tab, subselect = ''): HTMLElement =>
-  tab.querySelector(`sidecar ${subselect}`)
+export default (tab: Tab, subselect = ''): HTMLElement => tab.querySelector(`sidecar ${subselect}`)

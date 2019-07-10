@@ -26,9 +26,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
@@ -40,10 +38,7 @@ localDescribe('Invoke -q (quiet invoke)', function(this: common.ISuite) {
 
   it('should create an action', () =>
     cli
-      .do(
-        `create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`,
-        this.app
-      )
+      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName)))
@@ -51,10 +46,7 @@ localDescribe('Invoke -q (quiet invoke)', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(
-        `create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`,
-        this.app
-      )
+      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2)))

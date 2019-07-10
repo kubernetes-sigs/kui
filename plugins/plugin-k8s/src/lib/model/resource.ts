@@ -126,9 +126,7 @@ export function isRoleBinding(resource: KubeResource): resource is RoleBinding {
 interface ServiceAccount extends KubeResource {
   secrets: { name: string }[]
 }
-export function isServiceAccount(
-  resource: KubeResource
-): resource is ServiceAccount {
+export function isServiceAccount(resource: KubeResource): resource is ServiceAccount {
   const sa = resource as ServiceAccount
   return sa.secrets !== undefined
 }

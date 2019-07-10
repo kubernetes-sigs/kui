@@ -10,11 +10,7 @@ function main(params) {
 
   var promise = new Promise(function(resolve) {
     // eslint-disable-next-line handle-callback-err
-    request.post(url, { form: { name: search, title: search } }, function(
-      error,
-      response,
-      body
-    ) {
+    request.post(url, { form: { name: search, title: search } }, function(error, response, body) {
       resolve({
         // need to return this so that HTTP Response body is parsed correctly
         headers: {

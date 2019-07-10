@@ -30,19 +30,15 @@ const debug = Debug('plugins/core-support/text-search')
 async function registerListener() {
   if (typeof document === 'undefined') return // return if no document
 
-  const root = path.dirname(
-    require.resolve('@kui-shell/plugin-core-support/package.json')
-  )
+  const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
   injectCSS(path.join(root, 'web/css/text-search.css'))
 
   const app = await import('electron')
 
   // in case the document needs to be restyled as a consequence of the
   // searchBar visibility
-  const addVisibilityStatusToDocument = () =>
-    document.body.classList.add('search-bar-is-visible')
-  const removeVisibilityStatusFromDocument = () =>
-    document.body.classList.remove('search-bar-is-visible')
+  const addVisibilityStatusToDocument = () => document.body.classList.add('search-bar-is-visible')
+  const removeVisibilityStatusFromDocument = () => document.body.classList.remove('search-bar-is-visible')
 
   // insert html
   const searchBar = document.createElement('div')
@@ -55,12 +51,8 @@ async function registerListener() {
   page.insertBefore(searchBar, page.querySelector('main').nextSibling)
 
   // now add the logic
-  const searchInput = document.getElementById(
-    'search-input'
-  ) as HTMLInputElement
-  const searchFoundText = document.getElementById(
-    'search-found-text'
-  ) as HTMLElement
+  const searchInput = document.getElementById('search-input') as HTMLInputElement
+  const searchFoundText = document.getElementById('search-found-text') as HTMLElement
 
   const stopSearch = (clear: boolean) => {
     app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
@@ -130,11 +122,7 @@ async function registerListener() {
   })
 
   document.body.addEventListener('keydown', function(e: KeyboardEvent) {
-    if (
-      !e.defaultPrevented &&
-      e.keyCode === keys.F &&
-      ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)
-    ) {
+    if (!e.defaultPrevented && e.keyCode === keys.F && ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)) {
       // ctrl/cmd-f opens search, unless some interior region prevented default
       searchBar.classList.add('visible')
       addVisibilityStatusToDocument()

@@ -76,9 +76,7 @@ describe('Create a sequence via let', function(this: common.ISuite) {
   it(`should delete ${seqName5} and its two inline anonymous functions`, () =>
     cli
       .do(`wsk action rimraf -r ${seqName5}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true })
-      )
+      .then(cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true }))
       .then(sidecar.expectClosed))
 
   // create the sequence with a max of white spaces
@@ -100,8 +98,6 @@ describe('Create a sequence via let', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(ui.expectStruct({ y: 3 })))
 })

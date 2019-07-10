@@ -28,9 +28,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const actionName1 = `bottom-bar-back-button-test-${uuid()}`
 const actionName2 = `bottom-bar-back-button-test-${uuid()}`
@@ -61,10 +59,7 @@ describe('Bottom bar back button functionality', function(this: common.ISuite) {
 
   it('should create a composer sequence', () =>
     cli
-      .do(
-        `app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence2.js`,
-        this.app
-      )
+      .do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence2.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
@@ -151,9 +146,7 @@ describe('Bottom bar back button functionality', function(this: common.ISuite) {
         .then(() => this.app.client.getAttribute(cell1, 'data-action-name'))
         .then(async actionName => {
           await this.app.client.click(cell1)
-          return Promise.resolve(this.app).then(
-            sidecar.expectShowing(actionName)
-          )
+          return Promise.resolve(this.app).then(sidecar.expectShowing(actionName))
         })
         .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
         .then(() => this.app)
@@ -183,9 +176,7 @@ describe('Bottom bar back button functionality', function(this: common.ISuite) {
         .then(() => this.app.client.getAttribute(cell1, 'data-action-name'))
         .then(async actionName => {
           await this.app.client.click(cell1)
-          return Promise.resolve(this.app).then(
-            sidecar.expectShowing(actionName)
-          )
+          return Promise.resolve(this.app).then(sidecar.expectShowing(actionName))
         })
         .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
         .then(() => this.app)
@@ -195,9 +186,7 @@ describe('Bottom bar back button functionality', function(this: common.ISuite) {
         .then(() => this.app.client.getAttribute(cell2, 'data-action-name'))
         .then(async actionName => {
           await this.app.client.click(cell2)
-          return Promise.resolve(this.app).then(
-            sidecar.expectShowing(actionName)
-          )
+          return Promise.resolve(this.app).then(sidecar.expectShowing(actionName))
         })
         .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
         .then(() => this.app)

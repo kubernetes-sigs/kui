@@ -79,20 +79,12 @@ localDescribe('shell commands', function(this: common.ISuite) {
         .then(cli.expectErrorWithPassthrough(500))
         .then(N =>
           Promise.all([
+            this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
             this.app.client.waitForExist(
-              `${selectors.OUTPUT_N(
-                N
-              )} h4.usage-error-title[data-title="commands"]`
+              `${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`
             ),
             this.app.client.waitForExist(
-              `${selectors.OUTPUT_N(
-                N
-              )} .bx--breadcrumb-item .bx--no-link[data-label="app"]`
-            ),
-            this.app.client.waitForExist(
-              `${selectors.OUTPUT_N(
-                N
-              )} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`
+              `${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`
             )
           ])
         )

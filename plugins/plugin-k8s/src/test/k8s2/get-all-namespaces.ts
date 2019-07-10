@@ -50,9 +50,7 @@ describe('electron get all-namespaces', function(this: common.ISuite) {
             `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
             this.app
           )
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-          )
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
@@ -70,9 +68,7 @@ describe('electron get all-namespaces', function(this: common.ISuite) {
           await waitForGreen(this.app, selector)
 
           // make sure the NAME cell is clickable (as opposed to, say, the NAMESPACE cell)
-          await this.app.client.waitForExist(
-            `${selector} .clickable [data-key="NAME"]`
-          )
+          await this.app.client.waitForExist(`${selector} .clickable [data-key="NAME"]`)
 
           // now click on that cell
           this.app.client.click(`${selector} .clickable`)
@@ -107,9 +103,7 @@ describe('electron get all-namespaces', function(this: common.ISuite) {
       it(`should delete the pod in ns ${ns} by name via ${kubectl}`, () => {
         return cli
           .do(`${kubectl} delete pod nginx -n ${ns}`, this.app)
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-          )
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })

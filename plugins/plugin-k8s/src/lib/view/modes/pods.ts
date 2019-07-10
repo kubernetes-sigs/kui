@@ -61,10 +61,7 @@ const podsButton = (command: string, resource: Resource, overrides?) =>
 export const podMode: ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => {
     // let's see if the resource refers to a pod in some fashion
-    return (
-      resource.kind === 'Deployment' ||
-      (resource.status !== undefined && resource.status.podName !== undefined)
-    ) // e.g. tekton TaskRun or PipelineRun
+    return resource.kind === 'Deployment' || (resource.status !== undefined && resource.status.podName !== undefined) // e.g. tekton TaskRun or PipelineRun
   },
   mode: (command: string, resource: Resource) => {
     debug('addPods', resource)
@@ -93,9 +90,7 @@ export const renderAndViewPods = async (tab: Tab, parameters: Parameters) => {
   const { selector } = resource.resource.spec
 
   const getPods = selector
-    ? `kubectl get pods ${selectorToString(selector)} -n "${
-        resource.resource.metadata.namespace
-      }"`
+    ? `kubectl get pods ${selectorToString(selector)} -n "${resource.resource.metadata.namespace}"`
     : `kubectl get pods ${resource.resource.status.podName} -n "${resource.resource.metadata.namespace}"`
   debug('getPods', getPods)
 

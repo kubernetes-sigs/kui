@@ -24,18 +24,14 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, normalizeHTML, sidecar } = ui
 const { rp } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const REMOTE1 = {
-  url:
-    'https://ibm.box.com/shared/static/8eraoo66gza7rbd7xxi2nal7v9jav8wf.html',
+  url: 'https://ibm.box.com/shared/static/8eraoo66gza7rbd7xxi2nal7v9jav8wf.html',
   local: `${ROOT}/data/openwhisk/hello.html`
 }
 const REMOTE2 = {
-  url:
-    'https://ibm.box.com/shared/static/zsye0mwai0kce2p6wssltpsi5bfj9dy0.html',
+  url: 'https://ibm.box.com/shared/static/zsye0mwai0kce2p6wssltpsi5bfj9dy0.html',
   local: `${ROOT}/data/openwhisk/openwhisk-shell-demo-html`
 }
 const actionName = 'foo'
@@ -52,18 +48,9 @@ describe('Create an action via let from a remote resource', function(this: commo
   before(openwhisk.before(this))
   after(common.after(this))
 
-  const doCreate = remote => (
-    actionName,
-    extension = '',
-    packageName?
-  ) => () => {
+  const doCreate = remote => (actionName, extension = '', packageName?) => () => {
     return cli
-      .do(
-        `let ${
-          packageName ? packageName + '/' : ''
-        }${actionName}${extension} = ${remote.url}`,
-        this.app
-      )
+      .do(`let ${packageName ? packageName + '/' : ''}${actionName}${extension} = ${remote.url}`, this.app)
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: href, rejectUnauthorized: false }))
@@ -74,29 +61,21 @@ describe('Create an action via let from a remote resource', function(this: commo
           } else {
             assert.strictEqual(
               normalizeHTML(content),
-              normalizeHTML(data).replace(
-                'nickm_wskng_test',
-                ui.expectedNamespace()
-              )
+              normalizeHTML(data).replace('nickm_wskng_test', ui.expectedNamespace())
             )
           }
         })
       )
       .then(() => this.app)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName, undefined, undefined, packageName)
-      )
+      .then(sidecar.expectShowing(actionName, undefined, undefined, packageName))
   }
 
   const doCreate1 = doCreate(REMOTE1)
   const doCreate2 = doCreate(REMOTE2)
 
   it('should create an action from a remote resource', doCreate1(actionName))
-  it(
-    'should create an action from a remote resource, with extension',
-    doCreate1(actionName2, '.html')
-  )
+  it('should create an action from a remote resource, with extension', doCreate1(actionName2, '.html'))
   it(
     'should create an action from a remote resource, with extension and package name',
     doCreate1(actionName3, '.html', packageName)
@@ -106,10 +85,7 @@ describe('Create an action via let from a remote resource', function(this: commo
     doCreate1(actionName4, '', packageName2)
   )
 
-  it(
-    'should create an action from a remote resource that has no extension',
-    doCreate2(actionName5, '.html')
-  )
+  it('should create an action from a remote resource that has no extension', doCreate2(actionName5, '.html'))
   it(
     'should create an action from a remote resource that has no extension, with package name',
     doCreate2(actionName6, '.html', packageName3)

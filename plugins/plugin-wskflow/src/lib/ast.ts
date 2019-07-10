@@ -184,12 +184,7 @@ export interface ParallelLike extends ComponentArrayBearing {
 }
 
 export function isParallelLike(ast: Node): ast is ParallelLike {
-  return (
-    ast.type === 'parallel' ||
-    ast.type === 'par' ||
-    ast.type === 'map' ||
-    ast.type === 'forall'
-  )
+  return ast.type === 'parallel' || ast.type === 'par' || ast.type === 'map' || ast.type === 'forall'
 }
 
 export interface MapLike extends Node {

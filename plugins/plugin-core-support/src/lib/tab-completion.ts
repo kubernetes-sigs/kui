@@ -47,18 +47,12 @@ export interface TabCompletionSpec {
    */
   toBeCompletedIdx: number
 }
-type Enumerator = (
-  commandLine: CommandLine,
-  spec: TabCompletionSpec
-) => string[] | Promise<string[]>
+type Enumerator = (commandLine: CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
 const enumerators: Enumerator[] = []
 export function registerEnumerator(enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
-async function applyEnumerator(
-  commandLine: CommandLine,
-  spec: TabCompletionSpec
-): Promise<string[]> {
+async function applyEnumerator(commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
   return lists.flatMap(x => x).filter(x => x)
 }
@@ -72,8 +66,7 @@ async function applyEnumerator(
 const listenForUpDown = (prompt: HTMLInputElement) => {
   const moveTo = (nextOp: string, evt: Event) => {
     const block = cli.getCurrentBlock()
-    const temporaryContainer =
-      block && block.querySelector('.tab-completion-temporary')
+    const temporaryContainer = block && block.querySelector('.tab-completion-temporary')
 
     if (temporaryContainer) {
       const current = temporaryContainer.querySelector('.selected')
@@ -126,9 +119,7 @@ const listenForEscape = () => {
   document.onkeyup = evt => {
     if (evt.keyCode === keys.ESCAPE) {
       const block = cli.getCurrentBlock()
-      const temporaryContainer =
-        block &&
-        (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+      const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
       if (temporaryContainer) {
         evt.preventDefault()
@@ -197,17 +188,11 @@ const makeCompletionContainer = (
     const args = repl.split(prompt.value)
     const currentText = args[temporaryContainer.lastIdx]
     const prevMatches = temporaryContainer.currentMatches
-    const newMatches = prevMatches.filter(
-      ({ match }) => match.indexOf(currentText) === 0
-    )
-    const removedMatches = prevMatches.filter(
-      ({ match }) => match.indexOf(currentText) !== 0
-    )
+    const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
+    const removedMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) !== 0)
 
     temporaryContainer.currentMatches = newMatches
-    removedMatches.forEach(({ option }) =>
-      temporaryContainer.removeChild(option)
-    )
+    removedMatches.forEach(({ option }) => temporaryContainer.removeChild(option))
 
     temporaryContainer['partial'] = currentText
 
@@ -253,18 +238,10 @@ const shellescape = (str: string): string => {
  * overlap at the beginning.
  *
  */
-const completeWith = (
-  partial: string,
-  match: string,
-  doEscape = false,
-  addSpace = false
-): string => {
+const completeWith = (partial: string, match: string, doEscape = false, addSpace = false): string => {
   const escapedMatch = !doEscape ? match : shellescape(match) // partial is escaped already, so escape the match, too
   const partialIdx = escapedMatch.indexOf(partial)
-  const remainder =
-    partialIdx >= 0
-      ? escapedMatch.substring(partialIdx + partial.length)
-      : escapedMatch
+  const remainder = partialIdx >= 0 ? escapedMatch.substring(partialIdx + partial.length) : escapedMatch
   return remainder + (addSpace ? ' ' : '')
 }
 
@@ -332,17 +309,13 @@ const complete = (
   const addToPrompt = (extra: string): void => {
     const pos = prompt.selectionStart + extra.length
     prompt.value =
-      prompt.value.substring(0, prompt.selectionStart) +
-      extra +
-      prompt.value.substring(prompt.selectionStart)
+      prompt.value.substring(0, prompt.selectionStart) + extra + prompt.value.substring(prompt.selectionStart)
     prompt.setSelectionRange(pos, pos)
 
     // make sure the new text is visible
     // see https://github.com/IBM/kui/issues/1367
     prompt.scrollLeft =
-      (prompt.scrollWidth *
-        Math.max(0, pos - partial.length - extra.length - 1)) /
-      prompt.value.length
+      (prompt.scrollWidth * Math.max(0, pos - partial.length - extra.length - 1)) / prompt.value.length
   }
 
   if (dirname) {
@@ -461,19 +434,14 @@ const updateReplToReflectLongestPrefix = (
 ) => {
   if (matches.length > 0) {
     const shortest = matches.reduce(
-      (minLength: false | number, match) =>
-        !minLength ? match.length : Math.min(minLength, match.length),
+      (minLength: false | number, match) => (!minLength ? match.length : Math.min(minLength, match.length)),
       false
     )
     let idx = 0
 
     const partialComplete = (idx: number) => {
       // debug('partial complete', idx)
-      const completion = completeWith(
-        partial,
-        matches[0].substring(0, idx),
-        true
-      )
+      const completion = completeWith(partial, matches[0].substring(0, idx), true)
       temporaryContainer.partial = temporaryContainer.partial + completion
       prompt.value = prompt.value + completion
       return temporaryContainer.partial
@@ -522,23 +490,11 @@ const presentEnumeratorSuggestions = (
     const partial = last
     const dirname = undefined
     if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(
-        block,
-        prompt,
-        partial,
-        dirname,
-        lastIdx
-      )
+      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
     }
 
-    const prefix = updateReplToReflectLongestPrefix(
-      prompt,
-      filteredList,
-      temporaryContainer
-    )
-    filteredList.forEach(
-      addSuggestion(temporaryContainer, prefix || last, dirname, prompt)
-    )
+    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
   }
 }
 
@@ -586,12 +542,7 @@ const suggestLocalFile = (
         const partial = path.basename(last)
         const matches: string[] = files.filter(_f => {
           const f = shellescape(_f)
-          return (
-            (lastIsDir || f.indexOf(partial) === 0) &&
-            !f.endsWith('~') &&
-            f !== '.' &&
-            f !== '..'
-          )
+          return (lastIsDir || f.indexOf(partial) === 0) && !f.endsWith('~') && f !== '.' && f !== '..'
         })
 
         debug('fs.readdir success', partial, matches)
@@ -617,20 +568,10 @@ const suggestLocalFile = (
           // make a temporary div to house the completion options,
           // and attach it to the block that encloses the current prompt
           if (!temporaryContainer) {
-            temporaryContainer = makeCompletionContainer(
-              block,
-              prompt,
-              partial,
-              dirname,
-              lastIdx
-            )
+            temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
           }
 
-          const prefix = updateReplToReflectLongestPrefix(
-            prompt,
-            matches,
-            temporaryContainer
-          )
+          const prefix = updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
 
           // add each match to that temporary div
           matches.forEach((match, idx) => {
@@ -704,24 +645,12 @@ const filterAndPresentEntitySuggestions = (
     const dirname = undefined
 
     if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(
-        block,
-        prompt,
-        partial,
-        dirname,
-        lastIdx
-      )
+      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
     }
 
-    const prefix = updateReplToReflectLongestPrefix(
-      prompt,
-      filteredList,
-      temporaryContainer
-    )
+    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
 
-    filteredList.forEach(
-      addSuggestion(temporaryContainer, prefix || last, dirname, prompt)
-    )
+    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
   }
 }
 
@@ -770,9 +699,7 @@ const suggestCommandCompletions = (
     }
 
     // add suggestions to the container
-    matches.forEach(
-      addSuggestion(temporaryContainer, partial, undefined, prompt)
-    )
+    matches.forEach(addSuggestion(temporaryContainer, partial, undefined, prompt))
   }
 }
 
@@ -797,15 +724,7 @@ const suggest = (
     // can enumerate the entities of the specified type
     return repl
       .qexec(`${param.entity} list --limit 200`)
-      .then(
-        filterAndPresentEntitySuggestions(
-          path.basename(last),
-          block,
-          prompt,
-          temporaryContainer,
-          lastIdx
-        )
-      )
+      .then(filterAndPresentEntitySuggestions(path.basename(last), block, prompt, temporaryContainer, lastIdx))
   }
 }
 
@@ -822,18 +741,14 @@ export default () => {
       key: 'tab-completion.css'
     })
   } else {
-    const root = path.dirname(
-      require.resolve('@kui-shell/plugin-core-support/package.json')
-    )
+    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
     injectCSS(path.join(root, 'web/css/tab-completion.css'))
   }
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
   document.addEventListener('keydown', async (evt: KeyboardEvent) => {
     const block = cli.getCurrentBlock()
-    const temporaryContainer =
-      block &&
-      (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
+    const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
     if (evt.keyCode === keys.ENTER) {
       if (temporaryContainer) {
@@ -880,9 +795,7 @@ export default () => {
             // through the options
             const current = temporaryContainer.querySelector('.selected')
             const next = (current.nextSibling ||
-              temporaryContainer.querySelector(
-                '.tab-completion-option:first-child'
-              )) as HTMLElement
+              temporaryContainer.querySelector('.tab-completion-option:first-child')) as HTMLElement
             if (next) {
               current.classList.remove('selected')
               next.classList.add('selected')
@@ -892,9 +805,7 @@ export default () => {
           }
 
           const handleUsage = usageError => {
-            const usage = usageError.raw
-              ? usageError.raw.usage || usageError.raw
-              : usageError.usage || usageError
+            const usage = usageError.raw ? usageError.raw.usage || usageError.raw : usageError.usage || usageError
             debug('usage', usage, usageError)
 
             if (usage.fn) {
@@ -916,14 +827,10 @@ export default () => {
               // determine what parameters we might be
               // able to help with
               const required = usage.required || []
-              const optionalPositionals = (usage.optional || []).filter(
-                ({ positional }) => positional
-              )
+              const optionalPositionals = (usage.optional || []).filter(({ positional }) => positional)
 
               const oneofs = usage.oneof ? [usage.oneof[0]] : []
-              const positionals = required
-                .concat(oneofs)
-                .concat(optionalPositionals)
+              const positionals = required.concat(oneofs).concat(optionalPositionals)
 
               debug('positionals', positionals)
               if (positionals.length > 0) {
@@ -933,20 +840,9 @@ export default () => {
                 const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
                 const param = positionals[lastIdx]
 
-                debug(
-                  'maybe',
-                  args,
-                  commandIdx,
-                  lastIdx,
-                  nActuals,
-                  param,
-                  args[commandIdx + lastIdx]
-                )
+                debug('maybe', args, commandIdx, lastIdx, nActuals, param, args[commandIdx + lastIdx])
 
-                if (
-                  commandIdx === args.length - 1 &&
-                  !prompt.value.match(/\s+$/)
-                ) {
+                if (commandIdx === args.length - 1 && !prompt.value.match(/\s+$/)) {
                   // then the prompt has e.g. "wsk package" with no terminal whitespace; nothing to do yet
                 } else if (param) {
                   // great, there is a positional we can help with
@@ -966,27 +862,15 @@ export default () => {
                 }
               }
             } else if (!inBrowser()) {
-              const { A: args, endIndices } = repl._split(
-                prompt.value,
-                true,
-                true
-              ) as repl.Split
+              const { A: args, endIndices } = repl._split(prompt.value, true, true) as repl.Split
               const lastIdx = prompt.selectionStart
               debug('falling back on local file completion', args, lastIdx)
 
               for (let ii = 0; ii < endIndices.length; ii++) {
                 if (endIndices[ii] >= lastIdx) {
                   // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
-                  const last = prompt.value
-                    .substring(endIndices[ii - 1], lastIdx)
-                    .replace(/^\s+/, '')
-                  suggestLocalFile(
-                    last,
-                    block,
-                    prompt,
-                    temporaryContainer,
-                    lastIdx
-                  )
+                  const last = prompt.value.substring(endIndices[ii - 1], lastIdx).replace(/^\s+/, '')
+                  suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
                   break
                 }
               }
@@ -994,22 +878,15 @@ export default () => {
           }
 
           const lastIdx = prompt.selectionStart
-          const { A: argv, endIndices } = repl._split(
-            prompt.value,
-            true,
-            true
-          ) as repl.Split
+          const { A: argv, endIndices } = repl._split(prompt.value, true, true) as repl.Split
           const options = minimist(argv)
           const toBeCompletedIdx = endIndices.findIndex(idx => idx >= lastIdx) // e.g. git branch f<tab>
-          const completingTrailingEmpty =
-            lastIdx > endIndices[endIndices.length - 1] // e.g. git branch <tab>
+          const completingTrailingEmpty = lastIdx > endIndices[endIndices.length - 1] // e.g. git branch <tab>
           if (toBeCompletedIdx >= 0 || completingTrailingEmpty) {
             // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
             const last = completingTrailingEmpty
               ? ''
-              : prompt.value
-                  .substring(endIndices[toBeCompletedIdx - 1], lastIdx)
-                  .replace(/^\s+/, '')
+              : prompt.value.substring(endIndices[toBeCompletedIdx - 1], lastIdx).replace(/^\s+/, '')
 
             // argvNoOptions is argv without the options; we can get
             // this directly from yargs-parser's '_'
@@ -1032,13 +909,7 @@ export default () => {
 
             const completions = await applyEnumerator(commandLine, spec)
             if (completions && completions.length > 0) {
-              return presentEnumeratorSuggestions(
-                block,
-                prompt,
-                temporaryContainer,
-                lastIdx,
-                last
-              )(completions)
+              return presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
             }
 
             // intentional fallthrough

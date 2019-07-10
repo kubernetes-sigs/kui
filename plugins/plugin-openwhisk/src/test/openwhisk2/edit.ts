@@ -25,9 +25,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 describe('edit actions', function(this: common.ISuite) {
   before(openwhisk.before(this))
@@ -76,43 +74,17 @@ describe('edit actions', function(this: common.ISuite) {
       // now we click on the lock/unlock buttons a few times to make
       // sure we can toggle back and forth between read-only and edit
       // mode
-      .then(() =>
-        this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock'))
-      )
-      .then(() =>
-        this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock'))
-      )
-      .then(() =>
-        this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('code'))
-      )
-      .then(() =>
-        this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('limits'))
-      )
-      .then(() =>
-        this.app.client.waitForExist(
-          ui.selectors.SIDECAR_MODE_BUTTON('parameters')
-        )
-      )
-      .then(() =>
-        this.app.client.waitForExist(
-          ui.selectors.SIDECAR_MODE_BUTTON('annotations')
-        )
-      )
-      .then(() =>
-        this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('raw'))
-      )
-      .then(() =>
-        this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock'))
-      )
-      .then(() =>
-        this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock'))
-      )
-      .then(() =>
-        this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))
-      )
-      .then(() =>
-        this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Revert'))
-      )
+      .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('code')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('limits')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('parameters')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('annotations')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('raw')))
+      .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Deploy')))
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Revert')))
       .catch(common.oops(this)))
 
   it('should create an second action', () =>

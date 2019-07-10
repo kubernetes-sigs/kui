@@ -68,39 +68,30 @@ selectors.SIDECAR_RULE_CANVAS = `${selectors.SIDECAR} .rule-components`
 selectors.SIDECAR_RULE_CANVAS_NODES = `${selectors.SIDECAR_RULE_CANVAS} .sequence-component`
 selectors.SIDECAR_SEQUENCE_CANVAS = `${selectors.SIDECAR} #wskflowSVG`
 selectors.SIDECAR_SEQUENCE_CANVAS_NODES = `${selectors.SIDECAR_SEQUENCE_CANVAS} .node.action`
-selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N = N =>
-  `${selectors.SIDECAR_SEQUENCE_CANVAS_NODES}[data-task-index="${N}"]`
-selectors.SIDECAR_LIMIT = type =>
-  `${selectors.SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
+selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N = N => `${selectors.SIDECAR_SEQUENCE_CANVAS_NODES}[data-task-index="${N}"]`
+selectors.SIDECAR_LIMIT = type => `${selectors.SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
 selectors.SIDECAR_BADGES = `${selectors.SIDECAR} .sidecar-header .badges`
 selectors.SIDECAR_CUSTOM_CONTENT = `${selectors.SIDECAR} .custom-content`
 selectors.SIDECAR_MODE_BUTTONS = `${selectors.SIDECAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
-selectors.SIDECAR_MODE_BUTTON = mode =>
-  `${selectors.SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
+selectors.SIDECAR_MODE_BUTTON = mode => `${selectors.SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
 selectors.SIDECAR_BACK_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
 selectors.SIDECAR_MAXIMIZE_BUTTON = `${selectors.SIDECAR} .toggle-sidecar-maximization-button` // maximize button in the bottom stripe
 selectors.SIDECAR_CLOSE_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-close` // close button in the bottom stripe
 selectors.PROCESSING_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`
 selectors.CURRENT_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`
-selectors.PROMPT_BLOCK_N = N =>
-  `${selectors.PROMPT_BLOCK}[data-input-count="${N}"]`
+selectors.PROMPT_BLOCK_N = N => `${selectors.PROMPT_BLOCK}[data-input-count="${N}"]`
 selectors.PROCESSING_N = N => `${selectors.PROMPT_BLOCK_N(N)}.processing`
 selectors.CURRENT_PROMPT = `${selectors.CURRENT_PROMPT_BLOCK} input`
 selectors.PROMPT_N = N => `${selectors.PROMPT_BLOCK_N(N)} input`
 selectors.OUTPUT_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result`
 selectors.OUTPUT_LAST = `${selectors.PROMPT_BLOCK}:nth-last-child(2) .repl-result`
-selectors.LIST_RESULTS_N = N =>
-  `${selectors.PROMPT_BLOCK_N(N)} .repl-result .entity:not(.header-row)`
-selectors.LIST_RESULTS_BY_NAME_N = N =>
-  `${selectors.LIST_RESULTS_N(N)} .entity-name`
-selectors.LIST_RESULT_BY_N_FOR_NAME = (N, name) =>
-  `${selectors.LIST_RESULTS_N(N)}[data-name="${name}"]`
+selectors.LIST_RESULTS_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result .entity:not(.header-row)`
+selectors.LIST_RESULTS_BY_NAME_N = N => `${selectors.LIST_RESULTS_N(N)} .entity-name`
+selectors.LIST_RESULT_BY_N_FOR_NAME = (N, name) => `${selectors.LIST_RESULTS_N(N)}[data-name="${name}"]`
 selectors.BY_NAME = name => `.entity:not(.header-row)[data-name="${name}"]`
-selectors.LIST_RESULT_BY_N_AND_NAME = (N, name) =>
-  `${selectors.LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
+selectors.LIST_RESULT_BY_N_AND_NAME = (N, name) => `${selectors.LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
 selectors.OK_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-output .ok`
-selectors.xtermRows = N =>
-  `${selectors.PROMPT_BLOCK_N(N)} .xterm-container .xterm-rows`
+selectors.xtermRows = N => `${selectors.PROMPT_BLOCK_N(N)} .xterm-container .xterm-rows`
 exports.selectors = selectors
 
 const expectOK = (appAndCount, opt) => {
@@ -121,34 +112,21 @@ const expectOK = (appAndCount, opt) => {
         return promptValue
       })
       .then(promptValue => {
-        if (!opt || !opt.nonBlankPromptOk)
-          assert.strictEqual(promptValue.length, 0)
+        if (!opt || !opt.nonBlankPromptOk) assert.strictEqual(promptValue.length, 0)
       }) //      ... verify that
-      .then(() =>
-        opt && opt.expectError
-          ? false
-          : app.client.getHTML(selectors.OK_N(N - 1), timeout)
-      ) // get the "ok" part of the current command
-      .then(ok =>
-        opt && opt.expectError ? false : assert.ok(constants.OK.test(ok))
-      ) // make sure it says "ok" !
+      .then(() => (opt && opt.expectError ? false : app.client.getHTML(selectors.OK_N(N - 1), timeout))) // get the "ok" part of the current command
+      .then(ok => (opt && opt.expectError ? false : assert.ok(constants.OK.test(ok)))) // make sure it says "ok" !
       .then(() => {
         // validate any expected list entry
         if (typeof opt === 'string') {
           // expect exactly one entry
-          return app.client
-            .getText(selectors.LIST_RESULTS_BY_NAME_N(N - 1))
-            .then(name => assert.strictEqual(name, opt))
+          return app.client.getText(selectors.LIST_RESULTS_BY_NAME_N(N - 1)).then(name => assert.strictEqual(name, opt))
         } else if (Array.isArray(opt)) {
           // expect several entries, of which opt is one
           return app.client
             .getText(selectors.LIST_RESULTS_BY_NAME_N(N - 1))
             .then(name => (!Array.isArray(name) ? [name] : name))
-            .then(name =>
-              assert.ok(
-                name !== opt[0] && name.find(_ => _.indexOf(opt[0]) >= 0)
-              )
-            )
+            .then(name => assert.ok(name !== opt[0] && name.find(_ => _.indexOf(opt[0]) >= 0)))
         } else if (opt && (opt.selector || opt.expect)) {
           // more custom, look for expect text under given selector
           const selector = `${selectors.OUTPUT_N(N - 1)} ${opt.selector || ''}`
@@ -160,9 +138,7 @@ const expectOK = (appAndCount, opt) => {
               else if (opt.expect) {
                 if (txt.indexOf(opt.expect) < 0) {
                   console.error(
-                    `Expected string not found expected=${
-                      opt.expect
-                    } idx=${txt.indexOf(opt.expect)} actual=${txt}`
+                    `Expected string not found expected=${opt.expect} idx=${txt.indexOf(opt.expect)} actual=${txt}`
                   )
                   assert.ok(txt.indexOf(opt.expect) >= 0)
                 }
@@ -215,21 +191,11 @@ exports.cli = {
     return app.client
       .waitForExist(selectors.CURRENT_PROMPT_BLOCK)
       .then(() => grabFocus(app))
-      .then(() =>
-        app.client.getAttribute(
-          selectors.CURRENT_PROMPT_BLOCK,
-          'data-input-count'
-        )
-      )
+      .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count =>
         app.client
           .getValue(selectors.CURRENT_PROMPT)
-          .then(currentValue =>
-            app.client.setValue(
-              selectors.CURRENT_PROMPT,
-              `${currentValue}${cmd}`
-            )
-          )
+          .then(currentValue => app.client.setValue(selectors.CURRENT_PROMPT, `${currentValue}${cmd}`))
           .then(() => {
             if (noNewline !== true) app.client.keys(keys.ENTER)
           })
@@ -246,12 +212,7 @@ exports.cli = {
   paste: (cmd, app, nLines = 1) =>
     app.client
       .waitForExist(selectors.CURRENT_PROMPT_BLOCK)
-      .then(() =>
-        app.client.getAttribute(
-          selectors.CURRENT_PROMPT_BLOCK,
-          'data-input-count'
-        )
-      )
+      .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count =>
         app.electron.clipboard
           .writeText(cmd)
@@ -276,20 +237,12 @@ exports.cli = {
       .expectOKWithCustom({ passthrough: true })(res)
       .then(N =>
         Promise.all([
-          res.app.client.getHTML(
-            `${selectors.PROMPT_BLOCK_N(N + 1)} .repl-context`
-          ),
-          res.app.client.getHTML(
-            `${selectors.PROMPT_BLOCK_N(N + 1)} .repl-selection`
-          )
+          res.app.client.getHTML(`${selectors.PROMPT_BLOCK_N(N + 1)} .repl-context`),
+          res.app.client.getHTML(`${selectors.PROMPT_BLOCK_N(N + 1)} .repl-selection`)
         ]).then(
           pair =>
-            assert.ok(
-              expectedContext === undefined ||
-                pair[0].indexOf(expectedContext) >= 0
-            ) &&
-            (expectedSelection === undefined ||
-              pair[1].indexOf(expectedSelection) >= 0)
+            assert.ok(expectedContext === undefined || pair[0].indexOf(expectedContext) >= 0) &&
+            (expectedSelection === undefined || pair[1].indexOf(expectedSelection) >= 0)
         )
       )
       .then(() => res.app),
@@ -321,8 +274,7 @@ exports.cli = {
       expect: expect,
       passthrough: true
     }),
-  expectBlankWithOpts: (opts = {}) => res =>
-    expectOK(res, Object.assign({ selector: '', expectError: true }, opts)),
+  expectBlankWithOpts: (opts = {}) => res => expectOK(res, Object.assign({ selector: '', expectError: true }, opts)),
   expectBlank: res => exports.cli.expectBlankWithOpts()(res),
   expectOKWithCustom: custom => res => expectOK(res, custom), // as long as its ok, accept anything
   expectOKWithString: (expect, exact = false) => res => {
@@ -338,32 +290,21 @@ exports.cli = {
           })
       })
   },
-  expectOKWithTextContent: (
-    expect,
-    exact = false,
-    failFast = true,
-    sel = ' '
-  ) => async res => {
+  expectOKWithTextContent: (expect, exact = false, failFast = true, sel = ' ') => async res => {
     // Notes: webdriverio's getText seems to use .innerText to extract
     // the text from a given selector; this is quite unreliable in
     // terms of whitespace preservation; e.g. <div><span>
     // </span><span> </span></div> will preserve whitespace, but if
     // the inner spans have are inline-block, then innerText will not
     // preserve whitespace; textContent *will* preserve whitespace
-    const selector = await exports.cli.expectOKWithCustom({ selector: sel })(
-      res
-    )
+    const selector = await exports.cli.expectOKWithCustom({ selector: sel })(res)
     const txt = await exports.getTextContent(res.app, selector)
 
     if (exact) {
       return assert.strictEqual(txt, expect)
     } else {
       if (txt.indexOf(expect) < 0) {
-        console.error(
-          `Expected string not found expected=${expect} idx=${txt.indexOf(
-            expect
-          )} actual=${txt}`
-        )
+        console.error(`Expected string not found expected=${expect} idx=${txt.indexOf(expect)} actual=${txt}`)
         if (failFast) {
           assert.ok(txt.indexOf(expect) >= 0)
         } else {
@@ -399,28 +340,17 @@ exports.getTextContent = (app, selector) => {
 }
 
 exports.sidecar = {
-  expectOpen: app =>
-    app.client.waitForVisible(selectors.SIDECAR, timeout).then(() => app),
-  expectOpenWithFailure: app =>
-    app.client
-      .waitForVisible(selectors.SIDECAR_WITH_FAILURE, timeout)
-      .then(() => app),
+  expectOpen: app => app.client.waitForVisible(selectors.SIDECAR, timeout).then(() => app),
+  expectOpenWithFailure: app => app.client.waitForVisible(selectors.SIDECAR_WITH_FAILURE, timeout).then(() => app),
 
   // expect open fullscreen
-  expectFullscreen: app =>
-    app.client
-      .waitForVisible(selectors.SIDECAR_FULLSCREEN, timeout)
-      .then(() => app),
+  expectFullscreen: app => app.client.waitForVisible(selectors.SIDECAR_FULLSCREEN, timeout).then(() => app),
 
   // either minimized or fully closed
-  expectClosed: app =>
-    app.client.waitForExist(selectors.SIDECAR_HIDDEN, timeout).then(() => app),
+  expectClosed: app => app.client.waitForExist(selectors.SIDECAR_HIDDEN, timeout).then(() => app),
 
   // fully closed, not just minimized
-  expectFullyClosed: app =>
-    app.client
-      .waitForExist(selectors.SIDECAR_FULLY_HIDDEN, timeout)
-      .then(() => app),
+  expectFullyClosed: app => app.client.waitForExist(selectors.SIDECAR_FULLY_HIDDEN, timeout).then(() => app),
 
   expectSourceStruct: expectedJSON => app =>
     app.client
@@ -437,12 +367,7 @@ exports.sidecar = {
   expectSource: expectedSource => app =>
     app.client
       .getText(selectors.SIDECAR_ACTION_SOURCE)
-      .then(actualSource =>
-        assert.strictEqual(
-          actualSource.replace(/\s+/g, ''),
-          expectedSource.replace(/\s+/g, '')
-        )
-      )
+      .then(actualSource => assert.strictEqual(actualSource.replace(/\s+/g, ''), expectedSource.replace(/\s+/g, '')))
       .then(() => app),
 
   expectResult: (expectedResult, failFast = true) => app =>
@@ -459,11 +384,7 @@ exports.sidecar = {
 
   expectBadge: badge => app =>
     app.client
-      .waitUntil(() =>
-        app.client
-          .getText(selectors.SIDECAR_BADGES)
-          .then(badges => badges.indexOf(badge) >= 0)
-      )
+      .waitUntil(() => app.client.getText(selectors.SIDECAR_BADGES).then(badges => badges.indexOf(badge) >= 0))
       .then(() => app),
 
   expectLimit: (type, expectedValue) => app => {
@@ -479,9 +400,7 @@ exports.sidecar = {
   expectSequence: A => app => {
     return Promise.all(
       A.map((component, idx) => {
-        const selector = `${selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(
-          idx
-        )}[data-name="/_/${component}"]`
+        const selector = `${selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(idx)}[data-name="/_/${component}"]`
         console.error(`Waiting for ${selector}`)
         return app.client.waitForExist(selector)
       })
@@ -504,18 +423,13 @@ exports.sidecar = {
       .then(exports.sidecar.expectOpen)
   },
   close: function(ctx) {
-    it('should toggle closed the sidecar', () =>
-      exports.sidecar.doClose(ctx.app))
+    it('should toggle closed the sidecar', () => exports.sidecar.doClose(ctx.app))
   },
 
   expectMode: expectedMode => app =>
     app.client.waitUntil(() => {
       return app.client
-        .waitForVisible(
-          `${selectors.SIDECAR_MODE_BUTTON(
-            expectedMode
-          )}.bx--tabs__nav-item--selected`
-        )
+        .waitForVisible(`${selectors.SIDECAR_MODE_BUTTON(expectedMode)}.bx--tabs__nav-item--selected`)
         .then(() => app)
     }),
 
@@ -532,19 +446,12 @@ exports.sidecar = {
         () => {
           // check selected name in sidecar
           return app.client
-            .waitForVisible(
-              `${selectors.SIDECAR}${
-                !expectType ? '' : '.entity-is-' + expectType
-              }`
-            )
-            .then(() =>
-              app.client.waitForText(selectors.SIDECAR_TITLE, timeout)
-            )
+            .waitForVisible(`${selectors.SIDECAR}${!expectType ? '' : '.entity-is-' + expectType}`)
+            .then(() => app.client.waitForText(selectors.SIDECAR_TITLE, timeout))
             .then(() => app.client.getText(selectors.SIDECAR_TITLE))
             .then(name => {
               const nameMatches = expectSubstringMatchOnName
-                ? name.indexOf(expectedName) >= 0 ||
-                  expectedName.indexOf(name) >= 0
+                ? name.indexOf(expectedName) >= 0 || expectedName.indexOf(name) >= 0
                 : name === expectedName
               if (nameMatches) {
                 if (expectedPackageName) {
@@ -553,8 +460,7 @@ exports.sidecar = {
                     .then(name =>
                       expectSubstringMatchOnName
                         ? name.search(new RegExp(expectedPackageName, 'i')) >= 0
-                        : name.toLowerCase() ===
-                          expectedPackageName.toLowerCase()
+                        : name.toLowerCase() === expectedPackageName.toLowerCase()
                     )
                 } else {
                   return true
@@ -572,9 +478,7 @@ exports.sidecar = {
             () =>
               app.client
                 .waitForText(selectors.SIDECAR_ACTIVATION_TITLE, timeout)
-                .then(() =>
-                  app.client.getText(selectors.SIDECAR_ACTIVATION_TITLE)
-                )
+                .then(() => app.client.getText(selectors.SIDECAR_ACTIVATION_TITLE))
                 .then(id => id === expectedActivationId),
             timeout,
             `expect activation id ${expectedActivationId} in sidecar`
@@ -629,20 +533,14 @@ const sameStruct = (struct1, struct2, subset = false) => {
         return false
       }
     } else if (typeof struct1[key] !== typeof struct2[key]) {
-      console.log(
-        `typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[
-          key
-        ]} ${typeof struct2[key]}`
-      )
+      console.log(`typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[key]} ${typeof struct2[key]}`)
       return false
     } else if (typeof struct1[key] === 'object') {
       if (!sameStruct(struct1[key], struct2[key], subset)) {
         return false
       }
     } else if (struct1[key] !== struct2[key]) {
-      console.log(
-        `struct1[${key}] !== struct2[${key}] ${struct1[key]} ${struct2[key]}`
-      )
+      console.log(`struct1[${key}] !== struct2[${key}] ${struct1[key]} ${struct2[key]}`)
       return false
     }
   }
@@ -660,20 +558,14 @@ const sameStruct = (struct1, struct2, subset = false) => {
         return false
       }
     } else if (typeof struct1[key] !== typeof struct2[key]) {
-      console.log(
-        `typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[
-          key
-        ]} ${typeof struct2[key]}`
-      )
+      console.log(`typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[key]} ${typeof struct2[key]}`)
       return false
     } else if (typeof struct2[key] === 'object') {
       if (!sameStruct(struct1[key], struct2[key], subset)) {
         return false
       }
     } else if (struct1[key] !== struct2[key]) {
-      console.log(
-        `struct1[${key}] !== struct2[${key}] ${struct1[key]} ${struct2[key]}`
-      )
+      console.log(`struct1[${key}] !== struct2[${key}] ${struct1[key]} ${struct2[key]}`)
       return false
     }
   }
@@ -681,11 +573,7 @@ const sameStruct = (struct1, struct2, subset = false) => {
 }
 
 /** is the given struct2 the same as the given struct2 (given as a string) */
-exports.expectStruct = (
-  struct1,
-  noParse = false,
-  failFast = true
-) => string => {
+exports.expectStruct = (struct1, noParse = false, failFast = true) => string => {
   try {
     const ok = sameStruct(struct1, noParse ? string : JSON.parse(string))
     if (failFast) {
@@ -710,8 +598,7 @@ exports.expectYAML = (struct1, subset = false, failFast = true) => string => {
     throw err
   }
 }
-exports.expectYAMLSubset = (struct1, failFast = true) =>
-  exports.expectYAML(struct1, true, failFast)
+exports.expectYAMLSubset = (struct1, failFast = true) => exports.expectYAML(struct1, true, failFast)
 exports.expectSubset = (struct1, failFast = true) => string => {
   try {
     const ok = sameStruct(struct1, JSON.parse(string), true)
@@ -751,8 +638,7 @@ exports.expectArray = (expected, failFast = true) => actual => {
 
 /** validate an activationId */
 const activationIdPattern = /^\w{12}$/
-exports.expectValidActivationId = () => activationId =>
-  activationId.match(activationIdPattern)
+exports.expectValidActivationId = () => activationId => activationId.match(activationIdPattern)
 
 /**
  * Normalize data for conformance testing of an HTML file
@@ -772,10 +658,7 @@ exports.normalizeHTML = s => {
  * @return the expected namespace string for this test
  *
  */
-exports.expectedNamespace = (
-  space = process.env.TEST_SPACE,
-  org = process.env.TEST_ORG
-) => {
+exports.expectedNamespace = (space = process.env.TEST_SPACE, org = process.env.TEST_ORG) => {
   if (!org || org.length === 0) {
     return space
   } else {
@@ -789,10 +672,7 @@ exports.expectedNamespace = (
  *
  */
 exports.validateNamespace = observedNamespace => {
-  assert.strictEqual(
-    observedNamespace.toLowerCase(),
-    exports.expectedNamespace().toLowerCase()
-  )
+  assert.strictEqual(observedNamespace.toLowerCase(), exports.expectedNamespace().toLowerCase())
 }
 
 /**
@@ -808,11 +688,7 @@ exports.ctrlC = ['\uE009', 'c', 'NULL'] // Send NULL to release Control key at t
  * use an action name filter
  *
  */
-const waitForActivationOrSession = entityType => (
-  app,
-  activationId,
-  { name = '' } = {}
-) => {
+const waitForActivationOrSession = entityType => (app, activationId, { name = '' } = {}) => {
   return app.client.waitUntil(() => {
     return exports.cli
       .do(`wsk ${entityType} list ${name}`, app)
@@ -820,9 +696,7 @@ const waitForActivationOrSession = entityType => (
       .then(
         N =>
           !!app.client.getText(
-            `${exports.selectors.LIST_RESULTS_N(
-              N
-            )} .activationId[data-activation-id="${activationId}"]`
+            `${exports.selectors.LIST_RESULTS_N(N)} .activationId[data-activation-id="${activationId}"]`
           )
       )
   })
@@ -833,5 +707,4 @@ exports.waitForSession = waitForActivationOrSession('session')
 exports.apiHost = constants.API_HOST
 
 /** sleep for the given number of milliseconds */
-exports.sleep = (millis /*: number */) =>
-  new Promise(resolve => setTimeout(resolve, millis))
+exports.sleep = (millis /*: number */) => new Promise(resolve => setTimeout(resolve, millis))

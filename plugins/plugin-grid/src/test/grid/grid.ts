@@ -33,8 +33,7 @@ describe('grid visualization', function(this: common.ISuite) {
 
   const invoke = (inputValue, name = actionName, packageName?) => {
     // action bombs with negative numbers
-    const expectedStruct =
-      inputValue < 0 ? { error: 'bomb!' } : { x: inputValue }
+    const expectedStruct = inputValue < 0 ? { error: 'bomb!' } : { x: inputValue }
     const fullName = packageName ? `${packageName}/${name}` : name
 
     it(`should invoke ${fullName} with -p x ${inputValue}`, () =>
@@ -43,21 +42,14 @@ describe('grid visualization', function(this: common.ISuite) {
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct(expectedStruct))
         .catch(common.oops(this)))
   }
   const notbomb = (name?, packageName?) => invoke(+1, name, packageName)
   // const bomb = (name, packageName) => invoke(-1, name, packageName)
 
-  const verifyGrid = (
-    expectedCount,
-    expectedErrorCount,
-    name = actionName,
-    expectedTotalCount
-  ) => app =>
+  const verifyGrid = (expectedCount, expectedErrorCount, name = actionName, expectedTotalCount) => app =>
     Promise.resolve()
       .then(() => {
         // expected number of success cells?
@@ -73,9 +65,7 @@ describe('grid visualization', function(this: common.ISuite) {
           `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid[data-action-name="${name}"] .grid-cell.is-failure-false`
         )
       )
-      .then(elements =>
-        assert.strictEqual(elements.value.length, expectedCount)
-      ) // .elements() returns a WebElements structure, with a .value[] field
+      .then(elements => assert.strictEqual(elements.value.length, expectedCount)) // .elements() returns a WebElements structure, with a .value[] field
 
       // expected number of failure cells?
       .then(() =>
@@ -83,30 +73,18 @@ describe('grid visualization', function(this: common.ISuite) {
           `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid[data-action-name="${name}"] .grid-cell.is-failure-true`
         )
       )
-      .then(elements =>
-        assert.strictEqual(elements.value.length, expectedErrorCount)
-      )
+      .then(elements => assert.strictEqual(elements.value.length, expectedErrorCount))
 
       // expected total number of cells for the entire view?
       .then(() => {
         if (expectedTotalCount) {
           return app.client
-            .elements(
-              `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid .grid-cell.grid-cell-occupied`
-            )
-            .then(elements =>
-              assert.strictEqual(elements.value.length, expectedTotalCount)
-            )
+            .elements(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid .grid-cell.grid-cell-occupied`)
+            .then(elements => assert.strictEqual(elements.value.length, expectedTotalCount))
         }
       })
 
-  const openGridExpectCountOf = (
-    expectedCount,
-    expectedErrorCount,
-    cmd,
-    name = actionName,
-    expectedTotalCount?
-  ) => {
+  const openGridExpectCountOf = (expectedCount, expectedErrorCount, cmd, name = actionName, expectedTotalCount?) => {
     const once = (iter, resolve, reject) =>
       cli.do(cmd, this.app).then(_ => {
         if (expectedCount === 0 && expectedErrorCount === 0) {
@@ -117,14 +95,7 @@ describe('grid visualization', function(this: common.ISuite) {
           return cli
             .expectOK(_)
             .then(sidecar.expectOpen)
-            .then(
-              verifyGrid(
-                expectedCount,
-                expectedErrorCount,
-                name,
-                expectedTotalCount
-              )
-            )
+            .then(verifyGrid(expectedCount, expectedErrorCount, name, expectedTotalCount))
             .then(resolve)
             .catch(err => {
               if (iter < 10) {
@@ -144,10 +115,7 @@ describe('grid visualization', function(this: common.ISuite) {
 
   it(`should create an action ${actionName} that bombs if the input value is negative`, () =>
     cli
-      .do(
-        `let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`,
-        this.app
-      )
+      .do(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -156,27 +124,9 @@ describe('grid visualization', function(this: common.ISuite) {
   // invoke with positive number, expect count of 1 in the table
   notbomb()
   openGridExpectCountOf(1, 0, `grid --batches ${N}`)
-  openGridExpectCountOf(
-    1,
-    0,
-    `grid --batches ${N} ${actionName}`,
-    actionName,
-    1
-  )
-  openGridExpectCountOf(
-    0,
-    0,
-    `grid --batches ${N} ${randomGarbage}`,
-    actionName,
-    0
-  ) // expect 0 cells, for a random action name
-  openGridExpectCountOf(
-    0,
-    0,
-    `grid --batches ${N} ${randomGarbage}`,
-    randomGarbage,
-    0
-  ) // either way, there should be nothing
+  openGridExpectCountOf(1, 0, `grid --batches ${N} ${actionName}`, actionName, 1)
+  openGridExpectCountOf(0, 0, `grid --batches ${N} ${randomGarbage}`, actionName, 0) // expect 0 cells, for a random action name
+  openGridExpectCountOf(0, 0, `grid --batches ${N} ${randomGarbage}`, randomGarbage, 0) // either way, there should be nothing
 
   it('should fail with a bad this query', () =>
     cli
@@ -244,15 +194,9 @@ describe('grid visualization', function(this: common.ISuite) {
               const b2 = ui.selectors.SIDECAR_MODE_BUTTON('outliers')
 
               if (tab === 'grid') {
-                await Promise.all([
-                  this.app.client.waitForVisible(b1),
-                  this.app.client.waitForVisible(b2, 10000, true)
-                ])
+                await Promise.all([this.app.client.waitForVisible(b1), this.app.client.waitForVisible(b2, 10000, true)])
               } else if (tab === 'summary') {
-                await Promise.all([
-                  this.app.client.waitForVisible(b2),
-                  this.app.client.waitForVisible(b1, 10000, true)
-                ])
+                await Promise.all([this.app.client.waitForVisible(b2), this.app.client.waitForVisible(b1, 10000, true)])
               }
 
               return true
@@ -306,13 +250,7 @@ describe('grid visualization', function(this: common.ISuite) {
 
   // invoke again with positive, and then look for a count of 2
   notbomb()
-  openGridExpectCountOf(
-    0,
-    0,
-    `wsk grid --batches ${N} ${randomGarbage}`,
-    randomGarbage,
-    0
-  ) // expect 0 cells, for a random action name
+  openGridExpectCountOf(0, 0, `wsk grid --batches ${N} ${randomGarbage}`, randomGarbage, 0) // expect 0 cells, for a random action name
   openGridExpectCountOf(2, 0, `wsk grid --batches ${N}`)
 
   // this test suite is too flakey against IBM CLoud Functions, as activation records may only become visible way in the future

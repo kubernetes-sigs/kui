@@ -21,13 +21,7 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
-import {
-  addVariantSuffix,
-  betterNotExist,
-  defaults,
-  optional,
-  prepareEditorWithAction
-} from './new'
+import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from './new'
 import { extension, language } from '@kui-shell/plugin-editor/lib/file-types'
 import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
 import { openEditor } from '@kui-shell/plugin-editor/lib/open'
@@ -40,8 +34,7 @@ export const composeUsage = {
   strict: 'compose',
   command: 'compose',
   title: 'New composition',
-  header:
-    'For quick prototyping of compositions, this command opens an editor in the sidecar.',
+  header: 'For quick prototyping of compositions, this command opens an editor in the sidecar.',
   example: 'compose <appName>',
   required: [{ name: '<appName>', docs: 'The name of your new composition' }],
   optional: optional(['nodejs', 'python']).concat([
@@ -133,9 +126,7 @@ const addWskflow = (tab: Tab) => opts => {
       debug('wskflow updateView', action, ast)
 
       if (ast) {
-        const visualize = (await import(
-          '@kui-shell/plugin-wskflow/lib/visualize'
-        )).default
+        const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
 
         wskflowContainer.classList.add('visible')
         editorDom.classList.add('half-height')
@@ -253,17 +244,11 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
         debug(
           'readViaImport',
           findFile(template),
-          findFile(template).replace(
-            /^.*plugin-apache-composer\/samples(.*)$/,
-            '$1'
-          )
+          findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
         )
         resolve(
           require('raw-loader!@kui-shell/plugin-apache-composer/samples' +
-            findFile(template).replace(
-              /^.*plugin-apache-composer\/samples(.*)$/,
-              '$1'
-            )).default
+            findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')).default
         )
       }
 
@@ -325,12 +310,7 @@ export const newAction = ({
   _kind = defaults.kind,
   placeholder = undefined,
   placeholderFn = undefined
-}) => async ({
-  tab,
-  argvNoOptions,
-  parsedOptions: options,
-  execOptions
-}: EvaluatorArgs) => {
+}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -338,8 +318,7 @@ export const newAction = ({
   debug('newAction', cmd, name, kind, prettyKind)
 
   // create the initial, placeholder, source code to place in the editor
-  const makePlaceholderCode =
-    placeholderFn || (() => placeholder || placeholders[language(kind)])
+  const makePlaceholderCode = placeholderFn || (() => placeholder || placeholders[language(kind)])
 
   const code = await makePlaceholderCode(Object.assign({ kind }, options))
   debug('placeholder code', code)
@@ -350,10 +329,7 @@ export const newAction = ({
       ? inBrowser()
         ? import(
             '@kui-shell/plugin-apache-composer/samples' +
-              findFile(options.template).replace(
-                /^.*plugin-apache-composer\/samples(.*)$/,
-                '$1'
-              )
+              findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
           )
         : generateAST(code, options.template)
       : Promise.resolve()
@@ -378,9 +354,7 @@ export const newAction = ({
   // then send a response back to the repl
   //
   return betterNotExist(name, options)
-    .then(() =>
-      Promise.all([makeAction(), openEditor(tab, name, options, execOptions)])
-    )
+    .then(() => Promise.all([makeAction(), openEditor(tab, name, options, execOptions)]))
     .then(prepareEditorWithAction)
     .then(addWskflow(tab))
     .then(respondToRepl(undefined, ['is-modified']))
@@ -388,9 +362,10 @@ export const newAction = ({
 
 export default async (commandTree: CommandRegistrar) => {
   // command registration: create new app/composition
-  commandTree.listen(
-    '/editor/compose',
-    newAction(compositionOptions({ cmd: 'compose' })),
-    { usage: composeUsage, noAuthOk: true, needsUI: true, inBrowserOk: true }
-  )
+  commandTree.listen('/editor/compose', newAction(compositionOptions({ cmd: 'compose' })), {
+    usage: composeUsage,
+    noAuthOk: true,
+    needsUI: true,
+    inBrowserOk: true
+  })
 }

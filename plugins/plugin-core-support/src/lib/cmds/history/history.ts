@@ -43,8 +43,7 @@ const usage = {
   history: {
     command: 'history',
     strict: 'history',
-    docs:
-      'List current command history, optionally filtering by a given string',
+    docs: 'List current command history, optionally filtering by a given string',
     example: 'history 100 filterString',
     optional: [
       { name: 'N', positional: true, docs: 'list the most recent N commands' },
@@ -112,12 +111,9 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   const N = Nidx > 0 ? firstArgLooksLikeN : DEFAULT_HISTORY_N
 
   // construct the filter
-  const filterIdx =
-    Nargs === 2 ? historyIdx + 2 : !firstArgLooksLikeN ? historyIdx + 1 : -1
+  const filterIdx = Nargs === 2 ? historyIdx + 2 : !firstArgLooksLikeN ? historyIdx + 1 : -1
   const filterStr = filterIdx > 0 && argv[filterIdx]
-  const filter = filterStr
-    ? line => line.raw.indexOf(filterStr) >= 0
-    : () => true
+  const filter = filterStr ? line => line.raw.indexOf(filterStr) >= 0 : () => true
 
   const startIdx = Math.max(0, historyModel.getCursor() - N - 1)
   const endIdx = historyModel.getCursor() - 1
@@ -136,16 +132,12 @@ const showHistory = ({ argv, parsedOptions: options }) => {
       if (!filter(line)) return
 
       // some commands can be super long... try to trim them down for the initial display
-      const shortForm =
-        line.raw.substring(0, line.raw.indexOf(' =')) || line.raw
+      const shortForm = line.raw.substring(0, line.raw.indexOf(' =')) || line.raw
       const whitespace = shortForm.indexOf(' ')
       const command = document.createElement('strong')
       const rest = document.createElement('span')
 
-      command.innerText = shortForm.substring(
-        0,
-        whitespace === -1 ? shortForm.length : whitespace
-      )
+      command.innerText = shortForm.substring(0, whitespace === -1 ? shortForm.length : whitespace)
       if (whitespace !== -1) {
         rest.innerText = shortForm.substring(whitespace)
       }

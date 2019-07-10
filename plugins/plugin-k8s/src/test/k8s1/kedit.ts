@@ -15,13 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import {
-  cli,
-  selectors,
-  sidecar,
-  expectYAML,
-  getValueFromMonaco
-} from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar, expectYAML, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
 
 import { Application } from 'spectron'
 
@@ -29,9 +23,7 @@ import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { safeLoad, safeDump } from 'js-yaml'
 
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
 const TMP = '/tmp' // FIXME
 const initialFile = 'deployment.yaml'
@@ -56,18 +48,8 @@ const updatedContent: Resource = Object.assign({}, initialContent, {
 const initialResourceName = initialContent.metadata.name
 const updatedResourceName = updatedContent.metadata.name
 
-const singleParagraphFilepath = join(
-  ROOT,
-  'data',
-  'k8s',
-  'single-paragraph.yaml'
-)
-const trailingEmptyFilepath = join(
-  ROOT,
-  'data',
-  'k8s',
-  'trailing-dash-dash-dash.yaml'
-)
+const singleParagraphFilepath = join(ROOT, 'data', 'k8s', 'single-paragraph.yaml')
+const trailingEmptyFilepath = join(ROOT, 'data', 'k8s', 'trailing-dash-dash-dash.yaml')
 
 /** get the monaco editor text */
 const getValue = async (app: Application): Promise<string> => {
@@ -88,18 +70,12 @@ const setValue = async (app: Application, text: string): Promise<void> => {
 /** click the save buttom */
 const save = (app: Application) => async (): Promise<void> => {
   await app.client.click(selectors.SIDECAR_MODE_BUTTON('Save'))
-  await app.client.waitForExist(
-    `${selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`
-  )
+  await app.client.waitForExist(`${selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`)
 }
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
-const verifyYAML = (expected: object) => async (
-  app: Application
-): Promise<void> => {
+const verifyYAML = (expected: object) => async (app: Application): Promise<void> => {
   await app.client.waitUntil(async () => {
-    const ok: boolean = await getValue(app).then(
-      expectYAML(expected, false, false)
-    ) // false: not a subset; false: do not throw, instead return boolean
+    const ok: boolean = await getValue(app).then(expectYAML(expected, false, false)) // false: not a subset; false: do not throw, instead return boolean
 
     return ok
   })
@@ -135,10 +111,7 @@ describe('electron kedit', function(this: common.ISuite) {
     return this.app
   }
 
-  const editWithoutSaving = (
-    filepath = tmpFilepath,
-    expectedResource = initialContent
-  ) => {
+  const editWithoutSaving = (filepath = tmpFilepath, expectedResource = initialContent) => {
     it('should kedit but not save the content of an existing file', () =>
       cli
         .do(`kedit "${filepath}"`, this.app)
@@ -179,19 +152,11 @@ describe('electron kedit', function(this: common.ISuite) {
         .do(`${cmd} "${tmp}"`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
-        .then(
-          () =>
-            cmd === 'kedit' &&
-            sidecar.expectShowing(initialResourceName)(this.app)
-        )
+        .then(() => cmd === 'kedit' && sidecar.expectShowing(initialResourceName)(this.app))
         .then(switchToRaw(cmd))
         .then(() => setValue(this.app, safeDump(updatedContent)))
         .then(save(this.app))
-        .then(
-          () =>
-            cmd === 'kedit' &&
-            sidecar.expectShowing(updatedResourceName)(this.app)
-        )
+        .then(() => cmd === 'kedit' && sidecar.expectShowing(updatedResourceName)(this.app))
         .catch(common.oops(this)))
   }
 
@@ -205,17 +170,12 @@ describe('electron kedit', function(this: common.ISuite) {
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(initialResourceName))
-        .then(
-          () =>
-            `${selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`
-        )
+        .then(() => `${selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`)
         .then(async selector => {
           await this.app.client.waitForVisible(selector)
           return this.app.client.setValue(selector, intermediateResourceName)
         })
-        .then(() =>
-          this.app.client.click(selectors.SIDECAR_MODE_BUTTON('save'))
-        )
+        .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('save')))
         .then(() => this.app)
         .then(sidecar.expectShowing(intermediateResourceName))
         .then(switchToRaw(cmd))

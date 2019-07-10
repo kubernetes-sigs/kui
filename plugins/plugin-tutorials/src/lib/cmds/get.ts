@@ -205,8 +205,7 @@ const doGet = async ({ argvNoOptions }) => {
 
         // Description Box
         const descriptionDom = document.createElement('div')
-        descriptionDom.className =
-          'project-config-paragraph project-config-items'
+        descriptionDom.className = 'project-config-paragraph project-config-items'
         const titleDom = document.createElement('div')
         titleDom.className = 'config-item-title'
         titleDom.innerText = 'Description'
@@ -251,12 +250,7 @@ const doGet = async ({ argvNoOptions }) => {
         content.appendChild(wskflowContainer)
 
         // asynchronously render wskflow
-        repl.qexec(
-          `preview "${projectHome}/composition.js"`,
-          undefined,
-          undefined,
-          { container: wskflowContainer }
-        )
+        repl.qexec(`preview "${projectHome}/composition.js"`, undefined, undefined, { container: wskflowContainer })
 
         return {
           type: 'custom',
@@ -265,8 +259,7 @@ const doGet = async ({ argvNoOptions }) => {
           prettyName: name,
           name: projectName,
           api,
-          subtext:
-            'Learn more about what this module offers, and how it is constructed',
+          subtext: 'Learn more about what this module offers, and how it is constructed',
           content,
           modes: modes('get', api, choices)
         }

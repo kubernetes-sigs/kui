@@ -22,10 +22,7 @@ import { agent } from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-core'
 
 const debug = Debug('plugins/apache-composer/client')
 const options = {
-  ignore_certs:
-    process.env.IGNORE_CERTS &&
-    process.env.IGNORE_CERTS !== 'false' &&
-    process.env.IGNORE_CERTS !== '0'
+  ignore_certs: process.env.IGNORE_CERTS && process.env.IGNORE_CERTS !== 'false' && process.env.IGNORE_CERTS !== '0'
 }
 
 /**
@@ -41,20 +38,9 @@ export const deploy = ({ composition, overwrite }) => {
   debug('deploying composition', composition)
   const httpOptons = { agent }
   return Client(options)
-    .compositions.deploy(
-      composition,
-      overwrite,
-      undefined,
-      undefined,
-      undefined,
-      httpOptons
-    )
+    .compositions.deploy(composition, overwrite, undefined, undefined, undefined, httpOptons)
     .then(entity => {
       // delploy returns [{...}]
-      return Object.assign(
-        {},
-        { name: entity[0].id, verb: 'update', type: 'composition' },
-        entity[0]
-      )
+      return Object.assign({}, { name: entity[0].id, verb: 'update', type: 'composition' }, entity[0])
     })
 }

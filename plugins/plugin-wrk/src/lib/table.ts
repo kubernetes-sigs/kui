@@ -32,10 +32,7 @@ export const i18n = {
 /** latency formatter, using wrk's output */
 const formatter = x => prettyPrintDuration(~~parseDuration(x))
 
-export const addCell = (row: HTMLElement, rowData?) => (
-  field,
-  { css = undefined, formatter = x => x } = {}
-) => {
+export const addCell = (row: HTMLElement, rowData?) => (field, { css = undefined, formatter = x => x } = {}) => {
   const cell = document.createElement('span')
   row.appendChild(cell)
 

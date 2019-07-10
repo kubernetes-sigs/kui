@@ -194,41 +194,25 @@ const logThen = f => err => {
  * @param attr will be 'parameters' or 'annotations'
  *
  */
-const add = (type: string) => (
-  op: string,
-  opKind = op,
-  attr = 'parameters'
-) => ({ command: rawCommand, execOptions, tab }: EvaluatorArgs) => {
+const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({
+  command: rawCommand,
+  execOptions,
+  tab
+}: EvaluatorArgs) => {
   /** fetch the given entity with the given type */
-  const fetchEntityWithType = (name, type) =>
-    repl.qexec(`wsk ${type} get ${name}`)
+  const fetchEntityWithType = (name, type) => repl.qexec(`wsk ${type} get ${name}`)
 
   /** try to find the given entity name, across the types */
   const fetchEntityWithFallbacks = name =>
     fetchEntityWithType(name, type)
-      .catch(
-        logThen(() =>
-          fetchEntityWithType(
-            name,
-            type === 'packages' ? 'actions' : 'packages'
-          )
-        )
-      )
-      .catch(
-        logThen(() =>
-          fetchEntityWithType(
-            name,
-            type === 'triggers' ? 'actions' : 'triggers'
-          )
-        )
-      )
+      .catch(logThen(() => fetchEntityWithType(name, type === 'packages' ? 'actions' : 'packages')))
+      .catch(logThen(() => fetchEntityWithType(name, type === 'triggers' ? 'actions' : 'triggers')))
 
   /** fetch the entity with the given name, using the given entity type, then fall back to trying all types */
   const fetchEntity = (name, tryThisType) =>
-    (tryThisType
-      ? fetchEntityWithType(name, tryThisType)
-      : fetchEntityWithFallbacks(name)
-    ).catch(() => fetchEntityWithFallbacks(name))
+    (tryThisType ? fetchEntityWithType(name, tryThisType) : fetchEntityWithFallbacks(name)).catch(() =>
+      fetchEntityWithFallbacks(name)
+    )
 
   let key
   let value
@@ -290,10 +274,7 @@ const add = (type: string) => (
     }
   }
 
-  console.log(
-    `${op} ${key}=${value} to ${dest} using type ${tryThisType ||
-      '(we will try to infer the type)'}`
-  )
+  console.log(`${op} ${key}=${value} to ${dest} using type ${tryThisType || '(we will try to infer the type)'}`)
 
   // here is where we do the work!
   return fetchEntity(dest, tryThisType) // grab a copy of the current attributes
@@ -324,13 +305,9 @@ export default async (commandTree: CommandRegistrar) => {
   // docs
   //
   const docs = {
-      set: attr =>
-        mkDocs(`Modify ${attr} by adding or updating a key-value pair`),
+      set: attr => mkDocs(`Modify ${attr} by adding or updating a key-value pair`),
       unset: attr => mkDocs(`Modify ${attr} by removing a key`),
-      push: attr =>
-        mkDocs(
-          `Modify ${attr} by pushing a new value onto an array-valued entry`
-        )
+      push: attr => mkDocs(`Modify ${attr} by pushing a new value onto an array-valued entry`)
     }
 
     //
@@ -340,38 +317,18 @@ export default async (commandTree: CommandRegistrar) => {
     synonyms(type).forEach(syn => {
       const doAdd = add(type)
 
-      commandTree.listen(
-        `/wsk/${syn}/set`,
-        doAdd('set'),
-        docs.set('parameters')
-      )
-      commandTree.listen(
-        `/wsk/${syn}/annotate`,
-        doAdd('annotate', 'set', 'annotations'),
-        docs.set('annotations')
-      )
+      commandTree.listen(`/wsk/${syn}/set`, doAdd('set'), docs.set('parameters'))
+      commandTree.listen(`/wsk/${syn}/annotate`, doAdd('annotate', 'set', 'annotations'), docs.set('annotations'))
 
-      commandTree.listen(
-        `/wsk/${syn}/unset`,
-        doAdd('unset'),
-        docs.unset('parameters')
-      )
+      commandTree.listen(`/wsk/${syn}/unset`, doAdd('unset'), docs.unset('parameters'))
       commandTree.listen(
         `/wsk/${syn}/deannotate`,
         doAdd('deannotate', 'unset', 'annotations'),
         docs.unset('annotations')
       )
 
-      commandTree.listen(
-        `/wsk/${syn}/push`,
-        doAdd('push'),
-        docs.push('parameters')
-      )
-      commandTree.listen(
-        `/wsk/${syn}/apush`,
-        doAdd('apush', 'push', 'annotations'),
-        docs.push('annotations')
-      )
+      commandTree.listen(`/wsk/${syn}/push`, doAdd('push'), docs.push('parameters'))
+      commandTree.listen(`/wsk/${syn}/apush`, doAdd('apush', 'push', 'annotations'), docs.push('annotations'))
     })
   })
 }

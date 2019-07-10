@@ -27,9 +27,7 @@ const error = console.error
 
 const verbose = process.argv.find(_ => _ === '-v')
 const colorAlways = process.argv.find(_ => _ === '--color=always')
-const neverColor = process.argv.find(
-  _ => _ === '--no-color' || _ === '--no-colors'
-)
+const neverColor = process.argv.find(_ => _ === '--no-color' || _ === '--no-colors')
 const rawOutput = process.argv.find(_ => _ === '--raw-output') // don't try to pretty-print the JSON; c.f. jq's --raw-output
 
 /**
@@ -81,18 +79,11 @@ const prettyDom = (
   logger = log,
   stream = process.stdout,
   _color: string,
-  {
-    columnWidths,
-    extraColor: _extraColor
-  }: PrettyOptions = new DefaultPrettyOptions()
+  { columnWidths, extraColor: _extraColor }: PrettyOptions = new DefaultPrettyOptions()
 ) => {
   debug('prettyDom')
 
-  const isHeader =
-    dom.nodeType === 'h1' ||
-    dom.nodeType === 'h2' ||
-    dom.nodeType === 'h3' ||
-    dom.nodeType === 'h4'
+  const isHeader = dom.nodeType === 'h1' || dom.nodeType === 'h2' || dom.nodeType === 'h3' || dom.nodeType === 'h4'
   const capitalize = dom.className.indexOf('bx--no-link') >= 0
   const hasMargin =
     dom.className.indexOf('bx--breadcrumb-item--slash') >= 0 ||
@@ -128,9 +119,7 @@ const prettyDom = (
   }
 
   if (dom.innerText) {
-    const text = capitalize
-      ? dom.innerText.charAt(0).toUpperCase() + dom.innerText.slice(1)
-      : dom.innerText
+    const text = capitalize ? dom.innerText.charAt(0).toUpperCase() + dom.innerText.slice(1) : dom.innerText
     // debug('text', color, extraColor)
     stream.write(colors[color][extraColor](text))
   }
@@ -151,9 +140,7 @@ const prettyDom = (
   }
 
   // recurse to the children of this fake DOM
-  dom.children.forEach(child =>
-    prettyDom(child, logger, stream, _color, { extraColor })
-  )
+  dom.children.forEach(child => prettyDom(child, logger, stream, _color, { extraColor }))
 
   // handle table rows and cells:
   if (dom.rows) {
@@ -225,8 +212,7 @@ const prettyJSON = (msg, logger = log) => {
  *
  */
 const pn = (actionName: string, packageName?: string) =>
-  colors.dim(`${packageName ? packageName + '/' : ''}`) +
-  colors.blue(actionName)
+  colors.dim(`${packageName ? packageName + '/' : ''}`) + colors.blue(actionName)
 
 /**
  * Render a date; if it is from today, show just the time
@@ -263,12 +249,7 @@ const rowify = {
     sessionId,
     app: pn(name),
     start: colors.dim(prettyDate(start)),
-    status:
-      status === 'pending'
-        ? colors.yellow(status)
-        : success
-        ? colors.green(status)
-        : colors.red(status)
+    status: status === 'pending' ? colors.yellow(status) : success ? colors.green(status) : colors.red(status)
   }),
   activations: ({ activationId, name }) => ({ activationId, name: pn(name) }),
   actions: ({ name, packageName, publish, annotations, version }) => ({
@@ -316,13 +297,7 @@ rowify['live'] = rowify.session // same formatter...
  * pretty printers (such as prettyDom and prettyjson)
  *
  */
-export const print = (
-  msg,
-  logger = log,
-  stream = process.stdout,
-  color = 'reset',
-  ok = 'ok'
-) => {
+export const print = (msg, logger = log, stream = process.stdout, color = 'reset', ok = 'ok') => {
   debug('printing in this color: %s', color)
 
   if (verbose && typeof msg === 'string') {
@@ -392,13 +367,8 @@ export const print = (
                 msg.map(_ => print(_, logger, stream, color, ok))
               } else {
                 // strip off header row, as we'll make our own
-                msg = msg.filter(
-                  row =>
-                    !row.header &&
-                    (!row.outerCSS || !row.outerCSS.match(/header-cell/))
-                )
-                const print =
-                  rowify[msg[0].prettyType || msg[0].type] || rowify._default
+                msg = msg.filter(row => !row.header && (!row.outerCSS || !row.outerCSS.match(/header-cell/)))
+                const print = rowify[msg[0].prettyType || msg[0].type] || rowify._default
                 logger(
                   require('columnify')(msg.map(print), {
                     headingTransform: _ => colors.dim(_)
@@ -409,63 +379,34 @@ export const print = (
               error(err)
             }
           }
-        } else if (
-          msg.verb &&
-          msg.name &&
-          (msg.verb === 'create' || msg.verb === 'update')
-        ) {
+        } else if (msg.verb && msg.name && (msg.verb === 'create' || msg.verb === 'update')) {
           // msg is an entity, that has just been created or updated
           debug('printing create or update')
-          const isWebExported =
-            msg.annotations &&
-            msg.annotations.find(({ key }) => key === 'web-export')
+          const isWebExported = msg.annotations && msg.annotations.find(({ key }) => key === 'web-export')
           if (isWebExported) {
             const contentType = (msg.annotations &&
-              msg.annotations.find(
-                ({ key }) => key === 'content-type-extension'
-              )) || { value: 'json' }
+              msg.annotations.find(({ key }) => key === 'content-type-extension')) || { value: 'json' }
             const https =
-              msg.apiHost.startsWith('https://') ||
-              msg.apiHost.startsWith('http://')
+              msg.apiHost.startsWith('https://') || msg.apiHost.startsWith('http://')
                 ? ''
                 : msg.apiHost === 'localhost'
                 ? 'http://'
                 : 'https://'
-            const urlText = `${https}${msg.apiHost}/api/v1/web/${
-              msg.namespace
-            }/${!msg.packageName ? 'default/' : ''}${msg.name}.${
-              contentType.value
-            }`
+            const urlText = `${https}${msg.apiHost}/api/v1/web/${msg.namespace}/${!msg.packageName ? 'default/' : ''}${
+              msg.name
+            }.${contentType.value}`
             logger(colors.blue(urlText))
           }
-          logger(
-            colors.green(`${ok}:`) +
-              ` updated ${msg.type.replace(/s$/, '')} ${msg.name}`
-          )
+          logger(colors.green(`${ok}:`) + ` updated ${msg.type.replace(/s$/, '')} ${msg.name}`)
         } else if (msg.verb === 'delete') {
           debug('printing delete')
-          logger(
-            colors.green(`${ok}:`) +
-              ` deleted ${msg.type.replace(/s$/, '')} ${msg.name}`
-          )
-        } else if (
-          msg.verb === 'async' &&
-          msg.activationId /* && msg.response */
-        ) {
+          logger(colors.green(`${ok}:`) + ` deleted ${msg.type.replace(/s$/, '')} ${msg.name}`)
+        } else if (msg.verb === 'async' && msg.activationId /* && msg.response */) {
           // The returned msgs of action and app are different
           msg.type === 'activations'
-            ? logger(
-                colors.green(`${ok}:`) +
-                  ` invoked ${msg.entity.name} with id ${msg.activationId}`
-              )
-            : logger(
-                colors.green(`${ok}:`) +
-                  ` invoked ${msg.name} with id ${msg.activationId}`
-              )
-        } else if (
-          msg.verb === 'get' &&
-          msg.activationId /* && msg.response */
-        ) {
+            ? logger(colors.green(`${ok}:`) + ` invoked ${msg.entity.name} with id ${msg.activationId}`)
+            : logger(colors.green(`${ok}:`) + ` invoked ${msg.name} with id ${msg.activationId}`)
+        } else if (msg.verb === 'get' && msg.activationId /* && msg.response */) {
           // msg is an entity representing an invocation
           // commenting out this line diverges us from bx wsk output, but we're ok with that:
           // logger(colors.green(`${ok}:`) + ` got activation ${msg.activationId}`)

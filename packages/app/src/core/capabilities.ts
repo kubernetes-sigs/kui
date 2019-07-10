@@ -130,8 +130,7 @@ export const setValidCredentials = (creds: CredentialsMap): void => {
  * Do we have valid credentials to interface with the given provider?
  *
  */
-export const hasAuth = (provider: string): boolean =>
-  !!state.validCredentials[provider]
+export const hasAuth = (provider: string): boolean => !!state.validCredentials[provider]
 
 /**
  * Do we have access to a local system?

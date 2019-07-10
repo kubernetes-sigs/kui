@@ -15,13 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import {
-  cli,
-  keys,
-  selectors,
-  sidecar,
-  sleep
-} from '@kui-shell/core/tests/lib/ui'
+import { cli, keys, selectors, sidecar, sleep } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
   waitForRed,
@@ -48,9 +42,7 @@ describe('electron kubectl edit', function(this: common.ISuite) {
         .do(`${kubectl} delete pod ${name} ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
         .then(selector => waitForRed(this.app, selector))
-        .then(() =>
-          waitTillNone('pod', undefined, name, undefined, inNamespace)
-        )
+        .then(() => waitTillNone('pod', undefined, name, undefined, inNamespace))
         .catch(err => {
           if (!errOk) {
             return common.oops(this)(err)

@@ -63,11 +63,7 @@ const asciiToOptionsTable = (rows: string[]): Pair[] => {
   return table.length > 0 && table
 }
 
-export const formatUsage = (
-  command: string,
-  str: string,
-  options: Options = new DefaultOptions()
-): UsageError => {
+export const formatUsage = (command: string, str: string, options: Options = new DefaultOptions()): UsageError => {
   debug('raw', str)
   if (!matcher.test(str)) {
     debug('this does not look like a ASCII usage model')
@@ -108,12 +104,8 @@ export const formatUsage = (
     debug('sections', sections)
 
     if (sections.length > 0) {
-      const nameSectionIdx = sections.findIndex(({ title }) =>
-        /Name/i.test(title)
-      )
-      const usageSectionIdx = sections.findIndex(({ title }) =>
-        /Usage/i.test(title)
-      )
+      const nameSectionIdx = sections.findIndex(({ title }) => /Name/i.test(title))
+      const usageSectionIdx = sections.findIndex(({ title }) => /Usage/i.test(title))
 
       const rest = sections
         .filter((_, idx) => idx !== nameSectionIdx && idx !== usageSectionIdx)
@@ -124,8 +116,7 @@ export const formatUsage = (
           })
         )
 
-      const header =
-        nameSectionIdx >= 0 ? sections[nameSectionIdx].rows[0] : rows[0]
+      const header = nameSectionIdx >= 0 ? sections[nameSectionIdx].rows[0] : rows[0]
       const example = usageSectionIdx >= 0 && sections[usageSectionIdx].rows[0]
       debug('header', header, nameSectionIdx)
       debug('example', example, usageSectionIdx)

@@ -76,11 +76,7 @@ const fetch = activationId =>
       )
         .then(resolve)
         .catch(err => {
-          if (
-            err &&
-            err.error &&
-            err.error.error === 'The requested resource does not exist.'
-          ) {
+          if (err && err.error && err.error.error === 'The requested resource does not exist.') {
             // the activation isn't even recorded, yet!
             debug('fetch needs to poll', activationId)
             setTimeout(() => fetchPoll(), POLL_INTERVAL)
@@ -106,10 +102,7 @@ const poll = activation =>
       } else {
         // otherwise, the activation is recorded, but not yet complete, so retry after some time
         debug('poll still waiting for completion', activation.activationId)
-        setTimeout(
-          () => fetch(activation.activationId).then(poll),
-          POLL_INTERVAL
-        )
+        setTimeout(() => fetch(activation.activationId).then(poll), POLL_INTERVAL)
       }
     }
     iter()
@@ -133,19 +126,14 @@ const findActivationId = (options, activationId?: string) =>
       } else {
         // otherwise, use our local history to find the last activation id
         const lastActivationCommand = historyModel.find(
-          entry =>
-            entry.entityType === 'actions' &&
-            (entry.verb === 'invoke' || entry.verb === 'async')
+          entry => entry.entityType === 'actions' && (entry.verb === 'invoke' || entry.verb === 'async')
         )
         debug('lastActivationCommand', lastActivationCommand)
 
         if (lastActivationCommand) {
           // in some cases, the history does not yet record the activationId, so poll until it does
           const findPoll = iter => {
-            if (
-              lastActivationCommand.response &&
-              lastActivationCommand.response.activationId
-            ) {
+            if (lastActivationCommand.response && lastActivationCommand.response.activationId) {
               // got it!
               resolve(lastActivationCommand.response.activationId)
             } else {
@@ -189,8 +177,7 @@ export default (commandTree, wsk) => {
   // install the routes
   wsk.synonyms('activations').map(syn => {
     commandTree.listen(`/wsk/${syn}/await`, doAwait, {
-      docs:
-        'Wait until a previous activation completes (default: the last activation)'
+      docs: 'Wait until a previous activation completes (default: the last activation)'
     })
   })
 }

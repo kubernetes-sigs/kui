@@ -26,9 +26,7 @@ export default () => {
       key: 'wskflow'
     })
   } else {
-    const ourRoot = dirname(
-      require.resolve('@kui-shell/plugin-wskflow/package.json')
-    )
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-wskflow/package.json'))
     injectCSS(join(ourRoot, 'web/css/wskflow.css'))
   }
 }

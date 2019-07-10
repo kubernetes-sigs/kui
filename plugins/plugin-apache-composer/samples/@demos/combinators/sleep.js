@@ -8,8 +8,7 @@ const swap = (f1, f2) => obj => {
 }
 
 /** use a built-in Cloud Function to find the current time */
-const now = field =>
-  composer.sequence('/whisk.system/utils/date', swap('date', field))
+const now = field => composer.sequence('/whisk.system/utils/date', swap('date', field))
 
 /**
  * This code uses SLEEP and MERGE operations to produce,

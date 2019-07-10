@@ -21,10 +21,7 @@ const debug = Debug('plugins/bash-like/util/sidecar-support')
  * Render the given pre-rendered content as a sidecar-compatible dom
  *
  */
-export const asSidecarContent = (
-  renderedContent: Element | string,
-  tag = 'pre'
-) => {
+export const asSidecarContent = (renderedContent: Element | string, tag = 'pre') => {
   const content = document.createElement('div')
   content.classList.add('code-highlighting')
   content.classList.add('scrollable')

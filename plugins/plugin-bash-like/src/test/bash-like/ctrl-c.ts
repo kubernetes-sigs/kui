@@ -17,13 +17,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  localIt
-} from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors } = ui
 
@@ -34,12 +28,7 @@ describe('Cancel via Ctrl+C', function(this: ISuite) {
   const cancel = (app: Application, cmd = '') =>
     app.client
       .waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-      .then(() =>
-        app.client.getAttribute(
-          ui.selectors.CURRENT_PROMPT_BLOCK,
-          'data-input-count'
-        )
-      )
+      .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => parseInt(count, 10))
       .then(count =>
         app.client
@@ -56,29 +45,21 @@ describe('Cancel via Ctrl+C', function(this: ISuite) {
   it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
 
   const echoThisString = 'hi'
-  localIt(
-    'should initiate a command that completes with some delay',
-    async () => {
-      try {
-        const res = await cli.do(
-          `/bin/sleep 10 && echo ${echoThisString}`,
-          this.app
-        )
+  localIt('should initiate a command that completes with some delay', async () => {
+    try {
+      const res = await cli.do(`/bin/sleep 10 && echo ${echoThisString}`, this.app)
 
-        // we want the ctrlC to go to the xterm input; we need to wait for it to be visible
-        // TODO this belongs elsewhere
-        await ui.waitForXtermInput(this.app, res.count)
+      // we want the ctrlC to go to the xterm input; we need to wait for it to be visible
+      // TODO this belongs elsewhere
+      await ui.waitForXtermInput(this.app, res.count)
 
-        await this.app.client.keys(ui.ctrlC)
-        return this.app.client.waitUntil(async () => {
-          const actualText = await this.app.client.getText(
-            selectors.OUTPUT_N(res.count)
-          )
-          return /\^C/.test(actualText)
-        })
-      } catch (err) {
-        oops(this)(err)
-      }
+      await this.app.client.keys(ui.ctrlC)
+      return this.app.client.waitUntil(async () => {
+        const actualText = await this.app.client.getText(selectors.OUTPUT_N(res.count))
+        return /\^C/.test(actualText)
+      })
+    } catch (err) {
+      oops(this)(err)
     }
-  )
+  })
 })

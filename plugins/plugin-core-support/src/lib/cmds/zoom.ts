@@ -129,11 +129,7 @@ const listener = (event: KeyboardEvent): void => {
     event.preventDefault()
     reset()
     setTimeout(() => eventBus.emit('/zoom', 1), 100)
-  } else if (
-    (char === keys.ZOOM_IN || char === keys.ZOOM_OUT) &&
-    (event.ctrlKey || event.metaKey) &&
-    !event.shiftKey
-  ) {
+  } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
     event.preventDefault()
     const main = document.querySelector('body > .page')
@@ -178,9 +174,7 @@ export default (commandTree: CommandRegistrar) => {
       key: 'zoom.css'
     })
   } else {
-    const root = path.dirname(
-      require.resolve('@kui-shell/plugin-core-support/package.json')
-    )
+    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
     injectCSS(path.join(root, 'web/css/zoom.css'))
   }
 

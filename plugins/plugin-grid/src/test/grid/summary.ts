@@ -33,12 +33,7 @@ const actionName = `activation-table-${uuid()}` // some unique name
 } */
 /* const isInteger = str => typeof str === 'number' || parsesAsInteger(str) */
 
-const _openTableExpectCountOf = function(
-  ctx,
-  expectedCount,
-  expectedErrorRate,
-  cmd
-) {
+const _openTableExpectCountOf = function(ctx, expectedCount, expectedErrorRate, cmd) {
   const view = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .activation-viz-plugin`
   const row = `${view} tr[data-action-name="${actionName}"]`
   const successCell = `${row} .cell-successes.cell-hide-when-outliers-shown`
@@ -58,19 +53,10 @@ const _openTableExpectCountOf = function(
           ctx.app.client
             .scroll(row)
             .then(() => ctx.app.client.getText(successCell))
-            .then(actualCount =>
-              assert.strictEqual(parseInt(actualCount, 10), expectedCount)
-            )
+            .then(actualCount => assert.strictEqual(parseInt(actualCount, 10), expectedCount))
 
-            .then(() =>
-              ctx.app.client.getAttribute(failureCell, 'data-failures')
-            )
-            .then(actualErrorRate =>
-              assert.strictEqual(
-                parseInt(actualErrorRate, 10),
-                expectedErrorRate
-              )
-            )
+            .then(() => ctx.app.client.getAttribute(failureCell, 'data-failures'))
+            .then(actualErrorRate => assert.strictEqual(parseInt(actualErrorRate, 10), expectedErrorRate))
 
             // hover over a bar, expect focus labels
             .then(() => ctx.app.client.moveToObject(medianDot, 1, 1))
@@ -79,9 +65,7 @@ const _openTableExpectCountOf = function(
             // click outliers button
             .then(() => {
               if (expectedCount > 8) {
-                return ctx.app.client
-                  .click(outliersButton)
-                  .then(() => ctx.app.client.waitForVisible(outlierDots))
+                return ctx.app.client.click(outliersButton).then(() => ctx.app.client.waitForVisible(outlierDots))
               }
             })
 
@@ -103,18 +87,10 @@ const _openTableExpectCountOf = function(
         }
       })
 
-  return new Promise((resolve, reject) =>
-    setTimeout(() => once(0, resolve, reject), 2000)
-  )
+  return new Promise((resolve, reject) => setTimeout(() => once(0, resolve, reject), 2000))
 }
-export const openTableExpectCountOf = function(
-  ctx,
-  expectedCount,
-  expectedErrorRate,
-  cmd
-) {
-  it(`open activation table, with ${cmd}`, () =>
-    _openTableExpectCountOf(ctx, expectedCount, expectedErrorRate, cmd))
+export const openTableExpectCountOf = function(ctx, expectedCount, expectedErrorRate, cmd) {
+  it(`open activation table, with ${cmd}`, () => _openTableExpectCountOf(ctx, expectedCount, expectedErrorRate, cmd))
 }
 
 describe('summary visualization', function(this: common.ISuite) {
@@ -123,8 +99,7 @@ describe('summary visualization', function(this: common.ISuite) {
 
   const invoke = (inputValue = 1) => {
     // action bombs with negative numbers
-    const expectedStruct =
-      inputValue < 0 ? { error: 'bomb!' } : { x: inputValue }
+    const expectedStruct = inputValue < 0 ? { error: 'bomb!' } : { x: inputValue }
 
     it('should invoke the action with explicit action name', () =>
       cli
@@ -132,9 +107,7 @@ describe('summary visualization', function(this: common.ISuite) {
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(actionName))
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct(expectedStruct))
         .catch(common.oops(this)))
   }
@@ -162,10 +135,7 @@ describe('summary visualization', function(this: common.ISuite) {
 
   it(`should create the action that bombs if the input value is negative ${actionName}`, () =>
     cli
-      .do(
-        `let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`,
-        this.app
-      )
+      .do(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))

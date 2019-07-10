@@ -25,9 +25,7 @@ import {
 } from '@kui-shell/core/tests/lib/common'
 import { cli } from '@kui-shell/core/tests/lib/ui'
 
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 const input = join(ROOT, 'data/k8s/empty-status-cell.txt')
 
 localDescribe('k8s table with empty status cell', function(this: ISuite) {

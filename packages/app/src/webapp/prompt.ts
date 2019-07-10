@@ -20,11 +20,8 @@ import { inElectron } from '../core/capabilities'
 
 export function installContext(block: HTMLElement) {
   if (inElectron()) {
-    const cwd =
-      process.cwd() === process.env.HOME ? '~' : basename(process.cwd())
-    const promptContextContainer = block.querySelector(
-      '.repl-context'
-    ) as HTMLElement
+    const cwd = process.cwd() === process.env.HOME ? '~' : basename(process.cwd())
+    const promptContextContainer = block.querySelector('.repl-context') as HTMLElement
     promptContextContainer.innerText = cwd
   }
 }

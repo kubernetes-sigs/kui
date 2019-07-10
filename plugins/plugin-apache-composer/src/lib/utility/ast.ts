@@ -20,10 +20,7 @@ const debug = Debug('plugins/apache-composer/utility/ast')
 /* Does the given action represent a composer app? */
 export const isAnApp = action => {
   debug('filtering action', action)
-  const anno =
-    action &&
-    action.annotations &&
-    action.annotations.find(({ key }) => key === 'conductor')
+  const anno = action && action.annotations && action.annotations.find(({ key }) => key === 'conductor')
   return anno && anno.value
 }
 
@@ -60,8 +57,7 @@ export const extractActionsFromAst = composition => {
  */
 export const astAnnotation = entity => {
   const anno =
-    entity.annotations.find(({ key }) => key === 'ast') ||
-    entity.annotations.find(({ key }) => key === 'conductor')
+    entity.annotations.find(({ key }) => key === 'ast') || entity.annotations.find(({ key }) => key === 'conductor')
 
   // avoid conductor:true as indicating the presence of an Ast
   return anno && anno.value !== true ? anno : undefined

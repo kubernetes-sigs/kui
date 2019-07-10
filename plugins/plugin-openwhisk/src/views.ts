@@ -15,11 +15,7 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import {
-  Tab,
-  ViewHandler,
-  registerEntityView as registerCLIEntityView
-} from '@kui-shell/core/webapp/cli'
+import { Tab, ViewHandler, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
 import { registerEntityView as registerSidecarEntityView } from '@kui-shell/core/webapp/views/sidecar'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
 import { Entity } from '@kui-shell/core/models/entity'
@@ -33,16 +29,8 @@ export default () => {
       parsedOptions: Object, // eslint-disable-line @typescript-eslint/ban-types
       execOptions: Object // eslint-disable-line @typescript-eslint/ban-types
     ) => {
-      const showActivation = (await import(
-        './lib/views/cli/activations/entity'
-      )).default as ViewHandler
-      return showActivation(
-        tab,
-        response,
-        resultDom,
-        parsedOptions,
-        execOptions
-      )
+      const showActivation = (await import('./lib/views/cli/activations/entity')).default as ViewHandler
+      return showActivation(tab, response, resultDom, parsedOptions, execOptions)
     })
 
     const doShow = async (

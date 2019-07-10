@@ -28,22 +28,10 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import {
-  listen,
-  getCurrentPrompt,
-  getCurrentTab,
-  getTabIndex,
-  Tab,
-  setStatus
-} from '@kui-shell/core/webapp/cli'
+import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, Tab, setStatus } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
-import {
-  CommandRegistrar,
-  Event,
-  ExecType,
-  EvaluatorArgs
-} from '@kui-shell/core/models/command'
+import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { theme } from '@kui-shell/core/core/settings'
 
 const debug = Debug('plugins/core-support/new-tab')
@@ -51,9 +39,7 @@ const debug = Debug('plugins/core-support/new-tab')
 const usage = {
   strict: 'switch',
   command: 'switch',
-  required: [
-    { name: 'tabIndex', numeric: true, docs: 'Switch to the given tab index' }
-  ]
+  required: [{ name: 'tabIndex', numeric: true, docs: 'Switch to the given tab index' }]
 }
 
 /**
@@ -61,21 +47,10 @@ const usage = {
  *
  */
 const getTabButton = (tab: Tab) =>
-  element(
-    `.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(
-      tab
-    )}"]`
-  )
-const getCurrentTabButton = () =>
-  element('.main .left-tab-stripe .left-tab-stripe-button-selected')
-const getTabButtonLabel = (tab: Tab) =>
-  getTabButton(tab).querySelector(
-    '.left-tab-stripe-button-label'
-  ) as HTMLElement
-const getTabCloser = (tab: Tab) =>
-  getTabButton(tab).querySelector(
-    '.left-tab-stripe-button-closer'
-  ) as HTMLElement
+  element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(tab)}"]`)
+const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
+const getTabButtonLabel = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-label') as HTMLElement
+const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
 
 /**
  * Otherwise global state that we want to keep per tab
@@ -106,9 +81,7 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
   debug('switchTab', tabIndex)
 
   const currentTab = getCurrentTab()
-  const nextTab = document.querySelector(
-    `.main > .tab-container > tab[data-tab-index="${tabIndex}"]`
-  )
+  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-index="${tabIndex}"]`)
   const nextTabButton = document.querySelector(
     `.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${tabIndex}"]`
   )
@@ -162,11 +135,7 @@ const addKeyboardListeners = (): void => {
  */
 const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/complete', (event: Event) => {
-    if (
-      event.execType !== undefined &&
-      event.execType !== ExecType.Nested &&
-      event.route
-    ) {
+    if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
       debug('got event', event)
       getTabButton(event.tab).classList.remove('processing')
@@ -174,11 +143,7 @@ const addCommandEvaluationListeners = (): void => {
   })
 
   eventBus.on('/command/start', (event: Event) => {
-    if (
-      event.execType !== undefined &&
-      event.execType !== ExecType.Nested &&
-      event.route
-    ) {
+    if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
       debug('got event', event)
 
@@ -376,9 +341,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
  */
 const oneTimeInit = (): void => {
   // focus the current prompt no matter where the user clicks in the left tab stripe
-  ;(document.querySelector(
-    '.main > .left-tab-stripe'
-  ) as HTMLElement).onclick = () => {
+  ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
     getCurrentPrompt().focus()
   }
 
@@ -387,8 +350,7 @@ const oneTimeInit = (): void => {
   initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
 
   if (document.body.classList.contains('subwindow')) {
-    element('#new-tab-button > i').onclick = () =>
-      window.open(window.location.href, '_blank')
+    element('#new-tab-button > i').onclick = () => window.open(window.location.href, '_blank')
   } else {
     element('#new-tab-button > i').onclick = () => newTab()
   }
@@ -422,8 +384,7 @@ const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/tab/switch',
-    ({ argvNoOptions }) =>
-      switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
+    ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
     { usage, needsUI: true, noAuthOk: true }
   )
   commandTree.listen('/tab/new', newTabAsync, {

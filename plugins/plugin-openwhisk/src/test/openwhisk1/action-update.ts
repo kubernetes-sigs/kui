@@ -21,9 +21,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { localIt } = common
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
 
@@ -45,9 +43,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct({ x: 3 }))
       .catch(common.oops(this)))
 
@@ -64,9 +60,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct({ y: 5 })) // note that the original parameter binding is expected to be overwritten
       .catch(common.oops(this)))
 
@@ -83,9 +77,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct({ y: 6 })) // note that the original parameter binding is expected to be overwritten
       .catch(common.oops(this)))
 
@@ -103,18 +95,13 @@ describe('wsk action update without input file', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct({ y: 4 })) // note that the original parameter binding is expected to be overwritten
       .catch(common.oops(this)))
 
   localIt('should update the action, this time with a file', () =>
     cli
-      .do(
-        `wsk action update ${actionName} -p name updater ${ROOT}/data/openwhisk/foo.js`,
-        this.app
-      )
+      .do(`wsk action update ${actionName} -p name updater ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -127,9 +114,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct({ name: 'updater' })) // note that the original parameter binding is expected to be overwritten
       .catch(common.oops(this))
   )

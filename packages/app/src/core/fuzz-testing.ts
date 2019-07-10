@@ -29,10 +29,7 @@ debug('loading')
  *
  */
 const nope = (filepath: string) => {
-  return (
-    filepath.toString().indexOf('.wskprops') >= 0 ||
-    filepath.toString().indexOf('.cf/config.json') >= 0
-  )
+  return filepath.toString().indexOf('.wskprops') >= 0 || filepath.toString().indexOf('.cf/config.json') >= 0
 }
 
 /**
@@ -49,10 +46,7 @@ const fuzzies = {
     fs.readFile = function(filepath: string, options, cb) {
       if (nope(filepath)) {
         debug('fs.readFile blocked', filepath)
-        rf(
-          'fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas',
-          options ? cb : options
-        )
+        rf('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas', options ? cb : options)
       } else {
         if (!cb) {
           rf(filepath, options)

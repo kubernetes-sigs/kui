@@ -35,9 +35,7 @@ export const getCreds = async options => {
           try {
             const { APIHOST, AUTH } = propertiesParser.parse(data.toString())
             resolve({
-              apiHost: !new URL(APIHOST).protocol
-                ? `https://${APIHOST}`
-                : APIHOST,
+              apiHost: !new URL(APIHOST).protocol ? `https://${APIHOST}` : APIHOST,
               auth: AUTH
             })
           } catch (err) {
@@ -49,17 +47,11 @@ export const getCreds = async options => {
   } else if (options.apiHost && options.auth) {
     // specified on command line
     return options
-  } else if (
-    (options.apiHost && !options.auth) ||
-    (!options.apiHost && options.auth)
-  ) {
+  } else if ((options.apiHost && !options.auth) || (!options.apiHost && options.auth)) {
     throw new Error('Please specify both --apiHost and --auth')
   } else {
     // use the global settings
-    const [apiHost, auth] = await Promise.all([
-      $('wsk host get'),
-      $('wsk auth get')
-    ])
+    const [apiHost, auth] = await Promise.all([$('wsk host get'), $('wsk auth get')])
     return { apiHost, auth }
   }
 }

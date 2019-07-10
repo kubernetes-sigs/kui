@@ -82,10 +82,7 @@ export default (commandTree: CommandRegistrar) => {
           try {
             const data = await import(
               'raw-loader!@kui-shell/plugin-apache-composer/samples' +
-                filepath.replace(
-                  /^.*plugin-apache-composer\/samples(.*)$/,
-                  '$1'
-                )
+                filepath.replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
             )
 
             resolve(data)
@@ -142,9 +139,7 @@ export default (commandTree: CommandRegistrar) => {
       const name = path.basename(input)
 
       // create a fake action/entity record
-      const formatForUser = (mode: string) => async (
-        composition: CompositionWithCode
-      ) => {
+      const formatForUser = (mode: string) => async (composition: CompositionWithCode) => {
         debug('formatForUser', composition)
 
         const { ast } = composition
@@ -173,14 +168,7 @@ export default (commandTree: CommandRegistrar) => {
           namespace: undefined
         })
 
-        const modes: SidecarMode[] = wskflowUtil.vizAndfsmViewModes(
-          visualize,
-          viewName,
-          mode,
-          input,
-          ast,
-          options
-        )
+        const modes: SidecarMode[] = wskflowUtil.vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
         modes.splice(modes.length, 0, ...coreModes)
         const extraModes = wskflowUtil.zoomToFitButtons(controller)
 
@@ -214,8 +202,7 @@ export default (commandTree: CommandRegistrar) => {
         if (!viewOptions.noHeader) {
           entity = Object.assign(entity, {
             controlHeaders: ['sidecar-header-secondary-content'],
-            subtext:
-              'This is a preview of your composition, it is not yet deployed'
+            subtext: 'This is a preview of your composition, it is not yet deployed'
           })
         }
 
@@ -289,13 +276,7 @@ export default (commandTree: CommandRegistrar) => {
       if (options.c) {
         // then the user wants to see the code and preview side-by-side
         debug('delegating to editor')
-        return resolve(
-          repl.qexec(
-            `compose ${path.basename(
-              inputFile
-            )} --simple --readOnly --template "${inputFile}"`
-          )
-        )
+        return resolve(repl.qexec(`compose ${path.basename(inputFile)} --simple --readOnly --template "${inputFile}"`))
       }
 
       const input = findFile(expandHomeDir(inputFile))
@@ -335,10 +316,7 @@ export default (commandTree: CommandRegistrar) => {
           // in case the user provides env vars
           const backupEnv = {}
           if (options.env) {
-            debug(
-              'parsing environment variables from command line',
-              options.env
-            )
+            debug('parsing environment variables from command line', options.env)
 
             for (let idx = 0; idx < options.env.length; idx += 2) {
               const key = options.env[idx]

@@ -47,9 +47,7 @@ export default async (commandTree: CommandRegistrar) => {
           const beautify = require('js-beautify').js_beautify
 
           selection.exec.code = beautify(selection.exec.code)
-          const code = getSidecar(tab).querySelector(
-            '.action-content .action-source'
-          ) as HTMLElement
+          const code = getSidecar(tab).querySelector('.action-content .action-source') as HTMLElement
           code.innerText = selection.exec.code
 
           // re-highlight

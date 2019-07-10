@@ -21,9 +21,5 @@ import preview from './controller/preview'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 export default async (commandTree: CommandRegistrar) => {
-  return Promise.all([
-    getStep(commandTree),
-    getTask(commandTree),
-    preview(commandTree)
-  ])
+  return Promise.all([getStep(commandTree), getTask(commandTree), preview(commandTree)])
 }

@@ -80,20 +80,13 @@ const WebErrorResponseBuilder = (function() {
   }
 })()
 
-exports.TimeOutPromise = function(
-  internalPromise,
-  metricsAggregator,
-  origin,
-  timeOutInMilliseconds
-) {
+exports.TimeOutPromise = function(internalPromise, metricsAggregator, origin, timeOutInMilliseconds) {
   return new Promise((resolve, reject) => {
     let timeout = setTimeout(function() {
       return reject(
         WebErrorResponseBuilder.withStatusCode(504)
           .withError('SERVER_TIMEOUT')
-          .withDescription(
-            `Request timed out. ${JSON.stringify(metricsAggregator.finish())}`
-          )
+          .withDescription(`Request timed out. ${JSON.stringify(metricsAggregator.finish())}`)
           .withOrigin(origin)
           .build()
       )

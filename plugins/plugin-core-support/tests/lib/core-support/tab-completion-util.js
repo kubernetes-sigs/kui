@@ -38,25 +38,13 @@ exports.doTimes = (n, task) => {
 exports.tabby = (app, partial, full, expectOK = true) =>
   app.client
     .waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-    .then(() =>
-      app.client.getAttribute(
-        ui.selectors.CURRENT_PROMPT_BLOCK,
-        'data-input-count'
-      )
-    )
+    .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count =>
       app.client
         .setValue(ui.selectors.CURRENT_PROMPT, partial)
-        .then(() =>
-          app.client.waitForValue(ui.selectors.PROMPT_N(count), partial)
-        )
-        .then(() =>
-          app.client.setValue(
-            ui.selectors.CURRENT_PROMPT,
-            `${partial}${keys.TAB}`
-          )
-        )
+        .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), partial))
+        .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
         .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), full))
     )
     .then(() => new Promise(resolve => setTimeout(resolve, 500)))
@@ -75,40 +63,20 @@ exports.tabbyWithOptions = (
   partial,
   expected,
   full,
-  {
-    click = undefined,
-    nTabs = undefined,
-    expectOK = true,
-    expectedPromptAfterTab = undefined
-  } = {}
+  { click = undefined, nTabs = undefined, expectOK = true, expectedPromptAfterTab = undefined } = {}
 ) => {
   return app.client
     .waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-    .then(() =>
-      app.client.getAttribute(
-        ui.selectors.CURRENT_PROMPT_BLOCK,
-        'data-input-count'
-      )
-    )
+    .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count =>
       app.client
         .setValue(ui.selectors.CURRENT_PROMPT, partial)
-        .then(() =>
-          app.client.waitForValue(ui.selectors.PROMPT_N(count), partial)
-        )
-        .then(() =>
-          app.client.setValue(
-            ui.selectors.CURRENT_PROMPT,
-            `${partial}${keys.TAB}`
-          )
-        )
+        .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), partial))
+        .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
         .then(() => {
           if (expectedPromptAfterTab) {
-            return app.client.waitForValue(
-              ui.selectors.PROMPT_N(count),
-              expectedPromptAfterTab
-            )
+            return app.client.waitForValue(ui.selectors.PROMPT_N(count), expectedPromptAfterTab)
           }
         })
         .then(() => {
@@ -116,13 +84,7 @@ exports.tabbyWithOptions = (
             // then we expect non-visibility of the tab-completion popup
             // console.error('Expecting non-existence of popup')
             return app.client
-              .waitForVisible(
-                `${ui.selectors.PROMPT_BLOCK_N(
-                  count
-                )} .tab-completion-temporary .clickable`,
-                10000,
-                true
-              )
+              .waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`, 10000, true)
               .then(() => {
                 // great, the tab completion popup does not exist; early exit
                 const err = new Error()
@@ -130,20 +92,12 @@ exports.tabbyWithOptions = (
                 throw err
               })
           } else {
-            const selector = `${ui.selectors.PROMPT_BLOCK_N(
-              count
-            )} .tab-completion-temporary .clickable`
+            const selector = `${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`
             // console.error('Expecting existence of popup', selector)
             return app.client.waitForVisible(selector, 10000)
           }
         })
-        .then(() =>
-          app.client.getText(
-            `${ui.selectors.PROMPT_BLOCK_N(
-              count
-            )} .tab-completion-temporary .clickable`
-          )
-        )
+        .then(() => app.client.getText(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
         .then(ui.expectArray(expected))
         // .then(() => { console.error('Got expected options') })
         .then(() => {
@@ -151,27 +105,20 @@ exports.tabbyWithOptions = (
             // click on a row
             const selector = `${ui.selectors.PROMPT_BLOCK_N(
               count
-            )} .tab-completion-temporary .tab-completion-option[data-value="${expected[
-              click
-            ].replace(/\\/g, '\\\\')}"] .clickable`
+            )} .tab-completion-temporary .tab-completion-option[data-value="${expected[click].replace(
+              /\\/g,
+              '\\\\'
+            )}"] .clickable`
             // console.error('clicking', click, selector)
-            return app.client
-              .waitForVisible(selector, 10000)
-              .then(() => app.client.click(selector))
+            return app.client.waitForVisible(selector, 10000).then(() => app.client.click(selector))
           } else {
             // otherwise hit tab a number of times, to cycle to the desired entry
             // console.error('tabbing', nTabs)
-            return exports
-              .doTimes(nTabs, () => app.client.keys('Tab'))
-              .then(() => app.client.keys('Enter'))
+            return exports.doTimes(nTabs, () => app.client.keys('Tab')).then(() => app.client.keys('Enter'))
           }
         })
         .then(() =>
-          app.client.waitForVisible(
-            `${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`,
-            8000,
-            true
-          )
+          app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 8000, true)
         ) // wait for non-existence of the temporary
         .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), full))
     )
@@ -193,47 +140,21 @@ exports.tabbyWithOptions = (
 exports.tabbyWithOptionsThenCancel = (app, partial, expected) =>
   app.client
     .waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-    .then(() =>
-      app.client.getAttribute(
-        ui.selectors.CURRENT_PROMPT_BLOCK,
-        'data-input-count'
-      )
-    )
+    .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count =>
       app.client
         .setValue(ui.selectors.CURRENT_PROMPT, partial)
+        .then(() => app.client.waitForValue(ui.selectors.PROMPT_N(count), partial))
+        .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
         .then(() =>
-          app.client.waitForValue(ui.selectors.PROMPT_N(count), partial)
+          app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`)
         )
-        .then(() =>
-          app.client.setValue(
-            ui.selectors.CURRENT_PROMPT,
-            `${partial}${keys.TAB}`
-          )
-        )
-        .then(() =>
-          app.client.waitForVisible(
-            `${ui.selectors.PROMPT_BLOCK_N(
-              count
-            )} .tab-completion-temporary .clickable`
-          )
-        )
-        .then(() =>
-          app.client.getText(
-            `${ui.selectors.PROMPT_BLOCK_N(
-              count
-            )} .tab-completion-temporary .clickable`
-          )
-        )
+        .then(() => app.client.getText(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
         .then(ui.expectArray(expected))
         .then(() => app.client.keys('ffffff')) // type something random
         .then(() =>
-          app.client.waitForVisible(
-            `${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`,
-            20000,
-            true
-          )
+          app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 20000, true)
         )
     ) // wait for non-existence of the temporary
     .then(() => app.client.keys(ui.ctrlC)) // clear the line

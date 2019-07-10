@@ -31,9 +31,7 @@ import bottomStripe = require('./bottom-stripe')
 const _highlight = (op: string) => (highlightThis?: Element | Element[]) => {
   if (highlightThis) {
     if (Array.isArray(highlightThis)) {
-      highlightThis.forEach(_ =>
-        _.classList[op]('picture-in-picture-highlight')
-      )
+      highlightThis.forEach(_ => _.classList[op]('picture-in-picture-highlight'))
     } else {
       highlightThis.classList[op]('picture-in-picture-highlight')
     }
@@ -65,23 +63,15 @@ const restore = (
   debug('restore')
 
   const sidecar = getSidecar(tab)
-  const parent =
-    (options && options.parent) || sidecar.querySelector('.custom-content')
+  const parent = (options && options.parent) || sidecar.querySelector('.custom-content')
 
   if (pippedContainer !== true) {
     removeAllDomChildren(parent)
   }
 
   if (previousPresentation) {
-    debug(
-      'restoring presentation mode',
-      previousPresentation,
-      Presentation[previousPresentation].toString()
-    )
-    document.body.setAttribute(
-      'data-presentation',
-      Presentation[previousPresentation].toString()
-    )
+    debug('restoring presentation mode', previousPresentation, Presentation[previousPresentation].toString())
+    document.body.setAttribute('data-presentation', Presentation[previousPresentation].toString())
   }
 
   // restore escape handler
@@ -110,8 +100,7 @@ const restore = (
   // sidecar.classList.add('custom-content')
   // pippedContainer.classList.remove('picture-in-picture-stage1')
   if (pippedContainer !== true && pippedContainer !== false) {
-    if (pippedContainer.parentNode)
-      pippedContainer.parentNode.removeChild(pippedContainer)
+    if (pippedContainer.parentNode) pippedContainer.parentNode.removeChild(pippedContainer)
     parent.appendChild(pippedContainer)
   }
   // pippedContainer.onclick = null
@@ -215,11 +204,7 @@ interface CapturedHeader {
  * Capture and clone the given selector
  *
  */
-const capture = (
-  tab: Tab,
-  selector: string,
-  redraw?: Function
-): CapturedHeader => {
+const capture = (tab: Tab, selector: string, redraw?: Function): CapturedHeader => {
   const node = tab.querySelector(selector)
   return {
     selector, // remember how to find the replacement
@@ -246,34 +231,23 @@ export const drilldown = (
   if (event) event.stopPropagation()
 
   // maybe ccontainer is a query selector
-  const container =
-    typeof ccontainer === 'string'
-      ? document.querySelector(ccontainer)
-      : ccontainer
+  const container = typeof ccontainer === 'string' ? document.querySelector(ccontainer) : ccontainer
 
   debug('drilldown', command, container, returnTo)
 
   // capture the current header and other DOM state, before the `command` overwrites it
   const alreadyPipped = document.querySelector('body > .picture-in-picture')
   const presentation: Presentation =
-    document.body.getAttribute('data-presentation') &&
-    Presentation[document.body.getAttribute('data-presentation')]
+    document.body.getAttribute('data-presentation') && Presentation[document.body.getAttribute('data-presentation')]
   const capturedHeader = capture(tab, '.sidecar-header-text', popupListen)
-  const capturedHeader2 = capture(
-    tab,
-    '.header-right-bits .custom-header-content'
-  )
+  const capturedHeader2 = capture(tab, '.header-right-bits .custom-header-content')
   const capturedHeader3 = capture(tab, '.header-right-bits .action-content')
   const capturedHeader4 = capture(tab, '.sidecar-header-icon')
   const capturedHeader5 = capture(tab, '.sidecar-header-secondary-content')
 
   // for the footer, we need to capture the modeButton renderer, so we can reattach the click events
   const modeButtons = bottomStripe.css.modeContainer(tab)['capture']
-  const capturedFooter = capture(
-    tab,
-    bottomStripe.rawCSS.buttons,
-    modeButtons && modeButtons()
-  )
+  const capturedFooter = capture(tab, bottomStripe.rawCSS.buttons, modeButtons && modeButtons())
 
   debug('container', container)
   debug('alreadyPipped', alreadyPipped)
@@ -291,15 +265,7 @@ export const drilldown = (
   // make the transition
   const restoreFn =
     container && !alreadyPipped
-      ? pip(
-          tab,
-          container,
-          presentation,
-          capturedHeaders,
-          highlightThis,
-          returnTo,
-          options
-        )
+      ? pip(tab, container, presentation, capturedHeaders, highlightThis, returnTo, options)
       : () => true
 
   highlight(highlightThis)
@@ -324,9 +290,7 @@ export const drilldown = (
     if (!options || options.exec === 'pexec') {
       return repl.pexec(command, execOptions).catch(restoreFn)
     } else {
-      return repl
-        .qexec(command, undefined, undefined, execOptions)
-        .catch(restoreFn)
+      return repl.qexec(command, undefined, undefined, execOptions).catch(restoreFn)
     }
   } else if (typeof command === 'function') {
     return command().catch(restoreFn)

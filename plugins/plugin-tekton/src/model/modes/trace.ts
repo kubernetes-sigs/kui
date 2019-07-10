@@ -44,12 +44,7 @@ interface RenderOpts {
  * Render a trace view in the given container
  *
  */
-export const render = (
-  tab: Tab,
-  activations: ActivationLike[],
-  container: Element,
-  opts: RenderOpts = {}
-): void => {
+export const render = (tab: Tab, activations: ActivationLike[], container: Element, opts: RenderOpts = {}): void => {
   const { noCrop = false, showStart = false, showTimeline = true } = opts
 
   debug('trace', activations)
@@ -69,10 +64,7 @@ export const render = (
   // normalizing the bar dimensions
   const first = 0
   const start = activations[first].start
-  const maxEnd = activations.reduce(
-    (max, activation) => Math.max(max, activation.end || activation.start + 1),
-    0
-  ) // the last one in the list might not have the highest end
+  const maxEnd = activations.reduce((max, activation) => Math.max(max, activation.end || activation.start + 1), 0) // the last one in the list might not have the highest end
   const dur = Math.max(1, maxEnd - start, maxEnd - start)
 
   const tgap = 0
@@ -155,13 +147,10 @@ export const render = (
 
     // column 3: duration cell
     const duration = nextCell()
-    duration.className =
-      'somewhat-smaller-text log-field log-field-right-align duration-field'
+    duration.className = 'somewhat-smaller-text log-field log-field-right-align duration-field'
     duration.classList.add(isSuccess ? 'green-text' : 'red-text')
     if (activation.end) {
-      duration.innerText = prettyPrintDuration(
-        activation.end - activation.start
-      )
+      duration.innerText = prettyPrintDuration(activation.end - activation.start)
     } else {
       // for trigger and rule, set duration to be 1ms. If duration is not set, qtip will show 'lasting undefined'
       duration.innerText = prettyPrintDuration(1)
@@ -195,10 +184,7 @@ export const render = (
       bar.classList.add('log-line-bar')
       bar.classList.add(`is-success-${isSuccess}`)
       const left = normalize(activation.start + initTime, idx)
-      const right = normalize(
-        idx === 0 ? maxEnd : activation.end || activation.start + initTime + 1,
-        idx
-      ) // handle rules and triggers as having dur=1
+      const right = normalize(idx === 0 ? maxEnd : activation.end || activation.start + initTime + 1, idx) // handle rules and triggers as having dur=1
       const width = right - left
 
       // on which side should we render the tooltip?
@@ -209,18 +195,10 @@ export const render = (
       // bar.onclick = pip(show(activation))
       bar.setAttribute(
         'data-balloon',
-        prettyPrintDuration(
-          activation.end
-            ? activation.end - activation.start - initTime
-            : initTime
-        )
+        prettyPrintDuration(activation.end ? activation.end - activation.start - initTime : initTime)
       )
       bar.setAttribute('data-balloon-pos', balloonPos)
-      bar.onmouseover = () =>
-        legend.setAttribute(
-          'data-hover-type',
-          isSuccess ? 'execution-time' : 'failures'
-        )
+      bar.onmouseover = () => legend.setAttribute('data-hover-type', isSuccess ? 'execution-time' : 'failures')
       bar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
       // container initialization bar
@@ -236,8 +214,7 @@ export const render = (
         initTimeBar.style.position = 'absolute'
         initTimeBar.classList.add('log-line-bar')
         initTimeBar.classList.add('is-initTime')
-        initTimeBar.onmouseover = () =>
-          legend.setAttribute('data-hover-type', 'container-initialization')
+        initTimeBar.onmouseover = () => legend.setAttribute('data-hover-type', 'container-initialization')
         initTimeBar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
         // activation can fail at init time - if that's the case, initTime === duration
@@ -266,8 +243,7 @@ export const render = (
         // waitTimeBar.onclick = pip(show(activation))
         waitTimeBar.setAttribute('data-balloon', prettyPrintDuration(waitTime))
         waitTimeBar.setAttribute('data-balloon-pos', balloonPos)
-        waitTimeBar.onmouseover = () =>
-          legend.setAttribute('data-hover-type', 'queueing-delays')
+        waitTimeBar.onmouseover = () => legend.setAttribute('data-hover-type', 'queueing-delays')
         waitTimeBar.onmouseout = () => legend.removeAttribute('data-hover-type')
       }
 
@@ -291,11 +267,7 @@ export const render = (
       const previous = activations[idx - 1]
       const previousWaitTime = 0
       const previousStart = previous && previous.start - previousWaitTime
-      const time = prettyPrintTime(
-        activation.start - waitTime,
-        'short',
-        previousStart
-      )
+      const time = prettyPrintTime(activation.start - waitTime, 'short', previousStart)
       start.className =
         'somewhat-smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
       start.appendChild(startInner)
@@ -310,13 +282,8 @@ export const render = (
 }
 
 function makeRunActivationLike(run: PipelineRun): ActivationLike {
-  const start =
-    run && run.status && run.status.startTime && new Date(run.status.startTime)
-  const end =
-    run &&
-    run.status &&
-    run.status.completionTime &&
-    new Date(run.status.completionTime)
+  const start = run && run.status && run.status.startTime && new Date(run.status.startTime)
+  const end = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
   const duration = start && end && end.getTime() - start.getTime()
 
   return {
@@ -356,11 +323,7 @@ function makeSymbolTables(pipeline: Pipeline, jsons: KubeResource[]) {
   return { taskRefName2Task }
 }
 
-function makeTaskRunsActivationLike(
-  run: PipelineRun,
-  pipeline: Pipeline,
-  jsons: KubeResource[]
-): ActivationLike[] {
+function makeTaskRunsActivationLike(run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]): ActivationLike[] {
   const runs = run && run.status.taskRuns
 
   const { taskRefName2Task } = makeSymbolTables(pipeline, jsons)
@@ -419,12 +382,7 @@ function makeTaskRunsActivationLike(
   return activations
 }
 
-export const traceView = (
-  tab: Tab,
-  run: PipelineRun,
-  pipeline: Pipeline,
-  jsons: KubeResource[]
-) => {
+export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]) => {
   const content = document.createElement('div')
   content.classList.add('padding-content', 'repl-result')
   content.style.flex = '1'
@@ -433,11 +391,7 @@ export const traceView = (
   content.style.overflowX = 'hidden'
 
   const runActivation = makeRunActivationLike(run)
-  render(
-    tab,
-    [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)),
-    content
-  )
+  render(tab, [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)), content)
 
   const badges: Badge[] = ['Tekton']
 
@@ -461,10 +415,7 @@ const traceMode: SidecarMode = {
   mode: 'trace',
   direct: async (tab: Tab, _: ResponseObject) => {
     const resource = _.resource as PipelineRun
-    const [pipeline, tasks] = await Promise.all([
-      getPipelineFromRef(resource),
-      getTasks()
-    ])
+    const [pipeline, tasks] = await Promise.all([getPipelineFromRef(resource), getTasks()])
     return traceView(tab, resource, pipeline, tasks)
   },
   defaultMode: true,

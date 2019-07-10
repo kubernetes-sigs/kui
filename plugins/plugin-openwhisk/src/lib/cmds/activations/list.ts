@@ -47,12 +47,7 @@ const baseOptions: Options = {
  * The activation list impl.
  *
  */
-const doList = wsk => async ({
-  command,
-  argvNoOptions,
-  parsedOptions,
-  execOptions
-}) => {
+const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOptions }) => {
   debug('command', command)
   debug('skip', parsedOptions.skip)
   debug('limit', parsedOptions.limit)
@@ -71,11 +66,7 @@ const doList = wsk => async ({
     debug('adding positional parameter name', parsedOptions)
   }
 
-  const opts = Object.assign(
-    {},
-    baseOptions,
-    wsk.owOpts(parsedOptions, execOptions)
-  )
+  const opts = Object.assign({}, baseOptions, wsk.owOpts(parsedOptions, execOptions))
   delete opts._
 
   try {

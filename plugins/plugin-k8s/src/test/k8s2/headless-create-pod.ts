@@ -16,15 +16,10 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { kubectl, cli as kui, CLI } from '@kui-shell/core/tests/lib/headless'
-import {
-  createNS,
-  waitTillNone
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
 const synonyms = ['kubectl', 'k']
 
@@ -44,10 +39,7 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
 
     it(`should create sample pod from local file via ${kubectl}`, () => {
       return impl
-        .do(
-          `${kubectl} create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`,
-          ctx.app
-        )
+        .do(`${kubectl} create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
         .then(impl.expectOK('nginx'))
         .catch(common.oops(ctx))
     })
@@ -82,23 +74,15 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
 
     it(`should delete the new pod by yaml via ${kubectl}`, () => {
       return impl
-        .do(
-          `${kubectl} delete -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`,
-          ctx.app
-        )
+        .do(`${kubectl} delete -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
         .then(impl.expectOK('pod "nginx" deleted'))
-        .then(() =>
-          waitTillNone('pods', impl, undefined, undefined, inNamespace)(ctx.app)
-        )
+        .then(() => waitTillNone('pods', impl, undefined, undefined, inNamespace)(ctx.app))
         .catch(common.oops(ctx))
     })
 
     it(`should re-create sample pod from local file via ${kubectl}`, () => {
       return impl
-        .do(
-          `${kubectl} create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`,
-          ctx.app
-        )
+        .do(`${kubectl} create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
         .then(impl.expectOK('nginx'))
         .catch(common.oops(ctx))
     })
@@ -107,9 +91,7 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
       return impl
         .do(`${kubectl} delete pod nginx ${inNamespace}`, ctx.app)
         .then(impl.expectOK('pod "nginx" deleted'))
-        .then(() =>
-          waitTillNone('pods', impl, undefined, undefined, inNamespace)(ctx.app)
-        )
+        .then(() => waitTillNone('pods', impl, undefined, undefined, inNamespace)(ctx.app))
         .catch(common.oops(ctx))
     })
 

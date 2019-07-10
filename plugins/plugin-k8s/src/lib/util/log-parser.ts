@@ -172,9 +172,7 @@ const parseZapr = (raw: string): ZaprEntry[] => {
     if (nextIdx >= idx + 1) {
       const startIdx = nextIdx - 1
       for (let preIdx = idx; preIdx < startIdx; preIdx++) {
-        const maybe = records[preIdx].match(
-          /^\n?(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})\s+(.*)\n$/
-        )
+        const maybe = records[preIdx].match(/^\n?(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})\s+(.*)\n$/)
         if (maybe) {
           lines.push({
             timestamp: maybe[1],
@@ -248,9 +246,7 @@ const parseIstio = (raw: string): ZaprEntry[] => {
         const origin = record.instance || record.provider || record.caller || ''
 
         const zapr: ZaprEntry = {
-          timestamp: timestamp
-            ? prettyPrintTime(timestamp, timestampFormat, prevTimestamp)
-            : '',
+          timestamp: timestamp ? prettyPrintTime(timestamp, timestampFormat, prevTimestamp) : '',
           rawTimestamp: timestamp,
           logType,
           provider: record.logger,
@@ -304,9 +300,7 @@ const parseIstio = (raw: string): ZaprEntry[] => {
         const rest = (match && match[restIndex]) || line
 
         const zapr: ZaprEntry = {
-          timestamp:
-            timestamp &&
-            prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
+          timestamp: timestamp && prettyPrintTime(timestamp, timestampFormat, prevTimestamp),
           rawTimestamp: timestamp,
           logType,
           provider,
@@ -345,19 +339,14 @@ const parseIstio = (raw: string): ZaprEntry[] => {
 }
 
 /** filter out empty log entries */
-const notEmpty = (_: ZaprEntry) =>
-  _.timestamp || _.rest || _.origin || _.provider
+const notEmpty = (_: ZaprEntry) => _.timestamp || _.rest || _.origin || _.provider
 
 /**
  * Format the kubectl access logs
  *
  */
-export const formatLogs = (
-  raw: string,
-  options: Options = { asHTML: true }
-) => {
-  const logEntries: ZaprEntry[] =
-    parseZapr(raw) || parseIstio(raw) || parseCloudLens(raw, options)
+export const formatLogs = (raw: string, options: Options = { asHTML: true }) => {
+  const logEntries: ZaprEntry[] = parseZapr(raw) || parseIstio(raw) || parseCloudLens(raw, options)
   debug('logEntries', logEntries)
 
   if (!options.asHTML) {
@@ -368,115 +357,100 @@ export const formatLogs = (
     // container.classList.add('fixed-table-layout')
 
     const doWeHaveAnyFirstColumns =
-      logEntries.findIndex(
-        _ => !!(_.timestamp || _.origin || _.provider || _.runLength > 1)
-      ) >= 0
+      logEntries.findIndex(_ => !!(_.timestamp || _.origin || _.provider || _.runLength > 1)) >= 0
 
     logEntries
       .filter(notEmpty)
-      .forEach(
-        ({
-          logType = '',
-          timestamp = '',
-          origin = '',
-          provider = '',
-          rest,
-          runLength = 1
-        }) => {
-          // dom for the log line
-          const logLine = document.createElement('div')
-          logLine.classList.add('log-line')
-          container.appendChild(logLine)
+      .forEach(({ logType = '', timestamp = '', origin = '', provider = '', rest, runLength = 1 }) => {
+        // dom for the log line
+        const logLine = document.createElement('div')
+        logLine.classList.add('log-line')
+        container.appendChild(logLine)
 
-          // stdout or stderr?
-          if (logType.match(/^I/) || logType.match(/^INFO$/i)) {
-            logLine.classList.add('logged-to-stdout')
-          } else if (
-            logType.match(/^[EF]/) ||
-            logType.match(/^(ERROR|WARN)/i)
-          ) {
-            // errors or failures
-            logLine.classList.add('logged-to-stderr')
-          }
-
-          // timestamp rendering
-          if (doWeHaveAnyFirstColumns) {
-            const timestampDom = document.createElement('td')
-            timestampDom.className =
-              'log-field log-date entity-name-group hljs-attribute'
-            if (typeof timestamp === 'string') {
-              // due to td styling issues, some CSS attrs are on td > span
-              const inner = document.createElement('span')
-              inner.innerText = timestamp
-              timestampDom.appendChild(inner)
-            } else {
-              timestampDom.appendChild(timestamp)
-            }
-            logLine.appendChild(timestampDom)
-
-            // origin, e.g. filename and line number, rendering
-            if (origin) {
-              const originDom = document.createElement('span')
-              originDom.className = 'entity-name'
-              originDom.innerText = origin ? origin.replace(/]$/, '') : ''
-              timestampDom.appendChild(originDom)
-            }
-
-            if (provider) {
-              const providerDom = document.createElement('span')
-              providerDom.className = 'entity-name provider-name'
-              providerDom.innerText = provider ? provider.replace(/]$/, '') : ''
-              timestampDom.appendChild(providerDom)
-            }
-
-            // run length rendering
-            if (runLength > 1) {
-              const runLengthDom = document.createElement('div')
-              runLengthDom.innerText = `(${runLength} times)`
-              runLengthDom.classList.add('small-top-pad')
-              runLengthDom.classList.add('red-text')
-              timestampDom.appendChild(runLengthDom)
-            }
-          }
-
-          // log message rendering
-          const restDom = document.createElement('td')
-          restDom.className = 'log-field log-message slightly-smaller-text'
-
-          if (typeof rest === 'object') {
-            const pre = document.createElement('pre')
-            const code = document.createElement('code')
-            code.innerText = JSON.stringify(rest, undefined, 2)
-            pre.appendChild(code)
-            restDom.appendChild(pre)
-          } else {
-            const pre = document.createElement('pre')
-            pre.classList.add('pre-wrap')
-            pre.classList.add('break-all')
-            restDom.appendChild(pre)
-
-            // see if rest is of the form "a: b"
-            const trySplit = rest.split(/^(.*:)(\s+.*)?$/)
-            if (trySplit && trySplit.length > 1) {
-              const a = document.createElement('span')
-              a.classList.add('map-key')
-              a.innerText = trySplit[1]
-              pre.appendChild(a)
-
-              if (trySplit[2]) {
-                // we could just have a:<EOL>
-                const b = document.createElement('span')
-                b.classList.add('map-value')
-                b.innerText = trySplit[2]
-                pre.appendChild(b)
-              }
-            } else {
-              pre.innerText = rest
-            }
-          }
-          logLine.appendChild(restDom)
+        // stdout or stderr?
+        if (logType.match(/^I/) || logType.match(/^INFO$/i)) {
+          logLine.classList.add('logged-to-stdout')
+        } else if (logType.match(/^[EF]/) || logType.match(/^(ERROR|WARN)/i)) {
+          // errors or failures
+          logLine.classList.add('logged-to-stderr')
         }
-      )
+
+        // timestamp rendering
+        if (doWeHaveAnyFirstColumns) {
+          const timestampDom = document.createElement('td')
+          timestampDom.className = 'log-field log-date entity-name-group hljs-attribute'
+          if (typeof timestamp === 'string') {
+            // due to td styling issues, some CSS attrs are on td > span
+            const inner = document.createElement('span')
+            inner.innerText = timestamp
+            timestampDom.appendChild(inner)
+          } else {
+            timestampDom.appendChild(timestamp)
+          }
+          logLine.appendChild(timestampDom)
+
+          // origin, e.g. filename and line number, rendering
+          if (origin) {
+            const originDom = document.createElement('span')
+            originDom.className = 'entity-name'
+            originDom.innerText = origin ? origin.replace(/]$/, '') : ''
+            timestampDom.appendChild(originDom)
+          }
+
+          if (provider) {
+            const providerDom = document.createElement('span')
+            providerDom.className = 'entity-name provider-name'
+            providerDom.innerText = provider ? provider.replace(/]$/, '') : ''
+            timestampDom.appendChild(providerDom)
+          }
+
+          // run length rendering
+          if (runLength > 1) {
+            const runLengthDom = document.createElement('div')
+            runLengthDom.innerText = `(${runLength} times)`
+            runLengthDom.classList.add('small-top-pad')
+            runLengthDom.classList.add('red-text')
+            timestampDom.appendChild(runLengthDom)
+          }
+        }
+
+        // log message rendering
+        const restDom = document.createElement('td')
+        restDom.className = 'log-field log-message slightly-smaller-text'
+
+        if (typeof rest === 'object') {
+          const pre = document.createElement('pre')
+          const code = document.createElement('code')
+          code.innerText = JSON.stringify(rest, undefined, 2)
+          pre.appendChild(code)
+          restDom.appendChild(pre)
+        } else {
+          const pre = document.createElement('pre')
+          pre.classList.add('pre-wrap')
+          pre.classList.add('break-all')
+          restDom.appendChild(pre)
+
+          // see if rest is of the form "a: b"
+          const trySplit = rest.split(/^(.*:)(\s+.*)?$/)
+          if (trySplit && trySplit.length > 1) {
+            const a = document.createElement('span')
+            a.classList.add('map-key')
+            a.innerText = trySplit[1]
+            pre.appendChild(a)
+
+            if (trySplit[2]) {
+              // we could just have a:<EOL>
+              const b = document.createElement('span')
+              b.classList.add('map-value')
+              b.innerText = trySplit[2]
+              pre.appendChild(b)
+            }
+          } else {
+            pre.innerText = rest
+          }
+        }
+        logLine.appendChild(restDom)
+      })
 
     const wrapper = document.createElement('div')
     wrapper.classList.add('padding-content')

@@ -53,8 +53,7 @@ const breakout = (str: string, options) => {
   if (options.break > 0) {
     let dest = ''
     for (let idx = 0; idx < str.length; idx += options.break) {
-      dest =
-        dest + str.slice(idx, Math.min(str.length, idx + options.break)) + '\n'
+      dest = dest + str.slice(idx, Math.min(str.length, idx + options.break)) + '\n'
     }
     return dest
   } else {

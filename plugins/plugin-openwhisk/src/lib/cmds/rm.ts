@@ -67,12 +67,7 @@ export default async (commandTree: CommandRegistrar) => {
     } else {
       return Promise.all(
         entities.map(_ =>
-          repl.qexec(
-            `${type} rimraf -r -q ${repl.encodeComponent(_)}`,
-            undefined,
-            undefined,
-            { raw: true }
-          )
+          repl.qexec(`${type} rimraf -r -q ${repl.encodeComponent(_)}`, undefined, undefined, { raw: true })
         )
       )
     }
@@ -88,22 +83,14 @@ export default async (commandTree: CommandRegistrar) => {
     new Promise((resolve, reject) => {
       repl
         .qexec(`package get "${pckage}"`)
-        .then(pckage =>
-          Promise.all([
-            rmActions(reify(pckage, 'actions')),
-            rmTriggers(reify(pckage, 'feeds'))
-          ])
-        )
+        .then(pckage => Promise.all([rmActions(reify(pckage, 'actions')), rmTriggers(reify(pckage, 'feeds'))]))
         .then(flatten)
         .then(removedSoFar => {
           //
           // while openwhisk may return from deleting packaged actions,
           // but deleting the package can still fail with a 409; retry!
           //
-          const tryDelete = () =>
-            repl
-              .qexec(`package delete "${pckage}"`)
-              .then(() => removedSoFar.concat([pckage]))
+          const tryDelete = () => repl.qexec(`package delete "${pckage}"`).then(() => removedSoFar.concat([pckage]))
 
           const tryDeleteWithRetry = waitTime => {
             tryDelete()
@@ -138,18 +125,16 @@ export default async (commandTree: CommandRegistrar) => {
    */
   const BATCH = 200 // keep this at 200, but you can temporarily set it to lower values for debugging
   const fetch = (type, skip = 0, soFar = []) => {
-    return repl
-      .qexec(`${type} list --limit ${BATCH} --skip ${skip}`)
-      .then(items => {
-        if (items.length === BATCH) {
-          // then there may be more
-          return fetch(type, skip + BATCH, soFar.concat(items))
-        } else if (items.length === 0) {
-          return soFar
-        } else {
-          return soFar.concat(items)
-        }
-      })
+    return repl.qexec(`${type} list --limit ${BATCH} --skip ${skip}`).then(items => {
+      if (items.length === BATCH) {
+        // then there may be more
+        return fetch(type, skip + BATCH, soFar.concat(items))
+      } else if (items.length === 0) {
+        return soFar
+      } else {
+        return soFar.concat(items)
+      }
+    })
   }
 
   /**
@@ -160,26 +145,14 @@ export default async (commandTree: CommandRegistrar) => {
     const wildcards = list
       .filter(pattern => pattern.indexOf('*') >= 0)
       .map(pattern => new RegExp(pattern.replace(/\*/g, '.*')))
-    const exacts = list
-      .filter(pattern => pattern.indexOf('*') < 0)
-      .map(item => ({ isExact: true, item: item }))
+    const exacts = list.filter(pattern => pattern.indexOf('*') < 0).map(item => ({ isExact: true, item: item }))
 
     if (wildcards.length === 0) {
       return Promise.resolve(exacts)
     } else {
       return fetch(type)
-        .then(items =>
-          items.filter(item =>
-            wildcards.find(wildcard => item.name.match(wildcard))
-          )
-        )
-        .then(wildcardMatches =>
-          exacts.concat(
-            wildcardMatches
-              .map(fqn)
-              .map(item => ({ isExact: false, item: item }))
-          )
-        )
+        .then(items => items.filter(item => wildcards.find(wildcard => item.name.match(wildcard))))
+        .then(wildcardMatches => exacts.concat(wildcardMatches.map(fqn).map(item => ({ isExact: false, item: item }))))
     }
   }
 
@@ -187,13 +160,7 @@ export default async (commandTree: CommandRegistrar) => {
    * This is the core logic
    *
    */
-  const rm = (type: string) => ({
-    tab,
-    block,
-    nextBlock,
-    argv: fullArgv,
-    execOptions
-  }: EvaluatorArgs) => {
+  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: EvaluatorArgs) => {
     const options = minimist(fullArgv, {
       alias: { q: 'quiet', f: 'force', r: 'recursive' },
       boolean: ['quiet', 'force', 'recursive'],
@@ -233,12 +200,7 @@ export default async (commandTree: CommandRegistrar) => {
               //                         ^^^^^^ delete this, too
               //
               return repl.qexec(`action get "${arg}"`, block).then(action => {
-                if (
-                  action.annotations &&
-                  action.annotations.find(
-                    kv => kv.key === 'exec' && kv.value === 'sequence'
-                  )
-                ) {
+                if (action.annotations && action.annotations.find(kv => kv.key === 'exec' && kv.value === 'sequence')) {
                   return Promise.all(
                     action.exec.components.map(component =>
                       repl
@@ -260,22 +222,12 @@ export default async (commandTree: CommandRegistrar) => {
                     .then(flatten)
                     .then(counts =>
                       repl
-                        .qfexec(
-                          `${type} delete "${arg}"`,
-                          block as HTMLElement,
-                          nextBlock
-                        ) // now we can delete the sequence
+                        .qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock) // now we can delete the sequence
                         .then(() => counts.concat(arg))
                     ) // total deleted count
                 } else {
                   // not a sequence, plain old delete
-                  return repl
-                    .qfexec(
-                      `${type} delete "${arg}"`,
-                      block as HTMLElement,
-                      nextBlock
-                    )
-                    .then(() => [arg]) // deleted one
+                  return repl.qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock).then(() => [arg]) // deleted one
                 }
               })
             } else if (options.recursive && type === 'packages') {
@@ -283,11 +235,7 @@ export default async (commandTree: CommandRegistrar) => {
             } else {
               // no special handling for other entity types
               return repl
-                .qfexec(
-                  `${type} delete "${arg}"`,
-                  block as HTMLElement,
-                  nextBlock
-                )
+                .qfexec(`${type} delete "${arg}"`, block as HTMLElement, nextBlock)
                 .then(() => [arg]) // deleted one
                 .catch(err => {
                   if (err.statusCode === 404 && !isExact) {

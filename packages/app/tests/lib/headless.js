@@ -25,9 +25,7 @@ const { dirname, join } = require('path')
 
 const ROOT = process.env.TEST_ROOT
 const kui = process.env.KUI || join(ROOT, '../../bin/kui')
-const bindir = process.env.KUI
-  ? dirname(process.env.KUI)
-  : join(ROOT, '../../bin') // should contain kubectl-kui
+const bindir = process.env.KUI ? dirname(process.env.KUI) : join(ROOT, '../../bin') // should contain kubectl-kui
 const { expectStruct, expectSubset } = require('./ui')
 
 /**
@@ -129,9 +127,7 @@ class CLI {
 
       exec(command, { env: ourEnv }, async (err, stdout, stderr) => {
         if (this.teeToFile) debug('tee done', command)
-        const stdoutPromise = this.teeToFile
-          ? pollForEndMarker(tmpobj.fd)
-          : Promise.resolve(stdout)
+        const stdoutPromise = this.teeToFile ? pollForEndMarker(tmpobj.fd) : Promise.resolve(stdout)
 
         if (err) {
           // command failed miserably; collect all of the output of
@@ -178,10 +174,7 @@ class CLI {
     }
   }
 
-  expectOK(
-    expectedOutput,
-    { exact = false, skipLines = 0, squish = false } = {}
-  ) {
+  expectOK(expectedOutput, { exact = false, skipLines = 0, squish = false } = {}) {
     return ({ code: actualCode, output: actualOutput }) => {
       assert.strictEqual(actualCode, 0)
       if (expectedOutput) {
@@ -215,9 +208,7 @@ class CLI {
 
           if (exact) {
             if (checkAgainst !== expectedOutput) {
-              console.error(
-                `mismatch; actual='${actualOutput}'; expected='${checkAgainst}'`
-              )
+              console.error(`mismatch; actual='${actualOutput}'; expected='${checkAgainst}'`)
             }
             assert.strictEqual(checkAgainst, expectedOutput)
           } else {
@@ -249,9 +240,7 @@ class CLI {
             ? actualOutput.indexOf(expectedOutput) >= 0
             : !!actualOutput.match(expectedOutput) // expectedOutput is a RegExp
         if (!ok) {
-          console.error(
-            `mismatch; actual='${actualOutput}'; expected='${expectedOutput}'`
-          )
+          console.error(`mismatch; actual='${actualOutput}'; expected='${expectedOutput}'`)
         }
         assert.ok(ok)
       }

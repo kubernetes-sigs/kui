@@ -57,9 +57,7 @@ enum FinalState {
 export const sortBody = (rows: Row[]): Row[] => {
   return rows.sort(
     (a, b) =>
-      (a.prettyType || a.type || '').localeCompare(
-        b.prettyType || b.type || ''
-      ) ||
+      (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
       (a.packageName || '').localeCompare(b.packageName || '') ||
       a.name.localeCompare(b.name)
   )
@@ -153,13 +151,8 @@ const registerWatcher = (
         const { A: argv } = split(command, true, true) as Split
         const options = minimist(argv)
 
-        if (
-          options['final-state'] &&
-          FinalState[options['finalState']] === 'OfflineLike'
-        ) {
-          debug(
-            'resource not found after status check, but that is ok because that is what we wanted'
-          )
+        if (options['final-state'] && FinalState[options['finalState']] === 'OfflineLike') {
+          debug('resource not found after status check, but that is ok because that is what we wanted')
           stopWatching()
         }
       } else {
@@ -171,18 +164,9 @@ const registerWatcher = (
       }
     }
 
-    const applyRefreshResult = (
-      newRowModel: Row[],
-      tableViewInfo: TableViewInfo
-    ) => {
+    const applyRefreshResult = (newRowModel: Row[], tableViewInfo: TableViewInfo) => {
       const diffs = diffTableRows(tableViewInfo.rowsModel, newRowModel)
-      applyDiffTable(
-        diffs,
-        tab,
-        tableViewInfo.renderedTable,
-        tableViewInfo.renderedRows,
-        tableViewInfo.rowsModel
-      )
+      applyDiffTable(diffs, tab, tableViewInfo.renderedTable, tableViewInfo.renderedRows, tableViewInfo.rowsModel)
     }
 
     if (Array.isArray(tableViewInfo)) {
@@ -216,10 +200,7 @@ const registerWatcher = (
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (
-  tab: Tab,
-  options: RowFormatOptions = {}
-) => (entity: Row): HTMLElement => {
+export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const dom = document.createElement('div')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
@@ -227,9 +208,7 @@ export const formatOneRowResult = (
 
   // row selection
   entity.setSelected = () => {
-    const currentSelection = dom.parentNode.querySelector(
-      '.selected-row'
-    ) as HTMLElement
+    const currentSelection = dom.parentNode.querySelector('.selected-row') as HTMLElement
     if (currentSelection) {
       currentSelection.classList.remove('selected-row')
     }
@@ -328,13 +307,7 @@ export const formatOneRowResult = (
     if (isPopup() || options.usePip) {
       entityNameClickable.onclick = async (evt: MouseEvent) => {
         const { drilldown } = await import('../picture-in-picture')
-        return drilldown(
-          tab,
-          entity.onclick,
-          undefined,
-          '.custom-content .padding-content',
-          'previous view'
-        )(evt)
+        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
@@ -395,15 +368,9 @@ export const formatOneRowResult = (
           // use :before and :after; so we need a wrapper
           const iconWrapper = document.createElement('span')
           iconWrapper.setAttribute('data-balloon', theIcon.balloon)
-          iconWrapper.setAttribute(
-            'data-balloon-pos',
-            theIcon.balloonPos || 'right'
-          )
+          iconWrapper.setAttribute('data-balloon-pos', theIcon.balloonPos || 'right')
           if (theIcon.balloonLength) {
-            iconWrapper.setAttribute(
-              'data-balloon-length',
-              theIcon.balloonLength
-            )
+            iconWrapper.setAttribute('data-balloon-length', theIcon.balloonLength)
           }
           iconWrapper.appendChild(icon)
           inner.appendChild(iconWrapper)
@@ -432,11 +399,7 @@ export const formatOneRowResult = (
         inner.appendChild(container)
       } else {
         Promise.resolve(valueDom).then(valueDom =>
-          inner.appendChild(
-            valueDom.nodeName
-              ? valueDom
-              : document.createTextNode(valueDom.toString())
-          )
+          inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString()))
         )
       }
     } else if (value) {
@@ -461,13 +424,7 @@ export const formatOneRowResult = (
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup() || options.usePip) {
           const { drilldown } = await import('../picture-in-picture')
-          return drilldown(
-            tab,
-            onclick,
-            undefined,
-            '.custom-content .padding-content',
-            'previous view'
-          )(evt)
+          return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') {
           // TODO: define types here carefully
           pexec(onclick, { tab })
@@ -478,11 +435,7 @@ export const formatOneRowResult = (
     }
 
     const pulse = 'repeating-pulse'
-    if (
-      key === 'STATUS' &&
-      (css.includes('yellow-background') ||
-        innerClassName.includes('yellow-background'))
-    ) {
+    if (key === 'STATUS' && (css.includes('yellow-background') || innerClassName.includes('yellow-background'))) {
       cell.classList.add(pulse)
     }
 
@@ -520,16 +473,7 @@ export const formatOneRowResult = (
 
         try {
           Promise.resolve(watch(watchLimit - count - 1)).then(
-            ({
-              value,
-              done = false,
-              css,
-              onclick,
-              others = [],
-              unchanged = false,
-              outerCSS,
-              slowPoll = false
-            }) => {
+            ({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll = false }) => {
               if (unchanged) {
                 // nothing to do, yet
                 return
@@ -573,18 +517,12 @@ export const formatOneRowResult = (
               // update the text
               if (value) {
                 inner.innerText = ''
-                inner.appendChild(
-                  value.nodeName
-                    ? value
-                    : document.createTextNode(value.toString())
-                )
+                inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
               }
 
               // any other cells to update?
               others.forEach(({ key, value, css, fontawesome }) => {
-                const otherInner = parent.querySelector(
-                  `.cell-inner[data-key="${key}"]`
-                ) as HTMLElement
+                const otherInner = parent.querySelector(`.cell-inner[data-key="${key}"]`) as HTMLElement
                 if (otherInner) {
                   otherInner.setAttribute('data-value', value)
                   if (css) {
@@ -594,11 +532,7 @@ export const formatOneRowResult = (
                     otherInner.querySelector('i').className = fontawesome
                   } else {
                     otherInner.innerText = ''
-                    otherInner.appendChild(
-                      value.nodeName
-                        ? value
-                        : document.createTextNode(value.toString())
-                    )
+                    otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
                   }
                 }
               })
@@ -619,10 +553,7 @@ export const formatOneRowResult = (
                 slowPolling = false
                 cell.classList.add(pulse)
                 clearInterval(interval)
-                interval = setInterval(
-                  watchIt,
-                  tablePollingInterval + ~~(100 * Math.random())
-                )
+                interval = setInterval(watchIt, tablePollingInterval + ~~(100 * Math.random()))
               }
             }
           )
@@ -634,10 +565,7 @@ export const formatOneRowResult = (
       }
 
       // establish the initial watch interval
-      interval = setInterval(
-        watchIt,
-        tablePollingInterval + ~~(100 * Math.random())
-      )
+      interval = setInterval(watchIt, tablePollingInterval + ~~(100 * Math.random()))
     }
 
     return cell
@@ -645,16 +573,15 @@ export const formatOneRowResult = (
 
   // add any attributes that should appear *before* the name column
   if (entity.beforeAttributes) {
-    entity.beforeAttributes.forEach(
-      ({ key, value, css = '', outerCSS = '', onclick, fontawesome }) =>
-        addCellToRow({
-          className: outerCSS,
-          value,
-          innerClassName: css,
-          onclick,
-          key,
-          fontawesome
-        })
+    entity.beforeAttributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome }) =>
+      addCellToRow({
+        className: outerCSS,
+        value,
+        innerClassName: css,
+        onclick,
+        key,
+        fontawesome
+      })
     )
   }
 
@@ -664,17 +591,7 @@ export const formatOneRowResult = (
   if (entity.attributes) {
     // the entity provider wants to take complete control
     entity.attributes.forEach(
-      ({
-        key,
-        value,
-        css = '',
-        outerCSS = '',
-        watch,
-        watchLimit,
-        onclick,
-        fontawesome,
-        tag
-      }) => {
+      ({ key, value, css = '', outerCSS = '', watch, watchLimit, onclick, fontawesome, tag }) => {
         addCellToRow({
           className: outerCSS,
           value,
@@ -717,9 +634,7 @@ export const formatOneRowResult = (
           const badge = cell.querySelector('badge') as HTMLElement
           badge.innerText = capitalize(status)
           badge.classList.remove('gray-background')
-          badge.classList.add(
-            status === 'active' ? 'green-background' : 'red-background'
-          )
+          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
           badge.classList.remove('repeating-pulse')
         })
       }
@@ -858,18 +773,10 @@ export const formatTable = (
     }
   }
 
-  const tableViewInfo = isMultiTable(response)
-    ? response.tables.map(table => format(table))
-    : format(response)
+  const tableViewInfo = isMultiTable(response) ? response.tables.map(table => format(table)) : format(response)
 
   if (isWatchable(response) && response.watchByDefault) {
-    registerWatcher(
-      tab,
-      response.watchLimit,
-      response.refreshCommand,
-      resultDom,
-      tableViewInfo
-    )
+    registerWatcher(tab, response.watchLimit, response.refreshCommand, resultDom, tableViewInfo)
   }
 }
 
@@ -889,9 +796,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
 
   // row selection
   entity.setSelected = () => {
-    const currentSelection = dom.parentNode.querySelector(
-      '.selected-row'
-    ) as HTMLElement
+    const currentSelection = dom.parentNode.querySelector('.selected-row') as HTMLElement
     if (currentSelection) {
       currentSelection.classList.remove('selected-row')
     }
@@ -990,13 +895,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     if (isPopup()) {
       entityNameClickable.onclick = async (evt: MouseEvent) => {
         const { drilldown } = await import('../picture-in-picture')
-        return drilldown(
-          tab,
-          entity.onclick,
-          undefined,
-          '.custom-content .padding-content',
-          'previous view'
-        )(evt)
+        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
@@ -1090,9 +989,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
       inner.appendChild(container)
     } else if (value !== undefined) {
       Promise.resolve(value).then(value =>
-        inner.appendChild(
-          value.nodeName ? value : document.createTextNode(value.toString())
-        )
+        inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
       )
     } else {
       console.error('Invalid cell model, no value field')
@@ -1111,13 +1008,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup()) {
           const { drilldown } = await import('../picture-in-picture')
-          return drilldown(
-            tab,
-            onclick,
-            undefined,
-            '.custom-content .padding-content',
-            'previous view'
-          )(evt)
+          return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') {
           pexec(onclick, { tab })
         } else {
@@ -1162,16 +1053,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
 
         try {
           Promise.resolve(watch(watchLimit - count - 1)).then(
-            ({
-              value,
-              done = false,
-              css,
-              onclick,
-              others = [],
-              unchanged = false,
-              outerCSS,
-              slowPoll = false
-            }) => {
+            ({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll = false }) => {
               if (unchanged) {
                 // nothing to do, yet
                 return
@@ -1215,18 +1097,12 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
               // update the text
               if (value) {
                 inner.innerText = ''
-                inner.appendChild(
-                  value.nodeName
-                    ? value
-                    : document.createTextNode(value.toString())
-                )
+                inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
               }
 
               // any other cells to update?
               others.forEach(({ key, value, css, fontawesome }) => {
-                const otherInner = parent.querySelector(
-                  `.cell-inner[data-key="${key}"]`
-                ) as HTMLElement
+                const otherInner = parent.querySelector(`.cell-inner[data-key="${key}"]`) as HTMLElement
                 if (otherInner) {
                   otherInner.setAttribute('data-value', value)
                   if (css) {
@@ -1236,11 +1112,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
                     otherInner.querySelector('i').className = fontawesome
                   } else {
                     otherInner.innerText = ''
-                    otherInner.appendChild(
-                      value.nodeName
-                        ? value
-                        : document.createTextNode(value.toString())
-                    )
+                    otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
                   }
                 }
               })
@@ -1281,18 +1153,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
 
   // add any attributes that should appear *before* the name column
   if (entity.beforeAttributes) {
-    entity.beforeAttributes.forEach(
-      ({ key, value, css = '', outerCSS = '', onclick, fontawesome }) =>
-        addCell(
-          outerCSS,
-          value,
-          css,
-          undefined,
-          onclick,
-          undefined,
-          key,
-          fontawesome
-        )
+    entity.beforeAttributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome }) =>
+      addCell(outerCSS, value, css, undefined, onclick, undefined, key, fontawesome)
     )
   }
 
@@ -1302,30 +1164,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   if (entity.attributes) {
     // the entity provider wants to take complete control
     entity.attributes.forEach(
-      ({
-        key,
-        value,
-        css = '',
-        outerCSS = '',
-        watch,
-        watchLimit,
-        onclick,
-        fontawesome,
-        tag
-      }) => {
-        addCell(
-          outerCSS,
-          value,
-          css,
-          undefined,
-          onclick,
-          watch,
-          key,
-          fontawesome,
-          undefined,
-          watchLimit,
-          tag
-        )
+      ({ key, value, css = '', outerCSS = '', watch, watchLimit, onclick, fontawesome, tag }) => {
+        addCell(outerCSS, value, css, undefined, onclick, watch, key, fontawesome, undefined, watchLimit, tag)
       }
     )
   } else {
@@ -1362,20 +1202,14 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
           const badge = cell.querySelector('badge') as HTMLElement
           badge.innerText = capitalize(status)
           badge.classList.remove('gray-background')
-          badge.classList.add(
-            status === 'active' ? 'green-background' : 'red-background'
-          )
+          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
           badge.classList.remove('repeating-pulse')
         })
       }
     }
     const addVersion = () => {
       if (entity.version || entity.prettyVersion) {
-        addCell(
-          'entity-version hide-with-sidecar',
-          entity.prettyVersion || entity.version,
-          'slightly-deemphasize'
-        )
+        addCell('entity-version hide-with-sidecar', entity.prettyVersion || entity.version, 'slightly-deemphasize')
       }
     }
 
@@ -1426,11 +1260,7 @@ export const formatListResult = (tab: Tab, response) => {
  * Format a table of tables view
  *
  */
-export const formatMultiListResult = async (
-  tab: Tab,
-  response,
-  resultDom: Element
-) => {
+export const formatMultiListResult = async (tab: Tab, response, resultDom: Element) => {
   debug('formatMultiListResult', response)
 
   return Promise.all(
@@ -1453,10 +1283,7 @@ export const formatMultiListResult = async (
           }
 
           if (table[0].style !== undefined) {
-            tableOuter.setAttribute(
-              'kui-table-style',
-              TableStyle[table[0].style].toString()
-            )
+            tableOuter.setAttribute('kui-table-style', TableStyle[table[0].style].toString())
           }
 
           tableOuter.appendChild(titleOuter)
@@ -1501,10 +1328,7 @@ export const formatMultiListResult = async (
             }
 
             if (table[0].fontawesomeBalloon) {
-              awesomeWrapper.setAttribute(
-                'data-balloon',
-                table[0].fontawesomeBalloon
-              )
+              awesomeWrapper.setAttribute('data-balloon', table[0].fontawesomeBalloon)
               awesomeWrapper.setAttribute('data-balloon-pos', 'left')
               delete table[0].fontawesomeBalloon
             }

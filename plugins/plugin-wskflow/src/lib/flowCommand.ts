@@ -99,25 +99,19 @@ export default (commandTree: CommandRegistrar) => {
       // fetch the session, then fetch the trace (so we can show the flow) and action (to get the AST)
       return repl
         .qexec(`session get ${sessionId}`)
-        .then(session =>
-          Promise.all([session, fetchTrace(session), fetchTheAction(session)])
-        )
+        .then(session => Promise.all([session, fetchTrace(session), fetchTheAction(session)]))
         .then(async ([session, activations, action]) => {
           let ast
           if (action.wskflowErr) {
             // 1) if an app was deleted, the last promise item returns an error
-            const error = new Error(
-              `Sorry, this view is not available, as the composition was deleted`
-            )
+            const error = new Error(`Sorry, this view is not available, as the composition was deleted`)
             error['code'] = 404
             throw error
           } else {
             // extract the AST
             const astAnno = astUtil.astAnnotation(action)
             if (!astAnno) {
-              const error = new Error(
-                `Sorry, this view is not available, as the composition was improperly created`
-              )
+              const error = new Error(`Sorry, this view is not available, as the composition was improperly created`)
               error['code'] = 404
               throw error
             }
@@ -125,22 +119,11 @@ export default (commandTree: CommandRegistrar) => {
           }
 
           const visualize = (await import('./visualize')).default
-          const { view, controller } = await visualize(
-            tab,
-            ast,
-            undefined,
-            undefined,
-            undefined,
-            activations
-          )
+          const { view, controller } = await visualize(tab, ast, undefined, undefined, undefined, activations)
 
           // set the default mode to session flow
-          session.modes.find(
-            ({ defaultMode }) => defaultMode
-          ).defaultMode = false
-          session.modes.find(
-            ({ label }) => label === 'Session Flow'
-          ).defaultMode = true
+          session.modes.find(({ defaultMode }) => defaultMode).defaultMode = false
+          session.modes.find(({ label }) => label === 'Session Flow').defaultMode = true
 
           if (!session.modes.find(({ label }) => label === '1:1')) {
             zoomToFitButtons(controller).forEach(_ => session.modes.push(_))

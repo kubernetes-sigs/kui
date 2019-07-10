@@ -47,8 +47,7 @@ export const drawLegend = (
   /** user asked to toggle the latency bucket filter */
   const toggleFilter = idx => (): boolean | void => {
     // isRemove: user deselected current filter
-    const isRemove =
-      parseInt(gridContainer.getAttribute('data-latency-filter'), 10) === idx
+    const isRemove = parseInt(gridContainer.getAttribute('data-latency-filter'), 10) === idx
     const containers = [wrapper2, gridContainer] // legend and main grid
 
     containers.forEach(container => {
@@ -82,13 +81,7 @@ export const drawLegend = (
     balloonLength?: string
     onclick?: () => boolean | void
   }
-  const entry = (
-    labelText,
-    labelValue,
-    isFailure,
-    latBucket,
-    options: EntryOptions
-  ) => {
+  const entry = (labelText, labelValue, isFailure, latBucket, options: EntryOptions) => {
     const existing3 = wrapper2.querySelector(`.grid[label="${labelText}"]`)
     const wrapper3 = existing3 || document.createElement('div')
     const existingEntry = wrapper3.querySelector('table')
@@ -133,9 +126,7 @@ export const drawLegend = (
 
       if (options.useThisLabelInstead) {
         const labelCell = labelRow.insertCell(-1)
-        labelCell.appendChild(
-          document.createTextNode(options.useThisLabelInstead)
-        )
+        labelCell.appendChild(document.createTextNode(options.useThisLabelInstead))
         labelCell.setAttribute('colspan', '2')
         labelCell.className = 'activation-viz-legend-label'
       } else if (!options.labelAsTooltip) {
@@ -161,9 +152,7 @@ export const drawLegend = (
     const last = idx === A.length - 1
     const lower = idx === 0 ? 0 : A[idx - 1]
     const upper = latencyRange
-    const roughlySame =
-      upper - lower < 1000 &&
-      ((lower < 1000 && upper < 1000) || (lower > 1000 && upper > 1000))
+    const roughlySame = upper - lower < 1000 && ((lower < 1000 && upper < 1000) || (lower > 1000 && upper > 1000))
 
     // roughlySame means e.g. 50-100ms versus 500ms-1s; both
     // are "close", but the second one splits into a new range
@@ -183,9 +172,7 @@ export const drawLegend = (
       zoom: -1,
       useThisLabelInstead:
         (idx === A.length - 1 ? '>' : '') +
-        (upper >= 500 && upper < 1000
-          ? `${(upper / 1000).toLocaleString()}s`
-          : prettyPrintDuration(upper))
+        (upper >= 500 && upper < 1000 ? `${(upper / 1000).toLocaleString()}s` : prettyPrintDuration(upper))
     }
 
     if (count > 0) {

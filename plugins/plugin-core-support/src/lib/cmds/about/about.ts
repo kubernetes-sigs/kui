@@ -25,17 +25,8 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
-import {
-  bugs,
-  description,
-  homepage,
-  license,
-  version
-} from '@kui-shell/settings/package.json'
-import {
-  theme as settings,
-  config as extras
-} from '@kui-shell/core/core/settings'
+import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
+import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
 
 const debug = Debug('plugins/core-support/about')
 
@@ -61,9 +52,7 @@ const aboutWindow = async () => {
     })
   } catch (err) {
     const { dirname, join } = await import('path')
-    const ourRootDir = dirname(
-      require.resolve('@kui-shell/plugin-core-support/package.json')
-    )
+    const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
     injectCSS(join(ourRootDir, 'web/css/about.css'))
   }
 
@@ -132,11 +121,7 @@ const aboutWindow = async () => {
   flexContent.appendChild(bottomContent)
 
   type OnClickHandler = () => any // eslint-disable-line @typescript-eslint/no-explicit-any
-  const iconify = (
-    fontawesome: string,
-    title: string,
-    href: string | OnClickHandler
-  ): Element => {
+  const iconify = (fontawesome: string, title: string, href: string | OnClickHandler): Element => {
     const wrapper = document.createElement('div')
     wrapper.classList.add('about-window-icon-stack')
 
@@ -167,16 +152,10 @@ const aboutWindow = async () => {
     return wrapper
   }
 
-  insideContent.appendChild(
-    iconify('fab fa-readme', 'View tutorials', () =>
-      repl.pexec('getting started')
-    )
-  )
+  insideContent.appendChild(iconify('fab fa-readme', 'View tutorials', () => repl.pexec('getting started')))
 
   if (bugs) {
-    insideContent.appendChild(
-      iconify('fas fa-bug', 'Report an issue', bugs.url)
-    )
+    insideContent.appendChild(iconify('fas fa-bug', 'Report an issue', bugs.url))
   }
 
   if (homepage) {
@@ -185,9 +164,7 @@ const aboutWindow = async () => {
       fontawesome: 'fab fa-github',
       onclick: openHome
       }) */
-    insideContent.appendChild(
-      iconify('fab fa-github', 'Clone on GitHub', homepage)
-    )
+    insideContent.appendChild(iconify('fab fa-github', 'Clone on GitHub', homepage))
   }
 
   if (showVersionInfo) {
@@ -210,14 +187,7 @@ const aboutWindow = async () => {
     column2.innerText = 'VERSION'
     column2.className = 'header-cell log-field'
 
-    for (const component of [
-      name,
-      'build',
-      'electron',
-      'chrome',
-      'node',
-      'v8'
-    ]) {
+    for (const component of [name, 'build', 'electron', 'chrome', 'node', 'v8']) {
       const version = versionModel[component]
 
       if (version !== undefined) {
@@ -249,9 +219,7 @@ const aboutWindow = async () => {
     type: 'custom',
     isEntity: true,
     prettyType: 'about',
-    presentation:
-      document.body.classList.contains('subwindow') &&
-      Presentation.SidecarFullscreen,
+    presentation: document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen,
     name,
     badges,
     version,

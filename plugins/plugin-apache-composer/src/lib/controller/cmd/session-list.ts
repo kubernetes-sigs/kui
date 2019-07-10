@@ -41,8 +41,7 @@ export default async (commandTree: CommandRegistrar) => {
       async ({ argvNoOptions, parsedOptions: options }) => {
         const parsedOptions = (options as any) as ListOptions // eslint-disable-line @typescript-eslint/no-explicit-any
 
-        const limit =
-          parsedOptions.limit === undefined ? 10 : parsedOptions.limit // limit 10 sessions in session list if users didn't specify --limit
+        const limit = parsedOptions.limit === undefined ? 10 : parsedOptions.limit // limit 10 sessions in session list if users didn't specify --limit
         const skip = parsedOptions.skip || 0 // skip 0 sessions in session list by default if users didn't specify --skip
         const scanLimit = parsedOptions['scan-limit']
 
@@ -51,9 +50,7 @@ export default async (commandTree: CommandRegistrar) => {
 
         const nameOption = parsedOptions.name // e.g. session list --name [session name]
         const nameSpecify =
-          argvNoOptions.indexOf('list') === argvNoOptions.length - 2
-            ? argvNoOptions[argvNoOptions.length - 1]
-            : '' // e.g. session list [session name]
+          argvNoOptions.indexOf('list') === argvNoOptions.length - 2 ? argvNoOptions[argvNoOptions.length - 1] : '' // e.g. session list [session name]
 
         if (nameOption && nameSpecify && nameOption !== nameSpecify) {
           debug('inconsistent name:', nameSpecify, nameSpecify)
@@ -73,9 +70,7 @@ export default async (commandTree: CommandRegistrar) => {
                 if (
                   activation &&
                   activation.annotations &&
-                  activation.annotations.find(
-                    ({ key, value }) => key === 'conductor' && value
-                  )
+                  activation.annotations.find(({ key, value }) => key === 'conductor' && value)
                 ) {
                   debug('found a session', activation)
                   activation.sessionId = activation.activationId // indicate the entity is session
@@ -89,15 +84,9 @@ export default async (commandTree: CommandRegistrar) => {
         if (scanLimit) {
           const max: number = await repl.qexec('wsk activation count') // get the number of total activations
           let foundSessions = []
-          for (
-            let scanned = 0;
-            scanned < max && foundSessions.length < scanLimit;
-            scanned += 200
-          ) {
+          for (let scanned = 0; scanned < max && foundSessions.length < scanLimit; scanned += 200) {
             try {
-              foundSessions = foundSessions.concat(
-                await findSessions(scanned, name, 200)
-              )
+              foundSessions = foundSessions.concat(await findSessions(scanned, name, 200))
             } catch (err) {
               throw err
             }

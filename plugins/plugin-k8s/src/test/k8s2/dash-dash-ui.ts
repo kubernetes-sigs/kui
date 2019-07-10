@@ -15,18 +15,11 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import {
-  cli as kui,
-  kubectlElectron,
-  kuiElectron,
-  CLI
-} from '@kui-shell/core/tests/lib/headless'
+import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@kui-shell/core/tests/lib/headless'
 import { createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
 const doTests = (ctx: common.ISuite, impl: CLI) => {
   before(common.before(ctx, { noApp: true }))
@@ -44,10 +37,7 @@ const doTests = (ctx: common.ISuite, impl: CLI) => {
 
   it('should create sample pod from local file', () => {
     return kui
-      .do(
-        `kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`,
-        ctx.app
-      )
+      .do(`kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
       .then(kui.expectOK('nginx'))
       .catch(common.oops(ctx))
   })

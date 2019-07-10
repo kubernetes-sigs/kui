@@ -105,10 +105,7 @@ export const copy = async (src, target) =>
  * function as fn(T). If fn is not defined, then return T.
  *
  */
-export const copyOutDirectory = (
-  srcDir: string,
-  fn?: CopyOutHandler
-): Promise<string> =>
+export const copyOutDirectory = (srcDir: string, fn?: CopyOutHandler): Promise<string> =>
   new Promise<string>((resolve, reject) => {
     debug('copyOutDirectory', srcDir)
 
@@ -161,10 +158,7 @@ export const copyOutFile = (src: string): Promise<string> =>
     })
   })
 
-export const copyOut = async (
-  src: string,
-  fn?: CopyOutHandler
-): Promise<string> => {
+export const copyOut = async (src: string, fn?: CopyOutHandler): Promise<string> => {
   if (await isDirectory(src)) {
     return copyOutDirectory(src, fn)
   } else {

@@ -23,20 +23,18 @@ import { addBadge } from '@kui-shell/core/webapp/views/sidecar'
  */
 export const formatWebActionURL = action => {
   // note that we use json as the default content type
-  const contentType = (action.annotations &&
-    action.annotations.find(kv => kv.key === 'content-type-extension')) || {
+  const contentType = (action.annotations && action.annotations.find(kv => kv.key === 'content-type-extension')) || {
     value: 'json'
   }
   const https =
-    action.apiHost.startsWith('https://') ||
-    action.apiHost.startsWith('http://')
+    action.apiHost.startsWith('https://') || action.apiHost.startsWith('http://')
       ? ''
       : action.apiHost === 'localhost'
       ? 'http://'
       : 'https://'
-  const urlText = `${https}${action.apiHost}/api/v1/web/${action.namespace}/${
-    !action.packageName ? 'default/' : ''
-  }${action.name}.${contentType.value}`
+  const urlText = `${https}${action.apiHost}/api/v1/web/${action.namespace}/${!action.packageName ? 'default/' : ''}${
+    action.name
+  }.${contentType.value}`
 
   return urlText
 }
@@ -47,9 +45,7 @@ export const formatWebActionURL = action => {
  *
  */
 export const addWebBadge = (tab: Tab, action) => {
-  const isWebExported =
-    action.annotations &&
-    action.annotations.find(kv => kv.key === 'web-export' && kv.value)
+  const isWebExported = action.annotations && action.annotations.find(kv => kv.key === 'web-export' && kv.value)
   if (isWebExported) {
     const anchor = document.createElement('a')
     const urlText = formatWebActionURL(action)

@@ -95,9 +95,7 @@ localDescribe('Text search', function(this: ISuite) {
     try {
       this.app.client.keys([ui.ctrlOrMeta, 'f'])
       await this.app.client.waitForVisible('#search-bar')
-      await this.app.client.waitUntil(() =>
-        this.app.client.hasFocus('#search-input')
-      )
+      await this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'))
       await this.app.client.waitUntil(async () => {
         await this.app.client.setValue('#search-input', `grumble${keys.ENTER}`)
         const txt = await this.app.client.getText('#search-found-text')
@@ -122,10 +120,7 @@ localDescribe('Text search', function(this: ISuite) {
       .then(r => assert.ok(r, 'assert if search-input is focused'))
       .then(() =>
         this.app.client.waitUntil(async () => {
-          await this.app.client.setValue(
-            '#search-input',
-            `bojangles${keys.ENTER}`
-          )
+          await this.app.client.setValue('#search-input', `bojangles${keys.ENTER}`)
           const txt = await this.app.client.getText('#search-found-text')
           return txt === '2 matches' // one execution, plus tab title match
         })

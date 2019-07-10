@@ -33,10 +33,7 @@ interface Response {
 }
 
 const expect = {
-  appList: ({ name, packageName }) => ({
-    code: actualCode,
-    output: actualOutput
-  }) => {
+  appList: ({ name, packageName }) => ({ code: actualCode, output: actualOutput }) => {
     assert.strictEqual(actualCode, 0)
     const lines = actualOutput.split('\n')
     assert.strictEqual(lines[0].replace(/\s+/g, ' ').trim(), 'name type')
@@ -59,10 +56,7 @@ const expect = {
     return actualOutput
   },
 
-  json: ({ expectedOutput, expectedKeys }) => ({
-    code: actualCode,
-    output: actualOutput
-  }) => {
+  json: ({ expectedOutput, expectedKeys }) => ({ code: actualCode, output: actualOutput }) => {
     assert.strictEqual(actualCode, 0)
     actualOutput = JSON.parse(actualOutput)
 
@@ -134,9 +128,7 @@ class Validation {
       it(`validate ${invoker}`, () =>
         cli
           .do(invoker)
-          .then(
-            expect.json({ expectedOutput: output, expectedKeys: undefined })
-          )
+          .then(expect.json({ expectedOutput: output, expectedKeys: undefined }))
           .catch(common.oops(this.ctx)))
     })
   }
@@ -170,9 +162,7 @@ class Validation {
                   if (response.code === 404 - 256) {
                     // retry on 404, because the session might not yet be available
                     if (retry < 5) {
-                      console.error(
-                        `${retry} retry session get ${name} when 404`
-                      )
+                      console.error(`${retry} retry session get ${name} when 404`)
                       setTimeout(function() {
                         fetch(retry + 1)
                       }, 2000)
@@ -219,22 +209,16 @@ class Validation {
                     skipLines: 0,
                     squish: true
                   })({ code: response.code, output: lines[0] }) // check the title line
-                  if (
-                    lines.indexOf(`${sessionId} ${nameWithoutPackage}`) === -1
-                  ) {
+                  if (lines.indexOf(`${sessionId} ${nameWithoutPackage}`) === -1) {
                     // Retry when not found, becuase the session might not yet be available for listing
                     if (retry < 10) {
-                      console.error(
-                        `${retry} retry session list when not found ${sessionId} ${nameWithoutPackage}`
-                      )
+                      console.error(`${retry} retry session list when not found ${sessionId} ${nameWithoutPackage}`)
                       debug('session list result', lines)
                       setTimeout(function() {
                         fetchList(retry + 1)
                       }, 2000)
                     } else {
-                      throw Error(
-                        `session list could not find session id: ${sessionId}`
-                      )
+                      throw Error(`session list could not find session id: ${sessionId}`)
                     }
                   } else {
                     resolve()
@@ -252,33 +236,17 @@ class Validation {
     if (packageName !== '') name = `${packageName}/${name}`
     if (namespace !== '') name = `/${namespace}/${name}`
 
-    const expectedKeys = [
-      'annotations',
-      'limits',
-      'name',
-      'namespace',
-      'parameters',
-      'kind'
-    ]
+    const expectedKeys = ['annotations', 'limits', 'name', 'namespace', 'parameters', 'kind']
     if (packageName !== '') expectedKeys.push('packageName')
 
     it(`validate app get ${name}`, () =>
       cli
         .do(`app get ${name}`)
-        .then(
-          expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys })
-        )
+        .then(expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys }))
         .catch(common.oops(this.ctx)))
   }
 
-  do({
-    name,
-    packageName = '',
-    namespace = '',
-    output,
-    params = '',
-    outputWithParams = {}
-  }) {
+  do({ name, packageName = '', namespace = '', output, params = '', outputWithParams = {} }) {
     this.appList({ name, packageName, namespace })
     this.invoke({ name, output, packageName, namespace })
     if (params)
@@ -301,9 +269,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     it('app create test1 @demos/hello.js', () =>
       cli
         .do('app create test1 @demos/hello.js')
-        .then(
-          cli.expectOK('ok: updated composition /_/test1\n', { exact: true })
-        )
+        .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
         .catch(common.oops(this)))
     new Validation(this).do({
       name: 'test1',
@@ -381,15 +347,8 @@ describe('Composer Headless Test', function(this: common.ISuite) {
 
       it('validate app create with namespace', () =>
         cli
-          .do(
-            `app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`
-          )
-          .then(
-            cli.expectOK(
-              `ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`,
-              { exact: true }
-            )
-          )
+          .do(`app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`)
+          .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
           .catch(common.oops(this)))
       new Validation(this).do({
         name: 'subtest2',
@@ -414,9 +373,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     it('validate app create test2 @demos/if.js', () =>
       cli
         .do('app create test2 @demos/if.js')
-        .then(
-          cli.expectOK('ok: updated composition /_/test2\n', { exact: true })
-        )
+        .then(cli.expectOK('ok: updated composition /_/test2\n', { exact: true }))
         .catch(common.oops(this)))
 
     it('validate app invoke test2 fails', () =>
@@ -430,9 +387,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     it('validate app update test1 @demos/let.js', () =>
       cli
         .do('app update test1 @demos/let.js')
-        .then(
-          cli.expectOK('ok: updated composition /_/test1\n', { exact: true })
-        )
+        .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
         .catch(common.oops(this)))
     new Validation(this).do({ name: 'test1', output: { ok: true } })
   })
@@ -464,15 +419,8 @@ describe('Composer Headless Test', function(this: common.ISuite) {
 
       it(`validate app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`, () =>
         cli
-          .do(
-            `app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`
-          )
-          .then(
-            cli.expectOK(
-              `ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`,
-              { exact: true }
-            )
-          )
+          .do(`app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`)
+          .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
           .catch(common.oops(this)))
       new Validation(this).do({
         name: 'subtest2',

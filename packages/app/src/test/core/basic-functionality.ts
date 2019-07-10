@@ -56,8 +56,7 @@ localDescribe('Basic Functionality', function(this: ISuite) {
 
   it('shows an initial window', () => openWindow(this.app).catch(oops(this)))
 
-  it('has an initial focus on the CLI prompt', () =>
-    assert.ok(this.app.client.hasFocus(selectors.PROMPT)))
+  it('has an initial focus on the CLI prompt', () => assert.ok(this.app.client.hasFocus(selectors.PROMPT)))
 
   /* it('has the expected placeholder text in the CLI prompt', async () => {
     try {

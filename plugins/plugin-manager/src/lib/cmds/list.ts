@@ -40,9 +40,7 @@ const flatten = arrays => [].concat(...arrays)
  */
 const extractNested = root => dir =>
   dir.charAt(0) === '@'
-    ? fs
-        .readdir(path.join(root, dir))
-        .then(subdirs => subdirs.map(subdir => `${dir}/${subdir}`))
+    ? fs.readdir(path.join(root, dir)).then(subdirs => subdirs.map(subdir => `${dir}/${subdir}`))
     : dir // we'll flatten this below
 
 /**
@@ -61,8 +59,7 @@ const getVersion = moduleDir => plugin =>
  * Read the package.json of all plugins to get their versions
  *
  */
-const getVersions = moduleDir => installedPlugins =>
-  Promise.all(installedPlugins.map(getVersion(moduleDir)))
+const getVersions = moduleDir => installedPlugins => Promise.all(installedPlugins.map(getVersion(moduleDir)))
 
 const doList = () => {
   debug('command execution started')

@@ -128,9 +128,7 @@ export const tellMain = (message, channel?) =>
 
     ipcRenderer[channel === 'asynchronous-message' ? 'send' : 'sendSync'](
       channel || 'synchronous-message',
-      typeof message === 'string'
-        ? JSON.stringify({ operation: message })
-        : JSON.stringify(message)
+      typeof message === 'string' ? JSON.stringify({ operation: message }) : JSON.stringify(message)
     )
 
     if (channel === 'asynchronous-message') {

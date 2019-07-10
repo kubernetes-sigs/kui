@@ -55,16 +55,10 @@ const patterns = [
  * redaction character.
  *
  */
-const keyValueRedactor = (
-  _,
-  precedingWhitespace,
-  key,
-  interstitialWhitespace,
-  maybeContinuation,
-  value
-) => {
-  return `${precedingWhitespace}${key}${interstitialWhitespace}${maybeContinuation ||
-    ''}${new Array(Math.min(MAX_REDACT_LENGTH, value.length))
+const keyValueRedactor = (_, precedingWhitespace, key, interstitialWhitespace, maybeContinuation, value) => {
+  return `${precedingWhitespace}${key}${interstitialWhitespace}${maybeContinuation || ''}${new Array(
+    Math.min(MAX_REDACT_LENGTH, value.length)
+  )
     .fill('\u2588')
     .join('')}`
 }

@@ -20,13 +20,7 @@ import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { isTable } from './models/table'
 import { formatTable } from './views/table'
-import {
-  getSidecar,
-  showCustom,
-  isCustomSpec,
-  CustomSpec,
-  insertView
-} from './views/sidecar'
+import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
@@ -45,23 +39,14 @@ const debug = Debug('webapp/picture-in-picture')
  * across remote proxies, and thus is preferable to the former.
  *
  */
-type DirectViewController =
-  | string
-  | DirectViewControllerFunction
-  | DirectViewControllerSpec
-  | DirectViewEntity
-type DirectViewControllerFunction = (
-  tab: Tab,
-  entity: object
-) => PromiseLike<object> | object | void
+type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
+type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
 
 interface DirectViewEntity extends CustomSpec {
   isEntity: boolean
 }
 
-function isDirectViewEntity(
-  direct: DirectViewController
-): direct is DirectViewEntity {
+function isDirectViewEntity(direct: DirectViewController): direct is DirectViewEntity {
   const entity = direct as DirectViewEntity
   return entity.isEntity !== undefined
 }
@@ -77,23 +62,13 @@ interface DirectViewControllerSpec {
  * Call a "direct" impl
  *
  */
-const callDirect = async (
-  tab: Tab,
-  makeView: DirectViewController,
-  entity,
-  execOptions: ExecOptions
-) => {
+const callDirect = async (tab: Tab, makeView: DirectViewController, entity, execOptions: ExecOptions) => {
   if (typeof makeView === 'string') {
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
       return repl.pexec(makeView, execOptions)
     } else {
-      return repl.qexec(
-        makeView,
-        undefined,
-        undefined,
-        Object.assign({}, execOptions, { rethrowErrors: true })
-      )
+      return repl.qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
     }
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
@@ -103,9 +78,7 @@ const callDirect = async (
     const combined = Object.assign({}, entity, makeView)
     return combined
   } else {
-    const provider = await import(
-      `@kui-shell/plugin-${makeView.plugin}/${makeView.module}`
-    )
+    const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
     return provider[makeView.operation](tab, makeView.parameters)
   }
 }
@@ -172,15 +145,9 @@ export const rawCSS = {
 export const css = {
   buttons: (tab: Tab) => sidecarSelector(tab, rawCSS.buttons),
   backContainer: (tab: Tab) =>
-    sidecarSelector(
-      tab,
-      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'
-    ), // houses the back button text and <<
+    sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
   backButton: (tab: Tab) =>
-    sidecarSelector(
-      tab,
-      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'
-    ), // houses the back button text
+    sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
   button: 'sidecar-bottom-stripe-button',
   tab: ['bx--tabs__nav-item', 'sidecar-bottom-stripe-button'],
   buttonAction: 'bx--tabs__nav-link',
@@ -192,10 +159,7 @@ export const css = {
       '.sidecar-top-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits .bx--tabs__nav'
     ),
   bottomContainer: (tab: Tab) =>
-    sidecarSelector(
-      tab,
-      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'
-    ),
+    sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
   active: 'bx--tabs__nav-item--selected',
   selected: 'selected',
   hidden: 'hidden'
@@ -269,10 +233,7 @@ const _addModeButton = (
     }
   }
 
-  if (
-    (((!show || show === 'default') && defaultMode) || show === mode) &&
-    !actAsButton
-  ) {
+  if ((((!show || show === 'default') && defaultMode) || show === mode) && !actAsButton) {
     button.classList.add(css.active)
   }
   button.setAttribute('data-mode', mode)
@@ -307,9 +268,7 @@ const _addModeButton = (
 
   let container = modeStripe
   if (!isTab) {
-    let fillContainer = bottomStripe.querySelector(
-      '.fill-container.flush-right'
-    )
+    let fillContainer = bottomStripe.querySelector('.fill-container.flush-right')
     if (!fillContainer) {
       fillContainer = document.createElement('div')
       fillContainer.className = 'fill-container flush-right'
@@ -353,9 +312,7 @@ const _addModeButton = (
           }
           button.classList.add(css.active)
 
-          const visibleWhens = bottomStripe.querySelectorAll(
-            '.sidecar-bottom-stripe-button[data-visible-when]'
-          )
+          const visibleWhens = bottomStripe.querySelectorAll('.sidecar-bottom-stripe-button[data-visible-when]')
           for (let idx = 0; idx < visibleWhens.length; idx++) {
             const otherButton = visibleWhens[idx] as HTMLElement
             const when = otherButton.getAttribute('data-visible-when')
@@ -369,9 +326,7 @@ const _addModeButton = (
           if (radioButton) {
             button.classList.toggle(css.selected)
           } else {
-            const currentSelected = bottomStripe.querySelector(
-              `.${css.selected}`
-            )
+            const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
             if (currentSelected) {
               currentSelected.classList.remove(css.selected)
             }
@@ -385,30 +340,18 @@ const _addModeButton = (
         try {
           const view = await callDirect(tab, direct, entity, execOptions)
           if (view && !actAsButton) {
-            if (
-              isTable(view) ||
-              isDirectViewEntity(direct) ||
-              leaveBottomStripeAlone
-            ) {
+            if (isTable(view) || isDirectViewEntity(direct) || leaveBottomStripeAlone) {
               changeActiveButton()
             }
 
             if (typeof view === 'string') {
               const dom = document.createElement('div')
-              dom.classList.add(
-                'padding-content',
-                'scrollable',
-                'scrollable-auto'
-              )
+              dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.innerText = view
               insertView(tab)(dom)
             } else if (view.nodeName) {
               const dom = document.createElement('div')
-              dom.classList.add(
-                'padding-content',
-                'scrollable',
-                'scrollable-auto'
-              )
+              dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.appendChild(view)
               insertView(tab)(dom)
             } else if (isCustomSpec(view)) {
@@ -417,11 +360,7 @@ const _addModeButton = (
             } else if (isTable(view)) {
               const dom1 = document.createElement('div')
               const dom2 = document.createElement('div')
-              dom1.classList.add(
-                'padding-content',
-                'scrollable',
-                'scrollable-auto'
-              )
+              dom1.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom2.classList.add('result-as-table', 'repl-result')
               dom1.appendChild(dom2)
               formatTable(tab, view, dom2, { usePip: true })
@@ -429,9 +368,7 @@ const _addModeButton = (
             }
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
-              const button = modeStripe.querySelector(
-                `.sidecar-bottom-stripe-button[data-mode="${mode}"]`
-              )
+              const button = modeStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
               if (button) {
                 if (disabled) {
                   button.classList.add('disabled')
@@ -476,12 +413,7 @@ export const addModeButton = (
   return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (
-  tab: Tab,
-  modesUnsorted: SidecarMode[] = [],
-  entity,
-  options?: BottomStripOptions
-) => {
+export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], entity, options?: BottomStripOptions) => {
   // consult the view registrar for registered view modes
   // relevant to this resource
   const command = ''
@@ -510,12 +442,7 @@ export const addModeButtons = (
   })
 
   // for going back
-  const addModeButtons = (
-    tab: Tab,
-    modes: SidecarMode[],
-    entity,
-    show: string
-  ) => {
+  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity, show: string) => {
     const modeStripe = css.modeContainer(tab)
     const bottomStripe = css.bottomContainer(tab)
     removeAllDomChildren(modeStripe)
@@ -530,8 +457,7 @@ export const addModeButtons = (
     bottomStripe['capture'] = () => {
       // capture the current selection
       const currentSelection = modeStripe.querySelector(`.${css.active}`)
-      const currentShow =
-        currentSelection && currentSelection.getAttribute('data-mode')
+      const currentShow = currentSelection && currentSelection.getAttribute('data-mode')
       const show = currentShow || (options && options.show)
 
       // to avoid stale buttons from showing up while the new view renders
@@ -542,9 +468,7 @@ export const addModeButtons = (
   }
 
   const defaultMode = modes && modes.find(({ defaultMode }) => defaultMode)
-  const show =
-    (options && options.show) ||
-    (defaultMode && (defaultMode.mode || defaultMode.label))
+  const show = (options && options.show) || (defaultMode && (defaultMode.mode || defaultMode.label))
 
   addModeButtons(tab, modes, entity, show)
 

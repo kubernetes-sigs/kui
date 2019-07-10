@@ -32,10 +32,7 @@ const execInSequence = async function(arr, status, idx: number) {
   try {
     const thisResult = await repl.qexec(item)
     status[idx].value = 'Done'
-    status[idx].css = status[idx].css.replace(
-      /yellow-background/,
-      'green-background'
-    )
+    status[idx].css = status[idx].css.replace(/yellow-background/, 'green-background')
     status[idx].done = true
     status[idx].onclick = event => {
       event.stopPropagation()
@@ -49,17 +46,11 @@ const execInSequence = async function(arr, status, idx: number) {
     }
   } catch (err) {
     const content = await Promise.resolve(err.message)
-    const isWarning = (typeof content === 'string'
-      ? content
-      : err.raw.message
-    ).match(/already exists|already has/i)
+    const isWarning = (typeof content === 'string' ? content : err.raw.message).match(/already exists|already has/i)
 
     status[idx].value = isWarning ? 'Warning' : 'Error'
     if (!isWarning) {
-      status[idx].css = status[idx].css.replace(
-        /yellow-background/,
-        'red-background'
-      )
+      status[idx].css = status[idx].css.replace(/yellow-background/, 'red-background')
     }
     status[idx].done = true
     status[idx].onclick = async event => {
@@ -146,8 +137,7 @@ const doRun = ({ argv }) =>
                 {
                   key: 'status',
                   value: 'STATUS',
-                  outerCSS:
-                    'header-cell very-narrow not-too-wide min-width-6em text-center'
+                  outerCSS: 'header-cell very-narrow not-too-wide min-width-6em text-center'
                 }
               ]
             }
@@ -170,9 +160,7 @@ const usage = {
   strict: 'run',
   example: 'run commandFile',
   docs: 'Evaluate shell commands in a given file',
-  required: [
-    { name: 'commandFile', docs: 'A file of commands to execute', file: true }
-  ]
+  required: [{ name: 'commandFile', docs: 'A file of commands to execute', file: true }]
 }
 
 export default (commandTree: CommandRegistrar) => {
@@ -204,11 +192,7 @@ export default (commandTree: CommandRegistrar) => {
         container.classList.add('result-as-table')
         scrollInner.appendChild(container)
 
-        formatMultiListResult(
-          tab,
-          !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput,
-          container
-        )
+        formatMultiListResult(tab, !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput, container)
 
         return {
           type: 'custom',

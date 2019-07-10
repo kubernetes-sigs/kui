@@ -38,13 +38,8 @@ export const injectCSS = async () => {
     ])
   } else {
     const root = dirname(require.resolve('diff2html/package.json'))
-    const ourRoot = dirname(
-      require.resolve('@kui-shell/plugin-bash-like/package.json')
-    )
-    await Promise.all([
-      inject(join(root, 'dist/diff2html.min.css')),
-      inject(join(ourRoot, 'web/css/my-diff2html.css'))
-    ])
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
+    await Promise.all([inject(join(root, 'dist/diff2html.min.css')), inject(join(ourRoot, 'web/css/my-diff2html.css'))])
   }
 }
 

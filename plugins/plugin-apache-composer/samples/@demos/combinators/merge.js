@@ -10,9 +10,7 @@ const composer = require('openwhisk-composer')
  * on top of seq and retain.
  */
 function merge(...components) {
-  return composer.seq(composer.retain(...components), _ =>
-    Object.assign(_.params, _.result)
-  )
+  return composer.seq(composer.retain(...components), _ => Object.assign(_.params, _.result))
 }
 
 /**

@@ -21,15 +21,10 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 
 import { dirname } from 'path'
 
-import {
-  verifyNodeExists,
-  verifyTheBasicStuff
-} from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
+import { verifyNodeExists, verifyTheBasicStuff } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const actionName1 = 'foo1'
 const actionName2 = 'foo2'
@@ -53,14 +48,7 @@ describe('app create and sessions', function(this: common.ISuite) {
   }
 
   /** invoke a composition */
-  const invoke = (
-    _name,
-    key,
-    value,
-    extraExpect,
-    expectIsIt = false,
-    cmd = 'app invoke'
-  ) => {
+  const invoke = (_name, key, value, extraExpect, expectIsIt = false, cmd = 'app invoke') => {
     const name = typeof _name === 'string' ? _name : _name.action
     const packageName = _name.package
     const fullName = packageName ? `${packageName}/${name}` : name
@@ -71,15 +59,11 @@ describe('app create and sessions', function(this: common.ISuite) {
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName1))
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct(expect(key, value, extraExpect, expectIsIt)))
         .then(() => this.app.client.click(ui.selectors.SIDECAR_TITLE)) // click on the name part in the sidecar header
         .then(() => this.app)
-        .then(
-          sidecar.expectShowing(seqName1, undefined, undefined, packageName)
-        )
+        .then(sidecar.expectShowing(seqName1, undefined, undefined, packageName))
         .catch(common.oops(this)))
   }
 
@@ -99,9 +83,7 @@ describe('app create and sessions', function(this: common.ISuite) {
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name))
-        .then(app =>
-          app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-        )
+        .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
         .then(ui.expectStruct(expect(key, value, undefined, undefined)))
         .catch(common.oops(this)))
   }
@@ -129,9 +111,7 @@ describe('app create and sessions', function(this: common.ISuite) {
             )
 
             if (list.value.length !== nLive) {
-              console.error(
-                'live does not match ' + list.value.length + ' != ' + nLive
-              )
+              console.error('live does not match ' + list.value.length + ' != ' + nLive)
               if (list.value.length < nLive) {
                 // we'll retry
                 return false
@@ -146,9 +126,7 @@ describe('app create and sessions', function(this: common.ISuite) {
           }
 
           const liveGood = await isLiveGood()
-          const list = await this.app.client.elements(
-            `${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="done"]`
-          )
+          const list = await this.app.client.elements(`${ui.selectors.OUTPUT_N(N)} .entity.session[data-status="done"]`)
           if (!liveGood || list.value.length < nDone) {
             if (iter < 3) {
               // let's retry
@@ -159,9 +137,7 @@ describe('app create and sessions', function(this: common.ISuite) {
               assert.strictEqual(list.value.length, nDone)
             }
           } else if (list.value.length !== nDone) {
-            console.error(
-              'done does not match ' + list.value.length + ' != ' + nDone
-            )
+            console.error('done does not match ' + list.value.length + ' != ' + nDone)
             if (list.value.length < nDone && iter < 3) {
               // then let's retry
               setTimeout(() => once(iter + 1), 5000)
@@ -179,8 +155,7 @@ describe('app create and sessions', function(this: common.ISuite) {
   }
 
   const getSessions = (cmd, nLive, nDone) =>
-    it(`should list sessions via "${cmd}" nLive=${nLive} nDone=${nDone}`, () =>
-      doGetSessions(cmd, nLive, nDone))
+    it(`should list sessions via "${cmd}" nLive=${nLive} nDone=${nDone}`, () => doGetSessions(cmd, nLive, nDone))
 
   //
   // start of test suite
@@ -227,10 +202,7 @@ describe('app create and sessions', function(this: common.ISuite) {
 
   it('should create a packaged composer sequence', () =>
     cli
-      .do(
-        `app create ${packageName1}/${seqName1} ${ROOT}/data/composer/fsm.json`,
-        this.app
-      )
+      .do(`app create ${packageName1}/${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1, undefined, undefined, packageName1))
@@ -279,9 +251,7 @@ describe('app create and sessions', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
-      .then(() =>
-        this.app.client.getText(`${ui.selectors.SIDECAR_MODE_BUTTONS}`)
-      )
+      .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_MODE_BUTTONS}`))
       .then(
         (buttons: string | string[]) =>
           Array.isArray(buttons) &&
@@ -307,11 +277,7 @@ describe('app create and sessions', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
-      .then(() =>
-        this.app.client.waitForVisible(
-          `${ui.selectors.SIDECAR_MODE_BUTTON('visualization')}`
-        )
-      )
+      .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON('visualization')}`))
       .catch(common.oops(this)))
 
   // get some regular action, so we can test switching back to the composer action

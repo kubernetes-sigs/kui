@@ -16,9 +16,7 @@
 
 /* use wsk utility to parse parameters from a command */
 export const parseParams = (argv, wsk) => {
-  const {
-    kvOptions: { action: { parameters = [] } = {} } = {}
-  } = wsk.parseOptions(argv, 'action') // eslint-disable-line
+  const { kvOptions: { action: { parameters = [] } = {} } = {} } = wsk.parseOptions(argv, 'action') // eslint-disable-line
   return parameters.reduce(function(params, ele) {
     params[ele.key] = ele.value
     return params

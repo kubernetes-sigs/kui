@@ -129,15 +129,13 @@ const renderDescribe = async (
   add('QoS Class', status.qosClass)
   add(
     'Tolerations',
-    (spec.tolerations || []).map(
-      ({ key, value, effect, tolerationSeconds }) => {
-        if (!effect) {
-          return { key, value }
-        } else {
-          return { tolerate: key, effect, for: `${tolerationSeconds}s` }
-        }
+    (spec.tolerations || []).map(({ key, value, effect, tolerationSeconds }) => {
+      if (!effect) {
+        return { key, value }
+      } else {
+        return { tolerate: key, effect, for: `${tolerationSeconds}s` }
       }
-    )
+    })
   )
 
   const modes: SidecarMode[] = [
@@ -182,19 +180,12 @@ const renderDescribe = async (
   }
 
   // some resources have a notion of duration
-  const startTime =
-    resource && status && status.startTime && new Date(status.startTime)
-  const endTime =
-    resource &&
-    status &&
-    status.completionTime &&
-    new Date(status.completionTime)
-  const duration =
-    startTime && endTime && endTime.getTime() - startTime.getTime()
+  const startTime = resource && status && status.startTime && new Date(status.startTime)
+  const endTime = resource && status && status.completionTime && new Date(status.completionTime)
+  const duration = startTime && endTime && endTime.getTime() - startTime.getTime()
 
   // some resources have a notion of version
-  const version =
-    resource && metadata && metadata.labels && metadata.labels.version
+  const version = resource && metadata && metadata.labels && metadata.labels.version
 
   const description = {
     type: 'custom',
@@ -228,35 +219,17 @@ const describe = async ({ command, parsedOptions, execOptions }) => {
   const fallback = () => $$(command, undefined, undefined, noDelegationPlease)
 
   try {
-    const getCmd = command
-      .replace(/describe/, 'get')
-      .replace(/(-o|--output)[= ](yaml|json)/, '')
+    const getCmd = command.replace(/describe/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
 
-    const describeCmd = command
-      .replace(/get/, 'describe')
-      .replace(/(-o|--output)[= ](yaml|json)/, '')
+    const describeCmd = command.replace(/get/, 'describe').replace(/(-o|--output)[= ](yaml|json)/, '')
 
     debug('describeCmd', describeCmd)
     debug('getCmd', getCmd)
 
-    const resource: KubeResource = await $(
-      `${getCmd} -o json`,
-      noDelegationPlease
-    )
+    const resource: KubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
 
-    const response = await renderDescribe(
-      command,
-      getCmd,
-      describeCmd,
-      resource,
-      parsedOptions
-    )
-    if (
-      !response ||
-      !response.content ||
-      response.content === '{}' ||
-      Object.keys(response.content).length === 0
-    ) {
+    const response = await renderDescribe(command, getCmd, describeCmd, resource, parsedOptions)
+    if (!response || !response.content || response.content === '{}' || Object.keys(response.content).length === 0) {
       debug('the describe summary is empty, falling back to base view')
       return fallback()
     } else {

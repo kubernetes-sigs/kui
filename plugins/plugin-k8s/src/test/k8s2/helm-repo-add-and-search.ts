@@ -27,10 +27,7 @@ describe('helm repo add and search', function(this: common.ISuite) {
     const addRepo = () => {
       it('should add a helm repo', () => {
         return cli
-          .do(
-            `${helm} repo add bitnami https://charts.bitnami.com/bitnami`,
-            this.app
-          )
+          .do(`${helm} repo add bitnami https://charts.bitnami.com/bitnami`, this.app)
           .then(cli.expectOKWithAny)
           .catch(common.oops(this))
       })

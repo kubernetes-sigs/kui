@@ -15,12 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import {
-  expectYAMLSubset,
-  cli,
-  selectors,
-  sidecar
-} from '@kui-shell/core/tests/lib/ui'
+import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
   defaultModeForGet,
@@ -43,9 +38,7 @@ describe('electron configmap', function(this: common.ISuite) {
     const getText = () => {
       return this.app.client
         .execute(() => {
-          return document
-            .querySelector('.monaco-editor-wrapper')
-            ['editor'].getValue()
+          return document.querySelector('.monaco-editor-wrapper')['editor'].getValue()
         })
         .then(res => res.value)
     }
@@ -53,9 +46,7 @@ describe('electron configmap', function(this: common.ISuite) {
     /** wait until the sidecar displays a superset of the given content */
     const expectContent = (content: object) => {
       return this.app.client.waitUntil(async () => {
-        const ok: boolean = await getText().then(
-          expectYAMLSubset(content, false)
-        )
+        const ok: boolean = await getText().then(expectYAMLSubset(content, false))
 
         return ok
       })
@@ -95,16 +86,12 @@ describe('electron configmap', function(this: common.ISuite) {
     /** delete the given configmap */
     const deleteIt = (name: string, errOk = false) => {
       it(`should delete the configmap ${name} via ${kubectl} `, () => {
-        const expectResult = errOk
-          ? cli.expectOKWithAny
-          : cli.expectOKWithString('deleted')
+        const expectResult = errOk ? cli.expectOKWithAny : cli.expectOKWithString('deleted')
 
         return cli
           .do(`${kubectl} delete cm ${name} ${inNamespace}`, this.app)
           .then(expectResult)
-          .then(() =>
-            waitTillNone('configmap', undefined, name, undefined, inNamespace)
-          )
+          .then(() => waitTillNone('configmap', undefined, name, undefined, inNamespace))
           .catch(common.oops(this))
       })
     }
@@ -113,10 +100,7 @@ describe('electron configmap', function(this: common.ISuite) {
     const createIt = (name: string, literals = '') => {
       it(`should create a configmap ${name} via ${kubectl}`, () => {
         return cli
-          .do(
-            `${kubectl} create configmap ${name} ${literals} ${inNamespace}`,
-            this.app
-          )
+          .do(`${kubectl} create configmap ${name} ${literals} ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))

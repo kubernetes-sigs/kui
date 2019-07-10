@@ -26,11 +26,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import {
-  getSidecar,
-  addNameToSidecarHeader,
-  showCustom
-} from '@kui-shell/core/webapp/views/sidecar'
+import { getSidecar, addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
@@ -94,11 +90,7 @@ class Occupancy {
     cells.className = 'grid-row'
     grid.appendChild(cells)
     for (let count = 0, rowIdx = 0; rowIdx < height; rowIdx++) {
-      for (
-        let colIdx = 0;
-        colIdx < width && count < nCells;
-        colIdx++, count++
-      ) {
+      for (let colIdx = 0; colIdx < width && count < nCells; colIdx++, count++) {
         const cellDom = makeCellDom()
         cells.appendChild(cellDom)
         this.rows[rowIdx * width + colIdx] = cellDom
@@ -152,13 +144,10 @@ class Occupancy {
             repl.qexec(`wsk activation get ${cell.id}`).then(({ response }) => {
               if (response.result.error) {
                 cell['failureMessage'] =
-                  response.result.error.error ||
-                  response.result.error.message ||
-                  response.result.error
+                  response.result.error.error || response.result.error.message || response.result.error
                 cell.setAttribute(
                   'data-balloon',
-                  cell.getAttribute('data-balloon') +
-                    ` with: ${cell['failureMessage'].substring(0, 40)}`
+                  cell.getAttribute('data-balloon') + ` with: ${cell['failureMessage'].substring(0, 40)}`
                 )
               }
             })
@@ -179,10 +168,7 @@ class Occupancy {
  * Change the coloring strategy
  *
  */
-const colorBy = (
-  strategy,
-  gridGrid = document.querySelector(`.${css.content} .${css.gridGrid}`)
-) => {
+const colorBy = (strategy, gridGrid = document.querySelector(`.${css.content} .${css.gridGrid}`)) => {
   gridGrid.setAttribute('color-by', strategy)
   return true
 }
@@ -250,11 +236,7 @@ const drawAsTimeline = (
   }
 
   // for each column in the timeline... idx here is a column index
-  for (
-    let idx = 0, currentEmptyRunLength = 0, currentRunMinTime;
-    idx < nBuckets;
-    idx++
-  ) {
+  for (let idx = 0, currentEmptyRunLength = 0, currentRunMinTime; idx < nBuckets; idx++) {
     if (activations[idx].length === 0) {
       // empty column
       if (currentEmptyRunLength++ === 0 && idx > 0) {
@@ -273,10 +255,7 @@ const drawAsTimeline = (
       if (currentRunMinTime && currentRunMaxTime) {
         const swathInner = document.createElement('div')
         swathInner.classList.add('grid-timeline-empty-swath-inner')
-        swathInner.innerText = `${prettyPrintDuration(
-          currentRunMaxTime - currentRunMinTime,
-          { compact: true }
-        )}`
+        swathInner.innerText = `${prettyPrintDuration(currentRunMaxTime - currentRunMinTime, { compact: true })}`
 
         swath.appendChild(swathInner)
       }
@@ -294,11 +273,7 @@ const drawAsTimeline = (
         const successB = isSuccess(b)
         const nA = options.full ? a._duration : a.executionTime
         const nB = options.full ? b._duration : b.executionTime
-        return (!successA && !successB) || (successA && successB)
-          ? nA - nB
-          : !successA
-          ? 1
-          : -1
+        return (!successA && !successB) || (successA && successB) ? nA - nB : !successA ? 1 : -1
       })
     } else if (options.timeline === 'time') {
       activations[idx].sort((a, b) => a.start - b.start)
@@ -308,11 +283,7 @@ const drawAsTimeline = (
     // within the current column's stack of cells
     activations[idx].forEach((activation, jdx) => {
       const success = isSuccess(activation)
-      const latBucket =
-        success &&
-        latencyBucket(
-          options.full ? activation._duration : activation.executionTime
-        )
+      const latBucket = success && latencyBucket(options.full ? activation._duration : activation.executionTime)
 
       const cell = makeCellDom()
       const nameInTooltip = true
@@ -365,18 +336,10 @@ const _drawGrid = (
   sort(groups, sorter, sortDir)
   sortActivations(groups, startTimeSorter, +1)
 
-  const gridGrid = redraw
-    ? content.querySelector(`.${css.gridGrid}`)
-    : document.createElement('div')
+  const gridGrid = redraw ? content.querySelector(`.${css.gridGrid}`) : document.createElement('div')
   const totalCount = groupData.totalCount
   const zoomLevel = options.zoom || smartZoom(totalCount)
-  const zoomLevelForDisplay = options.timeline
-    ? -1
-    : totalCount > 1000
-    ? -2
-    : totalCount <= 100
-    ? zoomLevel
-    : 0 // don't zoom in too far, if there are many cells to display
+  const zoomLevelForDisplay = options.timeline ? -1 : totalCount > 1000 ? -2 : totalCount <= 100 ? zoomLevel : 0 // don't zoom in too far, if there are many cells to display
 
   gridGrid.className = `${css.gridGrid} overflow-auto cell-container zoom_${zoomLevelForDisplay}`
   gridGrid.setAttribute('data-zoom-level', zoomLevelForDisplay)
@@ -397,9 +360,7 @@ const _drawGrid = (
 
     drawLegend(tab, viewName, rightHeader, group, gridGrid)
   } else {
-    const onclick = options.appName
-      ? drilldownWith(tab, viewName, `app get "${options.appName}"`)
-      : undefined
+    const onclick = options.appName ? drilldownWith(tab, viewName, `app get "${options.appName}"`) : undefined
     const pathComponents = (options.appName || '').split('/')
     const packageName =
       pathComponents.length === 4
@@ -423,14 +384,7 @@ const _drawGrid = (
   displayTimeRange(groupData, leftHeader)
 
   if (options.timeline) {
-    drawAsTimeline(
-      tab,
-      timeline,
-      content,
-      gridGrid,
-      zoomLevelForDisplay,
-      options
-    )
+    drawAsTimeline(tab, timeline, content, gridGrid, zoomLevelForDisplay, options)
     return
   }
 
@@ -456,9 +410,7 @@ const _drawGrid = (
     const hasPackage = labelSplit.length === 4 // this action is part of a pacakge?
     const actionName = labelSplit[labelSplit.length - 1] // the action name to display
 
-    if (
-      !redraw /* zoomLevel === 0 || groups.length > 1 || options.fixedHeader */
-    ) {
+    if (!redraw /* zoomLevel === 0 || groups.length > 1 || options.fixedHeader */) {
       gridLabel.className = 'grid-label'
       gridLabel.appendChild(labelInner)
       gridDom.appendChild(gridLabel)
@@ -474,11 +426,7 @@ const _drawGrid = (
       labelInner.appendChild(labelAction)
       labelAction.innerText = actionName
       labelAction.className = 'clickable grid-label-part'
-      labelAction.onclick = drilldownWith(
-        tab,
-        viewName,
-        `grid "${group.path}" ${optionsToString(options)}`
-      )
+      labelAction.onclick = drilldownWith(tab, viewName, `grid "${group.path}" ${optionsToString(options)}`)
     }
 
     // render the grid
@@ -487,13 +435,7 @@ const _drawGrid = (
       const L = closestSquare(group.count)
       const width = L
       const height = L
-      const grid = new Occupancy(
-        width,
-        height,
-        group.activations.length,
-        gridDom,
-        gridGrid
-      )
+      const grid = new Occupancy(width, height, group.activations.length, gridDom, gridGrid)
       group.x = 0
       group.y = 0
       group.width = L
@@ -519,23 +461,13 @@ const _drawGrid = (
         gridLabel.style.maxWidth = `${Math.max(8, width * vws)}vw` // 2.75vw is the width in table.css; 1.1x to give a bit of overflow
       }
 
-      gridDom.querySelector('.grid-row').style.maxWidth = `${Math.max(
-        8,
-        width * vws
-      )}vw`
+      gridDom.querySelector('.grid-row').style.maxWidth = `${Math.max(8, width * vws)}vw`
 
       let idx = 0
       group.activations.forEach(activation => {
-        renderCell(
-          tab,
-          viewName,
-          cells[idx],
-          activation,
-          !isSuccess(activation),
-          undefined,
-          undefined,
-          { zoom: zoomLevelForDisplay }
-        )
+        renderCell(tab, viewName, cells[idx], activation, !isSuccess(activation), undefined, undefined, {
+          zoom: zoomLevelForDisplay
+        })
         idx++
       })
     } else {
@@ -595,26 +527,13 @@ const drawGrid = (
 ) => (activations: Object[]) => {
   debug('drawGrid', redraw)
 
-  const existingContent = sidecarSelector(
-    tab,
-    `.custom-content .${css.content}`
-  ) as HTMLElement
-  const content: HTMLElement =
-    (redraw && existingContent) || document.createElement('div')
+  const existingContent = sidecarSelector(tab, `.custom-content .${css.content}`) as HTMLElement
+  const content: HTMLElement = (redraw && existingContent) || document.createElement('div')
 
   content.classList.add(css.content)
   content.classList.add(css.useDarkTooltips)
 
-  _drawGrid(
-    tab,
-    options,
-    header,
-    content,
-    groupByAction(activations, options),
-    undefined,
-    undefined,
-    redraw
-  )
+  _drawGrid(tab, options, header, content, groupByAction(activations, options), undefined, undefined, redraw)
 
   /** zoom update button click handler */
   const rezoom = change => () => {
@@ -636,16 +555,7 @@ const drawGrid = (
         const gridLabel = gridDom.querySelector('.grid-label') as HTMLElement
         const gridRow = gridDom.querySelector('.grid-row') as HTMLElement
         const width = parseInt(gridDom.getAttribute('data-width'), 10)
-        const vws =
-          newZoom === 0
-            ? 2.75
-            : newZoom === -1
-            ? 1.25
-            : newZoom === 1
-            ? 3
-            : newZoom === 2
-            ? 4
-            : 1
+        const vws = newZoom === 0 ? 2.75 : newZoom === -1 ? 1.25 : newZoom === 1 ? 3 : newZoom === 2 ? 4 : 1
 
         gridRow.style.maxWidth = `${Math.max(8, width * vws)}vw`
         if (gridLabel) {
@@ -669,10 +579,7 @@ const drawGrid = (
         }
       } else {
         return {
-          toggle: [
-            { mode: 'zoom-out', disabled: false },
-            { mode: 'zoom-in', disabled: false }
-          ]
+          toggle: [{ mode: 'zoom-out', disabled: false }, { mode: 'zoom-in', disabled: false }]
         }
       }
     }
@@ -707,8 +614,7 @@ const drawGrid = (
     balloon: 'Display as grid',
     flush: 'right',
     actAsButton: true,
-    direct: () =>
-      repl.pexec(`grid ${optionsToString(options, ['timeline', 't'])}`)
+    direct: () => repl.pexec(`grid ${optionsToString(options, ['timeline', 't'])}`)
   }
 
   const switcher = options.timeline ? asGrid : asTimeline // switch between timeline and grid mode
@@ -733,19 +639,13 @@ export default async (commandTree: CommandRegistrar, options?) => {
   debug('init')
 
   if (options && options.activations) {
-    const renderer = drawGrid(
-      options.tab,
-      options,
-      prepareHeader(options.tab),
-      uuid()
-    )
+    const renderer = drawGrid(options.tab, options, prepareHeader(options.tab), uuid())
     const grid = renderer(options.activations)
     showCustom(options.tab, grid, {})
     return
   }
 
-  const mkCmd = (cmd, extraOptions?) =>
-    visualize(cmd, viewName, drawGrid, null, extraOptions)
+  const mkCmd = (cmd, extraOptions?) => visualize(cmd, viewName, drawGrid, null, extraOptions)
   const fixedGrid = mkCmd('grid')
   const pollingGrid = mkCmd('...', { live: true })
 

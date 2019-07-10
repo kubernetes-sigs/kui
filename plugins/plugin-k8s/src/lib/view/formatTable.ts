@@ -136,11 +136,7 @@ interface Pair {
   value: string
 }
 
-const split = (
-  str: string,
-  splits: number[],
-  headerCells?: string[]
-): Pair[] => {
+const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
@@ -158,13 +154,10 @@ export const preprocessTable = (raw: string[]) => {
 
   return raw.map(table => {
     const header = table.substring(0, table.indexOf('\n')).replace(/\t/g, ' ')
-    const headerCells = header
-      .split(/(\t|\s\s)+\s?/)
-      .filter(x => x && !x.match(/(\t|\s\s)/))
+    const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
     const columnStarts: number[] = []
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
-      const { offset, prefix } =
-        idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
+      const { offset, prefix } = idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
 
       const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
       if (newJdx < 0) {
@@ -214,19 +207,15 @@ export const formatTable = (
       : undefined) || undefined
 
   // helm doesn't support --output
-  const drilldownFormat =
-    drilldownCommand === 'kubectl' && drilldownVerb === 'get' ? '-o yaml' : ''
+  const drilldownFormat = drilldownCommand === 'kubectl' && drilldownVerb === 'get' ? '-o yaml' : ''
 
   const drilldownNamespace =
-    options.n || options.namespace
-      ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
-      : ''
+    options.n || options.namespace ? `-n ${repl.encodeComponent(options.n || options.namespace)}` : ''
 
   const drilldownKind = nameSplit => {
     debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
-      const kind =
-        nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
+      const kind = nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
       return kind ? ' ' + kind : ''
       /* } else if (drilldownVerb === 'config') {
         return ' use-context'; */
@@ -236,17 +225,9 @@ export const formatTable = (
   }
 
   // maximum column count across all rows
-  const nameColumnIdx = Math.max(
-    0,
-    preTable[0].findIndex(({ key }) => key === 'NAME')
-  )
-  const namespaceColumnIdx = preTable[0].findIndex(
-    ({ key }) => key === 'NAMESPACE'
-  )
-  const maxColumns = preTable.reduce(
-    (max, columns) => Math.max(max, columns.length),
-    0
-  )
+  const nameColumnIdx = Math.max(0, preTable[0].findIndex(({ key }) => key === 'NAME'))
+  const namespaceColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAMESPACE')
+  const maxColumns = preTable.reduce((max, columns) => Math.max(max, columns.length), 0)
 
   // for kubectl get all... the actual entity type of each table is
   // manifested in the name cell, e.g. "_pod_/mypod"
@@ -259,8 +240,7 @@ export const formatTable = (
       const nameForDisplay = nameSplit[1] || rows[0].value
       const nameForDrilldown = nameSplit[1] || name
       const css = ''
-      const firstColumnCSS =
-        idx === 0 || rows[0].key !== 'CURRENT' ? css : 'selected-entity'
+      const firstColumnCSS = idx === 0 || rows[0].key !== 'CURRENT' ? css : 'selected-entity'
 
       // if we have a "name split", e.g. "pod/myPod", then keep track of the "pod" part
       if (nameSplit[1]) {
@@ -293,9 +273,7 @@ export const formatTable = (
         idx === 0
           ? false
           : drilldownVerb
-          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(
-              nameSplit
-            )} ${repl.encodeComponent(
+          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(
               nameForDrilldown
             )} ${drilldownFormat} ${ns}`
           : false
@@ -305,8 +283,7 @@ export const formatTable = (
       return {
         key: rows[0].key,
         name: nameForDisplay,
-        fontawesome:
-          idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-network-wired',
+        fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-network-wired',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         css: firstColumnCSS,
         rowCSS,
@@ -321,17 +298,8 @@ export const formatTable = (
               header +
               ' ' +
               outerCSSForKey[key] +
-              (colIdx <= 1 ||
-              colIdx === nameColumnIdx - 1 ||
-              /STATUS/i.test(key)
-                ? ''
-                : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
-            css:
-              css +
-              ' ' +
-              ((idx > 0 && cssForKey[key]) || '') +
-              ' ' +
-              (cssForValue[column] || ''),
+              (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
+            css: css + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
             value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
           }))
           .concat(fillTo(rows.length, maxColumns))

@@ -30,11 +30,7 @@ const mode = mode => options => ({
   direct: entity =>
     repl.qexec(
       `${mode} ${optionsToString(options)}${
-        entity && entity.name
-          ? ' ' + entity.name
-          : options.name
-          ? ' ' + options.name
-          : ''
+        entity && entity.name ? ' ' + entity.name : options.name ? ' ' + options.name : ''
       }`
     )
 })

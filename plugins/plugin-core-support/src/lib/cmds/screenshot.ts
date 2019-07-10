@@ -33,8 +33,7 @@ const usage = {
   strict: 'screenshot',
   command: 'screenshot',
   title: 'Capture screenshot',
-  header:
-    'Capture a screenshot, optionally specifying which region of the window to capture.',
+  header: 'Capture a screenshot, optionally specifying which region of the window to capture.',
   example: 'screenshot [which]',
   detailedExample: [
     { command: 'screenshot sidecar', docs: 'capture the sidecar contents' },
@@ -78,16 +77,9 @@ const selectors = {
   default: 'body > .page', // everything but header
   sidecar: (tab: Tab) => sidecarSelector(tab), // entire sidecar region
   repl: (tab: Tab) => tab.querySelector('.repl'), // entire REPL region
-  nth: (tab: Tab, n: number) =>
-    tab.querySelector(
-      `.repl .repl-block:nth-child(${n}) .repl-output .repl-result`
-    ), // this will include only the non-ok region
-  'last-full': (tab: Tab) =>
-    tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
-  last: (tab: Tab) =>
-    tab.querySelector(
-      '.repl .repl-block:nth-last-child(2) .repl-output .repl-result'
-    ) // this will include only the non-ok region
+  nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
+  'last-full': (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
+  last: (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
 }
 
 /**
@@ -148,44 +140,31 @@ const _squish = (tab: Tab, which: string, selector: string, op) => {
   }
 }
 const squish = (tab: Tab, which: string, selector: string) =>
-  _squish(
-    tab,
-    which,
-    selector,
-    (dryRun: boolean, element: HTMLElement, property, value, css) => {
-      if (dryRun) {
-        const scrollers = element.querySelectorAll('.overflow-auto')
-        for (let idx = 0; idx < scrollers.length; idx++) {
-          const scroller = scrollers[idx]
-          if (scroller.scrollTop) {
-            return true
-          }
+  _squish(tab, which, selector, (dryRun: boolean, element: HTMLElement, property, value, css) => {
+    if (dryRun) {
+      const scrollers = element.querySelectorAll('.overflow-auto')
+      for (let idx = 0; idx < scrollers.length; idx++) {
+        const scroller = scrollers[idx]
+        if (scroller.scrollTop) {
+          return true
         }
-      } else {
-        if (css) element.classList.add(css)
-        if (property) element.style[property] = value
       }
+    } else {
+      if (css) element.classList.add(css)
+      if (property) element.style[property] = value
     }
-  )
+  })
 const unsquish = (tab: Tab, which: string, selector: string) =>
-  _squish(
-    tab,
-    which,
-    selector,
-    (_, element: HTMLElement, property, value, css) => {
-      if (css) element.classList.remove(css)
-      if (property) element.style[property] = null
-    }
-  )
+  _squish(tab, which, selector, (_, element: HTMLElement, property, value, css) => {
+    if (css) element.classList.remove(css)
+    if (property) element.style[property] = null
+  })
 
 /** fill to two digits */
 const fill = n => (n < 10 ? `0${n}` : n)
 
 /** format the date; e.g. 2018-03-27 */
-const dateString = ts =>
-  `${ts.getUTCFullYear()}-${fill(1 + ts.getUTCMonth())}-${fill(
-    ts.getUTCDate()
-  )}`
+const dateString = ts => `${ts.getUTCFullYear()}-${fill(1 + ts.getUTCMonth())}-${fill(ts.getUTCDate())}`
 
 /** format the time; e.g. 11.36.54 AM */
 const timeString = ts => ts.toLocaleTimeString('en-us').replace(/:/g, '.')
@@ -197,29 +176,20 @@ export default async (commandTree: CommandRegistrar) => {
     ({ tab, argvNoOptions, parsedOptions: options }) =>
       new Promise(async (resolve, reject) => {
         if (inBrowser()) {
-          const error = new Error(
-            'Command not yet supported when running in a browser'
-          )
+          const error = new Error('Command not yet supported when running in a browser')
           error['code'] = 500
           reject(error)
         }
 
         try {
-          const root = dirname(
-            require.resolve('@kui-shell/plugin-core-support/package.json')
-          )
+          const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
           injectCSS(join(root, 'web/css/screenshot.css'))
 
-          const { ipcRenderer, nativeImage, remote, shell } = await import(
-            'electron'
-          )
+          const { ipcRenderer, nativeImage, remote, shell } = await import('electron')
           const { app } = remote
 
           // which dom to snap?
-          const which =
-            (argvNoOptions[1] && argvNoOptions[1].toLowerCase()) ||
-            (options['nth'] && 'nth') ||
-            'default'
+          const which = (argvNoOptions[1] && argvNoOptions[1].toLowerCase()) || (options['nth'] && 'nth') || 'default'
 
           // the selector which will snap the dom
           let selector = selectors[which]
@@ -231,50 +201,28 @@ export default async (commandTree: CommandRegistrar) => {
 
           if (which === 'last' && !selector) {
             // sanity check the last option
-            return reject(
-              new Error(
-                'You requested to screenshot the last REPL output, but this is the first command'
-              )
-            )
+            return reject(new Error('You requested to screenshot the last REPL output, but this is the first command'))
           } else if (!selector) {
             // either we couldn't find the area to
             return reject(new UsageError({ usage }))
           } else if (which === 'sidecar' && !isSidecarVisible(tab)) {
             // sanity check the sidecar option
-            return reject(
-              new Error(
-                'You requested to screenshot the sidecar, but it is not currently open'
-              )
-            )
+            return reject(new Error('You requested to screenshot the sidecar, but it is not currently open'))
           } else if (which === 'nth') {
             if (N === undefined) {
-              return reject(
-                new Error(
-                  'You must provide a numeric value for the "nth" argument'
-                )
-              )
+              return reject(new Error('You must provide a numeric value for the "nth" argument'))
             }
           }
 
-          const dom =
-            selector && typeof selector === 'string'
-              ? document.querySelector(selector)
-              : selector
+          const dom = selector && typeof selector === 'string' ? document.querySelector(selector) : selector
           if (!dom) {
             // either we couldn't find the area to capture :(
             console.error('bad selector', selector)
-            return reject(
-              new Error(
-                'Internal Error: could not identify the screen region to capture'
-              )
-            )
+            return reject(new Error('Internal Error: could not identify the screen region to capture'))
           }
 
           // remove any hover effects on the capture screenshot button
-          const screenshotButton = sidecarSelector(
-            tab,
-            '.sidecar-screenshot-button'
-          )
+          const screenshotButton = sidecarSelector(tab, '.sidecar-screenshot-button')
           screenshotButton.classList.add('force-no-hover')
 
           // squish down the element to be copied, sizing it to fit
@@ -287,9 +235,7 @@ export default async (commandTree: CommandRegistrar) => {
           const snap = () => {
             const domRect = dom.getBoundingClientRect()
             const rect = {
-              x:
-                round(domRect.left) +
-                (options.offset ? parseInt(options.offset, 10) : 0), // see #346 for options.offset
+              x: round(domRect.left) + (options.offset ? parseInt(options.offset, 10) : 0), // see #346 for options.offset
               y: round(domRect.top),
               width: round(domRect.width),
               height: round(domRect.height)
@@ -347,38 +293,23 @@ export default async (commandTree: CommandRegistrar) => {
               }
               const blurryMouseUp = (evt: MouseEvent) => {
                 // if the total pixel movement is small, then we're ok calling this a click
-                notAClick =
-                  Math.abs(evt.screenX - currentClickX) +
-                    Math.abs(evt.screenY - currentClickY) >
-                  4
+                notAClick = Math.abs(evt.screenX - currentClickX) + Math.abs(evt.screenY - currentClickY) > 4
               }
               const cleanupMouseEvents = () => {
                 // remove the underlying page blurry bit
                 document.querySelector('.page').classList.remove('blurry')
 
-                document
-                  .querySelector('.page')
-                  .removeEventListener('click', blurryClick)
-                document
-                  .querySelector('.page')
-                  .removeEventListener('mousedown', blurryMouseDown)
-                document
-                  .querySelector('.page')
-                  .removeEventListener('mouseup', finish)
+                document.querySelector('.page').removeEventListener('click', blurryClick)
+                document.querySelector('.page').removeEventListener('mousedown', blurryMouseDown)
+                document.querySelector('.page').removeEventListener('mouseup', finish)
               }
               const initMouseEvents = () => {
                 // make the underlying page blurry while we have the snapshot overlay up
                 document.querySelector('.page').classList.add('blurry')
 
-                document
-                  .querySelector('.page')
-                  .addEventListener('click', blurryClick)
-                document
-                  .querySelector('.page')
-                  .addEventListener('mousedown', blurryMouseDown)
-                document
-                  .querySelector('.page')
-                  .addEventListener('mouseup', blurryMouseUp)
+                document.querySelector('.page').addEventListener('click', blurryClick)
+                document.querySelector('.page').addEventListener('mousedown', blurryMouseDown)
+                document.querySelector('.page').addEventListener('mouseup', blurryMouseUp)
               }
               initMouseEvents()
 
@@ -416,9 +347,7 @@ export default async (commandTree: CommandRegistrar) => {
               const saveButton = document.createElement('div')
               const saveButtonIcon = document.createElement('i')
               const ts = new Date()
-              const filename = `Screen Shot ${dateString(ts)} ${timeString(
-                ts
-              )}.png`
+              const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`
               const location = join(app.getPath('desktop'), filename)
               saveButton.setAttribute('data-balloon', 'Save to Desktop')
               saveButton.setAttribute('data-balloon-pos', 'up')
@@ -428,23 +357,21 @@ export default async (commandTree: CommandRegistrar) => {
               saveButton.appendChild(saveButtonIcon)
               saveButton.onclick = () => {
                 saveButton.classList.add('yellow-text')
-                remote
-                  .require('fs')
-                  .writeFile(location, img.toPNG(), async () => {
-                    console.log(`screenshot saved to ${location}`)
-                    saveButton.classList.remove('yellow-text')
-                    saveButton.classList.add('green-text')
+                remote.require('fs').writeFile(location, img.toPNG(), async () => {
+                  console.log(`screenshot saved to ${location}`)
+                  saveButton.classList.remove('yellow-text')
+                  saveButton.classList.add('green-text')
 
-                    try {
-                      shell.showItemInFolder(location)
-                    } catch (err) {
-                      console.error('error opening screenshot file')
-                    }
+                  try {
+                    shell.showItemInFolder(location)
+                  } catch (err) {
+                    console.error('error opening screenshot file')
+                  }
 
-                    setTimeout(() => {
-                      saveButton.classList.remove('green-text')
-                    }, 3000)
-                  })
+                  setTimeout(() => {
+                    saveButton.classList.remove('green-text')
+                  }, 3000)
+                })
               }
 
               snapFooter.appendChild(saveButton)
@@ -452,8 +379,7 @@ export default async (commandTree: CommandRegistrar) => {
               // close popup button
               const closeButton = document.createElement('div')
               closeButton.innerText = 'Done'
-              closeButton.className =
-                'sidecar-bottom-stripe-button sidecar-bottom-stripe-close'
+              closeButton.className = 'sidecar-bottom-stripe-button sidecar-bottom-stripe-close'
               snapFooter.appendChild(closeButton)
 
               // the image; chrome bug: if we use width and height,
@@ -506,10 +432,7 @@ export default async (commandTree: CommandRegistrar) => {
               // we can no unregister our listener; this is
               // important as subsequent listener registrations
               // stack, rather than replace
-              ipcRenderer.removeListener(
-                'capture-page-to-clipboard-done',
-                listener
-              )
+              ipcRenderer.removeListener('capture-page-to-clipboard-done', listener)
 
               // undo any squishing
               if (!doNotSquish) {
@@ -525,11 +448,7 @@ export default async (commandTree: CommandRegistrar) => {
             // started (in that order!)
             //
             ipcRenderer.on('capture-page-to-clipboard-done', listener)
-            ipcRenderer.send(
-              'capture-page-to-clipboard',
-              remote.getCurrentWebContents().id,
-              rect
-            )
+            ipcRenderer.send('capture-page-to-clipboard', remote.getCurrentWebContents().id, rect)
           }
 
           document.body.classList.add('no-tooltips-anywhere')

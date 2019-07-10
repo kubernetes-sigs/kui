@@ -26,5 +26,4 @@ interface LocalStorage {
  * cannot provide window.localStorage.
  *
  */
-export default (): LocalStorage =>
-  window['kuiLocalStorage'] || window.localStorage
+export default (): LocalStorage => window['kuiLocalStorage'] || window.localStorage

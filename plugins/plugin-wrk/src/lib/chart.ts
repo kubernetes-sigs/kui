@@ -43,9 +43,7 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
   }
 
   if (typeof Chart === 'undefined') {
-    injectScript(
-      'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js'
-    )
+    injectScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js')
 
     return setTimeout(() => init(graphics, options), 100)
   }
@@ -230,13 +228,7 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
   /** inject the current theme into the chart canvas */
   const injectTheme = (doUpdate = true) => {
     // pick up the theme choices
-    const {
-      fontFamily,
-      bar,
-      area,
-      borderWidth = 1,
-      chart: chartStyle
-    } = theme()
+    const { fontFamily, bar, area, borderWidth = 1, chart: chartStyle } = theme()
     debug('theme', fontFamily, bar)
 
     if (chartStyle && chartStyle.backgroundColor) {
@@ -274,9 +266,7 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
 
   injectTheme(false)
 
-  const right = document.querySelector(
-    '#sidecar .header-right-bits .custom-header-content'
-  )
+  const right = document.querySelector('#sidecar .header-right-bits .custom-header-content')
   const label = document.createElement('div')
   const max = document.createElement('div')
 

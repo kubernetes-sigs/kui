@@ -26,10 +26,7 @@ const debug = Debug('k8s/view/helm-status')
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const width = (table: any[]): number => {
   return table.reduce((max, { name, attributes }) => {
-    return Math.max(
-      max,
-      name.length + attributes.reduce((sum, { value }) => sum + value.length, 0)
-    )
+    return Math.max(max, name.length + attributes.reduce((sum, { value }) => sum + value.length, 0))
   }, 0)
 }
 
@@ -37,21 +34,12 @@ const width = (table: any[]): number => {
  * Format the output of a helm status command
  *
  */
-export const format = async (
-  command: string,
-  verb: string,
-  entityType: string,
-  options,
-  response: string,
-  stdout
-) => {
+export const format = async (command: string, verb: string, entityType: string, options, response: string, stdout) => {
   debug('command', command)
   debug('verb', verb)
   debug('entityType', entityType)
 
-  const [headerString, resourcesString, notesString] = response.split(
-    /RESOURCES:|(?=NOTES:)/
-  )
+  const [headerString, resourcesString, notesString] = response.split(/RESOURCES:|(?=NOTES:)/)
 
   const namespaceMatch = response.match(/^NAMESPACE:\s+(.*)$/m) || []
   const namespaceFromHelmStatusOutput = namespaceMatch[1]
@@ -80,9 +68,7 @@ export const format = async (
           const firstCol = 'NAME'
           const secondCol = 'AGE'
           const spaces = (nSpaces: number) => new Array(nSpaces).join(' ')
-          const header = `${firstCol}${spaces(
-            secondColIdx - firstCol.length
-          )}${secondCol}`
+          const header = `${firstCol}${spaces(secondColIdx - firstCol.length)}${secondCol}`
           A.splice(1, 0, header)
         }
       }
@@ -117,9 +103,7 @@ export const format = async (
     })
   if (headerString) await stdout(headerString)
 
-  await stdout(
-    Array.isArray(resourcesOut) ? { tables: resourcesOut } : resourcesOut
-  )
+  await stdout(Array.isArray(resourcesOut) ? { tables: resourcesOut } : resourcesOut)
 
   if (notesString) await stdout(notesString)
 

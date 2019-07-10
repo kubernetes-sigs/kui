@@ -24,12 +24,8 @@ const {
 } = require('../../kui/node_modules/@kui-shell/core/core/capabilities') */
 
 const mainPath = require.resolve('../../kui/node_modules/@kui-shell/core')
-const {
-  main: wssMain
-} = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/server')
-const {
-  StdioChannelWebsocketSide
-} = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/stdio-channel')
+const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/server')
+const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/stdio-channel')
 
 let serverIdx = 0
 
@@ -49,11 +45,7 @@ function main(cmdline, env, execOptions, server, port, host) {
     if (wsOpen) {
       const N = serverIdx++
       const { wss } = await wssMain(N, server, port)
-      const child = spawn(
-        'node',
-        [mainPath, 'bash', 'websocket', 'stdio'],
-        options
-      )
+      const child = spawn('node', [mainPath, 'bash', 'websocket', 'stdio'], options)
 
       child.on('error', err => {
         reject(err)
@@ -118,14 +110,7 @@ module.exports = (server, port) => {
           port,
           host: req.headers.host
         }) */
-        const { type, response } = await main(
-          command,
-          process.env,
-          execOptions,
-          server,
-          port,
-          req.headers.host
-        )
+        const { type, response } = await main(command, process.env, execOptions, server, port, req.headers.host)
         if (type !== 'object') {
           res.send(response)
         } else {

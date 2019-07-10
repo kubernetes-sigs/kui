@@ -15,12 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import {
-  cli,
-  expectYAMLSubset,
-  selectors,
-  sidecar
-} from '@kui-shell/core/tests/lib/ui'
+import { cli, expectYAMLSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
   waitForRed,
@@ -42,9 +37,7 @@ describe('electron namespace', function(this: common.ISuite) {
     const getText = () => {
       return this.app.client
         .execute(() => {
-          return document
-            .querySelector('.monaco-editor-wrapper')
-            ['editor'].getValue()
+          return document.querySelector('.monaco-editor-wrapper')['editor'].getValue()
         })
         .then(res => res.value)
     }
@@ -114,9 +107,7 @@ describe('electron namespace', function(this: common.ISuite) {
             `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
             this.app
           )
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-          )
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
@@ -127,13 +118,8 @@ describe('electron namespace', function(this: common.ISuite) {
           .then(cli.expectJustOK)
           .then(sidecar.expectOpen)
           .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
-          .then(() =>
-            this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
-          )
-          .then(
-            () =>
-              `${selectors.SIDECAR} .result-table .entity[data-name="nginx"]`
-          )
+          .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
+          .then(() => `${selectors.SIDECAR} .result-table .entity[data-name="nginx"]`)
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })

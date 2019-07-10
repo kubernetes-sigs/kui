@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Row,
-  Table,
-  MultiTable,
-  isMultiTable
-} from '@kui-shell/core/webapp/models/table'
+import { Row, Table, MultiTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import repl = require('@kui-shell/core/core/repl')
@@ -82,17 +77,10 @@ const addClickHandlers = (table: Table, execOptions): Table => {
  */
 const listContexts = opts =>
   repl
-    .qexec(
-      `kubectl config get-contexts`,
-      undefined,
-      undefined,
-      opts.execOptions
-    )
+    .qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions)
     .then((contexts: Table | MultiTable) =>
       isMultiTable(contexts)
-        ? contexts.tables.map(context =>
-            addClickHandlers(context, opts.execOptions)
-          )
+        ? contexts.tables.map(context => addClickHandlers(context, opts.execOptions))
         : addClickHandlers(contexts, opts.execOptions)
     )
 

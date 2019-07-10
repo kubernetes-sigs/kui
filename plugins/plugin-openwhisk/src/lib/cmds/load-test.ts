@@ -47,9 +47,7 @@ const costFns = {
         ? `No such recent activity of ${D.name}`
         : `The <strong>average</strong> duration of <strong>${D.N}</strong> ${
             D.N === 1 ? 'activation' : 'activations'
-          } ${D.name ? 'of ' + D.name : ''} was <strong>${prettyPrintDuration(
-            D.totalCost / D.N
-          )}</strong>.`
+          } ${D.name ? 'of ' + D.name : ''} was <strong>${prettyPrintDuration(D.totalCost / D.N)}</strong>.`
   }
 }
 
@@ -118,9 +116,9 @@ const formatResultForRepl = (costFn, name: string) => (groups, numErrors) => {
 
   const valid = document.createElement('div')
   result.appendChild(valid)
-  valid.innerText = `Run was ${
-    numErrors === true || numErrors === 0 ? 'valid' : 'INVALID'
-  }${numErrors > 0 ? ' with ' + numErrors + ' errors' : ''}`
+  valid.innerText = `Run was ${numErrors === true || numErrors === 0 ? 'valid' : 'INVALID'}${
+    numErrors > 0 ? ' with ' + numErrors + ' errors' : ''
+  }`
   valid.className = numErrors === 0 ? 'green-text' : 'oops'
 
   const table = document.createElement('div')
@@ -182,23 +180,14 @@ const loadtest = (verb: string) => ({
   parsedOptions,
   execOptions
 }: EvaluatorArgs) => {
-  const pair = parseOptions(
-    argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1),
-    'action'
-  )
+  const pair = parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const options: Record<string, any> = Object.assign(
-    {},
-    parsedOptions,
-    pair.kvOptions
-  )
+  const options: Record<string, any> = Object.assign({}, parsedOptions, pair.kvOptions)
 
   const action = argv[argv.indexOf(verb) + 1]
   const numThreads = options.numThreads || 4
   const numIters = options.numIters || 10
-  const thinkTime = options.hasOwnProperty('thinkTime')
-    ? options.thinkTime
-    : 100
+  const thinkTime = options.hasOwnProperty('thinkTime') ? options.thinkTime : 100
 
   debug('action', action)
   debug('options', options)
@@ -258,9 +247,7 @@ const loadtest = (verb: string) => ({
           }, {})
 
         getClient(execOptions)
-          .actions.invoke(
-            owOpts({ name: action, params: params || {}, blocking: true })
-          )
+          .actions.invoke(owOpts({ name: action, params: params || {}, blocking: true }))
           .then(activation => {
             const duration = activation.end - activation.start
             if (activation.response && activation.response.success) {
@@ -276,10 +263,7 @@ const loadtest = (verb: string) => ({
           })
           .catch(activation => {
             console.error(activation)
-            const duration =
-              activation.end && activation.start
-                ? activation.end - activation.start
-                : 0
+            const duration = activation.end && activation.start ? activation.end - activation.start : 0
             tally.durations.failure.push(duration)
 
             // proceed to the next iter
@@ -294,10 +278,7 @@ const loadtest = (verb: string) => ({
       setTimeout(() => spawn(0), 0)
     }
   }).then(tally => {
-    return formatResultForRepl(costFns.duration, action)(
-      tally.durations,
-      validator && validator(results)
-    )
+    return formatResultForRepl(costFns.duration, action)(tally.durations, validator && validator(results))
   })
 }
 
@@ -309,15 +290,10 @@ export default async (commandTree: CommandRegistrar) => {
       docs: 'Drive load against a selected action'
     }
   })
-  commandTree.synonym(
-    '/wsk/testing/loadtest',
-    loadtest('loadtest'),
-    loadtestCmd,
-    {
-      usage: {
-        command: 'loadtest',
-        docs: 'Drive load against a selected action'
-      }
+  commandTree.synonym('/wsk/testing/loadtest', loadtest('loadtest'), loadtestCmd, {
+    usage: {
+      command: 'loadtest',
+      docs: 'Drive load against a selected action'
     }
-  )
+  })
 }

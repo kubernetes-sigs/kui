@@ -26,12 +26,7 @@
  */
 
 import * as Debug from 'debug'
-import {
-  CommandHandler,
-  CommandRegistrar,
-  EvaluatorArgs,
-  ParsedOptions
-} from '@kui-shell/core/models/command'
+import { CommandHandler, CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { actions } from '../openwhisk-usage'
 import { synonyms } from '../../models/synonyms'
 const debug = Debug('plugins/openwhisk/cmds/actions/invoke')
@@ -52,8 +47,7 @@ const docs = () => ({
  * record. One thing these partial records lack is logs.
  *
  */
-const fetchActivation = partialActivation =>
-  repl.qfexec(`await ${partialActivation.activationId}`)
+const fetchActivation = partialActivation => repl.qfexec(`await ${partialActivation.activationId}`)
 const fetchFromError = error => {
   if (error['statusCode'] === 502) {
     // then this is a action error, display it as an activation failure
@@ -90,15 +84,7 @@ const respond = (options: ParsedOptions) => response => {
  *
  */
 const doInvoke = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
-  if (
-    !opts.argv.find(
-      opt =>
-        opt === '-b' ||
-        opt === '-r' ||
-        opt === '--blocking' ||
-        opt === '--result'
-    )
-  ) {
+  if (!opts.argv.find(opt => opt === '-b' || opt === '-r' || opt === '--blocking' || opt === '--result')) {
     // doInvoke means blocking invoke, so make sure that the argv
     // indicates that we want a blocking invocation
     opts.argv.push('-b')
@@ -111,9 +97,7 @@ const doInvoke = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
   // later, if necessary; it's preserved in the options variable,
   // and the respond method will handle the -r there. hopefully this
   // is good enough [NMM 20170922]
-  opts.argv = opts.argv.filter(
-    _ => _ !== '-r' && _ !== '--result' && _ !== '-br' && _ !== '-rb'
-  )
+  opts.argv = opts.argv.filter(_ => _ !== '-r' && _ !== '--result' && _ !== '-br' && _ !== '-rb')
   // do the invocation, then fetch the full activation record
   // (blocking invokes return incomplete records; no logs)
   return rawInvoke(opts)

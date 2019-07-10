@@ -37,12 +37,7 @@ const readJSON = (projectHome: string, fileName: string): Promise<any> =>
 
         // WARNING: webpack requires that the path prefix be an explicit string :(
         // DO NOT try to be clever here
-        resolve(
-          require('@kui-shell/plugin-tutorials/samples/@tutorials/' +
-            projectName +
-            '/' +
-            fileName)
-        )
+        resolve(require('@kui-shell/plugin-tutorials/samples/@tutorials/' + projectName + '/' + fileName))
       } else {
         debug('reading external', projectHome, fileName)
         resolve(join(projectHome, fileName))
@@ -64,14 +59,13 @@ export const readProject = async (projectHome: string) => {
     return readProject(dirname(projectHome))
   }
 
-  return Promise.all([
-    readJSON(projectHome, 'package.json'),
-    readJSON(projectHome, 'tutorial.json')
-  ]).then(([config, tutorial]) => {
-    return {
-      config: Object.assign({}, { projectName: config.name }, config), // for configs that don't define projectName, use the name field
-      tutorial,
-      projectHome
+  return Promise.all([readJSON(projectHome, 'package.json'), readJSON(projectHome, 'tutorial.json')]).then(
+    ([config, tutorial]) => {
+      return {
+        config: Object.assign({}, { projectName: config.name }, config), // for configs that don't define projectName, use the name field
+        tutorial,
+        projectHome
+      }
     }
-  })
+  )
 }

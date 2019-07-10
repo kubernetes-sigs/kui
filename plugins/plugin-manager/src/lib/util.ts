@@ -34,9 +34,7 @@ export const success = (operation, availableMessage, updatedCommands) => {
   if (operation !== false) {
     const installed = operation ? `The plugin has been ${operation}.` : ''
 
-    msg.appendChild(
-      document.createTextNode(isHeadless() ? colors.blue(installed) : installed)
-    )
+    msg.appendChild(document.createTextNode(isHeadless() ? colors.blue(installed) : installed))
     if (!isHeadless()) {
       msg.appendChild(document.createTextNode(' Please '))
       msg.appendChild(clicky)

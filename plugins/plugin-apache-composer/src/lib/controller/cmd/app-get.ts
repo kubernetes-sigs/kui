@@ -54,9 +54,7 @@ export default async (commandTree: CommandRegistrar) => {
           return Promise.reject(new Error())
         }
         debug('rendering action get')
-        return actionGet(opts).then(response =>
-          view.visualizeComposition(opts.tab, response, opts.execOptions)
-        )
+        return actionGet(opts).then(response => view.visualizeComposition(opts.tab, response, opts.execOptions))
       },
       {}
     )

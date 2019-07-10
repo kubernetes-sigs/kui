@@ -25,9 +25,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     `/wsk/app/delete`,
     ({ command }) => {
-      return repl
-        .qfexec(command.replace('app', 'action'))
-        .then(result => view.formatDeleteResult(result))
+      return repl.qfexec(command.replace('app', 'action')).then(result => view.formatDeleteResult(result))
     },
     { usage: appDelete }
   )

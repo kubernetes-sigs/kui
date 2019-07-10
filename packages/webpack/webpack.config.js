@@ -17,15 +17,11 @@
 const fs = require('fs')
 const path = require('path')
 
-const isWatching = !!process.argv.find(
-  _ => /--watch/.test(_) || /webpack-dev-server/.test(_)
-)
+const isWatching = !!process.argv.find(_ => /--watch/.test(_) || /webpack-dev-server/.test(_))
 const webCompress = process.env.WEB_COMPRESS
 const noCompression = webCompress === 'none' || isWatching
 const useGzip = webCompress === 'gzip'
-const CompressionPlugin =
-  !noCompression &&
-  require(useGzip ? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
+const CompressionPlugin = !noCompression && require(useGzip ? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
 
 console.log('watching?', isWatching)
 console.log('explicit compression option?', webCompress || '<not set>')
@@ -42,15 +38,13 @@ if (isMonorepo) {
 // const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
-const stageDir =
-  process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd()
+const stageDir = process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd()
 console.log('stageDir', stageDir)
 
 /** point webpack to the output directory */
 const buildDir =
   process.env.KUI_BUILDDIR ||
-  (process.env.KUI_MONO_HOME &&
-    path.join(process.env.KUI_MONO_HOME, 'clients/default/dist/webpack')) ||
+  (process.env.KUI_MONO_HOME && path.join(process.env.KUI_MONO_HOME, 'clients/default/dist/webpack')) ||
   path.join(stageDir, 'dist/webpack')
 console.log('buildDir', buildDir)
 
@@ -62,10 +56,7 @@ console.log('builderHome', builderHome)
 
 if (!process.env.CLIENT_HOME) {
   if (process.env.KUI_MONO_HOME) {
-    process.env.CLIENT_HOME = path.join(
-      process.env.KUI_MONO_HOME,
-      'clients/default'
-    )
+    process.env.CLIENT_HOME = path.join(process.env.KUI_MONO_HOME, 'clients/default')
   } else {
     process.env.CLIENT_HOME = stageDir
   }
@@ -80,10 +71,7 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * an example of this.
  *
  */
-const main = path.join(
-  stageDir,
-  'node_modules/@kui-shell/core/webapp/bootstrap/webpack'
-)
+const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/webpack')
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
@@ -194,13 +182,7 @@ module.exports = {
     overlay: { errors: true },
     watchOptions: {
       poll: 1000,
-      ignored: [
-        '**/*.d.ts',
-        'node_modules',
-        '**/packages/**/src/*',
-        '**/plugins/**/src/*',
-        '**/clients/default/**'
-      ]
+      ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']
     },
     contentBase: buildDir,
     port: process.env.KUI_PORT || 9080

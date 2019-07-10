@@ -25,9 +25,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 describe('auth tests', function(this: common.ISuite) {
   before(openwhisk.before(this))
@@ -46,8 +44,7 @@ describe('auth tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing('foo')))
 
   // list should show only foo
-  it(`should find the foo action with "list"`, () =>
-    cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
+  it(`should find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
 
   it(`should show ${ns1} for wsk namespace current`, () =>
     cli.do('wsk namespace current', this.app).then(cli.expectOKWithString(ns1)))
@@ -56,16 +53,13 @@ describe('auth tests', function(this: common.ISuite) {
   it(`should install a namespace key for ${ns2}`, () =>
     cli
       .do(`wsk auth add ${process.env.AUTH2}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })
-      ))
+      .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })))
 
   it(`should show ${ns2} for wsk namespace current`, () =>
     cli.do('wsk namespace current', this.app).then(cli.expectOKWithString(ns2)))
 
   // list should show no actions
-  it(`should NOT find the foo action with "list"`, () =>
-    cli.do('list', this.app).then(cli.expectJustOK))
+  it(`should NOT find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectJustOK))
 
   // create the second action
   it('should create an action foo2', () =>
@@ -76,50 +70,37 @@ describe('auth tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing('foo2')))
 
   // list should show only foo2
-  it(`should find the foo2 action with "list"`, () =>
-    cli.do('list', this.app).then(cli.expectOKWithOnly('foo2')))
+  it(`should find the foo2 action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo2')))
 
   // switch to first namespace
   it('should switch to the first namespace, using the CLI switch command', () =>
     cli
       .do(`wsk auth switch ${ns1}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns1}` })
-      ))
+      .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns1}` })))
 
   // list should show only foo
-  it(`should find the foo action with "list"`, () =>
-    cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
+  it(`should find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
 
   // switch back to second namespace
   it('should switch to the second namespace, using the CLI switch command', () =>
     cli
       .do(`wsk auth switch ${ns2}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })
-      ))
+      .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })))
 
   // list should show only foo2
-  it(`should find the foo2 action with "list"`, () =>
-    cli.do('list', this.app).then(cli.expectOKWithOnly('foo2')))
+  it(`should find the foo2 action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo2')))
 
   // wsk auth list should so both installed namespaces
   ui.aliases.list.forEach(cmd => {
-    const checkMarkCell = (ns: string) =>
-      `.entity.namespaces[data-name="${ns}"] .entity-name.clickable`
-    const nameCell = (ns: string) =>
-      `.entity.namespaces[data-name="${ns}"] > div > .clickable`
+    const checkMarkCell = (ns: string) => `.entity.namespaces[data-name="${ns}"] .entity-name.clickable`
+    const nameCell = (ns: string) => `.entity.namespaces[data-name="${ns}"] > div > .clickable`
 
     const ok = (ns: string) => {
       it(`should list namespace ${ns} and find checkmark cell with "wsk auth ${cmd}"`, async () => {
-        return cli
-          .do(`wsk auth ${cmd}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: checkMarkCell(ns) }))
+        return cli.do(`wsk auth ${cmd}`, this.app).then(cli.expectOKWithCustom({ selector: checkMarkCell(ns) }))
       })
       it(`should list namespace ${ns} and find name cell with "wsk auth ${cmd}"`, async () => {
-        return cli
-          .do(`wsk auth ${cmd}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: nameCell(ns) }))
+        return cli.do(`wsk auth ${cmd}`, this.app).then(cli.expectOKWithCustom({ selector: nameCell(ns) }))
       })
     }
 
@@ -131,58 +112,44 @@ describe('auth tests', function(this: common.ISuite) {
   it('should switch to the first namespace, using the CLI wsk auth add command', () =>
     cli
       .do(`wsk auth add ${process.env.AUTH}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns1}` })
-      ))
+      .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns1}` })))
 
   // switch to the second namespace but don't save it
   it("should switch to the second namespace but don't save it locally, using the CLI wsk auth switch --no-save command", () =>
     cli
       .do(`wsk auth switch ${ns2} --no-save`, this.app)
-      .then(
-        cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })
-      ))
+      .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })))
 
   // reload the app to check if namespace changes
   it('should reload the app', reload)
 
   // check the current namespace is not changed by namespace switch --no-save
   it('should see the first namespace', () =>
-    cli
-      .do('namespace current', this.app)
-      .then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
+    cli.do('namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
 
   // switch to the second namespace and save it
   it('should switch to the second namespace and save it locally, using the CLI wsk auth switch --save command', () =>
     cli
       .do(`wsk auth switch ${ns2} --save`, this.app)
-      .then(
-        cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })
-      ))
+      .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })))
 
   // reload the app to check if namespace changes
   it('should reload the app', reload)
 
   // check the current namespace is changed by namespace switch --save
   it('should see the second namespace', () =>
-    cli
-      .do('namespace current', this.app)
-      .then(cli.expectOKWithCustom({ selector: '', expect: `${ns2}` })))
+    cli.do('namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns2}` })))
 
   // switch to the first namespace and save it
   it('should switch to the first namespace and save it locally, using the CLI wsk auth switch command', () =>
     cli
       .do(`wsk auth switch ${ns1}`, this.app)
-      .then(
-        cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns1}` })
-      ))
+      .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns1}` })))
 
   // reload the app to check if namespace changes
   it('should reload the app', reload)
 
   // check the current namespace is changed by namespace switch
   it('should see the first namespace', () =>
-    cli
-      .do('namespace current', this.app)
-      .then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
+    cli.do('namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
 })

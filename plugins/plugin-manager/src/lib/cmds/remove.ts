@@ -45,13 +45,7 @@ const doRemove = ({ argvNoOptions }: EvaluatorArgs) => {
 
   return remove(pluginHome)
     .then(() => compile(rootDir, true, true)) // first true: externalOnly; second true: we want a reverse diff
-    .then(removedCommands =>
-      success(
-        'removed',
-        'will no be longer available, after reload',
-        removedCommands
-      )
-    )
+    .then(removedCommands => success('removed', 'will no be longer available, after reload', removedCommands))
 }
 
 module.exports = (commandTree: CommandRegistrar) => {

@@ -39,13 +39,7 @@ import createdOn from '../util/created-on'
 
 import { Resource, KubeResource } from '../model/resource'
 import { FinalState } from '../model/states'
-import {
-  Table,
-  MultiTable,
-  formatWatchableTable,
-  isTable,
-  isMultiTable
-} from '@kui-shell/core/webapp/models/table'
+import { Table, MultiTable, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { redactJSON, redactYAML } from '../view/redact'
@@ -93,19 +87,11 @@ const parseYAML = async (str: string): Promise<KubeResource> => {
  *
  */
 type CleanupFunction = () => void
-const possiblyExportCredentials = (
-  execOptions: KubeExecOptions,
-  env: NodeJS.ProcessEnv
-): Promise<CleanupFunction> =>
+const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.ProcessEnv): Promise<CleanupFunction> =>
   new Promise(async (resolve, reject) => {
     // debug('possiblyExportCredentials', process.env.KUBECONFIG, execOptions && execOptions.credentials)
 
-    if (
-      !process.env.KUBECONFIG &&
-      execOptions &&
-      execOptions.credentials &&
-      execOptions.credentials.k8s
-    ) {
+    if (!process.env.KUBECONFIG && execOptions && execOptions.credentials && execOptions.credentials.k8s) {
       debug('exporting kubernetes credentials')
       const { dir: tmpDir } = await import('tmp')
       tmpDir(async (err, path) => {
@@ -119,10 +105,7 @@ const possiblyExportCredentials = (
           try {
             const kubeconfigFilepath = join(path, 'kubeconfig.yml')
 
-            await Promise.all([
-              writeFile(kubeconfigFilepath, kubeconfig),
-              writeFile(join(path, cafile), ca)
-            ])
+            await Promise.all([writeFile(kubeconfigFilepath, kubeconfig), writeFile(join(path, cafile), ca)])
 
             env.KUBECONFIG = kubeconfigFilepath
             resolve(() => remove(path))
@@ -145,12 +128,7 @@ const possiblyExportCredentials = (
  * @param output the optional output type, e.g. kubectl get pods -o <json>
  *
  */
-const shouldWeDisplayAsTable = (
-  verb: string,
-  entityType: string,
-  output: string,
-  options: ParsedOptions
-) => {
+const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options: ParsedOptions) => {
   const hasTableVerb =
     verb === 'ls' ||
     verb === 'search' ||
@@ -163,10 +141,7 @@ const shouldWeDisplayAsTable = (
     !options.h &&
     verb !== 'describe' &&
     verb !== 'install' &&
-    (!output ||
-      output === 'wide' ||
-      output === 'name' ||
-      output.match(/^custom-columns/)) &&
+    (!output || output === 'wide' || output === 'name' || output.match(/^custom-columns/)) &&
     hasTableVerb
   )
 }
@@ -201,9 +176,7 @@ const table = (
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
   // whitespace
-  const preTables = preprocessTable(
-    decodedResult.split(/^(?=LAST SEEN|NAMESPACE|NAME\s+)/m)
-  )
+  const preTables = preprocessTable(decodedResult.split(/^(?=LAST SEEN|NAMESPACE|NAME\s+)/m))
 
   if (preTables && preTables.length === 1 && preTables[0].length === 0) {
     // degenerate case of "really not a table"
@@ -259,12 +232,7 @@ const prepareUsage = async (command: string): Promise<UsageModel> => {
   debug('prepareUsage', command)
 
   try {
-    const usage: UsageError = await repl.qexec(
-      `${command} -h`,
-      undefined,
-      undefined,
-      { failWithUsage: true }
-    )
+    const usage: UsageError = await repl.qexec(`${command} -h`, undefined, undefined, { failWithUsage: true })
     return usage.getUsageModel()
   } catch (err) {
     console.error('Error preparing usage')
@@ -302,24 +270,13 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     debug('exec', command, isKube)
 
     const verb = argv[1]
-    const entityType =
-      command === 'helm'
-        ? command
-        : verb && verb.match(/log(s)?/)
-        ? verb
-        : argv[2]
-    const entity =
-      command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
+    const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
+    const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
 
     if (!isHeadless() && isKube && verb === 'edit') {
       debug('redirecting kubectl edit to shell')
       repl
-        .qexec(
-          `! ${rawCommand}`,
-          block,
-          undefined,
-          Object.assign({}, execOptions, { createOutputStream })
-        )
+        .qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
         .then(resolveBase)
         .catch(reject)
       return
@@ -341,15 +298,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       (!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
       isKube &&
-      ((verb === 'describe' ||
-        (verb === 'get' && (output === 'yaml' || output === 'json'))) &&
+      ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) &&
         (execOptions.type !== ExecType.Nested || execOptions.delegationOk))
     ) {
-      debug(
-        'delegating to describe',
-        execOptions.delegationOk,
-        ExecType[execOptions.type].toString()
-      )
+      debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
       const describeImpl = (await import('./describe')).default
       return describeImpl(opts)
         .then(resolveBase)
@@ -364,13 +316,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     const statusCommand = isKube ? 'k' : command
 
     // for "raw" execution, force json output
-    if (
-      isKube &&
-      verb === 'get' &&
-      output === 'json' &&
-      execOptions.raw &&
-      !options.output
-    ) {
+    if (isKube && verb === 'get' && output === 'json' && execOptions.raw && !options.output) {
       debug('forcing json output for raw mode execution', options)
       rawArgv.push('-o')
       rawArgv.push('json')
@@ -401,13 +347,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     // strip trailing e.g. .app
     const entityTypeWithoutTrailingSuffix =
-      entityType &&
-      entityType.replace(/\..*$/, '').replace(/-[a-z0-9]{9}-[a-z0-9]{5}$/, '')
+      entityType && entityType.replace(/\..*$/, '').replace(/-[a-z0-9]{9}-[a-z0-9]{5}$/, '')
 
     // what we want to display for the entity kind
-    const entityTypeForDisplay =
-      abbreviations[entityTypeWithoutTrailingSuffix] ||
-      entityTypeWithoutTrailingSuffix
+    const entityTypeForDisplay = abbreviations[entityTypeWithoutTrailingSuffix] || entityTypeWithoutTrailingSuffix
 
     const cmdlineForDisplay = argv.slice(1).join(' ')
 
@@ -452,10 +395,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     debug('argvWithFileReplacements', argvWithFileReplacements)
 
     const env = Object.assign({}, process.env)
-    const cleanupCallback = await possiblyExportCredentials(
-      execOptions as KubeExecOptions,
-      env
-    )
+    const cleanupCallback = await possiblyExportCredentials(execOptions as KubeExecOptions, env)
     const resolve = async val => {
       await cleanupCallback()
       resolveBase(val)
@@ -468,8 +408,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     debug('kubeconfig', env.KUBECONFIG)
 
-    const commandForSpawn =
-      command === 'helm' ? await pickHelmClient(env) : command
+    const commandForSpawn = command === 'helm' ? await pickHelmClient(env) : command
     const child = spawn(commandForSpawn, argvWithFileReplacements, {
       env,
       shell: true
@@ -479,8 +418,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     const hasFileArg = file !== undefined
 
     const isProgrammatic = file && file.charAt(0) === '!'
-    const programmaticResource =
-      isProgrammatic && execOptions.parameters[file.slice(1)]
+    const programmaticResource = isProgrammatic && execOptions.parameters[file.slice(1)]
     if (isProgrammatic) {
       const param = file.slice(1)
       debug('writing to stdin', param, programmaticResource)
@@ -501,23 +439,12 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     const status = async (command: string, code?: number, stderr?: string) => {
       if (hasFileArg || verb === 'delete' || verb === 'create') {
         if (!execOptions.noStatus) {
-          const expectedState =
-            verb === 'create' || verb === 'apply'
-              ? FinalState.OnlineLike
-              : FinalState.OfflineLike
+          const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
           const finalState = `--final-state ${expectedState.toString()}`
           const resourceNamespace =
-            options.n || options.namespace
-              ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
-              : ''
+            options.n || options.namespace ? `-n ${repl.encodeComponent(options.n || options.namespace)}` : ''
 
-          debug(
-            'about to get status',
-            file,
-            entityType,
-            entity,
-            resourceNamespace
-          )
+          debug('about to get status', file, entityType, entity, resourceNamespace)
           return repl
             .qexec(
               `${statusCommand} status ${file || entityType} ${entity ||
@@ -527,14 +454,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
               { parameters: execOptions.parameters }
             )
             .catch(err => {
-              if (
-                err.code === 404 &&
-                expectedState === FinalState.OfflineLike
-              ) {
+              if (err.code === 404 && expectedState === FinalState.OfflineLike) {
                 // that's ok!
-                debug(
-                  'resource not found after status check, but that is ok because that is what we wanted'
-                )
+                debug('resource not found after status check, but that is ok because that is what we wanted')
                 return out
               } else {
                 throw err
@@ -571,10 +493,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       // whereas kubectl config -h results in an exit code of 0,
       // but we'd like to display them the same
       const originalCode = code
-      const isUsage =
-        code !== 0 &&
-        ((verb === 'config' && !entityType && !entity) ||
-          /Error: unknown.*flag/i.test(err))
+      const isUsage = code !== 0 && ((verb === 'config' && !entityType && !entity) || /Error: unknown.*flag/i.test(err))
       if (isUsage) {
         code = 0
         out = err
@@ -589,9 +508,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         const message = err
         const fileNotFound = message.match(/error: the path/)
         const codeForREPL =
-          noResources ||
-          message.match(/not found/i) ||
-          message.match(/doesn't have/i)
+          noResources || message.match(/not found/i) || message.match(/doesn't have/i)
             ? 404
             : message.match(/already exists/i)
             ? 409
@@ -617,11 +534,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         }
 
         if (codeForREPL === 404 || codeForREPL === 409 || codeForREPL === 412) {
-          if (
-            codeForREPL === 404 &&
-            verb === 'get' &&
-            (options.w || options.watch)
-          ) {
+          if (codeForREPL === 404 && verb === 'get' && (options.w || options.watch)) {
             // NOTE(5.30.2019): for now, we only support watchable table, so we have to return an empty table here
             debug('return an empty watch table')
             return resolve(
@@ -636,10 +549,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           error.code = codeForREPL
           debug('rejecting without usage', codeForREPL, error)
           reject(error)
-        } else if (
-          (verb === 'create' || verb === 'apply' || verb === 'delete') &&
-          hasFileArg
-        ) {
+        } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && hasFileArg) {
           debug('fetching status after error')
           status(command, codeForREPL, err)
             .then(resolve)
@@ -649,10 +559,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         }
       } else if (
         execOptions.raw ||
-        (isHeadless() &&
-          !output &&
-          execOptions.type === ExecType.TopLevel &&
-          !execOptions.isProxied)
+        (isHeadless() && !output && execOptions.type === ExecType.TopLevel && !execOptions.isProxied)
       ) {
         //
         // caller asked for the raw output
@@ -694,11 +601,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
         // debug('structured output', result)
 
-        if (
-          isHeadless() &&
-          execOptions.type === ExecType.TopLevel &&
-          !execOptions.isProxied
-        ) {
+        if (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied) {
           debug('directing resolving', isHeadless())
           return resolve(result)
         }
@@ -707,10 +610,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           {
             mode: 'result',
             direct: rawCommand,
-            label:
-              output === 'json' || output === 'yaml'
-                ? output.toUpperCase()
-                : output,
+            label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
             defaultMode: true
           }
         ]
@@ -758,33 +658,18 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         const content = result
 
         // some resources have a notion of duration
-        const startTime =
-          yaml &&
-          yaml.status &&
-          yaml.status.startTime &&
-          new Date(yaml.status.startTime)
-        const endTime =
-          yaml &&
-          yaml.status &&
-          yaml.status.completionTime &&
-          new Date(yaml.status.completionTime)
-        const duration =
-          startTime && endTime && endTime.getTime() - startTime.getTime()
+        const startTime = yaml && yaml.status && yaml.status.startTime && new Date(yaml.status.startTime)
+        const endTime = yaml && yaml.status && yaml.status.completionTime && new Date(yaml.status.completionTime)
+        const duration = startTime && endTime && endTime.getTime() - startTime.getTime()
 
         // some resources have a notion of version
-        const version =
-          yaml &&
-          yaml.metadata &&
-          yaml.metadata.labels &&
-          yaml.metadata.labels.version
+        const version = yaml && yaml.metadata && yaml.metadata.labels && yaml.metadata.labels.version
 
         const record = {
           type: 'custom',
           isEntity: true,
           name: entity || verb,
-          packageName:
-            (yaml && yaml.metadata && yaml.metadata.namespace) ||
-            cmdlineForDisplay,
+          packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || cmdlineForDisplay,
           namespace: options.namespace || options.n,
           duration,
           version,
@@ -809,10 +694,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           .qexec(`k status deploy "${entity}" -n "${namespace}"`)
           .then(resolve)
           .catch(reject)
-      } else if (
-        (hasFileArg || (isKube && entity)) &&
-        (verb === 'create' || verb === 'apply' || verb === 'delete')
-      ) {
+      } else if ((hasFileArg || (isKube && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
         //
         // then this was a create or delete from file; show the status of the operation
         //
@@ -822,16 +704,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           .catch(reject)
       } else if (formatters[command] && formatters[command][verb]) {
         debug('using custom formatter')
-        resolve(
-          formatters[command][verb].format(
-            command,
-            verb,
-            entityType,
-            options,
-            out,
-            opts.createOutputStream()
-          )
-        )
+        resolve(formatters[command][verb].format(command, verb, entityType, options, out, opts.createOutputStream()))
       } else if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
         //
         // tabular output
@@ -848,10 +721,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           execOptions
         )
 
-        if (
-          (options.watch || options.w) &&
-          (isTable(tableModel) || isMultiTable(tableModel))
-        ) {
+        if ((options.watch || options.w) && (isTable(tableModel) || isMultiTable(tableModel))) {
           resolve(
             formatWatchableTable(tableModel, {
               refreshCommand: rawCommand.replace(/--watch|-w/g, ''),
@@ -882,9 +752,7 @@ const helm = executeLocally('helm')
  * Delegate 'k8s <verb>' to 'kubectl verb'
  *
  */
-const dispatchViaDelegationTo = (delegate: CommandHandler) => (
-  opts: EvaluatorArgs
-) => {
+const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: EvaluatorArgs) => {
   if (opts.argv[0] === 'k8s') {
     opts.argv[0] = 'kubectl'
     opts.argvNoOptions[0] = 'kubectl'
@@ -932,16 +800,7 @@ export default async (commandTree: CommandRegistrar) => {
       const command = parsedOptions.command || 'kubectl'
       const verb = parsedOptions.verb || 'get'
       const entityType = parsedOptions.entityType || 'pod'
-      const tableModel = table(
-        out,
-        '',
-        command,
-        verb,
-        command === 'helm' ? '' : entityType,
-        undefined,
-        {},
-        execOptions
-      )
+      const tableModel = table(out, '', command, verb, command === 'helm' ? '' : entityType, undefined, {}, execOptions)
       return tableModel
     },
     { noAuthOk: true }
@@ -961,15 +820,11 @@ export default async (commandTree: CommandRegistrar) => {
   ]
   await Promise.all(
     shorthands.map(verb => {
-      return commandTree.listen(
-        `/k8s/${verb}`,
-        dispatchViaDelegationTo(kubectl),
-        {
-          usage: usage('kubectl'),
-          requiresLocal: true,
-          noAuthOk: ['openwhisk']
-        }
-      )
+      return commandTree.listen(`/k8s/${verb}`, dispatchViaDelegationTo(kubectl), {
+        usage: usage('kubectl'),
+        requiresLocal: true,
+        noAuthOk: ['openwhisk']
+      })
     })
   )
 }

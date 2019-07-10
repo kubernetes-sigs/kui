@@ -52,22 +52,12 @@ export const formatSessionResponse = activation => {
 }
 
 export const formatCompositionEntity = execOptions => response => {
-  return isHeadless()
-    ? response
-    : repl.qfexec(
-        `app get "${response.name}"`,
-        undefined,
-        undefined,
-        execOptions
-      )
+  return isHeadless() ? response : repl.qfexec(`app get "${response.name}"`, undefined, undefined, execOptions)
 }
 
 export const formatCompositionResult = (result, options) => {
   if (options.result || options.r) return result
-  else
-    return isHeadless()
-      ? result.response.result
-      : repl.qfexec(`activation get ${result.activationId}`)
+  else return isHeadless() ? result.response.result : repl.qfexec(`activation get ${result.activationId}`)
 }
 
 export const formatDeleteResult = response => {
@@ -77,11 +67,7 @@ export const formatDeleteResult = response => {
 
 export const formatSessionGet = response => {
   debug('session get response', response)
-  if (
-    response &&
-    response.annotations &&
-    response.annotations.find(({ key, value }) => key === 'conductor' && value)
-  ) {
+  if (response && response.annotations && response.annotations.find(({ key, value }) => key === 'conductor' && value)) {
     debug('activation is session')
     return formatSessionResponse(response)
   } else {

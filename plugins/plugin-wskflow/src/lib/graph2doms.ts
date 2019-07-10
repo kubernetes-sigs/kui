@@ -58,16 +58,12 @@ export default function graph2doms(
     }
   } = {}
 ) {
-  const maxLabelLength: number =
-    (JSONgraph.properties && JSONgraph.properties.maxLabelLength) ||
-    defaultMaxLabelLength
-  const defaultFontSize: string =
-    (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
+  const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
+  const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 
   const zoom = d3.behavior.zoom().on('zoom', redraw) // eslint-disable-line @typescript-eslint/no-use-before-define
 
-  const containerElement: HTMLElement =
-    ifReuseContainer || $(`<div id="${containerId}"></div>`)
+  const containerElement: HTMLElement = ifReuseContainer || $(`<div id="${containerId}"></div>`)
   const wskflowContainer: HTMLElement = $('<div id="wskflowContainer"></div>')
   let enterClickMode = false
 
@@ -172,9 +168,7 @@ export default function graph2doms(
 
   if (!$('#qtip')[0]) {
     // add qtip to the document
-    $(document.body).append(
-      "<div id='qtip'><span id='qtipArrow'>&#9668</span><div id='qtipContent'></div></div>"
-    )
+    $(document.body).append("<div id='qtip'><span id='qtipArrow'>&#9668</span><div id='qtipContent'></div></div>")
   }
 
   if (activations) {
@@ -323,17 +317,10 @@ export default function graph2doms(
     const svgns = 'http://www.w3.org/2000/svg'
     node
       .append(d => {
-        return document.createElementNS(
-          svgns,
-          d.properties && d.properties.kind === 'trigger' ? 'polygon' : 'rect'
-        )
+        return document.createElementNS(svgns, d.properties && d.properties.kind === 'trigger' ? 'polygon' : 'rect')
       })
       .attr('class', d => {
-        return (
-          'atom' +
-          (d.type === 'action' || d.onclick ? ' clickable' : '') +
-          (d.onclick ? ' has-onclick' : '')
-        )
+        return 'atom' + (d.type === 'action' || d.onclick ? ' clickable' : '') + (d.onclick ? ' has-onclick' : '')
       })
       .attr('points', d => {
         if (d.properties && d.properties.kind === 'trigger') {
@@ -381,18 +368,11 @@ export default function graph2doms(
         let qtipPre = false
 
         if (activations) {
-          if (
-            d.children === undefined &&
-            d.visited &&
-            $('#actList').css('display') !== 'block'
-          ) {
+          if (d.children === undefined && d.visited && $('#actList').css('display') !== 'block') {
             if (d.type === 'action') {
               // first, describe # activations if # > 1
               if (d.visited.length > 1) {
-                qtipText +=
-                  "<div style='padding-bottom:2px;'>" +
-                  activations.length +
-                  ' activations</div>'
+                qtipText += "<div style='padding-bottom:2px;'>" + activations.length + ' activations</div>'
               }
 
               let date
@@ -402,10 +382,7 @@ export default function graph2doms(
                 const start = new Date(a.start)
                 let timeString = ''
 
-                if (
-                  date === undefined ||
-                  date !== start.getMonth() + 1 + '/' + start.getDate()
-                ) {
+                if (date === undefined || date !== start.getMonth() + 1 + '/' + start.getDate()) {
                   date = start.getMonth() + 1 + '/' + start.getDate()
                   timeString += date + ' '
                 }
@@ -427,35 +404,24 @@ export default function graph2doms(
                   c = wfColorAct.failed
                 }
                 qtipText +=
-                  "<span style='color:" +
-                  c +
-                  "'>" +
-                  timeString +
-                  '</span> (' +
-                  duration +
-                  unit +
-                  ')<break></break>'
+                  "<span style='color:" + c + "'>" + timeString + '</span> (' + duration + unit + ')<break></break>'
                 let result = JSON.stringify(a.response.result)
                 if (result.length > 40) {
                   result = result.substring(0, 40) + '... '
                 }
                 qtipText += result
 
-                qtipText =
-                  "<div style='padding-bottom:2px;'>" + qtipText + '</div>'
+                qtipText = "<div style='padding-bottom:2px;'>" + qtipText + '</div>'
               })
               // else if(d.type == "Exit" || d.type == 'Entry'){
             } else if (d.type === 'Exit') {
               const act = activations[d.visited[0]]
               const start = new Date(act.start)
-              let timeString =
-                start.getMonth() + 1 + '/' + start.getDate() + ' '
+              let timeString = start.getMonth() + 1 + '/' + start.getDate() + ' '
               timeString += start.toLocaleTimeString(undefined, {
                 hour12: false
               })
-              let result = act.response.result
-                ? JSON.stringify(act.response.result, undefined, 4)
-                : ''
+              let result = act.response.result ? JSON.stringify(act.response.result, undefined, 4) : ''
               if (result.length > 200) {
                 result = result.substring(0, 200) + '\u2026'
               } // horizontal ellipsis
@@ -468,8 +434,7 @@ export default function graph2doms(
             if (d.type === 'try') {
               qtipText = "<span class='qtip-prefix red-text'>Try Block</span>"
             } else if (d.type === 'handler') {
-              qtipText =
-                "<span class='qtip-prefix red-text'>Handler Block</span>"
+              qtipText = "<span class='qtip-prefix red-text'>Handler Block</span>"
             } else if (d.type === 'try_catch') {
               const label = d.label || d.tooltip || ''
               if (label.indexOf(':') !== -1) {
@@ -491,14 +456,10 @@ export default function graph2doms(
                 qtipText = `<span class='qtip-prefix'>${label}</span>`
               }
             }
-          } else if (
-            d.type === 'action' &&
-            $('#' + d.id).attr('data-deployed') === 'not-deployed'
-          ) {
+          } else if (d.type === 'action' && $('#' + d.id).attr('data-deployed') === 'not-deployed') {
             qtipText = `<span class='qtip-prefix red-text'>Warning |</span> This action is not deployed`
           } else if (d.type === 'action' || d.type === 'function') {
-            const typeForDisplay =
-              d.type === 'function' ? 'Inline Function' : 'Action'
+            const typeForDisplay = d.type === 'function' ? 'Inline Function' : 'Action'
             if (d.type === 'function') {
               qtipPre = true // use white-space: pre for function body
             }
@@ -507,24 +468,15 @@ export default function graph2doms(
             } else {
               qtipText = `<span class='qtip-prefix ${
                 d.type
-              }' style="padding-right:5px; ">${typeForDisplay} |</span> ${d.label ||
-                d.tooltip ||
-                d.prettyCode}`
+              }' style="padding-right:5px; ">${typeForDisplay} |</span> ${d.label || d.tooltip || d.prettyCode}`
             }
           } else if (d.type === 'retain') {
             let edgeId
             const isOrigin = d.id.indexOf('__origin') > -1
-            const expectedSrc = isOrigin
-              ? d.id
-              : d.id.replace(/__terminus/, '__origin')
-            const expectedTerminus = isOrigin
-              ? d.id.replace(/__origin/, '__terminus')
-              : d.id
+            const expectedSrc = isOrigin ? d.id : d.id.replace(/__terminus/, '__origin')
+            const expectedTerminus = isOrigin ? d.id.replace(/__origin/, '__terminus') : d.id
             for (let i = 0; i < links.length; i++) {
-              if (
-                links[i].source === expectedSrc &&
-                links[i].target === expectedTerminus
-              ) {
+              if (links[i].source === expectedSrc && links[i].target === expectedTerminus) {
                 edgeId = links[i].id
                 break
               }
@@ -572,8 +524,7 @@ export default function graph2doms(
           //
           qtipText = `<div class='qtip-prefix ${
             d.tooltipColor ? 'color-base' + d.tooltipColor : 'function'
-          }' style="margin-bottom:1ex; padding-right:5px; ">${d.tooltipHeader ||
-            d.type}</div>${d.tooltip}`
+          }' style="margin-bottom:1ex; padding-right:5px; ">${d.tooltipHeader || d.type}</div>${d.tooltip}`
         }
 
         if (qtipText && qtipText.length !== 0) {
@@ -593,12 +544,7 @@ export default function graph2doms(
             const scaleString = $('#wskflowContainer').css('transform')
             let scale
             try {
-              scale = parseFloat(
-                scaleString.substring(
-                  'matrix('.length,
-                  scaleString.indexOf(',')
-                )
-              )
+              scale = parseFloat(scaleString.substring('matrix('.length, scaleString.indexOf(',')))
             } catch (e) {
               console.log(e)
               console.log(scaleString)
@@ -674,8 +620,7 @@ export default function graph2doms(
                 )(d3.event) // pass along the raw dom event
               } else {
                 // let act = fsm.States[d.id].act;
-                let actListContent =
-                  "<div style='padding-bottom:5px'>Click on an activation here to view details</div>"
+                let actListContent = "<div style='padding-bottom:5px'>Click on an activation here to view details</div>"
                 actListContent += `<div>${d.label}<break</break>${d.visited.length} activations, ordered by start time: </div>`
                 actListContent += "<ol style='padding-left: 15px;'>"
                 let date
@@ -685,10 +630,7 @@ export default function graph2doms(
                   const start = new Date(a.start)
                   let timeString = ''
                   let lis = ''
-                  if (
-                    date === undefined ||
-                    date !== start.getMonth() + 1 + '/' + start.getDate()
-                  ) {
+                  if (date === undefined || date !== start.getMonth() + 1 + '/' + start.getDate()) {
                     date = start.getMonth() + 1 + '/' + start.getDate()
                     timeString += date + ' '
                   }
@@ -713,9 +655,7 @@ export default function graph2doms(
                   lis += `<span class='actItem' style='color:${c}; text-decoration:underline; cursor: pointer;' index=${n}>${timeString}</span> (${duration +
                     unit})<break></break>`
 
-                  let result = a.response
-                    ? JSON.stringify(a.response.result)
-                    : ''
+                  let result = a.response ? JSON.stringify(a.response.result) : ''
                   if (result.length > 40) {
                     result = result.substring(0, 40) + '... '
                   }
@@ -770,10 +710,7 @@ export default function graph2doms(
             }
           }
         } else {
-          if (
-            d.type === 'action' &&
-            $('#' + d.id).attr('data-deployed') === 'deployed'
-          ) {
+          if (d.type === 'action' && $('#' + d.id).attr('data-deployed') === 'deployed') {
             if (d.name) {
               // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
               pictureInPicture(
@@ -816,13 +753,7 @@ export default function graph2doms(
         } else {
           return (
             d.height / 2 +
-            (d.type === 'Entry' || d.type === 'Exit'
-              ? 1.5
-              : d.type === 'Dummy'
-              ? 1.5
-              : d.type === 'let'
-              ? 3.5
-              : 2)
+            (d.type === 'Entry' || d.type === 'Exit' ? 1.5 : d.type === 'Dummy' ? 1.5 : d.type === 'let' ? 3.5 : 2)
           )
         }
       })
@@ -843,10 +774,7 @@ export default function graph2doms(
         }
       })
       .style('pointer-events', 'none')
-      .attr(
-        'multi-line-label',
-        d => d.multiLineLabel && d.multiLineLabel.join('\n')
-      )
+      .attr('multi-line-label', d => d.multiLineLabel && d.multiLineLabel.join('\n'))
       .text(function(d) {
         if (d.type === 'retain' || (d.type === 'Dummy' && d.label === d.id)) {
           // the === checks for unlabeled Dummy nodes
@@ -870,10 +798,7 @@ export default function graph2doms(
           const rest = d.value.length > maxLen ? ['\u2026', _] : []
 
           if (typeof d.value === 'string') {
-            return (
-              d.value.substring(0, 10) +
-              (d.value.length > maxLen ? '\u2026' : '')
-            )
+            return d.value.substring(0, 10) + (d.value.length > maxLen ? '\u2026' : '')
           } else if (Array.isArray(d.value)) {
             // render array literals
             const array = d.value
@@ -911,11 +836,8 @@ export default function graph2doms(
 
     for (let idx = 0; idx < textElements[0].length; idx++) {
       const textElement = textElements[0][idx]
-      const label =
-        textElement.attributes &&
-        textElement.attributes.getNamedItem('multi-line-label')
-      const width =
-        textElement.attributes && textElement.attributes.getNamedItem('width')
+      const label = textElement.attributes && textElement.attributes.getNamedItem('multi-line-label')
+      const width = textElement.attributes && textElement.attributes.getNamedItem('width')
 
       if (label) {
         const { maxLineLength } = textualPropertiesOfCode(label.value)
@@ -952,10 +874,7 @@ export default function graph2doms(
       .attr('marker-end', function(d) {
         if (d.visited) {
           return 'url(#greenEnd)'
-        } else if (
-          d.source.indexOf('__origin') >= 0 &&
-          d.target.indexOf('__terminus') >= 0
-        ) {
+        } else if (d.source.indexOf('__origin') >= 0 && d.target.indexOf('__terminus') >= 0) {
           return 'url(#forwardingEnd)'
         } else {
           return 'url(#end)'
@@ -963,16 +882,10 @@ export default function graph2doms(
       })
       .attr('class', function(d) {
         let s = 'link'
-        if (
-          d.source.indexOf('try_') === 0 &&
-          d.target.indexOf('handler_') === 0
-        ) {
+        if (d.source.indexOf('try_') === 0 && d.target.indexOf('handler_') === 0) {
           s += ' TryCatchEdge'
         }
-        if (
-          d.source.indexOf('__origin') >= 0 &&
-          d.target.indexOf('__terminus') >= 0
-        ) {
+        if (d.source.indexOf('__origin') >= 0 && d.target.indexOf('__terminus') >= 0) {
           s += ' forwardingLink has-hover-effect'
         }
         if (d.sourcePort && d.sourcePort.indexOf('_ptrue') !== -1) {
@@ -1025,19 +938,12 @@ export default function graph2doms(
           })
 
           const isTryCatchEdge = d.target.endsWith('-handler')
-          const isForwardingEdge =
-            d.source.indexOf('__origin') >= 0 &&
-            d.target.indexOf('__terminus') >= 0
+          const isForwardingEdge = d.source.indexOf('__origin') >= 0 && d.target.indexOf('__terminus') >= 0
           const offsetY = isForwardingEdge || isTryCatchEdge ? 0 : 4.2 // arrowhead hacking
 
           const offsetX = isTryCatchEdge ? -4.2 : 0
 
-          path +=
-            'L' +
-            (d.targetPoint.x + offsetX) +
-            ' ' +
-            (d.targetPoint.y - offsetY) +
-            ' '
+          path += 'L' + (d.targetPoint.x + offsetX) + ' ' + (d.targetPoint.y - offsetY) + ' '
         }
         return path
       })
@@ -1075,8 +981,7 @@ export default function graph2doms(
         }
         if (
           edge.sourcePort &&
-          (edge.sourcePort.indexOf('_ptrue') !== -1 ||
-            edge.sourcePort.indexOf('_pfalse') !== -1)
+          (edge.sourcePort.indexOf('_ptrue') !== -1 || edge.sourcePort.indexOf('_pfalse') !== -1)
         ) {
           let t
           let d
@@ -1165,8 +1070,7 @@ export default function graph2doms(
             }
 
             const target = $(`#${edge.target}`)
-            const targetStatus =
-              target && (target.attr('data-status') || 'not-run')
+            const targetStatus = target && (target.attr('data-status') || 'not-run')
             const thisEdgeWasTraversed = targetStatus !== 'not-run'
 
             d3.select('#' + edge.source)
@@ -1220,10 +1124,7 @@ export default function graph2doms(
       // introduces a heuristic to avoid tiny nodes on
       // initial display. This solves #582.
       const sidecar = getSidecar(tab)
-      if (
-        $(sidecar).height() > 400 &&
-        elkData.height * 2 > $(sidecar).height()
-      ) {
+      if ($(sidecar).height() > 400 && elkData.height * 2 > $(sidecar).height()) {
         resizeToCover()
       } else {
         resizeToContain()
@@ -1247,11 +1148,7 @@ export default function graph2doms(
                 c.edges[i].sections[0].endPoint.y += c.y
 
                 if (c.edges[i].sections[0].bendPoints) {
-                  for (
-                    let j = 0;
-                    j < c.edges[i].sections[0].bendPoints.length;
-                    j++
-                  ) {
+                  for (let j = 0; j < c.edges[i].sections[0].bendPoints.length; j++) {
                     c.edges[i].sections[0].bendPoints[j].x += c.x
                     c.edges[i].sections[0].bendPoints[j].y += c.y
                   }
@@ -1378,18 +1275,11 @@ export default function graph2doms(
         const height = $('#wskflowSVG').height()
         const scale = Math.min(width / elkData.width, height / elkData.height)
         const initScale = scale * zoom.scale()
-        const initTransX =
-          width / 2 - (elkData.width * scale) / 2 + zoom.translate()[0] * scale
-        const initTransY =
-          height / 2 -
-          (elkData.height * scale) / 2 +
-          zoom.translate()[1] * scale
+        const initTransX = width / 2 - (elkData.width * scale) / 2 + zoom.translate()[0] * scale
+        const initTransY = height / 2 - (elkData.height * scale) / 2 + zoom.translate()[1] * scale
         zoom.translate([initTransX, initTransY])
         zoom.scale(initScale)
-        container.attr(
-          'transform',
-          `matrix(${initScale}, 0, 0, ${initScale}, ${initTransX}, ${initTransY})`
-        )
+        container.attr('transform', `matrix(${initScale}, 0, 0, ${initScale}, ${initTransX}, ${initTransY})`)
       }
     })
 

@@ -27,24 +27,19 @@ const usage = {
   strict: 'clear',
   example: 'clear',
   docs: 'Clear the console',
-  optional: [
-    { name: '--keep-current-active', alias: '-k', boolean: true, hidden: true }
-  ]
+  optional: [{ name: '--keep-current-active', alias: '-k', boolean: true, hidden: true }]
 }
 
 const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
   if (!isHeadless()) {
     if (!parsedOptions.k) {
       // don't keep the current active prompt
-      debug(
-        'clearing everything, the repl loop will set up the next prompt for us'
-      )
+      debug('clearing everything, the repl loop will set up the next prompt for us')
       removeAllDomChildren(tab.querySelector('.repl-inner'))
     } else {
       // keep the current active prompt
       debug('preserving the current active prompt')
-      const selector =
-        '.repl-inner .repl-block:not(.repl-active):not(.processing)'
+      const selector = '.repl-inner .repl-block:not(.repl-active):not(.processing)'
 
       const blocks = tab.querySelectorAll(selector)
       for (let idx = 0; idx < blocks.length; idx++) {

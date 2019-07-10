@@ -45,9 +45,7 @@ const usage = {
  */
 const openSidecar = async () => {
   if (isHeadless()) {
-    throw new Error(
-      `Can't open sidecar in headless mode. Suggested command: sample sidecar --ui.`
-    )
+    throw new Error(`Can't open sidecar in headless mode. Suggested command: sample sidecar --ui.`)
   }
 
   const action = await $('sample create action')

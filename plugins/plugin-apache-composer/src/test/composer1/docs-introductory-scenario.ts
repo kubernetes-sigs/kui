@@ -58,11 +58,8 @@ const inputs = [
 ]
 
 /** fetch source code for the app */
-const root = path.dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/package.json')
-)
-const src = (app: string) =>
-  fs.readFileSync(path.join(root, 'samples/@demos/', `${app}.js`)).toString()
+const root = path.dirname(require.resolve('@kui-shell/plugin-apache-composer/package.json'))
+const src = (app: string) => fs.readFileSync(path.join(root, 'samples/@demos/', `${app}.js`)).toString()
 
 // hardcode for now... we need to generate this every time
 const ast = {
@@ -71,8 +68,7 @@ const ast = {
     function: {
       exec: {
         kind: 'nodejs:default',
-        code:
-          "function hello({ name = 'world' }) {\n  return { msg: `hello ${name}!` }\n}" // eslint-disable-line
+        code: "function hello({ name = 'world' }) {\n  return { msg: `hello ${name}!` }\n}" // eslint-disable-line
       }
     }
   },
@@ -126,8 +122,7 @@ const ast = {
           function: {
             exec: {
               kind: 'nodejs:default',
-              code:
-                "args => ({\n  text: Buffer.from(args.params.str, 'base64').toString()\n})"
+              code: "args => ({\n  text: Buffer.from(args.params.str, 'base64').toString()\n})"
             }
           }
         }
@@ -204,9 +199,7 @@ const graph = {
         !expectedTasks ? EMPTY : client.elements('#wskflowSVG .node.Task'),
         !expectedTotal ? EMPTY : client.elements('#wskflowSVG .node.leaf'),
         !expectedValues ? EMPTY : client.elements('#wskflowSVG .node.let'),
-        !expectedDeployed
-          ? EMPTY
-          : client.elements('#wskflowSVG .node.leaf[data-deployed="deployed"]')
+        !expectedDeployed ? EMPTY : client.elements('#wskflowSVG .node.leaf[data-deployed="deployed"]')
       ])
 
       console.error('actualTasks', actualTasks.length, expectedTasks)
@@ -244,19 +237,13 @@ const composer = {
         if (nDone > 0) {
           await app.client.waitUntil(async () => {
             const done = await app.client
-              .getText(
-                `${ui.selectors.OUTPUT_N(
-                  N
-                )} .entity.session .entity-name .clickable`
-              )
+              .getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .entity-name .clickable`)
               .then(done => (!Array.isArray(done) ? [done] : done)) // make sure we have an array
 
             // validate `expect`, which is a subset of the expected done list
             if (expect.length > 0) {
               // is each expected in the done list?
-              const allAreThere = expect.every(expectThis =>
-                done.find(gotThis => gotThis === expectThis)
-              )
+              const allAreThere = expect.every(expectThis => done.find(gotThis => gotThis === expectThis))
               if (!allAreThere) {
                 // keep on going with the waitUntil
                 return false
@@ -266,13 +253,9 @@ const composer = {
             // validate `nDone`, which is the expected minimum number of completed sessions
             if (done.length < nDone) {
               const activationIds = await app.client.getText(
-                `${ui.selectors.OUTPUT_N(
-                  N
-                )} .entity.session .activationId .clickable`
+                `${ui.selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`
               )
-              console.error(
-                `still waiting for ${nDone}, here is what we have so far: ${activationIds.length}`
-              )
+              console.error(`still waiting for ${nDone}, here is what we have so far: ${activationIds.length}`)
               console.error(activationIds)
 
               return false
@@ -338,21 +321,13 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(graph.hasNodes({ tasks: 1, total: 3 }))
 
         // switch to ast tab
-        .then(() =>
-          this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('ast'))
-        )
+        .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('ast')))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast[appName1]))
 
         // switch to annotations tab
-        .then(() =>
-          this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
-        )
-        .then(() =>
-          this.app.client.getText(
-            '#sidecar .sidecar-content .action-content code'
-          )
-        )
+        .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations')))
+        .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
         // .then(ui.expectSubset({"turkey": "shoot"}))
 
         // switch to parameters tab; in v2 this isn't relevant
@@ -405,9 +380,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
 
     it('should invoke hello and show one more session than before', () =>
       invokeHello()
-        .then(activationId =>
-          ui.waitForSession(this.app, activationId, { name: appName1 })
-        )
+        .then(activationId => ui.waitForSession(this.app, activationId, { name: appName1 }))
         .catch(common.oops(this)))
   }
 
@@ -442,27 +415,14 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(graph.hasNodes({ tasks: 1, total: 3 }))
 
         // visit ast tab
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast.hello))
 
         // visit code tab
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
         .then(() => ui.getValueFromMonaco(this.app))
-        .then(code =>
-          assert.strictEqual(
-            code.replace(/\s+/g, ''),
-            src(appName1).replace(/\s+/g, '')
-          )
-        )
+        .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName1).replace(/\s+/g, '')))
 
         .catch(common.oops(this))
     )
@@ -507,27 +467,14 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(graph.hasNodes({ tasks: 3, total: 6, deployed: 0 }))
 
         // visit ast tab
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast[appName2]))
 
         // visit code tab
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
         .then(() => ui.getValueFromMonaco(this.app))
-        .then(code =>
-          assert.strictEqual(
-            code.replace(/\s+/g, ''),
-            src(appName2).replace(/\s+/g, '')
-          )
-        )
+        .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName2).replace(/\s+/g, '')))
 
         .catch(common.oops(this))
     )
@@ -561,11 +508,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(sidecar.expectShowing(appName2))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 3, total: 6, deployed: 3 })) // <---- deployed had better be 3 now
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast[appName2]))
         .catch(common.oops(this))
@@ -624,9 +567,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const expected = [appName1, appName2] // appName1 and appName2 had both better be in the list
     const nDone = 3
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer
-        .getSessions(this.app, nDone, { cmd, expect: expected })
-        .catch(common.oops(this))
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(common.oops(this))
     })
   }
 
@@ -638,9 +579,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const expected = [appName1] // appName1 had better be in the list
     const nDone = 1
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer
-        .getSessions(this.app, nDone, { cmd, expect: expected })
-        .catch(common.oops(this))
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(common.oops(this))
     })
   }
 
@@ -652,9 +591,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const expected = [appName2] // appName2 had better be in the list
     const nDone = 2
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer
-        .getSessions(this.app, nDone, { cmd, expect: expected })
-        .catch(common.oops(this))
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(common.oops(this))
     })
   }
 
@@ -672,27 +609,14 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(graph.hasNodes({ tasks: 2, total: 4, deployed: 0 }))
 
         // visit ast tab
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast[appName3]))
 
         // visit code tab
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
         .then(() => ui.getValueFromMonaco(this.app))
-        .then(code =>
-          assert.strictEqual(
-            code.replace(/\s+/g, ''),
-            src(appName3).replace(/\s+/g, '')
-          )
-        )
+        .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName3).replace(/\s+/g, '')))
 
         .catch(common.oops(this))
     )
@@ -726,11 +650,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(sidecar.expectShowing(appName3))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 2, total: 4, deployed: 1 })) // <---- deployed had better be 1 now
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast[appName3]))
         .catch(common.oops(this))
@@ -800,11 +720,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
             return ok
           })
         )
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="visualization"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="visualization"]'))
         .then(() => this.app)
         .then(graph.hasNodes({ tasks: 2, total: 4 })) /*, deployed: 2 */
         .catch(common.oops(this))
@@ -823,11 +739,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(sidecar.expectShowing(appName4))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 3, total: 7, deployed: 1 })) // <---- deployed had better be 1
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast[appName4]))
         .catch(common.oops(this))
@@ -890,11 +802,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(sidecar.expectShowing(appName5))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 2, total: 5, deployed: 0, values: 1 }))
-        .then(() =>
-          this.app.client.click(
-            '#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'
-          )
-        )
+        .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
         .then(() => ui.getValueFromMonaco(this.app))
         .then(ui.expectStruct(ast[appName5]))
         .catch(common.oops(this))

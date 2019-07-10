@@ -60,18 +60,13 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
           debug('kubeconfig', kubeconfig)
 
           if (!kubeconfig.apiVersion && kubeconfig.kind !== 'Config') {
-            return Promise.reject(
-              new Error('This does not look like a kubeconfig')
-            )
+            return Promise.reject(new Error('This does not look like a kubeconfig'))
           } else if (!kubeconfig.clusters || kubeconfig.clusters.length === 0) {
             return Promise.reject(new Error('Could not find a cluster config'))
           } else {
-            const cafile =
-              kubeconfig.clusters[0].cluster['certificate-authority']
+            const cafile = kubeconfig.clusters[0].cluster['certificate-authority']
             if (!cafile) {
-              return Promise.reject(
-                new Error('Could not find a certificate-authority')
-              )
+              return Promise.reject(new Error('Could not find a certificate-authority'))
             } else {
               return {
                 reprompt: true,
@@ -84,11 +79,7 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
                   const certPattern = /^\s*-----BEGIN CERTIFICATE-----[^-]+-----END CERTIFICATE-----\s*$/
 
                   if (!ca.match(certPattern)) {
-                    return Promise.reject(
-                      new Error(
-                        'This does not look like a kubernetes certificate'
-                      )
-                    )
+                    return Promise.reject(new Error('This does not look like a kubernetes certificate'))
                   } else {
                     // all right! we now have the kubeconfig and the PEM
                     setAuth(kubeconfigString, ca, cafile)
