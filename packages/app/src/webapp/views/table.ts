@@ -34,6 +34,9 @@ import { theme } from '@kui-shell/core/core/settings'
 
 const debug = Debug('webapp/views/table')
 
+const tablePollingInterval = (theme && theme.tablePollingInterval) || 3000
+debug('tablePollingInterval', tablePollingInterval)
+
 interface TableFormatOptions {
   usePip?: boolean
 }
@@ -479,7 +482,10 @@ export const formatOneRowResult = (
                 slowPolling = false
                 cell.classList.add(pulse)
                 clearInterval(interval)
-                interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+                interval = setInterval(
+                  watchIt,
+                  tablePollingInterval + ~~(100 * Math.random())
+                )
               }
             }
           )
@@ -491,7 +497,10 @@ export const formatOneRowResult = (
       }
 
       // establish the initial watch interval
-      interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+      interval = setInterval(
+        watchIt,
+        tablePollingInterval + ~~(100 * Math.random())
+      )
     }
 
     return cell

@@ -41,6 +41,8 @@ interface Theme {
 
   userAgent?: string
 
+  tablePollingInterval?: number
+
   defaultTheme: string
   themes: { name: string; css: string; description?: string; style: string }[]
 }
