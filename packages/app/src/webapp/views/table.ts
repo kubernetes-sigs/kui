@@ -193,7 +193,7 @@ const registerWatcher = (
   }
 
   // establish the initial watch interval
-  interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+  interval = setInterval(watchIt, tablePollingInterval + ~~(100 * Math.random()))
 }
 
 /**
