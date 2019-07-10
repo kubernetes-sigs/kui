@@ -19,10 +19,7 @@ import * as Debug from 'debug'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
-import {
-  Resource,
-  KubeResource
-} from '@kui-shell/plugin-k8s/lib/model/resource'
+import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 import marked = require('marked')
 
 const debug = Debug('plugin/operator-framework/view/modes/description')
@@ -37,15 +34,9 @@ interface DescriptionBearer extends KubeResource {
   }
 }
 
-function isDescriptionBearer(
-  resource: KubeResource
-): resource is DescriptionBearer {
+function isDescriptionBearer(resource: KubeResource): resource is DescriptionBearer {
   const bearer = resource as DescriptionBearer
-  return (
-    bearer !== undefined &&
-    bearer.spec !== undefined &&
-    bearer.spec.description !== undefined
-  )
+  return bearer !== undefined && bearer.spec !== undefined && bearer.spec.description !== undefined
 }
 
 /**

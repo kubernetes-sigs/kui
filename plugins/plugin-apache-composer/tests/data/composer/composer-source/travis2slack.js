@@ -22,9 +22,7 @@ const prefix = 'travis2slack'
 
 const slackConfig = {
   token:
-    process.env[
-      'PATH'
-    ] /* for tests... just some env var that will be defined, it doesn't need to have any meaning */,
+    process.env['PATH'] /* for tests... just some env var that will be defined, it doesn't need to have any meaning */,
   username: 'whiskbot',
   url: 'https://slack.com/api/chat.postMessage'
 }
@@ -38,12 +36,7 @@ module.exports = composer.sequence(
   `/whisk.system/utils/echo`,
   `${prefix}/extract`,
   `${prefix}/fetch.job.id`,
-  composer.retain(
-    composer.sequence(
-      composer.retry(3, `${prefix}/fetch.log.url`),
-      `${prefix}/analyze.log`
-    )
-  ),
+  composer.retain(composer.sequence(composer.retry(3, `${prefix}/fetch.log.url`), `${prefix}/analyze.log`)),
   ({ result, params }) => Object.assign(result, params),
   `${prefix}/format.for.slack`,
   composer.retain(composer.literal(slackConfig)),

@@ -71,45 +71,35 @@
               "displayName": "Paused",
               "path": "paused",
               "value": false,
-              "x-descriptors": [
-                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-              ]
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:booleanSwitch"]
             },
             {
               "description": "Specifies if the Couchbase Server Web Console will be exposed externally.",
               "displayName": "Expose Console",
               "path": "exposeAdminConsole",
               "value": false,
-              "x-descriptors": [
-                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-              ]
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:booleanSwitch"]
             },
             {
               "description": "Specifies whether or not two pods in this cluster can be deployed on the same Kubernetes node.",
               "displayName": "Anti Affinity",
               "path": "antiAffinity",
               "value": false,
-              "x-descriptors": [
-                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-              ]
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:booleanSwitch"]
             },
             {
               "description": "Specifies if update notifications will be displayed in the Couchbase UI.",
               "displayName": "Show Update Notifications",
               "path": "softwareUpdateNotifications",
               "value": false,
-              "x-descriptors": [
-                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-              ]
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:booleanSwitch"]
             },
             {
               "description": "Specifies if the Operator will create or delete buckets.",
               "displayName": "Disable Bucket Management",
               "path": "disableBucketManagement",
               "value": false,
-              "x-descriptors": [
-                "urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
-              ]
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:booleanSwitch"]
             },
             {
               "description": "The desired number of member Pods for the Couchbase cluster.",
@@ -130,9 +120,7 @@
               "description": "Limits describes the minimum/maximum amount of compute resources required/allowed.",
               "displayName": "Resource Requirements",
               "path": "servers[0].pod.resources",
-              "x-descriptors": [
-                "urn:alm:descriptor:com.tectonic.ui:resourceRequirements"
-              ]
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:resourceRequirements"]
             }
           ],
           "statusDescriptors": [
@@ -158,9 +146,7 @@
               "description": "The status of each of the member Pods for the Couchbase cluster.",
               "displayName": "Member Status",
               "path": "members",
-              "x-descriptors": [
-                "urn:alm:descriptor:com.tectonic.ui:podStatuses"
-              ]
+              "x-descriptors": ["urn:alm:descriptor:com.tectonic.ui:podStatuses"]
             },
             {
               "description": "The current version of the Couchbase cluster.",
@@ -292,14 +278,7 @@
               },
               {
                 "apiGroups": [""],
-                "resources": [
-                  "pods",
-                  "services",
-                  "endpoints",
-                  "persistentvolumeclaims",
-                  "events",
-                  "secrets"
-                ],
+                "resources": ["pods", "services", "endpoints", "persistentvolumeclaims", "events", "secrets"],
                 "verbs": ["*"]
               },
               {

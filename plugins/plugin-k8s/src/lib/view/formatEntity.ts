@@ -18,11 +18,7 @@ import eventBus from '@kui-shell/core/core/events'
 
 import { toOpenWhiskFQN } from '../util/util'
 import { ParsedOptions } from '@kui-shell/core/models/execOptions'
-import {
-  FinalState,
-  watchStatus,
-  rendering as stateRendering
-} from '../model/states'
+import { FinalState, watchStatus, rendering as stateRendering } from '../model/states'
 
 const debug = require('debug')('k8s/util/formatEntity')
 
@@ -35,9 +31,7 @@ export const formatContextAttr = (context: string, extraCSS?: string) => {
     {
       key: 'context',
       value: context,
-      outerCSS: `${
-        extraCSS ? extraCSS + ' ' : ''
-      }entity-name-group entity-name-group-narrow hide-with-sidecar`
+      outerCSS: `${extraCSS ? extraCSS + ' ' : ''}entity-name-group entity-name-group-narrow hide-with-sidecar`
     }
   ]
 }
@@ -46,10 +40,7 @@ export const formatContextAttr = (context: string, extraCSS?: string) => {
  * Return a repl attribute for the given readiness
  *
  */
-export const formatEntity = (
-  parsedOptions: ParsedOptions,
-  context?: string
-) => async kubeEntity => {
+export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => async kubeEntity => {
   debug('formatEntity', kubeEntity)
 
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
@@ -70,11 +61,8 @@ export const formatEntity = (
   const kindForDisplay = masqueradeKind || kind
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const kindAttr: any[] = [
-    { key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }
-  ]
-  const contextAttr =
-    parsedOptions.multi || !context ? [] : formatContextAttr(context)
+  const kindAttr: any[] = [{ key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }]
+  const contextAttr = parsedOptions.multi || !context ? [] : formatContextAttr(context)
 
   // see if anyone else changes the expected final state
   const watch = {
@@ -133,8 +121,7 @@ export const formatEntity = (
         {
           key: 'message',
           value:
-            status.others &&
-            status.others.find(other => other.key === 'message')
+            status.others && status.others.find(other => other.key === 'message')
               ? status.others.find(other => other.key === 'message').value
               : '',
           css: 'somewhat-smaller-text slightly-deemphasize',
@@ -154,11 +141,7 @@ export const formatEntity = (
     name: title || actionName || fqn,
     packageName,
     noSort: true,
-    onclick: parsedOptions.onclickFn
-      ? parsedOptions.onclickFn(kubeEntity)
-      : status.onclick
-      ? status.onclick
-      : false,
+    onclick: parsedOptions.onclickFn ? parsedOptions.onclickFn(kubeEntity) : status.onclick ? status.onclick : false,
     done: status.done,
     attributes
   })

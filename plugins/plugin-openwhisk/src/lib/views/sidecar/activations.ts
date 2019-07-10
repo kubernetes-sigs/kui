@@ -21,12 +21,7 @@ import * as prettyPrintDuration from 'pretty-ms'
 import * as repl from '@kui-shell/core/core/repl'
 
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import {
-  linkify,
-  getSidecar,
-  renderField,
-  showCustom
-} from '@kui-shell/core/webapp/views/sidecar'
+import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
 import { Tab } from '@kui-shell/core/webapp/cli'
@@ -42,8 +37,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
 
   const sidecar = getSidecar(tab)
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
-  sidecar.querySelector('.sidecar-content .activation-content').className =
-    'activation-content'
+  sidecar.querySelector('.sidecar-content .activation-content').className = 'activation-content'
 
   // success indicator
   sidecar.classList.add(`activation-success-${entity.response.success}`)
@@ -52,9 +46,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
      statusDom.title = statusDom.getAttribute('data-title-base').replace(/{status}/, entity.response.status) */
 
   // limits
-  const entityLimitsAnnotation = entity.annotations.find(
-    kv => kv.key === 'limits'
-  )
+  const entityLimitsAnnotation = entity.annotations.find(kv => kv.key === 'limits')
   if (!entityLimitsAnnotation || entity.noCost) {
     // noCost means we should not display any cost info
     sidecar.classList.add('no-limits-data')
@@ -73,10 +65,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
   if (entity.end) {
     // the guard helps with: rule activations don't have an end time
     const duration = entity.end - entity.start
-    element(
-      '.activation-content .activation-duration',
-      sidecar
-    ).innerText = prettyPrintDuration(duration)
+    element('.activation-content .activation-duration', sidecar).innerText = prettyPrintDuration(duration)
   }
 
   // estimated cost
@@ -92,18 +81,11 @@ export default (tab: Tab, entity, options: ShowOptions) => {
   }
 
   // the entity.namespace and entity.name of activation records don't include the package name :/
-  const pathAnnotation =
-    entity.annotations && entity.annotations.find(kv => kv.key === 'path')
+  const pathAnnotation = entity.annotations && entity.annotations.find(kv => kv.key === 'path')
   const entityNameWithPackageAndNamespace =
-    (pathAnnotation && pathAnnotation.value) ||
-    `${entity.namespace}/${entity.name}`
-  const pathComponents =
-    pathAnnotation && entityNameWithPackageAndNamespace.split('/')
-  const entityPackageName = pathComponents
-    ? pathComponents.length === 2
-      ? ''
-      : pathComponents[1]
-    : '' // either ns/package/action or ns/action
+    (pathAnnotation && pathAnnotation.value) || `${entity.namespace}/${entity.name}`
+  const pathComponents = pathAnnotation && entityNameWithPackageAndNamespace.split('/')
+  const entityPackageName = pathComponents ? (pathComponents.length === 2 ? '' : pathComponents[1]) : '' // either ns/package/action or ns/action
 
   // make the nameDom clickable, traversing to the action
   element('.package-prefix', nameDom).innerText = entityPackageName
@@ -148,10 +130,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
           .map(line =>
             line
               .substring(line.indexOf('at ') + 3)
-              .replace(
-                /eval at <anonymous> \(\/nodejsAction\/runner.js:\d+:\d+\), /,
-                ''
-              )
+              .replace(/eval at <anonymous> \(\/nodejsAction\/runner.js:\d+:\d+\), /, '')
               .replace(/<anonymous>/, entity.name)
           )
       }
@@ -164,23 +143,15 @@ export default (tab: Tab, entity, options: ShowOptions) => {
           // then its already a DOM
           activationResult.appendChild(projection)
         } else {
-          if (
-            entity.contentType &&
-            activationResult.innerText.length < 20 * 1024
-          ) {
+          if (entity.contentType && activationResult.innerText.length < 20 * 1024) {
             // caller gave us a content type. attempt to decorate
             const contentType = `language-${entity.contentType}`
             activationResult.classList.add(contentType)
-            activationResult.classList.remove(
-              activationResult.getAttribute('data-content-type')
-            ) // remove previous
+            activationResult.classList.remove(activationResult.getAttribute('data-content-type')) // remove previous
             activationResult.setAttribute('data-content-type', contentType)
             activationResult.classList.remove('json')
 
-            activationResult.innerHTML = hljs.highlight(
-              entity.contentType,
-              projection
-            ).value
+            activationResult.innerHTML = hljs.highlight(entity.contentType, projection).value
             linkify(activationResult)
           } else {
             activationResult.innerText = projection
@@ -195,16 +166,11 @@ export default (tab: Tab, entity, options: ShowOptions) => {
           // colorify
           const contentType = 'language-json'
           activationResult.classList.add(contentType)
-          activationResult.classList.remove(
-            activationResult.getAttribute('data-content-type')
-          ) // remove previous
+          activationResult.classList.remove(activationResult.getAttribute('data-content-type')) // remove previous
           activationResult.setAttribute('data-content-type', contentType)
 
           // apply the syntax highlighter to the code
-          activationResult.innerHTML = hljs.highlight(
-            'javascript',
-            prettier
-          ).value
+          activationResult.innerHTML = hljs.highlight('javascript', prettier).value
           linkify(activationResult)
         } else {
           // too big! too slow for the fancy stuff

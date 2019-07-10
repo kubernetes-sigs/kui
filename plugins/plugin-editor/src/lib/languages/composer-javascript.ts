@@ -40,14 +40,12 @@ const strings = {
     args: ['task', 'errorHandler']
   },
   let: {
-    documentation:
-      'Bind a variable to a value, then execute a sequence of tasks',
+    documentation: 'Bind a variable to a value, then execute a sequence of tasks',
     detail: 'var=value; task1 -> task2',
     args: ['variable', 'value', 'task1', 'task2']
   },
   mask: {
-    documentation:
-      'Execute a given composition masking any enclosing variable bindings',
+    documentation: 'Execute a given composition masking any enclosing variable bindings',
     detail: 'mask enclosing variable bindings',
     args: ['composition']
   },
@@ -91,9 +89,7 @@ const makeProposal = monaco => keyword =>
       kind: monaco.languages.CompletionItemKind.Method,
       insertText: {
         // the map changes [x,y] to [${1:x}, ${2:y}], which gives a tab order
-        value: `${keyword}(${strings[keyword].args
-          .map((_, idx) => `\${${idx + 1}:${_}}`)
-          .join(', ')})`
+        value: `${keyword}(${strings[keyword].args.map((_, idx) => `\${${idx + 1}:${_}}`).join(', ')})`
       }
     },
     strings[keyword]

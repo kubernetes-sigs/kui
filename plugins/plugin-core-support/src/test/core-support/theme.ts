@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  remoteIt
-} from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, remoteIt } from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 
 const resetTheme = (ctx: ISuite) => {
@@ -52,9 +46,7 @@ const go = (theme: Theme) => (ctx: ISuite) => {
     cli
       .do(`theme set "${theme.name}"`, ctx.app)
       .then(cli.expectJustOK)
-      .then(() =>
-        ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`)
-      )
+      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
       .catch(oops(ctx)))
 
   it(`should show that we are using the ${theme.name} theme`, () =>
@@ -71,15 +63,11 @@ const go = (theme: Theme) => (ctx: ISuite) => {
  */
 const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
   // refresh electron's current page rather than restart the app to prevent clearing browser's local storage
-  remoteIt(
-    `should still be using ${theme.name} theme after a browser restart`,
-    () =>
-      ctx.app.client
-        .refresh()
-        .then(() =>
-          ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`)
-        )
-        .catch(oops(ctx))
+  remoteIt(`should still be using ${theme.name} theme after a browser restart`, () =>
+    ctx.app.client
+      .refresh()
+      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
+      .catch(oops(ctx))
   )
 }
 
@@ -92,9 +80,7 @@ const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
   it(`should still be using ${theme.name} theme after a reload`, () =>
     ctx.app.client
       .refresh()
-      .then(() =>
-        ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`)
-      )
+      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
       .catch(oops(ctx)))
 }
 
@@ -102,19 +88,12 @@ const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
  * Click on the theme button and expect the theme list
  *
  */
-const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (
-  ctx: ISuite,
-  nClicks = 1
-) => {
+const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nClicks = 1) => {
   it(`should click on help button, then theme link, then present theme list, then click on ${clickOn.name}`, async () => {
     try {
       await ctx.app.client.click('#help-button')
-      await ctx.app.client.waitForVisible(
-        '#tutorialPane .tutorial-content-command[data-command="themes"]'
-      )
-      await ctx.app.client.click(
-        '#tutorialPane .tutorial-content-command[data-command="themes"]'
-      )
+      await ctx.app.client.waitForVisible('#tutorialPane .tutorial-content-command[data-command="themes"]')
+      await ctx.app.client.click('#tutorialPane .tutorial-content-command[data-command="themes"]')
 
       const checkMarkCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
       const nameCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] > div > .clickable`
@@ -153,12 +132,8 @@ const restartAndThenLight = restartAndThen(Light)
 const restartAndThenDark = restartAndThen(Dark)
 const reloadAndThenLight = reloadAndThen(Light)
 const reloadAndThenDark = reloadAndThen(Dark)
-const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(
-  Light
-)
-const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(
-  Dark
-)
+const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
+const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
 
 describe('theme switching', function(this: ISuite) {
   before(commonBefore(this))

@@ -62,9 +62,7 @@ class ActiveISearch {
 
     this.placeholder = document.createElement('span')
     this.placeholderFixedPart = document.createElement('span')
-    this.placeholderFixedPart.innerText = strings.prompt
-      .replace(/\$1/, '')
-      .replace(/\$2/, this.prompt.value)
+    this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, '').replace(/\$2/, this.prompt.value)
     this.placeholder.appendChild(this.placeholderFixedPart)
     this.placeholder.classList.add('repl-temporary')
     this.placeholder.classList.add('normal-text')
@@ -130,9 +128,7 @@ class ActiveISearch {
       // if the user hits Backspace, reset currentSearchIdx
       // TODO confirm that this is the behavior of bash
       this.currentSearchIdx = -1
-      this.placeholderFixedPart.innerText = strings.prompt
-        .replace(/\$1/, ``)
-        .replace(/\$2/, this.prompt.value)
+      this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.prompt.value)
     }
 
     // where do we want to start the search? if the user is just
@@ -141,8 +137,7 @@ class ActiveISearch {
     const userHitCtrlR = evt.ctrlKey && evt.code === 'KeyR'
     const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : -1
 
-    const newSearchIdx =
-      this.prompt.value && historyModel.findIndex(this.prompt.value, startIdx)
+    const newSearchIdx = this.prompt.value && historyModel.findIndex(this.prompt.value, startIdx)
     debug('search index', this.prompt.value, newSearchIdx)
 
     if (newSearchIdx > 0) {
@@ -158,9 +153,7 @@ class ActiveISearch {
       debug('caretPosition', caretPosition)
 
       const matchedPrefix = newValue.substring(0, caretPosition - 1)
-      const matchedSuffix = newValue.substring(
-        caretPosition + this.prompt.value.length - 1
-      )
+      const matchedSuffix = newValue.substring(caretPosition + this.prompt.value.length - 1)
       debug('matchedPrefix', matchedPrefix, newValue, caretPosition)
       debug('matchedSuffix', matchedSuffix)
       this.placeholderTypedPart.innerText = this.prompt.value.replace(/ /g, '_') // show matched whitespaces with an underscore
@@ -175,24 +168,17 @@ class ActiveISearch {
       this.placeholderTypedPart.innerText = ''
       this.placeholderMatchedPrefixPart.innerText = ''
       this.placeholderMatchedSuffixPart.innerText = ''
-      this.placeholderFixedPart.innerText = strings.prompt
-        .replace(/\$1/, ``)
-        .replace(/\$2/, this.prompt.value)
+      this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.prompt.value)
     } else {
       this.placeholderFixedPart.classList.add('alert-pulse')
-      setTimeout(
-        () => this.placeholderFixedPart.classList.remove('alert-pulse'),
-        1000
-      )
+      setTimeout(() => this.placeholderFixedPart.classList.remove('alert-pulse'), 1000)
     }
   }
 
   /** fill in the result of a search */
   completeSearch() {
     debug('completing search')
-    this.prompt.value = this.placeholderContentPart.getAttribute(
-      'data-full-match'
-    )
+    this.prompt.value = this.placeholderContentPart.getAttribute('data-full-match')
     this.cancelISearch()
   }
 
@@ -224,46 +210,43 @@ function registerListener() {
    * Listen for ctrl+r
    *
    */
-  document
-    .getElementsByTagName('body')[0]
-    .addEventListener('keyup', (evt: KeyboardEvent) => {
-      //
-      // we want ctrl+R; but if we're in a browser and on linux or
-      // windows, then ctrl+R will result in a browser reload :(
-      //
-      // Note: even if not in a browser (i.e. running in electron mode),
-      // on linux and windows we have to be careful not to use the
-      // default reload keyboard shortcut; see app/src/main/menu.js
-      //
-      // re: RUNNING_SHELL_TEST; there seems to be some weird bug here; on linux, the ctrlKey modifier becomes sticky
-      if (!document.activeElement.classList.contains('repl-input-element')) {
-        // if we aren't focused on a repl input, don't bother
-      } else if (
-        evt.ctrlKey &&
-        (process.platform === 'darwin' ||
-          ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
-      ) {
-        const tab = getTabFromTarget(evt.srcElement)
-        const activeSearch = tab['_kui_active_i_search']
+  document.getElementsByTagName('body')[0].addEventListener('keyup', (evt: KeyboardEvent) => {
+    //
+    // we want ctrl+R; but if we're in a browser and on linux or
+    // windows, then ctrl+R will result in a browser reload :(
+    //
+    // Note: even if not in a browser (i.e. running in electron mode),
+    // on linux and windows we have to be careful not to use the
+    // default reload keyboard shortcut; see app/src/main/menu.js
+    //
+    // re: RUNNING_SHELL_TEST; there seems to be some weird bug here; on linux, the ctrlKey modifier becomes sticky
+    if (!document.activeElement.classList.contains('repl-input-element')) {
+      // if we aren't focused on a repl input, don't bother
+    } else if (
+      evt.ctrlKey &&
+      (process.platform === 'darwin' || ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
+    ) {
+      const tab = getTabFromTarget(evt.srcElement)
+      const activeSearch = tab['_kui_active_i_search']
 
-        if (evt.keyCode === keys.R) {
-          debug('got ctrl+r')
-          if (activeSearch) {
-            debug('continuation of existing reverse-i-search')
-            activeSearch.doSearch(evt)
-          } else {
-            debug('new reverse-i-search')
-            tab['_kui_active_i_search'] = new ActiveISearch(tab)
-          }
-        } else if (activeSearch && isCursorMovement(evt)) {
-          activeSearch.completeSearch()
-        } else if (activeSearch) {
-          // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
-          debug('cancel', evt.keyCode)
-          activeSearch.cancelISearch(evt)
+      if (evt.keyCode === keys.R) {
+        debug('got ctrl+r')
+        if (activeSearch) {
+          debug('continuation of existing reverse-i-search')
+          activeSearch.doSearch(evt)
+        } else {
+          debug('new reverse-i-search')
+          tab['_kui_active_i_search'] = new ActiveISearch(tab)
         }
+      } else if (activeSearch && isCursorMovement(evt)) {
+        activeSearch.completeSearch()
+      } else if (activeSearch) {
+        // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
+        debug('cancel', evt.keyCode)
+        activeSearch.cancelISearch(evt)
       }
-    })
+    }
+  })
 }
 
 /**

@@ -72,12 +72,7 @@ describe('Create api gateway', function(this: common.ISuite) {
         cli
           .expectOKWithOnly('/hello/world')(res)
           .then(() => res.count)
-          .then(N =>
-            this.app.client.getAttribute(
-              `${ui.selectors.LIST_RESULTS_N(N)} [data-key="url"]`,
-              'data-value'
-            )
-          )
+          .then(N => this.app.client.getAttribute(`${ui.selectors.LIST_RESULTS_N(N)} [data-key="url"]`, 'data-value'))
       )
 
       .then(_href => {
@@ -85,10 +80,7 @@ describe('Create api gateway', function(this: common.ISuite) {
           throw new Error('href attribute not found')
         } else {
           const x = _href as string // typescript weirdness https://github.com/Microsoft/TypeScript/issues/14889
-          const href = x.replace(
-            /(http:\/\/)?172\.17\.0\.1/,
-            ui.apiHost.replace(/http(s)?:\/\//, '')
-          )
+          const href = x.replace(/(http:\/\/)?172\.17\.0\.1/, ui.apiHost.replace(/http(s)?:\/\//, ''))
           if (!href.startsWith('http')) {
             return `http://${href}`
           } else {

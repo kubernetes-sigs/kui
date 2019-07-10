@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-const all = [
-  'wsk action',
-  'wsk activation',
-  'wsk package',
-  'wsk rule',
-  'wsk trigger'
-]
+const all = ['wsk action', 'wsk activation', 'wsk package', 'wsk rule', 'wsk trigger']
 const except = str => all.filter(_ => _ !== str)
 
 const aliases = {
@@ -37,9 +31,7 @@ const configuration = {
 const context = type => [{ command: 'wsk' }, { command: `wsk ${type}` }]
 
 /** deployed variant of an entity name */
-const deployed = entity => [
-  Object.assign({}, entity[0], { entity: entity[0].name })
-]
+const deployed = entity => [Object.assign({}, entity[0], { entity: entity[0].name })]
 
 /** required action parameter */
 const action = [{ name: 'action', docs: 'an action name' }]
@@ -84,9 +76,7 @@ const sourceFile: Option[] = [
 
 /** required activationId parameter */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const activationID: any[] = [
-  { name: 'activationId', docs: 'an activation ID', entity: 'activation' }
-]
+const activationID: any[] = [{ name: 'activationId', docs: 'an activation ID', entity: 'activation' }]
 
 /** optional parameters having to do with parameter bindings */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -130,9 +120,7 @@ const annotations = [
 const paramsAndAnnotations = params.concat(annotations)
 
 /** package sharing scope parameter */
-const shared = [
-  { name: '--shared', docs: 'package visibility', allowed: ['yes', 'no'] }
-]
+const shared = [{ name: '--shared', docs: 'package visibility', allowed: ['yes', 'no'] }]
 
 /** feed annotation for triggers */
 const feed = [
@@ -195,8 +183,7 @@ const actionMix = params
       name: '--copy',
       boolean: true,
       advanced: true,
-      docs:
-        'copy the action named by the second parameter to a new action named by the first'
+      docs: 'copy the action named by the second parameter to a new action named by the first'
     },
     {
       name: '--native',
@@ -286,9 +273,7 @@ export const actions = {
       example: 'wsk action create <action> <sourceFile>',
       required: [{ name: 'name', docs: 'the name of your new action' }],
       optional: sourceFile
-        .concat([
-          { name: '--docker', docs: 'use a dockerhub image for the action' }
-        ])
+        .concat([{ name: '--docker', docs: 'use a dockerhub image for the action' }])
         .concat(actionMix),
       parents: context('action')
     },
@@ -419,9 +404,7 @@ export const rules = {
       strict: 'update',
       docs: 'update an existing rule, or create one if it does not exist',
       example: 'wsk rule update <rule> <trigger> <action>',
-      required: maybeDeployedRule
-        .concat(deployedTrigger)
-        .concat(deployedAction),
+      required: maybeDeployedRule.concat(deployedTrigger).concat(deployedAction),
       parents: context('rule')
     },
     {
@@ -459,8 +442,7 @@ export const rules = {
 
 export const api = {
   title: 'API Gateway operations',
-  header:
-    'These commands will help you to work with routes and the API Gateway.',
+  header: 'These commands will help you to work with routes and the API Gateway.',
   example: 'wsk api <command>',
   commandPrefix: 'wsk api',
   nRowsInViewport: 4, // list all four, since we have a short list
@@ -478,10 +460,7 @@ export const api = {
       strict: 'get',
       docs: 'get API details',
       example: 'wsk api get <api>',
-      oneof: [
-        { name: 'api', docs: 'the name of an API' },
-        { name: 'path', docs: 'the full base/path route an API' }
-      ],
+      oneof: [{ name: 'api', docs: 'the name of an API' }, { name: 'path', docs: 'the full base/path route an API' }],
       optional: [
         { name: 'verb', positional: true, docs: 'the verb to show' },
         {
@@ -723,8 +702,7 @@ export const activations = alias => ({
         },
         {
           name: '--since',
-          docs:
-            'return activations with timestamps later than SINCE; measured in milliseconds since epoch'
+          docs: 'return activations with timestamps later than SINCE; measured in milliseconds since epoch'
         },
         {
           name: '--skip',
@@ -733,8 +711,7 @@ export const activations = alias => ({
         },
         {
           name: '--upto',
-          docs:
-            'return activations with timestamps earlier than UPTO; measured in milliseconds since epoch'
+          docs: 'return activations with timestamps earlier than UPTO; measured in milliseconds since epoch'
         }
       ]
     },

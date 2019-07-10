@@ -88,9 +88,7 @@ describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
   it('should delete nothing with rimraf zzz*', () =>
     cli
       .do(`rimraf zzz*`, this.app)
-      .then(
-        cli.expectOKWithCustom({ expect: 'deleted 0 elements', exact: true })
-      )
+      .then(cli.expectOKWithCustom({ expect: 'deleted 0 elements', exact: true }))
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
       .catch(common.oops(this)))
@@ -98,9 +96,7 @@ describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
   it('should delete foo and foo2 with rimraf foo*', () =>
     cli
       .do(`rimraf foo*`, this.app)
-      .then(
-        cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true })
-      )
+      .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
       .catch(common.oops(this)))

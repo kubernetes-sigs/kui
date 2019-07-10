@@ -16,12 +16,7 @@
 
 import * as Debug from 'debug'
 
-import {
-  inBrowser,
-  getAuthValue,
-  setHasAuth,
-  inElectron
-} from '@kui-shell/core/core/capabilities'
+import { inBrowser, getAuthValue, setHasAuth, inElectron } from '@kui-shell/core/core/capabilities'
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
 import { config } from '@kui-shell/core/core/settings'
 import store from '@kui-shell/core/models/store'
@@ -35,9 +30,7 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const propertiesParser = require('properties-parser')
   if (!inBrowser()) {
-    wskprops = propertiesParser.read(
-      expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops')
-    )
+    wskprops = propertiesParser.read(expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))
   } else {
     // then we're running in a browser; we'll initialize this
     // later. clearly there is no local filesystem from which to pull
@@ -89,17 +82,12 @@ let authKey: string =
   store().getItem(localStorageKey.auth) ||
   getAuthValue('openwhisk', 'api_key')
 
-const apigwToken: string =
-  process.env.__OW_APIGW_TOKEN ||
-  wskprops.APIGW_ACCESS_TOKEN ||
-  'localhostNeedsSomething'
+const apigwToken: string = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
 
-const apigwSpaceGuid: string =
-  process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
+const apigwSpaceGuid: string = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
 export let ow /* : openwhisk.Client */
 
-let userRequestedIgnoreCerts =
-  store().getItem(localStorageKey.ignoreCerts) !== undefined
+let userRequestedIgnoreCerts = store().getItem(localStorageKey.ignoreCerts) !== undefined
 const ignoreCerts = (apiHost: string): boolean =>
   !!(
     userRequestedIgnoreCerts ||
@@ -110,9 +98,7 @@ const ignoreCerts = (apiHost: string): boolean =>
     wskprops.INSECURE_SSL
   )
 
-export const initOWFromConfig = (
-  owConfig: openwhisk.Options
-) /* : openwhisk.Client */ => {
+export const initOWFromConfig = (owConfig: openwhisk.Options) /* : openwhisk.Client */ => {
   debug('initOWFromConfig', owConfig)
 
   if (owConfig.api_key !== 'unknown') {
@@ -147,10 +133,7 @@ export const initOW = () => {
 
   ow = initOWFromConfig(owConfig)
 }
-if (
-  getDefaultCommandContext()[0] === 'wsk' &&
-  getDefaultCommandContext()[1] === 'action'
-) {
+if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
   initOW()
 }
 
@@ -160,10 +143,7 @@ export const apiHost = {
     // eslint-disable-next-line node/no-deprecated-api
     const url = (await import('url')).parse(newHost)
     if (!url.protocol) {
-      if (
-        newHost.indexOf('localhost') >= 0 ||
-        newHost.indexOf('192.168') >= 0
-      ) {
+      if (newHost.indexOf('localhost') >= 0 || newHost.indexOf('192.168') >= 0) {
         newHost = `http://${newHost}`
       } else {
         newHost = `https://${newHost}`
@@ -172,10 +152,7 @@ export const apiHost = {
     apihost = newHost // global variable
     userRequestedIgnoreCerts = ignoreCerts
     store().setItem(localStorageKey.host, newHost) // remember the choice in localStorage
-    store().setItem(
-      localStorageKey.ignoreCerts,
-      userRequestedIgnoreCerts.toString()
-    )
+    store().setItem(localStorageKey.ignoreCerts, userRequestedIgnoreCerts.toString())
     authKey = undefined
     initOW() // re-initialize the openwhisk npm
     debug('apiHost::set', apihost)

@@ -46,24 +46,11 @@ describe('session list and name filter', function(this: common.ISuite) {
         .catch(common.oops(this)))
   }
 
-  const verifySessionList = async ({
-    commandIndex,
-    expectedLength = 0,
-    expectedSessions = []
-  }) => {
+  const verifySessionList = async ({ commandIndex, expectedLength = 0, expectedSessions = [] }) => {
     return this.app.client
-      .waitForText(
-        `${ui.selectors.OUTPUT_N(
-          commandIndex
-        )} .entity.session .entity-name .clickable`,
-        5000
-      )
+      .waitForText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`, 5000)
       .then(() =>
-        this.app.client.getText(
-          `${ui.selectors.OUTPUT_N(
-            commandIndex
-          )} .entity.session .entity-name .clickable`
-        )
+        this.app.client.getText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`)
       )
       .then(sessions => (!Array.isArray(sessions) ? [sessions] : sessions)) // make sure we have an array
       .then(actualSessions => {
@@ -101,9 +88,7 @@ describe('session list and name filter', function(this: common.ISuite) {
     cli
       .do(`session list`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(async commandIndex =>
-        verifySessionList({ commandIndex, expectedSessions: [appName] })
-      )
+      .then(async commandIndex => verifySessionList({ commandIndex, expectedSessions: [appName] }))
       .catch(common.oops(this)))
 
   it(`should show ${appName} in session list ${appName}`, () =>

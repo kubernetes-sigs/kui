@@ -70,9 +70,7 @@ export const persisters = {
  */
 export const save = ({ getEntity, editor, eventBus }) => {
   const entityRightNow = getEntity()
-  const mode =
-    (entityRightNow.persister && entityRightNow.persister.saveString) ||
-    strings.save
+  const mode = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
 
   return {
     mode,

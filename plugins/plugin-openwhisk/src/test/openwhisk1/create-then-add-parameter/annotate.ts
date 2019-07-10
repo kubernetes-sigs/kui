@@ -28,9 +28,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
 localDescribe('Modify annotations', function(this: common.ISuite) {
@@ -51,9 +49,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ exec: 'nodejs:6' })))
 
   it('should add a parameter with explicit action name', () =>
@@ -62,9 +58,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: 1 })))
 
   it('should add a parameter with implicit action name', () =>
@@ -73,9 +67,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: 1, y: 1 })))
 
   it('should update a parameter value with implicit action name', () =>
@@ -84,9 +76,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: 2, y: 1 })))
 
   it('should update an inner structure parameter with implicit action name', () =>
@@ -95,9 +85,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: 2, y: 1, z: {} })))
 
   it('should update an inner-inner structure parameter with implicit action name', () =>
@@ -106,9 +94,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: 2, y: 1, z: { z: true } })))
 
   it('should update a parameter to false, with implicit action name', () =>
@@ -117,9 +103,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: false, y: 1, z: { z: true } })))
 
   it('should update a parameter with spaces', () =>
@@ -128,9 +112,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           'humble pie': 'rumble tummy',
@@ -146,9 +128,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           'humble pie': 'rumble tummy',
@@ -164,9 +144,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           'humble pie': 'rumble tummy',
@@ -182,9 +160,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: false, y: 1, z: { z: true } })))
 
   it('should add a structure', () =>
@@ -193,9 +169,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           sss: { 'phone home': 345 },
@@ -211,9 +185,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ x: false, y: 1, z: { z: true } })))
 
   it('should add with a pathy key', () =>
@@ -222,9 +194,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           m: { n: { 'phone home': 345 } },
@@ -240,9 +210,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ m: {}, x: false, y: 1, z: { z: true } })))
 
   it('should push to a new array', () =>
@@ -251,9 +219,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectSubset({ a: [3], m: {}, x: false, y: 1, z: { z: true } })))
 
   it('should push to an existing array', () =>
@@ -262,12 +228,8 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
-      .then(
-        ui.expectSubset({ a: [3, 4], m: {}, x: false, y: 1, z: { z: true } })
-      ))
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+      .then(ui.expectSubset({ a: [3, 4], m: {}, x: false, y: 1, z: { z: true } })))
 
   it('should push to a new pathy array', () =>
     cli
@@ -275,9 +237,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           a: [3, 4],
@@ -294,9 +254,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           a: [3, 4],
@@ -313,9 +271,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(
         ui.expectSubset({
           a: [3, 4],
@@ -332,9 +288,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(text =>
         assert.strictEqual(
           text.replace(/\s+/g, ''),

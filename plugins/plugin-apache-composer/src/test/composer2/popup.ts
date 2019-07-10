@@ -15,18 +15,10 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import {
-  selectors,
-  sidecar,
-  expectSubset,
-  getValueFromMonaco
-} from '@kui-shell/core/tests/lib/ui'
+import { selectors, sidecar, expectSubset, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
-import {
-  verifyNodeExists,
-  verifyEdgeExists
-} from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
+import { verifyNodeExists, verifyEdgeExists } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 const { localDescribe } = common
 
 /** shorthands for commands */
@@ -37,9 +29,7 @@ const waitForPreview = function(this: common.ISuite, name: string) {
   it(`should wait for wskflow visualization for ${name}`, async () => {
     const waitForIcon = () => {
       return this.app.client.waitUntil(async () => {
-        const iconText = await this.app.client.getText(
-          `${selectors.SIDECAR} .sidecar-header-icon`
-        )
+        const iconText = await this.app.client.getText(`${selectors.SIDECAR} .sidecar-header-icon`)
         return /preview/i.test(iconText)
       })
     }
@@ -53,9 +43,7 @@ const waitForPreview = function(this: common.ISuite, name: string) {
 
     await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('ast'))
     await this.app.client.waitUntil(() => {
-      return getValueFromMonaco(this.app).then(
-        expectSubset({ type: 'if' }, false)
-      ) // false: don't assert, return false instead
+      return getValueFromMonaco(this.app).then(expectSubset({ type: 'if' }, false)) // false: don't assert, return false instead
     })
 
     await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('source'))

@@ -37,10 +37,7 @@ describe('List activations, then drill down to summary views', function(this: co
           sidecar
             .expectClosed(this.app)
             .then(
-              () =>
-                `${ui.selectors.OUTPUT_N(
-                  N
-                )} .list-paginator-left-buttons span[data-button-command="${command}"]`
+              () => `${ui.selectors.OUTPUT_N(N)} .list-paginator-left-buttons span[data-button-command="${command}"]`
             )
             .then(sel => {
               console.error(`Looking for ${sel}`)
@@ -52,9 +49,7 @@ describe('List activations, then drill down to summary views', function(this: co
             })
             .then(sel => this.app.client.click(sel))
             .catch(async err => {
-              const txt = await this.app.client.getText(
-                ui.selectors.OUTPUT_N(N)
-              )
+              const txt = await this.app.client.getText(ui.selectors.OUTPUT_N(N))
               console.log(`huh, got this ${txt}`)
               throw err
             })

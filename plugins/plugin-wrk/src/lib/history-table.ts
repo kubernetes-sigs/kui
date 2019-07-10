@@ -85,9 +85,7 @@ export const list = ({ tab }: EvaluatorArgs) => {
           const highlightThis = undefined
           const returnTo = viewName
 
-          return drilldown(tab, command, highlightThis, container, returnTo)(
-            event
-          )
+          return drilldown(tab, command, highlightThis, container, returnTo)(event)
         }
       })
   }

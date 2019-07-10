@@ -28,9 +28,7 @@ const usage = {
   command: 'prompt',
   strict: 'prompt',
   hidden: true,
-  optional: [
-    { name: 'promptString', positional: true, docs: 'The prompt string' }
-  ]
+  optional: [{ name: 'promptString', positional: true, docs: 'The prompt string' }]
 }
 
 /**

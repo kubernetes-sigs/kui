@@ -46,10 +46,7 @@ const logThen = f => (msg: string) => {
 const deleteAllOnce = entities =>
   Promise.all(
     entities.map(entity => {
-      const tryDelete = () =>
-        repl.qexec(
-          `${entity.type} delete "/${entity.namespace}/${entity.name}"`
-        )
+      const tryDelete = () => repl.qexec(`${entity.type} delete "/${entity.namespace}/${entity.name}"`)
 
       // with retries...
       return tryDelete()
@@ -128,13 +125,9 @@ const handle404s = (retry: () => void) => err => {
  *
  */
 const doWipe1 = (quiet = false) =>
-  Promise.all([clean('trigger', quiet), clean('action', quiet)]).catch(
-    handle404s(() => doWipe1(true))
-  )
+  Promise.all([clean('trigger', quiet), clean('action', quiet)]).catch(handle404s(() => doWipe1(true)))
 const doWipe2 = (quiet = false) =>
-  Promise.all([clean('rule', quiet), clean('package', quiet)]).catch(
-    handle404s(() => doWipe2(true))
-  )
+  Promise.all([clean('rule', quiet), clean('package', quiet)]).catch(handle404s(() => doWipe2(true)))
 const doWipe = () =>
   doWipe1()
     .then(() => doWipe2())
@@ -145,11 +138,7 @@ const doWipe = () =>
       }
     })
 
-const doWipeWithConfirmation = async ({
-  tab,
-  block,
-  nextBlock
-}: EvaluatorArgs) => {
+const doWipeWithConfirmation = async ({ tab, block, nextBlock }: EvaluatorArgs) => {
   //
   // first, hide the sidecar
   //
@@ -164,8 +153,7 @@ const doWipeWithConfirmation = async ({
     nextBlock,
     tab,
     {
-      placeholder:
-        'This operation will remove all entities. Enter "yes" to confirm.',
+      placeholder: 'This operation will remove all entities. Enter "yes" to confirm.',
       dangerous: true
     },
     options => {

@@ -19,15 +19,9 @@ import * as Debug from 'debug'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import {
-  outerCSSForKey,
-  cssForKey
-} from '@kui-shell/core/webapp/util/ascii-to-table'
+import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import {
-  Resource,
-  KubeResource
-} from '@kui-shell/plugin-k8s/lib/model/resource'
+import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 const debug = Debug('plugin/operator-framework/view/modes/packages')
 

@@ -25,9 +25,7 @@ const localWskProps = () => {
     const propertiesParser = require('properties-parser')
 
     try {
-      wskprops = propertiesParser.read(
-        process.env['WSK_CONFIG_FILE'] || expandHomeDir('~/.wskprops')
-      )
+      wskprops = propertiesParser.read(process.env['WSK_CONFIG_FILE'] || expandHomeDir('~/.wskprops'))
     } catch (err) {
       if (err.code === 'ENOENT') {
         // this probably is OK, it probably means that the user set everything via env vars
@@ -47,11 +45,7 @@ const localWskProps = () => {
  */
 exports.entities = ['action', 'trigger', 'rule', 'package']
 
-const apihost =
-  process.env.__OW_API_HOST ||
-  process.env.API_HOST ||
-  process.env.APIHOST ||
-  localWskProps().APIHOST
+const apihost = process.env.__OW_API_HOST || process.env.API_HOST || process.env.APIHOST || localWskProps().APIHOST
 const apihostIsLocal = apihost
   ? apihost.indexOf('localhost') >= 0 ||
     apihost.startsWith('192.') ||
@@ -65,8 +59,7 @@ exports.apihostIsLocal = apihostIsLocal
 
 const cleanAll = (
   noDefault,
-  api_key = !noDefault &&
-    (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)
+  api_key = !noDefault && (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)
 ) => {
   if (!api_key) {
     return Promise.resolve(true)
@@ -75,11 +68,7 @@ const cleanAll = (
   const opts = {
     apihost,
     api_key,
-    ignore_certs:
-      process.env.IGNORE_CERTS ||
-      process.env.INSECURE_SSL ||
-      localWskProps().INSECURE_SSL ||
-      apihostIsLocal
+    ignore_certs: process.env.IGNORE_CERTS || process.env.INSECURE_SSL || localWskProps().INSECURE_SSL || apihostIsLocal
   }
 
   const ow = require('openwhisk')(opts)
@@ -102,9 +91,7 @@ const cleanAll = (
           return ow[entity.type]
             .delete({ name: `/${entity.namespace}/${entity.name}` })
             .then(deleted => {
-              const feedAnnotation =
-                deleted.annotations &&
-                deleted.annotations.find(kv => kv.key === 'feed')
+              const feedAnnotation = deleted.annotations && deleted.annotations.find(kv => kv.key === 'feed')
               if (feedAnnotation) {
                 // console.log('Deleting feed', feedAnnotation.value)
                 return ow.feeds.delete({
@@ -173,9 +160,7 @@ const cleanAll = (
   // here is the core logic
   //
   const cleanOnce = () =>
-    Promise.all([clean('triggers'), clean('actions')]).then(() =>
-      Promise.all([clean('rules'), clean('packages')])
-    )
+    Promise.all([clean('triggers'), clean('actions')]).then(() => Promise.all([clean('rules'), clean('packages')]))
 
   return cleanOnce()
     .catch(logThen(cleanOnce))
@@ -211,16 +196,10 @@ exports.before = (ctx, opts) => {
         ? x => x
         : () =>
             cli
-              .do(
-                `wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`,
-                ctx.app
-              )
+              .do(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
               .then(cli.expectOK)
               .catch(err => {
-                console.log(
-                  `Failed at command: wsk auth add ${process.env.__OW_API_KEY ||
-                    process.env.AUTH}`
-                )
+                console.log(`Failed at command: wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`)
                 common.oops(ctx)(err)
               })
 

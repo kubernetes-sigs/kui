@@ -16,11 +16,7 @@
 
 /* eslint @typescript-eslint/camelcase: ["error", { allow: ["session_get", "session_result"] }] */
 
-import {
-  actions,
-  activations,
-  skipAndLimit
-} from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-usage'
+import { actions, activations, skipAndLimit } from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-usage'
 import { sampleInputs } from './sample-inputs'
 
 const activationsUsage = {
@@ -33,8 +29,7 @@ const actionsUsage = {
 }
 
 const strings = {
-  create:
-    'Use this command to create a new composition from a given source file.',
+  create: 'Use this command to create a new composition from a given source file.',
   update: 'Use this command to update an existing composition.',
   session_get: `Display the full details of a session`,
   session_result: `Display the return value of a session. (Hint: use session get to see the full details)`
@@ -121,9 +116,7 @@ export const appGet = command => ({
   title: 'Show composition',
   header: 'Displays the details of a given composition',
   example: `app ${command} <appName>`,
-  required: [
-    { name: 'appName', docs: 'the name of your composition', entity: 'action' }
-  ],
+  required: [{ name: 'appName', docs: 'the name of your composition', entity: 'action' }],
   optional: [
     {
       name: '--cli',
@@ -203,8 +196,7 @@ export const sessionGet = command => ({
  */
 export const sessionList = {
   title: 'List Recent Sessions',
-  header:
-    'Returns a list of recent composition activations (a.k.a. "sessions").',
+  header: 'Returns a list of recent composition activations (a.k.a. "sessions").',
   example: 'session list',
   optional: [
     { name: '--name', docs: 'filter to show only a given named composition' },
@@ -242,9 +234,7 @@ export const appDelete = {
   docs: 'delete a given composition',
   strict: 'delete',
   example: 'app delete <composition>',
-  required: [
-    { name: 'name', docs: 'a deployed composition', entity: 'action' }
-  ],
+  required: [{ name: 'name', docs: 'a deployed composition', entity: 'action' }],
   parents: ['composer', { command: 'composer app' }]
 }
 

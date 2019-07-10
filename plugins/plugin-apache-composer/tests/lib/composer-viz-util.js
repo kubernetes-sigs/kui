@@ -20,9 +20,7 @@ const ui = require('@kui-shell/core/tests/lib/ui')
 const cli = ui.cli
 const sidecar = ui.sidecar
 
-const ROOT = path.dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = path.dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /**
  * Helper to find an input file
@@ -45,9 +43,7 @@ const verifyNodeExists = (name, isDeployed = false) => app => {
   }"]`
   console.error(`CHECKING NODE ${name} ${selector}`)
   return app.client
-    .waitUntil(() =>
-      app.client.elements(selector).then(nodes => nodes.value.length === 1)
-    )
+    .waitUntil(() => app.client.elements(selector).then(nodes => nodes.value.length === 1))
     .then(() => app)
 }
 
@@ -77,12 +73,10 @@ const verifyNodeStatusExists = (name, status) => app => {
             console.error(`GOTb ${nodes.length} NODES`)
             console.error(nodes)
 
-            return app.client
-              .getAttribute(selector, 'data-name')
-              .then(nodes => {
-                console.error(`GOTc ${nodes.length} NODES`)
-                console.error(nodes)
-              })
+            return app.client.getAttribute(selector, 'data-name').then(nodes => {
+              console.error(`GOTc ${nodes.length} NODES`)
+              console.error(nodes)
+            })
           })
           .catch(() => true)
           .then(() => {
@@ -94,11 +88,7 @@ const verifyNodeStatusExists = (name, status) => app => {
 
 const verifyNodeExistsById = id => app => {
   return app.client
-    .waitUntil(() =>
-      app.client
-        .elements(`#wskflowSVG #${id}`)
-        .then(nodes => nodes.value.length === 1)
-    )
+    .waitUntil(() => app.client.elements(`#wskflowSVG #${id}`).then(nodes => nodes.value.length === 1))
     .then(() => app)
 }
 
@@ -110,9 +100,7 @@ const verifyEdgeExists = (from, to) => app => {
   const selector = `#wskflowSVG path[data-from-name="/_/${from}"][data-to-name="/_/${to}"]`
   console.error(`CHECKING EDGE ${from} ${to} ${selector}`)
   return app.client
-    .waitUntil(() =>
-      app.client.elements(selector).then(edges => edges.value.length === 1)
-    )
+    .waitUntil(() => app.client.elements(selector).then(edges => edges.value.length === 1))
     .then(() => app)
 }
 
@@ -149,9 +137,7 @@ const verifyNodeLabelsAreSane = app =>
   app.client
     .getText(`#wskflowSVG .node text`)
     .then(labels => (typeof labels === 'string' ? [labels] : labels))
-    .then(labels =>
-      labels.forEach(label => assert.ok(label.indexOf('[object Object]') < 0))
-    )
+    .then(labels => labels.forEach(label => assert.ok(label.indexOf('[object Object]') < 0)))
     .then(() => app)
 
 /**

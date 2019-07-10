@@ -39,11 +39,7 @@ const viewName = 'Containers'
  * for the given resource
  *
  */
-export const containersButton = (
-  command: string,
-  resource: Resource,
-  overrides?
-) =>
+export const containersButton = (command: string, resource: Resource, overrides?) =>
   Object.assign(
     {},
     {
@@ -81,11 +77,7 @@ export const containersMode: ModeRegistration<KubeResource> = {
  * Return a drilldown function that shows container logs
  *
  */
-const showLogs = (
-  tab: Tab,
-  { pod, container },
-  exec: 'pexec' | 'qexec' = 'pexec'
-) => {
+const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
   const podName = repl.encodeComponent(pod.metadata.name)
   const containerName = repl.encodeComponent(container.name)
   const ns = repl.encodeComponent(pod.metadata.namespace)
@@ -108,8 +100,7 @@ const showLogs = (
  *
  */
 const headerModel = (resource: Resource): Row => {
-  const statuses =
-    resource.resource.status && resource.resource.status.containerStatuses
+  const statuses = resource.resource.status && resource.resource.status.containerStatuses
 
   const specAttrs = [{ value: 'PORTS', outerCSS: 'header-cell pretty-narrow' }]
 
@@ -160,9 +151,7 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
           {
             key: 'ready',
             value: status.ready,
-            fontawesome: status.ready
-              ? 'fas fa-check-circle'
-              : 'far fa-dot-circle',
+            fontawesome: status.ready ? 'fas fa-check-circle' : 'far fa-dot-circle',
             css: status.ready ? 'green-text' : 'yellow-text'
           },
           {
@@ -178,16 +167,12 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
                 : TrafficLight.Yellow,
             watch: async () => {
               // { value, done = false, css, onclick, others = [], unchanged = false, outerCSS }
-              const pod = await repl.qexec(
-                `kubectl get pod ${podName} -n ${ns} -o json`,
-                undefined,
-                undefined,
-                { raw: true }
-              )
+              const pod = await repl.qexec(`kubectl get pod ${podName} -n ${ns} -o json`, undefined, undefined, {
+                raw: true
+              })
 
               const statuses = pod.status && pod.status.containerStatuses
-              const status =
-                statuses && statuses.find(_ => _.name === container.name)
+              const status = statuses && statuses.find(_ => _.name === container.name)
               const stateKey = Object.keys(status.state)[0]
               const stateBody = status.state[stateKey]
               debug('watch', status, stateKey, pod)
@@ -205,9 +190,7 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
                   key: 'ready',
                   value: status.ready,
                   css: status.ready ? 'green-text' : 'yellow-text',
-                  fontawesome: status.ready
-                    ? 'fas fa-check-circle'
-                    : 'far fa-dot-circle'
+                  fontawesome: status.ready ? 'fas fa-check-circle' : 'far fa-dot-circle'
                 },
                 {
                   key: 'message',
@@ -234,9 +217,7 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
     const portsAttr = {
       key: 'ports',
       outerCSS: 'not-too-wide',
-      value: (container.ports || [])
-        .map(({ containerPort, protocol }) => `${containerPort}/${protocol}`)
-        .join(' ')
+      value: (container.ports || []).map(({ containerPort, protocol }) => `${containerPort}/${protocol}`).join(' ')
     }
 
     const specAttrs = [portsAttr]
@@ -257,11 +238,7 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
  * Render the tabular containers view
  *
  */
-export const renderContainers = async (
-  tab: Tab,
-  command: string,
-  resource: Resource
-) => {
+export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
   debug('renderContainers', command, resource)
 
   return formatTable(tab, {
@@ -281,7 +258,5 @@ interface Parameters {
   resource: Resource
 }
 export const renderAndViewContainers = (tab: Tab, parameters: Parameters) => {
-  renderContainers(tab, parameters.command, parameters.resource).then(
-    insertView(tab)
-  )
+  renderContainers(tab, parameters.command, parameters.resource).then(insertView(tab))
 }

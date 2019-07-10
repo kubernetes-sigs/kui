@@ -26,9 +26,7 @@ import {
 } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-k8s/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
@@ -53,9 +51,7 @@ describe('electron create pod', function(this: common.ISuite) {
               `${kubectl} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
               this.app
             )
-            .then(
-              cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-            )
+            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
@@ -77,22 +73,15 @@ describe('electron create pod', function(this: common.ISuite) {
             `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
             this.app
           )
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-          )
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })
 
       it(`should create sample pod from local file via ${kubectl}`, () => {
         return cli
-          .do(
-            `${kubectl} create ${dashF} "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`,
-            this.app
-          )
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-          )
+          .do(`${kubectl} create ${dashF} "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
@@ -100,9 +89,7 @@ describe('electron create pod', function(this: common.ISuite) {
       it(`should delete the sample pod by name via ${kubectl}`, () => {
         return cli
           .do(`${kubectl} delete pod nginx ${inNamespace}`, this.app)
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-          )
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })

@@ -27,10 +27,7 @@ import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import {
-  SidecarState,
-  getSidecarState
-} from '@kui-shell/core/webapp/views/sidecar'
+import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
 import {
   setCustomCaret,
   clearPendingTextSelection,
@@ -44,19 +41,12 @@ import {
 } from '@kui-shell/core/webapp/cli'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
-import {
-  preprocessTable,
-  formatTable
-} from '@kui-shell/core/webapp/util/ascii-to-table'
+import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
-import {
-  Channel,
-  InProcessChannel,
-  WebViewChannelRendererSide
-} from './channel'
+import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 const debug = Debug('plugins/bash-like/pty/client')
 
 /* eslint-disable no-control-regex */
@@ -88,10 +78,7 @@ function getCachedSize(tab: Tab): Size {
     return cachedSize
   }
 }
-function setCachedSize(
-  tab: Tab,
-  { rows, cols }: { rows: number; cols: number }
-) {
+function setCachedSize(tab: Tab, { rows, cols }: { rows: number; cols: number }) {
   tab['_kui_pty_cachedSize'] = {
     rows,
     cols,
@@ -179,10 +166,7 @@ class Resizer {
   }
 
   private isEmptyCursorRow(row: Element): boolean {
-    return (
-      row.children.length === 1 &&
-      row.children[0].classList.contains('xterm-cursor')
-    )
+    return row.children.length === 1 && row.children[0].classList.contains('xterm-cursor')
   }
 
   /**
@@ -233,9 +217,7 @@ class Resizer {
     // debug('hideTrailingEmptyBlanks', remove, from)
 
     if (!remove) {
-      const hidden = this.terminal.element.querySelectorAll(
-        '.xterm-rows > .xterm-hidden-row'
-      )
+      const hidden = this.terminal.element.querySelectorAll('.xterm-rows > .xterm-hidden-row')
       for (let idx = 0; idx < hidden.length; idx++) {
         hidden[idx].classList.remove('xterm-hidden-row')
       }
@@ -262,9 +244,7 @@ class Resizer {
    *
    */
   hideCursorOnlyRow() {
-    const cursor = this.terminal.element.querySelector(
-      '.xterm-rows .xterm-cursor'
-    )
+    const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
     const cursorRow = cursor && (cursor.parentNode as Element)
     if (cursorRow) {
       if (cursorRow.children.length === 1) {
@@ -299,8 +279,7 @@ class Resizer {
     const _core = this.terminal._core
     const hack = _core.renderer
     const dimensions = hack.dimensions
-    const scaledCharWidth =
-      hack._terminal.charMeasure.width * window.devicePixelRatio
+    const scaledCharWidth = hack._terminal.charMeasure.width * window.devicePixelRatio
     const ratio = scaledCharWidth / dimensions.scaledCharWidth
 
     const selectorForSize = '.repl-inner'
@@ -311,17 +290,11 @@ class Resizer {
     const widthPadElement = this.tab.querySelector(selectorForWidthPad)
     const heightPadElement = sizeElement
 
-    const width =
-      enclosingRect.width - Resizer.paddingHorizontal(widthPadElement)
-    const height =
-      enclosingRect.height - Resizer.paddingVertical(heightPadElement)
+    const width = enclosingRect.width - Resizer.paddingHorizontal(widthPadElement)
+    const height = enclosingRect.height - Resizer.paddingVertical(heightPadElement)
 
-    const cols = Math.floor(
-      width / this.terminal._core.renderer.dimensions.actualCellWidth / ratio
-    )
-    const rows = Math.floor(
-      height / this.terminal._core.renderer.dimensions.actualCellHeight
-    )
+    const cols = Math.floor(width / this.terminal._core.renderer.dimensions.actualCellWidth / ratio)
+    const rows = Math.floor(height / this.terminal._core.renderer.dimensions.actualCellHeight)
 
     debug('getSize', cols, rows, width, height)
 
@@ -346,14 +319,7 @@ class Resizer {
 
     const { rows, cols } = this.getSize(flush)
     if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
-      debug(
-        'resize',
-        cols,
-        rows,
-        this.terminal.cols,
-        this.terminal.rows,
-        this.inAltBufferMode()
-      )
+      debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
       try {
         this.terminal.resize(cols, rows)
 
@@ -415,13 +381,10 @@ let cachedFontProperties: { fontFamily: string; fontSize: number }
 function getFontProperties(flush: boolean) {
   if (flush || !cachedFontProperties) {
     debug('computing font properties')
-    const fontTheme = getComputedStyle(
-      document.querySelector('body .repl .repl-input input')
-    )
+    const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
 
     /** helper to extract a kui theme color */
-    const val = (key: string, kind = 'color'): string =>
-      fontTheme.getPropertyValue(`--${kind}-${key}`).trim()
+    const val = (key: string, kind = 'color'): string => fontTheme.getPropertyValue(`--${kind}-${key}`).trim()
 
     const fontSize = parseFloat(fontTheme.fontSize.replace(/px$/, ''))
     const fontFamily = val('monospace', 'font')
@@ -508,11 +471,7 @@ const getOrCreateChannel = async (
 
   const cachedws = tab['ws'] as Channel
 
-  if (
-    !cachedws ||
-    cachedws.readyState === WebSocket.CLOSING ||
-    cachedws.readyState === WebSocket.CLOSED
-  ) {
+  if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
     debug('allocating new channel')
     const ws = await channelFactory()
     debug('allocated new channel', ws)
@@ -564,9 +523,7 @@ export const doExec = (
       parsedOptions.o ||
       parsedOptions.output ||
       parsedOptions.out ||
-      (argvNoOptions[0] === 'cat' &&
-        /json$/.test(argvNoOptions[1]) &&
-        'json') ||
+      (argvNoOptions[0] === 'cat' && /json$/.test(argvNoOptions[1]) && 'json') ||
       (argvNoOptions[0] === 'cat' && /yaml$/.test(argvNoOptions[1]) && 'yaml')
     const expectingSemiStructuredOutput = /yaml|json/.test(contentType)
 
@@ -580,17 +537,12 @@ export const doExec = (
         })
       } else {
         injectCSS({
-          path: path.join(
-            path.dirname(require.resolve('xterm/package.json')),
-            'lib/xterm.css'
-          ),
+          path: path.join(path.dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'),
           key: 'xtermjs'
         })
         injectCSS({
           path: path.join(
-            path.dirname(
-              require.resolve('@kui-shell/plugin-bash-like/package.json')
-            ),
+            path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')),
             'web/css/xterm.css'
           ),
           key: 'kui-xtermjs'
@@ -654,10 +606,7 @@ export const doExec = (
 
         // heuristic for hiding empty rows
         terminal.element.classList.add('xterm-empty-row-heuristic')
-        setTimeout(
-          () => terminal.element.classList.remove('xterm-empty-row-heuristic'),
-          100
-        )
+        setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
         const cleanUpTerminal = () => {
           terminal.blur()
@@ -678,12 +627,7 @@ export const doExec = (
             ? webviewChannelFactory
             : remoteChannelFactory
           : electronChannelFactory
-        const ws: Channel = await getOrCreateChannel(
-          cmdline,
-          channelFactory,
-          tab,
-          terminal
-        ).catch(err => {
+        const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal).catch(err => {
           console.error('error creating channel', err)
           cleanUpTerminal()
           throw err
@@ -708,10 +652,7 @@ export const doExec = (
         // relay keyboard input to the server
         let queuedInput: string
         terminal.on('key', key => {
-          if (
-            ws.readyState === WebSocket.CLOSING ||
-            ws.readyState === WebSocket.CLOSED
-          ) {
+          if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
             debug('queued input out back', key)
             queuedInput += key
           } else {
@@ -742,10 +683,7 @@ export const doExec = (
 
         const doScroll = () => {
           try {
-            if (
-              !resizer.inAltBufferMode() &&
-              block.classList.contains('processing')
-            ) {
+            if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
               if (currentScrollAsync) {
                 clearTimeout(currentScrollAsync)
               }
@@ -796,8 +734,7 @@ export const doExec = (
         let pendingTable: Table
         let raw = ''
 
-        let definitelyNotTable =
-          expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' // short-term hack until we fix up ascii-to-table
+        let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' // short-term hack until we fix up ascii-to-table
 
         const onMessage = async (data: string) => {
           const msg = JSON.parse(data)
@@ -806,11 +743,7 @@ export const doExec = (
             const queuedInput = disableInputQueueing()
             if (queuedInput.length > 0) {
               debug('queued input up front', queuedInput)
-              setTimeout(
-                () =>
-                  ws.send(JSON.stringify({ type: 'data', data: queuedInput })),
-                50
-              )
+              setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
             }
 
             // now that we've grabbed queued input, focus on the terminal,
@@ -846,35 +779,20 @@ export const doExec = (
                   drilldownWithPip: true
                 }))
 
-            if (
-              !definitelyNotTable &&
-              raw.length > 0 &&
-              !resizer.wasEverInAltBufferMode()
-            ) {
+            if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
               try {
-                const tables = preprocessTable(
-                  stripClean(raw).split(/^(?=NAME|Name|ID|\n\*)/m)
-                ).filter(x => x)
+                const tables = preprocessTable(stripClean(raw).split(/^(?=NAME|Name|ID|\n\*)/m)).filter(x => x)
                 debug('tables', tables)
 
                 if (tables && tables.length > 0) {
-                  const tableRows = tables
-                    .filter(_ => _.rows !== undefined)
-                    .flatMap(_ => _.rows)
+                  const tableRows = tables.filter(_ => _.rows !== undefined).flatMap(_ => _.rows)
 
                   if (tableRows && tableRows.length > 0) {
                     debug('tableRows', tableRows)
                     const command = argvNoOptions[0]
                     const verb = argvNoOptions[1]
-                    const entityType =
-                      /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
-                    const tableModel = formatTable(
-                      command,
-                      verb,
-                      entityType,
-                      parsedOptions,
-                      tableRows
-                    )
+                    const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
+                    const tableModel = formatTable(command, verb, entityType, parsedOptions, tableRows)
                     debug('tableModel', tableModel)
                     pendingTable = tableModel
                   }
@@ -924,9 +842,7 @@ export const doExec = (
               } else if (expectingSemiStructuredOutput) {
                 try {
                   const resource =
-                    contentType === 'yaml'
-                      ? safeLoadWithCatch(stripClean(raw))
-                      : JSON.parse(stripClean(raw))
+                    contentType === 'yaml' ? safeLoadWithCatch(stripClean(raw)) : JSON.parse(stripClean(raw))
 
                   if (typeof resource === 'string') {
                     // degenerate case e.g. cat foo.json | jq .something.something => string rather than struct
@@ -936,22 +852,13 @@ export const doExec = (
                       type: 'custom',
                       isEntity: true,
                       name:
-                        argvNoOptions[0] === 'cat'
-                          ? path.basename(argvNoOptions[1])
-                          : argvNoOptions.slice(3).join(' '),
-                      packageName:
-                        argvNoOptions[0] === 'cat' &&
-                        path.dirname(argvNoOptions[1]),
-                      prettyType:
-                        argvNoOptions[0] === 'cat'
-                          ? contentType
-                          : argvNoOptions[2],
+                        argvNoOptions[0] === 'cat' ? path.basename(argvNoOptions[1]) : argvNoOptions.slice(3).join(' '),
+                      packageName: argvNoOptions[0] === 'cat' && path.dirname(argvNoOptions[1]),
+                      prettyType: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
                       contentType,
                       content: stripClean(raw),
                       resource,
-                      modes: [
-                        { mode: 'raw', direct: cmdline, defaultMode: true }
-                      ]
+                      modes: [{ mode: 'raw', direct: cmdline, defaultMode: true }]
                     })
                   }
                 } catch (err) {
@@ -977,11 +884,7 @@ export const doExec = (
                 const error = new Error('')
                 if (/File exists/i.test(raw)) error['code'] = 409
                 // re: i18n, this is for tests
-                else if (
-                  msg.exitCode !== 127 &&
-                  (/no such/i.test(raw) || /not found/i.test(raw))
-                )
-                  error['code'] = 404
+                else if (msg.exitCode !== 127 && (/no such/i.test(raw) || /not found/i.test(raw))) error['code'] = 404
                 // re: i18n, this is for tests
                 else error['code'] = msg.exitCode
 

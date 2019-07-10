@@ -22,17 +22,9 @@ const makeButton = (overrides, fn?) =>
     {},
     {
       direct: async (tab: Tab, args) => {
-        const {
-          prettyType: kind = '-f',
-          name,
-          resourceName = name,
-          packageName,
-          namespace = packageName
-        } = args
+        const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
         const response = await repl.pexec(
-          `kubectl ${overrides.mode} ${kind} ${resourceName} ${
-            namespace ? '-n ' + namespace : ''
-          }`,
+          `kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
           { noStatus: !!fn, tab }
         )
         return fn ? fn(response) : response

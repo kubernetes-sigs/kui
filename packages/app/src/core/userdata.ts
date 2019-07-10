@@ -165,10 +165,7 @@ export const getPreference = async (key: string): Promise<string> => {
  * @return the preference value
  *
  */
-export const setPreference = async (
-  key: string,
-  value: string
-): Promise<string> => {
+export const setPreference = async (key: string, value: string): Promise<string> => {
   debug('setPreference', key, value)
   const prefs = await preferences()
   prefs[key] = value

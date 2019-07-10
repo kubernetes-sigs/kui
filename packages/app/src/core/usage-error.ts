@@ -37,10 +37,7 @@ class DefaultUsageOptions implements UsageOptions {}
  * back.
  *
  */
-async function promiseEach<T, R>(
-  arr: T[],
-  fn: (t: T) => Promise<R>
-): Promise<R[]> {
+async function promiseEach<T, R>(arr: T[], fn: (t: T) => Promise<R>): Promise<R[]> {
   const result = []
   for (const item of arr) {
     result.push(await fn(item))
@@ -75,8 +72,7 @@ const div = (
   }
   return result
 }
-const span = (str?: string | Element, css?: string): HTMLElement =>
-  div(str, css, 'span')
+const span = (str?: string | Element, css?: string): HTMLElement => div(str, css, 'span')
 
 /**
  * The start of every section, e.g. Usage:
@@ -120,13 +116,8 @@ interface BreadcrumbWithClickCommand {
 interface BreadcrumbWithLabelProvider {
   command: string
 }
-type BreadcrumbLabel =
-  | string
-  | BreadcrumbWithLabelProvider
-  | BreadcrumbWithClickCommand
-function isBreadcrumbWithClickCommand(
-  crumb: BreadcrumbLabel
-): crumb is BreadcrumbWithClickCommand {
+type BreadcrumbLabel = string | BreadcrumbWithLabelProvider | BreadcrumbWithClickCommand
+function isBreadcrumbWithClickCommand(crumb: BreadcrumbLabel): crumb is BreadcrumbWithClickCommand {
   const breadcrumb = crumb as BreadcrumbWithClickCommand
   return !!(breadcrumb.label && breadcrumb.command)
 }
@@ -141,12 +132,7 @@ function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
  *
  */
 const breadcrumbFromCommand = async (command: string): Promise<string> => {
-  const usageError: UsageError = await repl.qexec(
-    command,
-    undefined,
-    undefined,
-    { failWithUsage: true }
-  )
+  const usageError: UsageError = await repl.qexec(command, undefined, undefined, { failWithUsage: true })
 
   if (isMessageWithUsageModel(usageError.raw)) {
     const usage = usageError.raw.usage
@@ -189,9 +175,7 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
     item.appendChild(dom)
 
     if (!options.noSlash) {
-      item.appendChild(
-        span(isHeadless() ? '/' : '', 'bx--breadcrumb-item--slash')
-      )
+      item.appendChild(span(isHeadless() ? '/' : '', 'bx--breadcrumb-item--slash'))
     }
 
     if (cmd) {
@@ -216,10 +200,7 @@ function isGenerator(row: UsageRow): row is Generator {
  * Format the given usage message
  *
  */
-const format = async (
-  message: UsageLike,
-  options: UsageOptions = new DefaultUsageOptions()
-): Promise<HTMLElement> => {
+const format = async (message: UsageLike, options: UsageOptions = new DefaultUsageOptions()): Promise<HTMLElement> => {
   debug('format message', message)
 
   if (typeof message === 'string') {
@@ -265,25 +246,15 @@ const format = async (
     // those fields now; `body` is the flex-wrap portion of the
     // content
     const resultWrapper = div(undefined, 'usage-error-wrapper')
-    const result = div(
-      undefined,
-      options.noHide ? '' : ['hideable', 'page-content'],
-      'p'
-    )
+    const result = div(undefined, options.noHide ? '' : ['hideable', 'page-content'], 'p')
     const body = div()
     const left = div() // usage and detailedExample
     const right = div() // required and optional parameters
 
     // if we have a great many detailed examples, place them in a scroll region
-    const scrollableDetailedExamples =
-      detailedExample &&
-      Array.isArray(detailedExample) &&
-      detailedExample.length > 4
+    const scrollableDetailedExamples = detailedExample && Array.isArray(detailedExample) && detailedExample.length > 4
 
-    if (
-      (sections && sections.length > 1) ||
-      (scrollableDetailedExamples && sections && sections.length > 0)
-    ) {
+    if ((sections && sections.length > 1) || (scrollableDetailedExamples && sections && sections.length > 0)) {
       left.classList.add('fifty-fifty')
       right.classList.add('fifty-fifty')
     } else {
@@ -296,10 +267,7 @@ const format = async (
       const messageDom = div(undefined, '', 'div')
       const prefacePart = span('')
 
-      const messagePart = span(
-        messageString,
-        'red-text usage-error-message-string'
-      )
+      const messagePart = span(messageString, 'red-text usage-error-message-string')
       if (message.messageDom) {
         if (typeof message.messageDom === 'string') {
           messagePart.appendChild(document.createTextNode(message.messageDom))
@@ -317,15 +285,9 @@ const format = async (
       resultWrapper.appendChild(messageDom)
 
       if (!isHeadless() && !options.noHide) {
-        const usagePart = div(
-          undefined,
-          'small-top-pad hideable click-here-for-usage-container'
-        )
+        const usagePart = div(undefined, 'small-top-pad hideable click-here-for-usage-container')
         const frontPart = span('Click ')
-        const clickyPart = span(
-          'here',
-          'clickable clickable-blatant click-here-for-usage'
-        )
+        const clickyPart = span('here', 'clickable clickable-blatant click-here-for-usage')
         const restPart = span(' for usage information.')
 
         usagePart.appendChild(frontPart)
@@ -354,21 +316,13 @@ const format = async (
         breadcrumb
       }))
       const thisCommand = { breadcrumb, noSlash: true, preserveCase }
-      const breadcrumbs: CrumbOptions[] = [
-        rootCrumb,
-        ...parentChain,
-        thisCommand
-      ]
+      const breadcrumbs: CrumbOptions[] = [rootCrumb, ...parentChain, thisCommand]
 
       // generate the breadcrumb Elements from the model
       const crumbs = await promiseEach(breadcrumbs, makeBreadcrumb)
 
       // attach the breadcrumb to the view
-      const container = div(
-        undefined,
-        'bx--breadcrumb bx--breadcrumb--no-trailing-slash',
-        'h2'
-      )
+      const container = div(undefined, 'bx--breadcrumb bx--breadcrumb--no-trailing-slash', 'h2')
       result.appendChild(container)
       crumbs.forEach(breadcrumb => container.appendChild(breadcrumb))
     }
@@ -428,10 +382,7 @@ const format = async (
     const scrollRegions = []
 
     // any minimally formatted sections? e.g. `intro` and `section` fields
-    const makeSection = (parent = right, noMargin = false) => ({
-      title,
-      content
-    }: TitledContent) => {
+    const makeSection = (parent = right, noMargin = false) => ({ title, content }: TitledContent) => {
       const wrapper = bodyPart(noMargin)
       const prePart = prefix(title)
       const contentPart = document.createElement('pre')
@@ -469,9 +420,7 @@ const format = async (
 
     // detailed example command
     if (detailedExample) {
-      const examples = !Array.isArray(detailedExample)
-        ? [detailedExample]
-        : detailedExample
+      const examples = !Array.isArray(detailedExample) ? [detailedExample] : detailedExample
 
       const examplePart = bodyPart()
       const prePart = prefix(examples.length === 1 ? 'Example' : 'Examples')
@@ -480,12 +429,9 @@ const format = async (
 
       // only if we there are other sections to show, render the
       // detailed examples in a scroll region
-      const examplesInScrollRegion =
-        examples.length > 4 && sections && sections.length > 0
+      const examplesInScrollRegion = examples.length > 4 && sections && sections.length > 0
 
-      const rowsPart = examplesInScrollRegion
-        ? div(undefined, ['scrollable', 'scrollable-auto'])
-        : examplePart
+      const rowsPart = examplesInScrollRegion ? div(undefined, ['scrollable', 'scrollable-auto']) : examplePart
       if (examplesInScrollRegion) {
         scrollRegions.push(rowsPart)
 
@@ -543,14 +489,9 @@ const format = async (
       // bottom border; the 3em part must .log-line's height in
       // ui.css; nRowsInViewport = true means disable inner scrolling
       if (rows.length > nRowsInViewport && nRowsInViewport !== true) {
-        const tableScrollable = div(undefined, [
-          'scrollable',
-          'scrollable-auto'
-        ])
+        const tableScrollable = div(undefined, ['scrollable', 'scrollable-auto'])
         const nRows =
-          sections &&
-          (sections.length === 2 ||
-            (sections.length === 1 && scrollableDetailedExamples))
+          sections && (sections.length === 2 || (sections.length === 1 && scrollableDetailedExamples))
             ? 8
             : nRowsInViewport
         tableScrollable.style.maxHeight = `calc(${nRows} * 3em + 1px)`
@@ -603,21 +544,10 @@ const format = async (
 
         const cmdCell = row.insertCell(-1)
         const docsCell = row.insertCell(-1)
-        const cmdPart = span(
-          label && label.replace(/=/g, '=\u00ad'),
-          'pre-wrap'
-        )
+        const cmdPart = span(label && label.replace(/=/g, '=\u00ad'), 'pre-wrap')
         const dirPart = isDir && label && span('/')
-        const examplePart =
-          example &&
-          span(
-            example,
-            label || dirPart ? 'left-pad lighter-text smaller-text' : ''
-          ) // for -p key value, "key value"
-        const aliasesPart =
-          aliases &&
-          aliases.length > 0 &&
-          span(undefined, 'lighter-text smaller-text small-left-pad')
+        const examplePart = example && span(example, label || dirPart ? 'left-pad lighter-text smaller-text' : '') // for -p key value, "key value"
+        const aliasesPart = aliases && aliases.length > 0 && span(undefined, 'lighter-text smaller-text small-left-pad')
         const docsPart = span(docs)
         const allowedPart = allowed && smaller(span(undefined))
 
@@ -640,9 +570,7 @@ const format = async (
             .filter(x => x)
             .forEach(alias => {
               const cmdCell = span()
-              const cmdPart = span(
-                alias /* noclick ? '' : 'clickable clickable-blatant' */
-              ) // don't make aliases clickable
+              const cmdPart = span(alias /* noclick ? '' : 'clickable clickable-blatant' */) // don't make aliases clickable
               const dirPart = isDir && span('/')
 
               if (!noclick) {
@@ -660,11 +588,7 @@ const format = async (
           allowedPart.style.color = 'var(--color-text-02)'
           allowedPart.appendChild(span('options: '))
           allowed.forEach((value, idx) => {
-            const option = span(
-              `${idx > 0 ? ', ' : ''}${value}${
-                value !== defaultValue ? '' : '*'
-              }`
-            )
+            const option = span(`${idx > 0 ? ', ' : ''}${value}${value !== defaultValue ? '' : '*'}`)
             allowedPart.appendChild(option)
           })
         }
@@ -684,29 +608,19 @@ const format = async (
             cmdPart.onclick = async event => {
               const cli = await import('../webapp/cli')
               if (partial) {
-                return cli.partial(
-                  commandForExec(alias, command) +
-                    `${partial === true ? '' : ' ' + partial}`
-                )
+                return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
               } else {
                 if (drilldownWithPip) {
-                  const { drilldown } = await import(
-                    '@kui-shell/core/webapp/picture-in-picture'
-                  )
+                  const { drilldown } = await import('@kui-shell/core/webapp/picture-in-picture')
                   return drilldown(
                     cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
-                    commandForExec(
-                      command,
-                      name !== command ? name : undefined
-                    ),
+                    commandForExec(command, name !== command ? name : undefined),
                     undefined,
                     resultWrapper.parentNode.parentNode as Element,
                     'Previous Usage'
                   )(event)
                 } else {
-                  return repl.pexec(
-                    commandForExec(command, name !== command ? name : undefined)
-                  )
+                  return repl.pexec(commandForExec(command, name !== command ? name : undefined))
                 }
               }
             }
@@ -745,9 +659,7 @@ const format = async (
         )
         return Math.min(
           section.rows.length,
-          section.nRowsInViewport ||
-            defaultNRowsInViewport(idx, section.rows.length) ||
-            section.rows.length
+          section.nRowsInViewport || defaultNRowsInViewport(idx, section.rows.length) || section.rows.length
         )
       }
 
@@ -969,10 +881,7 @@ interface MessageWithUsageModel extends MessageWithCode {
 
 function isMessageWithCode(msg: UsageLike): msg is MessageWithCode {
   const message = msg as MessageWithCode
-  return !!(
-    message.message &&
-    (message.code || message.statusCode || message.exitCode)
-  )
+  return !!(message.message && (message.code || message.statusCode || message.exitCode))
 }
 
 type MessageLike = string | HTMLElement
@@ -990,9 +899,7 @@ export class UsageError extends Error implements CodedError {
       Error.captureStackTrace(this, this.constructor)
     }
     this.raw = message
-    this.code = isMessageWithCode(message)
-      ? message.statusCode || message.code || message.exitCode
-      : 500
+    this.code = isMessageWithCode(message) ? message.statusCode || message.code || message.exitCode : 500
 
     if (typeof message === 'string') {
       this.message = message
@@ -1006,9 +913,7 @@ export class UsageError extends Error implements CodedError {
   }
 
   getFormattedMessage(): Promise<HTMLElement> {
-    return this.formattedMessage
-      ? this.formattedMessage
-      : Promise.resolve(span(this.message))
+    return this.formattedMessage ? this.formattedMessage : Promise.resolve(span(this.message))
   }
 
   static isUsageError(error: Entity): error is UsageError {

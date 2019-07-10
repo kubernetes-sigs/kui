@@ -81,9 +81,7 @@ const doDiff = async ({ command, execOptions }: EvaluatorArgs) =>
               // outputFormat: 'side-by-side',
             }),
             {
-              presentation: isPopup()
-                ? Presentation.FixedSize
-                : Presentation.Default
+              presentation: isPopup() ? Presentation.FixedSize : Presentation.Default
             },
             undefined,
             commandPart,
@@ -92,15 +90,7 @@ const doDiff = async ({ command, execOptions }: EvaluatorArgs) =>
         )
       } else {
         try {
-          resolve(
-            handleNonZeroExitCode(
-              command,
-              exitCode,
-              rawOut,
-              rawErr,
-              execOptions
-            )
-          )
+          resolve(handleNonZeroExitCode(command, exitCode, rawOut, rawErr, execOptions))
         } catch (err) {
           reject(err)
         }

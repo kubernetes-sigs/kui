@@ -22,9 +22,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const file = `${ROOT}/data/openwhisk/not-really-png.png`
 const content = readFileSync(file).toString()
@@ -40,10 +38,7 @@ describe('Invoke an action with a binary-formatted parameter', function(this: co
   // testing the auto-base64 support
   it(`should create an action`, () =>
     cli
-      .do(
-        `let ${actionName1} = ({image}) => ({ text: Buffer.from(image, 'base64').toString() })`,
-        this.app
-      )
+      .do(`let ${actionName1} = ({image}) => ({ text: Buffer.from(image, 'base64').toString() })`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -55,11 +50,7 @@ describe('Invoke an action with a binary-formatted parameter', function(this: co
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
-      .then(app =>
-        app.client.getText(
-          `${ui.selectors.SIDECAR_CONTENT} .activation-content`
-        )
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-content`))
       .then(ui.expectStruct({ text: content }))
       .catch(common.oops(this)))
 })

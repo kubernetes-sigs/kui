@@ -167,17 +167,13 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
 
         case 'exec':
           try {
-            shell = spawn(
-              await getLoginShell(),
-              ['-l', '-i', '-c', '--', msg.cmdline],
-              {
-                name: 'xterm-color',
-                rows: msg.rows,
-                cols: msg.cols,
-                cwd: msg.cwd || process.cwd(),
-                env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
-              }
-            )
+            shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
+              name: 'xterm-color',
+              rows: msg.rows,
+              cols: msg.cols,
+              cwd: msg.cwd || process.cwd(),
+              env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
+            })
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
             // send all PTY data out to the websocket client
@@ -243,11 +239,7 @@ const createDefaultServer = (): Server => {
  */
 let cachedWss
 let cachedPort
-export const main = async (
-  N: number,
-  server?: Server,
-  preexistingPort?: number
-) => {
+export const main = async (N: number, server?: Server, preexistingPort?: number) => {
   if (cachedWss) {
     return cachedPort
   } else {
@@ -271,18 +263,12 @@ export const main = async (
         servers.push({ wss })
 
         // only handle upgrades for the "N" index we own
-        const doUpgrade = (
-          request: IncomingMessage,
-          socket: Socket,
-          head: Buffer
-        ) => {
+        const doUpgrade = (request: IncomingMessage, socket: Socket, head: Buffer) => {
           const match = request.url.match(/\/bash\/([0-9]+)/)
           const yourN = match && parseInt(match[1], 10) // do we own this upgrade?
           if (yourN === N) {
             server.removeListener('upgrade', doUpgrade)
-            wss.handleUpgrade(request, socket, head, function done(
-              ws: WebSocket
-            ) {
+            wss.handleUpgrade(request, socket, head, function done(ws: WebSocket) {
               wss.emit('connection', ws, request)
             })
           }

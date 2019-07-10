@@ -39,9 +39,7 @@ export const registerCapability: CapabilityRegistration = async () => {
  */
 export default async () => {
   if (!isHeadless()) {
-    const registerSidecarMode = (await import(
-      '@kui-shell/core/webapp/views/registrar/modes'
-    )).default
+    const registerSidecarMode = (await import('@kui-shell/core/webapp/views/registrar/modes')).default
     Promise.all([
       import('./lib/view/modes/pods')
         .then(_ => _.podMode)

@@ -19,6 +19,4 @@
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const localFilepath: any[] = [
-  { name: 'path', docs: 'local file path', file: true, positional: true }
-]
+export const localFilepath: any[] = [{ name: 'path', docs: 'local file path', file: true, positional: true }]

@@ -36,8 +36,6 @@ export default async (commandTree: CommandRegistrar) => {
     kubectl(commandTree),
     istio(commandTree),
     kiali(commandTree),
-    inBrowser()
-      ? Promise.resolve()
-      : (await import('./lib/controller/kedit')).default(commandTree)
+    inBrowser() ? Promise.resolve() : (await import('./lib/controller/kedit')).default(commandTree)
   ])
 }

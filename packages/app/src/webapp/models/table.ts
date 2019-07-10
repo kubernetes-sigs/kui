@@ -112,10 +112,7 @@ export class Table {
 export interface WatchableTable extends Table, Watchable {}
 
 export function isTable(model: Entity): model is Table {
-  return (
-    model !== undefined &&
-    (model instanceof Table || (model as Table).body !== undefined)
-  )
+  return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
 }
 
 export interface MultiTable {
@@ -134,17 +131,12 @@ export function isMultiTable(model: Entity): model is MultiTable {
 
 export type WatchableMultiTable = MultiTable & Watchable
 
-export function formatWatchableTable(
-  model: Table | MultiTable,
-  watch: Watchable
-) {
+export function formatWatchableTable(model: Table | MultiTable, watch: Watchable) {
   if (isTable(model) || isMultiTable(model)) {
     return Object.assign(model, watch)
   } else {
     // TODO: we might need to consider the variance of model, throw error for now
-    throw new Error(
-      'models other than table(s) are not supported in watch mode yet'
-    )
+    throw new Error('models other than table(s) are not supported in watch mode yet')
   }
 }
 
@@ -185,10 +177,7 @@ export interface RowDiff {
  * diff two rows model
  * @param refreshRows is the rows model returned by refreshing
  */
-export function diffTableRows(
-  existingRows: Row[],
-  refreshRows: Row[]
-): RowDiff {
+export function diffTableRows(existingRows: Row[], refreshRows: Row[]): RowDiff {
   // find rows in the existing rows but not in the refreshed rows
   const rowDeletion: RowDeletion[] = existingRows
     .map((row, index) => {
@@ -201,17 +190,14 @@ export function diffTableRows(
     .filter(row => existingRows.some(_ => _.name === row.name))
     .map(row => {
       const index = existingRows.findIndex(_ => _.name === row.name)
-      const doUpdate =
-        JSON.stringify(row) !== JSON.stringify(existingRows[index])
+      const doUpdate = JSON.stringify(row) !== JSON.stringify(existingRows[index])
       if (doUpdate) return { updateIndex: index, model: row }
     })
     .filter(x => x)
 
   // find the rows which are not in the existing rows, to get the insertion index, first concat with the existing rows, then sort
   const rowInsertion: RowInsertion[] = sortBody(
-    refreshRows
-      .filter(row => !existingRows.some(_ => _.name === row.name))
-      .concat(existingRows)
+    refreshRows.filter(row => !existingRows.some(_ => _.name === row.name)).concat(existingRows)
   )
     .map((row, index) => {
       return { insertBeforeIndex: index + 1, model: row }

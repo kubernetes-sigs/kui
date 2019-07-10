@@ -38,10 +38,7 @@ export const optionsToString = (options: Options) => {
     ) {
       const dash = key.length === 1 ? '-' : '--'
       const prefix = options[key] === false ? 'no-' : '' // e.g. --no-help
-      const value =
-        options[key] === true || options[key] === false
-          ? ''
-          : ` ${options[key]}`
+      const value = options[key] === true || options[key] === false ? '' : ` ${options[key]}`
 
       if (!(dash === '-' && options[key] === false)) {
         // avoid -no-q, i.e. single dash

@@ -93,16 +93,7 @@ export const compileWrk = ({ createOutputStream }) =>
       debug('cloning from git')
       stdout('cloning from git', true)
 
-      const clone = spawn(
-        'git',
-        [
-          'clone',
-          '-b',
-          'latency_stacks3',
-          'https://github.com/starpit/wrk.git'
-        ],
-        { cwd: tmp }
-      )
+      const clone = spawn('git', ['clone', '-b', 'latency_stacks3', 'https://github.com/starpit/wrk.git'], { cwd: tmp })
       clone.stdout.on('data', data => {
         stdout(data.toString().split(/[\n\r]/)[0], true) // print first line only
       })

@@ -38,12 +38,7 @@ const squash = (err: Error) => {
  */
 const installIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
   const tmp = '/tmp' // FIXME
-  const platform =
-    process.platform === 'darwin'
-      ? 'osx'
-      : process.platform === 'win32'
-      ? 'win'
-      : 'linux'
+  const platform = process.platform === 'darwin' ? 'osx' : process.platform === 'win32' ? 'win' : 'linux'
   const version = parsedOptions.version || '1.0.6'
 
   const installDir = join(tmp, `istio-${version}`)
@@ -136,15 +131,9 @@ const uninstallBookinfo = async () => {
  */
 const ingress = async ({ argvNoOptions: args }: EvaluatorArgs) => {
   const [ingressHost, ingressPort] = await Promise.all([
-    $(
-      `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
-    ),
-    $(
-      `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}'`
-    ),
-    $(
-      `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}'`
-    )
+    $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`),
+    $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}'`),
+    $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}'`)
   ])
 
   const baseUrl = `http://${ingressHost}:${ingressPort}`
@@ -174,11 +163,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen('/istio/uninstall', uninstallIstio106, { noAuthOk: true })
   commandTree.listen('/istio/delete', uninstallIstio106, { noAuthOk: true })
   commandTree.listen('/istio/ingress', ingress, { noAuthOk: true })
-  commandTree.listen(
-    '/istio/status',
-    () => $$('k status svc -n istio-system'),
-    { noAuthOk: true }
-  )
+  commandTree.listen('/istio/status', () => $$('k status svc -n istio-system'), { noAuthOk: true })
 
   commandTree.listen('/bookinfo/install', installBookinfo, { noAuthOk: true })
   commandTree.listen('/bookinfo/create', installBookinfo, { noAuthOk: true })

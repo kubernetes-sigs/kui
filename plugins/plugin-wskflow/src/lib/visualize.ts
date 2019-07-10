@@ -25,13 +25,7 @@ import fsm2graph from './fsm2graph'
 const debug = Debug('plugins/wskflow/visualize')
 debug('loading')
 
-type GraphRenderer = (
-  ir,
-  containerElement,
-  acts,
-  options,
-  rule
-) => Promise<void>
+type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
 
 /**
  * Create the wskflow visualization for the given fsm

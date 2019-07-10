@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  theme as t,
-  env as e,
-  config as c
-} from '@kui-shell/settings/config.json'
+import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
 import { TableStyle } from '@kui-shell/core/webapp/models/table'
 

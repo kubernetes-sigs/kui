@@ -44,11 +44,7 @@ const maybeKUBECONFIG = (file: string): string | void => {
     debug('maybe? KUBECONFIG from %s', file, maybe)
     if (maybe.length > 1) {
       const kubeconfig = maybe.toString().trim()
-      debug(
-        'all right! we got a candidate KUBECONFIG from %s',
-        file,
-        kubeconfig
-      )
+      debug('all right! we got a candidate KUBECONFIG from %s', file, kubeconfig)
       return kubeconfig
     }
   } catch (err) {

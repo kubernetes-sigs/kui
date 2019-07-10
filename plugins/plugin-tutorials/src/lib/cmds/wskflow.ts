@@ -31,10 +31,7 @@ const maxIter = 5
  */
 const inBounds = (rect, bounds) => {
   return (
-    rect.left >= bounds.left &&
-    rect.right <= bounds.right &&
-    rect.top >= bounds.top &&
-    rect.bottom <= bounds.bottom
+    rect.left >= bounds.left && rect.right <= bounds.right && rect.top >= bounds.top && rect.bottom <= bounds.bottom
   )
 }
 
@@ -76,9 +73,7 @@ const hoverOn = elements => {
         // highlight; start over!
         one(0, iter + 1)
       } else {
-        const bounds = document
-          .getElementById('wskflowSVG')
-          .getBoundingClientRect()
+        const bounds = document.getElementById('wskflowSVG').getBoundingClientRect()
         const rect = element.getBoundingClientRect()
 
         if (inBounds(rect, bounds)) {
@@ -130,9 +125,7 @@ const hoverOn = elements => {
 export const wskflowCycle = obj => {
   debug('wskflowCycle')
 
-  const actions = document.querySelectorAll(
-    '#wskflowSVG .node.wskflow-node-with-special-meaning rect'
-  )
+  const actions = document.querySelectorAll('#wskflowSVG .node.wskflow-node-with-special-meaning rect')
   const edges = document.querySelectorAll('#wskflowSVG path.has-hover-effect')
 
   const all = []

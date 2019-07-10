@@ -63,13 +63,9 @@ describe('wsk package list tests', function(this: common.ISuite) {
       await this.app.client.click(`${selector} .clickable`)
       await sidecar.expectOpen(this.app).then(sidecar.expectShowing(pckage))
 
-      await this.app.client.click(
-        `${selectors.SIDECAR} .package-action-list .entity[data-name="${action}"] .clickable`
-      )
+      await this.app.client.click(`${selectors.SIDECAR} .package-action-list .entity[data-name="${action}"] .clickable`)
 
-      await sidecar
-        .expectOpen(this.app)
-        .then(sidecar.expectShowing(action, undefined, undefined, pckage))
+      await sidecar.expectOpen(this.app).then(sidecar.expectShowing(action, undefined, undefined, pckage))
     } catch (err) {
       common.oops(this)(err)
     }

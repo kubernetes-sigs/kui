@@ -25,18 +25,14 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = 'foo bar'
 const actionName2 = 'bam'
 const sequenceName1 = 'sss'
 
 // TODO: webpack test
-localDescribe('Create a sequence with whitespacey names', function(
-  this: common.ISuite
-) {
+localDescribe('Create a sequence with whitespacey names', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -62,11 +58,7 @@ localDescribe('Create a sequence with whitespacey names', function(
     cli
       .do('list', this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N =>
-        this.app.client.click(
-          ui.selectors.LIST_RESULT_BY_N_AND_NAME(N, actionName1)
-        )
-      )
+      .then(N => this.app.client.click(ui.selectors.LIST_RESULT_BY_N_AND_NAME(N, actionName1)))
       .then(() => this.app)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -75,10 +67,7 @@ localDescribe('Create a sequence with whitespacey names', function(
   // create a sequence
   it('should create a sequence', () =>
     cli
-      .do(
-        `create ${sequenceName1} --sequence "${actionName1},${actionName2}"`,
-        this.app
-      )
+      .do(`create ${sequenceName1} --sequence "${actionName1},${actionName2}"`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(sequenceName1))
@@ -87,12 +76,8 @@ localDescribe('Create a sequence with whitespacey names', function(
   // click on a sequence component bubble
   it('should show action after clicking on bubble', async () => {
     try {
-      await this.app.client.click(
-        ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0)
-      )
-      return sidecar
-        .expectOpen(this.app)
-        .then(sidecar.expectShowing(actionName1))
+      await this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
+      return sidecar.expectOpen(this.app).then(sidecar.expectShowing(actionName1))
     } catch (err) {
       return common.oops(this)(err)
     }

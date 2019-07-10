@@ -21,10 +21,7 @@
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import {
-  show as showSidecar,
-  showEntity
-} from '@kui-shell/core/webapp/views/sidecar'
+import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
 import repl = require('@kui-shell/core/core/repl')
@@ -37,11 +34,7 @@ import repl = require('@kui-shell/core/core/repl')
  * If requiredType===true, then accept any
  *
  */
-const docs = (
-  docString: string,
-  requiredType?: string | boolean,
-  noSequencesPlease = false
-) =>
+const docs = (docString: string, requiredType?: string | boolean, noSequencesPlease = false) =>
   Object.assign(
     { docs: docString },
     {
@@ -67,14 +60,8 @@ const idMatch = (entity, entityId) => {
   }
 }
 
-export default async (
-  commandTree: CommandRegistrar,
-  { crudable, synonyms }
-) => {
-  const switchSidecarMode = (entityType, mode) => async ({
-    argvNoOptions: args,
-    tab
-  }: EvaluatorArgs) => {
+export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => {
+  const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args, tab }: EvaluatorArgs) => {
     const entityId = args[args.indexOf(mode) + 1]
     const selection = currentSelection(tab)
 
@@ -83,8 +70,7 @@ export default async (
       (!entityType ||
         !entityId ||
         (selection.type === entityType && idMatch(selection, entityId)) ||
-        (Array.isArray(entityType) &&
-          entityType.find(t => t === selection.type)))
+        (Array.isArray(entityType) && entityType.find(t => t === selection.type)))
     ) {
       if (
         mode !== 'raw' &&
@@ -110,16 +96,13 @@ export default async (
         return true // make repl happy
       }
     } else {
-      const isVowel = c =>
-        c === 'a' || c === 'e' || c === 'i' || c === 'o' || c === 'u'
+      const isVowel = c => c === 'a' || c === 'e' || c === 'i' || c === 'o' || c === 'u'
       const startsWithVowel = s => isVowel(s.charAt(0))
 
       throw new Error(
         !entityType
           ? 'You have not selected an entity'
-          : `You have not yet selected ${
-              startsWithVowel(entityType) ? 'an' : 'a'
-            } ${entityType.replace(/s$/, '')}`
+          : `You have not yet selected ${startsWithVowel(entityType) ? 'an' : 'a'} ${entityType.replace(/s$/, '')}`
       )
     }
   }
@@ -178,16 +161,8 @@ export default async (
         switchSidecarMode(undefined, 'annotations'),
         docs('Show the annotations')
       )
-      commandTree.listen(
-        `/wsk/${syn}/content`,
-        switchSidecarMode(undefined, 'default'),
-        docs('Show the main content')
-      )
-      commandTree.listen(
-        `/wsk/${syn}/raw`,
-        switchSidecarMode(undefined, 'raw'),
-        docs('Show the raw JSON record')
-      )
+      commandTree.listen(`/wsk/${syn}/content`, switchSidecarMode(undefined, 'default'), docs('Show the main content'))
+      commandTree.listen(`/wsk/${syn}/raw`, switchSidecarMode(undefined, 'raw'), docs('Show the raw JSON record'))
       // commandTree.listen('/default', switchSidecarMode(undefined, 'default'))
     })
   })

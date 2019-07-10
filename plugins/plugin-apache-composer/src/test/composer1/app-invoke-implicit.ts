@@ -21,9 +21,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const seqName1 = 'seq1'
 
@@ -57,9 +55,7 @@ describe('app invoke with implicit entity', function(this: common.ISuite) {
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName1))
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct({ name: `grumble${idx}` }))
         .catch(common.oops(this)))
   }

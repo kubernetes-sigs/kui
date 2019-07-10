@@ -111,9 +111,7 @@ const apihost = async (options: KialiOptions = new DefaultOptions()) => {
         throw new Error(`kiali ingress has no exposed IPs`)
       }
     } else {
-      throw new Error(
-        `kiali ingress type not yet handled ${Object.keys(ingress.status)[0]}`
-      )
+      throw new Error(`kiali ingress type not yet handled ${Object.keys(ingress.status)[0]}`)
     }
   } else {
     throw new Error(`kiali service type not yet handled ${svc.spec.type}`)
@@ -124,9 +122,7 @@ const apihost = async (options: KialiOptions = new DefaultOptions()) => {
  * @return the endpoint of the Kiali console
  *
  */
-export const consoleView = async (
-  options: KialiOptions = new DefaultOptions()
-) => {
+export const consoleView = async (options: KialiOptions = new DefaultOptions()) => {
   return `${await apihost(options)}/kiali/console`
 }
 
@@ -142,21 +138,15 @@ export const modes = (defaultMode: string) =>
  * e.g. graph/namespaces/?edges=noEdgeLabels&graphType=versionedApp&namespaces=default&injectServiceNodes=true&duration=60&pi=15000&layout=dagre
  *
  */
-export const graphView = async (
-  _options: KialiOptions = new DefaultOptions()
-) => {
+export const graphView = async (_options: KialiOptions = new DefaultOptions()) => {
   const options = Object.assign({}, new DefaultOptions(), _options)
 
   // the graph view seems to accept duration in units of seconds, weird. the graph model API accepts prometheus strings etc.
   const MILLIS_PER_SECOND = 1000
 
-  const endpoint = `${await apihost(
-    options
-  )}/console/graph/namespaces/?edges=noEdgeLabels&graphType=${
+  const endpoint = `${await apihost(options)}/console/graph/namespaces/?edges=noEdgeLabels&graphType=${
     options.graphType
-  }&namespaces=${
-    options.namespace
-  }&injectServiceNodes=true&duration=${parseDuration(options.duration) /
+  }&namespaces=${options.namespace}&injectServiceNodes=true&duration=${parseDuration(options.duration) /
     MILLIS_PER_SECOND}&pi=${parseDuration(options.pi)}&layout=${options.layout}`
   debug('graphView endpoint', endpoint)
 
@@ -233,12 +223,8 @@ interface ApplicationList {
  * Applications model
  *
  */
-export const appList = async (
-  options: KialiOptions = new DefaultOptions()
-): Promise<ApplicationList> => {
-  const url = `${await apihost(options)}/kiali/api/namespaces/${
-    options.namespace
-  }/apps`
+export const appList = async (options: KialiOptions = new DefaultOptions()): Promise<ApplicationList> => {
+  const url = `${await apihost(options)}/kiali/api/namespaces/${options.namespace}/apps`
   return get(url)
 }
 

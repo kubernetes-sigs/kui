@@ -16,8 +16,4 @@ const formatDocument = document => ({ timestamp: new Date(), document })
  * a document to Cloudant; note the use of the
  * GET operation provided by the cloudant plugin.
  */
-module.exports = composer.async(
-  formatDocument,
-  doc => ({ dbname, id, doc }),
-  '/whisk.system/cloudant/write'
-)
+module.exports = composer.async(formatDocument, doc => ({ dbname, id, doc }), '/whisk.system/cloudant/write')

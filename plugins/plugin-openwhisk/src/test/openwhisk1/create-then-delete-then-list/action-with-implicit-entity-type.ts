@@ -25,36 +25,32 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe(
-  'Create an action, list it, delete it, then list nothing (implicit entity type)',
-  function(this: common.ISuite) {
-    before(openwhisk.before(this))
-    after(common.after(this))
+localDescribe('Create an action, list it, delete it, then list nothing (implicit entity type)', function(
+  this: common.ISuite
+) {
+  before(openwhisk.before(this))
+  after(common.after(this))
 
-    ui.aliases.remove.forEach(cmd => {
-      // create an action, using the implicit entity type
-      it('should create an action', () =>
-        cli
-          .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-          .then(cli.expectJustOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing('foo')))
+  ui.aliases.remove.forEach(cmd => {
+    // create an action, using the implicit entity type
+    it('should create an action', () =>
+      cli
+        .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+        .then(cli.expectJustOK)
+        .then(sidecar.expectOpen)
+        .then(sidecar.expectShowing('foo')))
 
-      // list it
-      it(`should find the new action with "ls"`, () =>
-        cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
+    // list it
+    it(`should find the new action with "ls"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
 
-      // delete the action
-      it(`should delete the newly created action using "${cmd}"`, () =>
-        cli
-          .do(`${cmd} foo`, this.app)
-          .then(cli.expectOK)
-          .then(sidecar.expectClosed))
-    })
-  }
-)
+    // delete the action
+    it(`should delete the newly created action using "${cmd}"`, () =>
+      cli
+        .do(`${cmd} foo`, this.app)
+        .then(cli.expectOK)
+        .then(sidecar.expectClosed))
+  })
+})

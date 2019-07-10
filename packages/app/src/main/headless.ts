@@ -93,9 +93,7 @@ const success = quit => async out => {
     debug('graphical shell is open')
   }
 }
-const failure = (quit, execOptions?: ExecOptions) => async (
-  err: CodedError
-) => {
+const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => {
   if (execOptions && execOptions.rethrowErrors) {
     throw err
   }
@@ -132,14 +130,11 @@ const failure = (quit, execOptions?: ExecOptions) => async (
         }
       } else {
         const { print } = await import('./headless-pretty-print')
-        completion =
-          print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
+        completion = print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
       }
     }
   } else {
-    error(
-      `No credentials found. Consider trying again with "kui help" command.`
-    )
+    error(`No credentials found. Consider trying again with "kui help" command.`)
   }
 
   return completion.then(() => {
@@ -162,19 +157,14 @@ const failure = (quit, execOptions?: ExecOptions) => async (
  * Insufficient arguments provided?
  *
  */
-const insufficientArgs = (argv: string[]) =>
-  argv.length === 0 || (argv.length === 1 && /(-h)|(--help)/.test(argv[0]))
+const insufficientArgs = (argv: string[]) => argv.length === 0 || (argv.length === 1 && /(-h)|(--help)/.test(argv[0]))
 
 /**
  * Opens the full UI
  *
  */
 let electronCreateWindowFn
-export const createWindow = async (
-  argv: string[],
-  subwindowPlease: boolean,
-  subwindowPrefs: ISubwindowPrefs
-) => {
+export const createWindow = async (argv: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
   try {
     graphicalShellIsOpen = true
     const { setGraphicalShellIsOpen } = await import('./headless-pretty-print')
@@ -212,12 +202,7 @@ const initCommandContext = async (commandContext: string) => {
  * Initialize headless mode
  *
  */
-export const main = async (
-  app,
-  mainFunctions,
-  rawArgv = process.argv,
-  execOptions?: ExecOptions
-) => {
+export const main = async (app, mainFunctions, rawArgv = process.argv, execOptions?: ExecOptions) => {
   debug('main')
 
   // get this started right away, to amortize the cost of loading the
@@ -257,8 +242,7 @@ export const main = async (
    * Evaluate the given command
    *
    */
-  const evaluate = (cmd: string) =>
-    Promise.resolve(exec(cmd, execOptions)).then(success(quit))
+  const evaluate = (cmd: string) => Promise.resolve(exec(cmd, execOptions)).then(success(quit))
 
   const trace = console.trace
   console.trace = () => {
@@ -378,15 +362,8 @@ export async function initHeadless(
           ) => {
             // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
             // because this will be called for cases where we want a headless -> GUI transition
-            const { createWindow: createElectronWindow } = await import(
-              './spawn-electron'
-            )
-            return createElectronWindow(
-              true,
-              executeThisArgvPlease,
-              subwindowPlease,
-              subwindowPrefs
-            )
+            const { createWindow: createElectronWindow } = await import('./spawn-electron')
+            return createElectronWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs)
           }
         },
         argv,

@@ -76,8 +76,7 @@ const copy = (type: string) => (op: string) => ({
     if (err.statusCode === 404 && retryOK) {
       // create failure with 404, maybe package not found?
       const path = name.split('/')
-      const packageName =
-        path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
+      const packageName = path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
       if (packageName) {
         return repl.qexec(`wsk package update "${packageName}"`).then(() =>
           copy(type)(op)({
@@ -93,9 +92,7 @@ const copy = (type: string) => (op: string) => ({
     throw err
   }
 
-  return repl
-    .qfexec(`wsk ${type} update --copy "${newName}" "${oldName}"`)
-    .catch(packageAutoCreate(newName))
+  return repl.qfexec(`wsk ${type} update --copy "${newName}" "${oldName}"`).catch(packageAutoCreate(newName))
 }
 
 /**

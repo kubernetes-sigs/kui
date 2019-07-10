@@ -22,9 +22,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname, join } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const srcDir = `${ROOT}/data/composer/composer-source` // inputs for create-from-source
 

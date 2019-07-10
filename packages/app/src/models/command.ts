@@ -157,9 +157,7 @@ export interface EvaluatorArgs extends CommandLine {
 export type CommandResponse = any // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** base command handler */
-export type CommandHandler = (
-  args: EvaluatorArgs
-) => CommandResponse | Promise<CommandResponse>
+export type CommandHandler = (args: EvaluatorArgs) => CommandResponse | Promise<CommandResponse>
 
 /**
  * Evaluator
@@ -215,24 +213,14 @@ export interface CommandHandlerWithEvents extends Evaluator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parsedOptions: { [key: string]: any }
   }) => void
-  error: (
-    command: string,
-    tab: Tab,
-    type: ExecType,
-    err: CodedError
-  ) => CodedError
+  error: (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError
 }
-export function isCommandHandlerWithEvents(
-  evaluator: Evaluator
-): evaluator is CommandHandlerWithEvents {
+export function isCommandHandlerWithEvents(evaluator: Evaluator): evaluator is CommandHandlerWithEvents {
   const handler = evaluator as CommandHandlerWithEvents
   return handler.options !== undefined
 }
 
-export type CommandTreeResolution =
-  | boolean
-  | CommandHandlerWithEvents
-  | CodedError
+export type CommandTreeResolution = boolean | CommandHandlerWithEvents | CodedError
 
 export type YargsParserFlags = { [key in 'boolean' | 'alias']: string[] }
 
@@ -248,17 +236,8 @@ export interface CatchAllHandler extends CommandBase {
 
 export interface CommandRegistrar {
   find: (route: string, noOverride?: boolean) => Promise<Command>
-  listen: (
-    route: string,
-    handler: CommandHandler,
-    options: CommandOptions
-  ) => Command
-  synonym: (
-    route: string,
-    handler: CommandHandler,
-    master: Command,
-    options: CommandOptions
-  ) => void
+  listen: (route: string, handler: CommandHandler, options: CommandOptions) => Command
+  synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) => void
   subtree: (route: string, options: CommandOptions) => Command
   subtreeSynonym: (route: string, masterTree: Command) => void
 }

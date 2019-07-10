@@ -55,16 +55,12 @@ export const applyDiffTable = (
         prepareRows[rowDeletion.deleteIndex] = rowDeletion.model
 
         // apply diff to the view
-        const status = rows[rowDeletion.deleteIndex].querySelector(
-          '.cell-inner[data-key="STATUS"]'
-        ) as HTMLElement
+        const status = rows[rowDeletion.deleteIndex].querySelector('.cell-inner[data-key="STATUS"]') as HTMLElement
         if (status) {
           status.className = 'cell-inner red-background'
           status.innerText = 'Offline'
         }
-        const pulse = rows[rowDeletion.deleteIndex].querySelector(
-          '.repeating-pulse'
-        ) as HTMLElement
+        const pulse = rows[rowDeletion.deleteIndex].querySelector('.repeating-pulse') as HTMLElement
         if (pulse) pulse.classList.remove('repeating-pulse')
       })
   }

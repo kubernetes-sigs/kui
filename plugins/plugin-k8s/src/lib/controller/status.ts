@@ -22,13 +22,7 @@ import { safeLoadAll as parseYAML } from 'js-yaml'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
-import {
-  Row,
-  Table,
-  formatWatchableTable,
-  isTable,
-  isMultiTable
-} from '@kui-shell/core/webapp/models/table'
+import { Row, Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { CodedError } from '@kui-shell/core/models/errors'
 
 import { withRetryOn404 } from '../util/retry'
@@ -56,8 +50,7 @@ const strings = {
 const adminCoreFilter = '-l provider!=kubernetes'
 
 /** administrative CRDs that we want to ignore */
-const adminCRDFilter =
-  '-l app!=mixer,app!=istio-pilot,app!=ibmcloud-image-enforcement,app!=ibm-cert-manager'
+const adminCRDFilter = '-l app!=mixer,app!=istio-pilot,app!=ibmcloud-image-enforcement,app!=ibm-cert-manager'
 
 const usage = (command: string) => ({
   command,
@@ -105,9 +98,7 @@ interface HeaderRow {
 const headerRow = (opts: HeaderRow, kind?: string): Row => {
   debug('headerRow', kind)
 
-  const kindAttr = [
-    { value: 'KIND', outerCSS: 'header-cell not-too-wide entity-kind' }
-  ]
+  const kindAttr = [{ value: 'KIND', outerCSS: 'header-cell not-too-wide entity-kind' }]
   const namespaceAttr =
     kind && kind.match(/(ns|Namespace)/i)
       ? []
@@ -117,9 +108,7 @@ const headerRow = (opts: HeaderRow, kind?: string): Row => {
             outerCSS: 'header-cell pretty-narrow hide-with-sidecar'
           }
         ]
-  const contextAttr = !opts.context
-    ? []
-    : formatContextAttr('CONTEXT', 'header-cell')
+  const contextAttr = !opts.context ? [] : formatContextAttr('CONTEXT', 'header-cell')
   const attributes = kindAttr
     .concat(contextAttr)
     .concat(namespaceAttr)
@@ -127,8 +116,7 @@ const headerRow = (opts: HeaderRow, kind?: string): Row => {
       { value: 'STATUS', outerCSS: 'header-cell badge-width' },
       {
         value: 'MESSAGE',
-        outerCSS:
-          'header-cell not-too-wide hide-with-sidecar min-width-date-like'
+        outerCSS: 'header-cell not-too-wide hide-with-sidecar min-width-date-like'
       }
     ])
 
@@ -174,16 +162,8 @@ interface Context {
  * Return an [IContext] model for all known contexts
  * @param {Boolean} fetchAllNS If set to true, fetch all the namespaces of a cluster
  */
-const allContexts = async (
-  execOptions: ExecOptions,
-  { fetchAllNS = false } = {}
-): Promise<Context[]> => {
-  const table: Table = await repl.qexec(
-    `k8s contexts`,
-    undefined,
-    undefined,
-    execOptions
-  )
+const allContexts = async (execOptions: ExecOptions, { fetchAllNS = false } = {}): Promise<Context[]> => {
+  const table: Table = await repl.qexec(`k8s contexts`, undefined, undefined, execOptions)
 
   if (!fetchAllNS) {
     return table.body.map(({ attributes }) => ({
@@ -196,12 +176,7 @@ const allContexts = async (
     await Promise.all(
       table.body.map(cluster => {
         const ns: Promise<Context[]> = repl
-          .qexec(
-            `k get ns --context ${cluster.name}`,
-            undefined,
-            undefined,
-            execOptions
-          )
+          .qexec(`k get ns --context ${cluster.name}`, undefined, undefined, execOptions)
           .then((nsTable: Table) =>
             nsTable.body.map(({ name }) => ({
               name: cluster.name,
@@ -222,11 +197,8 @@ const allContexts = async (
 const removeDuplicateResources = (L: KubeResource[]) =>
   L.filter((item, idx) => {
     return (
-      L.findIndex(
-        _ =>
-          _.metadata.name === item.metadata.name &&
-          _.metadata.namespace === item.metadata.namespace
-      ) === idx
+      L.findIndex(_ => _.metadata.name === item.metadata.name && _.metadata.namespace === item.metadata.namespace) ===
+      idx
     )
   })
 
@@ -234,24 +206,16 @@ const removeDuplicateResources = (L: KubeResource[]) =>
  * Fetch the status for a given list of contexts
  *
  */
-const getStatusForKnownContexts = (
-  execOptions: ExecOptions,
-  parsedOptions: ParsedOptions
-) => async (contexts: Context[] = []) => {
+const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: ParsedOptions) => async (
+  contexts: Context[] = []
+) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
-  const currentContext: Promise<string> = repl.qexec(
-    `kubectl config current-context`,
-    undefined,
-    undefined,
-    raw
-  )
+  const currentContext: Promise<string> = repl.qexec(`kubectl config current-context`, undefined, undefined, raw)
 
   if (contexts.length === 0) {
     const ccName = await currentContext
-    contexts = (await allContexts(execOptions)).filter(
-      ({ name }) => name === ccName
-    )
+    contexts = (await allContexts(execOptions)).filter(({ name }) => name === ccName)
     if (contexts.length === 0) {
       debug(
         'Odd, no contexts found',
@@ -293,9 +257,7 @@ const getStatusForKnownContexts = (
         const crdResources = flatten(
           await Promise.all(
             filteredCRDs.map(crd => {
-              const kind =
-                (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) ||
-                crd.spec.names.kind
+              const kind = (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) || crd.spec.names.kind
               const resource: Promise<KubeResource[]> = repl
                 .qexec(
                   `kubectl get --context "${name}" ${inNamespace} ${adminCoreFilter} "${kind}" -o json`,
@@ -309,9 +271,7 @@ const getStatusForKnownContexts = (
           )
         )
 
-        const resources = removeDuplicateResources(
-          (await coreResources).concat(crdResources)
-        )
+        const resources = removeDuplicateResources((await coreResources).concat(crdResources))
         debug('resources', resources, crdResources)
 
         if (execOptions.raw) {
@@ -323,16 +283,12 @@ const getStatusForKnownContexts = (
           // icon to represent kubernetes cluster/context
           const thisContextIsCurrent = (await currentContext) === name
           const tableCSS = thisContextIsCurrent ? 'selected-row' : ''
-          const balloon = thisContextIsCurrent
-            ? strings.currentContext
-            : strings.notCurrentContext
+          const balloon = thisContextIsCurrent ? strings.currentContext : strings.notCurrentContext
 
           if (!parsedOptions.multi) {
             return Promise.all(resources.map(formatEntity(parsedOptions, name)))
           } else {
-            return Promise.all(
-              resources.map(formatEntity(parsedOptions, name))
-            ).then(rows => {
+            return Promise.all(resources.map(formatEntity(parsedOptions, name))).then(rows => {
               return [
                 headerRow({
                   title: name,
@@ -376,11 +332,7 @@ const getStatusForKnownContexts = (
  * In case of an error fetching the status of an entity, return something...
  *
  */
-const errorEntity = (
-  execOptions: ExecOptions,
-  base: KubeResource,
-  backupNamespace?: string
-) => (err: CodedError) => {
+const errorEntity = (execOptions: ExecOptions, base: KubeResource, backupNamespace?: string) => (err: CodedError) => {
   debug('creating error entity', err.code, base, backupNamespace, err)
 
   if (!base) {
@@ -440,9 +392,7 @@ const getDirectReferences = (command: string) => async ({
   const file = argvNoOptions[idx]
   const name = argvNoOptions[idx + 1]
   const namespace = parsedOptions.namespace || parsedOptions.n || 'default'
-  const finalState: FinalState =
-    (parsedOptions as FinalStateOptions)['final-state'] ||
-    FinalState.NotPendingLike
+  const finalState: FinalState = (parsedOptions as FinalStateOptions)['final-state'] || FinalState.NotPendingLike
   debug('getDirectReferences', file, name)
 
   /** format a --namespace cli option for the given kubeEntity */
@@ -466,9 +416,7 @@ const getDirectReferences = (command: string) => async ({
     // CRDs
     //
     debug('global status check')
-    return getStatusForKnownContexts(execOptions, parsedOptions)(
-      await allContexts(execOptions, { fetchAllNS: true })
-    )
+    return getStatusForKnownContexts(execOptions, parsedOptions)(await allContexts(execOptions, { fetchAllNS: true }))
   } else if (!file && !name) {
     //
     // ibid, but only for the current context
@@ -476,18 +424,11 @@ const getDirectReferences = (command: string) => async ({
     debug('status check for the current context')
     return getStatusForKnownContexts(execOptions, parsedOptions)()
   } else if (file.charAt(0) === '!') {
-    const resources: KubeResource[] = parseYAML(
-      execOptions.parameters[file.slice(1)]
-    )
+    const resources: KubeResource[] = parseYAML(execOptions.parameters[file.slice(1)])
     debug('status by programmatic parameter', resources)
     const entities = await Promise.all(
       resources.map(_ => {
-        return repl.qexec(
-          `kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`,
-          undefined,
-          undefined,
-          raw
-        )
+        return repl.qexec(`kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`, undefined, undefined, raw)
       })
     )
     if (execOptions.raw) {
@@ -511,10 +452,7 @@ const getDirectReferences = (command: string) => async ({
     const getter = () => {
       return repl.qexec(command, undefined, undefined, raw)
     }
-    const kubeEntity =
-      finalState === FinalState.OfflineLike
-        ? getter()
-        : withRetryOn404(getter, command)
+    const kubeEntity = finalState === FinalState.OfflineLike ? getter() : withRetryOn404(getter, command)
 
     if (execOptions.raw) {
       return kubeEntity
@@ -540,35 +478,24 @@ const getDirectReferences = (command: string) => async ({
       const { readdir } = await import('fs-extra')
 
       const files: string[] = await readdir(filepath)
-      const yamls = files
-        .filter(_ => _.match(/^[^\\.#].*\.yaml$/))
-        .map(file => join(filepath, file))
+      const yamls = files.filter(_ => _.match(/^[^\\.#].*\.yaml$/)).map(file => join(filepath, file))
 
       if (files.find(file => file === 'seeds')) {
         const seedsDir = join(filepath, 'seeds')
         if (await isDirectory(seedsDir)) {
-          const seeds: string[] = (await readdir(seedsDir)).filter(_ =>
-            _.match(/\.yaml$/)
-          )
+          const seeds: string[] = (await readdir(seedsDir)).filter(_ => _.match(/\.yaml$/))
           seeds.forEach(file => yamls.push(join(filepath, 'seeds', file)))
         }
       }
 
       const main = yamls.find(_ => _.match(/main.yaml$/))
-      const yamlsWithMainFirst = (main ? [main] : []).concat(
-        yamls.filter(_ => !_.match(/main.yaml$/))
-      )
+      const yamlsWithMainFirst = (main ? [main] : []).concat(yamls.filter(_ => !_.match(/main.yaml$/)))
 
       // make a list of tables, recursively calling ourselves for
       // each yaml file in the given directory
       return Promise.all(
         yamlsWithMainFirst.map(filepath =>
-          repl.qexec(
-            `k status "${filepath}" --final-state ${finalState}`,
-            undefined,
-            undefined,
-            execOptions
-          )
+          repl.qexec(`k status "${filepath}" --final-state ${finalState}`, undefined, undefined, execOptions)
         )
       )
     } else if (isDir === undefined) {
@@ -576,12 +503,7 @@ const getDirectReferences = (command: string) => async ({
       debug('status by resource kind', file, name)
 
       const kubeEntities = repl
-        .qexec(
-          `kubectl get "${file}" "${name || ''}" ${ns()} -o json`,
-          undefined,
-          undefined,
-          raw
-        )
+        .qexec(`kubectl get "${file}" "${name || ''}" ${ns()} -o json`, undefined, undefined, raw)
         .catch(err => {
           if (err.code === 404) {
             // then no such resource type exists
@@ -616,14 +538,7 @@ const getDirectReferences = (command: string) => async ({
       const kubeEntities = Promise.all(
         specs.map(spec => {
           return repl
-            .qexec(
-              `kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(
-                spec
-              )} -o json`,
-              undefined,
-              undefined,
-              raw
-            )
+            .qexec(`kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(spec)} -o json`, undefined, undefined, raw)
             .catch(errorEntity(execOptions, spec, namespace))
         })
       )
@@ -660,9 +575,7 @@ const findControlledResources = async (
           .map(({ kind, metadata: { labels, namespace } }) => {
             if (labels && labels.app && kind !== 'Pod') {
               const pods: Promise<KubeResource[]> = repl.qexec(
-                `kubectl get pods -n "${namespace || 'default'}" -l "app=${
-                  labels.app
-                }" -o json`,
+                `kubectl get pods -n "${namespace || 'default'}" -l "app=${labels.app}" -o json`,
                 undefined,
                 undefined,
                 raw
@@ -678,11 +591,9 @@ const findControlledResources = async (
   if (args.execOptions.raw) {
     return pods
   } else if (pods.length > 0) {
-    return Promise.all(pods.map(formatEntity(args.parsedOptions))).then(
-      formattedEntities => {
-        return [headerRow({ title: 'pods' })].concat(flatten(formattedEntities))
-      }
-    )
+    return Promise.all(pods.map(formatEntity(args.parsedOptions))).then(formattedEntities => {
+      return [headerRow({ title: 'pods' })].concat(flatten(formattedEntities))
+    })
   } else {
     return []
   }
@@ -752,9 +663,7 @@ export const status = (command: string) => async (
   }
 
   const maybe = await (direct.entities || direct)
-  const directEntities = await (Array.isArray(maybe)
-    ? Promise.all(maybe)
-    : [maybe])
+  const directEntities = await (Array.isArray(maybe) ? Promise.all(maybe) : [maybe])
 
   const controlled = await findControlledResources(args, directEntities)
 
@@ -765,14 +674,10 @@ export const status = (command: string) => async (
     if (args.execOptions.raw) {
       return direct
     } else {
-      return Promise.all(
-        directEntities.map(formatEntity(args.parsedOptions))
-      ).then(formattedEntities => {
+      return Promise.all(directEntities.map(formatEntity(args.parsedOptions))).then(formattedEntities => {
         debug('formatted entities', formattedEntities)
         if (direct.headerRow) {
-          const statusResult = statusTable(
-            [direct.headerRow].concat(...formattedEntities)
-          )
+          const statusResult = statusTable([direct.headerRow].concat(...formattedEntities))
           return doWatch && isTable(statusResult)
             ? formatWatchableTable(statusResult, {
                 refreshCommand,
@@ -788,17 +693,12 @@ export const status = (command: string) => async (
     if (args.execOptions.raw) {
       return (await direct).concat(controlled)
     } else {
-      return Promise.all(
-        directEntities.map(formatEntity(args.parsedOptions))
-      ).then(formattedEntities => {
+      return Promise.all(directEntities.map(formatEntity(args.parsedOptions))).then(formattedEntities => {
         if (direct.headerRow) {
-          const directTable = statusTable(
-            [direct.headerRow].concat(formattedEntities)
-          )
+          const directTable = statusTable([direct.headerRow].concat(formattedEntities))
           const controlledTable = statusTable(controlled)
           const statusResult = { tables: [directTable, controlledTable] }
-          return doWatch &&
-            (isTable(statusResult) || isMultiTable(statusResult))
+          return doWatch && (isTable(statusResult) || isMultiTable(statusResult))
             ? formatWatchableTable(statusResult, {
                 refreshCommand,
                 watchByDefault: true

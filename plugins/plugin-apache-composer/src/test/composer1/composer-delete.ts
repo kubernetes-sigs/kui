@@ -21,9 +21,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const seqName1 = 'seq1'
 
@@ -50,9 +48,7 @@ describe('Use the app delete command to delete an invokeable composition', funct
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct(expect(key, value, extraExpect, expectIsIt)))
         .catch(common.oops(this)))
   }
@@ -68,10 +64,7 @@ describe('Use the app delete command to delete an invokeable composition', funct
   // we have to make an app before we can delete it
   it('should create a composer sequence', () =>
     cli
-      .do(
-        `app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`,
-        this.app
-      )
+      .do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))

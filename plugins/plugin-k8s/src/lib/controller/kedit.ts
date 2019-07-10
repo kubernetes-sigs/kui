@@ -47,9 +47,7 @@ const usage = {
     strict: 'kedit',
     docs: 'Edit a resource definition file',
     example: 'kedit @seed/cloud-functions/function/echo.yaml',
-    required: [
-      { name: 'file', file: true, docs: 'A kubernetes resource file or kind' }
-    ],
+    required: [{ name: 'file', file: true, docs: 'A kubernetes resource file or kind' }],
     optional: [
       {
         name: 'resource',
@@ -73,17 +71,14 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
       key: 'kedit'
     })
   } else {
-    const ourRoot = dirname(
-      require.resolve('@kui-shell/plugin-k8s/package.json')
-    )
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-k8s/package.json'))
     injectCSS(join(ourRoot, 'web/css/main.css'))
   }
 
   // override the type shown in the sidecar header to show the
   // resource kind
   const typeOverride = yaml.kind
-  const nameOverride = (resource: KubeResource) =>
-    (resource.metadata && resource.metadata.name) || basename(filepath)
+  const nameOverride = (resource: KubeResource) => (resource.metadata && resource.metadata.name) || basename(filepath)
 
   // add our mode buttons
   const resource = {
@@ -118,10 +113,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   const { safeLoad, safeDump } = await import('js-yaml')
 
   /** re-extract the structure from raw yaml string */
-  const extract = (
-    rawText: string,
-    entity?: ResourceSource
-  ): ResourceSource => {
+  const extract = (rawText: string, entity?: ResourceSource): ResourceSource => {
     const resource = (editorEntity.resource = safeLoad(rawText))
     editorEntity.source = rawText
     editorEntity.name = resource.metadata.name
@@ -152,9 +144,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
 
     return repl
       .qexec(
-        `edit !source --type "${typeOverride}" --name "${nameOverride(
-          editorEntity.resource
-        )}" --language yaml`,
+        `edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.resource)}" --language yaml`,
         undefined,
         undefined,
         {
@@ -167,13 +157,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   /** open the content as a pretty-printed form */
   const openAsForm = () => {
     return Promise.resolve(
-      generateForm(tab)(
-        editorEntity.resource,
-        filepath,
-        nameOverride(editorEntity.resource),
-        typeOverride,
-        extract
-      )
+      generateForm(tab)(editorEntity.resource, filepath, nameOverride(editorEntity.resource), typeOverride, extract)
     ).then(addModeButtons('edit'))
   }
 
@@ -198,17 +182,13 @@ const showAsTable = async (
       return evt => {
         evt.stopPropagation() // row versus name click handling; we don't want both
         return repl.pexec(
-          `kedit ${repl.encodeComponent(
-            filepathAsGiven
-          )} ${repl.encodeComponent(kubeEntity.metadata.name)}`
+          `kedit ${repl.encodeComponent(filepathAsGiven)} ${repl.encodeComponent(kubeEntity.metadata.name)}`
         )
       }
     }
   }
 
-  return Promise.all(
-    yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))
-  ).then(formattedEntities => {
+  return Promise.all(yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))).then(formattedEntities => {
     return new Table({ body: formattedEntities })
   })
 }
@@ -231,19 +211,13 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
 
   if (yamls.length === 0) {
     throw new Error('The specified file is empty')
-  } else if (
-    yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0
-  ) {
-    debug(
-      'The specified file does not contain any Kubernetes resource definitions'
-    )
+  } else if (yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0) {
+    debug('The specified file does not contain any Kubernetes resource definitions')
     return repl.qexec(`edit "${filepathAsGiven}"`)
   } else if (yamls.length > 1 && !resource) {
     return showAsTable(yamls, filepathAsGiven, parsedOptions)
   } else {
-    const yamlIdx = !resource
-      ? 0
-      : yamls.findIndex(({ metadata: { name } }) => name === resource)
+    const yamlIdx = !resource ? 0 : yamls.findIndex(({ metadata: { name } }) => name === resource)
     if (yamlIdx < 0) {
       throw new Error('Cannot find the specified resource')
     } else {

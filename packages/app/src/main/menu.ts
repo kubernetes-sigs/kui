@@ -28,8 +28,7 @@ const { productName, gettingStarted } = theme
  */
 const tellRendererToExecute = async (command: string, exec = 'qexec') => {
   const { webContents } = await import('electron')
-  const focusedWindow =
-    webContents.getFocusedWebContents() || webContents.getAllWebContents()[0] // see https://github.com/IBM/kui/issues/1717
+  const focusedWindow = webContents.getFocusedWebContents() || webContents.getAllWebContents()[0] // see https://github.com/IBM/kui/issues/1717
 
   const devTools = webContents
     .getAllWebContents()
@@ -40,9 +39,7 @@ const tellRendererToExecute = async (command: string, exec = 'qexec') => {
   if (isFocusedWindowDevTools) {
     // debug('closing dev tools')
     const owningWindow = webContents.getAllWebContents().find(_ => {
-      return (
-        _.devToolsWebContents && _.devToolsWebContents.id === focusedWindow.id
-      )
+      return _.devToolsWebContents && _.devToolsWebContents.id === focusedWindow.id
     })
     if (owningWindow) {
       owningWindow.closeDevTools()
@@ -117,9 +114,7 @@ export const install = (createWindow: () => void) => {
       {
         label: 'Report Issue...',
         click() {
-          require('electron').shell.openExternal(
-            'https://github.com/IBM/kui/issues/new'
-          )
+          require('electron').shell.openExternal('https://github.com/IBM/kui/issues/new')
         }
       }
     ]
@@ -150,8 +145,7 @@ export const install = (createWindow: () => void) => {
           themeMenuItem,
           { type: 'separator' },
           {
-            accelerator:
-              process.platform === 'darwin' ? 'Meta+R' : 'Shift+CmdOrCtrl+R',
+            accelerator: process.platform === 'darwin' ? 'Meta+R' : 'Shift+CmdOrCtrl+R',
             role: 'reload'
           },
           //          { role: 'forcereload' },

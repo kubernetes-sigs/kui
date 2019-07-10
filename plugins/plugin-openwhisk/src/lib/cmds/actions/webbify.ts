@@ -123,17 +123,13 @@ const doWebbify = ({ command, execOptions, tab }: EvaluatorArgs) => {
 
       if (!action) {
         // user hasn't specified an action to webbify, either explicitly or implicitly via selection
-        throw new Error(
-          `Please select an action, either via "webbify <action>", or by opening it in the sidecar`
-        )
+        throw new Error(`Please select an action, either via "webbify <action>", or by opening it in the sidecar`)
       }
 
       // fetch, update, render to user
       const ow = getClient(execOptions)
       return ow.actions
-        .get(
-          owOpts({ name: action.name || action, namespace: action.namespace })
-        )
+        .get(owOpts({ name: action.name || action, namespace: action.namespace }))
         .then(action =>
           ow.actions.update(
             owOpts({
@@ -156,10 +152,6 @@ const doWebbify = ({ command, execOptions, tab }: EvaluatorArgs) => {
  */
 export default (commandTree: CommandRegistrar) => {
   synonyms('actions').forEach(syn => {
-    commandTree.listen(
-      `/wsk/${syn}/webbify`,
-      doWebbify,
-      theDocs('Export an action to the web')
-    )
+    commandTree.listen(`/wsk/${syn}/webbify`, doWebbify, theDocs('Export an action to the web'))
   })
 }

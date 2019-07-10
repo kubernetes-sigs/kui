@@ -23,11 +23,7 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import eventBus from '@kui-shell/core/core/events'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import {
-  getPreference,
-  setPreference,
-  clearPreference
-} from '@kui-shell/core/core/userdata'
+import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
 import { theme as settings, env } from '@kui-shell/core/core/settings'
 const debug = Debug('plugins/core-support/theme')
 
@@ -96,9 +92,7 @@ const getDefaultTheme = () => {
  *
  */
 const list = async () => {
-  const { Row, Table, TableStyle } = await import(
-    '@kui-shell/core/webapp/models/table'
-  )
+  const { Row, Table, TableStyle } = await import('@kui-shell/core/webapp/models/table')
 
   const header: Row = {
     type: 'theme',
@@ -132,9 +126,7 @@ const list = async () => {
       }
 
       const onclick = async () => {
-        const { encodeComponent, qexec } = await import(
-          '@kui-shell/core/core/repl'
-        )
+        const { encodeComponent, qexec } = await import('@kui-shell/core/core/repl')
         await qexec(`theme set ${encodeComponent(theme.name)}`)
         row.setSelected()
       }
@@ -160,9 +152,7 @@ const list = async () => {
  *
  */
 const getCssFilepathForGivenTheme = (themeModel): string => {
-  const prefix = inBrowser()
-    ? ''
-    : dirname(require.resolve('@kui-shell/settings/package.json'))
+  const prefix = inBrowser() ? '' : dirname(require.resolve('@kui-shell/settings/package.json'))
   return join(prefix, env.cssHome, themeModel.css)
 }
 
@@ -180,10 +170,7 @@ export const getCssFilepathForCurrentTheme = async (): Promise<string> => {
  * Internal logic to switch themes
  *
  */
-const switchTo = async (
-  theme: string,
-  webContents?: WebContents
-): Promise<void> => {
+const switchTo = async (theme: string, webContents?: WebContents): Promise<void> => {
   const themeModel = (settings.themes || []).find(_ => _.name === theme)
   if (!themeModel) {
     debug('could not find theme', theme, settings)
@@ -197,19 +184,11 @@ const switchTo = async (
   try {
     if (webContents) {
       const { readFile } = await import('fs-extra')
-      const css = (await readFile(
-        getCssFilepathForGivenTheme(themeModel)
-      )).toString()
-      debug(
-        'using electron to pre-inject CSS before the application loads, from the main process'
-      )
+      const css = (await readFile(getCssFilepathForGivenTheme(themeModel))).toString()
+      debug('using electron to pre-inject CSS before the application loads, from the main process')
       webContents.insertCSS(css)
-      webContents.executeJavaScript(
-        `document.body.setAttribute('kui-theme', '${theme}')`
-      )
-      webContents.executeJavaScript(
-        `document.body.setAttribute('kui-theme-style', '${themeModel.style}')`
-      )
+      webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${theme}')`)
+      webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
     } else {
       const previousKey = document.body.getAttribute('kui-theme-key')
       const newKey = `kui-theme-css-${theme}`
@@ -251,9 +230,7 @@ const switchTo = async (
  * Switch to the last user choice, if the user so indicated
  *
  */
-export const switchToPersistedThemeChoice = async (
-  webContents?: WebContents
-): Promise<void> => {
+export const switchToPersistedThemeChoice = async (webContents?: WebContents): Promise<void> => {
   const theme = await getPersistedThemeChoice()
   if (theme) {
     debug('switching to persisted theme choice')
@@ -314,8 +291,7 @@ export const plugin = (commandTree: CommandRegistrar) => {
   // returns the current persisted theme choice; helpful for debugging
   commandTree.listen(
     '/theme/current',
-    async () =>
-      (await getPersistedThemeChoice()) || 'You are using the default theme',
+    async () => (await getPersistedThemeChoice()) || 'You are using the default theme',
     { noAuthOk: true, inBrowserOk: true, hidden: true }
   ) // for debugging
 

@@ -24,11 +24,7 @@ import { ExecOptions } from '../models/execOptions'
  * This is the main entry point to kui
  *
  */
-export const main = async (
-  argv: string[],
-  env = process.env,
-  execOptions?: ExecOptions
-) => {
+export const main = async (argv: string[], env = process.env, execOptions?: ExecOptions) => {
   const forceUI = !!argv.find(arg => arg === '--ui') || !!env.KUI_POPUP
   const isShell = !!argv.find(arg => arg === 'shell')
   const kuiShell = forceUI || isShell
@@ -38,9 +34,7 @@ export const main = async (
     // then spawn the electron graphics
     debug('shortcut to graphics')
     const { getCommand, initElectron } = await import('./spawn-electron')
-    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(
-      argv
-    )
+    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv)
     initElectron(
       strippedArgv,
       { isRunningHeadless, forceUI },
@@ -54,12 +48,7 @@ export const main = async (
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
     const { initHeadless } = await import('./headless')
-    const result = await initHeadless(
-      argv,
-      false,
-      isRunningHeadless,
-      execOptions
-    )
+    const result = await initHeadless(argv, false, isRunningHeadless, execOptions)
     if (env.KUI_REPL_MODE) {
       if (env.KUI_REPL_MODE === 'stdout') {
         debug('emitting repl mode result')
@@ -89,9 +78,5 @@ export const main = async (
 // to bootstrap things, as follows:
 if (require.main === module) {
   debug('it looks like this is the main entry point, rather than a require')
-  main(
-    process.argv,
-    process.env,
-    process.env.KUI_EXEC_OPTIONS && JSON.parse(process.env.KUI_EXEC_OPTIONS)
-  )
+  main(process.argv, process.env, process.env.KUI_EXEC_OPTIONS && JSON.parse(process.env.KUI_EXEC_OPTIONS))
 }

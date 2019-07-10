@@ -60,15 +60,12 @@ export const titleWhenNothingSelected = 'Recent Activity'
 const flatten = arrays => [].concat(...arrays)
 
 /** return the path attribute of the given activation */
-export const pathOf = activation =>
-  `/${activation.annotations.find(({ key }) => key === 'path').value}`
+export const pathOf = activation => `/${activation.annotations.find(({ key }) => key === 'path').value}`
 
 /** make a filter by name */
 const acceptAnything = x => x
-const allBut = excludePattern =>
-  !excludePattern ? acceptAnything : name => name.indexOf(excludePattern) < 0
-const accept = (includePattern, excluder) => name =>
-  name.indexOf(includePattern) >= 0 && excluder(name)
+const allBut = excludePattern => (!excludePattern ? acceptAnything : name => name.indexOf(excludePattern) < 0)
+const accept = (includePattern, excluder) => name => name.indexOf(includePattern) >= 0 && excluder(name)
 const makeFilter = (includePattern, excludePattern) => {
   if (!includePattern && !excludePattern) {
     return acceptAnything
@@ -111,13 +108,9 @@ const filterOutNonActionActivations = filter => activations => {
  *
  */
 const extractTasks = async app => {
-  const composer = await import(
-    '@kui-shell/plugin-apache-composer/lib/utility/ast'
-  )
+  const composer = await import('@kui-shell/plugin-apache-composer/lib/utility/ast')
   const { namespace, name, ast } = app
-  return [`/${namespace}/${name}`].concat(
-    !ast ? [] : composer.extractActionsFromAst(ast)
-  )
+  return [`/${namespace}/${name}`].concat(!ast ? [] : composer.extractActionsFromAst(ast))
 }
 
 /**
@@ -130,9 +123,7 @@ const filterByLatencyBucket = options => activations => {
     return activations
   } else {
     // TODO support options.full
-    return activations.filter(
-      _ => latencyBucket(_.end - _.start) === latencyBucket
-    )
+    return activations.filter(_ => latencyBucket(_.end - _.start) === latencyBucket)
   }
 }
 
@@ -163,16 +154,7 @@ const filterBySuccess = ({ success, failure }) => activations => {
  *
  */
 export const fetchActivationData /* FromBackend */ = (N, options) => {
-  const {
-    nocrawl = false,
-    path,
-    filter,
-    include,
-    exclude,
-    skip = 0,
-    batchSize = defaults.batchSize,
-    all
-  } = options
+  const { nocrawl = false, path, filter, include, exclude, skip = 0, batchSize = defaults.batchSize, all } = options
   let { name = '' } = options
 
   // see if the user requested a time range
@@ -200,10 +182,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
   const sinceArg = since ? ` --since ${since}` : '' // ibid; after a millis since epoch
   const fetch = extraSkip =>
     repl
-      .qexec(
-        `wsk activation list ${nameFilter} --skip ${skip +
-          extraSkip} --limit ${batchSize}${uptoArg}${sinceArg}`
-      )
+      .qexec(`wsk activation list ${nameFilter} --skip ${skip + extraSkip} --limit ${batchSize}${uptoArg}${sinceArg}`)
       .catch(err => {
         // log but swallow errors, so that we can show the user something... hopefully, at least one of the fetches succeeds
         console.error(err)
@@ -303,9 +282,7 @@ export const injectContent = () => {
     injectCSS(join(root, 'web/css/table.css'))
   }
 
-  injectCSS(
-    'https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css'
-  ) // tooltips
+  injectCSS('https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css') // tooltips
 }
 
 export const injectHTML = (container, file, css = '') => {
@@ -329,10 +306,7 @@ const strong = (container, N) => {
     return element
   }
 }
-export const displayTimeRange = (
-  { minTime, maxTime, totalCount },
-  container
-) => {
+export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) => {
   removeAllDomChildren(container)
 
   if (totalCount === 0) {
@@ -368,12 +342,8 @@ export interface Header {
 }
 export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
   const sidecar = getSidecar(tab)
-  const leftHeader = sidecar.querySelector(
-    '.sidecar-header-secondary-content .custom-header-content'
-  )
-  const rightHeader = sidecar.querySelector(
-    '.header-right-bits .custom-header-content'
-  )
+  const leftHeader = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
+  const rightHeader = sidecar.querySelector('.header-right-bits .custom-header-content')
 
   if (!isRedraw) {
     removeAllDomChildren(leftHeader)
@@ -394,13 +364,11 @@ export type Renderer = (
   uuid: string,
   isRedraw?: boolean
 ) => void
-export const visualize = (
-  cmd,
-  viewName: string,
-  draw: Renderer,
-  extraUsage,
-  extraOptions?
-) => ({ tab, argvNoOptions, parsedOptions: options }: EvaluatorArgs) => {
+export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({
+  tab,
+  argvNoOptions,
+  parsedOptions: options
+}: EvaluatorArgs) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
@@ -420,9 +388,7 @@ export const visualize = (
     try {
       parseInt(cliN, 10)
     } catch (e) {
-      throw new Error(
-        'Please provide an integer value for the --batches argument'
-      )
+      throw new Error('Please provide an integer value for the --batches argument')
     }
   }
 
@@ -458,9 +424,7 @@ export const visualize = (
                 }
                 return data
             }) */
-        .then(
-          draw(tab, options, prepareHeader(tab, isRedraw), ourUUID, isRedraw)
-        )
+        .then(draw(tab, options, prepareHeader(tab, isRedraw), ourUUID, isRedraw))
     )
   }
 
@@ -536,15 +500,11 @@ export const latencyBucket = value => {
   )
 }
 const range = (top, buckets, idx, base = 0) =>
-  `${prettyPrintDuration(
-    (top / buckets) * idx + 1 + base
-  )}-${prettyPrintDuration((top / buckets) * (idx + 1) + base)}`
+  `${prettyPrintDuration((top / buckets) * idx + 1 + base)}-${prettyPrintDuration((top / buckets) * (idx + 1) + base)}`
 const bucketRanges = []
 for (let idx = 0; idx < n100; idx++) bucketRanges.push(range(100, n100, idx))
-for (let idx = 0; idx < n1000; idx++)
-  bucketRanges.push(range(900, n1000, idx, 100))
-for (let idx = 0; idx < n7000; idx++)
-  bucketRanges.push(range(6000, n7000, idx, 1000))
+for (let idx = 0; idx < n1000; idx++) bucketRanges.push(range(900, n1000, idx, 100))
+for (let idx = 0; idx < n7000; idx++) bucketRanges.push(range(6000, n7000, idx, 1000))
 export const latencyBucketRange = bucket => {
   return bucketRanges[bucket]
 }
@@ -571,10 +531,7 @@ export const optionsToString = (options, except?) => {
     ) {
       const dash = key.length === 1 ? '-' : '--'
       const prefix = options[key] === false ? 'no-' : '' // e.g. --no-help
-      const value =
-        options[key] === true || options[key] === false
-          ? ''
-          : ` ${options[key]}`
+      const value = options[key] === true || options[key] === false ? '' : ` ${options[key]}`
 
       if (!(dash === '-' && options[key] === false)) {
         // avoid -no-q, i.e. single dash

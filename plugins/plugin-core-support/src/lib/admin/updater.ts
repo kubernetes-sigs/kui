@@ -42,11 +42,7 @@ const npmProcessResponse = (exec = 'npm', name, stdout) => {
   return lines
     .filter(_ => _) // strip blank lines
     .map(line => line.substring(0, Location)) // strip last column
-    .map(
-      line =>
-        line.substring(0, Current + 'Current'.length) +
-        line.substring(Wanted + 'Wanted'.length)
-    ) // strip Wanted column
+    .map(line => line.substring(0, Current + 'Current'.length) + line.substring(Wanted + 'Wanted'.length)) // strip Wanted column
     .concat(' ')
     .concat('To update, run the following command from the terminal:')
     .concat(`${exec} update ${name} -g`)
@@ -85,12 +81,7 @@ const defaultBackupPlans = [
     }
   }
 ]
-const checkForUpdates = (
-  quiet = false,
-  exec = 'npm',
-  opts = {},
-  backupPlans = defaultBackupPlans
-) =>
+const checkForUpdates = (quiet = false, exec = 'npm', opts = {}, backupPlans = defaultBackupPlans) =>
   new Promise((resolve, reject) => {
     try {
       const shellName = 'kui-shell'
@@ -100,10 +91,7 @@ const checkForUpdates = (
           if (backupPlans.length > 0) {
             // try one of the backup plans
             const plan = backupPlans.pop()
-            checkForUpdates(quiet, plan.exec, plan.opts, backupPlans).then(
-              resolve,
-              reject
-            )
+            checkForUpdates(quiet, plan.exec, plan.opts, backupPlans).then(resolve, reject)
           } else {
             if (err) {
               console.error(err)
@@ -145,19 +133,13 @@ const notifyOfAvailableUpdatesVisually = changes => {
     console.log('Updates available')
 
     const notificationArea = document.querySelector('#notification-area')
-    let notificationWidget = notificationArea.querySelector(
-      '.updates-available-widget'
-    ) as HTMLElement
+    let notificationWidget = notificationArea.querySelector('.updates-available-widget') as HTMLElement
     if (!notificationWidget) {
       notificationWidget = document.createElement('div')
-      notificationWidget.className =
-        'updates-available-widget green-text graphical-clickable'
+      notificationWidget.className = 'updates-available-widget green-text graphical-clickable'
       notificationWidget.style.fontSize = '1.75em'
       notificationWidget.innerText = '\u2B06'
-      notificationWidget.setAttribute(
-        'title',
-        'Updates available, click here to get update'
-      )
+      notificationWidget.setAttribute('title', 'Updates available, click here to get update')
       notificationArea.appendChild(notificationWidget)
 
       // click handler for notification widget
@@ -174,8 +156,7 @@ const checkForUpdatesQuietly = () => checkForUpdates(true)
  * Chain an update check with a visual notifier
  *
  */
-const checkForUpdatesThenNotifyVisually = () =>
-  checkForUpdatesQuietly().then(notifyOfAvailableUpdatesVisually)
+const checkForUpdatesThenNotifyVisually = () => checkForUpdatesQuietly().then(notifyOfAvailableUpdatesVisually)
 
 /**
  * The updater impl
@@ -194,10 +175,7 @@ class Updater {
  *
  */
 export default commandTree => {
-  const updater = new Updater(
-    defaults.DELAY_ON_START,
-    defaults.INTERVAL_IN_MILLIS
-  )
+  const updater = new Updater(defaults.DELAY_ON_START, defaults.INTERVAL_IN_MILLIS)
 
   commandTree.listen(
     `/updater/check`,

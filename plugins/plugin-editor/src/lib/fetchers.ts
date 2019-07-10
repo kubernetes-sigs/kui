@@ -59,11 +59,7 @@ export interface Entity extends MetadataBearing {
   annotations: KeyValuePair[]
 }
 
-export type IFetcher = (
-  name: string,
-  parsedOptions?,
-  execOptions?
-) => Promise<Entity>
+export type IFetcher = (name: string, parsedOptions?, execOptions?) => Promise<Entity>
 
 /**
  * Register an entity fetcher for a given entity kind
@@ -80,11 +76,7 @@ export const registerFetcher = (fetcher: IFetcher): void => {
  * the text for the given named entity
  *
  */
-export const fetchEntity = async (
-  name: string,
-  parsedOptions,
-  execOptions
-): Promise<Entity> => {
+export const fetchEntity = async (name: string, parsedOptions, execOptions): Promise<Entity> => {
   let lastError
   for (let idx = 0; idx < fetchers.length; idx++) {
     const { fetcher } = fetchers[idx]

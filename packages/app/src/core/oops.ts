@@ -24,16 +24,9 @@ interface ErrorWithResultField {
   }
 }
 
-function isErrorWithResultField(
-  error: ErrorLike
-): error is ErrorWithResultField {
+function isErrorWithResultField(error: ErrorLike): error is ErrorWithResultField {
   const err = error as ErrorWithResultField
-  return !!(
-    err.error &&
-    err.error.response &&
-    err.error.response.result &&
-    err.error.response.result.error
-  )
+  return !!(err.error && err.error.response && err.error.response.result && err.error.response.result.error)
 }
 
 interface ErrorWithNestedResultField {
@@ -48,9 +41,7 @@ interface ErrorWithNestedResultField {
   }
 }
 
-function isErrorWithNestedResultField(
-  error: ErrorLike
-): error is ErrorWithNestedResultField {
+function isErrorWithNestedResultField(error: ErrorLike): error is ErrorWithNestedResultField {
   const err = error as ErrorWithNestedResultField
   return !!(
     err.error &&
@@ -67,9 +58,7 @@ interface ErrorWithNestedErrorField {
   }
 }
 
-function isErrorWithNestedErrorField(
-  error: ErrorLike
-): error is ErrorWithNestedErrorField {
+function isErrorWithNestedErrorField(error: ErrorLike): error is ErrorWithNestedErrorField {
   const err = error as ErrorWithNestedErrorField
   return !!(err.error && err.error.error)
 }

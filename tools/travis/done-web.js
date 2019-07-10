@@ -9,9 +9,9 @@ const apihost = 'https://sherpa-stage.wdpdist.com'
 function composition(namespace, pkgname, shortname) {
   const suffix = shortname ? `/${shortname}` : ''
 
-  return `${apihost}/v1/namespaces/${encodeURIComponent(
-    namespace
-  )}/packages/${encodeURIComponent(pkgname)}/compositions${suffix}`
+  return `${apihost}/v1/namespaces/${encodeURIComponent(namespace)}/packages/${encodeURIComponent(
+    pkgname
+  )}/compositions${suffix}`
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -29,11 +29,8 @@ const main = params => {
 
   return needle(
     'post',
-    `${composition(namespace, pkgname, shortname)}?blocking=${!!blocking ||
-      !!result}&result=${!!result}`,
+    `${composition(namespace, pkgname, shortname)}?blocking=${!!blocking || !!result}&result=${!!result}`,
     params,
     auth
-  ).then(response =>
-    response.statusCode >= 400 ? Promise.reject(response) : response
-  )
+  ).then(response => (response.statusCode >= 400 ? Promise.reject(response) : response))
 }

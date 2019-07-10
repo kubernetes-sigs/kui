@@ -48,10 +48,7 @@ describe('electron apply deployment against URL that has redirects', function(th
     it(`should apply with a redirecting URL via ${kubectl}`, async () => {
       try {
         const selector = await cli
-          .do(
-            `${kubectl} apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`,
-            this.app
-          )
+          .do(`${kubectl} apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`, this.app)
           .then(
             cli.expectOKWithCustom({
               selector: selectors.BY_NAME('nginx-deployment')
@@ -74,10 +71,7 @@ describe('electron apply deployment against URL that has redirects', function(th
 
     it(`should delete the deployment from redirecting URL via ${kubectl}`, () => {
       return cli
-        .do(
-          `${kubectl} delete -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`,
-          this.app
-        )
+        .do(`${kubectl} delete -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`, this.app)
         .then(
           cli.expectOKWithCustom({
             selector: selectors.BY_NAME('nginx-deployment')

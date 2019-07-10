@@ -27,13 +27,9 @@ describe('k8s usage', function(this: common.ISuite) {
       .then(cli.expectErrorWithPassthrough(500))
       .then(N =>
         Promise.all([
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Usage"]`),
           this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Usage"]`
-          ),
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} .bx--breadcrumb-item .bx--no-link[data-label="kubectl"]`
+            `${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="kubectl"]`
           )
         ])
       )
@@ -45,21 +41,9 @@ describe('k8s usage', function(this: common.ISuite) {
       .then(cli.expectErrorWithPassthrough(500))
       .then(N =>
         Promise.all([
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} h4.usage-error-title[data-title="Options:"]`
-          ),
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} .bx--breadcrumb-item .bx--no-link[data-label="get"]`
-          ),
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`
-          )
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Options:"]`),
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="get"]`),
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
         ])
       )
       .catch(common.oops(this)))
@@ -70,26 +54,10 @@ describe('k8s usage', function(this: common.ISuite) {
       .then(cli.expectErrorWithPassthrough(500))
       .then(N =>
         Promise.all([
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} h4.usage-error-title[data-title="Options:"]`
-          ),
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} h4.usage-error-title[data-title="Examples"]`
-          ),
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} .bx--breadcrumb-item .bx--no-link[data-label="logs"]`
-          ),
-          this.app.client.waitForExist(
-            `${selectors.OUTPUT_N(
-              N
-            )} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`
-          )
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Options:"]`),
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="Examples"]`),
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="logs"]`),
+          this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="kubectl"]`)
         ])
       )
       .catch(common.oops(this)))

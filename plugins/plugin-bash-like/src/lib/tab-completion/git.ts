@@ -17,19 +17,13 @@
 import { exec } from 'child_process'
 
 import { CommandLine } from '@kui-shell/core/models/command'
-import {
-  registerEnumerator,
-  TabCompletionSpec
-} from '@kui-shell/plugin-core-support/lib/tab-completion'
+import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/lib/tab-completion'
 
 /**
  * Tab completion handler for git branch names
  *
  */
-async function completeGitBranches(
-  commandLine: CommandLine,
-  spec: TabCompletionSpec
-): Promise<string[]> {
+async function completeGitBranches(commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const { argvNoOptions: args } = commandLine
   const { toBeCompleted } = spec
 
@@ -39,9 +33,7 @@ async function completeGitBranches(
       // enumeration command: note the '*' suffix wildcard in the
       // --list option
       exec(
-        `git branch --list ${
-          toBeCompleted ? toBeCompleted + '*' : ''
-        } --sort=refname --sort=committerdate`,
+        `git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`,
         (error, stdout, stderr) => {
           if (error) {
             if (stderr) {
@@ -49,9 +41,7 @@ async function completeGitBranches(
             }
             reject(error)
           } else {
-            const completions = stdout
-              .split(/[\n\r]/)
-              .map(_ => _.replace(/^\s*[*]\s+/, '').trim())
+            const completions = stdout.split(/[\n\r]/).map(_ => _.replace(/^\s*[*]\s+/, '').trim())
             resolve(completions)
           }
         }

@@ -21,10 +21,7 @@ import { dir as createTemporaryDirectory } from 'tmp'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-import {
-  tabby,
-  tabbyWithOptions
-} from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
+import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 
 const { cli } = ui
 
@@ -33,20 +30,16 @@ const testClone = 'test-clone'
 
 function gitInit(tmpdir: string) {
   return new Promise((resolve, reject) => {
-    exec(
-      `git init --bare ${testRepo}`,
-      { cwd: tmpdir },
-      (error, stdout, stderr) => {
-        if (error) {
-          if (stderr) {
-            console.error(stderr)
-          }
-          reject(error)
-        } else {
-          resolve()
+    exec(`git init --bare ${testRepo}`, { cwd: tmpdir }, (error, stdout, stderr) => {
+      if (error) {
+        if (stderr) {
+          console.error(stderr)
         }
+        reject(error)
+      } else {
+        resolve()
       }
-    )
+    })
   })
 }
 
@@ -71,20 +64,16 @@ function gitClone(tmpdir: string) {
 
 function checkout(branchName: string, tmpdir: string, options = '') {
   return new Promise((resolve, reject) => {
-    exec(
-      `git checkout ${options} ${branchName}`,
-      { cwd: join(tmpdir, testClone) },
-      (error, stdout, stderr) => {
-        if (error) {
-          if (stderr) {
-            console.error(stderr)
-          }
-          reject(error)
-        } else {
-          resolve()
+    exec(`git checkout ${options} ${branchName}`, { cwd: join(tmpdir, testClone) }, (error, stdout, stderr) => {
+      if (error) {
+        if (stderr) {
+          console.error(stderr)
         }
+        reject(error)
+      } else {
+        resolve()
       }
-    )
+    })
   })
 }
 
@@ -92,9 +81,7 @@ function makeBranch(branchName: string, tmpdir: string) {
   return checkout(branchName, tmpdir, '-b')
 }
 
-common.localDescribe('Tab completion for git branches', function(
-  this: common.ISuite
-) {
+common.localDescribe('Tab completion for git branches', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -120,12 +107,9 @@ common.localDescribe('Tab completion for git branches', function(
 
   it('should git init in that temporary directory', () => gitInit(tmpdir))
   it('should git init in that temporary directory', () => gitClone(tmpdir))
-  it(`should make branch ${branch1} in that temporary directory`, () =>
-    makeBranch(branch1, tmpdir))
-  it(`should make branch ${branch2} in that temporary directory`, () =>
-    makeBranch(branch2, tmpdir))
-  it(`should make branch ${branch3} in that temporary directory`, () =>
-    makeBranch(branch3, tmpdir))
+  it(`should make branch ${branch1} in that temporary directory`, () => makeBranch(branch1, tmpdir))
+  it(`should make branch ${branch2} in that temporary directory`, () => makeBranch(branch2, tmpdir))
+  it(`should make branch ${branch3} in that temporary directory`, () => makeBranch(branch3, tmpdir))
   it('should checkout master', () => checkout('master', tmpdir))
 
   it('should cd to the clone directory', () =>
@@ -136,11 +120,7 @@ common.localDescribe('Tab completion for git branches', function(
 
   it(`should tab complete ${branch3} without any options`, () => {
     // since branch3 is distinctly named
-    return tabby(
-      this.app,
-      `git checkout ${branch3.charAt(0)}`,
-      `git checkout ${branch3}`
-    )
+    return tabby(this.app, `git checkout ${branch3.charAt(0)}`, `git checkout ${branch3}`)
   })
 
   it(`should tab complete branch names with options`, () => {

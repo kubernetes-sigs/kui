@@ -16,12 +16,7 @@
 
 import * as assert from 'assert'
 
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops
-} from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, sidecar } = ui
 
@@ -49,9 +44,7 @@ export const expectSuggestionsFor = function(
     .do(cmd, this.app)
     .then(cli.expectErrorWithPassthrough(404, 'Command not found'))
     .then(N => {
-      const base = `${ui.selectors.OUTPUT_N(
-        N
-      )} .user-error-available-commands .log-line`
+      const base = `${ui.selectors.OUTPUT_N(N)} .user-error-available-commands .log-line`
       const availableItems = `${base} .clickable`
 
       return this.app.client
@@ -67,14 +60,10 @@ export const expectSuggestionsFor = function(
                 //
                 // then expect the next command to have the given terminal breadcrumb
                 //
-                const breadcrumb = `${ui.selectors.OUTPUT_N(
-                  N + 1
-                )} .bx--breadcrumb-item:last-child .bx--no-link`
+                const breadcrumb = `${ui.selectors.OUTPUT_N(N + 1)} .bx--breadcrumb-item:last-child .bx--no-link`
                 return this.app.client
                   .getText(breadcrumb)
-                  .then(actualBreadcrumb =>
-                    assert.strictEqual(actualBreadcrumb, expectedBreadcrumb)
-                  )
+                  .then(actualBreadcrumb => assert.strictEqual(actualBreadcrumb, expectedBreadcrumb))
               } else if (expectedIcon) {
                 //
                 // then wait for the sidecar to be open and showing the expected sidecar icon text
@@ -84,17 +73,13 @@ export const expectSuggestionsFor = function(
                   .expectOpen(this.app)
                   .then(() => this.app.client.getText(icon))
                   .then(actualIcon => actualIcon.toLowerCase())
-                  .then(actualIcon =>
-                    assert.strictEqual(actualIcon, expectedIcon)
-                  )
+                  .then(actualIcon => assert.strictEqual(actualIcon, expectedIcon))
               } else if (expectedString) {
                 //
                 // then wait for the given command output
                 //
                 return this.app.client.waitUntil(async () => {
-                  const text = await this.app.client.getText(
-                    ui.selectors.OUTPUT_N(N + 1)
-                  )
+                  const text = await this.app.client.getText(ui.selectors.OUTPUT_N(N + 1))
                   return text === expectedString
                 })
               }

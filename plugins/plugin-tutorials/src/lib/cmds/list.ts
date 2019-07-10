@@ -30,8 +30,7 @@ const sort = list => {
   return list.sort((a, b) => {
     return (
       (a.sort !== undefined ? a.sort : levelToNumber[a.level]) -
-        (b.sort !== undefined ? b.sort : levelToNumber[b.level]) ||
-      (a.sort || a.name).localeCompare(b.sort || b.name)
+        (b.sort !== undefined ? b.sort : levelToNumber[b.level]) || (a.sort || a.name).localeCompare(b.sort || b.name)
     )
   })
 }
@@ -52,9 +51,7 @@ const doList = () =>
         const tutorials = (await Promise.all(
           files.map(async name => {
             const { disabled, sort, description, level } = await import(
-              '@kui-shell/plugin-tutorials/samples/@tutorials/' +
-                name +
-                '/package.json'
+              '@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json'
             )
 
             if (disabled) {
@@ -74,9 +71,7 @@ const doList = () =>
             let descriptionForDisplay = description
             if (nowPlaying === name) {
               const descriptionWrapper = document.createElement('div')
-              descriptionWrapper.appendChild(
-                document.createTextNode(description)
-              )
+              descriptionWrapper.appendChild(document.createTextNode(description))
 
               const isNowPlaying = document.createElement('span')
               isNowPlaying.className = 'red-text semi-bold small-left-pad'

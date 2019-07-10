@@ -24,8 +24,6 @@ export default function success(conditions: KubeStatusCondition[]): boolean {
   const successCondition = conditions.find(_ => _.type === 'Succeeded')
   return (
     successCondition &&
-    (successCondition.status === true ||
-      (successCondition.status !== false &&
-        /true/i.test(successCondition.status)))
+    (successCondition.status === true || (successCondition.status !== false && /true/i.test(successCondition.status)))
   )
 }

@@ -37,7 +37,6 @@ const stats = typecov.breakdowns.identifiers.files
   .map(_ => _.stats)
   .reduce(incr, undefined)
 
-stats.percentage =
-  stats.totalTypes === 0 ? 100 : (100 * stats.knownTypes) / stats.totalTypes
+stats.percentage = stats.totalTypes === 0 ? 100 : (100 * stats.knownTypes) / stats.totalTypes
 
 console.log(JSON.stringify(stats, undefined, 2))

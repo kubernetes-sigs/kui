@@ -30,9 +30,7 @@ import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
 const keys = ui.keys
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /**
  * Here starts the test
@@ -74,17 +72,13 @@ describe('wskflow test app preview should actively watching an external file', f
 
   it('should write composer.sequence("a", "b") to a temp file', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(
-        tempFileName,
-        `module.exports = require('openwhisk-composer').sequence("a", "b")`,
-        err => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(true)
-          }
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "b")`, err => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(true)
         }
-      )
+      })
     })
   })
 
@@ -98,40 +92,29 @@ describe('wskflow test app preview should actively watching an external file', f
 
   it('should update the temp file to composer.sequence("a", "c")asdfasdf', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(
-        tempFileName,
-        `module.exports = require('openwhisk-composer').sequence("a", "c")asdfasdf`,
-        err => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(true)
-          }
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "c")asdfasdf`, err => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(true)
         }
-      )
+      })
     })
   })
 
   // error message is shown as action code
   it('should update preview with the error message', () =>
-    this.app.client.waitForVisible(
-      `${ui.selectors.SIDECAR}.entity-is-actions`,
-      3000
-    ))
+    this.app.client.waitForVisible(`${ui.selectors.SIDECAR}.entity-is-actions`, 3000))
 
   it('should update the temp file to composer.sequence("a", "c")', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(
-        tempFileName,
-        `module.exports = require('openwhisk-composer').sequence("a", "c")`,
-        err => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(true)
-          }
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "c")`, err => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(true)
         }
-      )
+      })
     })
   })
 
@@ -151,9 +134,7 @@ describe('wskflow test app preview should actively watching an external file', f
   it('should switch to the JSON tab', async () => {
     try {
       await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('ast'))
-      await this.app.client.click(
-        ui.selectors.SIDECAR_MODE_BUTTON('visualization')
-      )
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
     } catch (err) {
       return common.oops(this)(err)
     }
@@ -167,17 +148,13 @@ describe('wskflow test app preview should actively watching an external file', f
   // update file again, and verify that preview updates too
   it('should update the temp file to composer.sequence("a", "b")', () => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(
-        tempFileName,
-        `module.exports = require('openwhisk-composer').sequence("a", "b")`,
-        err => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(true)
-          }
+      fs.writeFile(tempFileName, `module.exports = require('openwhisk-composer').sequence("a", "b")`, err => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(true)
         }
-      )
+      })
     })
   })
   it('should update preview', async () => {
@@ -234,9 +211,7 @@ describe('wskflow test create a if composition, invoke, verify session flow is s
       .catch(common.oops(this)))
 
   it(`should be able to click on the mode button to switch to session flow, and see the true path highlighted`, async () => {
-    await this.app.client.click(
-      ui.selectors.SIDECAR_MODE_BUTTON('visualization')
-    )
+    await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
     return Promise.resolve(this.app)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(appName))
@@ -255,9 +230,7 @@ describe('wskflow test create a if composition, invoke, verify session flow is s
       .catch(common.oops(this)))
 
   it(`should be able to click on the mode button to switch to session flow, and see the false path highlighted`, async () => {
-    await this.app.client.click(
-      ui.selectors.SIDECAR_MODE_BUTTON('visualization')
-    )
+    await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
     return Promise.resolve(this.app)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(appName))
@@ -300,9 +273,7 @@ describe('wskflow test drilldown to action from wskflow', function(this: common.
       .click(`#wskflowSVG .node[data-name="/_/${actionName}"]`)
       .then(() =>
         this.app.client.waitUntil(async () => {
-          return this.app.client
-            .getText(ui.selectors.SIDECAR_TITLE)
-            .then(text => text === actionName)
+          return this.app.client.getText(ui.selectors.SIDECAR_TITLE).then(text => text === actionName)
         })
       )
       .then(() => this.app.client.waitForVisible('#qtip', 2000, true)) // qtip better not be visible
@@ -333,9 +304,7 @@ describe('wskflow test test if pressing a node, dragging and releasing triggers 
       .catch(common.oops(this)))
 
   it(`should be able to click on the mode button to switch to session flow`, async () => {
-    await this.app.client.click(
-      ui.selectors.SIDECAR_MODE_BUTTON('visualization')
-    )
+    await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('visualization'))
     return Promise.resolve(this.app)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(appName))

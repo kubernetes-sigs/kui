@@ -88,8 +88,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
  * Thin wrapper on top of WebView postMessage
  *
  */
-export class WebViewChannelRendererSide extends EventEmitter
-  implements Channel {
+export class WebViewChannelRendererSide extends EventEmitter implements Channel {
   readyState = ReadyState.OPEN
   private channelId: number
 

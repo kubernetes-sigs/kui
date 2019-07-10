@@ -54,8 +54,7 @@ const usage = {
     toplevel: {
       commandPrefix: 'wsk auth',
       title: 'Authorization Operations',
-      header:
-        'Commands to switch, list, and remember OpenWhisk authorization keys',
+      header: 'Commands to switch, list, and remember OpenWhisk authorization keys',
       available: [],
       related: ['host']
     },
@@ -67,8 +66,7 @@ const usage = {
       strict: 'list',
       command: 'list',
       title: 'List Auth Keys',
-      header:
-        'List the OpenWhisk namespaces for which you have authorization keys',
+      header: 'List the OpenWhisk namespaces for which you have authorization keys',
       parents: ['auth'],
       related: ['host set']
     },
@@ -146,11 +144,7 @@ const usage = {
     }
   }
 }
-usage.auth.toplevel.available = [
-  usage.auth.add,
-  usage.auth.list,
-  usage.auth.switch
-]
+usage.auth.toplevel.available = [usage.auth.add, usage.auth.list, usage.auth.switch]
 usage.host.toplevel.available = [usage.host.get, usage.host.set]
 
 /**
@@ -216,9 +210,7 @@ const readFromLocalWskProps = (auth?: string, subject?: string) =>
             wskprops.APIHOST = apiHost // in case this has also changed, via `host set`
             if (auth) wskprops.AUTH = auth
             if (subject) wskprops.SUBJECT = subject
-            console.error(
-              `updating existing wksprops ${JSON.stringify(wskprops)}`
-            )
+            console.error(`updating existing wksprops ${JSON.stringify(wskprops)}`)
             resolve(wskprops)
           }
         })
@@ -237,11 +229,7 @@ const writeToLocalWskProps = (wskprops): Promise<string> =>
     for (const key in wskprops) {
       props += `${key}=${wskprops[key]}\n`
     }
-    console.error(
-      'writing wskprops file to %s %s',
-      wskpropsFile(),
-      wskprops.AUTH
-    )
+    console.error('writing wskprops file to %s %s', wskpropsFile(), wskprops.AUTH)
     require('fs').writeFile(wskpropsFile(), props, err => {
       if (err) reject(err)
       else resolve(wskprops.AUTH)
@@ -252,10 +240,7 @@ const writeToLocalWskProps = (wskprops): Promise<string> =>
  * Read-and-update an auth choice to ~/.wskprops
  *
  */
-const updateLocalWskProps = (
-  auth?: string,
-  subject?: string
-): Promise<string> => {
+const updateLocalWskProps = (auth?: string, subject?: string): Promise<string> => {
   if (!inBrowser()) {
     return readFromLocalWskProps(auth, subject).then(writeToLocalWskProps)
   } else {
@@ -325,11 +310,7 @@ interface UseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({
-  argvNoOptions,
-  parsedOptions,
-  tab
-}: EvaluatorArgs) =>
+const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: EvaluatorArgs) =>
   namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
     if (auth) {
       /**
@@ -391,9 +372,7 @@ const addFn = (tab: Tab, key: string, subject: string) => {
         console.log(err)
         // otherwise, guide the user towards possibly helpful commands
         const dom = document.createElement('div')
-        dom.appendChild(
-          document.createTextNode('Please select a namespace, using ')
-        )
+        dom.appendChild(document.createTextNode('Please select a namespace, using '))
         clicky(dom, 'wsk auth list', repl.pexec)
         dom.appendChild(document.createTextNode(' or '))
         clicky(dom, 'wsk auth add', partial)
@@ -406,20 +385,12 @@ const addFn = (tab: Tab, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = async ({
-  argvNoOptions,
-  parsedOptions: options,
-  execOptions
-}: EvaluatorArgs) => {
+const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
     host: argv[0] || options.host, // the new apihost to use
-    ignoreCerts: !!(
-      options.ignoreCerts ||
-      options.insecureSSL ||
-      options.insecure
-    ),
+    ignoreCerts: !!(options.ignoreCerts || options.insecureSSL || options.insecure),
     isLocal: false // is this a local openwhisk?
   }
 
@@ -466,12 +437,7 @@ const hostSet = async ({
     hostConfig.ignoreCerts = true
     hostConfig.isLocal = true
   } else if (hostConfig.host === 'local' || hostConfig.host === 'localhost') {
-    hostConfig = await repl.qexec(
-      'wsk host pinglocal',
-      undefined,
-      undefined,
-      execOptions
-    )
+    hostConfig = await repl.qexec('wsk host pinglocal', undefined, undefined, execOptions)
   }
 
   const { host, ignoreCerts, isLocal } = await Promise.resolve(hostConfig)
@@ -521,9 +487,7 @@ const hostSet = async ({
           clicky.onclick = () => partial(cmd)
 
           dom.appendChild(
-            document.createTextNode(
-              'Before you can proceed, please provide an OpenWhisk auth key, using '
-            )
+            document.createTextNode('Before you can proceed, please provide an OpenWhisk auth key, using ')
           )
           dom.appendChild(clicky)
           return dom
@@ -627,8 +591,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.subtree('/wsk/host', { usage: usage.host.toplevel })
   commandTree.subtree('/wsk/auth', { usage: usage.auth.toplevel })
 
-  const add = ({ argvNoOptions, tab }: EvaluatorArgs) =>
-    addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
+  const add = ({ argvNoOptions, tab }: EvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
   commandTree.listen('/wsk/auth/switch', use('switch'), {
     usage: usage.auth.switch,

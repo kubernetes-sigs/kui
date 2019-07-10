@@ -51,8 +51,7 @@ const serialize = options => {
 
 /** some utility routines over annotations */
 const getAnnotation = (entity, key, defaultValue) => {
-  const annotation =
-    entity.annotations && entity.annotations.find(kv => kv.key === key)
+  const annotation = entity.annotations && entity.annotations.find(kv => kv.key === key)
   return (annotation && annotation.value) || defaultValue
 }
 
@@ -61,35 +60,23 @@ const isFromIncludedPackage = packageRegex => activations => {
   if (!packageRegex) {
     return activations
   } else {
-    const regex = new RegExp(
-      `.*/${packageRegex.replace('*', '.*').replace('/', '\\/')}.*`
-    )
-    return activations.filter(activation =>
-      getAnnotation(activation, 'path', '').match(regex)
-    )
+    const regex = new RegExp(`.*/${packageRegex.replace('*', '.*').replace('/', '\\/')}.*`)
+    return activations.filter(activation => getAnnotation(activation, 'path', '').match(regex))
   }
 }
 
 /** filter the given list of activations to exclude those caused by a sequence */
 const doesNotHaveAnnotation = (key, value) => entity =>
-  !(
-    entity.annotations &&
-    entity.annotations.find(kv => kv.key === key && kv.value === value)
-  )
-const excludeIfCausedBySequence = activations =>
-  activations.filter(doesNotHaveAnnotation('causedBy', 'sequence'))
+  !(entity.annotations && entity.annotations.find(kv => kv.key === key && kv.value === value))
+const excludeIfCausedBySequence = activations => activations.filter(doesNotHaveAnnotation('causedBy', 'sequence'))
 
 /** a filter function that accepts anything */
 const acceptAll = x => x
 
 /** a filter function that accepts only activations with a failure response */
 const hasErrorResult = activations =>
-  Promise.all(
-    activations.map(activation =>
-      repl.qexec(`wsk activation get ${activation.activationId}`)
-    )
-  ).then(activations =>
-    activations.filter(activation => !activation['response'].success)
+  Promise.all(activations.map(activation => repl.qexec(`wsk activation get ${activation.activationId}`))).then(
+    activations => activations.filter(activation => !activation['response'].success)
   )
 
 /** here is the module */
@@ -127,11 +114,7 @@ export default (commandTree, wsk) => {
 
   // Install the routes
   wsk.synonyms('activations').forEach(syn => {
-    const rootsCmd = commandTree.listen(
-      `/wsk/${syn}/roots`,
-      roots('roots'),
-      rootsDocs
-    )
+    const rootsCmd = commandTree.listen(`/wsk/${syn}/roots`, roots('roots'), rootsDocs)
 
     rootSynonyms.forEach(op => {
       commandTree.synonym(`/wsk/${syn}/${op}`, roots(op), rootsCmd)
@@ -144,16 +127,8 @@ export default (commandTree, wsk) => {
       rootsWithErrorsDocs
     )
     rootSynonyms.forEach(op => {
-      commandTree.synonym(
-        `/wsk/${syn}/${op}!`,
-        roots(`${op}!`),
-        rootsWithErrorsCmd
-      )
+      commandTree.synonym(`/wsk/${syn}/${op}!`, roots(`${op}!`), rootsWithErrorsCmd)
     })
-    commandTree.listen(
-      `/wsk/$$!`,
-      roots('$$!', hasErrorResult),
-      rootsWithErrorsDocsShortcut
-    )
+    commandTree.listen(`/wsk/$$!`, roots('$$!', hasErrorResult), rootsWithErrorsDocsShortcut)
   })
 }

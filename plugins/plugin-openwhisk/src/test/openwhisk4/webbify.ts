@@ -23,9 +23,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { rp } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
@@ -59,9 +57,7 @@ describe('Webbify actions', function(this: common.ISuite) {
       .do(`webbify`, this.app)
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
-      .then(href =>
-        rp({ url: `${href}?message=test`, rejectUnauthorized: false })
-      ) // provide an input to the remote request
+      .then(href => rp({ url: `${href}?message=test`, rejectUnauthorized: false })) // provide an input to the remote request
       .then(ui.expectSubset({ message: 'test' })) // and expect it right back, since the action is an echo action
       .then(() => this.app)
       .then(sidecar.expectOpen)
@@ -72,9 +68,7 @@ describe('Webbify actions', function(this: common.ISuite) {
       .do(`webbify ${actionName}`, this.app)
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
-      .then(href =>
-        rp({ url: `${href}?message2=test2`, rejectUnauthorized: false })
-      ) // provide an input to the remote request
+      .then(href => rp({ url: `${href}?message2=test2`, rejectUnauthorized: false })) // provide an input to the remote request
       .then(ui.expectSubset({ message2: 'test2' })) // and expect it right back, since the action is an echo action
       .then(() => this.app)
       .then(sidecar.expectOpen)
@@ -85,48 +79,36 @@ describe('Webbify actions', function(this: common.ISuite) {
       .do(`let ${packageName}/${actionName3} = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName3, undefined, undefined, packageName)
-      ))
+      .then(sidecar.expectShowing(actionName3, undefined, undefined, packageName)))
 
   it('should create another packaged action', () =>
     cli
       .do(`let ${packageName}/${actionName4} = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName4, undefined, undefined, packageName)
-      ))
+      .then(sidecar.expectShowing(actionName4, undefined, undefined, packageName)))
 
   it('should webbify a packaged action with implicit action', () =>
     cli
       .do(`webbify`, this.app)
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
-      .then(href =>
-        rp({ url: `${href}?message3=test3`, rejectUnauthorized: false })
-      ) // provide an input to the remote request
+      .then(href => rp({ url: `${href}?message3=test3`, rejectUnauthorized: false })) // provide an input to the remote request
       .then(ui.expectSubset({ message3: 'test3' })) // and expect it right back, since the action is an echo action
       .then(() => this.app)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName4, undefined, undefined, packageName)
-      ))
+      .then(sidecar.expectShowing(actionName4, undefined, undefined, packageName)))
 
   it('should webbify a packaged action with explicit action', () =>
     cli
       .do(`webbify ${packageName}/${actionName3}`, this.app)
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
-      .then(href =>
-        rp({ url: `${href}?message4=test4`, rejectUnauthorized: false })
-      ) // provide an input to the remote request
+      .then(href => rp({ url: `${href}?message4=test4`, rejectUnauthorized: false })) // provide an input to the remote request
       .then(ui.expectSubset({ message4: 'test4' })) // and expect it right back, since the action is an echo action
       .then(() => this.app)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName3, undefined, undefined, packageName)
-      ))
+      .then(sidecar.expectShowing(actionName3, undefined, undefined, packageName)))
 
   it('should create an action for http', () =>
     cli
@@ -147,9 +129,7 @@ describe('Webbify actions', function(this: common.ISuite) {
       .do(`webbify as http`, this.app)
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
-      .then(href =>
-        rp({ url: `${href}?message=test5`, rejectUnauthorized: false })
-      ) // provide an input to the remote request
+      .then(href => rp({ url: `${href}?message=test5`, rejectUnauthorized: false })) // provide an input to the remote request
       .then(response => assert.strictEqual(response, 'test5')) // and expect it right back
       .then(() => this.app)
       .then(sidecar.expectOpen)
@@ -160,9 +140,7 @@ describe('Webbify actions', function(this: common.ISuite) {
       .do(`webbify ${actionName5} as http`, this.app)
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
-      .then(href =>
-        rp({ url: `${href}?message=test6`, rejectUnauthorized: false })
-      ) // provide an input to the remote request
+      .then(href => rp({ url: `${href}?message=test6`, rejectUnauthorized: false })) // provide an input to the remote request
       .then(response => assert.strictEqual(response, 'test6')) // and expect it right back
       .then(() => this.app)
       .then(sidecar.expectOpen)
@@ -173,10 +151,7 @@ describe('Webbify actions', function(this: common.ISuite) {
   //
   it('should create a web action via action create --web', () =>
     cli
-      .do(
-        `action create ${actionName7} ${ROOT}/data/openwhisk/foo.js --web`,
-        this.app
-      )
+      .do(`action create ${actionName7} ${ROOT}/data/openwhisk/foo.js --web`, this.app)
       // make sure the REPL output has the proper href:
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
@@ -195,12 +170,7 @@ describe('Webbify actions', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName7))
       .then(sidecar.expectBadge('web'))
       // finally, make sure the "web accessible" badge also has the proper href:
-      .then(() =>
-        this.app.client.getAttribute(
-          `${ui.selectors.SIDECAR} .badges .entity-web-export-url`,
-          'href'
-        )
-      )
+      .then(() => this.app.client.getAttribute(`${ui.selectors.SIDECAR} .badges .entity-web-export-url`, 'href'))
       .then(href =>
         rp({
           uri: href,

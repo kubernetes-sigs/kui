@@ -26,14 +26,10 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe('Create a sequence, list it, delete it', function(
-  this: common.ISuite
-) {
+localDescribe('Create a sequence, list it, delete it', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -61,8 +57,7 @@ localDescribe('Create a sequence, list it, delete it', function(
       .then(sidecar.expectShowing('sss')))
 
   // list it
-  it(`should find the new sequence with "list"`, () =>
-    cli.do('action list', this.app).then(cli.expectOKWith('sss')))
+  it(`should find the new sequence with "list"`, () => cli.do('action list', this.app).then(cli.expectOKWith('sss')))
 
   // delete the actions, keeping the sequence around
   it(`should delete the newly created action using "${rm}"`, () =>

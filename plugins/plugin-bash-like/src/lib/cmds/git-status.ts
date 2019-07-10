@@ -89,11 +89,7 @@ const noCurrentTextSelection = () =>
  * Look for modified: and turn them into git diff links
  *
  */
-export const status2Html = (
-  tab: Tab,
-  rawOut: string,
-  stats: Promise<Stats> = numstat()
-): HTMLElement => {
+export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
   injectCSS()
 
   const mods = rawOut
@@ -115,18 +111,12 @@ export const status2Html = (
       /(Untracked files:)/g,
       `</div></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><div class='result-table'>`
     )
-    .replace(
-      /modified:/g,
-      `<span class='yellow-text larger-text icon-width'><i class="fas fa-file"></i></span>`
-    )
+    .replace(/modified:/g, `<span class='yellow-text larger-text icon-width'><i class="fas fa-file"></i></span>`)
     .replace(
       /new file:/g,
       `<span class='green-text larger-text icon-width'><i class='fas fa-file-medical'></i></i></span>`
     )
-    .replace(
-      /deleted:/g,
-      `<span class='red-text larger-text icon-width'><i class='far fa-file'></i></i></span>`
-    )
+    .replace(/deleted:/g, `<span class='red-text larger-text icon-width'><i class='far fa-file'></i></i></span>`)
     .replace(
       /\s*(nothing added to commit but untracked files present|no changes added to commit.*)/,
       `</div></div><div class='top-pad'>$1</div>`
@@ -153,8 +143,7 @@ export const status2Html = (
         const deleted = elt.querySelector('.d2h-lines-deleted') as HTMLElement
 
         added.innerText = stat.added === '0' ? stat.added : `+${stat.added}`
-        deleted.innerText =
-          stat.deleted === '0' ? stat.deleted : `-${stat.deleted}`
+        deleted.innerText = stat.deleted === '0' ? stat.deleted : `-${stat.deleted}`
       } else {
         elt.parentNode.removeChild(elt)
       }
@@ -184,13 +173,9 @@ export const status2Html = (
         // no-text-selected.
         setTimeout(() => {
           if (noCurrentTextSelection()) {
-            return pip(
-              tab,
-              `${command} ${relpath}`,
-              undefined,
-              wrapper.parentNode.parentNode as Element,
-              'git status'
-            )(event)
+            return pip(tab, `${command} ${relpath}`, undefined, wrapper.parentNode.parentNode as Element, 'git status')(
+              event
+            )
           }
         }, 0)
       }
@@ -229,25 +214,10 @@ const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) =>
     proc.on('close', (exitCode: number) => {
       if (exitCode === 0) {
         // note: no sidecar header if this launched from the command line ("subwindow mode")
-        resolve(
-          asSidecarEntity(
-            'git status',
-            status2Html(tab, rawOut, stats),
-            {},
-            undefined,
-            'statuss',
-            currentBranch
-          )
-        ) // intentional additional s at the end
+        resolve(asSidecarEntity('git status', status2Html(tab, rawOut, stats), {}, undefined, 'statuss', currentBranch)) // intentional additional s at the end
       } else {
         try {
-          return handleNonZeroExitCode(
-            command,
-            exitCode,
-            rawOut,
-            rawErr,
-            execOptions
-          )
+          return handleNonZeroExitCode(command, exitCode, rawOut, rawErr, execOptions)
         } catch (err) {
           reject(err)
         }

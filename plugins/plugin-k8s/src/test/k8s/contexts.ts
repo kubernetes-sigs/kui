@@ -21,12 +21,7 @@ import { safeDump, safeLoad as parseYAML } from 'js-yaml'
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import {
-  waitForGreen,
-  waitForRed,
-  createNS,
-  waitTillNone
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 import path = require('path')
 import assert = require('assert')
 
@@ -52,9 +47,7 @@ describe('electron context switching', function(this: common.ISuite) {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
         return cli
           .do(`${kubectl} delete namespace ${name}`, this.app)
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME(name), errOk })
-          )
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name), errOk }))
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
@@ -84,9 +77,7 @@ describe('electron context switching', function(this: common.ISuite) {
             `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
             this.app
           )
-          .then(
-            cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') })
-          )
+          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
@@ -97,13 +88,8 @@ describe('electron context switching', function(this: common.ISuite) {
           .then(cli.expectJustOK)
           .then(sidecar.expectOpen)
           .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
-          .then(() =>
-            this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
-          )
-          .then(
-            () =>
-              `${selectors.SIDECAR} .result-table .entity[data-name="nginx"]`
-          )
+          .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
+          .then(() => `${selectors.SIDECAR} .result-table .entity[data-name="nginx"]`)
           .then(selector => waitForGreen(this.app, selector))
           .catch(common.oops(this))
       })
@@ -131,10 +117,7 @@ describe('electron context switching', function(this: common.ISuite) {
       it('should add a new context', async () => {
         try {
           const kconfig = parseYAML(getKUBECONFIG().toString())
-          const newOnesFilepath = path.join(
-            path.dirname(getKUBECONFIGFilepath()),
-            'forTesting.yml'
-          )
+          const newOnesFilepath = path.join(path.dirname(getKUBECONFIGFilepath()), 'forTesting.yml')
 
           kconfig.contexts[0].context.namespace = ns
           kconfig.contexts[0].name = contextName
@@ -142,8 +125,7 @@ describe('electron context switching', function(this: common.ISuite) {
 
           await this.app.client.execute(
             (defaultFilepath: string, newOnesFilepath: string) => {
-              process.env.KUBECONFIG = `${process.env.KUBECONFIG ||
-                defaultFilepath}:${newOnesFilepath}`
+              process.env.KUBECONFIG = `${process.env.KUBECONFIG || defaultFilepath}:${newOnesFilepath}`
             },
             defaultFilepath,
             newOnesFilepath
@@ -186,17 +168,9 @@ describe('electron context switching', function(this: common.ISuite) {
           const allContextNames = await cli
             .do(`contexts`, this.app)
             .then(cli.expectOKWithCustom({ selector: ' ' }))
-            .then(selector =>
-              this.app.client.elements(
-                `${selector} .entity-name[data-key="NAME"]`
-              )
-            )
+            .then(selector => this.app.client.elements(`${selector} .entity-name[data-key="NAME"]`))
             .then(elements => elements.value.map(_ => _.ELEMENT))
-            .then(elements =>
-              Promise.all(
-                elements.map(element => this.app.client.elementIdText(element))
-              )
-            )
+            .then(elements => Promise.all(elements.map(element => this.app.client.elementIdText(element))))
             .then(texts => texts.map(_ => _.value))
 
           assert.ok(allContextNames.find(_ => _ === contextName))
@@ -209,16 +183,13 @@ describe('electron context switching', function(this: common.ISuite) {
     /** list pods and expect an empty list */
     const listPodsAndExpectNone = (ns: string) => {
       it('should list pods and show nothing', () => {
-        return cli
-          .do(`${kubectl} get pods -n ${ns}`, this.app)
-          .then(cli.expectError(404))
+        return cli.do(`${kubectl} get pods -n ${ns}`, this.app).then(cli.expectError(404))
       })
     }
 
     /** list pods and expect one entry */
     const listPodsAndExpectOne = (name: string, ns?: string) => {
-      it(`should list pods and show ${name} maybe in namespace ${ns ||
-        'nope'}`, () => {
+      it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'}`, () => {
         return cli
           .do(`${kubectl} get pods ${ns ? '-n ' + ns : ''}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))

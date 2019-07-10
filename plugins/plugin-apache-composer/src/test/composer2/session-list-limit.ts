@@ -54,24 +54,11 @@ describe('session list --limit --skip', function(this: common.ISuite) {
     return sessionArray
   }
 
-  const verifySessionList = async ({
-    commandIndex,
-    expectedLength = 0,
-    expectedSessions = []
-  }) => {
+  const verifySessionList = async ({ commandIndex, expectedLength = 0, expectedSessions = [] }) => {
     return this.app.client
-      .waitForText(
-        `${ui.selectors.OUTPUT_N(
-          commandIndex
-        )} .entity.session .entity-name .clickable`,
-        5000
-      )
+      .waitForText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`, 5000)
       .then(() =>
-        this.app.client.getText(
-          `${ui.selectors.OUTPUT_N(
-            commandIndex
-          )} .entity.session .entity-name .clickable`
-        )
+        this.app.client.getText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`)
       )
       .then(sessions => (!Array.isArray(sessions) ? [sessions] : sessions)) // make sure we have an array
       .then(actualSessions => {

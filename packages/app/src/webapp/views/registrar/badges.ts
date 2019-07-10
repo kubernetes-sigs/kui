@@ -18,11 +18,7 @@ import * as Debug from 'debug'
 
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
-import {
-  addBadge,
-  BadgeSpec,
-  BadgeOptions
-} from '@kui-shell/core/webapp/views/sidecar'
+import { addBadge, BadgeSpec, BadgeOptions } from '@kui-shell/core/webapp/views/sidecar'
 import { SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
 
 const debug = Debug('webapp/views/registrar/badges')
@@ -44,9 +40,7 @@ const registrar: BadgeRegistration<MetadataBearing>[] = []
  * Register a new badge
  *
  */
-export function registerSidecarBadge<Resource extends MetadataBearing>(
-  registration: BadgeRegistration<Resource>
-) {
+export function registerSidecarBadge<Resource extends MetadataBearing>(registration: BadgeRegistration<Resource>) {
   registrar.push(registration)
 }
 export default registerSidecarBadge

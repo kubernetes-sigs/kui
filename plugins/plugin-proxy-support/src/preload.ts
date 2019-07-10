@@ -16,11 +16,7 @@
 
 import * as Debug from 'debug'
 
-import {
-  inBrowser,
-  assertHasProxy,
-  assertLocalAccess
-} from '@kui-shell/core/core/capabilities'
+import { inBrowser, assertHasProxy, assertLocalAccess } from '@kui-shell/core/core/capabilities'
 import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 const debug = Debug('plugins/proxy-support/preload')
 

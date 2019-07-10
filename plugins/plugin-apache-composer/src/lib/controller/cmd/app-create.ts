@@ -34,11 +34,7 @@ export default async (commandTree: CommandRegistrar) => {
       let inputFile = argvNoOptions[argvNoOptions.indexOf('create') + 2]
       let name = argvNoOptions[argvNoOptions.indexOf('create') + 1]
       if (!inputFile) {
-        const implicitEntity = compileUtil.implicitInputFile(
-          tab,
-          inputFile,
-          name
-        )
+        const implicitEntity = compileUtil.implicitInputFile(tab, inputFile, name)
         inputFile = implicitEntity.inputFile
         name = implicitEntity.name
 
@@ -55,9 +51,7 @@ export default async (commandTree: CommandRegistrar) => {
       return compileUtil
         .sourceToComposition({ inputFile, name })
         .then(source =>
-          client
-            .deploy({ composition: source, overwrite: false })
-            .then(view.formatCompositionEntity(execOptions))
+          client.deploy({ composition: source, overwrite: false }).then(view.formatCompositionEntity(execOptions))
         )
         .catch(err => {
           throw err
@@ -74,11 +68,7 @@ export default async (commandTree: CommandRegistrar) => {
       let inputFile = argvNoOptions[argvNoOptions.indexOf('update') + 2]
       let name = argvNoOptions[argvNoOptions.indexOf('update') + 1]
       if (!inputFile) {
-        const implicitEntity = compileUtil.implicitInputFile(
-          tab,
-          inputFile,
-          name
-        )
+        const implicitEntity = compileUtil.implicitInputFile(tab, inputFile, name)
         inputFile = implicitEntity.inputFile
         name = implicitEntity.name
 
@@ -95,9 +85,7 @@ export default async (commandTree: CommandRegistrar) => {
       return compileUtil
         .sourceToComposition({ inputFile, name })
         .then(composition =>
-          client
-            .deploy({ composition, overwrite: true })
-            .then(view.formatCompositionEntity(execOptions))
+          client.deploy({ composition, overwrite: true }).then(view.formatCompositionEntity(execOptions))
         )
     },
     { usage: create('update') }

@@ -32,9 +32,7 @@ import { Quittable } from './main-models'
  */
 export default ({ Tray, Menu }, app: Quittable, createWindow: Function) => {
   const screen = require('electron').screen
-  const screenSize = screen.getDisplayNearestPoint(
-    screen.getCursorScreenPoint()
-  ).workArea
+  const screenSize = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
   const dimensions = { width: 800, height: 600 }
 
   const template = [
@@ -101,20 +99,15 @@ export default ({ Tray, Menu }, app: Quittable, createWindow: Function) => {
     {
       label: 'Run a Load Test',
       click: () =>
-        createWindow(
-          true,
-          'lt <action> --numThreads 1 --numIters 10 -p key value',
-          true,
-          {
-            title: 'Load Test',
-            sidecarOnly: false,
-            partialExec: true,
-            width: dimensions.width,
-            height: 130
-            /* position: { x: screenSize.x + (screenSize.width - 2 * dimensions.width - 100),
+        createWindow(true, 'lt <action> --numThreads 1 --numIters 10 -p key value', true, {
+          title: 'Load Test',
+          sidecarOnly: false,
+          partialExec: true,
+          width: dimensions.width,
+          height: 130
+          /* position: { x: screenSize.x + (screenSize.width - 2 * dimensions.width - 100),
                             y: screenSize.y + screenSize.height - dimensions.height } */
-          }
-        )
+        })
     },
     {
       label: 'Switch Namespace',
@@ -141,10 +134,7 @@ export default ({ Tray, Menu }, app: Quittable, createWindow: Function) => {
   ]
 
   const platform = require('os').platform()
-  const image =
-    platform === 'win32'
-      ? '../../content/icons/ico/kui.ico'
-      : '../../content/icons/png/kui.png'
+  const image = platform === 'win32' ? '../../content/icons/ico/kui.ico' : '../../content/icons/png/kui.png'
 
   // tray.setToolTip('Common Kui tasks')
 

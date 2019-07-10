@@ -23,11 +23,7 @@ import { ReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
-import {
-  isCommandHandlerWithEvents,
-  Evaluator,
-  EvaluatorArgs
-} from '@kui-shell/core/models/command'
+import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 
 import * as needle from 'needle'
@@ -42,9 +38,7 @@ interface DisabledProxyServerConfig {
   enabled: boolean
 }
 
-function isDisabled(
-  _config: ProxyServerConfig
-): _config is DisabledProxyServerConfig {
+function isDisabled(_config: ProxyServerConfig): _config is DisabledProxyServerConfig {
   const config = _config as DisabledProxyServerConfig
   return config && config.enabled === false
 }
@@ -58,8 +52,7 @@ type ProxyServerConfig = DisabledProxyServerConfig | ActualProxyServerConfig
  *
  */
 import defaultProxyServerConfig = require('@kui-shell/proxy/lib/defaultProxyServerConfig.json')
-const proxyServerConfig: ProxyServerConfig =
-  config['proxyServer'] || defaultProxyServerConfig
+const proxyServerConfig: ProxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
 debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */
@@ -72,12 +65,7 @@ const directEvaluator = new DirectReplEval()
 class ProxyEvaluator implements ReplEval {
   name = 'ProxyEvaluator'
 
-  async apply(
-    command: string,
-    execOptions: ExecOptions,
-    evaluator: Evaluator,
-    args: EvaluatorArgs
-  ) {
+  async apply(command: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     debug('apply', evaluator)
 
     if (
@@ -103,16 +91,8 @@ class ProxyEvaluator implements ReplEval {
 
       try {
         const invokeRemote = () => {
-          const proxyURL = new URL(
-            proxyServerConfig.url,
-            window.location.origin
-          )
-          return needle(
-            'post',
-            proxyURL.href,
-            body,
-            Object.assign({ json: true }, proxyServerConfig.needleOptions)
-          )
+          const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
+          return needle('post', proxyURL.href, body, Object.assign({ json: true }, proxyServerConfig.needleOptions))
         }
 
         const response: needle.NeedleResponse = await (window['webview-proxy']
@@ -140,9 +120,7 @@ class ProxyEvaluator implements ReplEval {
             if (response.body.innerText) {
               return response.body.innerText
             } else {
-              const err = new Error(
-                'Internal Error: Fakedom objects are not accepted by proxy executor'
-              )
+              const err = new Error('Internal Error: Fakedom objects are not accepted by proxy executor')
               err['code'] = 500
               throw err
             }
@@ -170,12 +148,9 @@ class ProxyEvaluator implements ReplEval {
         } else {
           const error = new Error(
             (err.body && err.body.message) ||
-              (typeof err.body === 'string'
-                ? err.body
-                : err.message || 'Internal error')
+              (typeof err.body === 'string' ? err.body : err.message || 'Internal error')
           )
-          error['code'] = error['statusCode'] =
-            (err.body && err.body.code) || err.code || err.statusCode
+          error['code'] = error['statusCode'] = (err.body && err.body.code) || err.code || err.statusCode
           debug('using this code', error['code'])
           throw error
         }

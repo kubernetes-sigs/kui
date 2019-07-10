@@ -25,10 +25,8 @@ export default {
   tidy: 'Reformat source code',
   readonly: 'Done Editing',
   isNew: 'You are in edit mode, viewing <strong>undeployed code</strong>',
-  isNewReadOnly:
-    'You are in readonly mode, viewing <strong>undeployed code</strong>',
-  isUpToDate:
-    'You are in edit mode, viewing the <strong>currently saved version</strong>',
+  isNewReadOnly: 'You are in readonly mode, viewing <strong>undeployed code</strong>',
+  isUpToDate: 'You are in edit mode, viewing the <strong>currently saved version</strong>',
   isModified: 'You are in edit mode, with <strong>unsaved edits</strong>',
   isModifiedIndicator: 'You have unsaved edits',
 

@@ -22,9 +22,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 describe('blackbox actions', function(this: common.ISuite) {
   before(openwhisk.before(this))
@@ -37,9 +35,7 @@ describe('blackbox actions', function(this: common.ISuite) {
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb1'))
       .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE))
-      .then(txt =>
-        assert.strictEqual(txt, 'dockerhub image: openwhisk/example')
-      )
+      .then(txt => assert.strictEqual(txt, 'dockerhub image: openwhisk/example'))
       .catch(common.oops(this)))
 
   it('should create a blackbox action variant 2', () =>
@@ -52,10 +48,7 @@ describe('blackbox actions', function(this: common.ISuite) {
 
   it('should create a blackbox action variant 3', () =>
     cli
-      .do(
-        `wsk action create --docker openwhisk/example bb3 ${ROOT}/data/openwhisk/echo.js`,
-        this.app
-      )
+      .do(`wsk action create --docker openwhisk/example bb3 ${ROOT}/data/openwhisk/echo.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb3'))
@@ -63,18 +56,11 @@ describe('blackbox actions', function(this: common.ISuite) {
 
   it('should create a blackbox action variant 4', () =>
     cli
-      .do(
-        `wsk action create bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`,
-        this.app
-      )
+      .do(`wsk action create bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb4'))
-      .then(
-        sidecar.expectSource(
-          '// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'
-        )
-      )
+      .then(sidecar.expectSource('// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'))
       .catch(common.oops(this)))
 
   it('should create a package', () =>
@@ -87,18 +73,11 @@ describe('blackbox actions', function(this: common.ISuite) {
 
   it('should create a blackbox action variant 5', () =>
     cli
-      .do(
-        `wsk action create ppp/bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`,
-        this.app
-      )
+      .do(`wsk action create ppp/bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb4', undefined, undefined, 'ppp'))
-      .then(
-        sidecar.expectSource(
-          '// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'
-        )
-      )
+      .then(sidecar.expectSource('// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'))
       .catch(common.oops(this)))
 
   it(`should invoke bb2`, () =>
@@ -107,9 +86,7 @@ describe('blackbox actions', function(this: common.ISuite) {
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb2'))
-      .then(() =>
-        this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-      )
+      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(
         ui.expectStruct({
           args: {},

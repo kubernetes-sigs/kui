@@ -54,8 +54,7 @@ describe('app create where app name is also a package name', function(this: comm
       .do('app list', this.app)
       .then(
         cli.expectOKWithCustom({
-          selector:
-            '.entity[data-name="foo"][data-package-name="foo"] .entity-name.clickable',
+          selector: '.entity[data-name="foo"][data-package-name="foo"] .entity-name.clickable',
           passthrough: true
         })
       )

@@ -28,10 +28,7 @@ const globp = (dir, patternSuffix, dirWildcard = false) =>
         resolve(
           files.map(filepath => ({
             filepath,
-            targetName: filepath.replace(
-              new RegExp(`^${dir}${dirWildcard ? '[^/]+/' : ''}`),
-              ''
-            )
+            targetName: filepath.replace(new RegExp(`^${dir}${dirWildcard ? '[^/]+/' : ''}`), '')
           }))
         )
       }
@@ -78,11 +75,7 @@ const cleanBucket = async (cos, Bucket) => {
     const list = await cos.listObjects({ Bucket }).promise()
 
     debug('deleting objects in bucket', list.Contents)
-    await Promise.all(
-      list.Contents.map(({ Key }) =>
-        cos.deleteObject({ Bucket, Key }).promise()
-      )
-    )
+    await Promise.all(list.Contents.map(({ Key }) => cos.deleteObject({ Bucket, Key }).promise()))
 
     // debug('deleting bucket', Bucket)
     // await cos.deleteBucket({ Bucket }).promise()
@@ -141,9 +134,7 @@ const putObject = (cos, Bucket) => ({ filepath, targetName }) =>
       ? 'image/jpeg'
       : filename.endsWith('.svg')
       ? 'image/svg+xml'
-      : filename.endsWith('.js') ||
-        filename.endsWith('.js.gz') ||
-        filename.endsWith('.js.br')
+      : filename.endsWith('.js') || filename.endsWith('.js.gz') || filename.endsWith('.js.br')
       ? 'application/javascript'
       : 'text/plain'
 
@@ -156,9 +147,7 @@ const putObject = (cos, Bucket) => ({ filepath, targetName }) =>
     fs.readFile(filepath, (err, Body) => {
       if (err) {
         if (err.code === 'ENOENT') {
-          console.error(
-            `WARNING: Not uploading ${Key}, as the file was not found`
-          )
+          console.error(`WARNING: Not uploading ${Key}, as the file was not found`)
           resolve(Key)
         } else {
           reject(err)
@@ -178,13 +167,7 @@ const putObject = (cos, Bucket) => ({ filepath, targetName }) =>
           object.ContentEncoding = 'br'
         }
 
-        debug(
-          'putObject',
-          Bucket,
-          Key,
-          ContentType,
-          object.ContentEncoding || 'plain'
-        )
+        debug('putObject', Bucket, Key, ContentType, object.ContentEncoding || 'plain')
 
         cos
           .putObject(object)
@@ -228,16 +211,12 @@ debug('assembling assets')
 const main = async () => {
   try {
     debug('requesting endpoints', secrets.endpoints)
-    const endpoints = (await needle('get', secrets.endpoints, { json: true }))
-      .body
+    const endpoints = (await needle('get', secrets.endpoints, { json: true })).body
 
     const config = {
-      endpoint:
-        endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
+      endpoint: endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
 
-      ibmAuthEndpoint: `https://${
-        endpoints['identity-endpoints']['iam-token']
-      }/oidc/token`,
+      ibmAuthEndpoint: `https://${endpoints['identity-endpoints']['iam-token']}/oidc/token`,
       apiKeyId: secrets.apikey,
       serviceInstanceId: secrets.resource_instance_id
 
@@ -287,9 +266,7 @@ const main = async () => {
 
     debug('uploads done')
     const base = `${config.endpoint}/${Bucket}`
-    console.log(
-      colors.bold('Endpoint: ' + `${base}/${encodeURIComponent(index)}`)
-    )
+    console.log(colors.bold('Endpoint: ' + `${base}/${encodeURIComponent(index)}`))
 
     console.log('ok')
     process.exit(0)

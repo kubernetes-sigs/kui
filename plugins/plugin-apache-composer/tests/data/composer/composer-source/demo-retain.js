@@ -16,6 +16,4 @@
 
 const composer = require('openwhisk-composer')
 
-module.exports = composer.retain(
-  composer.sequence('TripleAndIncrement', 'DivideByTwo')
-)
+module.exports = composer.retain(composer.sequence('TripleAndIncrement', 'DivideByTwo'))

@@ -34,10 +34,7 @@ import { create } from './usage'
 import * as messages from './messages'
 const debug = Debug('plugins/apache-composer/utility/compile')
 
-const loadSourceCode = (
-  inputFile: string,
-  localCodePath: string
-): Promise<string> =>
+const loadSourceCode = (inputFile: string, localCodePath: string): Promise<string> =>
   new Promise(async (resolve, reject) => {
     if (!inBrowser()) {
       debug('readFile in headless mode or for electron')
@@ -53,10 +50,7 @@ const loadSourceCode = (
       try {
         const data = await import(
           '@kui-shell/plugin-apache-composer/samples' +
-            localCodePath.replace(
-              /^.*plugin-apache-composer\/samples(.*)$/,
-              '$1'
-            )
+            localCodePath.replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
         )
         debug('readFile for webpack done', data)
         resolve(data)
@@ -90,15 +84,8 @@ export const compileComposition = (composition, name) => {
 }
 
 // give style freedom for users to write composition source
-const allowSourceVariation = (
-  composition,
-  logMessage: string,
-  errorMessage: string
-) => {
-  if (
-    (composition.main && isValidAst(composition.main)) ||
-    typeof composition.main === 'function'
-  ) {
+const allowSourceVariation = (composition, logMessage: string, errorMessage: string) => {
+  if ((composition.main && isValidAst(composition.main)) || typeof composition.main === 'function') {
     debug('pulling composition from exports.main')
     composition = composition.main
   } else if (
@@ -120,10 +107,7 @@ const allowSourceVariation = (
     // maybe the code did a console.log?
     let err = ''
     try {
-      const maybeStr = logMessage.substring(
-        logMessage.indexOf('{'),
-        logMessage.lastIndexOf('}') + 1
-      )
+      const maybeStr = logMessage.substring(logMessage.indexOf('{'), logMessage.lastIndexOf('}') + 1)
       debug('maybe composition is in log message?', maybeStr)
       const maybe = Composer.util.deserialize(JSON.parse(maybeStr))
       if (isValidAst(maybe)) {
@@ -160,10 +144,7 @@ const sourceErrHandler = (error, originalCode: string, filename: string) => {
           .replace(/\s+at createScript([^\n])*/g, '\n')
           .trim()
   const message = _message
-    .replace(
-      /\s+\(.*plugins\/modules\/apache-composer\/node_modules\/openwhisk-composer\/composer\.js:[^\s]*/,
-      ''
-    )
+    .replace(/\s+\(.*plugins\/modules\/apache-composer\/node_modules\/openwhisk-composer\/composer\.js:[^\s]*/, '')
     .replace(/\s+at ContextifyScript[^\n]*/g, '')
 
   // for parse error, error message is shown in the ast (JSON) tab, and user code in the source (code) tab
@@ -177,20 +158,14 @@ const sourceErrHandler = (error, originalCode: string, filename: string) => {
   }
 }
 
-export const implicitInputFile = (
-  tab: Tab,
-  inputFile?: string,
-  name?: string
-) => {
+export const implicitInputFile = (tab: Tab, inputFile?: string, name?: string) => {
   if (!inputFile) {
     // the user didn't provide an input file, maybe we can infer one from the current selection
     const selection = currentSelection(tab)
     debug('selection', selection)
     if (selection && selection['ast'] && selection.prettyType === 'preview') {
       debug('input from app preview selection') // then the sidecar is currently showing an app preview
-      const inputAnnotation = selection.annotations.find(
-        ({ key }) => key === 'file'
-      )
+      const inputAnnotation = selection.annotations.find(({ key }) => key === 'file')
 
       if (inputAnnotation) {
         inputFile = inputAnnotation.value
@@ -207,11 +182,7 @@ export const implicitInputFile = (
   return { inputFile, name }
 }
 
-export const loadComposition = (
-  inputFile: string,
-  originalCode?: string,
-  localCodePath?: string
-) => {
+export const loadComposition = (inputFile: string, originalCode?: string, localCodePath?: string) => {
   if (inBrowser() && originalCode) {
     debug('loadComposition for webpack', originalCode)
     return originalCode
@@ -286,13 +257,7 @@ export const loadComposition = (
   }
 }
 
-export const sourceToComposition = ({
-  inputFile,
-  name = ''
-}: {
-  inputFile: string
-  name?: string
-}) =>
+export const sourceToComposition = ({ inputFile, name = '' }: { inputFile: string; name?: string }) =>
   new Promise(async (resolve, reject) => {
     debug('validating source file', inputFile)
     const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)

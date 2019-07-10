@@ -5,8 +5,4 @@ const composer = require('openwhisk-composer')
  * to note that a certain call back is expected
  * not to be taken. Use EMPTY for these cases.
  */
-module.exports = composer.if(
-  () => true,
-  '/whisk.system/utils/date',
-  composer.empty()
-)
+module.exports = composer.if(() => true, '/whisk.system/utils/date', composer.empty())

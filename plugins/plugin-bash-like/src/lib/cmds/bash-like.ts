@@ -26,11 +26,7 @@ import { exec } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
-import {
-  CommandRegistrar,
-  EvaluatorArgs,
-  ParsedOptions
-} from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { handleNonZeroExitCode } from '../util/exec'
@@ -112,13 +108,7 @@ export const doExec = (
         // strip off e.g. /bin/sh: line 0:
         const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
         try {
-          handleNonZeroExitCode(
-            cmdLine,
-            exitCode,
-            rawOut,
-            cleanErr,
-            execOptions
-          )
+          handleNonZeroExitCode(cmdLine, exitCode, rawOut, cleanErr, execOptions)
         } catch (err) {
           reject(err)
         }
@@ -126,16 +116,10 @@ export const doExec = (
     })
   })
 
-export const doShell = (
-  argv: string[],
-  options: ParsedOptions,
-  execOptions?: ExecOptions
-) =>
+export const doShell = (argv: string[], options: ParsedOptions, execOptions?: ExecOptions) =>
   new Promise(async (resolve, reject) => {
     if (inBrowser()) {
-      reject(
-        new Error('Local file access not supported when running in a browser')
-      )
+      reject(new Error('Local file access not supported when running in a browser'))
     }
 
     // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
@@ -217,8 +201,7 @@ const usage = {
     strict: 'cd',
     command: 'cd',
     title: 'change working directory',
-    header:
-      'Update the current working directory for local filesystem manipulations',
+    header: 'Update the current working directory for local filesystem manipulations',
     optional: localFilepath
   }
 }

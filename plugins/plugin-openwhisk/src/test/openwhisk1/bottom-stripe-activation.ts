@@ -41,22 +41,10 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(
-            `${ui.selectors.SIDECAR_CONTENT} .activation-result`
-          )
-        )
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(actualLogs => {
-          if (
-            actualLogs
-              .replace(/\s+/g, '')
-              .indexOf(expectedLogs.replace(/\s+/g, '')) < 0
-          ) {
-            console.error(
-              actualLogs.replace(/\s+/g, '') +
-                ' != ' +
-                expectedLogs.replace(/\s+/g, '')
-            )
+          if (actualLogs.replace(/\s+/g, '').indexOf(expectedLogs.replace(/\s+/g, '')) < 0) {
+            console.error(actualLogs.replace(/\s+/g, '') + ' != ' + expectedLogs.replace(/\s+/g, ''))
             assert.ok(false)
           }
         })
@@ -67,17 +55,11 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
     const subsetOfAnnotations = { path: `${ui.expectedNamespace()}/${name}` }
 
     it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(
-        ui.selectors.SIDECAR_MODE_BUTTON('annotations')
-      )
+      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(
-            `${ui.selectors.SIDECAR_CONTENT} .activation-result`
-          )
-        )
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(ui.expectSubset(subsetOfAnnotations))
         .catch(common.oops(this))
     })
@@ -88,11 +70,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(
-            `${ui.selectors.SIDECAR_CONTENT} .activation-result`
-          )
-        )
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(ui.expectStruct(expectedResult))
         .catch(common.oops(this))
     })
@@ -103,11 +81,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() =>
-          this.app.client.getText(
-            `${ui.selectors.SIDECAR_CONTENT} .activation-result`
-          )
-        )
+        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
         .then(ui.expectSubset({ name, namespace: ui.expectedNamespace() })) // parts of the raw annotation record
         .catch(common.oops(this))
     })
@@ -116,10 +90,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
   // create an action, using the implicit entity type
   it(`should create an action ${actionName}`, () =>
     cli
-      .do(
-        `let ${actionName} = x => { console.log(JSON.stringify(x)); return x } -p x 5 -p y 10`,
-        this.app
-      )
+      .do(`let ${actionName} = x => { console.log(JSON.stringify(x)); return x } -p x 5 -p y 10`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))

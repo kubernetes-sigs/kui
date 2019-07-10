@@ -39,12 +39,9 @@ const main = ({ secrets, value }) => {
   return needle('get', secrets.endpoints, { json: true })
     .then(endpoints => endpoints.body)
     .then(endpoints => ({
-      endpoint:
-        endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
+      endpoint: endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
 
-      ibmAuthEndpoint: `https://${
-        endpoints['identity-endpoints']['iam-token']
-      }/oidc/token`,
+      ibmAuthEndpoint: `https://${endpoints['identity-endpoints']['iam-token']}/oidc/token`,
       apiKeyId: secrets.apikey,
       serviceInstanceId: secrets.resource_instance_id
 

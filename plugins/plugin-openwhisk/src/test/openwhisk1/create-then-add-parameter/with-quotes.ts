@@ -26,14 +26,10 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 import { dirname } from 'path'
 const { cli, sidecar } = ui
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe('Create actions, add parameters with quotes', function(
-  this: common.ISuite
-) {
+localDescribe('Create actions, add parameters with quotes', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
@@ -51,8 +47,6 @@ localDescribe('Create actions, add parameters with quotes', function(
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
-      .then(app =>
-        app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
       .then(ui.expectStruct({ z: 'bbb' })))
 })

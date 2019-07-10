@@ -58,10 +58,7 @@ const doList = ({ argvNoOptions }: EvaluatorArgs) => {
     .then(commands => commands.sort((a, b) => -a.localeCompare(b)))
     .then(commands =>
       commands.filter(
-        (command, idx) =>
-          !commands.find(
-            (other, otherIdx) => idx !== otherIdx && command.endsWith(other)
-          )
+        (command, idx) => !commands.find((other, otherIdx) => idx !== otherIdx && command.endsWith(other))
       )
     )
     .then(commands =>

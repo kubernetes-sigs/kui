@@ -22,9 +22,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = 'foo1'
 
@@ -34,25 +32,13 @@ describe('Create jar actions', function(this: common.ISuite) {
 
   it('should create a jar action', () =>
     cli
-      .do(
-        `action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`,
-        this.app
-      )
+      .do(`action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
       .then(sidecar.expectBadge('jar'))
-      .then(app =>
-        app.client.getText(
-          `${ui.selectors.SIDECAR_CONTENT} .hook-for-third-party-content`
-        )
-      )
-      .then(code =>
-        assert.strictEqual(
-          code,
-          'This is machine-generated code, wrapping around your original code.'
-        )
-      )
+      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .hook-for-third-party-content`))
+      .then(code => assert.strictEqual(code, 'This is machine-generated code, wrapping around your original code.'))
       .catch(common.oops(this)))
 
   it('should invoke the jar action', () =>

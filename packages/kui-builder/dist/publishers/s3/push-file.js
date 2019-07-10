@@ -37,9 +37,7 @@ const putObject = (cos, Bucket) => filepath =>
       ? 'image/jpeg'
       : filename.endsWith('.svg')
       ? 'image/svg+xml'
-      : filename.endsWith('.js') ||
-        filename.endsWith('.js.gz') ||
-        filename.endsWith('.js.br')
+      : filename.endsWith('.js') || filename.endsWith('.js.gz') || filename.endsWith('.js.br')
       ? 'application/javascript'
       : 'text/plain'
 
@@ -48,9 +46,7 @@ const putObject = (cos, Bucket) => filepath =>
     fs.readFile(filepath, (err, Body) => {
       if (err) {
         if (err.code === 'ENOENT') {
-          console.error(
-            `WARNING: Not uploading ${Key}, as the file was not found`
-          )
+          console.error(`WARNING: Not uploading ${Key}, as the file was not found`)
           resolve(Key)
         } else {
           reject(err)
@@ -76,12 +72,9 @@ debug('requesting endpoints', secrets.endpoints)
 needle('get', secrets.endpoints, { json: true })
   .then(endpoints => endpoints.body)
   .then(endpoints => ({
-    endpoint:
-      endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
+    endpoint: endpoints['service-endpoints']['cross-region'].us.public['us-geo'],
 
-    ibmAuthEndpoint: `https://${
-      endpoints['identity-endpoints']['iam-token']
-    }/oidc/token`,
+    ibmAuthEndpoint: `https://${endpoints['identity-endpoints']['iam-token']}/oidc/token`,
     apiKeyId: secrets.apikey,
     serviceInstanceId: secrets.resource_instance_id
 

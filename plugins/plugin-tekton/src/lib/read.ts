@@ -38,9 +38,7 @@ const knownKinds = /PipelineResource|Pipeline|Task/
  * Parse a resource spec
  *
  */
-export const parse = async (
-  raw: string | PromiseLike<string>
-): Promise<KubeResource[]> => {
+export const parse = async (raw: string | PromiseLike<string>): Promise<KubeResource[]> => {
   return safeLoadAll(await raw).filter(_ => knownKinds.test(_.kind))
 }
 
@@ -56,11 +54,7 @@ export const read = async (filepath: string): Promise<string> => {
  * Fetch the Pipeline and Task models
  *
  */
-export const fetchTask = async (
-  pipelineName: string,
-  taskName: string,
-  filepath: string
-): Promise<Task> => {
+export const fetchTask = async (pipelineName: string, taskName: string, filepath: string): Promise<Task> => {
   if (filepath) {
     const model: KubeResource[] = await parse(read(filepath))
     const task = taskName
@@ -68,20 +62,15 @@ export const fetchTask = async (
       : model.filter(_ => _.kind === 'Task')
     return task as Task
   } else if (!taskName) {
-    const pipeline = await $(
-      `kubectl get Pipeline ${encodeComponent(pipelineName)}`
-    ).catch(err => {
+    const pipeline = await $(`kubectl get Pipeline ${encodeComponent(pipelineName)}`).catch(err => {
       // want Pipeline.tekton.dev but that is much slower
       debug('got error fetching pipeline', err)
       return { spec: { tasks: [] } }
     })
-    const referencedTasks: Record<string, boolean> = pipeline.spec.tasks.reduce(
-      (M, _) => {
-        M[_.taskRef.name] = true
-        return M
-      },
-      {}
-    )
+    const referencedTasks: Record<string, boolean> = pipeline.spec.tasks.reduce((M, _) => {
+      M[_.taskRef.name] = true
+      return M
+    }, {})
     debug('referencedTasks', referencedTasks)
 
     return qexec(`kubectl get Task`, undefined, undefined, {

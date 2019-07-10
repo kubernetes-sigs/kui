@@ -19,15 +19,9 @@ import * as Debug from 'debug'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import {
-  outerCSSForKey,
-  cssForKey
-} from '@kui-shell/core/webapp/util/ascii-to-table'
+import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import {
-  Resource,
-  KubeResource
-} from '@kui-shell/plugin-k8s/lib/model/resource'
+import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 const debug = Debug('plugin/operator-framework/view/modes/crds')
 
@@ -107,11 +101,7 @@ function toTable(resource: CRDBearer): Table {
       name: 'NAME',
       outerCSS: outerCSSForKey.NAME,
       css: cssForKey.NAME,
-      attributes: [
-        { value: 'KIND' },
-        { value: 'VERSION', outerCSS: outerCSSForKey.AGE },
-        { value: 'DESCRIPTION' }
-      ]
+      attributes: [{ value: 'KIND' }, { value: 'VERSION', outerCSS: outerCSSForKey.AGE }, { value: 'DESCRIPTION' }]
     },
     body: resource.spec.customresourcedefinitions.owned.map(spec => ({
       name: spec.name,

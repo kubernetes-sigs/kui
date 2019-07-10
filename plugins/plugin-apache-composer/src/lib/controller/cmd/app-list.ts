@@ -53,27 +53,23 @@ export default async (commandTree: CommandRegistrar) => {
         return []
       }
 
-      return repl
-        .qexec(argvNoOptions.join(' ').replace('app', 'action'))
-        .then(actions => {
-          debug('filtering action list to find compositions', actions)
-          const apps = actions.filter(astUtil.isAnApp).map(app =>
-            Object.assign({}, app, {
-              prettyType,
-              prettyKind,
-              onclick: `app get "/${app.namespace}/${app.name}"`
-            })
-          )
+      return repl.qexec(argvNoOptions.join(' ').replace('app', 'action')).then(actions => {
+        debug('filtering action list to find compositions', actions)
+        const apps = actions.filter(astUtil.isAnApp).map(app =>
+          Object.assign({}, app, {
+            prettyType,
+            prettyKind,
+            onclick: `app get "/${app.namespace}/${app.name}"`
+          })
+        )
 
-          const skip = parsedOptions.skip || 0
-          const limit = parsedOptions.limit || apps.length
+        const skip = parsedOptions.skip || 0
+        const limit = parsedOptions.limit || apps.length
 
-          const paginated = apps.slice(skip, skip + limit)
+        const paginated = apps.slice(skip, skip + limit)
 
-          return parsedOptions.count
-            ? paginated.length
-            : withHeader(paginated, execOptions)
-        })
+        return parsedOptions.count ? paginated.length : withHeader(paginated, execOptions)
+      })
     },
     { usage: appList('list') }
   )

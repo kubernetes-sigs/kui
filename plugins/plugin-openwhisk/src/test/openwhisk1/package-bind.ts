@@ -56,10 +56,7 @@ describe('wsk package bind tests', function(this: common.ISuite) {
 
   it('should bind that package with namespace', () =>
     cli
-      .do(
-        `wsk package bind /${ui.expectedNamespace()}/package minder`,
-        this.app
-      )
+      .do(`wsk package bind /${ui.expectedNamespace()}/package minder`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('minder'))

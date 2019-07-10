@@ -94,8 +94,7 @@ export default async (commandTree: CommandRegistrar) => {
       await remember(parsedOptions)
 
       const namespace = parsedOptions.n || parsedOptions.namespace
-      const getSources = `oc get ClusterServiceVersions -n ${namespace ||
-        'default'} ${
+      const getSources = `oc get ClusterServiceVersions -n ${namespace || 'default'} ${
         parsedOptions.config ? `--config ${parsedOptions.config}` : ''
       } -o=custom-columns=NAME:.metadata.name,DISPLAY:.spec.displayName,VERSION:.spec.version,STATUS:.status.phase`
 

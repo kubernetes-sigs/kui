@@ -28,11 +28,6 @@ export const drilldownWith = (
   // invoke any precursor functions
   callThese.forEach(_ => _())
 
-  const container = sidecarSelector(
-    tab,
-    '.custom-content .activation-viz-plugin'
-  )
-  return pictureInPicture(tab, command, highlightThis, container, returnTo)(
-    event
-  )
+  const container = sidecarSelector(tab, '.custom-content .activation-viz-plugin')
+  return pictureInPicture(tab, command, highlightThis, container, returnTo)(event)
 }

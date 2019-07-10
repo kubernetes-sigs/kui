@@ -21,17 +21,9 @@ import * as repl from '@kui-shell/core/core/repl'
 
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { formatOneListResult } from '@kui-shell/core/webapp/views/table'
-import {
-  addBadge,
-  beautify,
-  getSidecar,
-  renderField
-} from '@kui-shell/core/webapp/views/sidecar'
+import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import {
-  ShowOptions,
-  DefaultShowOptions
-} from '@kui-shell/core/webapp/views/show-options'
+import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
@@ -55,23 +47,13 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
 const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)
-  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize'))
-    .default
+  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
 
   sidecar.classList.add('custom-content')
   const container = sidecarSelector(tab, '.custom-content')
   removeAllDomChildren(container)
 
-  const { view } = await visualize(
-    tab,
-    ast,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    rule
-  )
+  const { view } = await visualize(tab, ast, undefined, undefined, undefined, undefined, undefined, rule)
   container.appendChild(view)
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 }
@@ -106,17 +88,13 @@ export const showEntity = async (
     }
   }
 
-  const thirdPartyBodyContent = sidecar.querySelector(
-    '.sidecar-content .hook-for-third-party-content'
-  )
+  const thirdPartyBodyContent = sidecar.querySelector('.sidecar-content .hook-for-third-party-content')
   thirdPartyBodyContent.className = 'hook-for-third-party-content no-content'
   // removeAllDomChildren(thirdPartyBodyContent)
 
   // TODO move this piece into the redactor plugin, once we figure out how to support third party view mods
   const renderThirdParty = entity => {
-    const combinatorArtifacts =
-      entity.annotations &&
-      entity.annotations.find(({ key }) => key === 'wskng.combinators')
+    const combinatorArtifacts = entity.annotations && entity.annotations.find(({ key }) => key === 'wskng.combinators')
     if (combinatorArtifacts) {
       const annotations = Array.isArray(combinatorArtifacts.value)
         ? combinatorArtifacts.value
@@ -151,15 +129,10 @@ export const showEntity = async (
               const indexContent = zip.readAsText(indexEntry)
               const src = element('.action-source', sidecar)
 
-              src.innerText = beautify(
-                indexEntryJavascript ? 'nodejs' : 'other',
-                indexContent.toString()
-              )
+              src.innerText = beautify(indexEntryJavascript ? 'nodejs' : 'other', indexContent.toString())
               setTimeout(() => hljs.highlightBlock(src), 0)
             } else {
-              addThirdPartyMessage(
-                'Unable to locate the index.js file in the zip file'
-              )
+              addThirdPartyMessage('Unable to locate the index.js file in the zip file')
             }
           } else if (annotation.contentType === 'html') {
             const frame = document.createElement('iframe')
@@ -173,9 +146,7 @@ export const showEntity = async (
             container.appendChild(frame)
             frame.setAttribute('src', formatWebActionURL(entity))
           } else {
-            addThirdPartyMessage(
-              'This is machine-generated code, wrapping around your original code.'
-            )
+            addThirdPartyMessage('This is machine-generated code, wrapping around your original code.')
           }
 
           if (annotation.original) {
@@ -261,11 +232,8 @@ export const showEntity = async (
         // then the third party rendering took care of it
       } else {
         // to show the sequence graph
-        const extraCss =
-          entity.exec.components.length < 5 ? 'small-node-count-canvas' : ''
-        sequence.className = `${sequence.getAttribute(
-          'data-base-class'
-        )} ${extraCss}`
+        const extraCss = entity.exec.components.length < 5 ? 'small-node-count-canvas' : ''
+        sequence.className = `${sequence.getAttribute('data-base-class')} ${extraCss}`
 
         // form a fake AST, so we can use the wskflow visualization
         // wskflw now use the IR, so we have to fake a IR instead of a AST
@@ -287,10 +255,7 @@ export const showEntity = async (
               .then(name => {
                 return {
                   type: 'action',
-                  name:
-                    actionName.indexOf('/') === -1
-                      ? `/_/${actionName}`
-                      : actionName,
+                  name: actionName.indexOf('/') === -1 ? `/_/${actionName}` : actionName,
                   displayLabel: name
                 }
               })
@@ -330,10 +295,7 @@ export const showEntity = async (
                 code.appendChild(document.createTextNode('dockerhub image: '))
                 code.appendChild(clicky)
                 clicky.innerText = entity.exec.image
-                clicky.setAttribute(
-                  'href',
-                  `https://hub.docker.com/r/${entity.exec.image}`
-                )
+                clicky.setAttribute('href', `https://hub.docker.com/r/${entity.exec.image}`)
                 clicky.setAttribute('target', '_blank')
               }
             } else {
@@ -347,18 +309,13 @@ export const showEntity = async (
 
             if (
               !entity.exec.binary &&
-              !(
-                entity.annotations &&
-                entity.annotations.find(({ key }) => key === 'binary')
-              )
+              !(entity.annotations && entity.annotations.find(({ key }) => key === 'binary'))
             ) {
               //
               // render the textual source code
               //
 
-              const lang = uiNameForKind(
-                entity.exec.kind.substring(0, entity.exec.kind.indexOf(':'))
-              )
+              const lang = uiNameForKind(entity.exec.kind.substring(0, entity.exec.kind.indexOf(':')))
               const codeText = beautify(entity.exec.kind, entity.exec.code)
 
               // apply the syntax highlighter to the code; there is some but in higlightjs w.r.t. comments;
@@ -403,10 +360,7 @@ export const showEntity = async (
   } else if (entity.type === 'packages') {
     const actionCountDom = sidecar.querySelector('.package-action-count')
     const actionCount = (entity.actions && entity.actions.length) || 0
-    actionCountDom.setAttribute(
-      'data-is-plural',
-      (actionCount !== 1).toString()
-    )
+    actionCountDom.setAttribute('data-is-plural', (actionCount !== 1).toString())
     element('.package-content-count', actionCountDom).innerText = actionCount
 
     const feedCountDom = element('.package-feed-count', sidecar)
@@ -453,8 +407,7 @@ export const showEntity = async (
   } else if (entity.type === 'activations') {
     showActivation(tab, entity, options)
   } else if (entity.type === 'triggers') {
-    const feed =
-      entity.annotations && entity.annotations.find(kv => kv.key === 'feed')
+    const feed = entity.annotations && entity.annotations.find(kv => kv.key === 'feed')
     const feedDom = element('.trigger-content .feed-content', sidecar)
     if (feed) {
       feedDom.innerText = `This is a feed based on ${feed.value}`

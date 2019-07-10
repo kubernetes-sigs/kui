@@ -21,17 +21,9 @@ import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
-import {
-  CommandRegistrar,
-  EvaluatorArgs,
-  ParsedOptions
-} from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
-import {
-  findFile,
-  findFileWithViewer,
-  isSpecialDirectory
-} from '@kui-shell/core/core/find-file'
+import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/core/core/find-file'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
@@ -47,11 +39,7 @@ function flatten<T>(arrays: T[][]): T[] {
  * start of some filename in the given fileMap
  *
  */
-const scanForFilename = (
-  str: string,
-  fileMap: Record<string, boolean>,
-  endIdx = str.length - 1
-) => {
+const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx = str.length - 1) => {
   let candidate: string
   let candidateIdx: number
 
@@ -122,9 +110,7 @@ const myreaddir = (dir: string): Promise<Record<string, boolean>> =>
  */
 const lsOrOpen = (filepath: string) =>
   new Promise((resolve, reject) => {
-    const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(
-      expandHomeDir(filepath)
-    )
+    const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
     const filepathForRepl = repl.encodeComponent(filepath)
 
     // note: stat not lstat, because we want to follow the link
@@ -145,21 +131,16 @@ const lsOrOpen = (filepath: string) =>
  * Turn ls output into a REPL table
  *
  */
-const tabularize = (
-  cmd: string,
-  parsedOptions: ParsedOptions,
-  parent = '',
-  parentAsGiven = ''
-) => async (output: string): Promise<true | Table> => {
+const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', parentAsGiven = '') => async (
+  output: string
+): Promise<true | Table> => {
   debug('tabularize', parent, parentAsGiven)
 
   if (output.length === 0) {
     return true
   }
 
-  const fileMap = await myreaddir(
-    (parent || process.cwd()).replace(/['"]/g, '')
-  )
+  const fileMap = await myreaddir((parent || process.cwd()).replace(/['"]/g, ''))
 
   // ls -l on directories has a line at the top "total nnnn"
   // we will strip this off
@@ -180,10 +161,7 @@ const tabularize = (
             // the "num links" and "user" columns are adjoined
             // e.g. "1 nickm"
             const spaceIdx = col.indexOf(' ')
-            return [
-              col.substring(0, spaceIdx),
-              col.substring(spaceIdx + 1)
-            ].filter(x => x) // the first entry might be blank, e.g. on linux
+            return [col.substring(0, spaceIdx), col.substring(spaceIdx + 1)].filter(x => x) // the first entry might be blank, e.g. on linux
           } else if (process.platform !== 'darwin' && idx >= 5 && idx <= 7) {
             // the date column is split across three cols in our split
             if (idx === 5) {
@@ -204,11 +182,7 @@ const tabularize = (
               const arrow = '->'
               const arrowIdx = col.lastIndexOf(arrow)
               const endOfLinkIdx = arrowIdx - arrow.length + 1
-              const startOfFilename = scanForFilename(
-                col,
-                fileMap,
-                endOfLinkIdx - 1
-              )
+              const startOfFilename = scanForFilename(col, fileMap, endOfLinkIdx - 1)
 
               return [
                 col.substring(0, spaceIdx1), // size
@@ -286,9 +260,7 @@ const tabularize = (
     }
   ]
 
-  const headerAttributes = permissionAttrs
-    .concat(ownerAttrs)
-    .concat(normalAttrs)
+  const headerAttributes = permissionAttrs.concat(ownerAttrs).concat(normalAttrs)
 
   const headerRow: Row = {
     name: 'NAME',
@@ -307,9 +279,7 @@ const tabularize = (
       const isSpecial = stats.charAt(0) !== '-'
 
       const name = columns[columns.length - 1]
-      const nameForDisplay = `${name}${
-        isDirectory ? '/' : isLink ? '@' : isExecutable ? '*' : ''
-      }`
+      const nameForDisplay = `${name}${isDirectory ? '/' : isLink ? '@' : isExecutable ? '*' : ''}`
 
       const css = isDirectory
         ? 'dir-listing-is-directory'
@@ -365,8 +335,7 @@ const tabularize = (
       return new Row({
         type: cmd,
         name: nameForDisplay,
-        onclick: () =>
-          lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
+        onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
         css,
         attributes: permissionAttrs.concat(normalAttributes)
       })
@@ -406,9 +375,7 @@ const doLs = (cmd: string) => ({
     throw new Error('File not found')
   }
 
-  const rest = command
-    .replace(/^\s*(l)?ls/, '')
-    .replace(filepathAsGiven, filepath)
+  const rest = command.replace(/^\s*(l)?ls/, '').replace(filepathAsGiven, filepath)
   return doExec(
     `ls -lh ${rest}`,
     Object.assign({}, execOptions, {

@@ -24,10 +24,7 @@ describe('input queueing', function(this: common.ISuite) {
 
   const queueUp = (textWhileQueued: string, N: number, sleepTime = 2) => {
     return {
-      thenType: (
-        textAfterQueued: string,
-        verify = cli.expectOKWithCustom({ expect: common.expectedVersion })
-      ) => {
+      thenType: (textAfterQueued: string, verify = cli.expectOKWithCustom({ expect: common.expectedVersion })) => {
         it(`should queue ${textWhileQueued} while we sleep, then ${textAfterQueued}`, async () => {
           try {
             // do something that takes a while
@@ -41,9 +38,7 @@ describe('input queueing', function(this: common.ISuite) {
 
             // now await completion of the first command; sleep should
             // result in blank output, i.e. no "ok"
-            await outstanding.then(
-              cli.expectBlankWithOpts({ nonBlankPromptOk: true })
-            )
+            await outstanding.then(cli.expectBlankWithOpts({ nonBlankPromptOk: true }))
 
             if (textAfterQueued !== undefined) {
               // finally, type the trailing text and verify the output (use
@@ -74,15 +69,10 @@ describe('input queueing', function(this: common.ISuite) {
   nPromptBlocksSoFar += 2
 
   // double newlines while queued up
-  queueUp(`version${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar).thenType(
-    undefined
-  )
+  queueUp(`version${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
   nPromptBlocksSoFar += 3
 
   // triple newlines while queued up
-  queueUp(
-    `version${keys.ENTER}${keys.ENTER}${keys.ENTER}`,
-    nPromptBlocksSoFar
-  ).thenType(undefined)
+  queueUp(`version${keys.ENTER}${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
   nPromptBlocksSoFar += 4
 })

@@ -25,9 +25,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     `/wsk/app/invoke`,
     ({ command, parsedOptions: options }) => {
-      return repl
-        .qfexec(command.replace('app', 'action'))
-        .then(result => view.formatCompositionResult(result, options))
+      return repl.qfexec(command.replace('app', 'action')).then(result => view.formatCompositionResult(result, options))
     },
     { usage: invoke }
   )

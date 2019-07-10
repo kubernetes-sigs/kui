@@ -44,13 +44,7 @@ const fetchElectron = (stagingArea: string, url: string, file: string) =>
       .on('finish', () => resolve(tmp))
   })
 
-const fetchAndExtract = (
-  stagingArea: string,
-  fetchLock: string,
-  doneLock: string,
-  url: string,
-  file: string
-) =>
+const fetchAndExtract = (stagingArea: string, fetchLock: string, doneLock: string, url: string, file: string) =>
   fetchElectron(stagingArea, url, file).then(filepath => {
     debug('fetchAndExtract extracting', filepath)
 

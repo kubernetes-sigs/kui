@@ -38,8 +38,7 @@ const docs = cmd => ({ usage: usage(cmd) })
 const types = ['actions', 'packages', 'triggers', 'rules']
 
 /** list the entities of a given type */
-const list = type =>
-  repl.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
+const list = type => repl.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
 
 /** the command handler */
 const doList = () => () =>

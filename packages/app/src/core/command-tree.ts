@@ -168,11 +168,7 @@ const treeMatch = (
     cur = parent
   }
 
-  if (
-    cur.options &&
-    cur.options.noArgs &&
-    !exactlyTheSameRoute(cur.route, path)
-  ) {
+  if (cur.options && cur.options.noArgs && !exactlyTheSameRoute(cur.route, path)) {
     // if cur represents a command registration that has asserted
     // it takes no extra arguments, we can fast-path this as a
     // non-match, if cur's route doesn't contain the requested
@@ -242,11 +238,8 @@ const _listen = (
     return leaf
   }
 }
-export const listen = (
-  route: string,
-  handler: CommandHandler,
-  options: CommandOptions
-) => _listen(model, route, handler, options)
+export const listen = (route: string, handler: CommandHandler, options: CommandOptions) =>
+  _listen(model, route, handler, options)
 
 /**
  * Register a subtree in the command tree
@@ -269,10 +262,7 @@ export const subtree = (route: string, options: CommandOptions) => {
 
       // the usage message
       const usage =
-        options.usage ||
-        (options.synonymFor &&
-          options.synonymFor.options &&
-          options.synonymFor.options.usage)
+        options.usage || (options.synonymFor && options.synonymFor.options && options.synonymFor.options.usage)
 
       /* if (options.synonymFor) {
         usageMessage.synonymFor = options.synonymFor
@@ -301,17 +291,10 @@ export const subtree = (route: string, options: CommandOptions) => {
  * Register a synonym of a subtree
  *
  */
-export const subtreeSynonym = (
-  route: string,
-  master: Command,
-  options = master.options
-) => {
+export const subtreeSynonym = (route: string, master: Command, options = master.options) => {
   if (route !== master.route) {
     // <-- don't alias to yourself!
-    const mySubtree = subtree(
-      route,
-      Object.assign({}, options, { synonymFor: master })
-    )
+    const mySubtree = subtree(route, Object.assign({}, options, { synonymFor: master }))
 
     // reverse mapping from master to synonym
     if (!master.synonyms) master.synonyms = {}
@@ -324,19 +307,10 @@ export const subtreeSynonym = (
  *    master is the return value of `listen`
  *
  */
-export const synonym = (
-  route: string,
-  handler: CommandHandler,
-  master: Command,
-  options = master.options
-) => {
+export const synonym = (route: string, handler: CommandHandler, master: Command, options = master.options) => {
   if (route !== master.route) {
     // don't alias to yourself!
-    const node = listen(
-      route,
-      handler,
-      Object.assign({}, options, { synonymFor: master })
-    )
+    const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
 
     // reverse mapping from master to synonym
     if (!master.synonyms) master.synonyms = {}
@@ -348,17 +322,8 @@ export const synonym = (
  * Register an intentional action
  *
  */
-export const intention = (
-  route: string,
-  handler: CommandHandler,
-  options: CommandOptions
-) =>
-  _listen(
-    intentions,
-    route,
-    handler,
-    Object.assign({}, options, { isIntention: true })
-  )
+export const intention = (route: string, handler: CommandHandler, options: CommandOptions) =>
+  _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
 
 /**
  * Oops, we couldn't resolve the given command. But maybe we found
@@ -366,8 +331,7 @@ export const intention = (
  *
  */
 const commandNotFoundMessage = 'Command not found'
-const commandNotFoundMessageWithPartialMatches =
-  'The following commands are partial matches for your request.'
+const commandNotFoundMessageWithPartialMatches = 'The following commands are partial matches for your request.'
 
 /**
  * Help the user with some partial matches for a command not found
@@ -392,22 +356,14 @@ const formatPartialMatches = (partialMatches: Command[]): UsageError => {
   )
 }
 
-export const suggestPartialMatches = (
-  partialMatches?: Command[],
-  noThrow = false,
-  hide = false
-): CodedError => {
+export const suggestPartialMatches = (partialMatches?: Command[], noThrow = false, hide = false): CodedError => {
   debug('suggestPartialMatches', partialMatches)
 
   // filter out any partial matches without usage info
-  const availablePartials = (partialMatches || []).filter(
-    ({ options }) => options.usage
-  )
+  const availablePartials = (partialMatches || []).filter(({ options }) => options.usage)
   const anyPartials = availablePartials.length > 0
 
-  const error: CodedError = anyPartials
-    ? formatPartialMatches(availablePartials)
-    : new Error(commandNotFoundMessage)
+  const error: CodedError = anyPartials ? formatPartialMatches(availablePartials) : new Error(commandNotFoundMessage)
   error.code = 404
 
   // to allow for programmatic use of the partial matches, e.g. for tab completion
@@ -462,13 +418,7 @@ const withEvents = (
     route: leaf.route,
     eval: evaluator,
     options: leaf && leaf.options,
-    success: ({
-      tab,
-      type: execType,
-      command,
-      isDrilldown = false,
-      parsedOptions
-    }) => {
+    success: ({ tab, type: execType, command, isDrilldown = false, parsedOptions }) => {
       event.tab = tab
       event.execType = execType
       event.command = command
@@ -484,12 +434,7 @@ const withEvents = (
 
       if (leaf && eventBus) eventBus.emit('/command/complete', event)
     },
-    error: (
-      command: string,
-      tab: Tab,
-      execType: ExecType,
-      err: CodedError
-    ): CodedError => {
+    error: (command: string, tab: Tab, execType: ExecType, err: CodedError): CodedError => {
       event.tab = tab
       event.execType = execType
       event.command = command
@@ -498,15 +443,8 @@ const withEvents = (
 
       if (err.code === 127) {
         // command not found
-        const suggestions = suggestPartialMatches(
-          partialMatches,
-          true,
-          err['hide']
-        ) // true: don't throw an exception
-        debug(
-          'got suggestions after unresolvable command not found',
-          suggestions
-        )
+        const suggestions = suggestPartialMatches(partialMatches, true, err['hide']) // true: don't throw an exception
+        debug('got suggestions after unresolvable command not found', suggestions)
         return suggestions
       }
 
@@ -568,8 +506,7 @@ const _read = async (
       return _read(model, originalArgv, undefined, originalArgv)
     } else if (
       contextRetry.length > 0 &&
-      contextRetry[contextRetry.length - 1] !==
-        originalArgv[originalArgv.length - 1]
+      contextRetry[contextRetry.length - 1] !== originalArgv[originalArgv.length - 1]
     ) {
       // command not found so far, look further afield.
       const maybeInContextRetry = _read(
@@ -586,15 +523,8 @@ const _read = async (
 
       // oof, fallback plan: look in /wsk/action
       debug('fallback to wsk action')
-      const newContext = _defaultContext
-        .concat(originalArgv)
-        .filter((elt, idx, A) => elt !== A[idx - 1])
-      const maybeInWskAction = _read(
-        model,
-        newContext,
-        contextRetry.slice(0, contextRetry.length - 1),
-        originalArgv
-      )
+      const newContext = _defaultContext.concat(originalArgv).filter((elt, idx, A) => elt !== A[idx - 1])
+      const maybeInWskAction = _read(model, newContext, contextRetry.slice(0, contextRetry.length - 1), originalArgv)
       return maybeInWskAction
     } else {
       // if we get here, we can't find a matching command
@@ -608,15 +538,8 @@ const _read = async (
         // e.g. executing "help" we don't want to use the default
         // context (see "subtree help" above for an example use of
         // this feature)
-        debug(
-          'mismatch on fully qualified route %s!=%s',
-          leaf.route,
-          routeWithoutContext
-        )
-        if (
-          argv.length === originalArgv.length &&
-          argv.every((elt, idx) => elt === originalArgv[idx])
-        ) {
+        debug('mismatch on fully qualified route %s!=%s', leaf.route, routeWithoutContext)
+        if (argv.length === originalArgv.length && argv.every((elt, idx) => elt === originalArgv[idx])) {
           debug('giving up')
           return false
         } else {
@@ -650,10 +573,7 @@ export const setDefaultCommandContext = (commandContext: string[]) => {
 }
 
 /** read, with retries based on the current context */
-const internalRead = (
-  model: CommandTree,
-  argv: string[]
-): Promise<boolean | CommandHandlerWithEvents> => {
+const internalRead = (model: CommandTree, argv: string[]): Promise<boolean | CommandHandlerWithEvents> => {
   if (argv[0] === 'kui') argv.shift()
   return _read(model, argv, Context.current, argv)
 }
@@ -689,9 +609,7 @@ const disambiguate = async (argv: string[], noRetry = false) => {
   let idx
   const resolutions =
     (((idx = 0) || true) && resolver.disambiguate(argv[idx])) ||
-    (argv.length > 1 &&
-      ((idx = argv.length - 1) || true) &&
-      resolver.disambiguate(argv[idx])) ||
+    (argv.length > 1 && ((idx = argv.length - 1) || true) && resolver.disambiguate(argv[idx])) ||
     []
   debug('disambiguate', idx, argv, resolutions)
 
@@ -706,9 +624,7 @@ const disambiguate = async (argv: string[], noRetry = false) => {
     const argvForMatch = resolutions[0].route.split('/').slice(1)
     const cmdMatch = treeMatch(model, argvForMatch)
     const leaf =
-      cmdMatch && cmdMatch.$
-        ? areCompatible(argvForMatch, argv) && cmdMatch
-        : treeMatch(intentions, argvForMatch)
+      cmdMatch && cmdMatch.$ ? areCompatible(argvForMatch, argv) && cmdMatch : treeMatch(intentions, argvForMatch)
 
     debug('disambiguate single match', idx, argv)
 
@@ -748,11 +664,7 @@ const disambiguate = async (argv: string[], noRetry = false) => {
  * We could not find a registered command handler
  *
  */
-const commandNotFound = async (
-  argv: string[],
-  partialMatches?: Command[],
-  execOptions?: ExecOptions
-) => {
+const commandNotFound = async (argv: string[], partialMatches?: Command[], execOptions?: ExecOptions) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
@@ -791,10 +703,7 @@ const findPartialMatchesAt = (subtree: Command, partial: string): Command[] => {
     for (const cmd in subtree.children) {
       if (cmd.indexOf(partial) === 0) {
         const match = subtree.children[cmd]
-        if (
-          !match.options ||
-          (!match.options.synonymFor && !match.options.hide)
-        ) {
+        if (!match.options || (!match.options.synonymFor && !match.options.hide)) {
           // don't include synonyms or hidden commands
           matches.push(match)
         }
@@ -835,10 +744,7 @@ export function isSuccessfulCommandResolution(
   return (resolution as CommandHandlerWithEvents).eval !== undefined
 }
 /** here, we don't use any implicit context resolutions */
-export const readIntention = async (
-  argv: string[],
-  noRetry = false
-): Promise<CommandTreeResolution> => {
+export const readIntention = async (argv: string[], noRetry = false): Promise<CommandTreeResolution> => {
   const cmd = _read(intentions, argv, undefined, argv)
 
   if (!cmd) {
@@ -915,15 +821,11 @@ export const read = async (
       const allButLast = argv.slice(0, argv.length - 1)
       const last = argv[argv.length - 1]
 
-      const parent =
-        (await internalRead(model, allButLast)) ||
-        (await disambiguate(allButLast))
+      const parent = (await internalRead(model, allButLast)) || (await disambiguate(allButLast))
       debug('searching for partial matches for subcommand', allButLast, parent)
 
       if (parent) {
-        matches = await removeDuplicates(
-          findPartialMatchesAt(parent.subtree, last)
-        )
+        matches = await removeDuplicates(findPartialMatchesAt(parent.subtree, last))
       }
     }
 
@@ -984,15 +886,10 @@ export const proxy = (plugin: string) => ({
     handler: CommandHandler,
     prio = 0,
     options: CommandOptions = new DefaultCommandOptions()
-  ) =>
-    catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
+  ) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
   listen: (route: string, handler: CommandHandler, options: CommandOptions) =>
     listen(route, handler, Object.assign({}, options, { plugin: plugin })),
-  intention: (
-    route: string,
-    handler: CommandHandler,
-    options: CommandOptions
-  ) =>
+  intention: (route: string, handler: CommandHandler, options: CommandOptions) =>
     intention(route, handler, Object.assign({}, options, { plugin: plugin })),
   synonym,
   subtree,
@@ -1000,11 +897,7 @@ export const proxy = (plugin: string) => ({
   commandNotFoundMessage,
   find: async (route: string, noOverride = true) => {
     const cmd = match(route.split('/').slice(1), true)
-    if (
-      !cmd ||
-      cmd.route !== route ||
-      (!noOverride && resolver && resolver.isOverridden(cmd.route))
-    ) {
+    if (!cmd || cmd.route !== route || (!noOverride && resolver && resolver.isOverridden(cmd.route))) {
       if (resolver) {
         debug('find invoking resolver', route, cmd, noOverride)
         await resolver.resolve(route)

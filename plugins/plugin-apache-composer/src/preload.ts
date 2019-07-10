@@ -31,14 +31,7 @@ export default async () => {
   await initRequirePath()
 
   // give visibility to our @demos directory on the module path
-  addPath(
-    dirname(
-      require.resolve(
-        '@kui-shell/plugin-apache-composer/samples/@demos/hello.js'
-      )
-    ),
-    { command: 'preview' }
-  )
+  addPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/samples/@demos/hello.js')), { command: 'preview' })
 }
 
 debug('finished loading')

@@ -14,7 +14,4 @@ const log = params => ({ message: 'Composition time: ' + params.value })
  * Note the use of the ACTION operation to make
  * a named Cloud Function out of an inline function.
  */
-module.exports = composer.sequence(
-  composer.literal(Date()),
-  composer.action('log', { action: log })
-)
+module.exports = composer.sequence(composer.literal(Date()), composer.action('log', { action: log }))

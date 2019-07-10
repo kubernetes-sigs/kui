@@ -66,9 +66,7 @@ export default (editorWrapper: HTMLElement, options) => {
             global['require'] = nodeRequire
 
             if (!inBrowser()) {
-              const monacoRoot = path.dirname(
-                require.resolve('monaco-editor/package.json')
-              )
+              const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
 
               amdRequire.config({
                 baseUrl: uriFromPath(path.join(monacoRoot, 'min'))
@@ -92,19 +90,14 @@ export default (editorWrapper: HTMLElement, options) => {
           const initEditor = () => {
             if (!initDone) {
               // for now, try to disable the built-in Javascript-specific completion helper thingies
-              global[
-                'monaco'
-              ].languages.typescript.javascriptDefaults.setCompilerOptions({
+              global['monaco'].languages.typescript.javascriptDefaults.setCompilerOptions({
                 noLib: true,
                 allowNonTsExtensions: true
               })
 
               // install any custom languages we might have
               languages(global['monaco']).forEach(({ language, provider }) => {
-                global['monaco'].languages.registerCompletionItemProvider(
-                  language,
-                  provider
-                )
+                global['monaco'].languages.registerCompletionItemProvider(language, provider)
               })
 
               // e.g. js-beautify detects global.define and
@@ -118,12 +111,7 @@ export default (editorWrapper: HTMLElement, options) => {
 
             // see if we are in dark mode
             const theme = {
-              theme:
-                document
-                  .querySelector('body')
-                  .getAttribute('kui-theme-style') === 'dark'
-                  ? 'vs-dark'
-                  : 'vs'
+              theme: document.querySelector('body').getAttribute('kui-theme-style') === 'dark' ? 'vs-dark' : 'vs'
             }
 
             // here we instantiate an editor widget

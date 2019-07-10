@@ -24,8 +24,7 @@ const debug = require('debug')('k8s/util/help')
  * is a single sentence, this is less necessary.
  *
  */
-const removeSolitaryAndTrailingPeriod = (str: string) =>
-  str.replace(/^\s*([^.]+)[.]\s*$/, '$1').trim()
+const removeSolitaryAndTrailingPeriod = (str: string) => str.replace(/^\s*([^.]+)[.]\s*$/, '$1').trim()
 
 /**
  * Pretty-print the kubectl help output
@@ -34,12 +33,7 @@ const removeSolitaryAndTrailingPeriod = (str: string) =>
  * @param verb e.g. list versus get
  *
  */
-export const renderHelp = (
-  out: string,
-  command: string,
-  verb: string,
-  exitCode: number
-) => {
+export const renderHelp = (out: string, command: string, verb: string, exitCode: number) => {
   debug('renderHelp')
 
   // kube and helm help often have a `Use "this command" to do that operation`
@@ -62,18 +56,16 @@ export const renderHelp = (
       })
 
   // for the remaining sections, form a [{ title, content }] model
-  const _allSections: Section[] = rawSections
-    .slice(1)
-    .reduce((S, _, idx, sections) => {
-      if (idx % 2 === 0) {
-        S.push({
-          title: sections[idx],
-          content: sections[idx + 1].replace(/^\n/, '')
-        })
-      }
+  const _allSections: Section[] = rawSections.slice(1).reduce((S, _, idx, sections) => {
+    if (idx % 2 === 0) {
+      S.push({
+        title: sections[idx],
+        content: sections[idx + 1].replace(/^\n/, '')
+      })
+    }
 
-      return S
-    }, [])
+    return S
+  }, [])
 
   interface Section {
     title: string
@@ -105,19 +97,14 @@ export const renderHelp = (
       rows: content
         .split(/[\n\r]/)
         .filter(x => x)
-        .map(line =>
-          line
-            .split(/(\t|(\s\s)+\s?)|(?=:\s)/)
-            .filter(x => x && !/(\t|\s\s)/.test(x))
-        )
+        .map(line => line.split(/(\t|(\s\s)+\s?)|(?=:\s)/).filter(x => x && !/(\t|\s\s)/.test(x)))
         .map(([thisCommand, docs]) => {
           if (thisCommand) {
             return {
               command: thisCommand.replace(/^\s*-\s+/, '').replace(/:\s*$/, ''),
               docs: docs && docs.replace(/^\s*:\s*/, ''),
               commandPrefix: /Commands/i.test(title) && command,
-              noclick:
-                !title.match(/Common actions/i) && !title.match(/Commands/i)
+              noclick: !title.match(/Common actions/i) && !title.match(/Commands/i)
             }
           }
         })
@@ -193,10 +180,7 @@ export const renderHelp = (
       intro,
       sections,
       detailedExample,
-      example:
-        usageSection &&
-        usageSection[0] &&
-        usageSection[0].content.replace(/\s+$/, '')
+      example: usageSection && usageSection[0] && usageSection[0].content.replace(/\s+$/, '')
     }
   })
 }

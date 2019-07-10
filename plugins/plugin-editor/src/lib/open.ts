@@ -23,11 +23,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import {
-  injectCSS,
-  uninjectCSS,
-  injectScript
-} from '@kui-shell/core/webapp/util/inject'
+import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
 import {
   currentSelection,
   getSidecar,
@@ -49,10 +45,7 @@ const debug = Debug('plugins/editor/open')
 const setText = (editor, options, execOptions?) => ({ code, kind }) => {
   // options is --language yaml command line
   // execOptions is side channel progmmatic information passed via repl.exec
-  const lang =
-    (options && options.language) ||
-    (execOptions && execOptions.language) ||
-    language(kind)
+  const lang = (options && options.language) || (execOptions && execOptions.language) || language(kind)
   debug('setText language', kind, lang)
   debug('setText code', code.substring(0, 20))
 
@@ -61,14 +54,8 @@ const setText = (editor, options, execOptions?) => ({ code, kind }) => {
 
   editor.setModel(newModel)
 
-  if (
-    !execOptions ||
-    !execOptions.cursorPosition ||
-    execOptions.cursorPosition === 'end'
-  ) {
-    editor.setPosition(
-      editor.getModel().getPositionAt((code && code.length) || 0)
-    )
+  if (!execOptions || !execOptions.cursorPosition || execOptions.cursorPosition === 'end') {
+    editor.setPosition(editor.getModel().getPositionAt((code && code.length) || 0))
   }
 
   if (oldModel) {
@@ -98,12 +85,10 @@ const injectTheme = (editorWrapper?: Element, force = false) => {
     return
   }
 
-  const isDark =
-    document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
+  const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
   const currentTheme = document.querySelector('body').getAttribute('kui-theme')
 
-  const previousKey =
-    editorWrapper && editorWrapper.getAttribute('kui-theme-key')
+  const previousKey = editorWrapper && editorWrapper.getAttribute('kui-theme-key')
   const key = `editor.theme-${currentTheme}`
   if (editorWrapper) editorWrapper.setAttribute('kui-theme-key', key)
 
@@ -125,9 +110,7 @@ const injectTheme = (editorWrapper?: Element, force = false) => {
     }
   } catch (err) {
     // oh well, try filesystem style
-    const ourRoot = path.dirname(
-      require.resolve('@kui-shell/plugin-editor/package.json')
-    )
+    const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
     if (isDark) {
       injectCSS({ key, path: path.join(ourRoot, 'web/css/dark.css') })
     } else {
@@ -158,12 +141,7 @@ export const preload = () => {
  *     - content: a dom that contains the instance; this must be attached somewhere!
  *
  */
-export const openEditor = async (
-  tab: Tab,
-  name: string,
-  options,
-  execOptions
-) => {
+export const openEditor = async (tab: Tab, name: string, options, execOptions) => {
   debug('openEditor')
 
   const sidecar = getSidecar(tab)
@@ -178,19 +156,14 @@ export const openEditor = async (
   // for certain content types, always show folding controls, rather
   // than on mouse over (which is the default behavior for monaco)
   const entityRightNow = getEntity()
-  const kind =
-    entityRightNow &&
-    ((entityRightNow.exec && entityRightNow.exec.kind) ||
-      entityRightNow.contentType)
+  const kind = entityRightNow && ((entityRightNow.exec && entityRightNow.exec.kind) || entityRightNow.contentType)
   if (kind === 'yaml' || kind === 'json') {
     options.showFoldingControls = 'always'
   }
 
   if (!pre2) {
     if (!inBrowser()) {
-      const monacoRoot = path.dirname(
-        require.resolve('monaco-editor/package.json')
-      )
+      const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
       injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
     }
 
@@ -200,9 +173,7 @@ export const openEditor = async (
         key: 'editor.editor'
       })
     } catch (err) {
-      const ourRoot = path.dirname(
-        require.resolve('@kui-shell/plugin-editor/package.json')
-      )
+      const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
       injectCSS(path.join(ourRoot, 'web/css/editor.css'))
     }
     pre2 = true
@@ -221,8 +192,7 @@ export const openEditor = async (
   }
 
   const theme = getComputedStyle(document.body)
-  editorWrapper['baseFontSize'] =
-    parseInt(theme.getPropertyValue('font-size').replace(/px$/, ''), 10) * 0.875
+  editorWrapper['baseFontSize'] = parseInt(theme.getPropertyValue('font-size').replace(/px$/, ''), 10) * 0.875
 
   // override the repl's capturing of the focus
   content.onclick = evt => {
@@ -246,13 +216,8 @@ export const openEditor = async (
 
     editor.clearDecorations = () => {
       // debug('clearing decorations', editor.__cloudshell_decorations)
-      const none = [
-        { range: new global['monaco'].Range(1, 1, 1, 1), options: {} }
-      ]
-      editor.__cloudshell_decorations = editor.deltaDecorations(
-        editor.__cloudshell_decorations || [],
-        none
-      )
+      const none = [{ range: new global['monaco'].Range(1, 1, 1, 1), options: {} }]
+      editor.__cloudshell_decorations = editor.deltaDecorations(editor.__cloudshell_decorations || [], none)
     }
 
     editorWrapper['editor'] = editor
@@ -275,9 +240,7 @@ export const openEditor = async (
       addSidecarHeaderIconText(entity.kind || entity.type, sidecar)
 
       // isModified display
-      const subtext = sidecar.querySelector(
-        '.sidecar-header-secondary-content .custom-header-content'
-      )
+      const subtext = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
       const status = document.createElement('div')
       const isNew = document.createElement('div')
       const isNewReadOnly = document.createElement('div')
@@ -333,10 +296,7 @@ export const openEditor = async (
           nameDiv.className = 'is-modified-wrapper'
           isModifiedPart.className = 'is-modified-indicator'
           isModifiedIcon.className = 'fas fa-asterisk'
-          isModifiedPart.setAttribute(
-            'data-balloon',
-            strings.isModifiedIndicator
-          )
+          isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
           isModifiedPart.setAttribute('data-balloon-pos', 'left')
 
           addNameToSidecarHeader(

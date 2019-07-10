@@ -21,12 +21,7 @@ module.exports = composer.sequence(
   },
   `/whisk.system/utils/echo`,
   `${prefix}/extract``${prefix}/fetch.job.id`,
-  composer.retain(
-    composer.sequence(
-      composer.retry(3, `${prefix}/fetch.log.url`),
-      `${prefix}/analyze.log`
-    )
-  ),
+  composer.retain(composer.sequence(composer.retry(3, `${prefix}/fetch.log.url`), `${prefix}/analyze.log`)),
   ({ result, params }) => Object.assign({}, result, params),
   `${prefix}/format.for.slack`,
   app.retain(slackConfig),

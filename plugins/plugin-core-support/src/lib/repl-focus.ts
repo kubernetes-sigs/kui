@@ -15,10 +15,7 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import {
-  getCurrentPrompt,
-  getPromptFromTarget
-} from '@kui-shell/core/webapp/cli'
+import { getCurrentPrompt, getPromptFromTarget } from '@kui-shell/core/webapp/cli'
 
 /**
  * Is no text currently selected?
@@ -93,22 +90,15 @@ export default () => {
   // sidecar header clicks should keep the repl prompt focused
   const sidecar = document.querySelector('tab.visible sidecar') as HTMLElement
   let promptHasFocusBeforeClick = false
-  ;(sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener(
-    'mousedown',
-    (evt: MouseEvent) => {
-      promptHasFocusBeforeClick =
-        document.activeElement === getPromptFromTarget(evt.srcElement)
+  ;(sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener('mousedown', (evt: MouseEvent) => {
+    promptHasFocusBeforeClick = document.activeElement === getPromptFromTarget(evt.srcElement)
+  })
+  ;(sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener('click', (evt: MouseEvent) => {
+    const noTextSelection = window.getSelection().toString().length === 0
+    if (promptHasFocusBeforeClick && noTextSelection) {
+      getPromptFromTarget(evt.srcElement).focus()
     }
-  )
-  ;(sidecar.querySelector('.sidecar-header') as HTMLElement).addEventListener(
-    'click',
-    (evt: MouseEvent) => {
-      const noTextSelection = window.getSelection().toString().length === 0
-      if (promptHasFocusBeforeClick && noTextSelection) {
-        getPromptFromTarget(evt.srcElement).focus()
-      }
-    }
-  )
+  })
 
   /** listen for paste events, focus on the current prompt first */
   document.body.onpaste = (evt: Event) => {
@@ -134,10 +124,7 @@ export default () => {
    *
    */
   document.body.addEventListener('click', (evt: MouseEvent) => {
-    if (
-      document.activeElement === document.body &&
-      window.getSelection().toString().length === 0
-    ) {
+    if (document.activeElement === document.body && window.getSelection().toString().length === 0) {
       // refocus current prompt, because there is no active element
       // and no text selection
       getPromptFromTarget(evt.srcElement).focus()

@@ -53,10 +53,7 @@ describe('Load tester', function(this: common.ISuite) {
 
   it('load test it with lt with no params', () =>
     cli
-      .do(
-        `lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`,
-        this.app
-      )
+      .do(`lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
       .catch(common.oops(this)))
 })

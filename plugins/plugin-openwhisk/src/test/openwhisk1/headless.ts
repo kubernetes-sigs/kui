@@ -24,9 +24,7 @@ import { cli } from '@kui-shell/core/tests/lib/headless'
 import { dirname, join } from 'path'
 
 const { localDescribe } = common
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 export const {
   version: expectedVersion
@@ -90,12 +88,7 @@ localDescribe('Headless mode', function(this: common.ISuite) {
   it('should show wsk action get help with action get', () =>
     cli
       .do('action get', {}, { errOk: 1 })
-      .then(
-        cli.expectError(
-          497 - 256,
-          'Shell Docs / OpenWhisk / Action operations / Get'
-        )
-      )
+      .then(cli.expectError(497 - 256, 'Shell Docs / OpenWhisk / Action operations / Get'))
       .catch(common.oops(this)))
 
   /* bx plugin hard-codes that preview needs graphics
@@ -135,24 +128,13 @@ localDescribe('Headless mode', function(this: common.ISuite) {
 
   it('should create an action with an env var parameter', () =>
     cli
-      .do(
-        `action create envfun ${join(
-          ROOT,
-          'data/openwhisk/headless/echo.js'
-        )} -p fun $FUN`,
-        { FUN: 3 }
-      )
+      .do(`action create envfun ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun $FUN`, { FUN: 3 })
       .then(cli.expectOK('ok: updated action envfun\n', { exact: true }))
       .catch(common.oops(this)))
 
   it('should create an action with params-with-spaces', () =>
     cli
-      .do(
-        `action create spacey ${join(
-          ROOT,
-          'data/openwhisk/headless/echo.js'
-        )} -p fun "space cadet"`
-      )
+      .do(`action create spacey ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun "space cadet"`)
       .then(cli.expectOK('ok: updated action spacey\n', { exact: true }))
       .catch(common.oops(this)))
 

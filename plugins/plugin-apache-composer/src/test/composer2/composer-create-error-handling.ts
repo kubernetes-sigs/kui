@@ -53,9 +53,7 @@ describe('app create error handling', function(this: common.ISuite) {
         app.client.waitUntil(async () => {
           const ok: boolean = await app.client
             .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-            .then(activationResult =>
-              activationResult.includes('Failed to resolve action')
-            )
+            .then(activationResult => activationResult.includes('Failed to resolve action'))
           return ok
         }, 2000)
       )
@@ -87,13 +85,11 @@ describe('app create error handling', function(this: common.ISuite) {
       .then(sidecar.expectShowing('if'))
       .then(app =>
         app.client.waitUntil(async () => {
-          const ok: boolean = await await app.client
-            .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-            .then(
-              ui.expectStruct({
-                html: '<html><body>please say the magic word.</body></html>'
-              })
-            )
+          const ok: boolean = await await app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`).then(
+            ui.expectStruct({
+              html: '<html><body>please say the magic word.</body></html>'
+            })
+          )
           return ok
         }, 2000)
       )

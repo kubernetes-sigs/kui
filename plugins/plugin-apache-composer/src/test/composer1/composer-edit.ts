@@ -31,9 +31,7 @@ import {
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /** set the monaco editor text */
 const setValue = (client, text) => {
@@ -50,16 +48,10 @@ describe('edit compositions', function(this: common.ISuite) {
   const deploy = (app, action) => () => {
     return app.client
       .click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))
-      .then(() =>
-        app.client.waitForExist(
-          `${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new)`
-        )
-      )
+      .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new)`))
       .then(() => app)
       .catch(err => {
-        console.error(
-          'Ouch, something bad happened, let us clean up the action before retrying'
-        )
+        console.error('Ouch, something bad happened, let us clean up the action before retrying')
         console.error(err)
         return cli.do(`rm ${action}`, app).then(() => {
           throw err
@@ -78,10 +70,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(verifyEdgeExists('A', 'B'))
       .then(verifyEdgeExists('B', 'Exit'))
       .then(() =>
-        setValue(
-          this.app.client,
-          "\nmodule.exports = require(\"openwhisk-composer\").sequence('A', 'B', 'C')"
-        )
+        setValue(this.app.client, "\nmodule.exports = require(\"openwhisk-composer\").sequence('A', 'B', 'C')")
       )
       .then(() => this.app)
       .then(verifyNodeExists('A'))
@@ -91,12 +80,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(verifyEdgeExists('A', 'B'))
       .then(verifyEdgeExists('B', 'C'))
       .then(verifyEdgeExists('C', 'Exit'))
-      .then(() =>
-        setValue(
-          this.app.client,
-          "\nmodule.exports = require(\"openwhisk-composer\").sequence('A', 'B')"
-        )
-      )
+      .then(() => setValue(this.app.client, "\nmodule.exports = require(\"openwhisk-composer\").sequence('A', 'B')"))
       .then(() => this.app)
       .then(verifyNodeExists('A'))
       .then(verifyNodeExists('B'))
@@ -104,9 +88,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(verifyEdgeExists('Entry', 'A'))
       .then(verifyEdgeExists('A', 'B'))
       .then(verifyEdgeExists('B', 'Exit'))
-      .then(() =>
-        this.app.client.waitForExist('.wskflow-undeployed-action-warning')
-      )
+      .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
       .catch(common.oops(this)))
 
   // deploy composition with undeployed actions
@@ -115,9 +97,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .do('compose compSimple', this.app)
       .then(cli.expectOK)
       .then(deploy(this.app, 'compSimple'))
-      .then(() =>
-        this.app.client.waitForExist('.wskflow-undeployed-action-warning')
-      )
+      .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
       .then(() =>
         this.app.client.waitUntil(() =>
           cli
@@ -137,27 +117,11 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('compParseErr'))
       .then(() =>
-        setValue(
-          this.app.client,
-          '\nmodule.exports = require("openwhisk-composer").sequence(notfound1, notfound2)'
-        )
+        setValue(this.app.client, '\nmodule.exports = require("openwhisk-composer").sequence(notfound1, notfound2)')
       )
-      .then(() =>
-        this.app.client.waitForExist('.editor.parse-error-decoration')
-      )
-      .then(() =>
-        setValue(
-          this.app.client,
-          'module.exports = require("openwhisk-composer").sequence(x=>x, y=>y)'
-        )
-      )
-      .then(() =>
-        this.app.client.waitForExist(
-          '.editor.parse-error-decoration',
-          2000,
-          true
-        )
-      )
+      .then(() => this.app.client.waitForExist('.editor.parse-error-decoration'))
+      .then(() => setValue(this.app.client, 'module.exports = require("openwhisk-composer").sequence(x=>x, y=>y)'))
+      .then(() => this.app.client.waitForExist('.editor.parse-error-decoration', 2000, true))
       .catch(common.oops(this)))
 
   /* it('should initialize composer', () => cli.do(`app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
@@ -180,10 +144,7 @@ describe('edit compositions', function(this: common.ISuite) {
 
   it('should create an app from source', () =>
     cli
-      .do(
-        `app create compFromSrc ${ROOT}/data/composer/composer-source/seq.js`,
-        this.app
-      )
+      .do(`app create compFromSrc ${ROOT}/data/composer/composer-source/seq.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('compFromSrc'))

@@ -31,12 +31,7 @@ const rows = selectors.xtermRows(0)
 const lastRow = `${rows} > div:last-child`
 
 /** we have a custom vimrc, to make sure INSERT shows up */
-const vimrc = join(
-  dirname(
-    require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')
-  ),
-  'vimrc'
-)
+const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
 
 localDescribe('xterm vi 1', function(this: common.ISuite) {
   before(common.before(this))
@@ -76,9 +71,7 @@ localDescribe('xterm vi 1', function(this: common.ISuite) {
 
       await res.then(cli.expectBlank)
 
-      await cli
-        .do(`cat ${file.name}`, this.app)
-        .then(cli.expectOKWithString('hello there'))
+      await cli.do(`cat ${file.name}`, this.app).then(cli.expectOKWithString('hello there'))
 
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), 'hello there')

@@ -39,10 +39,7 @@ interface TextualProperties {
 export const textualPropertiesOfCode = (code: string): TextualProperties => {
   const lines = code.split(/[\n\r]/)
   const nLines = lines.length
-  const maxLineLength = lines.reduce(
-    (max, line) => Math.max(max, line.length),
-    0
-  )
+  const maxLineLength = lines.reduce((max, line) => Math.max(max, line.length), 0)
 
   return { nLines, maxLineLength }
 }
@@ -113,11 +110,7 @@ export const vizAndfsmViewModes = (
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (
-  tab: Tab,
-  visualize,
-  { ast, name, namespace, viewOptions, container }
-) => {
+export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = await repl
@@ -129,16 +122,7 @@ export const wskflow = async (
     )
     .catch(() => [])
 
-  return visualize(
-    tab,
-    ast,
-    container,
-    undefined,
-    undefined,
-    undefined,
-    viewOptions,
-    isPartOfRule
-  )
+  return visualize(tab, ast, container, undefined, undefined, undefined, viewOptions, isPartOfRule)
 }
 
 /**
@@ -148,10 +132,7 @@ export const wskflow = async (
  * @param visibleWhenShowing only show the zoom buttons when the given mode is active
  *
  */
-export const zoomToFitButtons = (
-  controller,
-  { visibleWhenShowing = 'visualization' } = {}
-): SidecarMode[] => {
+export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): SidecarMode[] => {
   if (controller && controller.register) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require('events')
@@ -159,14 +140,8 @@ export const zoomToFitButtons = (
     const zoomToFitBus = new events.EventEmitter()
 
     const listener = event => {
-      zoom1to1Bus.emit(
-        'change',
-        event.applyAutoScale === false && !event.customZoom
-      )
-      zoomToFitBus.emit(
-        'change',
-        event.applyAutoScale === true && !event.customZoom
-      )
+      zoom1to1Bus.emit('change', event.applyAutoScale === false && !event.customZoom)
+      zoomToFitBus.emit('change', event.applyAutoScale === true && !event.customZoom)
     }
 
     controller.register(listener)
@@ -210,10 +185,7 @@ export const zoomToFitButtons = (
  * like an app
  *
  */
-export const decorateAsApp = async (
-  tab: Tab,
-  { action, input, commandPrefix = 'app get', doVisualize, options }
-) => {
+export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
   debug('decorateAsApp', options)
   action.prettyType = badges.app
 
@@ -238,15 +210,9 @@ export const decorateAsApp = async (
     }
 
     const visualize = require('./visualize').default
-    const { view, controller } = await wskflow(
-      tab,
-      visualize,
-      Object.assign({}, action, { viewOptions })
-    )
+    const { view, controller } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
 
-    const sourceAnnotation = action.annotations.find(
-      ({ key }) => key === 'source'
-    )
+    const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
     if (sourceAnnotation) {
       action.source = sourceAnnotation.value
     }
@@ -254,14 +220,7 @@ export const decorateAsApp = async (
     action.modes = (action.modes || [])
       .filter(_ => _.mode !== 'code')
       .concat(
-        vizAndfsmViewModes(
-          visualize,
-          commandPrefix,
-          undefined,
-          input,
-          action.ast,
-          options.originalOptions || options
-        )
+        vizAndfsmViewModes(visualize, commandPrefix, undefined, input, action.ast, options.originalOptions || options)
       )
       .concat(sourceAnnotation ? [codeViewMode(action.source)] : [])
       .concat(zoomToFitButtons(controller))

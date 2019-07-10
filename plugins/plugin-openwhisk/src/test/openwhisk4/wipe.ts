@@ -20,9 +20,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, keys } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 describe('wipe command', function(this: common.ISuite) {
   before(openwhisk.before(this))
@@ -110,10 +108,7 @@ describe('wipe command', function(this: common.ISuite) {
   for (let idx = 0; idx < 10; idx++) {
     it(`should create action ${idx}`, () =>
       cli
-        .do(
-          `wsk action create aaa${idx} ${ROOT}/data/openwhisk/foo.js`,
-          this.app
-        )
+        .do(`wsk action create aaa${idx} ${ROOT}/data/openwhisk/foo.js`, this.app)
         .then(cli.expectOK)
         .catch(common.oops(this)))
   }

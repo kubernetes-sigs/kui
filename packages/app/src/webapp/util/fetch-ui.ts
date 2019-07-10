@@ -76,11 +76,7 @@ const app = {
  * Wait for fetch to complete
  *
  */
-const waitForDone = (
-  notifyOfProgress: boolean,
-  stagingArea: string,
-  doneLock: string
-) =>
+const waitForDone = (notifyOfProgress: boolean, stagingArea: string, doneLock: string) =>
   new Promise((resolve, reject) => {
     const iter = (idx: number, doneMessageNeeded = false) => {
       debug('waiting for completion')
@@ -147,9 +143,7 @@ const mkdir = (filepath: string): Promise<void> => {
  * download, or initiate a download
  *
  */
-const doneWaitOrFetch = (notifyOfProgress = false) => (
-  stagingAreaBase: string
-) =>
+const doneWaitOrFetch = (notifyOfProgress = false) => (stagingAreaBase: string) =>
   new Promise<string>((resolve, reject) => {
     debug('doneWaitOrFetch', notifyOfProgress, stagingAreaBase)
 
@@ -180,30 +174,21 @@ const doneWaitOrFetch = (notifyOfProgress = false) => (
           if (stats) {
             // already fetched
             debug('already fetched')
-            waitForDone(notifyOfProgress, stagingArea, doneLock).then(
-              resolve,
-              reject
-            )
+            waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
           }
           if (err) {
             return fs.stat(fetchLock, (err, stats) => {
               if (stats) {
                 // currently fetching
                 debug('currently fetching variant 1')
-                waitForDone(notifyOfProgress, stagingArea, doneLock).then(
-                  resolve,
-                  reject
-                )
+                waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
               }
               if (err) {
                 return fs.mkdir(fetchLock, err => {
                   if (err && err.code === 'EEXIST') {
                     // currently fetching
                     debug('currently fetching variant 2')
-                    waitForDone(notifyOfProgress, stagingArea, doneLock).then(
-                      resolve,
-                      reject
-                    )
+                    waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
                   } else if (err) {
                     handle(err)
                   } else {
@@ -211,14 +196,7 @@ const doneWaitOrFetch = (notifyOfProgress = false) => (
 
                     const child = spawn(
                       'node',
-                      [
-                        join(__dirname, 'fetcher.js'),
-                        stagingArea,
-                        fetchLock,
-                        doneLock,
-                        url,
-                        file
-                      ],
+                      [join(__dirname, 'fetcher.js'), stagingArea, fetchLock, doneLock, url, file],
                       { stdio: 'inherit', detached: true }
                     )
                     child.on('close', code => {
@@ -230,10 +208,7 @@ const doneWaitOrFetch = (notifyOfProgress = false) => (
                     child.unref()
 
                     debug('fetch initiated')
-                    waitForDone(notifyOfProgress, stagingArea, doneLock).then(
-                      resolve,
-                      reject
-                    )
+                    waitForDone(notifyOfProgress, stagingArea, doneLock).then(resolve, reject)
                   }
                 })
               }

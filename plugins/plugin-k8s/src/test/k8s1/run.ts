@@ -16,12 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
-import {
-  waitForGreen,
-  createNS,
-  allocateNS,
-  deleteNS
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl', 'k']
 

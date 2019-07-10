@@ -68,9 +68,7 @@ describe('wsk trigger fire tests', function(this: common.ISuite) {
       .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(logs => JSON.parse(logs))
       .then(logs => logs.activationId)
-      .then(activationId =>
-        cli.do(`wsk activation get ${activationId}`, this.app)
-      )
+      .then(activationId => cli.do(`wsk activation get ${activationId}`, this.app))
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('aaa'))
@@ -93,9 +91,7 @@ describe('wsk trigger fire tests', function(this: common.ISuite) {
       .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
       .then(logs => JSON.parse(logs))
       .then(logs => logs.activationId)
-      .then(activationId =>
-        cli.do(`wsk activation get ${activationId}`, this.app)
-      )
+      .then(activationId => cli.do(`wsk activation get ${activationId}`, this.app))
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('aaa'))

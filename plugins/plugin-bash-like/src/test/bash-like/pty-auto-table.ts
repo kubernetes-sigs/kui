@@ -19,9 +19,7 @@ import { dirname, join } from 'path'
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-bash-like/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
 const { cli } = ui
 const { dockerDescribe } = common
 
@@ -36,10 +34,7 @@ dockerDescribe('xterm auto-table', function(this: common.ISuite) {
 
   it('should cat a table from a table and have it displayed as a table', () =>
     cli
-      .do(
-        `cat ${join(ROOT, 'tests/data/table-with-duplicate-columns.txt')}`,
-        this.app
-      )
+      .do(`cat ${join(ROOT, 'tests/data/table-with-duplicate-columns.txt')}`, this.app)
       .then(cli.expectOKWith('reviews-v1v2-e2etestcase1-1'))
       .catch(common.oops(this)))
 

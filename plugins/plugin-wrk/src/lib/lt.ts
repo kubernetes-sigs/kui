@@ -53,12 +53,10 @@ const Latency = {
     if (latencyStacks) {
       console.error(latencyStacks)
       console.error(findReverse(latencyStacks))
-      const { breakdown: fastest } = latencyStacks[
-        find(latencyStacks) || 0
-      ] || { breakdown: undefined }
-      const { breakdown: slowest } = latencyStacks[
-        findReverse(latencyStacks) || latencyStacks.length - 1
-      ] || { breakdown: undefined }
+      const { breakdown: fastest } = latencyStacks[find(latencyStacks) || 0] || { breakdown: undefined }
+      const { breakdown: slowest } = latencyStacks[findReverse(latencyStacks) || latencyStacks.length - 1] || {
+        breakdown: undefined
+      }
 
       if (fastest && slowest) {
         // great, we have the data, now let's try to make sense of it
@@ -130,12 +128,7 @@ const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
     // request for early termination
     let terminateNow = false
 
-    const {
-      iters = 10000,
-      timeout = 2000,
-      duration = '10s',
-      connections = 2
-    } = options
+    const { iters = 10000, timeout = 2000, duration = '10s', connections = 2 } = options
 
     const iter = (N, { dryRun = false } = {}) => {
       const nThreads = N * 1
@@ -173,12 +166,8 @@ const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
 
           const first = results[0]
           const prev = results[results.length - 1]
-          const fratio = !first
-            ? 1
-            : parseDuration(current.latency90) / parseDuration(first.latency90)
-          const pratio = !prev
-            ? 1
-            : parseDuration(current.latency90) / parseDuration(prev.latency90)
+          const fratio = !first ? 1 : parseDuration(current.latency90) / parseDuration(first.latency90)
+          const pratio = !prev ? 1 : parseDuration(current.latency90) / parseDuration(prev.latency90)
 
           // try to explain why the slow hits are so slow
           const disparity = Latency.explain(current.latencyStacks)
@@ -229,9 +218,7 @@ const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
               console.error(`Exiting due to non2xx3xx ${current.non2xx3xx}`)
               return nopushResolve()
             } else if (current.connectErrors > 10) {
-              console.error(
-                `Exiting due to connectErrors ${current.connectErrors}`
-              )
+              console.error(`Exiting due to connectErrors ${current.connectErrors}`)
               return nopushResolve()
             } else if (current.readErrors > 10) {
               console.error(`Exiting due to readErrors ${current.readErrors}`)
@@ -240,9 +227,7 @@ const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
               console.error(`Exiting due to writeErrors ${current.writeErrors}`)
               return nopushResolve()
             } else if (current.timeoutErrors > 10) {
-              console.error(
-                `Exiting due to timeoutErrors ${current.timeoutErrors}`
-              )
+              console.error(`Exiting due to timeoutErrors ${current.timeoutErrors}`)
               return nopushResolve()
             }
           }

@@ -19,9 +19,7 @@ require('colors')
 
 /** electron targets in travis use the clients/default version */
 exports.expectedVersion =
-  process.env.MOCHA_RUN_TARGET === 'electron'
-    ? '0.0.1'
-    : require('@kui-shell/settings/package.json').version
+  process.env.MOCHA_RUN_TARGET === 'electron' ? '0.0.1' : require('@kui-shell/settings/package.json').version
 
 /**
  * Mimic the request-promise functionality, but with retry
@@ -32,17 +30,8 @@ exports.rp = opts => {
   const withRetry = require('promise-retry')
 
   return withRetry((retry, iter) => {
-    return rp(
-      Object.assign(
-        { timeout: 20000 },
-        typeof opts === 'string' ? { url: opts } : opts
-      )
-    ).catch(err => {
-      const isNormalError =
-        err &&
-        (err.statusCode === 400 ||
-          err.statusCode === 404 ||
-          err.statusCode === 409)
+    return rp(Object.assign({ timeout: 20000 }, typeof opts === 'string' ? { url: opts } : opts)).catch(err => {
+      const isNormalError = err && (err.statusCode === 400 || err.statusCode === 404 || err.statusCode === 409)
       if (!isNormalError && iter < 10) {
         console.error(err)
         retry()
@@ -64,8 +53,7 @@ exports.rp = opts => {
 const prepareElectron = (fuzz, popup = false) => {
   const Application = require('spectron').Application
   const electron = require('electron') // relative to __dirname
-  const appMain =
-    process.env.APP_MAIN || '../../build/packages/app/src/main/main.js' // relative to the tests/ directory
+  const appMain = process.env.APP_MAIN || '../../build/packages/app/src/main/main.js' // relative to the tests/ directory
 
   const env = {}
   if (fuzz) {
@@ -198,9 +186,7 @@ exports.after = (ctx, f) => () => {
           log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
           log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
         ) {
-          const logMessage = log.message
-            .substring(log.message.indexOf('%c') + 2)
-            .replace(/%c|%s|"/g, '')
+          const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
           console.log(`${log.source} ${log.level}`.bold.red, logMessage)
         }
       })
@@ -230,9 +216,7 @@ exports.oops = ctx => err => {
           console.log('RENDER'.bold.yellow, log.message.red)
         } else {
           // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
-          const logMessage = log.message
-            .substring(log.message.indexOf('%c') + 2)
-            .replace(/%c|%s|"/g, '')
+          const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
           console.log('RENDER'.bold.yellow, logMessage)
         }
       })
@@ -261,10 +245,7 @@ exports.localDescribe = (msg, func) => {
 
 /** only execute the test suite in an environment that has docker */
 exports.dockerDescribe = (msg, func) => {
-  if (
-    process.env.MOCHA_RUN_TARGET !== 'webpack' &&
-    (!process.env.TRAVIS_JOB_ID || process.platform === 'linux')
-  ) {
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack' && (!process.env.TRAVIS_JOB_ID || process.platform === 'linux')) {
     // currently only linux supports docker when running in travis
     return describe(msg, func)
   }

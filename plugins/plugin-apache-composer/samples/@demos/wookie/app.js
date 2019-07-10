@@ -5,9 +5,6 @@ module.exports = composer.sequence(
   composer.if(
     'validate-swapi',
     'report-swapi',
-    composer.sequence(
-      composer.retain('stapi'),
-      composer.if('validate-stapi', 'report-stapi', 'report-empty')
-    )
+    composer.sequence(composer.retain('stapi'), composer.if('validate-stapi', 'report-stapi', 'report-empty'))
   )
 )

@@ -69,13 +69,9 @@ export const generateScriptForAction = ({ options }) => action =>
                           delete apiHostParse.host
                         }
 
-                        const theURL = `${url.format(
-                          apiHostParse
-                        )}api/v1/namespaces/${encodeURIComponent(
+                        const theURL = `${url.format(apiHostParse)}api/v1/namespaces/${encodeURIComponent(
                           action.namespace
-                        )}/actions/${encodeURIComponent(
-                          action.name
-                        )}?blocking=true&result=true`
+                        )}/actions/${encodeURIComponent(action.name)}?blocking=true&result=true`
                         console.error(path, theURL)
 
                         resolve({
@@ -124,13 +120,8 @@ export const generateScriptForURL = ({ method = 'GET' }) => () =>
  * Command handler to generate a lua script to run load against a given action
  *
  */
-export const script = async ({
-  argvNoOptions: argv,
-  parsedOptions: options
-}: EvaluatorArgs) => {
-  const namespace = await import(
-    '@kui-shell/plugin-openwhisk/lib/models/namespace'
-  )
+export const script = async ({ argvNoOptions: argv, parsedOptions: options }: EvaluatorArgs) => {
+  const namespace = await import('@kui-shell/plugin-openwhisk/lib/models/namespace')
 
   const rootDir = path.join(__dirname, '..')
   const nameFull = argv[argv.indexOf('script') + 1]
@@ -153,13 +144,7 @@ export const script = async ({
   addOption('connections')
 
   return generateScriptForAction({ options })(action)
-    .then(
-      ({ url, script }) =>
-        `${rootDir.replace(
-          / /g,
-          '\\ '
-        )}/wrk/wrk -s '${script}' '${url}'${cliOptions}`
-    )
+    .then(({ url, script }) => `${rootDir.replace(/ /g, '\\ ')}/wrk/wrk -s '${script}' '${url}'${cliOptions}`)
     .then(require('electron').clipboard.writeText)
     .then(() => 'Command copied to clipboard')
 }

@@ -30,19 +30,8 @@ import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
-import {
-  actionSpecificModes,
-  addActionMode,
-  activationModes,
-  addActivationModes
-} from '../models/modes'
-import {
-  ow as globalOW,
-  apiHost,
-  apihost,
-  auth as authModel,
-  initOWFromConfig
-} from '../models/auth'
+import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
+import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
 import repl = require('@kui-shell/core/core/repl')
 import historyModel = require('@kui-shell/core/models/history')
@@ -62,11 +51,7 @@ const isLinux = osType() === 'Linux'
 debug('modules loaded')
 
 export const getClient = (execOptions: ExecOptions) => {
-  if (
-    execOptions &&
-    execOptions.credentials &&
-    execOptions.credentials.openwhisk
-  ) {
+  if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
     return initOWFromConfig(execOptions.credentials.openwhisk)
   } else {
     return globalOW
@@ -90,13 +75,10 @@ for (const type in isCRUDable) crudableTypes.push(type)
 
 // some verbs not directly exposed by the openwhisk npm (hidden in super-prototypes)
 const alreadyHaveGet = { namespaces: true, activations: true }
-const extraVerbsForAllTypes = (type: string) =>
-  alreadyHaveGet[type] ? [] : ['get']
+const extraVerbsForAllTypes = (type: string) => (alreadyHaveGet[type] ? [] : ['get'])
 const extraVerbsForAllCRUDableTypes = ['delete', 'update']
 const extraVerbs = (type: string) =>
-  extraVerbsForAllTypes(type).concat(
-    isCRUDable[type] ? extraVerbsForAllCRUDableTypes : []
-  )
+  extraVerbsForAllTypes(type).concat(isCRUDable[type] ? extraVerbsForAllCRUDableTypes : [])
 
 /** given /a/b/c, return /a/b */
 const parseNamespace = (fqn: string) => fqn.substring(0, fqn.lastIndexOf('/'))
@@ -146,12 +128,7 @@ type ParameterMap = Record<
 >
 
 /** update the parameter mapping M.params with the mapping stored in a given file */
-const paramFile = (
-  M: ParameterMap,
-  idx: number,
-  argv: string[],
-  type: string
-) => {
+const paramFile = (M: ParameterMap, idx: number, argv: string[], type: string) => {
   if (!M[type]) M[type] = {}
   if (!M[type].parameters) {
     M[type].parameters = []
@@ -184,12 +161,7 @@ const isBinary = {
   mp4: true
 }
 
-const handleKeyValuePairAsArray = (key: string) => (
-  M,
-  idx: number,
-  argv: string[],
-  type: string
-) => {
+const handleKeyValuePairAsArray = (key: string) => (M, idx: number, argv: string[], type: string) => {
   if (!argv[idx + 1] || !argv[idx + 2]) {
     return idx + 1
   }
@@ -204,9 +176,7 @@ const handleKeyValuePairAsArray = (key: string) => (
       // it might be a negative number...
       JSON.parse(argv[idx + 1])
     } catch (e) {
-      throw new Error(
-        `Parse error: expected string, got an option ${argv[idx + 1]}`
-      )
+      throw new Error(`Parse error: expected string, got an option ${argv[idx + 1]}`)
       // return idx + 1
     }
   }
@@ -215,9 +185,7 @@ const handleKeyValuePairAsArray = (key: string) => (
       // it might be a negative number...
       JSON.parse(argv[idx + 2])
     } catch (e) {
-      throw Error(
-        `Parse error: expected string, got an option ${argv[idx + 2]}`
-      )
+      throw Error(`Parse error: expected string, got an option ${argv[idx + 2]}`)
       // return idx + 1
     }
   }
@@ -283,12 +251,7 @@ function isNumeric(input) {
   // eslint-disable-next-line eqeqeq
   return input - 0 == input && ('' + input).trim().length > 0
 }
-const limits = (key: string) => (
-  M: ParameterMap,
-  idx: number,
-  argv: string[],
-  type: string
-) => {
+const limits = (key: string) => (M: ParameterMap, idx: number, argv: string[], type: string) => {
   if (!M[type]) M[type] = {}
   if (!M[type].limits) M[type].limits = {}
 
@@ -297,17 +260,11 @@ const limits = (key: string) => (
 
   // check that the value is a valid integer
   if (!isNumeric(valueString)) {
-    if (
-      key === 'timeout' &&
-      valueString &&
-      (valueString.endsWith('s') || valueString.endsWith('m'))
-    ) {
+    if (key === 'timeout' && valueString && (valueString.endsWith('s') || valueString.endsWith('m'))) {
       value = require('parse-duration')(valueString)
     } else {
       throw new Error(
-        `Invalid ${key} limit: expected integer, but got ${
-          valueString === undefined ? 'nothing' : valueString
-        }.`
+        `Invalid ${key} limit: expected integer, but got ${valueString === undefined ? 'nothing' : valueString}.`
       )
     }
   }
@@ -408,10 +365,7 @@ const correctMissingBindingName = options => entity => {
 
   if (packageName) {
     if (entity.namespace) {
-      entity.namespace = entity.namespace.replace(
-        new RegExp(`/${entity.packageName}$`),
-        `/${packageName}`
-      )
+      entity.namespace = entity.namespace.replace(new RegExp(`/${entity.packageName}$`), `/${packageName}`)
     }
     entity.packageName = packageName
   }
@@ -439,11 +393,7 @@ const specials = {
   activations: BlankSpecial
 }
 
-export const addPrettyType = (
-  entityType: string,
-  verb: string,
-  entityName: string
-) => async entity => {
+export const addPrettyType = (entityType: string, verb: string, entityName: string) => async entity => {
   if (typeof entity === 'string') {
     return {
       type: entityType,
@@ -463,10 +413,7 @@ export const addPrettyType = (
     }
     if (
       (entity.exec && entity.exec.kind === 'sequence') ||
-      (entity.annotations &&
-        entity.annotations.find(
-          kv => kv.key === 'exec' && kv.value === 'sequence'
-        ))
+      (entity.annotations && entity.annotations.find(kv => kv.key === 'exec' && kv.value === 'sequence'))
     ) {
       entity.prettyType = 'sequence'
     }
@@ -509,8 +456,7 @@ export const addPrettyType = (
   }
 
   // action-specific cells
-  const kind =
-    entity.annotations && entity.annotations.find(({ key }) => key === 'exec')
+  const kind = entity.annotations && entity.annotations.find(({ key }) => key === 'exec')
   if (kind && kind.value) {
     entity.kind = kind.value
   }
@@ -521,16 +467,12 @@ export const addPrettyType = (
     //
     if (!entity.onclick) {
       // a postprocess handler might have already added an onclick handler
-      entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(
-        `/${entity.namespace}/${entity.name}`
-      )}`
+      entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(`/${entity.namespace}/${entity.name}`)}`
     }
 
     if (entity.type === 'actions' && entity.prettyType === 'sequence') {
       // add a fun a->b->c rendering of the sequence
-      const action = repl.qexec(
-        `wsk action get "/${entity.namespace}/${entity.name}"`
-      )
+      const action = repl.qexec(`wsk action get "/${entity.namespace}/${entity.name}"`)
       const ns = repl.qexec('wsk namespace current')
 
       entity.prettyVersion = await action.then(async action => {
@@ -544,14 +486,10 @@ export const addPrettyType = (
       })
     } else if (entity.type === 'rules') {
       // rule-specific cells
-      const rule = repl.qexec(
-        `wsk rule get "/${entity.namespace}/${entity.name}"`
-      )
+      const rule = repl.qexec(`wsk rule get "/${entity.namespace}/${entity.name}"`)
 
       entity.status = rule.then(rule => rule.status)
-      entity.prettyVersion = await rule.then(
-        rule => `${rule.trigger.name} \u27fc ${rule.action.name}`
-      )
+      entity.prettyVersion = await rule.then(rule => `${rule.trigger.name} \u27fc ${rule.action.name}`)
       //                                                                   ^^^^^^ this is a unicode |->
     }
   }
@@ -684,15 +622,13 @@ specials.api = {
 
         // our "something reasonable" is the action impl, but
         // decorated with the name of the API and the verb
-        return repl
-          .qexec(`wsk action get "/${namespace}/${name}"`)
-          .then(action =>
-            Object.assign(action, {
-              name,
-              namespace,
-              packageName: `${verb} ${basePath}${path}`
-            })
-          )
+        return repl.qexec(`wsk action get "/${namespace}/${name}"`).then(action =>
+          Object.assign(action, {
+            name,
+            namespace,
+            packageName: `${verb} ${basePath}${path}`
+          })
+        )
       }
     }
   },
@@ -722,9 +658,7 @@ specials.api = {
         return ow.actions
           .get(owOpts({ name }))
           .then(action => {
-            const isWebExported = action.annotations.find(
-              ({ key }) => key === 'web-export'
-            )
+            const isWebExported = action.annotations.find(({ key }) => key === 'web-export')
             if (!isWebExported) {
               const error = new Error(
                 `Action '${name}' is not a web action. Issue 'wsk action update "${name}" --web true' to convert the action to a web action.`
@@ -736,9 +670,7 @@ specials.api = {
           .then(() => _) // on success, return whatever preprocess was given as input
           .catch(err => {
             if (err.statusCode === 404) {
-              const error = new Error(
-                `Unable to get action '${name}': The requested resource does not exist.`
-              )
+              const error = new Error(`Unable to get action '${name}': The requested resource does not exist.`)
               error['code'] = 404 // not found
               throw error
             } else {
@@ -754,15 +686,13 @@ specials.api = {
         const { action: name, namespace } = api[verb]['x-openwhisk']
 
         // manufacture an entity-like object
-        return repl
-          .qexec(`wsk action get "/${namespace}/${name}"`)
-          .then(action =>
-            Object.assign(action, {
-              name,
-              namespace,
-              packageName: `${verb} ${basePath}${path}`
-            })
-          )
+        return repl.qexec(`wsk action get "/${namespace}/${name}"`).then(action =>
+          Object.assign(action, {
+            name,
+            namespace,
+            packageName: `${verb} ${basePath}${path}`
+          })
+        )
       }
     }
   },
@@ -795,19 +725,14 @@ specials.api = {
                     name,
                     namespace,
                     onclick: () => {
-                      return repl.pexec(
-                        `wsk api get ${repl.encodeComponent(name)} ${verb}`
-                      )
+                      return repl.pexec(`wsk api get ${repl.encodeComponent(name)} ${verb}`)
                     },
                     attributes: [
                       { key: 'verb', value: verb },
                       {
                         key: 'action',
                         value: action,
-                        onclick: () =>
-                          repl.pexec(
-                            `wsk action get ${repl.encodeComponent(actionFqn)}`
-                          )
+                        onclick: () => repl.pexec(`wsk action get ${repl.encodeComponent(actionFqn)}`)
                       },
                       {
                         key: 'url',
@@ -850,157 +775,143 @@ specials.api = {
 specials.actions = {
   get: standardViewModes(actionSpecificModes),
   update: BlankSpecial, // updated below
-  create: standardViewModes(
-    actionSpecificModes,
-    (options, argv, verb, execOptions) => {
-      if (!options || !argv) return
+  create: standardViewModes(actionSpecificModes, (options, argv, verb, execOptions) => {
+    if (!options || !argv) return
 
-      if (!options.action) options.action = {}
-      if (!options.action.exec) options.action.exec = {}
+    if (!options.action) options.action = {}
+    if (!options.action.exec) options.action.exec = {}
 
-      if (options.web) {
-        if (!options.action.annotations) options.action.annotations = []
-        options.action.annotations.push({ key: 'web-export', value: true })
+    if (options.web) {
+      if (!options.action.annotations) options.action.annotations = []
+      options.action.annotations.push({ key: 'web-export', value: true })
 
-        if (options['content-type']) {
-          options.action.annotations.push({
-            key: 'content-type-extension',
-            value: options['content-type']
-          })
-        }
-      }
-
-      if (options.sequence) {
-        options.action.exec = {
-          kind: 'sequence',
-          components: argv[0].split(/,\s*/).map(fqn) // split by commas, and we need fully qualified names
-        }
-      } else if (options.copy) {
-        // copying an action
-        const src = argv[argv.length - 1]
-        const dest = options.name
-        debug('action copy SRC', src, 'DEST', dest, argv)
-
-        return {
-          options: getClient(execOptions)
-            .actions.get(owOpts({ name: src }))
-            .then(action => {
-              if (options.action.parameters && !action.parameters) {
-                action.parameters = options.action.parameters
-              } else if (options.action.parameters) {
-                action.parameters = action.parameters.concat(
-                  options.action.parameters
-                )
-              }
-              if (options.action.annotations && !action.annotations) {
-                action.annotations = options.action.annotations
-              } else if (options.action.annotations) {
-                action.annotations = action.annotations.concat(
-                  options.action.annotations
-                )
-              }
-              return {
-                name: dest,
-                action: action
-              }
-            })
-        }
-      } else if (verb !== 'update' || argv[0]) {
-        // for action create, or update and the user gave a
-        // positional param... find the input file
-        if (options.docker) {
-          // blackbox action
-          options.action.exec.kind = 'blackbox'
-          options.action.exec.image = options.docker
-        }
-
-        if (argv[0]) {
-          // find the file named by argv[0]
-          const filepath = findFile(expandHomeDir(argv[0]))
-          const isZip = argv[0].endsWith('.zip')
-          const isJar = argv[0].endsWith('.jar')
-          const isBinary = isZip || isJar
-          const encoding = isBinary ? 'base64' : 'utf8'
-
-          if (argv[0].charAt(0) === '!') {
-            // read the file from execOptions
-            const key = argv[0].slice(1)
-            options.action.exec.code =
-              execOptions &&
-              (execOptions.parameters[key] || execOptions.params[key])
-
-            // remove traces of this from params
-            if (execOptions.parameters) delete execOptions.parameters[key]
-            if (execOptions.params) delete execOptions.params[key]
-            options.action.parameters = options.action.parameters.filter(
-              ({ key: otherKey }) => key !== otherKey
-            )
-
-            debug('code passed programmatically', options.action, execOptions)
-            if (!options.action.exec.code) {
-              debug('Could not find code', execOptions)
-              throw new Error('Could not find code')
-            }
-          } else {
-            options.action.exec.code = readFileSync(filepath).toString(encoding)
-          }
-
-          if (!options.action.annotations) options.action.annotations = []
-          options.action.annotations.push({ key: 'file', value: filepath })
-
-          if (isBinary) {
-            // add an annotation to indicate that this is a managed action
-            options.action.annotations.push({
-              key: 'wskng.combinators',
-              value: [
-                {
-                  type: 'action.kind',
-                  role: 'replacement',
-                  badge: isZip ? 'zip' : 'jar'
-                }
-              ]
-            })
-
-            options.action.annotations.push({ key: 'binary', value: true })
-          }
-
-          if (options.native) {
-            // native code blackbox action
-            options.action.exec.kind = 'blackbox'
-            options.action.exec.image = 'openwhisk/dockerskeleton'
-          }
-
-          eventBus.emit('/action/update', {
-            file: filepath,
-            action: { name: options.name, namespace: options.namespace }
-          })
-
-          // set the default kind
-          if (!options.action.exec.kind) {
-            if (options.kind) {
-              options.action.exec.kind = options.kind
-            } else {
-              const extension = filepath.substring(
-                filepath.lastIndexOf('.') + 1
-              )
-              if (extension) {
-                options.action.exec.kind =
-                  extensionToKind[extension] || extension
-              }
-            }
-          }
-        }
-      } else {
-        // then we must remove options.exec; the backend fails if an empty struct is passed
-        delete options.action.exec
-      }
-
-      if (options.main && options.action.exec) {
-        // main method of java actions
-        options.action.exec.main = options.main
+      if (options['content-type']) {
+        options.action.annotations.push({
+          key: 'content-type-extension',
+          value: options['content-type']
+        })
       }
     }
-  ),
+
+    if (options.sequence) {
+      options.action.exec = {
+        kind: 'sequence',
+        components: argv[0].split(/,\s*/).map(fqn) // split by commas, and we need fully qualified names
+      }
+    } else if (options.copy) {
+      // copying an action
+      const src = argv[argv.length - 1]
+      const dest = options.name
+      debug('action copy SRC', src, 'DEST', dest, argv)
+
+      return {
+        options: getClient(execOptions)
+          .actions.get(owOpts({ name: src }))
+          .then(action => {
+            if (options.action.parameters && !action.parameters) {
+              action.parameters = options.action.parameters
+            } else if (options.action.parameters) {
+              action.parameters = action.parameters.concat(options.action.parameters)
+            }
+            if (options.action.annotations && !action.annotations) {
+              action.annotations = options.action.annotations
+            } else if (options.action.annotations) {
+              action.annotations = action.annotations.concat(options.action.annotations)
+            }
+            return {
+              name: dest,
+              action: action
+            }
+          })
+      }
+    } else if (verb !== 'update' || argv[0]) {
+      // for action create, or update and the user gave a
+      // positional param... find the input file
+      if (options.docker) {
+        // blackbox action
+        options.action.exec.kind = 'blackbox'
+        options.action.exec.image = options.docker
+      }
+
+      if (argv[0]) {
+        // find the file named by argv[0]
+        const filepath = findFile(expandHomeDir(argv[0]))
+        const isZip = argv[0].endsWith('.zip')
+        const isJar = argv[0].endsWith('.jar')
+        const isBinary = isZip || isJar
+        const encoding = isBinary ? 'base64' : 'utf8'
+
+        if (argv[0].charAt(0) === '!') {
+          // read the file from execOptions
+          const key = argv[0].slice(1)
+          options.action.exec.code = execOptions && (execOptions.parameters[key] || execOptions.params[key])
+
+          // remove traces of this from params
+          if (execOptions.parameters) delete execOptions.parameters[key]
+          if (execOptions.params) delete execOptions.params[key]
+          options.action.parameters = options.action.parameters.filter(({ key: otherKey }) => key !== otherKey)
+
+          debug('code passed programmatically', options.action, execOptions)
+          if (!options.action.exec.code) {
+            debug('Could not find code', execOptions)
+            throw new Error('Could not find code')
+          }
+        } else {
+          options.action.exec.code = readFileSync(filepath).toString(encoding)
+        }
+
+        if (!options.action.annotations) options.action.annotations = []
+        options.action.annotations.push({ key: 'file', value: filepath })
+
+        if (isBinary) {
+          // add an annotation to indicate that this is a managed action
+          options.action.annotations.push({
+            key: 'wskng.combinators',
+            value: [
+              {
+                type: 'action.kind',
+                role: 'replacement',
+                badge: isZip ? 'zip' : 'jar'
+              }
+            ]
+          })
+
+          options.action.annotations.push({ key: 'binary', value: true })
+        }
+
+        if (options.native) {
+          // native code blackbox action
+          options.action.exec.kind = 'blackbox'
+          options.action.exec.image = 'openwhisk/dockerskeleton'
+        }
+
+        eventBus.emit('/action/update', {
+          file: filepath,
+          action: { name: options.name, namespace: options.namespace }
+        })
+
+        // set the default kind
+        if (!options.action.exec.kind) {
+          if (options.kind) {
+            options.action.exec.kind = options.kind
+          } else {
+            const extension = filepath.substring(filepath.lastIndexOf('.') + 1)
+            if (extension) {
+              options.action.exec.kind = extensionToKind[extension] || extension
+            }
+          }
+        }
+      }
+    } else {
+      // then we must remove options.exec; the backend fails if an empty struct is passed
+      delete options.action.exec
+    }
+
+    if (options.main && options.action.exec) {
+      // main method of java actions
+      options.action.exec.main = options.main
+    }
+  }),
   list: options => {
     // support for `wsk action list <packageName>` see shell issue #449
     if (options && options.name) {
@@ -1093,9 +1004,7 @@ specials.rules = {
     }
 
     if (options && (!options.name || !options.trigger || !options.action)) {
-      throw new Error(
-        'Invalid argument(s). A rule, trigger and action name are required.'
-      )
+      throw new Error('Invalid argument(s). A rule, trigger and action name are required.')
     }
   }
 }
@@ -1182,11 +1091,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
   let entity = _entity
   let verb = _verb
 
-  if (
-    execOptions &&
-    execOptions.credentials &&
-    execOptions.credentials.openwhisk
-  ) {
+  if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
     // FIXME we can do better here
     initOWFromConfig(execOptions.credentials.openwhisk)
   }
@@ -1203,11 +1108,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
   const argv = regularOptions._
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let options: Record<string, any> = Object.assign(
-    {},
-    regularOptions,
-    pair.kvOptions
-  )
+  let options: Record<string, any> = Object.assign({}, regularOptions, pair.kvOptions)
   delete options._
 
   debug('exec', entity, verb, argv, options, execOptions)
@@ -1247,9 +1148,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
         //
         // special case for activations... the proper entity path is an annotation. nice
         //
-        const pathAnnotation =
-          selection.annotations &&
-          selection.annotations.find(kv => kv.key === 'path')
+        const pathAnnotation = selection.annotations && selection.annotations.find(kv => kv.key === 'path')
         if (pathAnnotation) {
           // note: the path doesn't have a leading slash. nice nice
           options.name = `/${pathAnnotation.value}`
@@ -1288,20 +1187,11 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
 
   if (entity === 'activations' && verb === 'get' && options.last) {
     // special case for wsk activation get --last
-    return repl.qfexec(
-      `wsk activation last ${
-        typeof options.last === 'string' ? options.last : ''
-      }`
-    )
+    return repl.qfexec(`wsk activation last ${typeof options.last === 'string' ? options.last : ''}`)
   }
 
   if (specials[entity] && specials[entity][verb]) {
-    const res = await specials[entity][verb](
-      options,
-      argv.slice(restIndex),
-      verb,
-      execOptions
-    )
+    const res = await specials[entity][verb](options, argv.slice(restIndex), verb, execOptions)
     if (res && res.verb) {
       // updated verb? e.g. 'package bind' => 'package update'
       verb = res.verb
@@ -1340,11 +1230,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
   const kind = toOpenWhiskKind(entity)
   if (execOptions && execOptions.entity && execOptions.entity[kind]) {
     // passing entity options programatically rather than via the command line
-    options[kind] = Object.assign(
-      {},
-      options[entity] || {},
-      execOptions.entity[kind]
-    )
+    options[kind] = Object.assign({}, options[entity] || {}, execOptions.entity[kind])
     debug('programmatic entity', execOptions.entity[kind], options[entity])
   }
 
@@ -1397,23 +1283,15 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
         })
         .then(pretty)
         .then(correctMissingBindingName(options))
+        .then(response => (Array.isArray(response) ? Promise.all(response.map(pretty)) : response))
         .then(response =>
-          Array.isArray(response) ? Promise.all(response.map(pretty)) : response
-        )
-        .then(response =>
-          Array.isArray(response) && response.length > 0
-            ? withHeader(response, execOptions)
-            : response
+          Array.isArray(response) && response.length > 0 ? withHeader(response, execOptions) : response
         )
         .then(response => {
           if (
             commandTree &&
-            (!execOptions ||
-              !execOptions.noHistory ||
-              (execOptions && execOptions.contextChangeOK)) && // don't update context for nested execs
-            (response.verb === 'get' ||
-              response.verb === 'create' ||
-              response.verb === 'update')
+            (!execOptions || !execOptions.noHistory || (execOptions && execOptions.contextChangeOK)) && // don't update context for nested execs
+            (response.verb === 'get' || response.verb === 'create' || response.verb === 'update')
           ) {
             return response
           } else {
@@ -1432,17 +1310,10 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
             //
             const message = oopsMessage(err)
             const code = err.statusCode || err.code
-            const __usageModel =
-              typeof usage[entity] === 'function'
-                ? usage[entity](entity)
-                : usage[entity]
-            const _usageModel =
-              __usageModel.available &&
-              __usageModel.available.find(({ command }) => command === verb)
+            const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity]
+            const _usageModel = __usageModel.available && __usageModel.available.find(({ command }) => command === verb)
             const usageModel: UsageModel =
-              _usageModel && typeof _usageModel.fn === 'function'
-                ? _usageModel.fn(verb, entity)
-                : _usageModel
+              _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
 
             console.error(err)
             if (!usageModel) {
@@ -1493,13 +1364,8 @@ export const update = execOptions => (entity, retryCount = 0) => {
   }
 }
 
-export const fillInActionDetails = (
-  Package,
-  type = 'actions'
-) => actionSummary => {
-  const kindAnnotation =
-    actionSummary.annotations &&
-    actionSummary.annotations.find(_ => _.key === 'exec')
+export const fillInActionDetails = (Package, type = 'actions') => actionSummary => {
+  const kindAnnotation = actionSummary.annotations && actionSummary.annotations.find(_ => _.key === 'exec')
   const kind = kindAnnotation && kindAnnotation.value
 
   return Object.assign({}, actionSummary, {
@@ -1508,9 +1374,7 @@ export const fillInActionDetails = (
     packageName: Package.name,
     namespace: `${Package.namespace}/${Package.name}`,
     kind,
-    onclick: `wsk action get ${repl.encodeComponent(
-      `/${Package.namespace}/${Package.name}/${actionSummary.name}`
-    )}`
+    onclick: `wsk action get ${repl.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
   })
 }
 
@@ -1557,11 +1421,7 @@ const makeInit = commandTree => async (isReinit = false) => {
 
     /** is this activation that of a sequence? */
     isSequenceActivation: entity =>
-      entity.logs &&
-      entity.annotations &&
-      entity.annotations.find(
-        kv => kv.key === 'kind' && kv.value === 'sequence'
-      ),
+      entity.logs && entity.annotations && entity.annotations.find(kv => kv.key === 'kind' && kv.value === 'sequence'),
 
     /** update the given openwhisk entity */
     update,
@@ -1573,12 +1433,7 @@ const makeInit = commandTree => async (isReinit = false) => {
 
     /** execute a wsk command without saving to the command history */
     qexec: (command, execOptions) =>
-      executor(
-        commandTree,
-        history,
-        command,
-        Object.assign({}, { noHistory: true }, execOptions)
-      ),
+      executor(commandTree, history, command, Object.assign({}, { noHistory: true }, execOptions)),
 
     /** execute a wsk command with the given options */
     exec: (command, execOptions) => {
@@ -1604,20 +1459,15 @@ const makeInit = commandTree => async (isReinit = false) => {
   //
   for (const api in globalOW) {
     const clazz = globalOW[api].constructor
-    const props = Object.getOwnPropertyNames(clazz.prototype).concat(
-      extraVerbs(api) || []
-    )
+    const props = Object.getOwnPropertyNames(clazz.prototype).concat(extraVerbs(api) || [])
     // alsoInstallAtRoot = api === 'actions'
 
     /** return the usage model for the given (api, syn, verb) */
     const docs = (syn, verb?, alias?) => {
-      const entityModel =
-        typeof usage[api] === 'function' ? usage[api](syn) : usage[api]
+      const entityModel = typeof usage[api] === 'function' ? usage[api](syn) : usage[api]
 
       if (verb) {
-        const model =
-          entityModel &&
-          entityModel.available.find(({ command }) => command === verb)
+        const model = entityModel && entityModel.available.find(({ command }) => command === verb)
         if (model && typeof model.fn === 'function') {
           return model.fn(alias || verb, syn)
         } else {
@@ -1647,11 +1497,9 @@ const makeInit = commandTree => async (isReinit = false) => {
           })
 
           const handler = executor(commandTree, eee.name || api, verb, verb)
-          const entityAliasMaster = commandTree.listen(
-            `/wsk/${eee.nickname || eee}/${verb}`,
-            handler,
-            { usage: docs(api, verb) }
-          )
+          const entityAliasMaster = commandTree.listen(`/wsk/${eee.nickname || eee}/${verb}`, handler, {
+            usage: docs(api, verb)
+          })
 
           // register e.g. wsk action help; we delegate to
           // "wsk action", which will print out usage (this
@@ -1660,33 +1508,18 @@ const makeInit = commandTree => async (isReinit = false) => {
           // commandTree.listen(`/wsk/${eee.nickname || eee}/help`, () => repl.qexec(`wsk ${eee.nickname || eee}`), { noArgs: true })
 
           verbs.forEach(vvv => {
-            const handler = executor(
-              commandTree,
-              eee.name || api,
-              vvv.name || verb,
-              vvv.nickname || vvv
-            )
+            const handler = executor(commandTree, eee.name || api, vvv.name || verb, vvv.nickname || vvv)
             if (vvv.notSynonym || vvv === verb) {
               if (vvv.limitTo && vvv.limitTo[api]) {
-                commandTree.listen(
-                  `/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`,
-                  handler,
-                  { usage: docs(api, vvv.nickname || vvv) }
-                )
+                commandTree.listen(`/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`, handler, {
+                  usage: docs(api, vvv.nickname || vvv)
+                })
               }
             } else {
-              const handler = executor(
-                commandTree,
-                eee.name || api,
-                verb,
-                vvv.nickname || vvv
-              )
-              commandTree.synonym(
-                `/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`,
-                handler,
-                entityAliasMaster,
-                { usage: docs(api, verb, vvv.nickname || vvv) }
-              )
+              const handler = executor(commandTree, eee.name || api, verb, vvv.nickname || vvv)
+              commandTree.synonym(`/wsk/${eee.nickname || eee}/${vvv.nickname || vvv}`, handler, entityAliasMaster, {
+                usage: docs(api, verb, vvv.nickname || vvv)
+              })
             }
 
             // if (alsoInstallAtRoot) {
@@ -1719,9 +1552,7 @@ const makeInit = commandTree => async (isReinit = false) => {
     return ow.triggers
       .delete(owOpts({ name: name }))
       .then(trigger => {
-        const feedAnnotation =
-          trigger.annotations &&
-          trigger.annotations.find(kv => kv.key === 'feed')
+        const feedAnnotation = trigger.annotations && trigger.annotations.find(kv => kv.key === 'feed')
         debug('trigger delete success', trigger, feedAnnotation)
         if (feedAnnotation) {
           // special case of feed
@@ -1740,9 +1571,7 @@ const makeInit = commandTree => async (isReinit = false) => {
   }
   synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/delete`, removeTrigger, {
-      usage: usage.triggers.available.find(
-        ({ command }) => command === 'delete'
-      )
+      usage: usage.triggers.available.find(({ command }) => command === 'delete')
     })
   })
 
@@ -1752,11 +1581,7 @@ const makeInit = commandTree => async (isReinit = false) => {
    * creation
    *
    */
-  const createTrigger = ({
-    argvNoOptions: argv,
-    parsedOptions: options,
-    execOptions
-  }) => {
+  const createTrigger = ({ argvNoOptions: argv, parsedOptions: options, execOptions }) => {
     const name = argv[argv.length - 1]
     const triggerSpec = owOpts({ name })
     const paramsArray = []
@@ -1800,9 +1625,7 @@ const makeInit = commandTree => async (isReinit = false) => {
       if (!triggerSpec['trigger'].parameters) {
         triggerSpec['trigger'].parameters = paramsArray
       } else {
-        triggerSpec['trigger'].parameters = triggerSpec[
-          'trigger'
-        ].parameters.concat(paramsArray)
+        triggerSpec['trigger'].parameters = triggerSpec['trigger'].parameters.concat(paramsArray)
       }
     }
 
@@ -1840,33 +1663,28 @@ const makeInit = commandTree => async (isReinit = false) => {
   }
   synonymsTable.entities.triggers.forEach(syn => {
     commandTree.listen(`/wsk/${syn}/create`, createTrigger, {
-      usage: usage.triggers.available.find(
-        ({ command }) => command === 'create'
-      )
+      usage: usage.triggers.available.find(({ command }) => command === 'create')
     })
   })
 
   // count APIs
   for (const entityType in synonymsTable.entities) {
     synonymsTable.entities[entityType].forEach(syn => {
-      commandTree.listen(
-        `/wsk/${syn}/count`,
-        ({ argvNoOptions, parsedOptions: options, execOptions }) => {
-          const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
-          const overrides = { count: true }
-          delete options._
-          delete options.limit
-          delete options.skip
-          if (name) {
-            overrides['name'] = name
-          }
-
-          const opts = owOpts(Object.assign({}, options, overrides))
-          const ow = getClient(execOptions)
-
-          return ow[entityType].list(opts).then(res => res[entityType])
+      commandTree.listen(`/wsk/${syn}/count`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
+        const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
+        const overrides = { count: true }
+        delete options._
+        delete options.limit
+        delete options.skip
+        if (name) {
+          overrides['name'] = name
         }
-      )
+
+        const opts = owOpts(Object.assign({}, options, overrides))
+        const ow = getClient(execOptions)
+
+        return ow[entityType].list(opts).then(res => res[entityType])
+      })
     })
   }
 

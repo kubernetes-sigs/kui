@@ -23,9 +23,7 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 const usage = {
   command: 'sleep',
   strict: 'sleep',
-  required: [
-    { name: 'sleepTime', number: true, docs: 'The number of seconds to sleep' }
-  ]
+  required: [{ name: 'sleepTime', number: true, docs: 'The number of seconds to sleep' }]
 }
 
 /**

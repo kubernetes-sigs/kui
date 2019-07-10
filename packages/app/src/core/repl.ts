@@ -25,31 +25,16 @@ import * as Debug from 'debug'
 const debug = Debug('core/repl')
 debug('loading')
 
-import {
-  CommandTreeResolution,
-  ExecType,
-  Evaluator,
-  EvaluatorArgs,
-  YargsParserFlags
-} from '../models/command'
+import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserFlags } from '../models/command'
 
-import {
-  ExecOptions,
-  DefaultExecOptions,
-  DefaultExecOptionsForTab,
-  ParsedOptions
-} from '../models/execOptions'
+import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
 import eventBus from '@kui-shell/core/core/events'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
 import { UsageError, UsageModel, IUsageRow } from './usage-error'
 
-import {
-  isHeadless,
-  hasLocalAccess,
-  hasAuth as hasAuthCapability
-} from './capabilities'
+import { isHeadless, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
@@ -81,12 +66,7 @@ export interface Executor {
  */
 export interface ReplEval {
   name: string
-  apply(
-    commandUntrimmed: string,
-    execOptions: ExecOptions,
-    evaluator: Evaluator,
-    args: EvaluatorArgs
-  )
+  apply(commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs)
 }
 
 /**
@@ -96,12 +76,7 @@ export interface ReplEval {
  */
 export class DirectReplEval implements ReplEval {
   name = 'DirectReplEval'
-  apply(
-    commandUntrimmed: string,
-    execOptions: ExecOptions,
-    evaluator: Evaluator,
-    args: EvaluatorArgs
-  ) {
+  apply(commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
@@ -240,9 +215,7 @@ export const _split = (
           removeOuterQuotes &&
           endsWithQuoteSpace(idx, char) &&
           (idx === 0 ||
-            (stack.length === 0 &&
-              (removeInlineOuterQuotes ||
-                patterns.whitespace.test(str.charAt(idx - 1)))))
+            (stack.length === 0 && (removeInlineOuterQuotes || patterns.whitespace.test(str.charAt(idx - 1)))))
 
         removedLastOpenQuote.push(removeQuote)
 
@@ -270,17 +243,8 @@ export const _split = (
     return A
   }
 }
-export const split = (
-  str: string,
-  removeOuterQuotes = true,
-  removeInlineOuterQuotes = false
-): string[] => {
-  return _split(
-    str,
-    removeOuterQuotes,
-    undefined,
-    removeInlineOuterQuotes
-  ) as string[]
+export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): string[] => {
+  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as string[]
 }
 
 /** an empty promise, for blank lines */
@@ -300,20 +264,13 @@ const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
  * override the graphical default
  *
  */
-type OopsHandler = (
-  block: HTMLElement,
-  nextBlock: HTMLElement
-) => (err: Error) => void
+type OopsHandler = (block: HTMLElement, nextBlock: HTMLElement) => (err: Error) => void
 let oopsHandler: OopsHandler
 export const installOopsHandler = (fn: OopsHandler) => {
   debug('installing oops handler')
   oopsHandler = fn
 }
-const oops = (
-  command?: string,
-  block?: HTMLElement,
-  nextBlock?: HTMLElement
-) => (err: Error) => {
+const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) => (err: Error) => {
   if (oopsHandler) {
     debug('invoking registered oops handler')
     return oopsHandler(block, nextBlock)(err)
@@ -346,8 +303,7 @@ class InProcessExecutor implements Executor {
     }
 
     const echo = !execOptions || execOptions.echo !== false
-    const nested =
-      execOptions && execOptions.noHistory && !execOptions.replSilence
+    const nested = execOptions && execOptions.noHistory && !execOptions.replSilence
     if (nested) execOptions.nested = nested
 
     const block = (execOptions && execOptions.block) || cli.getCurrentBlock(tab)
@@ -360,13 +316,7 @@ class InProcessExecutor implements Executor {
       const { container, returnTo } = execOptions.pip
       try {
         const { drilldown } = await import('../webapp/picture-in-picture') // FIXME
-        return drilldown(
-          tab,
-          commandUntrimmed,
-          undefined,
-          document.querySelector(container),
-          returnTo
-        )()
+        return drilldown(tab, commandUntrimmed, undefined, document.querySelector(container), returnTo)()
       } catch (err) {
         console.error(err as Error)
         // fall through to normal execution, if pip fails
@@ -379,9 +329,7 @@ class InProcessExecutor implements Executor {
     if (!execOptions || (!execOptions.noHistory && echo)) {
       // this is a top-level exec
       cli.unlisten(prompt)
-      nextBlock =
-        (execOptions && execOptions.nextBlock) ||
-        (block.cloneNode(true) as HTMLElement)
+      nextBlock = (execOptions && execOptions.nextBlock) || (block.cloneNode(true) as HTMLElement)
 
       // since we cloned it, make sure it's all cleaned out
       nextBlock.querySelector('input').value = ''
@@ -442,8 +390,7 @@ class InProcessExecutor implements Executor {
 
       // the Read part of REPL
       const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-      const evaluator: CommandTreeResolution = await (execOptions &&
-      execOptions.intentional
+      const evaluator: CommandTreeResolution = await (execOptions && execOptions.intentional
         ? commandTree.readIntention(argvNoOptions)
         : commandTree.read(argvNoOptions, false, false, execOptions))
 
@@ -452,21 +399,15 @@ class InProcessExecutor implements Executor {
         // fetch the usage model for the command
         //
         const _usage: UsageModel = evaluator.options && evaluator.options.usage
-        const usage: UsageModel =
-          _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
+        const usage: UsageModel = _usage && _usage.fn ? _usage.fn(_usage.command) : _usage
         // debug('usage', usage)
 
         if (execOptions && execOptions.failWithUsage && !usage) {
-          debug(
-            'caller needs usage model, but none exists for this command',
-            evaluator
-          )
+          debug('caller needs usage model, but none exists for this command', evaluator)
           return false
         }
 
-        const builtInOptions: IUsageRow[] = [
-          { name: '--quiet', alias: '-q', hidden: true, boolean: true }
-        ]
+        const builtInOptions: IUsageRow[] = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
         if (!usage || !usage.noHelp) {
           // usage might tell us not to add help, or not to add the -h help alias
           const help = { name: '--help', hidden: true, boolean: true }
@@ -486,14 +427,9 @@ class InProcessExecutor implements Executor {
             evaluator.options.synonymFor.options.flags) ||
           ({} as YargsParserFlags) // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
         const optional = builtInOptions.concat(
-          (evaluator.options &&
-            evaluator.options.usage &&
-            evaluator.options.usage.optional) ||
-            []
+          (evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || []
         )
-        const optionalBooleans =
-          optional &&
-          optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name))
+        const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name))
 
         interface CanonicalArgs {
           [key: string]: string
@@ -511,16 +447,9 @@ class InProcessExecutor implements Executor {
           [key: string]: number
         }
         const allFlags = {
-          configuration: Object.assign(
-            { 'camel-case-expansion': false },
-            (usage && usage.configuration) || {}
-          ),
+          configuration: Object.assign({ 'camel-case-expansion': false }, (usage && usage.configuration) || {}),
           boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
-          alias: Object.assign(
-            {},
-            commandFlags.alias || {},
-            optionalAliases || {}
-          ),
+          alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
           narg:
             optional &&
             optional.reduce((N: ArgCount, { name, alias, narg }) => {
@@ -543,18 +472,11 @@ class InProcessExecutor implements Executor {
         // to involve the plugin. this lets us avoid having each
         // plugin check for options.help
         //
-        if (
-          (!usage || !usage.noHelp) &&
-          parsedOptions.help &&
-          evaluator.options &&
-          evaluator.options.usage
-        ) {
+        if ((!usage || !usage.noHelp) && parsedOptions.help && evaluator.options && evaluator.options.usage) {
           if (execOptions && execOptions.failWithUsage) {
             return evaluator.options.usage
           } else {
-            return oops(command, block, nextBlock)(
-              new UsageError({ usage: evaluator.options.usage })
-            )
+            return oops(command, block, nextBlock)(new UsageError({ usage: evaluator.options.usage }))
           }
         }
 
@@ -564,38 +486,23 @@ class InProcessExecutor implements Executor {
         if (usage && usage.strict) {
           // strict: command wants *us* to enforce conformance
           // required and optional parameters
-          const {
-            strict: cmd,
-            onlyEnforceOptions = false,
-            required = [],
-            oneof = [],
-            optional: _optional = []
-          } = usage
-          const optLikeOneOfs: IUsageRow[] = oneof.filter(
-            ({ command, name = command }) => name.charAt(0) === '-'
-          ) // some one-ofs might be of the form --foo
+          const { strict: cmd, onlyEnforceOptions = false, required = [], oneof = [], optional: _optional = [] } = usage
+          const optLikeOneOfs: IUsageRow[] = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
           const positionalConsumers = _optional.filter(
             ({ name, alias, consumesPositional }) =>
-              consumesPositional &&
-              (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)])
+              consumesPositional && (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)])
           )
-          const optional = builtInOptions
-            .concat(_optional)
-            .concat(optLikeOneOfs)
-          const positionalOptionals = optional.filter(
-            ({ positional }) => positional
-          )
+          const optional = builtInOptions.concat(_optional).concat(optLikeOneOfs)
+          const positionalOptionals = optional.filter(({ positional }) => positional)
           const nPositionalOptionals = positionalOptionals.length
 
           // just introducing a shorter variable name, here
           const args = argvNoOptions
           const nPositionalsConsumed = positionalConsumers.length
-          const nRequiredArgs =
-            required.length + (oneof.length > 0 ? 1 : 0) - nPositionalsConsumed
+          const nRequiredArgs = required.length + (oneof.length > 0 ? 1 : 0) - nPositionalsConsumed
           const optLikeActuals = optLikeOneOfs.filter(
             ({ name, alias = '' }) =>
-              parsedOptions.hasOwnProperty(unflag(name)) ||
-              parsedOptions.hasOwnProperty(unflag(alias))
+              parsedOptions.hasOwnProperty(unflag(name)) || parsedOptions.hasOwnProperty(unflag(alias))
           )
           const nOptLikeActuals = optLikeActuals.length
           const cmdArgsStart = args.indexOf(cmd)
@@ -611,12 +518,9 @@ class InProcessExecutor implements Executor {
 
             // should we enforce this option?
             const enforceThisOption =
-              onlyEnforceOptions === undefined ||
-              typeof onlyEnforceOptions === 'boolean'
+              onlyEnforceOptions === undefined || typeof onlyEnforceOptions === 'boolean'
                 ? true
-                : !!onlyEnforceOptions.find(
-                    _ => _ === `-${optionalArg}` || _ === `--${optionalArg}`
-                  )
+                : !!onlyEnforceOptions.find(_ => _ === `-${optionalArg}` || _ === `--${optionalArg}`)
 
             if (!enforceThisOption) {
               // then neither did the spec didn't mention anything about enforcement (!onlyEnforceOptions)
@@ -650,16 +554,11 @@ class InProcessExecutor implements Executor {
                 return oops(command, block, nextBlock)(err)
               }
             } else if (
-              (match.boolean &&
-                typeof parsedOptions[optionalArg] !== 'boolean') ||
+              (match.boolean && typeof parsedOptions[optionalArg] !== 'boolean') ||
               (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
               (match.booleanOK &&
-                !(
-                  typeof parsedOptions[optionalArg] === 'boolean' ||
-                  typeof parsedOptions[optionalArg] === 'string'
-                )) ||
-              (match.numeric &&
-                typeof parsedOptions[optionalArg] !== 'number') ||
+                !(typeof parsedOptions[optionalArg] === 'boolean' || typeof parsedOptions[optionalArg] === 'string')) ||
+              (match.numeric && typeof parsedOptions[optionalArg] !== 'number') ||
               (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
               (!match.boolean &&
                 !match.booleanOK &&
@@ -676,21 +575,13 @@ class InProcessExecutor implements Executor {
                   _ =>
                     _ === parsedOptions[optionalArg] ||
                     _ === '...' ||
-                    (match.allowedIsPrefixMatch &&
-                      parsedOptions[optionalArg].indexOf(_) === 0)
+                    (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)
                 ))
             ) {
               //
               // then the user passed an option, but of the wrong type
               //
-              debug(
-                'bad value for option',
-                optionalArg,
-                match,
-                parsedOptions,
-                args,
-                allFlags
-              )
+              debug('bad value for option', optionalArg, match, parsedOptions, args, allFlags)
 
               const expectedMessage = match.boolean
                 ? ', expected boolean'
@@ -701,14 +592,8 @@ class InProcessExecutor implements Executor {
                 : ''
 
               const message = `Bad value for option ${optionalArg}${expectedMessage}${
-                typeof parsedOptions[optionalArg] === 'boolean'
-                  ? ''
-                  : ', got ' + parsedOptions[optionalArg]
-              }${
-                match.allowed
-                  ? ' expected one of: ' + match.allowed.join(', ')
-                  : ''
-              }`
+                typeof parsedOptions[optionalArg] === 'boolean' ? '' : ', got ' + parsedOptions[optionalArg]
+              }${match.allowed ? ' expected one of: ' + match.allowed.join(', ') : ''}`
               const error = new UsageError({ message, usage })
               debug(message, match)
               error.code = 498
@@ -725,19 +610,10 @@ class InProcessExecutor implements Executor {
           //
           if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
             // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
-            if (
-              !(
-                nActualArgs >= nRequiredArgs &&
-                nActualArgs <= nRequiredArgs + nPositionalOptionals
-              )
-            ) {
+            if (!(nActualArgs >= nRequiredArgs && nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
-              const implicitIdx = required.findIndex(
-                ({ implicitOK }) => implicitOK !== undefined
-              )
-              const { currentSelection } = await import(
-                '../webapp/views/sidecar'
-              ) // FIXME
+              const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
+              const { currentSelection } = await import('../webapp/views/sidecar') // FIXME
               const selection = currentSelection(tab)
 
               let nActualArgsWithImplicit = nActualArgs
@@ -745,16 +621,12 @@ class InProcessExecutor implements Executor {
               if (
                 implicitIdx >= 0 &&
                 selection &&
-                required[implicitIdx].implicitOK.find(
-                  _ => _ === selection.type || _ === selection.prettyType
-                )
+                required[implicitIdx].implicitOK.find(_ => _ === selection.type || _ === selection.prettyType)
               ) {
                 nActualArgsWithImplicit++
 
                 // if implicit, maybe other required parameters aren't needed
-                const notNeededIfImplicit = required.filter(
-                  ({ notNeededIfImplicit }) => notNeededIfImplicit
-                )
+                const notNeededIfImplicit = required.filter(({ notNeededIfImplicit }) => notNeededIfImplicit)
                 nActualArgsWithImplicit += notNeededIfImplicit.length
               }
 
@@ -770,21 +642,10 @@ class InProcessExecutor implements Executor {
                     ? 'This command does not accept this number of arguments'
                     : `This command requires ${nRequiredArgs} parameter${
                         nRequiredArgs === 1 ? '' : 's'
-                      }, but you provided ${
-                        nActualArgsWithImplicit === 0
-                          ? 'none'
-                          : nActualArgsWithImplicit
-                      }`
+                      }, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
                 const err = new UsageError({ message, usage })
                 err.code = 497
-                debug(
-                  message,
-                  cmd,
-                  nActualArgs,
-                  nRequiredArgs,
-                  args,
-                  optLikeActuals
-                )
+                debug(message, cmd, nActualArgs, nRequiredArgs, args, optLikeActuals)
 
                 if (execOptions && execOptions.nested) {
                   debug('returning usage error')
@@ -806,47 +667,30 @@ class InProcessExecutor implements Executor {
                     implicitIdx,
                     cmdArgsStart + 1,
                     `/${activationPath.value}`,
-                    selection['sessionId'] || selection['ast']
-                      ? 'composition'
-                      : 'action'
+                    selection['sessionId'] || selection['ast'] ? 'composition' : 'action'
                   )
                 } else {
                   // ooh, then splice in the implicit parameter
                   args.splice(
                     implicitIdx,
                     cmdArgsStart + 1,
-                    selection.namespace
-                      ? `/${selection.namespace}/${selection.name}`
-                      : selection.name
+                    selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name
                   )
                 }
-                debug(
-                  'spliced in implicit argument',
-                  cmdArgsStart,
-                  implicitIdx,
-                  args
-                )
+                debug('spliced in implicit argument', cmdArgsStart, implicitIdx, args)
               }
             }
           }
         } /* strict usage model conformance checking */
 
-        if (
-          evaluator.options &&
-          !(await hasAuth()) &&
-          !evaluator.options.noAuthOk
-        ) {
+        if (evaluator.options && !(await hasAuth()) && !evaluator.options.noAuthOk) {
           debug('command requires auth, and we do not have it')
           const err = new Error('Command requires authentication')
           err['code'] = 403
           return oops(command, block, nextBlock)(err)
         }
 
-        if (
-          evaluator.options &&
-          evaluator.options.requiresLocal &&
-          !hasLocalAccess()
-        ) {
+        if (evaluator.options && evaluator.options.requiresLocal && !hasLocalAccess()) {
           debug('command does not work in a browser')
           const err = new Error('Command requires local access')
           err['code'] = 406 // http not acceptable
@@ -861,8 +705,7 @@ class InProcessExecutor implements Executor {
           isHeadless() &&
           !parsedOptions.cli &&
           !parsedOptions.help &&
-          ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) ||
-            (evaluator.options && evaluator.options.needsUI))
+          ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) || (evaluator.options && evaluator.options.needsUI))
         ) {
           import('../main/headless').then(({ createWindow }) =>
             createWindow(argv, evaluator.options.fullscreen, evaluator.options)
@@ -891,35 +734,21 @@ class InProcessExecutor implements Executor {
               execType: (execOptions && execOptions.type) || ExecType.TopLevel
             })
 
-            return currentEvaluatorImpl.apply(
-              commandUntrimmed,
+            return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
+              tab,
+              block: block || true,
+              nextBlock,
+              argv,
+              command,
               execOptions,
-              evaluator,
-              {
-                tab,
-                block: block || true,
-                nextBlock,
-                argv,
-                command,
-                execOptions,
-                argvNoOptions,
-                parsedOptions,
-                createOutputStream:
-                  execOptions.createOutputStream ||
-                  (() =>
-                    isHeadless()
-                      ? headlessStreamTo()
-                      : cli.streamTo(tab, block))
-              }
-            )
+              argvNoOptions,
+              parsedOptions,
+              createOutputStream:
+                execOptions.createOutputStream || (() => (isHeadless() ? headlessStreamTo() : cli.streamTo(tab, block)))
+            })
           })
           .then(response => {
-            if (
-              !execOptions.rawResponse &&
-              response &&
-              response.context &&
-              nextBlock
-            ) {
+            if (!execOptions.rawResponse && response && response.context && nextBlock) {
               // cli.setContextUI(response, nextBlock)
               return response.message
             } else {
@@ -944,9 +773,7 @@ class InProcessExecutor implements Executor {
             }
 
             if (response.verb === 'delete') {
-              const { maybeHideEntity } = await import(
-                '../webapp/views/sidecar'
-              ) // FIXME
+              const { maybeHideEntity } = await import('../webapp/views/sidecar') // FIXME
               if (maybeHideEntity(tab, response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
               }
@@ -966,37 +793,19 @@ class InProcessExecutor implements Executor {
             })
 
             // response=true means we are in charge of 'ok'
-            if (
-              nested ||
-              response.mode === 'prompt' ||
-              (block && block['_isFakeDom'])
-            ) {
+            if (nested || response.mode === 'prompt' || (block && block['_isFakeDom'])) {
               // the parent exec will deal with the repl
-              debug(
-                'passing control back to prompt processor or headless',
-                response,
-                commandUntrimmed
-              )
+              debug('passing control back to prompt processor or headless', response, commandUntrimmed)
               return Promise.resolve(response)
             } else {
               // we're the top-most exec, so deal with the repl!
               debug('displaying response')
-              const resultDom = block.querySelector(
-                '.repl-result'
-              ) as HTMLElement
+              const resultDom = block.querySelector('.repl-result') as HTMLElement
               return new Promise(resolve => {
                 cli
-                  .printResults(
-                    block,
-                    nextBlock,
-                    tab,
-                    resultDom,
-                    echo,
-                    execOptions,
-                    parsedOptions,
-                    command,
-                    evaluator
-                  )(response) // <--- the Print part of REPL
+                  .printResults(block, nextBlock, tab, resultDom, echo, execOptions, parsedOptions, command, evaluator)(
+                    response
+                  ) // <--- the Print part of REPL
                   .then(() => {
                     if (echo) {
                       // <-- create a new input, for the next iter of the Loop
@@ -1035,12 +844,7 @@ class InProcessExecutor implements Executor {
               throw err
             } else {
               // indicate that the command was NOT successfuly completed
-              err = evaluator.error(
-                command,
-                tab,
-                (execOptions && execOptions.type) || ExecType.TopLevel,
-                err
-              )
+              err = evaluator.error(command, tab, (execOptions && execOptions.type) || ExecType.TopLevel, err)
 
               if (!nested && !rethrowIt) {
                 debug('reporting command execution error to user via repl')
@@ -1050,9 +854,7 @@ class InProcessExecutor implements Executor {
                 debug('rethrowing command execution error')
                 if (reportIt) {
                   // maybe the caller also wants us to report it via the repl?
-                  debug(
-                    'also reporting command execution error to user via repl'
-                  )
+                  debug('also reporting command execution error to user via repl')
                   oops(command, block, nextBlock)(err)
                 }
                 throw err
@@ -1066,9 +868,7 @@ class InProcessExecutor implements Executor {
       if (isHeadless()) {
         try {
           debug('attempting to run the command graphically', e)
-          const command = commandUntrimmed
-            .trim()
-            .replace(patterns.commentLine, '')
+          const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
           const argv = split(command)
           await import('../main/spawn-electron').then(({ initElectron }) =>
             initElectron(argv, { forceUI: true }, true, { fullscreen: true })
@@ -1102,18 +902,10 @@ class InProcessExecutor implements Executor {
           oops(command, block, nextBlock)(e)
         } else {
           const cmd = cli.showHelp(command, blockForError, nextBlock, e)
-          const resultDom = blockForError.querySelector(
-            '.repl-result'
-          ) as HTMLElement
+          const resultDom = blockForError.querySelector('.repl-result') as HTMLElement
           return Promise.resolve(cmd)
             .then(cli.printResults(blockForError, nextBlock, tab, resultDom))
-            .then(
-              cli.installBlock(
-                blockForError.parentNode,
-                blockForError,
-                nextBlock
-              )
-            )
+            .then(cli.installBlock(blockForError.parentNode, blockForError, nextBlock))
         }
       })
     }
@@ -1126,10 +918,7 @@ class InProcessExecutor implements Executor {
  *
  */
 let currentExecutorImpl: Executor = new InProcessExecutor()
-export const exec = (
-  commandUntrimmed: string,
-  execOptions = emptyExecOptions()
-) => {
+export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions()) => {
   return currentExecutorImpl.exec(commandUntrimmed, execOptions)
 }
 
@@ -1137,10 +926,7 @@ export const exec = (
  * User hit enter in the REPL
  *
  */
-export const doEval = ({
-  block = cli.getCurrentBlock(),
-  prompt = cli.getPrompt(block)
-} = {}) => {
+export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(block) } = {}) => {
   const command = prompt.value.trim()
 
   if (block['completion']) {
@@ -1148,10 +934,7 @@ export const doEval = ({
     block['completion'](prompt.value)
   } else {
     // otherwise, this is a plain old eval, resulting from the user hitting Enter
-    return exec(
-      command,
-      new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt))
-    )
+    return exec(command, new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt)))
   }
 }
 
@@ -1201,13 +984,7 @@ export const iexec = (
   nextBlock?: HTMLElement
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-  return qexec(
-    command,
-    block,
-    contextChangeOK,
-    Object.assign({}, execOptions, { intentional: true }),
-    nextBlock
-  )
+  return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }
 
 /**
@@ -1215,12 +992,7 @@ export const iexec = (
  *
  */
 export const rexec = (command: string, execOptions = emptyExecOptions()) => {
-  return qexec(
-    command,
-    undefined,
-    undefined,
-    Object.assign({ raw: true }, execOptions)
-  )
+  return qexec(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
 }
 
 /**
@@ -1228,10 +1000,7 @@ export const rexec = (command: string, execOptions = emptyExecOptions()) => {
  *
  */
 export const pexec = (command: string, execOptions?: ExecOptions) => {
-  return exec(
-    command,
-    Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions)
-  )
+  return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions))
 }
 
 /**

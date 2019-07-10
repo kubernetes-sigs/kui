@@ -16,11 +16,7 @@
 
 import * as Debug from 'debug'
 
-import {
-  inBrowser,
-  isHeadless,
-  hasProxy
-} from '@kui-shell/core/core/capabilities'
+import { inBrowser, isHeadless, hasProxy } from '@kui-shell/core/core/capabilities'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
@@ -81,9 +77,7 @@ export const dispatchToShell = async ({
  */
 export const preload = commandTree => {
   if (inBrowser() && !hasProxy()) {
-    debug(
-      'skipping catchall registration: in browser and no remote proxy to support it'
-    )
+    debug('skipping catchall registration: in browser and no remote proxy to support it')
     return
   }
 

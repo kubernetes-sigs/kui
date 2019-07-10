@@ -93,17 +93,10 @@ const open = async (tab: Tab, filepath: string, hljs) => {
 
           let data: string | Element = fileContent.toString()
           let name = basename(filepath)
-          let packageName =
-            enclosingDirectory === '.' ? undefined : enclosingDirectory
+          let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
           if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
-            const { title, body } = await markdownify(
-              tab,
-              suffix,
-              data,
-              fullpath,
-              hljs
-            )
+            const { title, body } = await markdownify(tab, suffix, data, fullpath, hljs)
 
             data = body
 

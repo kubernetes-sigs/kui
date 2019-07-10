@@ -66,9 +66,7 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
-        .then(app =>
-          app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-        )
+        .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
         .then(ui.expectSubset(expectAnnotations))
         .catch(common.oops(this)))
 
@@ -79,9 +77,7 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(b))
-        .then(() =>
-          this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-        )
+        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
         .then(ui.expectStruct(expect))
         .catch(common.oops(this)))
 
@@ -101,9 +97,7 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(a, undefined, undefined, aPackage))
-        .then(app =>
-          app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`)
-        )
+        .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
         .then(ui.expectSubset(expectAnnotations))
         .catch(common.oops(this)))
   }
@@ -111,10 +105,7 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
   // COPY ACTION
   it('should create an action via let', () =>
     cli
-      .do(
-        `let ${actionName1} = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`,
-        this.app
-      )
+      .do(`let ${actionName1} = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -125,15 +116,10 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
   // COPY PACKAGED ACTION TO NON-PACKAGED ACTION
   it('should create a packaged action via let', () =>
     cli
-      .do(
-        `let ${packageName1}/${actionName2}.js = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`,
-        this.app
-      )
+      .do(`let ${packageName1}/${actionName2}.js = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(
-        sidecar.expectShowing(actionName2, undefined, undefined, packageName1)
-      )
+      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName1))
       .catch(common.oops(this)))
   cp(actionName2, actionName2b, packageName1)
   cp(actionName2, actionName2c, packageName1, undefined, 'copy')

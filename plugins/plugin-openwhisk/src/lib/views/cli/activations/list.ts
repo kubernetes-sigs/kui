@@ -72,11 +72,7 @@ const fetch = async (activationIds: string[]) => {
 const show = activation => () => {
   debug('show', activation)
 
-  if (
-    activation.logs &&
-    activation.logs.length === 1 &&
-    activation.logs[0].match(/^[0-9a-f]{32}$/)
-  ) {
+  if (activation.logs && activation.logs.length === 1 && activation.logs[0].match(/^[0-9a-f]{32}$/)) {
     // if log size == 1 and the log matches activation id regex
 
     // optimistically assume this is a session. the sesion get
@@ -95,11 +91,7 @@ const show = activation => () => {
 
 const findItemInAnnotations = (name, activation) => {
   // this function is for finding waitTime of initTime in activation annotations
-  if (
-    activation &&
-    activation.annotations &&
-    activation.annotations.find(item => item.key === name)
-  ) {
+  if (activation && activation.annotations && activation.annotations.find(item => item.key === name)) {
     return activation.annotations.find(item => item.key === name).value
   } else {
     return 0
@@ -125,11 +117,7 @@ const _render = args => {
   const currentRows = container.querySelectorAll('tr.log-line')
 
   // trim any extra rows
-  for (
-    let idx = 0;
-    idx < Math.min(currentRows.length, activationIds.length);
-    idx++
-  ) {
+  for (let idx = 0; idx < Math.min(currentRows.length, activationIds.length); idx++) {
     debug('showing', idx)
     currentRows[idx].classList.remove('hide')
   }
@@ -188,31 +176,17 @@ const _render = args => {
         })
 
   return Promise.all([
-    fetch(activationIds).then(activations =>
-      entity ? [entity, ...activations] : activations
-    ), // add entity to the front
-    parsedOptions &&
-      repl.qexec(
-        `wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`
-      )
+    fetch(activationIds).then(activations => (entity ? [entity, ...activations] : activations)), // add entity to the front
+    parsedOptions && repl.qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`)
   ]).then(([activations, count]) => {
     // duration of the activation. this will be helpful for
     // normalizing the bar dimensions
     const first = activations.length - 1
     const start = entity
       ? entity.start
-      : activations[first].start -
-        findItemInAnnotations('waitTime', activations[first])
-    const maxEnd = activations.reduce(
-      (max, activation) =>
-        Math.max(max, activation.end || activation.start + 1),
-      0
-    ) // the last one in the list might not have the highest end
-    const dur = Math.max(
-      1,
-      entity ? entity.end - entity.start : maxEnd - start,
-      maxEnd - start
-    )
+      : activations[first].start - findItemInAnnotations('waitTime', activations[first])
+    const maxEnd = activations.reduce((max, activation) => Math.max(max, activation.end || activation.start + 1), 0) // the last one in the list might not have the highest end
+    const dur = Math.max(1, entity ? entity.end - entity.start : maxEnd - start, maxEnd - start)
 
     let tgap = 0
     let gaps // eslint-disable-line prefer-const
@@ -229,9 +203,7 @@ const _render = args => {
         const activation = activations[idx]
         const previous = activations[idx + 1]
         const gap =
-          activation.start -
-          findItemInAnnotations('waitTime', activation) -
-          (previous.end || previous.start + 1)
+          activation.start - findItemInAnnotations('waitTime', activation) - (previous.end || previous.start + 1)
         if (gap > 0) {
           const ngap = gap / residualDur
           if (gap > 10000 || ngap > 0.05) {
@@ -283,28 +255,22 @@ const _render = args => {
       if (entity && idx === 0) line.classList.add('log-line-root')
 
       let cellIdx = 0
-      const nextCell = () =>
-        newLine ? line.insertCell(-1) : line.children[cellIdx++]
+      const nextCell = () => (newLine ? line.insertCell(-1) : line.children[cellIdx++])
 
       // column 1: activationId cell
       const id = nextCell()
-      const clicky = newLine
-        ? document.createElement('span')
-        : id.querySelector('.clickable')
+      const clicky = newLine ? document.createElement('span') : id.querySelector('.clickable')
       clicky.className = 'clickable'
       if (newLine) id.appendChild(clicky)
       id.className = 'log-field activationId'
       if (noCrop) id.classList.add('full-width')
-      clicky.innerText =
-        activation.originalActivationId || activation.activationId
+      clicky.innerText = activation.originalActivationId || activation.activationId
       id.setAttribute('data-activation-id', id.innerText)
       clicky.onclick = pip(show(activation))
 
       // column 2: name cell
       const name = nextCell()
-      const nameClick = newLine
-        ? document.createElement('span')
-        : name.querySelector('.clickable')
+      const nameClick = newLine ? document.createElement('span') : name.querySelector('.clickable')
       name.className = 'slightly-deemphasize log-field entity-name'
       nameClick.className = 'clickable'
       nameClick.innerText = activation.name
@@ -346,15 +312,11 @@ const _render = args => {
            } */
 
       // command to be executed when clicking on the entity name cell
-      const path =
-        activation.annotations &&
-        activation.annotations.find(({ key }) => key === 'path')
+      const path = activation.annotations && activation.annotations.find(({ key }) => key === 'path')
       const gridCommand = activation.sessionId
         ? `grid ${repl.encodeComponent(activation.name)}` // for apps, the activation.name field is the app name
         : !path
-        ? `grid ${repl.encodeComponent(
-            `/${activation.namespace}/${activation.name}`
-          )}` // triggers, at least, have no path annotation
+        ? `grid ${repl.encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
         : `grid ${repl.encodeComponent(`/${path.value}`)}`
 
       nameClick.onclick = pip(
@@ -364,13 +326,10 @@ const _render = args => {
 
       // column 3: duration cell
       const duration = nextCell()
-      duration.className =
-        'somewhat-smaller-text log-field log-field-right-align duration-field'
+      duration.className = 'somewhat-smaller-text log-field log-field-right-align duration-field'
       duration.classList.add(isSuccess ? 'green-text' : 'red-text')
       if (activation.end) {
-        duration.innerText = prettyPrintDuration(
-          activation.end - activation.start
-        )
+        duration.innerText = prettyPrintDuration(activation.end - activation.start)
       } else {
         // for trigger and rule, set duration to be 1ms. If duration is not set, qtip will show 'lasting undefined'
         duration.innerText = prettyPrintDuration(1)
@@ -391,12 +350,9 @@ const _render = args => {
         const code = document.createElement('code')
         code.classList.add('json')
         result.appendChild(code)
-        result.className =
-          'somewhat-smaller-text lighter-text log-field activation-result'
+        result.className = 'somewhat-smaller-text lighter-text log-field activation-result'
         if (activation.response) {
-          code.innerText = JSON.stringify(
-            activation.response.result || {}
-          ).substring(0, 40)
+          code.innerText = JSON.stringify(activation.response.result || {}).substring(0, 40)
           setTimeout(() => global['hljs'].highlightBlock(code), 0)
         }
       }
@@ -420,12 +376,7 @@ const _render = args => {
         bar.classList.add('log-line-bar')
         bar.classList.add(`is-success-${isSuccess}`)
         const left = normalize(activation.start + initTime, idx)
-        const right = normalize(
-          idx === 0
-            ? maxEnd
-            : activation.end || activation.start + initTime + 1,
-          idx
-        ) // handle rules and triggers as having dur=1
+        const right = normalize(idx === 0 ? maxEnd : activation.end || activation.start + initTime + 1, idx) // handle rules and triggers as having dur=1
         const width = right - left
 
         // on which side should we render the tooltip?
@@ -436,15 +387,10 @@ const _render = args => {
         bar.onclick = pip(show(activation))
         bar.setAttribute(
           'data-balloon',
-          prettyPrintDuration(
-            activation.end
-              ? activation.end - activation.start - initTime
-              : initTime
-          )
+          prettyPrintDuration(activation.end ? activation.end - activation.start - initTime : initTime)
         )
         bar.setAttribute('data-balloon-pos', balloonPos)
-        bar.onmouseover = () =>
-          legend.setAttribute('data-hover-type', 'execution-time')
+        bar.onmouseover = () => legend.setAttribute('data-hover-type', 'execution-time')
         bar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
         // container initialization bar
@@ -460,10 +406,8 @@ const _render = args => {
           initTimeBar.style.position = 'absolute'
           initTimeBar.classList.add('log-line-bar')
           initTimeBar.classList.add('is-initTime')
-          initTimeBar.onmouseover = () =>
-            legend.setAttribute('data-hover-type', 'container-initialization')
-          initTimeBar.onmouseout = () =>
-            legend.removeAttribute('data-hover-type')
+          initTimeBar.onmouseover = () => legend.setAttribute('data-hover-type', 'container-initialization')
+          initTimeBar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
           // activation can fail at init time - if that's the case, initTime === duration
           if (initTime === activation.duration) {
@@ -473,10 +417,7 @@ const _render = args => {
           }
 
           initTimeBar.onclick = pip(show(activation))
-          initTimeBar.setAttribute(
-            'data-balloon',
-            prettyPrintDuration(initTime)
-          )
+          initTimeBar.setAttribute('data-balloon', prettyPrintDuration(initTime))
           initTimeBar.setAttribute('data-balloon-pos', balloonPos)
         }
 
@@ -492,15 +433,10 @@ const _render = args => {
           waitTimeBar.classList.add('log-line-bar')
           waitTimeBar.classList.add('is-waitTime')
           waitTimeBar.onclick = pip(show(activation))
-          waitTimeBar.setAttribute(
-            'data-balloon',
-            prettyPrintDuration(waitTime)
-          )
+          waitTimeBar.setAttribute('data-balloon', prettyPrintDuration(waitTime))
           waitTimeBar.setAttribute('data-balloon-pos', balloonPos)
-          waitTimeBar.onmouseover = () =>
-            legend.setAttribute('data-hover-type', 'queueing-delays')
-          waitTimeBar.onmouseout = () =>
-            legend.removeAttribute('data-hover-type')
+          waitTimeBar.onmouseover = () => legend.setAttribute('data-hover-type', 'queueing-delays')
+          waitTimeBar.onmouseout = () => legend.removeAttribute('data-hover-type')
         }
 
         // here, we have to be careful to stack the bars in an order so that the tooltips will stack on top
@@ -519,13 +455,9 @@ const _render = args => {
       // column n: start cell
       if (showStart) {
         const start = nextCell()
-        const startInner = newLine
-          ? document.createElement('span')
-          : start.querySelector('span')
+        const startInner = newLine ? document.createElement('span') : start.querySelector('span')
         const previous = activations[idx - 1]
-        const previousStart =
-          previous &&
-          previous.start - findItemInAnnotations('waitTime', previous)
+        const previousStart = previous && previous.start - findItemInAnnotations('waitTime', previous)
         const time = prettyPrintTime(
           activation.start - findItemInAnnotations('waitTime', activation),
           'short',
@@ -582,25 +514,23 @@ const _render = args => {
             balloonPos: 'up-left'
           }
         ]
-        buttons.forEach(
-          ({ command, icon, balloon, balloonPos = 'up-left' }) => {
-            const buttonContainer = document.createElement('span')
-            const button = document.createElement('i')
+        buttons.forEach(({ command, icon, balloon, balloonPos = 'up-left' }) => {
+          const buttonContainer = document.createElement('span')
+          const button = document.createElement('i')
 
-            leftButtons.appendChild(buttonContainer)
+          leftButtons.appendChild(buttonContainer)
 
-            buttonContainer.className = 'graphical-icon'
-            buttonContainer.appendChild(button)
-            buttonContainer.setAttribute('data-balloon', balloon)
-            buttonContainer.setAttribute('data-balloon-pos', balloonPos)
+          buttonContainer.className = 'graphical-icon'
+          buttonContainer.appendChild(button)
+          buttonContainer.setAttribute('data-balloon', balloon)
+          buttonContainer.setAttribute('data-balloon-pos', balloonPos)
 
-            button.className = icon
-            button.classList.add('clickable')
+          button.className = icon
+          button.classList.add('clickable')
 
-            buttonContainer.setAttribute('data-button-command', command)
-            buttonContainer.onclick = () => repl.pexec(command)
-          }
-        )
+          buttonContainer.setAttribute('data-button-command', command)
+          buttonContainer.onclick = () => repl.pexec(command)
+        })
 
         // description of current page
         description.className = 'list-paginator-description'
@@ -609,19 +539,13 @@ const _render = args => {
         // forward and back buttons
         rightButtons.appendChild(prev)
         rightButtons.appendChild(next)
-        prev.className =
-          'list-paginator-button list-paginator-button-prev fas fa-chevron-left'
-        next.className =
-          'list-paginator-button list-paginator-button-next fas fa-chevron-right'
+        prev.className = 'list-paginator-button list-paginator-button-prev fas fa-chevron-left'
+        next.className = 'list-paginator-button list-paginator-button-next fas fa-chevron-right'
       } else {
         const paginator = container.querySelector('.list-paginator')
         description = paginator.querySelector('.list-paginator-description')
-        prev = paginator.querySelector(
-          '.list-paginator-button.list-paginator-button-prev'
-        )
-        next = paginator.querySelector(
-          '.list-paginator-button.list-paginator-button-next'
-        )
+        prev = paginator.querySelector('.list-paginator-button.list-paginator-button-prev')
+        next = paginator.querySelector('.list-paginator-button.list-paginator-button-next')
       }
 
       // paginator description text
@@ -629,39 +553,34 @@ const _render = args => {
         activations.length > 0 && !activations[0].sessionId
           ? ` of ${count < 10000 ? count : count.toLocaleString()}`
           : ''
-      description.innerText = `${skip + 1}\u2013${skip +
-        activationIds.length} items${ofNText}`
+      description.innerText = `${skip + 1}\u2013${skip + activationIds.length} items${ofNText}`
 
       // pagination click handlers
       const goto = skip => () => {
-        const listCommand = activations.every(
-          activation => activation.sessionId !== undefined
-        )
+        const listCommand = activations.every(activation => activation.sessionId !== undefined)
           ? 'session list'
           : 'wsk activation list'
-        return repl
-          .qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
-          .then(activationIds => {
-            if (activationIds.length === 0) {
-              // we're at the end! disable the next button
-              next.classList.add('list-paginator-button-disabled')
-              delete next.onclick
-            } else {
-              _render({
-                activationIds,
-                container,
-                noCrop,
-                noPip,
-                showResult,
-                showStart,
-                showTimeline,
-                skip,
-                limit,
-                tab,
-                parsedOptions
-              })
-            }
-          })
+        return repl.qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`).then(activationIds => {
+          if (activationIds.length === 0) {
+            // we're at the end! disable the next button
+            next.classList.add('list-paginator-button-disabled')
+            delete next.onclick
+          } else {
+            _render({
+              activationIds,
+              container,
+              noCrop,
+              noPip,
+              showResult,
+              showStart,
+              showTimeline,
+              skip,
+              limit,
+              tab,
+              parsedOptions
+            })
+          }
+        })
       }
       if (skip === 0) {
         // disable the back button when we're on the first page
@@ -743,8 +662,6 @@ export const renderActivationListView = (
 
   if (activations.length > 0) {
     ;(container.parentNode as HTMLElement).classList.add('result-as-table')
-    ;(container.parentNode as HTMLElement).classList.add(
-      'result-as-table-full-width'
-    )
+    ;(container.parentNode as HTMLElement).classList.add('result-as-table-full-width')
   }
 }

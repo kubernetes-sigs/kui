@@ -42,20 +42,12 @@ export interface Activation {
   response: ActivationResponse
 }
 
-export function isActivationSpec(
-  response: Activation | EntitySpec
-): response is Activation {
+export function isActivationSpec(response: Activation | EntitySpec): response is Activation {
   const activation = response as Activation
-  return (
-    activation.response !== undefined && activation.activationId !== undefined
-  )
+  return activation.response !== undefined && activation.activationId !== undefined
 }
 
-export function isAsyncActivationSpec(
-  response: Activation | EntitySpec
-): response is Activation {
+export function isAsyncActivationSpec(response: Activation | EntitySpec): response is Activation {
   const activation = response as Activation
-  return (
-    activation.response === undefined && activation.activationId !== undefined
-  )
+  return activation.response === undefined && activation.activationId !== undefined
 }

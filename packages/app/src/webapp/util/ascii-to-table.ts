@@ -29,11 +29,7 @@ interface Pair {
   key: string
   value: string
 }
-const split = (
-  str: string,
-  splits: number[],
-  headerCells?: string[]
-): Pair[] => {
+const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
@@ -46,9 +42,7 @@ const split = (
  * Find the column splits
  *
  */
-export const preprocessTable = (
-  raw: string[]
-): { rows?: Pair[][]; trailingString?: string }[] => {
+export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingString?: string }[] => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
@@ -64,8 +58,7 @@ export const preprocessTable = (
     const columnStarts: number[] = []
 
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
-      const { offset, prefix } =
-        idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
+      const { offset, prefix } = idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
 
       const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
       if (newJdx < 0) {
@@ -107,8 +100,7 @@ export const preprocessTable = (
       })
       debug('endOfTable', endOfTable, possibleRows)
 
-      const rows =
-        endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
+      const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
       const preprocessed = rows
         .map(line => {
@@ -117,8 +109,7 @@ export const preprocessTable = (
         .filter(x => x)
       debug('preprocessed', preprocessed)
 
-      const trailingString =
-        endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
+      const trailingString = endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
       debug('trailingString', trailingString)
 
       return {
@@ -309,13 +300,9 @@ export const formatTable = (
   const drilldownFormat = isKube && drilldownVerb === 'get' ? '-o yaml' : ''
 
   const drilldownNamespace =
-    options.n || options.namespace
-      ? `-n ${repl.encodeComponent(options.n || options.namespace)}`
-      : ''
+    options.n || options.namespace ? `-n ${repl.encodeComponent(options.n || options.namespace)}` : ''
 
-  const config = options.config
-    ? `--config ${repl.encodeComponent(options.config)}`
-    : ''
+  const config = options.config ? `--config ${repl.encodeComponent(options.config)}` : ''
 
   const drilldownKind = nameSplit => {
     if (drilldownVerb === 'get') {
@@ -329,22 +316,12 @@ export const formatTable = (
   }
 
   // maximum column count across all rows
-  const nameColumnIdx = Math.max(
-    0,
-    lines[0].findIndex(({ key }) => key === 'NAME')
-  )
-  const namespaceColumnIdx = lines[0].findIndex(
-    ({ key }) => key === 'NAMESPACE'
-  )
-  const maxColumns = lines.reduce(
-    (max, columns) => Math.max(max, columns.length),
-    0
-  )
+  const nameColumnIdx = Math.max(0, lines[0].findIndex(({ key }) => key === 'NAME'))
+  const namespaceColumnIdx = lines[0].findIndex(({ key }) => key === 'NAMESPACE')
+  const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
 
   // e.g. Name: -> NAME
-  const keyForFirstColumn = lines[0][nameColumnIdx].key
-    .replace(/:/g, '')
-    .toUpperCase()
+  const keyForFirstColumn = lines[0][nameColumnIdx].key.replace(/:/g, '').toUpperCase()
 
   const allRows: Row[] = lines.map((columns, idx) => {
     const name = columns[nameColumnIdx].value
@@ -352,8 +329,7 @@ export const formatTable = (
     const nameForDisplay = columns[0].value
     const nameForDrilldown = nameSplit[1] || name
     const css = ''
-    const firstColumnCSS =
-      idx === 0 || columns[0].key !== 'CURRENT' ? css : 'selected-entity'
+    const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT' ? css : 'selected-entity'
 
     const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
     const rowKey = columns[0].key
@@ -377,9 +353,7 @@ export const formatTable = (
       idx === 0
         ? false
         : drilldownVerb
-        ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(
-            nameSplit
-          )} ${repl.encodeComponent(
+        ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(
             nameForDrilldown
           )} ${drilldownFormat} ${ns} ${config}`
         : false
@@ -392,9 +366,7 @@ export const formatTable = (
         onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
         outerCSS:
           outerCSSForKey[key] +
-          (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key)
-            ? ''
-            : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
+          (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
         css:
           css +
           (column.length > 20 ? ' pretty-wide' : '') +
@@ -402,16 +374,14 @@ export const formatTable = (
           ((idx > 0 && cssForKey[key]) || '') +
           ' ' +
           (cssForValue[column] || ''),
-        value:
-          idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
+        value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
       }))
       .concat(fillTo(columns.length, maxColumns))
 
     const row: Row = {
       key: keyForFirstColumn,
       name: nameForDisplay,
-      fontawesome:
-        idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
+      fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
       onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
       css: firstColumnCSS,
       rowCSS,

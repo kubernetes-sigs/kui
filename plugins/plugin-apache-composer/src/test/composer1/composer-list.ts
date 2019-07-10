@@ -21,9 +21,7 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { dirname } from 'path'
 const cli = ui.cli
 const sidecar = ui.sidecar
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-apache-composer/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const seqName1 = 'seq1'
 const seqName2 = 'seq2'
@@ -116,9 +114,7 @@ describe('Use the app list command to list the invokeable compositions', functio
           expect: `ppp/${seqName2}`
         })
       )
-      .then(selector =>
-        this.app.client.click(`${selector} .entity-name.clickable`)
-      )
+      .then(selector => this.app.client.click(`${selector} .entity-name.clickable`))
       .then(() => this.app)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName2, undefined, undefined, 'ppp'))

@@ -46,9 +46,7 @@ describe('openwhisk host tests', function(this: common.ISuite) {
   // if the user hits return, we want the operation to be cancelled
   // see shell issue #192
   it('should auto-cancel when using prefilled content', () =>
-    cli
-      .do(`wsk host set <your_api_host>`, this.app)
-      .then(cli.expectError(0, 'Operation cancelled')))
+    cli.do(`wsk host set <your_api_host>`, this.app).then(cli.expectError(0, 'Operation cancelled')))
 
   it(`should restore host to original setting: ${openwhisk.apihost}`, () =>
     cli

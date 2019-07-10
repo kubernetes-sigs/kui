@@ -21,10 +21,5 @@ import shortcuts from './lib/cmds/shortcuts'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 export default async (commandTree: CommandRegistrar) => {
-  return Promise.all([
-    list(commandTree),
-    get(commandTree),
-    play(commandTree),
-    shortcuts(commandTree)
-  ])
+  return Promise.all([list(commandTree), get(commandTree), play(commandTree), shortcuts(commandTree)])
 }

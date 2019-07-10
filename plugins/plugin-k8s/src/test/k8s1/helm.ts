@@ -18,11 +18,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
 
-import {
-  createNS,
-  allocateNS,
-  deleteNS
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 describe('helm commands', function(this: common.ISuite) {
   before(common.before(this))
@@ -51,23 +47,13 @@ describe('helm commands', function(this: common.ISuite) {
       .then(async res => {
         await cli.expectOKWithAny(res)
 
-        const table = await this.app.client.getText(
-          `${selectors.OUTPUT_N(res.count)} .result-table-title`
-        )
+        const table = await this.app.client.getText(`${selectors.OUTPUT_N(res.count)} .result-table-title`)
         assert.strict.equal(table.length, 6)
 
-        const text = await this.app.client.getText(
-          `${selectors.OUTPUT_N(res.count)} .streaming-output`
-        )
-        assert.ok(
-          Array.isArray(text),
-          'expect more than one section of streaming output'
-        )
+        const text = await this.app.client.getText(`${selectors.OUTPUT_N(res.count)} .streaming-output`)
+        assert.ok(Array.isArray(text), 'expect more than one section of streaming output')
         if (Array.isArray(text)) {
-          assert.ok(
-            text.find(x => x && x.includes('NOTES:')),
-            'expect a NOTES section of streaming output'
-          )
+          assert.ok(text.find(x => x && x.includes('NOTES:')), 'expect a NOTES section of streaming output')
           assert.ok(
             text.find(x => x && x.includes('LAST DEPLOYED:')),
             'expect a LAST DEPLOYED section of streaming output'

@@ -25,9 +25,7 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
 
 import { dirname } from 'path'
 const { cli, sidecar } = ui
-const ROOT = dirname(
-  require.resolve('@kui-shell/plugin-openwhisk/tests/package.json')
-)
+const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = `foo1-${new Date().getTime()}`
 const actionName2 = `foo2-${new Date().getTime()}`
@@ -71,19 +69,8 @@ localDescribe('wsk activation get --last', function(this: common.ISuite) {
           .do(`wsk activation get --last`, this.app)
           .then(cli.expectOK)
           .then(sidecar.expectOpen)
-          .then(
-            sidecar.expectShowing(
-              actionName1,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              500
-            )
-          )
-          .then(() =>
-            this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT)
-          )
+          .then(sidecar.expectShowing(actionName1, undefined, undefined, undefined, undefined, 500))
+          .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
           .then(ui.expectStruct({ name: 'Step1 lastTestIPromise' }))
           .then(() => true)
           .catch(() => false)

@@ -60,9 +60,7 @@ localDescribe('History', function(this: ISuite) {
     try {
       const res = await cli.do('history 5 ls', this.app)
       const N = await cli.expectOKWithCustom({ passthrough: true })(res)
-      const selector = `${ui.selectors.LIST_RESULTS_N(
-        N
-      )}:first-child .entity-name`
+      const selector = `${ui.selectors.LIST_RESULTS_N(N)}:first-child .entity-name`
       await this.app.client.click(selector)
       return cli.expectOKWith('README.md')({ app: this.app, count: N + 1 })
     } catch (err) {

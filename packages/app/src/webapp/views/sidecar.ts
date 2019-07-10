@@ -31,12 +31,7 @@ import { keys } from '../keys'
 import { ShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
-import {
-  MetadataBearing,
-  isMetadataBearing,
-  EntitySpec,
-  Entity
-} from '../../models/entity'
+import { MetadataBearing, isMetadataBearing, EntitySpec, Entity } from '../../models/entity'
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
 
@@ -130,9 +125,7 @@ export const maybeHideEntity = (tab: Tab, entity: EntitySpec): boolean => {
   const sidecar = getSidecar(tab)
 
   const entityMatchesSelection =
-    sidecar.entity &&
-    sidecar.entity.name === entity.name &&
-    sidecar.entity.namespace === entity.namespace
+    sidecar.entity && sidecar.entity.name === entity.name && sidecar.entity.namespace === entity.namespace
 
   debug('maybeHideEntity', entityMatchesSelection, entity, sidecar.entity)
   if (entityMatchesSelection) {
@@ -249,9 +242,7 @@ export const renderField = async (
 
         try {
           const timestamp = new Date(match[1])
-          date.appendChild(
-            prettyPrintTime(timestamp, 'short', previousTimestamp)
-          )
+          date.appendChild(prettyPrintTime(timestamp, 'short', previousTimestamp))
           previousTimestamp = timestamp
         } catch (e) {
           date.innerText = match[1]
@@ -277,9 +268,7 @@ export const renderField = async (
         lineDom.innerText = logLine
       } else if (typeof logLine === 'object') {
         const code = document.createElement('code')
-        code.appendChild(
-          document.createTextNode(JSON.stringify(logLine, undefined, 2))
-        )
+        code.appendChild(document.createTextNode(JSON.stringify(logLine, undefined, 2)))
         lineDom.appendChild(code)
         setTimeout(() => hljs.highlightBlock(code), 0)
       } else {
@@ -369,44 +358,28 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
 export interface MetadataBearingByReference extends CustomSpec {
   resource: MetadataBearing
 }
-export function isMetadataBearingByReference(
-  spec: Entity
-): spec is MetadataBearingByReference {
+export function isMetadataBearingByReference(spec: Entity): spec is MetadataBearingByReference {
   const ref = spec as MetadataBearingByReference
-  return (
-    ref !== undefined &&
-    ref.resource !== undefined &&
-    isMetadataBearing(ref.resource)
-  )
+  return ref !== undefined && ref.resource !== undefined && isMetadataBearing(ref.resource)
 }
 
 export function isCustomSpec(entity: Entity): entity is CustomSpec {
   const custom = entity as CustomSpec
-  return (
-    custom !== undefined &&
-    (custom.type === 'custom' || custom.renderAs === 'custom')
-  )
+  return custom !== undefined && (custom.type === 'custom' || custom.renderAs === 'custom')
 }
 function isPromise<T>(content: CustomContent): content is Promise<T> {
   const promise = content as Promise<T>
   return !!promise.then
 }
 function isHTML(content: CustomContent): content is HTMLElement {
-  return (
-    typeof content !== 'string' &&
-    (content as HTMLElement).nodeName !== undefined
-  )
+  return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
 }
 
 /**
  * Ensure that we are in sidecar maximization mode
  *
  */
-export const setMaximization = (
-  tab: Tab,
-  op = 'add',
-  cause: MaximizationCause = 'default'
-) => {
+export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause = 'default') => {
   if (document.body.classList.contains('subwindow')) {
     document.body.classList[op]('sidecar-full-screen')
     document.body.classList[op]('sidecar-visible')
@@ -435,9 +408,7 @@ export const linkify = (dom: Element): void => {
     if (attr.innerText.indexOf('http') === 0) {
       const link = document.createElement('a')
       link.href = attr.innerText
-      link.innerText = attr.innerText.substring(
-        attr.innerText.lastIndexOf('/') + 1
-      )
+      link.innerText = attr.innerText.substring(attr.innerText.lastIndexOf('/') + 1)
       link.target = '_blank'
       attr.innerText = ''
       attr.appendChild(link)
@@ -447,15 +418,8 @@ export const linkify = (dom: Element): void => {
 
 export const presentAs = (tab: Tab, presentation?: Presentation) => {
   if (presentation || presentation === Presentation.Default) {
-    document.body.setAttribute(
-      'data-presentation',
-      Presentation[presentation].toString()
-    )
-    if (
-      !isPopup() &&
-      presentation === Presentation.Default &&
-      tab.getAttribute('maximization-cause') !== 'user'
-    ) {
+    document.body.setAttribute('data-presentation', Presentation[presentation].toString())
+    if (!isPopup() && presentation === Presentation.Default && tab.getAttribute('maximization-cause') !== 'user') {
       setMaximization(tab, 'remove')
     }
   } else {
@@ -466,11 +430,7 @@ export const presentAs = (tab: Tab, presentation?: Presentation) => {
 export const addBadge = (
   tab: Tab,
   badgeText: Badge,
-  {
-    css,
-    onclick,
-    badgesDom = new DefaultBadgeOptions(tab).badgesDom
-  }: BadgeOptions = new DefaultBadgeOptions(tab)
+  { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: BadgeOptions = new DefaultBadgeOptions(tab)
 ) => {
   debug('addBadge', badgeText, badgesDom)
 
@@ -530,20 +490,14 @@ export const clearBadges = (tab: Tab) => {
  * If the entity has a version attribute, then render it
  *
  */
-export const addVersionBadge = (
-  tab: Tab,
-  entity: EntitySpec,
-  { clear = false, badgesDom = undefined } = {}
-) => {
+export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, badgesDom = undefined } = {}) => {
   if (clear) {
     clearBadges(tab)
   }
   if (entity.version) {
-    addBadge(
-      tab,
-      /^v/.test(entity.version) ? entity.version : `v${entity.version}`,
-      { badgesDom }
-    ).classList.add('version')
+    addBadge(tab, /^v/.test(entity.version) ? entity.version : `v${entity.version}`, { badgesDom }).classList.add(
+      'version'
+    )
   }
 }
 
@@ -575,9 +529,7 @@ const call = async (spec: Formattable): Promise<string | HTMLElement> => {
   } else if (!isFormatter(spec)) {
     return Promise.resolve(spec)
   } else {
-    const provider = await import(
-      `@kui-shell/plugin-${spec.plugin}/${spec.module}`
-    )
+    const provider = await import(`@kui-shell/plugin-${spec.plugin}/${spec.module}`)
     return provider[spec.operation](spec.parameters)
   }
 }
@@ -586,10 +538,7 @@ const call = async (spec: Formattable): Promise<string | HTMLElement> => {
  * Add view name to the sidecar header "icon text"
  *
  */
-export const addSidecarHeaderIconText = (
-  viewName: string,
-  sidecar: HTMLElement
-) => {
+export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement) => {
   debug('addSidecarHeaderIconText', viewName)
   const iconDom = element('.sidecar-header-icon', sidecar)
 
@@ -610,11 +559,8 @@ export const addSidecarHeaderIconText = (
 
 /** format the creation time of a resource */
 const createdOn = (resource: MetadataBearing): HTMLElement => {
-  const startTime =
-    /* resource.status && resource.status.startTime || */ resource.metadata
-      .creationTimestamp
-  const prefixText =
-    /* resource.status && resource.status.startTime ? 'Started on ' : */ 'Created on '
+  const startTime = /* resource.status && resource.status.startTime || */ resource.metadata.creationTimestamp
+  const prefixText = /* resource.status && resource.status.startTime ? 'Started on ' : */ 'Created on '
 
   if (!startTime) {
     return
@@ -649,22 +595,13 @@ export const addNameToSidecarHeader = async (
   subtext?: Formattable,
   entity?: EntitySpec | CustomSpec
 ) => {
-  debug(
-    'addNameToSidecarHeader',
-    name,
-    isMetadataBearingByReference(entity),
-    entity
-  )
+  debug('addNameToSidecarHeader', name, isMetadataBearingByReference(entity), entity)
 
   // maybe entity.content is a metadat-bearing entity that we can
   // mine for identifying characteristics
-  const metadataBearer = isMetadataBearingByReference(entity)
-    ? entity.resource
-    : isMetadataBearing(entity) && entity
+  const metadataBearer = isMetadataBearingByReference(entity) ? entity.resource : isMetadataBearing(entity) && entity
   if (metadataBearer) {
-    const maybeName =
-      metadataBearer.spec &&
-      (metadataBearer.spec.displayName || metadataBearer.metadata.name)
+    const maybeName = metadataBearer.spec && (metadataBearer.spec.displayName || metadataBearer.metadata.name)
     if (maybeName) {
       name = maybeName
     }
@@ -692,9 +629,7 @@ export const addNameToSidecarHeader = async (
   if (isCustomSpec(entity) && entity.isREPL) {
     sidecar.querySelector('.sidecar-header-text').classList.add('is-repl-like')
   } else {
-    sidecar
-      .querySelector('.sidecar-header-text')
-      .classList.remove('is-repl-like')
+    sidecar.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
   }
 
   if (typeof name === 'string') {
@@ -721,10 +656,7 @@ export const addNameToSidecarHeader = async (
   addSidecarHeaderIconText(viewName, sidecar)
 
   if (subtext) {
-    const sub = element(
-      '.sidecar-header-secondary-content .custom-header-content',
-      sidecar
-    )
+    const sub = element('.sidecar-header-secondary-content .custom-header-content', sidecar)
     removeAllDomChildren(sub)
 
     const text = await Promise.resolve(call(subtext))
@@ -746,12 +678,7 @@ export const isFullscreen = (tab: Tab) => {
   return tab.classList.contains('sidecar-full-screen')
 }
 
-export const showCustom = async (
-  tab: Tab,
-  custom: CustomSpec,
-  options?: ExecOptions,
-  resultDom?: Element
-) => {
+export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
   if (!custom || !custom.content) return
   debug('showCustom', custom, options, resultDom)
 
@@ -808,9 +735,7 @@ export const showCustom = async (
   } else {
     // plugin will control some headers; it tell us which it wants us to control
     custom.controlHeaders.forEach((_: string) => {
-      const customHeaders = sidecar.querySelectorAll(
-        `${_} .custom-header-content`
-      )
+      const customHeaders = sidecar.querySelectorAll(`${_} .custom-header-content`)
       for (let idx = 0; idx < customHeaders.length; idx++) {
         removeAllDomChildren(customHeaders[idx])
       }
@@ -824,10 +749,7 @@ export const showCustom = async (
   const modes = custom.modes
   if (!options || !options.leaveBottomStripeAlone) {
     addModeButtons(tab, modes, custom, options)
-    sidecar.setAttribute(
-      'class',
-      `${sidecar.getAttribute('data-base-class')} custom-content`
-    )
+    sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
     setVisibleClass(sidecar)
   } else {
     sidecar.classList.add('custom-content')
@@ -844,9 +766,7 @@ export const showCustom = async (
     })
   }
 
-  const badgesDomContainer = sidecar.querySelector(
-    '.header-right-bits .custom-header-content'
-  )
+  const badgesDomContainer = sidecar.querySelector('.header-right-bits .custom-header-content')
   let badgesDom = badgesDomContainer.querySelector('.badges')
   if (!badgesDom) {
     badgesDom = document.createElement('span')
@@ -888,17 +808,13 @@ export const showCustom = async (
   }
   if (isMetadataBearingByReference(custom)) {
     const badgeOptions: BadgeOptions = {
-      badgesDom: sidecar.querySelector(
-        '.sidecar-header .custom-header-content .badges'
-      )
+      badgesDom: sidecar.querySelector('.sidecar-header .custom-header-content .badges')
     }
     addRelevantBadges(tab, custom, badgeOptions)
   }
 
   const replView = tab.querySelector('.repl')
-  replView.className = `sidecar-visible ${(
-    replView.getAttribute('class') || ''
-  ).replace(/sidecar-visible/g, '')}`
+  replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
   const container = resultDom || sidecar.querySelector('.custom-content')
   removeAllDomChildren(container)
@@ -907,9 +823,7 @@ export const showCustom = async (
     container.appendChild(await custom.content)
   } else if (custom.contentType || custom.contentTypeProjection) {
     // we were asked ot project out one specific field
-    const projection = custom.contentTypeProjection
-      ? custom.content[custom.contentTypeProjection]
-      : custom.content
+    const projection = custom.contentTypeProjection ? custom.content[custom.contentTypeProjection] : custom.content
 
     if (projection.nodeName) {
       // then its already a DOM
@@ -919,14 +833,10 @@ export const showCustom = async (
       if (tryToUseEditor) {
         try {
           // const { edit, IEditorEntity } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
-          const { edit } = await import(
-            '@kui-shell/plugin-editor/lib/cmds/edit'
-          )
+          const { edit } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
           debug('successfully loaded editor', custom)
 
-          const metadataBearer = isMetadataBearingByReference(custom)
-            ? custom.resource
-            : custom
+          const metadataBearer = isMetadataBearingByReference(custom) ? custom.resource : custom
 
           const entity /*: IEditorEntity */ = {
             type: custom.prettyType,
@@ -937,10 +847,7 @@ export const showCustom = async (
             annotations: [],
             exec: {
               kind: custom.contentType,
-              code:
-                typeof projection !== 'string'
-                  ? JSON.stringify(projection, undefined, 2)
-                  : projection
+              code: typeof projection !== 'string' ? JSON.stringify(projection, undefined, 2) : projection
             }
           }
 
@@ -1008,11 +915,7 @@ interface HeaderUpdate {
   name?: string
   packageName?: string
 }
-export const updateSidecarHeader = (
-  tab: Tab,
-  update: HeaderUpdate,
-  sidecar = getSidecar(tab)
-) => {
+export const updateSidecarHeader = (tab: Tab, update: HeaderUpdate, sidecar = getSidecar(tab)) => {
   const nameDom = sidecar.querySelector('.sidecar-header-name-content')
 
   if (update.name) {
@@ -1049,18 +952,11 @@ const setVisible = (sidecar: Sidecar) => {
   setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 600)
 }
 
-export const show = (
-  tab: Tab,
-  block?: HTMLElement,
-  nextBlock?: HTMLElement
-) => {
+export const show = (tab: Tab, block?: HTMLElement, nextBlock?: HTMLElement) => {
   debug('show')
 
   const sidecar = getSidecar(tab)
-  if (
-    currentSelection(tab) ||
-    sidecar.className.indexOf('custom-content') >= 0
-  ) {
+  if (currentSelection(tab) || sidecar.className.indexOf('custom-content') >= 0) {
     setVisible(sidecar)
     return true
   } else if (block && nextBlock) {
@@ -1154,20 +1050,14 @@ export const showGenericEntity = (
   if (!options || options.echo !== false) sidecar.entity = entity
   sidecar.setAttribute(
     'class',
-    `${sidecar.getAttribute('data-base-class')} entity-is-${
-      entity.prettyType
-    } entity-is-${entity.type}`
+    `${sidecar.getAttribute('data-base-class')} entity-is-${entity.prettyType} entity-is-${entity.type}`
   )
   setVisibleClass(sidecar)
 
   const replView = tab.querySelector('.repl')
-  replView.className = `sidecar-visible ${(
-    replView.getAttribute('class') || ''
-  ).replace(/sidecar-visible/g, '')}`
+  replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
-  const viewProviderDesiresFullscreen = document.body.classList.contains(
-    'subwindow'
-  )
+  const viewProviderDesiresFullscreen = document.body.classList.contains('subwindow')
   if (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab)) {
     toggleMaximization(tab)
     presentAs(tab, Presentation.SidecarFullscreen)
@@ -1179,13 +1069,7 @@ export const showGenericEntity = (
   // the name of the entity, for the header
   const viewName = entity.prettyType || entity.type
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const nameDom = addNameToSidecarHeader(
-    sidecar,
-    entity.name,
-    entity.packageName,
-    undefined,
-    viewName
-  )
+  const nameDom = addNameToSidecarHeader(sidecar, entity.name, entity.packageName, undefined, viewName)
 
   clearBadges(tab)
   addVersionBadge(tab, entity)
@@ -1204,10 +1088,7 @@ export type ISidecarViewHandler = (
   options: ShowOptions
 ) => void
 const registeredEntityViews = {}
-export const registerEntityView = (
-  kind: string,
-  handler: ISidecarViewHandler
-) => {
+export const registerEntityView = (kind: string, handler: ISidecarViewHandler) => {
   registeredEntityViews[kind] = handler
 }
 
@@ -1231,11 +1112,7 @@ export const showEntity = (
 
   const renderer = registeredEntityViews[entity.type || entity.kind]
   if (renderer) {
-    debug(
-      'dispatching to registered view handler %s',
-      entity.type || entity.kind,
-      renderer
-    )
+    debug('dispatching to registered view handler %s', entity.type || entity.kind, renderer)
     return renderer(tab, entity, sidecar, options)
   } else {
     try {
@@ -1265,10 +1142,7 @@ export const init = async () => {
 
   // command-left go back
   document.addEventListener('keydown', async (event: KeyboardEvent) => {
-    if (
-      event.keyCode === keys.LEFT_ARROW &&
-      (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))
-    ) {
+    if (event.keyCode === keys.LEFT_ARROW && (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))) {
       const tab = getTabFromTarget(event.srcElement)
       const back = bottomStripeCSS.backButton(tab)
       const clickEvent = document.createEvent('Events')

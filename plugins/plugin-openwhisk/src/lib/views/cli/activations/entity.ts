@@ -22,10 +22,7 @@ import { pexec } from '@kui-shell/core/core/repl'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
-import {
-  Activation,
-  isAsyncActivationSpec
-} from '../../../models/openwhisk-entity'
+import { Activation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
 const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
 /**
@@ -49,13 +46,10 @@ export default async (
     const isAbsolute = response.entity.name.charAt(0) === '/'
     const ns = isAbsolute && nameParts[1]
     const restIndex = isAbsolute ? 2 : 0 // '/a/b/c' => ['', 'a', 'b', 'c'], rest starts at 2
-    const nsForDisplay =
-      !ns || ns === (await currentNamespace()) ? '' : `/${ns}/`
+    const nsForDisplay = !ns || ns === (await currentNamespace()) ? '' : `/${ns}/`
     const prettyName = `${nsForDisplay}${nameParts.slice(restIndex).join('/')}`
 
-    suffix.appendChild(
-      document.createTextNode(` invoked ${prettyName} with id `)
-    )
+    suffix.appendChild(document.createTextNode(` invoked ${prettyName} with id `))
 
     const clickable = document.createElement('span') as HTMLElement
     clickable.className = 'clickable clickable-blatant activationId'

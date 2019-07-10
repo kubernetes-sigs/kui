@@ -39,19 +39,15 @@ const installKiali = async () => {
   // await $(`kubectl create secret generic kiali -n "${ns}" --from-literal=username="${username}" --from-literal=passphrase="${passphrase}"`)
 
   await new Promise((resolve, reject) => {
-    exec(
-      'bash <(curl -L http://git.io/getLatestKialiKubernetes)',
-      { cwd: tmp, shell: 'bash' },
-      (err, stdout) => {
-        if (err) {
-          console.error(err)
-          reject(err)
-        } else {
-          debug(stdout)
-          resolve()
-        }
+    exec('bash <(curl -L http://git.io/getLatestKialiKubernetes)', { cwd: tmp, shell: 'bash' }, (err, stdout) => {
+      if (err) {
+        console.error(err)
+        reject(err)
+      } else {
+        debug(stdout)
+        resolve()
       }
-    )
+    })
   })
 }
 
@@ -92,12 +88,8 @@ const ingressFor = (appName: string): Promise<string> => {
  *
  */
 const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
-  const pollingInterval = parsedOptions.watch
-    ? parseDuration(parsedOptions.watch)
-    : 10000
-  const list = await client.appList(
-    parsedOptions.namespace && new client.Namespace(parsedOptions.namespace)
-  )
+  const pollingInterval = parsedOptions.watch ? parseDuration(parsedOptions.watch) : 10000
+  const list = await client.appList(parsedOptions.namespace && new client.Namespace(parsedOptions.namespace))
 
   const rateInterval = parsedOptions.interval
 
@@ -137,9 +129,7 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
           value: app.istioSidecar,
           outerCSS: 'text-center hide-with-sidecar',
           css: app.istioSidecar ? 'green-text' : 'red-text',
-          fontawesome: app.istioSidecar
-            ? 'fas fa-check-circle'
-            : 'fas fa-exclamation-triangle'
+          fontawesome: app.istioSidecar ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle'
         },
         {
           key: 'inboundErrorRatio',
@@ -159,16 +149,8 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
           outerCSS: 'text-center',
           css: TrafficLight.Yellow,
           watch: async () => {
-            const health = await client.appHealth(
-              app.name,
-              new client.Namespace(list.namespace.name),
-              rateInterval
-            )
-            const {
-              errorRatio,
-              inboundErrorRatio,
-              outboundErrorRatio
-            } = health.requests
+            const health = await client.appHealth(app.name, new client.Namespace(list.namespace.name), rateInterval)
+            const { errorRatio, inboundErrorRatio, outboundErrorRatio } = health.requests
 
             const { value, badgeCss } =
               errorRatio === -1
@@ -189,20 +171,12 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
               others: [
                 {
                   key: 'inboundErrorRatio',
-                  value: `${
-                    inboundErrorRatio === -1
-                      ? '\u2014'
-                      : (100 * inboundErrorRatio).toFixed(2) + '%'
-                  }`,
+                  value: `${inboundErrorRatio === -1 ? '\u2014' : (100 * inboundErrorRatio).toFixed(2) + '%'}`,
                   css: inboundTextCss
                 },
                 {
                   key: 'outboundErrorRatio',
-                  value: `${
-                    outboundErrorRatio === -1
-                      ? '\u2014'
-                      : (100 * outboundErrorRatio).toFixed(2) + '%'
-                  }`,
+                  value: `${outboundErrorRatio === -1 ? '\u2014' : (100 * outboundErrorRatio).toFixed(2) + '%'}`,
                   css: outboundTextCss
                 }
               ]
@@ -217,8 +191,7 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
               balloon: 'Load test',
               balloonLength: 'small',
               balloonPos: 'left',
-              onclick: async () =>
-                pexec(`wrk -d 20 ${await ingressFor(app.name)}`)
+              onclick: async () => pexec(`wrk -d 20 ${await ingressFor(app.name)}`)
             }
           ]
         }
