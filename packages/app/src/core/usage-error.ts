@@ -189,10 +189,10 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
 
 interface Generator {
   command: string
-  fn: (command: string) => IUsageRow
+  fn: (command: string) => UsageRow
 }
 
-function isGenerator(row: UsageRow): row is Generator {
+function isGenerator(row: UsageRowOrGenerator): row is Generator {
   return !!(row as Generator).fn
 }
 
@@ -460,7 +460,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
      */
     const makeTable = (
       title: string,
-      rows: IUsageRow[],
+      rows: UsageRow[],
       parent = right,
       nRowsInViewport = (usage && usage.nRowsInViewport) || 5
     ): HTMLElement => {
@@ -503,7 +503,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       }
 
       // render the rows
-      const renderRow = (rowData: UsageRow) => {
+      const renderRow = (rowData: UsageRowOrGenerator) => {
         if (isGenerator(rowData)) {
           // then rowData is a generator for aliases
           return renderRow(rowData.fn(rowData.command))
@@ -750,8 +750,7 @@ interface DetailedExample {
   docs: string
 }
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
-export interface IUsageRow {
+export interface UsageRow {
   commandPrefix?: string
   commandSuffix?: string
   command?: string
@@ -798,7 +797,7 @@ export interface IUsageRow {
   docs?: string
   partial?: boolean
   defaultValue?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  available?: IUsageRow[]
+  available?: UsageRow[]
 
   // allow users to provide a prefix substring of an `allowed` value
   allowedIsPrefixMatch?: boolean
@@ -807,11 +806,11 @@ export interface IUsageRow {
   allowed?: (number | string | boolean)[]
 }
 
-type UsageRow = IUsageRow | Generator
+type UsageRowOrGenerator = UsageRow | Generator
 
 interface UsageSection {
   title: string
-  rows: IUsageRow[]
+  rows: UsageRow[]
   nRowsInViewport?: number
 }
 
@@ -844,7 +843,7 @@ export interface UsageModel {
   header?: string
   example?: string
   detailedExample?: DetailedExample | DetailedExample[]
-  sampleInputs?: IUsageRow[]
+  sampleInputs?: UsageRow[]
   intro?: TitledContent
   sections?: UsageSection[]
   commandPrefix?: string
@@ -854,10 +853,10 @@ export interface UsageModel {
   preserveCase?: boolean // in breadcrumbs
   parents?: BreadcrumbLabel[]
   related?: string[]
-  available?: IUsageRow[]
-  required?: IUsageRow[]
-  optional?: IUsageRow[]
-  oneof?: IUsageRow[]
+  available?: UsageRow[]
+  required?: UsageRow[]
+  optional?: UsageRow[]
+  oneof?: UsageRow[]
   nRowsInViewport?: number | boolean
 }
 
