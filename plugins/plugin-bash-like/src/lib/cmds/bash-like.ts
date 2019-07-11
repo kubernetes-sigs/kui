@@ -161,6 +161,7 @@ export const doShell = (argv: string[], options: ParsedOptions, execOptions?: Ex
         const output = shell[cmd](args)
         if (cmd === 'cd') {
           process.env.OLDPWD = OLDPWD
+          process.env.PWD = output
 
           if (output.code === 0) {
             // special case: if the user asked to change working
@@ -219,6 +220,13 @@ const cd = ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
   })
 }
 
+const bcd = async ({ command, execOptions }: EvaluatorArgs) => {
+  const pwd = await repl.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
+  debug('pwd', pwd)
+  process.env.PWD = pwd
+  return pwd
+}
+
 /**
  * Register command handlers
  *
@@ -230,9 +238,21 @@ export default (commandTree: CommandRegistrar) => {
     requiresLocal: true
   })
 
-  commandTree.listen('/cd', cd, {
-    usage: usage.cd,
-    noAuthOk: true,
-    requiresLocal: true
-  })
+  if (!inBrowser()) {
+    commandTree.listen('/cd', cd, {
+      usage: usage.cd,
+      noAuthOk: true,
+      inBrowserOk: true
+    })
+  } else {
+    commandTree.listen('/kuicd', cd, {
+      noAuthOk: true
+    })
+
+    commandTree.listen('/cd', bcd, {
+      usage: usage.cd,
+      noAuthOk: true,
+      inBrowserOk: true
+    })
+  }
 }

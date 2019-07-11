@@ -30,10 +30,17 @@ const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell
 let serverIdx = 0
 
 /** thin wrapper on child_process.exec */
-function main(cmdline, env, execOptions, server, port, host) {
+function main(cmdline, execOptions, server, port, host) {
   return new Promise(async (resolve, reject) => {
+    const uid = undefined
+    const gid = undefined
+
     const options = {
-      env: Object.assign(env, {
+      uid,
+      gid,
+      cwd: execOptions.cwd || '/',
+      env: Object.assign(execOptions.env, {
+        DEBUG: process.env.DEBUG,
         DEVMODE: true,
         KUI_HEADLESS: true,
         KUI_REPL_MODE: 'stdout',
@@ -45,7 +52,8 @@ function main(cmdline, env, execOptions, server, port, host) {
     if (wsOpen) {
       const N = serverIdx++
       const { wss } = await wssMain(N, server, port)
-      const child = spawn('node', [mainPath, 'bash', 'websocket', 'stdio'], options)
+
+      const child = spawn(process.argv[0], [mainPath, 'bash', 'websocket', 'stdio'], options)
 
       child.on('error', err => {
         reject(err)
@@ -60,10 +68,18 @@ function main(cmdline, env, execOptions, server, port, host) {
 
       channel.on('open', () => {
         const proto = process.env.KUI_USE_HTTP === 'true' ? 'ws' : 'wss'
-        resolve({ type: 'string', response: `${proto}://${host}/bash/${N}` })
+        resolve({
+          type: 'object',
+          response: {
+            url: `${proto}://${host}/bash/${N}`,
+            uid,
+            gid
+          }
+        })
       })
     } else {
-      exec(`node "${mainPath}" ${cmdline}`, (err, stdout, stderr) => {
+      debug('using plain exec', cmdline, options)
+      exec(`${process.argv[0]} "${mainPath}" ${cmdline}`, options, (err, stdout, stderr) => {
         if (stderr) {
           console.error(stderr)
         }
@@ -110,7 +126,7 @@ module.exports = (server, port) => {
           port,
           host: req.headers.host
         }) */
-        const { type, response } = await main(command, process.env, execOptions, server, port, req.headers.host)
+        const { type, response } = await main(command, execOptions, server, port, req.headers.host)
         if (type !== 'object') {
           res.send(response)
         } else {
@@ -119,7 +135,8 @@ module.exports = (server, port) => {
         }
       } catch (err) {
         debug('exception in command execution', err.code, err.message, err)
-        const code = err.code || err.statusCode || 500
+        const possibleCode = err.code || err.statusCode
+        const code = possibleCode && typeof possibleCode === 'number' ? possibleCode : 500
         res.status(code).send(err.message || err)
       }
     }

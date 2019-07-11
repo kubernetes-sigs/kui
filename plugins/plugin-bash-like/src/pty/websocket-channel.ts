@@ -26,9 +26,23 @@ const debug = Debug('plugins/bash-like/pty/channel')
  *
  */
 class WebSocketChannel extends WebSocket implements Channel {
-  constructor(url: string) {
+  private readonly uid: number
+  private readonly gid: number
+
+  constructor(url: string, uid: number, gid: number) {
     debug('WebSocketChannel init', url)
     super(url, undefined /*, { rejectUnauthorized: false } */)
+    this.uid = uid
+    this.gid = gid
+  }
+
+  send(msg: string) {
+    // inject uid and gid into the payload
+    const withUser = Object.assign(JSON.parse(msg), {
+      uid: this.uid,
+      gid: this.gid
+    })
+    return super.send(JSON.stringify(withUser))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

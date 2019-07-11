@@ -48,7 +48,21 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
     const { initHeadless } = await import('./headless')
-    const result = await initHeadless(argv, false, isRunningHeadless, execOptions)
+    const result = await initHeadless(argv, false, isRunningHeadless, execOptions).catch(err => {
+      if (env.KUI_REPL_MODE) {
+        const errResponse = {
+          code: err.code,
+          statusCode: err.statusCode,
+          message: err.message
+        }
+        for (const key in err) {
+          errResponse[key] = err[key]
+        }
+        return errResponse
+      } else {
+        throw err
+      }
+    })
     if (env.KUI_REPL_MODE) {
       if (env.KUI_REPL_MODE === 'stdout') {
         debug('emitting repl mode result')

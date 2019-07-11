@@ -418,12 +418,17 @@ type ChannelFactory = () => Promise<Channel>
  */
 const remoteChannelFactory: ChannelFactory = async () => {
   try {
-    const url: string = await $('bash websocket open', undefined, undefined, {
-      rethrowErrors: true
-    })
-    debug('websocket url', url)
+    const { url, uid, gid }: { url: string; uid: number; gid: number } = await $(
+      'bash websocket open',
+      undefined,
+      undefined,
+      {
+        rethrowErrors: true
+      }
+    )
+    debug('websocket url', url, uid, gid)
     const WebSocketChannel = (await import('./websocket-channel')).default
-    return new WebSocketChannel(url)
+    return new WebSocketChannel(url, uid, gid)
   } catch (err) {
     console.error('error opening websocket', err)
     throw err
@@ -455,7 +460,7 @@ const getOrCreateChannel = async (
 ): Promise<Channel> => {
   // tell the server to start a subprocess
   const doExec = (ws: Channel) => {
-    debug('exec after open', terminal.cols, terminal.rows)
+    debug('exec after open', terminal.cols, terminal.rows, process.env.PWD || process.cwd())
 
     ws.send(
       JSON.stringify({
@@ -463,8 +468,8 @@ const getOrCreateChannel = async (
         cmdline,
         rows: terminal.rows,
         cols: terminal.cols,
-        cwd: !inBrowser() && process.cwd(),
-        env: !inBrowser() && process.env
+        cwd: process.env.PWD || process.cwd(),
+        env: process.env
       })
     )
   }
@@ -627,7 +632,7 @@ export const doExec = (
             ? webviewChannelFactory
             : remoteChannelFactory
           : electronChannelFactory
-        const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal).catch(err => {
+        const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal).catch((err: Error) => {
           console.error('error creating channel', err)
           cleanUpTerminal()
           throw err
