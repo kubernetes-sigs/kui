@@ -254,8 +254,7 @@ const prepareUsage = async (command: string): Promise<UsageModel> => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
 const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
-  // eslint-disable-next-line promise/param-names
-  new Promise(async (resolveBase, reject) => {
+  new Promise(async (resolve, reject) => {
     const {
       block,
       argv: rawArgv,
@@ -277,7 +276,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       debug('redirecting kubectl edit to shell')
       repl
         .qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
-        .then(resolveBase)
+        .then(resolve)
         .catch(reject)
       return
     }
@@ -304,11 +303,11 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
       const describeImpl = (await import('./describe')).default
       return describeImpl(opts)
-        .then(resolveBase)
+        .then(resolve)
         .catch(reject)
     } else if (isKube && (verb === 'status' || verb === 'list')) {
       return statusImpl(verb)(opts)
-        .then(resolveBase)
+        .then(resolve)
         .catch(reject)
     }
 
@@ -396,9 +395,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     const env = Object.assign({}, process.env)
     const cleanupCallback = await possiblyExportCredentials(execOptions as KubeExecOptions, env)
-    const resolve = async val => {
+    const cleanupAndResolve = async val => {
       await cleanupCallback()
-      resolveBase(val)
+      resolve(val)
     }
 
     const { spawn } = await import('child_process')
@@ -537,7 +536,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           if (codeForREPL === 404 && verb === 'get' && (options.w || options.watch)) {
             // NOTE(5.30.2019): for now, we only support watchable table, so we have to return an empty table here
             debug('return an empty watch table')
-            return resolve(
+            return cleanupAndResolve(
               formatWatchableTable(new Table({ body: [] }), {
                 refreshCommand: rawCommand.replace(/--watch|-w/g, ''),
                 watchByDefault: true
@@ -552,7 +551,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         } else if ((verb === 'create' || verb === 'apply' || verb === 'delete') && hasFileArg) {
           debug('fetching status after error')
           status(command, codeForREPL, err)
-            .then(resolve)
+            .then(cleanupAndResolve)
             .catch(reject)
         } else {
           nope()
@@ -569,17 +568,17 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         if (output === 'json') {
           try {
             const json = JSON.parse(out)
-            resolve(json.items || json)
+            cleanupAndResolve(json.items || json)
           } catch (err) {
             console.error(err)
-            resolve(pre(out))
+            cleanupAndResolve(pre(out))
           }
         } else {
-          resolve(out.trim())
+          cleanupAndResolve(out.trim())
         }
       } else if (options.help || options.h || argv.length === 1 || isUsage) {
         try {
-          resolve(renderHelp(out, command, verb, originalCode))
+          cleanupAndResolve(renderHelp(out, command, verb, originalCode))
         } catch (err) {
           console.error('error rendering help', err)
           reject(out)
@@ -603,7 +602,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
         if (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied) {
           debug('directing resolving', isHeadless())
-          return resolve(result)
+          return cleanupAndResolve(result)
         }
 
         const modes: SidecarMode[] = [
@@ -685,14 +684,14 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         record['contentType'] = output
 
         debug('exec output json', record)
-        resolve(record)
+        cleanupAndResolve(record)
       } else if (isKube && verb === 'run' && argv[2]) {
         const entity = argv[2]
         const namespace = options.namespace || options.n || 'default'
         debug('status after kubectl run', entity, namespace)
         repl
           .qexec(`k status deploy "${entity}" -n "${namespace}"`)
-          .then(resolve)
+          .then(cleanupAndResolve)
           .catch(reject)
       } else if ((hasFileArg || (isKube && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
         //
@@ -700,11 +699,13 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         //
         debug('status after success')
         status(command)
-          .then(resolve)
+          .then(cleanupAndResolve)
           .catch(reject)
       } else if (formatters[command] && formatters[command][verb]) {
         debug('using custom formatter')
-        resolve(formatters[command][verb].format(command, verb, entityType, options, out, opts.createOutputStream()))
+        cleanupAndResolve(
+          formatters[command][verb].format(command, verb, entityType, options, out, opts.createOutputStream())
+        )
       } else if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
         //
         // tabular output
@@ -722,21 +723,21 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         )
 
         if ((options.watch || options.w) && (isTable(tableModel) || isMultiTable(tableModel))) {
-          resolve(
+          cleanupAndResolve(
             formatWatchableTable(tableModel, {
               refreshCommand: rawCommand.replace(/--watch|-w/g, ''),
               watchByDefault: true
             })
           )
         } else {
-          resolve(tableModel)
+          cleanupAndResolve(tableModel)
         }
       } else {
         //
         // otherwise, return raw text for display in the repl
         //
         debug('passing through preformatted output')
-        resolve(pre(out))
+        cleanupAndResolve(pre(out))
       }
     })
   })
