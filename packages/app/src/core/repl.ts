@@ -32,7 +32,7 @@ import eventBus from '@kui-shell/core/core/events'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
-import { UsageError, UsageModel, IUsageRow } from './usage-error'
+import { UsageError, UsageModel, UsageRow } from './usage-error'
 
 import { isHeadless, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
@@ -407,7 +407,7 @@ class InProcessExecutor implements Executor {
           return false
         }
 
-        const builtInOptions: IUsageRow[] = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
+        const builtInOptions: UsageRow[] = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
         if (!usage || !usage.noHelp) {
           // usage might tell us not to add help, or not to add the -h help alias
           const help = { name: '--help', hidden: true, boolean: true }
@@ -487,7 +487,7 @@ class InProcessExecutor implements Executor {
           // strict: command wants *us* to enforce conformance
           // required and optional parameters
           const { strict: cmd, onlyEnforceOptions = false, required = [], oneof = [], optional: _optional = [] } = usage
-          const optLikeOneOfs: IUsageRow[] = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
+          const optLikeOneOfs: UsageRow[] = oneof.filter(({ command, name = command }) => name.charAt(0) === '-') // some one-ofs might be of the form --foo
           const positionalConsumers = _optional.filter(
             ({ name, alias, consumesPositional }) =>
               consumesPositional && (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)])
