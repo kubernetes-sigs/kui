@@ -31,7 +31,7 @@ import { Quittable } from './main-models'
  *
  */
 export default ({ Tray, Menu }, app: Quittable, createWindow: Function) => {
-  const screen = require('electron').screen
+  const screen = require('electron').remote.screen
   const screenSize = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
   const dimensions = { width: 800, height: 600 }
 

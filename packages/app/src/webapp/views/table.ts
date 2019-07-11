@@ -85,6 +85,31 @@ const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
   return [header].concat(noSort ? body : sortBody(body)).filter(x => x)
 }
 
+// maybe the resources in table have all reach to the final state?
+const hasReachedFinalState = (response: Table | MultiTable): boolean => {
+  let reachedFinalState = false
+
+  if (isTable(response)) {
+    if (!response.body.some(row => !row.done)) {
+      reachedFinalState = true // stop watching if all resources have reached to the finial state
+    }
+
+    return reachedFinalState
+  } else if (isMultiTable(response)) {
+    let allDone = true // allDone is used to indicate if all resources have reached to the final state
+
+    response.tables.map(table => {
+      if (table.body.some(row => !row.done)) {
+        allDone = false
+      }
+    })
+
+    reachedFinalState = allDone
+  }
+
+  return reachedFinalState
+}
+
 const registerWatcher = (
   tab: Tab,
   watchLimit: number = 100000,
@@ -101,31 +126,21 @@ const registerWatcher = (
   }
 
   const processRefreshResponse = (response: Table | MultiTable) => {
-    let reachedFinalState = false
-
-    if (isTable(response)) {
-      if (!response.body.some(row => !row.done)) {
-        // stop watching if all resources have reached to the finial state
-        reachedFinalState = true
-      }
-
-      return { table: prepareTable(tab, response), reachedFinalState }
-    } else if (isMultiTable(response)) {
-      let allDone = true // allDone is used to indicate if all resources have reached to the final state
-
-      const newRowModels = response.tables.map(table => {
-        if (table.body.some(row => !row.done)) {
-          allDone = false
-        }
-
-        return prepareTable(tab, table)
-      })
-
-      return { tables: newRowModels, reachedFinalState: allDone }
-    } else {
+    if (!isTable(response) && !isMultiTable(response)) {
       console.error('refresh result is not a table', response)
       throw new Error('refresh result is not a table')
     }
+
+    const reachedFinalState = hasReachedFinalState(response)
+
+    return isTable(response)
+      ? { table: prepareTable(tab, response), reachedFinalState }
+      : {
+          tables: response.tables.map(table => {
+            return prepareTable(tab, table)
+          }),
+          reachedFinalState
+        }
   }
 
   const refreshTable = async () => {
@@ -333,6 +348,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       tag = 'span',
       tagClass
     } = theCell
+
     const cell = document.createElement('span')
     const inner = document.createElement(tag)
 
@@ -402,14 +418,16 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
           inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString()))
         )
       }
-    } else if (value) {
+    } else if (value !== undefined) {
+      // value could be an empty string
       Promise.resolve(value).then(value => {
         inner.title = value
         inner.appendChild(document.createTextNode(value))
       })
     } else {
-      console.error('Invalid cell model, no value field')
+      console.error('Invalid cell model, no value field', theCell)
     }
+
     cell.appendChild(inner)
     parent.appendChild(cell)
 
@@ -775,7 +793,7 @@ export const formatTable = (
 
   const tableViewInfo = isMultiTable(response) ? response.tables.map(table => format(table)) : format(response)
 
-  if (isWatchable(response) && response.watchByDefault) {
+  if (!hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault) {
     registerWatcher(tab, response.watchLimit, response.refreshCommand, resultDom, tableViewInfo)
   }
 }
