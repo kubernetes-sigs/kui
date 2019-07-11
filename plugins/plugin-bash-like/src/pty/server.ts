@@ -152,6 +152,8 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
     try {
       const msg: {
         type: string
+        uid?: number
+        gid?: number
         data?: string
         cmdline?: string
         exitCode?: number
@@ -168,6 +170,8 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
         case 'exec':
           try {
             shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
+              uid: msg.uid,
+              gid: msg.gid,
               name: 'xterm-color',
               rows: msg.rows,
               cols: msg.cols,
@@ -237,8 +241,8 @@ const createDefaultServer = (): Server => {
  * Spawn the shell
  * Compliments of http://krasimirtsonev.com/blog/article/meet-evala-your-terminal-in-the-browser-extension
  */
-let cachedWss
-let cachedPort
+let cachedWss: Server
+let cachedPort: number
 export const main = async (N: number, server?: Server, preexistingPort?: number) => {
   if (cachedWss) {
     return cachedPort
@@ -280,12 +284,12 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
         cachedPort = await getPort()
         const server = createDefaultServer()
         server.listen(cachedPort, async () => {
-          const wss = (cachedWss = new WebSocket.Server({ server }))
+          const wss: Server = (cachedWss = new WebSocket.Server({ server }))
           servers.push({ wss: cachedWss, server })
           resolve({ wss, port: cachedPort, exitNow })
         })
       }
-    }).then(({ wss, port, exitNow }) => {
+    }).then(({ wss, port, exitNow }: { wss: Server; port: number; exitNow: ExitHandler }) => {
       wss.on('connection', onConnection(exitNow))
       return { wss, port }
     })
@@ -326,7 +330,7 @@ export default (commandTree: CommandRegistrar) => {
          *
          */
         const resolveWithHost = (port: number) => {
-          const host = execOptions['host'] || `localhost:${port}`
+          const host: string = execOptions['host'] || `localhost:${port}`
           resolve(`wss://${host}/bash/${N}`)
         }
 
@@ -353,8 +357,8 @@ export default (commandTree: CommandRegistrar) => {
           )
 
           const channel = `/exec/response/${N}`
-          ipcRenderer.once(channel, (event, arg) => {
-            const message = JSON.parse(arg)
+          ipcRenderer.once(channel, (event, arg: string) => {
+            const message: { error?: Error; success?: boolean; returnValue: number } = JSON.parse(arg)
             if (!message.success) {
               reject(message.error)
             } else {

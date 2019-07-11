@@ -67,6 +67,7 @@ class ProxyEvaluator implements ReplEval {
 
   async apply(command: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     debug('apply', evaluator)
+    debug('execOptions', execOptions)
 
     if (
       isDisabled(proxyServerConfig) ||
@@ -82,6 +83,8 @@ class ProxyEvaluator implements ReplEval {
         command,
         execOptions: Object.assign({}, execOptions, {
           isProxied: true,
+          cwd: process.env.PWD || process.cwd(),
+          env: process.env,
           credentials: getValidCredentials(),
           tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
           rawResponse: true // we will post-process the response

@@ -38,6 +38,8 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
   }
 
   public async init(child: ChildProcess) {
+    debug('StdioChannelWebsocketSide.init')
+
     child.stderr.on('data', (data: Buffer) => {
       debug(data.toString())
     })
@@ -48,7 +50,7 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
     })
 
     // upstream client has sent data downstream; forward it to the subprocess
-    this.wss.on('message', data => {
+    this.wss.on('message', (data: string) => {
       child.stdin.write(data)
     })
   }
@@ -77,11 +79,13 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
   public readyState = ReadyState.OPEN
 
   public async init(onExit: ExitHandler) {
+    debug('StdioChannelKuiSide.init')
+
     // await onConnection(await disableBashSessions())(this)
     await onConnection(onExit)(this)
 
     process.stdin.on('data', (data: Buffer) => {
-      this.emit('message', data)
+      this.emit('message', data.toString())
     })
 
     this.send('open')
@@ -90,6 +94,7 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
   /** emit 'message' on the other side */
   public send(msg: string) {
     if (this.readyState === ReadyState.OPEN) {
+      debug('send', msg)
       process.stdout.write(msg)
     }
   }
