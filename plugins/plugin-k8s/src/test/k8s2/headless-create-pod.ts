@@ -104,10 +104,10 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   })
 }
 
-describe('headless create pod kubectl kui mode', function(this: common.ISuite) {
+common.localDescribe('headless create pod kubectl kui mode', function(this: common.ISuite) {
   doHeadless(this, kubectl)
 })
 
-describe('headless create pod bin/kui mode', function(this: common.ISuite) {
+common.localDescribe('headless create pod bin/kui mode', function(this: common.ISuite) {
   doHeadless(this, kui)
 })

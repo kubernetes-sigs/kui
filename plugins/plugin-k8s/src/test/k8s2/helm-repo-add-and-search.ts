@@ -19,7 +19,8 @@ import { cli } from '@kui-shell/core/tests/lib/ui'
 
 const synonyms = ['helm']
 
-describe('helm repo add and search', function(this: common.ISuite) {
+// TODO: enable this test when ISSUE https://github.com/IBM/kui/issues/1947 is solved
+common.localDescribe('helm repo add and search', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
