@@ -17,6 +17,7 @@
 const debug = require('debug')('proxy/exec')
 const { exec, spawn } = require('child_process')
 const express = require('express')
+const { v4: uuid } = require('uuid')
 
 /* const { main } = require('../../kui/node_modules/@kui-shell/core')
 const {
@@ -26,8 +27,6 @@ const {
 const mainPath = require.resolve('../../kui/node_modules/@kui-shell/core')
 const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/server')
 const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/stdio-channel')
-
-let serverIdx = 0
 
 /** thin wrapper on child_process.exec */
 function main(cmdline, execOptions, server, port, host) {
@@ -39,7 +38,7 @@ function main(cmdline, execOptions, server, port, host) {
       uid,
       gid,
       cwd: execOptions.cwd || '/',
-      env: Object.assign(execOptions.env, {
+      env: Object.assign(execOptions.env || {}, {
         DEBUG: process.env.DEBUG,
         DEVMODE: true,
         KUI_HEADLESS: true,
@@ -50,7 +49,8 @@ function main(cmdline, execOptions, server, port, host) {
 
     const wsOpen = cmdline === 'bash websocket open'
     if (wsOpen) {
-      const N = serverIdx++
+      // N is the random identifier for this connection
+      const N = uuid()
       const { wss } = await wssMain(N, server, port)
 
       const child = spawn(process.argv[0], [mainPath, 'bash', 'websocket', 'stdio'], options)
@@ -88,7 +88,14 @@ function main(cmdline, execOptions, server, port, host) {
           reject(err)
         } else {
           debug('stdout', stdout)
-          resolve(JSON.parse(stdout))
+          try {
+            resolve(JSON.parse(stdout))
+          } catch (err) {
+            resolve({
+              type: 'string',
+              response: stdout
+            })
+          }
         }
       })
     }
