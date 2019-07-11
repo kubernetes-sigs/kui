@@ -9,7 +9,7 @@ services:
 os:
   - linux
   - osx
-
+  
 env:
   matrix:
     - SCRIPTS="lint.sh typecov.sh"
@@ -110,6 +110,42 @@ jobs:
               branch: master
               repo: IBM/kui
               condition: $TRAVIS_EVENT_TYPE = cron
+    - stage: official release
+      env: ""
+      node_js: "8"
+      script: 
+        - echo "starting the release"
+      before_script:
+        - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
+        - npm install
+        - cd clients/default
+        - npm run build:headless && npm run build:electron
+        - cd ../..
+      after_script:
+            - cd packages/kui-builder/dist/publishers/s3
+            - npm install
+            - BRANCH="stable.$TRAVIS_BUILD_NUMBER" ./publish.sh
+            - BRANCH="latest" ./publish.sh
+      deploy:
+          - provider: script
+            script: npx lerna publish from-package --yes
+            skip_cleanup: true
+            keep_history: true
+            on:
+              branch: master
+              repo: IBM/kui
+              condition: $TRAVIS_EVENT_TYPE = push && $TRAVIS_COMMIT_MESSAGE =~ ([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
+              tags: true
+          - provider: releases
+            api_key: $GITHUB_TOKEN
+            file_glob: true
+            file: clients/dist/electron/*
+            skip_cleanup: true
+            on:
+              branch:  master
+              repo: IBM/kui
+              condition: $TRAVIS_EVENT_TYPE = push && $TRAVIS_COMMIT_MESSAGE =~ ([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
+              tags: true
 
 notifications:
   webhooks:
