@@ -42,7 +42,17 @@ describe('helm repo add and search', function(this: common.ISuite) {
       })
     }
 
+    const deleteRepo = () => {
+      it('should remove a helm repo', () => {
+        return cli
+          .do(`${helm} repo remove bitnami`, this.app)
+          .then(cli.expectOKWithAny)
+          .catch(common.oops(this))
+      })
+    }
+
     addRepo()
     searchRepo('nginx')
+    deleteRepo()
   })
 })
