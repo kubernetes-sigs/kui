@@ -92,7 +92,7 @@ const getDefaultTheme = () => {
  *
  */
 const list = async () => {
-  const { Row, Table, TableStyle } = await import('@kui-shell/core/webapp/models/table')
+  const { Table, TableStyle } = await import('@kui-shell/core/webapp/models/table')
 
   const header: Row = {
     type: 'theme',
