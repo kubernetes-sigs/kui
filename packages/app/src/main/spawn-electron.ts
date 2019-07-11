@@ -19,7 +19,6 @@ const debug = Debug('main/spawn-electron')
 debug('loading')
 
 import windowDefaults from '../webapp/defaults'
-import { ExecOptions } from '../models/execOptions'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 /**

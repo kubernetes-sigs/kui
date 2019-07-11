@@ -11,6 +11,7 @@ export interface Watchable {
   watchLimit?: number
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isWatchable(model: any): model is Watchable {
   return model && model.refreshCommand
 }

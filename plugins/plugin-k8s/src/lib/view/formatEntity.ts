@@ -51,7 +51,7 @@ export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => 
     metadata: { name, namespace, labels, annotations = {} }
   } = kubeEntity
   const { type, actionName, packageName, fqn } = toOpenWhiskFQN(kubeEntity)
-  const { outerCSS, cssForState } = stateRendering
+  const { cssForState } = stateRendering
 
   // masquerade: allows the spec to override/pretty-print certain fields
   const title = annotations['seed.ibm.com/title']
