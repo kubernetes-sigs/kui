@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 import * as EventEmitter from 'events'
 import { ChildProcess } from 'child_process'
 
-import { ExitHandler, onConnection, SessionCookie } from './server'
+import { ExitHandler, onConnection } from './server'
 import { Channel, ReadyState } from './channel'
 
 const debugE = Debug('plugins/bash-like/pty/stdio-channel-kui-stderr')
@@ -35,6 +35,7 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
   public readyState = ReadyState.CONNECTING
 
   private ws: Channel
+
   private readonly wss: EventEmitter
 
   public constructor(wss: EventEmitter) {
@@ -42,13 +43,8 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
     this.wss = wss
   }
 
-  public async init(child: ChildProcess, cookie: SessionCookie) {
+  public async init(child: ChildProcess) {
     debugW('StdioChannelWebsocketSide.init')
-
-    const terminateChildProcess = () => {
-      debugW('terminateChildProcess')
-      child.kill('SIGINT')
-    }
 
     this.wss.on('connection', (ws: Channel) => {
       debugW('got connection')

@@ -33,6 +33,7 @@ function prefetchEnv() {
     return
   }
 
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     exec(`${await getLoginShell()} -l -i -c printenv`, (err, stdout, stderr) => {
       try {
@@ -69,6 +70,7 @@ function prefetchHome() {
     return
   }
 
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     exec('eval echo ~', (err, stdout, stderr) => {
       try {
@@ -109,7 +111,8 @@ function prefetchAliases() {
     return
   }
 
-  return new Promise(async (resolve, reject) => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async resolve => {
     execFile(await getLoginShell(), ['-l', '-i', '-c', 'alias'], (err, stdout, stderr) => {
       try {
         if (stderr) {
@@ -124,7 +127,9 @@ function prefetchAliases() {
             .split(/[\n\r]/)
             .filter(_ => _)
             .map(_ => _.match(/^(alias )?(.*)=(.*)/))
-            .reduce((M, [ignore1, ignore2, key, value]) => {
+            .reduce((M, match) => {
+              const key = match[2]
+              const value = match[3]
               M[key] = unquote(value)
               return M
             }, {})
