@@ -77,8 +77,11 @@ const makeCellDom = () => {
 
 class Occupancy {
   width: number
+
   height: number
+
   rows: HTMLElement[]
+
   gridGrid: Element
 
   constructor(width, height, nCells, grid, gridGrid) {

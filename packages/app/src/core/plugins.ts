@@ -400,10 +400,11 @@ const prequire = async (route: string, options?: object) => {
   debug('prequire %s', route)
 
   try {
-    if (!registrar.hasOwnProperty(route)) {
+    if (!Object.prototype.hasOwnProperty.call(registrar, route)) {
       // note how we stash a promise in the registrar immediately, to
       // avoid race conditions with multiple threads trying to prequire
       // the same plugin
+      // eslint-disable-next-line no-async-promise-executor
       registrar[route] = new Promise(async (resolve, reject) => {
         const module = prescan.flat.find(_ => _.route === route)
         if (module) {
@@ -453,6 +454,7 @@ const makeResolver = (prescan: PrescanModel) => {
       if (!plugin) {
         return
       } else if (!isResolved[plugin]) {
+        // eslint-disable-next-line no-async-promise-executor
         isResolved[plugin] = new Promise(async (resolve, reject) => {
           try {
             const prereqs = prescan.topological[plugin]

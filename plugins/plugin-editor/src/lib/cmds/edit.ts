@@ -41,7 +41,9 @@ class DefaultCustomization {
 
 class DefaultExecOptions {
   noSidecarHeader = false
+
   parameters: EditorEntity = undefined
+
   custom = new DefaultCustomization()
 }
 

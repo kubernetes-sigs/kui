@@ -27,6 +27,7 @@ import { onbranch, injectCSS } from '../util/git-support'
 const debug = Debug('plugins/bash-like/cmds/git-diff')
 
 const doDiff = async ({ command, execOptions }: EvaluatorArgs) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     injectCSS()
 

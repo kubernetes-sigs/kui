@@ -130,7 +130,9 @@ class Resizer {
   private _frozen = false
 
   private readonly terminal: HTerminal
+
   private _ws: Channel
+
   private readonly resizeNow: () => void
 
   constructor(terminal: xterm.Terminal, tab: Tab) {

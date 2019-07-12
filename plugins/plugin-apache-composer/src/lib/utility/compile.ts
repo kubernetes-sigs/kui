@@ -35,6 +35,7 @@ import * as messages from './messages'
 const debug = Debug('plugins/apache-composer/utility/compile')
 
 const loadSourceCode = (inputFile: string, localCodePath: string): Promise<string> =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     if (!inBrowser()) {
       debug('readFile in headless mode or for electron')
@@ -258,6 +259,7 @@ export const loadComposition = (inputFile: string, originalCode?: string, localC
 }
 
 export const sourceToComposition = ({ inputFile, name = '' }: { inputFile: string; name?: string }) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     debug('validating source file', inputFile)
     const extension = inputFile.substring(inputFile.lastIndexOf('.') + 1)

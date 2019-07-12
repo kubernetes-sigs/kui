@@ -139,6 +139,7 @@ export const injectScript = (url: any): Promise<any> =>
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const loadHTML = (file: any): Promise<string> =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     if (file.html) {
       // then we have the raw content already

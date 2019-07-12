@@ -85,6 +85,7 @@ export default async (commandTree: CommandRegistrar) => {
           const max: number = await repl.qexec('wsk activation count') // get the number of total activations
           let foundSessions = []
           for (let scanned = 0; scanned < max && foundSessions.length < scanLimit; scanned += 200) {
+            // eslint-disable-next-line no-useless-catch
             try {
               foundSessions = foundSessions.concat(await findSessions(scanned, name, 200))
             } catch (err) {

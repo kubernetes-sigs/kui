@@ -15,9 +15,9 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let main = args => {
-  let re = new RegExp('^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$')
-  let ok = typeof args.str === 'string' && args.str.length > 0 && args.str.length % 4 === 0 && args.str.match(re)
+const main = args => {
+  const re = new RegExp('^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$')
+  const ok = typeof args.str === 'string' && args.str.length > 0 && args.str.length % 4 === 0 && args.str.match(re)
   if (ok) return { ok: true }
   else throw new Error('argument is not a base64 encoded string.')
 }

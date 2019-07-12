@@ -66,6 +66,7 @@ export const branch = (): Promise<string> =>
 export const onbranch = (): Promise<Element> => {
   const currentBranch = branch()
 
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise<Element>(async resolve => {
     const span = document.createElement('span')
     span.appendChild(document.createTextNode('On branch '))

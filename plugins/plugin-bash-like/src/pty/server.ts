@@ -81,6 +81,7 @@ const verifySession = (expectedCookie: SessionCookie) => {
  *
  */
 const getPort = (): Promise<number> =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const { createServer } = await import('net')
 
@@ -305,6 +306,7 @@ export const main = async (N: string, server?: Server, preexistingPort?: number,
   } else {
     const WebSocket = await import('ws')
 
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async resolve => {
       const idx = servers.length
       const cleanupCallback = await disableBashSessions()
@@ -378,6 +380,7 @@ export default (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/bash/websocket/stdio',
     () =>
+      // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
         try {
           await new StdioChannelKuiSide().init(() => {
@@ -394,6 +397,7 @@ export default (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/bash/websocket/open',
     ({ execOptions }) =>
+      // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
         const N = count++
 

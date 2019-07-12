@@ -40,6 +40,7 @@ async function allocateUser() {
 
 /** thin wrapper on child_process.exec */
 function main(cmdline, execOptions, server, port, host, existingSession) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     const { uid, gid } = existingSession || (await allocateUser())
 

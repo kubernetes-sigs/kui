@@ -77,6 +77,7 @@ const cleanWrk = async () => {
  *
  */
 export const compileWrk = ({ createOutputStream }) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise<boolean>(async (resolve, reject) => {
     const stdout = createOutputStream()
 

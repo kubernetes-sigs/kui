@@ -22,28 +22,51 @@ import { Entity } from '@kui-shell/core/models/entity'
 
 export class Row {
   attributes?: Cell[]
+
   name: string
+
   type?: string
+
   packageName?: string
+
   prettyType?: string
+
   fontawesome?: string
+
   fontawesomeCSS?: string
+
   setSelected?: () => void
+
   setUnselected?: () => void
+
   nameCss?: string
+
   key?: string
+
   prettyName?: string
+
   fullName?: string
+
   kind?: string
+
   prettyKind?: string
+
   status?: string
+
   version?: string
+
   prettyVersion?: string
+
   beforeAttributes?: Cell[]
+
   rowCSS?: string | string[]
+
   onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+
   css?: string
+
   outerCSS?: string
+
   done?: boolean
 
   constructor(row: Row) {
@@ -53,18 +76,31 @@ export class Row {
 
 export class Cell {
   value: string
+
   valueDom?: Node[] | Node
+
   css?: string
+
   outerCSS?: string
+
   onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+
   key?: string
+
   watch?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+
   watchLimit?: number
+
   fontawesome?: string[] | string
+
   tag?: string
+
   tagClass?: string
+
   innerClassName?: string
+
   className?: string
+
   parent?: HTMLElement
 
   constructor(cell: Cell) {
@@ -91,17 +127,29 @@ export enum TableStyle {
 
 export class Table {
   body: Row[]
+
   type?: string
+
   style?: TableStyle
+
   header?: Row
+
   footer?: Footer
+
   noSort?: boolean
+
   noEntityColors?: boolean
+
   title?: string
+
   flexWrap?: number | boolean
+
   tableCSS?: string
+
   fontawesome?: string
+
   fontawesomeCSS?: string
+
   fontawesomeBalloon?: string
 
   constructor(table: Table) {
@@ -142,9 +190,13 @@ export function formatWatchableTable(model: Table | MultiTable, watch: Watchable
 
 export class Icon {
   fontawesome: string
+
   onclick?: (evt: Event) => void
+
   balloon?: string
+
   balloonLength?: string
+
   balloonPos?: string
 
   constructor(icon: Icon) {

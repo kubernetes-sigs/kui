@@ -76,6 +76,7 @@ export interface ReplEval {
  */
 export class DirectReplEval implements ReplEval {
   name = 'DirectReplEval'
+
   apply(commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     return evaluator.eval(args)
   }
@@ -502,7 +503,8 @@ class InProcessExecutor implements Executor {
           const nRequiredArgs = required.length + (oneof.length > 0 ? 1 : 0) - nPositionalsConsumed
           const optLikeActuals = optLikeOneOfs.filter(
             ({ name, alias = '' }) =>
-              parsedOptions.hasOwnProperty(unflag(name)) || parsedOptions.hasOwnProperty(unflag(alias))
+              Object.prototype.hasOwnProperty.call(parsedOptions, unflag(name)) ||
+              Object.prototype.hasOwnProperty.call(parsedOptions, unflag(alias))
           )
           const nOptLikeActuals = optLikeActuals.length
           const cmdArgsStart = args.indexOf(cmd)

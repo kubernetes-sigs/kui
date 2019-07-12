@@ -320,7 +320,7 @@ const filterByOutlieriness = options => ({ activations, statData }) => {
     const threshold = statData.n[thresholdN]
 
     // check that the user passed a supported options.outliers parameter
-    if (!options.hasOwnProperty('outliers') && threshold === undefined) {
+    if (!Object.prototype.hasOwnProperty.call(options, 'outliers') && threshold === undefined) {
       // then the user specified an undefined threhsold
       throw new Error(`Unsupported threhsold. Supported threhsolds: ${Object.keys(statData.n)}`)
     }

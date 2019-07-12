@@ -42,9 +42,14 @@ interface CredentialsMap {
  */
 class State {
   assertedLocalAccess = false
-  hasLocalAccess = true // may change as media changes or assertLocalAccess is called
+
+  hasLocalAccess = true
+
+  // may change as media changes or assertLocalAccess is called
   hasProxy = false
+
   media = Media.Unknown
+
   validCredentials: CredentialsMap = {} // map to the credentials
 }
 const state: State = new State()

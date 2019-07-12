@@ -79,6 +79,7 @@ export interface KubeMetadata {
 }
 export class DefaultKubeMetadata implements KubeMetadata {
   kind = undefined
+
   name = undefined
 }
 
