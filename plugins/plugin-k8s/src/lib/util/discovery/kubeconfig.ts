@@ -40,7 +40,7 @@ const fillInPATH = (env: Record<string, any>) => {
 // indicates failure (on macOS, the length seems to be 0?)
 const maybeKUBECONFIG = (file: string): string | void => {
   try {
-    const maybe = execSync(`echo $(. ~/${file} && echo $KUBECONFIG)`)
+    const maybe = execSync(`if [ -f ~/${file} ]; then echo $(. ~/${file} && echo $KUBECONFIG); fi`)
     debug('maybe? KUBECONFIG from %s', file, maybe)
     if (maybe.length > 1) {
       const kubeconfig = maybe.toString().trim()
