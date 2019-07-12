@@ -238,17 +238,16 @@ export default (commandTree: CommandRegistrar) => {
     requiresLocal: true
   })
 
+  commandTree.listen('/kuicd', cd, {
+    noAuthOk: true
+  })
+
   if (!inBrowser()) {
     commandTree.listen('/cd', cd, {
       usage: usage.cd,
-      noAuthOk: true,
-      inBrowserOk: true
-    })
-  } else {
-    commandTree.listen('/kuicd', cd, {
       noAuthOk: true
     })
-
+  } else {
     commandTree.listen('/cd', bcd, {
       usage: usage.cd,
       noAuthOk: true,

@@ -22,6 +22,7 @@ import { promisify } from 'util'
 import { join } from 'path'
 import { exec } from 'child_process'
 import { createServer, Server } from 'https'
+import { parse as parseCookie } from 'cookie'
 
 // for types
 import { Socket } from 'net'
@@ -37,6 +38,43 @@ const servers = []
 
 /** handler for shell/pty exit */
 export type ExitHandler = (exitCode: number) => void
+
+/**
+ * Verify a session's validity
+ *
+ */
+interface Session {
+  uid: number
+  gid: number
+  token: string
+}
+interface SessionCookie {
+  key: string
+  session: Session
+}
+const verifySession = (expectedCookie: SessionCookie) => {
+  return ({ req }: { req: IncomingMessage }, cb: (ok: boolean, code?: number, why?: string) => void) => {
+    const cookies = parseCookie(req.headers.cookie || '')
+    const sessionToken = cookies[expectedCookie.key]
+    if (sessionToken) {
+      try {
+        const actualSession: Session = JSON.parse(Buffer.from(sessionToken, 'base64').toString('utf-8'))
+        if (actualSession.token === expectedCookie.session.token) {
+          cb(true) // eslint-disable-line standard/no-callback-literal
+          return
+        } else {
+          console.error('token found, but mismatched values', expectedCookie, actualSession)
+        }
+      } catch (err) {
+        console.error('error parsing session token', sessionToken, err)
+      }
+    }
+
+    // intentional fall-through for invalid session
+    console.error('invalid session for websocket upgrade', expectedCookie, cookies[expectedCookie.key], cookies)
+    cb(false, 401, 'Invalid authorization for websocket upgrade') // eslint-disable-line standard/no-callback-literal
+  }
+}
 
 /**
  * Allocate a port
@@ -110,7 +148,7 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
  *
  */
 let cachedLoginShell: string
-const getLoginShell = async (): Promise<string> =>
+export const getLoginShell = async (): Promise<string> =>
   new Promise((resolve, reject) => {
     if (cachedLoginShell) {
       resolve(cachedLoginShell)
@@ -134,7 +172,7 @@ const getLoginShell = async (): Promise<string> =>
  *
  *
  */
-export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
+export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) => async (ws: Channel) => {
   // for now, we need to use a dynamic import here, because the plugin
   // compiler does not work versus node-pty's eager loading of the
   // native modules -- we compile the native modules against electron,
@@ -152,8 +190,6 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
     try {
       const msg: {
         type: string
-        uid?: number
-        gid?: number
         data?: string
         cmdline?: string
         exitCode?: number
@@ -170,8 +206,8 @@ export const onConnection = (exitNow: ExitHandler) => async (ws: Channel) => {
         case 'exec':
           try {
             shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
-              uid: msg.uid,
-              gid: msg.gid,
+              uid,
+              gid,
               name: 'xterm-color',
               rows: msg.rows,
               cols: msg.cols,
@@ -239,11 +275,11 @@ const createDefaultServer = (): Server => {
 
 /**
  * Spawn the shell
- * Compliments of http://krasimirtsonev.com/blog/article/meet-evala-your-terminal-in-the-browser-extension
+ * vague origins: http://krasimirtsonev.com/blog/article/meet-evala-your-terminal-in-the-browser-extension
  */
 let cachedWss: Server
 let cachedPort: number
-export const main = async (N: number, server?: Server, preexistingPort?: number) => {
+export const main = async (N: string, server?: Server, preexistingPort?: number, expectedCookie?: SessionCookie) => {
   if (cachedWss) {
     return cachedPort
   } else {
@@ -263,13 +299,19 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
       }
 
       if (preexistingPort) {
-        const wss = new WebSocket.Server({ noServer: true })
+        // if we were given a session cookie, then use the
+        // verifyClient functionality of WebSocket.Server to enforce
+        // the session's validity
+        const wss = new WebSocket.Server({
+          noServer: true,
+          verifyClient: expectedCookie && verifySession(expectedCookie)
+        })
         servers.push({ wss })
 
         // only handle upgrades for the "N" index we own
         const doUpgrade = (request: IncomingMessage, socket: Socket, head: Buffer) => {
-          const match = request.url.match(/\/bash\/([0-9]+)/)
-          const yourN = match && parseInt(match[1], 10) // do we own this upgrade?
+          const match = request.url.match(/\/bash\/([0-9a-z-]+)/)
+          const yourN = match && match[1] // do we own this upgrade?
           if (yourN === N) {
             server.removeListener('upgrade', doUpgrade)
             wss.handleUpgrade(request, socket, head, function done(ws: WebSocket) {
@@ -290,7 +332,14 @@ export const main = async (N: number, server?: Server, preexistingPort?: number)
         })
       }
     }).then(({ wss, port, exitNow }: { wss: Server; port: number; exitNow: ExitHandler }) => {
-      wss.on('connection', onConnection(exitNow))
+      wss.on(
+        'connection',
+        onConnection(
+          exitNow,
+          expectedCookie && expectedCookie.session.uid,
+          expectedCookie && expectedCookie.session.gid
+        )
+      )
       return { wss, port }
     })
   }
@@ -308,10 +357,10 @@ export default (commandTree: CommandRegistrar) => {
     () =>
       new Promise(async (resolve, reject) => {
         try {
-          await new StdioChannelKuiSide().init(() => {
+          await new StdioChannelKuiSide().init(/* () => {
             console.error('done with stdiochannel')
             resolve()
-          })
+          } */)
         } catch (err) {
           reject(err)
         }
@@ -336,7 +385,7 @@ export default (commandTree: CommandRegistrar) => {
 
         if (execOptions.isProxied) {
           // console.log(`do we have a port? ${execOptions['port']}`)
-          return main(N, execOptions['server'], execOptions['port'])
+          return main(N.toString(), execOptions['server'], execOptions['port'])
             .then(resolveWithHost)
             .catch(reject)
         } else {

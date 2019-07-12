@@ -32,7 +32,7 @@
     "marked": "0.6.2"
   },
   "devDependencies": {
-    "@types/marked": "^0.6.5"
+    "@types/marked": "0.6.5"
   },
   "kui": {
     "headless": false,

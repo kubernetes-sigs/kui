@@ -26,12 +26,11 @@ import { config } from '@kui-shell/core/core/settings'
 import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 
-import * as needle from 'needle'
 const debug = Debug('plugins/proxy-support/executor')
 
 interface ActualProxyServerConfig {
   url: string
-  needleOptions?: needle.NeedleOptions
+  // needleOptions?: needle.NeedleOptions
 }
 
 interface DisabledProxyServerConfig {
@@ -93,12 +92,33 @@ class ProxyEvaluator implements ReplEval {
       debug('sending body', body)
 
       try {
-        const invokeRemote = () => {
-          const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
-          return needle('post', proxyURL.href, body, Object.assign({ json: true }, proxyServerConfig.needleOptions))
-        }
+        const invokeRemote = () =>
+          new Promise((resolve, reject) => {
+            const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
+            const xhr = new XMLHttpRequest()
+            xhr.open('POST', proxyURL.href)
+            xhr.responseType = 'json'
+            xhr.withCredentials = true
+            xhr.setRequestHeader('Content-Type', 'application/json')
+            xhr.setRequestHeader('Accept', 'application/json')
+            xhr.addEventListener('error', () => {
+              console.error('error in xhr', xhr)
+              resolve(xhr.response || 'Internal Error')
+            })
+            xhr.addEventListener('load', () => {
+              resolve({
+                statusCode: xhr.status,
+                body: xhr.response.response
+              })
+            })
+            // proxyServerConfig.needleOptions
+            xhr.send(JSON.stringify(body))
+          })
 
-        const response: needle.NeedleResponse = await (window['webview-proxy']
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response: { statusCode: number; body: Record<string, any> | string | ElementMimic } = await (window[
+          'webview-proxy'
+        ]
           ? window['webview-proxy'](body)
           : invokeRemote())
 
@@ -107,7 +127,7 @@ class ProxyEvaluator implements ReplEval {
         if (response.statusCode !== 200) {
           debug('rethrowing non-200 response', response)
           // to trigger the catch just below
-          const err = new Error(response.body)
+          const err = new Error(response.body as string)
           err['code'] = err['statusCode'] = response.statusCode
           err['body'] = response.body
           throw err

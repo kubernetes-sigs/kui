@@ -18,10 +18,10 @@ import * as Debug from 'debug'
 import * as EventEmitter from 'events'
 import { ChildProcess } from 'child_process'
 
-import { ExitHandler, onConnection } from './server'
 import { Channel, ReadyState } from './channel'
 
-const debug = Debug('plugins/bash-like/pty/stdio-channel')
+const debugW = Debug('plugins/bash-like/pty/stdio-channel-proxy')
+const debugK = Debug('plugins/bash-like/pty/stdio-channel-kui')
 
 /**
  * stdin/stdout channel
@@ -38,19 +38,21 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
   }
 
   public async init(child: ChildProcess) {
-    debug('StdioChannelWebsocketSide.init')
+    debugW('StdioChannelWebsocketSide.init')
 
     child.stderr.on('data', (data: Buffer) => {
-      debug(data.toString())
+      debugW(data.toString())
     })
 
     // underlying pty has emitted data from the subprocess
     child.stdout.on('data', (data: Buffer) => {
+      debugW('forwarding child output upstream', data.toString())
       this.send(data.toString())
     })
 
     // upstream client has sent data downstream; forward it to the subprocess
     this.wss.on('message', (data: string) => {
+      debugW('forwarding message downstream', data)
       child.stdin.write(data)
     })
   }
@@ -78,13 +80,14 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
 export class StdioChannelKuiSide extends EventEmitter implements Channel {
   public readyState = ReadyState.OPEN
 
-  public async init(onExit: ExitHandler) {
-    debug('StdioChannelKuiSide.init')
+  public async init(/* onExit: ExitHandler */) {
+    debugK('StdioChannelKuiSide.init')
 
     // await onConnection(await disableBashSessions())(this)
-    await onConnection(onExit)(this)
+    // await onConnection(onExit)(this)
 
     process.stdin.on('data', (data: Buffer) => {
+      debugK('input', data.toString())
       this.emit('message', data.toString())
     })
 
@@ -94,7 +97,7 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
   /** emit 'message' on the other side */
   public send(msg: string) {
     if (this.readyState === ReadyState.OPEN) {
-      debug('send', msg)
+      debugK('send', msg)
       process.stdout.write(msg)
     }
   }
