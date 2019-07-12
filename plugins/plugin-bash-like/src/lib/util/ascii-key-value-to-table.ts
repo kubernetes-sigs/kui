@@ -49,7 +49,7 @@ export default (str: string): Pair[] | void => {
         css: 'normal-wrap break-all'
       }
       matches.push({ type: 'key-value', name: match[1], attributes: [value] })
-    } while ((match = kvPattern.exec(str))) // eslint-disable-line no-cond-assign
+    } while ((match = kvPattern.exec(str)))
 
     // make sure we've captured all of the rows
     const nLines = str.split(/\n/).filter(x => x).length
