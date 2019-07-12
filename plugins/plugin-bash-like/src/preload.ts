@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import prefetchShellState from './pty/prefetch'
