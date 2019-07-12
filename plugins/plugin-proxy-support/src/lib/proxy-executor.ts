@@ -93,7 +93,7 @@ class ProxyEvaluator implements ReplEval {
 
       try {
         const invokeRemote = () =>
-          new Promise((resolve, reject) => {
+          new Promise(resolve => {
             const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
             const xhr = new XMLHttpRequest()
             xhr.open('POST', proxyURL.href)
