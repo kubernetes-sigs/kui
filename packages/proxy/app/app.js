@@ -25,7 +25,7 @@ const ExecRouter = require('./routes/exec')
 const app = express()
 
 app.use(
-  cors()
+  cors({ origin: 'http://localhost:9080', credentials: true })
   // TODO cors config, e.g.
   // { origin: 'https://localhost:8080' }
 )

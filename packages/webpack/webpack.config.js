@@ -141,7 +141,6 @@ module.exports = {
     fs: 'empty',
     // eslint-disable-next-line @typescript-eslint/camelcase
     child_process: 'empty',
-    'node-docker-api': 'empty',
     'docker-modem': 'empty',
     'fs-extra': 'empty'
   },
@@ -178,8 +177,7 @@ module.exports = {
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*' },
     compress: true,
-    liveReload: true,
-    overlay: { errors: true },
+    clientLogLevel: 'silent',
     watchOptions: {
       poll: 1000,
       ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']

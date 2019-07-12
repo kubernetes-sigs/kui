@@ -130,7 +130,8 @@ export class ElementMimic {
     )
   }
 
-  static isFakeDom(dom: object): dom is ElementMimic {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static isFakeDom(dom: any): dom is ElementMimic {
     return (dom as ElementMimic)._isFakeDom
   }
 }

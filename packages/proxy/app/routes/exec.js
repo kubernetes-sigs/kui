@@ -18,21 +18,30 @@ const debug = require('debug')('proxy/exec')
 const { exec, spawn } = require('child_process')
 const express = require('express')
 const { v4: uuid } = require('uuid')
+const { parse: parseCookie } = require('cookie')
 
 /* const { main } = require('../../kui/node_modules/@kui-shell/core')
 const {
   setValidCredentials
 } = require('../../kui/node_modules/@kui-shell/core/core/capabilities') */
 
+const sessionKey = 'kui_websocket_auth'
+
 const mainPath = require.resolve('../../kui/node_modules/@kui-shell/core')
 const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/server')
 const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/stdio-channel')
 
+async function allocateUser() {
+  const uid = undefined
+  const gid = undefined
+
+  return { uid, gid }
+}
+
 /** thin wrapper on child_process.exec */
-function main(cmdline, execOptions, server, port, host) {
+function main(cmdline, execOptions, server, port, host, existingSession) {
   return new Promise(async (resolve, reject) => {
-    const uid = undefined
-    const gid = undefined
+    const { uid, gid } = existingSession || (await allocateUser())
 
     const options = {
       uid,
@@ -51,7 +60,15 @@ function main(cmdline, execOptions, server, port, host) {
     if (wsOpen) {
       // N is the random identifier for this connection
       const N = uuid()
-      const { wss } = await wssMain(N, server, port)
+
+      const session = existingSession || {
+        uid,
+        gid,
+        token: uuid() // use a different uuid for the session cookie
+      }
+      const sessionToken = Buffer.from(JSON.stringify(session)).toString('base64')
+
+      const { wss } = await wssMain(N, server, port, { key: sessionKey, session })
 
       const child = spawn(process.argv[0], [mainPath, 'bash', 'websocket', 'stdio'], options)
 
@@ -66,14 +83,19 @@ function main(cmdline, execOptions, server, port, host) {
       const channel = new StdioChannelWebsocketSide(wss)
       await channel.init(child)
 
-      channel.on('open', () => {
+      channel.once('open', () => {
+        debug('channel open')
+
         const proto = process.env.KUI_USE_HTTP === 'true' ? 'ws' : 'wss'
         resolve({
           type: 'object',
+          cookie: {
+            key: sessionKey,
+            value: sessionToken,
+            path: `/bash/${N}`
+          },
           response: {
-            url: `${proto}://${host}/bash/${N}`,
-            uid,
-            gid
+            url: `${proto}://${host}/bash/${N}`
           }
         })
       })
@@ -132,14 +154,22 @@ module.exports = (server, port) => {
           server,
           port,
           host: req.headers.host
-        }) */
-        const { type, response } = await main(command, execOptions, server, port, req.headers.host)
-        if (type !== 'object') {
-          res.send(response)
-        } else {
-          const code = response.code || response.statusCode || 200
-          res.status(code).json(response)
+          }) */
+        const sessionToken = parseCookie(req.headers.cookie || '')[sessionKey]
+        const session = sessionToken && JSON.parse(Buffer.from(sessionToken, 'base64').toString('utf-8'))
+        const { type, cookie, response } = await main(command, execOptions, server, port, req.headers.host, session)
+
+        if (cookie) {
+          res.header('Access-Control-Allow-Credentials', 'true')
+          res.cookie(cookie.key, cookie.value, {
+            httpOnly: true, // clients are not allowed to read this cookie
+            secure: process.env.KUI_USE_HTTP !== 'true', // https required?
+            path: cookie.path // lock down the cookie to this channel's path
+          })
         }
+
+        const code = response.code || response.statusCode || 200
+        res.status(code).json({ type, response })
       } catch (err) {
         debug('exception in command execution', err.code, err.message, err)
         const possibleCode = err.code || err.statusCode

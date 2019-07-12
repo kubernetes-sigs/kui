@@ -28,6 +28,9 @@
     "debug": "4.1.1",
     "marked": "0.6.2"
   },
+  "devDependencies": {
+    "@types/marked": "0.6.5"
+  },
   "publishConfig": {
     "access": "public"
   }

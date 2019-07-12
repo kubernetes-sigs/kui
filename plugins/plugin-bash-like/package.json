@@ -25,18 +25,19 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
+    "cookie": "0.4.0",
     "debug": "4.1.1",
     "diff2html": "2.10.0",
     "marked": "0.6.2",
     "node-pty": "0.8.1",
     "shelljs": "0.8.3",
-    "strip-ansi": "^5.2.0",
-    "ws": "7.0.1",
+    "strip-ansi": "5.2.0",
+    "ws": "7.1.0",
     "xterm": "3.13.0"
   },
   "devDependencies": {
-    "@types/marked": "^0.6.5",
-    "@types/shelljs": "^0.8.5"
+    "@types/marked": "0.6.5",
+    "@types/shelljs": "0.8.5"
   },
   "kui": {
     "exclude": {
