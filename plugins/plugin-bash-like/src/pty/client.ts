@@ -460,18 +460,17 @@ const getOrCreateChannel = async (
 ): Promise<Channel> => {
   // tell the server to start a subprocess
   const doExec = (ws: Channel) => {
-    debug('exec after open', terminal.cols, terminal.rows, process.env.PWD || process.cwd())
+    const msg = {
+      type: 'exec',
+      cmdline,
+      rows: terminal.rows,
+      cols: terminal.cols,
+      cwd: process.env.PWD || process.cwd(),
+      env: !inBrowser() && process.env // don't send an empty process.env from the browser!
+    }
+    debug('exec after open', msg)
 
-    ws.send(
-      JSON.stringify({
-        type: 'exec',
-        cmdline,
-        rows: terminal.rows,
-        cols: terminal.cols,
-        cwd: process.env.PWD || process.cwd(),
-        env: process.env
-      })
-    )
+    ws.send(JSON.stringify(msg))
   }
 
   const cachedws = tab['ws'] as Channel

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-// import * as Debug from 'debug'
-// const debug = Debug('plugins/bash-like/pty/server')
+import * as Debug from 'debug'
+const debug = Debug('plugins/bash-like/pty/server')
 
 import * as fs from 'fs'
 import { promisify } from 'util'
@@ -48,7 +48,7 @@ interface Session {
   gid: number
   token: string
 }
-interface SessionCookie {
+export interface SessionCookie {
   key: string
   session: Session
 }
@@ -169,10 +169,21 @@ export const getLoginShell = async (): Promise<string> =>
   })
 
 /**
+ * Use precomputed shell aliases
+ *
+ */
+let shellAliases: Record<string, string> = {}
+export function setShellAliases(aliases: Record<string, string>) {
+  shellAliases = aliases
+}
+
+/**
  *
  *
  */
 export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) => async (ws: Channel) => {
+  debug('onConnection', uid, gid, ws)
+
   // for now, we need to use a dynamic import here, because the plugin
   // compiler does not work versus node-pty's eager loading of the
   // native modules -- we compile the native modules against electron,
@@ -187,6 +198,8 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
+    debug('got message')
+
     try {
       const msg: {
         type: string
@@ -204,15 +217,22 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           return exitNow(msg.exitCode)
 
         case 'exec':
+          const env = Object.assign({}, msg.env || process.env, { KUI: 'true' })
+
           try {
-            shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', msg.cmdline], {
+            const end = msg.cmdline.indexOf(' ')
+            const cmd = msg.cmdline.slice(0, end < 0 ? msg.cmdline.length : end) // FIXME quoted first arg
+            const aliasedCmd = shellAliases[cmd]
+            const cmdline = aliasedCmd ? msg.cmdline.replace(new RegExp(`^${cmd}`), aliasedCmd) : msg.cmdline
+
+            shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', cmdline], {
               uid,
               gid,
               name: 'xterm-color',
               rows: msg.rows,
               cols: msg.cols,
               cwd: msg.cwd || process.cwd(),
-              env: Object.assign({}, msg.env || process.env, { KUI: 'true' })
+              env
             })
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
@@ -332,14 +352,17 @@ export const main = async (N: string, server?: Server, preexistingPort?: number,
         })
       }
     }).then(({ wss, port, exitNow }: { wss: Server; port: number; exitNow: ExitHandler }) => {
-      wss.on(
-        'connection',
-        onConnection(
-          exitNow,
-          expectedCookie && expectedCookie.session.uid,
-          expectedCookie && expectedCookie.session.gid
+      if (!expectedCookie) {
+        debug('listening for connection')
+        wss.on(
+          'connection',
+          onConnection(
+            exitNow,
+            expectedCookie && expectedCookie.session.uid,
+            expectedCookie && expectedCookie.session.gid
+          )
         )
-      )
+      }
       return { wss, port }
     })
   }
@@ -357,10 +380,10 @@ export default (commandTree: CommandRegistrar) => {
     () =>
       new Promise(async (resolve, reject) => {
         try {
-          await new StdioChannelKuiSide().init(/* () => {
+          await new StdioChannelKuiSide().init(() => {
             console.error('done with stdiochannel')
             resolve()
-          } */)
+          })
         } catch (err) {
           reject(err)
         }

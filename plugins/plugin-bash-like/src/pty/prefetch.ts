@@ -1,0 +1,159 @@
+/*
+ * Copyright 2019 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as Debug from 'debug'
+const debug = Debug('plugins/bash-like/pty/prefetch')
+debug('loading')
+
+import { exec, execFile } from 'child_process'
+import * as propertiesParser from 'properties-parser'
+
+import { getLoginShell, setShellAliases } from './server'
+
+/**
+ * Preprocess bash/zsh environment variables
+ *
+ */
+function prefetchEnv() {
+  if (process.env.HOME) {
+    debug('skipping prefetchEnv')
+    return
+  }
+
+  return new Promise(async (resolve, reject) => {
+    exec(`${await getLoginShell()} -l -i -c printenv`, (err, stdout, stderr) => {
+      try {
+        if (stderr) {
+          debug(stderr)
+        }
+        if (err) {
+          debug('Error retrieving shell ENV', err)
+        } else {
+          const env = propertiesParser.parse(stdout.toString())
+          debug('got env', env)
+          for (const key in env) {
+            if (key !== '_') {
+              process.env[key] = env[key]
+            }
+          }
+        }
+      } catch (err) {
+        reject(err)
+      } finally {
+        resolve()
+      }
+    })
+  })
+}
+
+/**
+ * Determine HOME
+ *
+ */
+function prefetchHome() {
+  if (process.env.HOME) {
+    debug('skipping prefetchHome')
+    return
+  }
+
+  return new Promise(async (resolve, reject) => {
+    exec('eval echo ~', (err, stdout, stderr) => {
+      try {
+        if (stderr) {
+          debug(stderr)
+        }
+        if (err) {
+          debug('Error retrieving HOME', err)
+        } else {
+          const HOME = stdout.toString()
+          debug('got HOME', HOME)
+          process.env._HOME = HOME
+        }
+      } catch (err) {
+        reject(err)
+      } finally {
+        resolve()
+      }
+    })
+  })
+}
+
+/**
+ * e.g. in this: alias treep='tree -C -A -F -I '\''*~'\'' --dirsfirst'
+ * we want to remove those quotes
+ */
+function unquote(val: string): string {
+  return val.replace(/(^')|('$)/g, '').replace(/'\\''/g, "'")
+}
+
+/**
+ * Preprocess bash/zsh aliases
+ *
+ */
+function prefetchAliases() {
+  if (process.platform !== 'darwin') {
+    debug('skipping prefetchAliases')
+    return
+  }
+
+  return new Promise(async (resolve, reject) => {
+    execFile(await getLoginShell(), ['-l', '-i', '-c', 'alias'], (err, stdout, stderr) => {
+      try {
+        if (stderr) {
+          debug(stderr)
+        }
+        if (err) {
+          debug('Error retrieving shell aliases', err)
+        } else {
+          const aliases = stdout
+            .toString()
+            .trim()
+            .split(/[\n\r]/)
+            .filter(_ => _)
+            .map(_ => _.match(/^(alias )?(.*)=(.*)/))
+            .reduce((M, [ignore1, ignore2, key, value]) => {
+              M[key] = unquote(value)
+              return M
+            }, {})
+          debug('got aliases', aliases)
+          setShellAliases(aliases)
+        }
+      } catch (err) {
+        debug('Error parsing aliases', stdout.length)
+        debug(err)
+        resolve()
+      } finally {
+        resolve()
+      }
+    })
+  })
+}
+
+/**
+ * Parent routine for all prefetching
+ *
+ */
+export default () =>
+  Promise.all([prefetchEnv(), prefetchAliases(), prefetchHome()])
+    .then(() => {
+      if (process.env._HOME) {
+        process.env.HOME = process.env._HOME
+        delete process.env._HOME
+      }
+    })
+    .catch(err => {
+      console.error('error prefetching state', err)
+    })

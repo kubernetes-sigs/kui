@@ -25,7 +25,7 @@ import { onConnection, disableBashSessions } from './server'
 const debug = Debug('plugins/bash-like/pty/channel')
 
 export interface Channel {
-  send: (msg: string) => void
+  send: (msg: string | Buffer) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on: (eventType: string, handler: any) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
