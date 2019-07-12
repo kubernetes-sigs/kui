@@ -66,14 +66,13 @@ const WebErrorResponseBuilder = (function() {
         'access-control-allow-credentials': 'true',
         'Content-Type': 'application/json'
       }
-      // eslint-disable-next-line node/no-deprecated-api
-      result.body = new Buffer(
+      result.body = Buffer.from(
         JSON.stringify({
           code: value.status_code,
           error: value.error,
           description: value.description
         })
-      ).toString('base64')
+      )
       value = {}
       return result
     }
