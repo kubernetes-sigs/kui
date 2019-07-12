@@ -199,6 +199,9 @@ exports.after = (ctx, f) => () => {
 }
 
 exports.oops = ctx => err => {
+  if (process.env.MOCHA_RUN_TARGET) {
+    console.log(`Error with mocha target ${process.env.MOCHA_RUN_TARGET}`)
+  }
   console.log(err)
 
   if (ctx.app) {

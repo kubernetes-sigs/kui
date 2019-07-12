@@ -67,8 +67,9 @@ function main(cmdline, execOptions, server, port, host, existingSession) {
         token: uuid() // use a different uuid for the session cookie
       }
       const sessionToken = Buffer.from(JSON.stringify(session)).toString('base64')
+      const cookie = { key: sessionKey, session }
 
-      const { wss } = await wssMain(N, server, port, { key: sessionKey, session })
+      const { wss } = await wssMain(N, server, port, cookie)
 
       const child = spawn(process.argv[0], [mainPath, 'bash', 'websocket', 'stdio'], options)
 
@@ -81,7 +82,7 @@ function main(cmdline, execOptions, server, port, host, existingSession) {
       })
 
       const channel = new StdioChannelWebsocketSide(wss)
-      await channel.init(child)
+      await channel.init(child, cookie)
 
       channel.once('open', () => {
         debug('channel open')

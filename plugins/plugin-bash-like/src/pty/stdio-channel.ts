@@ -18,10 +18,14 @@ import * as Debug from 'debug'
 import * as EventEmitter from 'events'
 import { ChildProcess } from 'child_process'
 
+import { ExitHandler, onConnection, SessionCookie } from './server'
 import { Channel, ReadyState } from './channel'
 
+const debugE = Debug('plugins/bash-like/pty/stdio-channel-kui-stderr')
 const debugW = Debug('plugins/bash-like/pty/stdio-channel-proxy')
 const debugK = Debug('plugins/bash-like/pty/stdio-channel-kui')
+
+const MARKER = '\n'
 
 /**
  * stdin/stdout channel
@@ -30,6 +34,7 @@ const debugK = Debug('plugins/bash-like/pty/stdio-channel-kui')
 export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
   public readyState = ReadyState.CONNECTING
 
+  private ws: Channel
   private readonly wss: EventEmitter
 
   public constructor(wss: EventEmitter) {
@@ -37,11 +42,31 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
     this.wss = wss
   }
 
-  public async init(child: ChildProcess) {
+  public async init(child: ChildProcess, cookie: SessionCookie) {
     debugW('StdioChannelWebsocketSide.init')
 
+    const terminateChildProcess = () => {
+      debugW('terminateChildProcess')
+      child.kill('SIGINT')
+    }
+
+    this.wss.on('connection', (ws: Channel) => {
+      debugW('got connection')
+      this.ws = ws
+
+      // upstream client has sent data downstream; forward it to the subprocess
+      ws.on('message', (data: string) => {
+        debugW('forwarding message downstream', data)
+        child.stdin.write(data)
+      })
+    })
+
+    child.on('exit', (code: number) => {
+      debugW('child exit', code)
+    })
+
     child.stderr.on('data', (data: Buffer) => {
-      debugW(data.toString())
+      debugE(data.toString())
     })
 
     // underlying pty has emitted data from the subprocess
@@ -49,21 +74,20 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
       debugW('forwarding child output upstream', data.toString())
       this.send(data.toString())
     })
-
-    // upstream client has sent data downstream; forward it to the subprocess
-    this.wss.on('message', (data: string) => {
-      debugW('forwarding message downstream', data)
-      child.stdin.write(data)
-    })
   }
 
   /** emit 'message' on the other side */
   public send(msg: string) {
-    if (msg === 'open') {
+    debugW('send', this.readyState === ReadyState.OPEN)
+
+    if (msg === `open${MARKER}`) {
       this.readyState = ReadyState.OPEN
       this.emit('open')
     } else if (this.readyState === ReadyState.OPEN) {
-      this.wss.emit('message', msg)
+      msg
+        .split(MARKER)
+        .filter(_ => _)
+        .forEach(_ => this.ws.send(_))
     }
   }
 
@@ -80,15 +104,15 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
 export class StdioChannelKuiSide extends EventEmitter implements Channel {
   public readyState = ReadyState.OPEN
 
-  public async init(/* onExit: ExitHandler */) {
+  public async init(onExit: ExitHandler) {
     debugK('StdioChannelKuiSide.init')
 
     // await onConnection(await disableBashSessions())(this)
-    // await onConnection(onExit)(this)
+    await onConnection(onExit)(this)
 
     process.stdin.on('data', (data: Buffer) => {
       debugK('input', data.toString())
-      this.emit('message', data.toString())
+      this.emit('message', data)
     })
 
     this.send('open')
@@ -98,7 +122,7 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
   public send(msg: string) {
     if (this.readyState === ReadyState.OPEN) {
       debugK('send', msg)
-      process.stdout.write(msg)
+      process.stdout.write(`${msg}${MARKER}`)
     }
   }
 
