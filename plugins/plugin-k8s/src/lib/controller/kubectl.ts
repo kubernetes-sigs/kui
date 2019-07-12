@@ -88,6 +88,7 @@ const parseYAML = async (str: string): Promise<KubeResource> => {
  */
 type CleanupFunction = () => void
 const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.ProcessEnv): Promise<CleanupFunction> =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     // debug('possiblyExportCredentials', process.env.KUBECONFIG, execOptions && execOptions.credentials)
 
@@ -254,6 +255,7 @@ const prepareUsage = async (command: string): Promise<UsageModel> => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
 const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const {
       block,
@@ -386,7 +388,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         }
       )
     )
-    if (verb === 'delete' && !options.hasOwnProperty('wait') && isKube) {
+    if (verb === 'delete' && !Object.prototype.hasOwnProperty.call(options, 'wait') && isKube) {
       // by default, apparently, kubernetes treats finalizers as
       // synchronous, and --wait defaults to true
       argvWithFileReplacements.push('--wait=false')

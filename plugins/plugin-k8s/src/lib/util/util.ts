@@ -49,6 +49,7 @@ export const maybeAsDate = str => {
  *
  */
 export const isDirectory = (filepath: string): Promise<boolean> =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise<boolean>(async (resolve, reject) => {
     if (inBrowser()) {
       resolve(false)

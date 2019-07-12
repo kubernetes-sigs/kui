@@ -190,6 +190,7 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
  *
  */
 const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const stats = numstat()
     const currentBranch = onbranch()

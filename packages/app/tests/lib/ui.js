@@ -523,7 +523,7 @@ const sameStruct = (struct1, struct2, subset = false) => {
     return sameStruct(map1, map2, subset)
   }
 
-  for (let key in struct1) {
+  for (const key in struct1) {
     if (!(key in struct2)) {
       console.log(`!(${key} in struct2)`)
       return false
@@ -548,7 +548,7 @@ const sameStruct = (struct1, struct2, subset = false) => {
   // if struct1 if expected to be a subset of struct2, then we're done
   if (subset) return true
 
-  for (let key in struct2) {
+  for (const key in struct2) {
     if (!(key in struct1)) {
       console.log(`!(${key} in struct1)`)
       return false

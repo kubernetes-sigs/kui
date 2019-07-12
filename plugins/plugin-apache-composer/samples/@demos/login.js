@@ -15,6 +15,6 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let main = () => ({
+const main = () => ({
   html: `<html><body>please say the magic word.</body></html>`
 })

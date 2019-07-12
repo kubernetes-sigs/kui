@@ -46,6 +46,7 @@ export enum ReadyState {
  */
 export class InProcessChannel extends EventEmitter implements Channel {
   readyState = ReadyState.OPEN
+
   private otherSide: InProcessChannel
 
   constructor(otherSide?: InProcessChannel) {
@@ -90,6 +91,7 @@ export class InProcessChannel extends EventEmitter implements Channel {
  */
 export class WebViewChannelRendererSide extends EventEmitter implements Channel {
   readyState = ReadyState.OPEN
+
   private channelId: number
 
   async init() {

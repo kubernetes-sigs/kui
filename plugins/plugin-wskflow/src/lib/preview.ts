@@ -62,6 +62,7 @@ interface CompositionWithCode {
  */
 export default (commandTree: CommandRegistrar) => {
   const readFile = (input: string): Promise<string> =>
+    // eslint-disable-next-line no-async-promise-executor
     new Promise(async (resolve, reject) => {
       const filepath = findFile(expandHomeDir(input))
 

@@ -41,15 +41,25 @@ export interface KialiOptions {
 
 class DefaultOptions implements KialiOptions {
   local = false
+
   kialiNamespace = 'istio-system'
+
   duration = '10m'
+
   pi = '15000'
+
   graphType = 'versionedApp'
+
   layout = 'dagre'
+
   injectServiceNodes = true
+
   groupBy = 'app'
+
   appenders = 'deadNode,sidecarsCheck,serviceEntry,istio'
+
   namespaces = 'default'
+
   namespace = 'default'
 }
 

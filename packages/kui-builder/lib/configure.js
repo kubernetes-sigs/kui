@@ -57,7 +57,7 @@ const evaluateMacros = settings => str => {
   debug('evaluateMacros', settings)
   task('evaluate macros', str)
 
-  for (let key in settings) {
+  for (const key in settings) {
     str = str.replace(new RegExp('\\$\\{' + key + '\\}', 'g'), settings[key])
   }
 

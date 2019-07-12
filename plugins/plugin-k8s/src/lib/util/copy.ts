@@ -40,6 +40,7 @@ type CopyOutHandler = (src: string) => string
  *
  */
 const copyFile = (src, target) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     debug('copyFile', src, target)
 
@@ -66,6 +67,7 @@ const copyFile = (src, target) =>
  *
  */
 export const copy = async (src, target) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     debug('copy', src, target)
 

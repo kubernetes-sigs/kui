@@ -122,6 +122,7 @@ const listenForTestEvents = (ipcRenderer?) => {
  *
  */
 export const tellMain = (message, channel?) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const electron = await import('electron')
     const ipcRenderer = electron.ipcRenderer

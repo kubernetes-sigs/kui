@@ -69,6 +69,7 @@ const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOption
   const opts = Object.assign({}, baseOptions, wsk.owOpts(parsedOptions, execOptions))
   delete opts._
 
+  // eslint-disable-next-line no-useless-catch
   try {
     const list = await wsk
       .client(execOptions)

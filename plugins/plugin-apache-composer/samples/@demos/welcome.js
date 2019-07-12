@@ -15,6 +15,6 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let main = args => ({
+const main = args => ({
   html: `<html><body>welcome ${args.name}!</body></html>`
 })

@@ -119,6 +119,7 @@ const Latency = {
 }
 
 const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     debug('url', url || altURL)
 

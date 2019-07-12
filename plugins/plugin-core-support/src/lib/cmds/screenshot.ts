@@ -174,6 +174,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/screenshot',
     ({ tab, argvNoOptions, parsedOptions: options }) =>
+      // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
         if (inBrowser()) {
           const error = new Error('Command not yet supported when running in a browser')

@@ -42,17 +42,29 @@ const strings = {
 /** state of the reverse-i-search */
 class ActiveISearch {
   private isSearchActive = true
+
   private readonly tab: Tab
+
   private readonly currentOnKeypress
+
   private readonly currentOnInput
+
   private currentSearchIdx = -1
+
   private readonly placeholder: HTMLElement
+
   private readonly placeholderFixedPart: HTMLElement
+
   private readonly placeholderContentPart: HTMLElement
+
   private readonly placeholderTypedPart: HTMLElement
+
   private readonly placeholderMatchedPrefixPart: HTMLElement
+
   private readonly placeholderMatchedSuffixPart: HTMLElement
+
   private readonly prompt: HTMLInputElement
+
   private readonly promptLeft: Element
 
   constructor(tab: Tab) {

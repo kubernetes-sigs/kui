@@ -50,10 +50,15 @@ function id2log(id: string): string {
 
 class RenderState {
   readonly graphData: Node
+
   dummyCount = 0
+
   taskIndex = 0
+
   visited: Record<string, number[]>
+
   actions: Record<string, string[]>
+
   readonly activations: ActivationLike[]
 
   constructor(acts: ActivationLike[]) {

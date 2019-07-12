@@ -26,7 +26,7 @@ exports.MetricsAggregator = function() {
       return this
     },
     finish: function() {
-      let result = value.map(function(metric) {
+      const result = value.map(function(metric) {
         metric.endTiming()
         return metric
       })
@@ -57,7 +57,7 @@ const WebErrorResponseBuilder = (function() {
       return this
     },
     build: function() {
-      let result = {}
+      const result = {}
       result.statusCode = value.status_code
       result.headers = {
         'access-control-allow-headers': 'authorization, content-type',
@@ -82,7 +82,7 @@ const WebErrorResponseBuilder = (function() {
 
 exports.TimeOutPromise = function(internalPromise, metricsAggregator, origin, timeOutInMilliseconds) {
   return new Promise((resolve, reject) => {
-    let timeout = setTimeout(function() {
+    const timeout = setTimeout(function() {
       return reject(
         WebErrorResponseBuilder.withStatusCode(504)
           .withError('SERVER_TIMEOUT')

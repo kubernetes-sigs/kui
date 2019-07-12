@@ -888,7 +888,9 @@ type UsageLike = MessageLike | MessageWithUsageModel //  | IUsageRowGenerator
 
 export class UsageError extends Error implements CodedError {
   private formattedMessage: Promise<HTMLElement>
+
   raw: UsageLike
+
   code: number
 
   constructor(message: UsageLike, extra?: UsageOptions) {

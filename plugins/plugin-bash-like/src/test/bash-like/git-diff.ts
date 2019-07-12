@@ -23,6 +23,7 @@ const { localDescribe } = common
 
 /** modify the top-level README.md, so that we can exhibit a git diff */
 const modifyTopLevelReadme = () =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     try {
       const copy = new Promise((resolve, reject) => {

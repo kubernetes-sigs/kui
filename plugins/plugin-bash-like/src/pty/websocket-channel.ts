@@ -27,6 +27,7 @@ const debug = Debug('plugins/bash-like/pty/channel')
  */
 class WebSocketChannel extends WebSocket implements Channel {
   private readonly uid: number
+
   private readonly gid: number
 
   constructor(url: string, uid: number, gid: number) {

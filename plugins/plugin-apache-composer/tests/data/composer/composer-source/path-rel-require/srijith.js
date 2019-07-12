@@ -17,7 +17,7 @@ const postProcessing = require('./actions/post_processing/index.js').main
 const startSession = require('./actions/start_session/index.js').main
 
 const app = composer.if(composerUtils.isOptionsCall, options, function(args) {
-  let metricsAggregator = composerUtils.MetricsAggregator()
+  const metricsAggregator = composerUtils.MetricsAggregator()
   return composerUtils.TimeOutPromise(
     Promise.resolve(
       composer.sequence(

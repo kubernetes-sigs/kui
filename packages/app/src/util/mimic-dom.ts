@@ -63,15 +63,25 @@ function clone<T>(instance: T): T {
 
 export class ElementMimic {
   private readonly _isFakeDom = true
+
   value = ''
+
   innerText = ''
+
   innerHTML = ''
+
   className = ''
+
   classList = new ClassList()
+
   nodeType = ''
+
   style: { [key: string]: string } = {}
+
   children: ElementMimic[] = []
+
   cells: ElementMimic[] = []
+
   rows: ElementMimic[] = []
 
   private _attrs: { [key: string]: string } = {}

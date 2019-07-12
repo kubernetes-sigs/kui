@@ -15,4 +15,4 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let main = args => ({ value: args.token === 'secret' })
+const main = args => ({ value: args.token === 'secret' })

@@ -187,7 +187,7 @@ const loadtest = (verb: string) => ({
   const action = argv[argv.indexOf(verb) + 1]
   const numThreads = options.numThreads || 4
   const numIters = options.numIters || 10
-  const thinkTime = options.hasOwnProperty('thinkTime') ? options.thinkTime : 100
+  const thinkTime = Object.prototype.hasOwnProperty.call(options, 'thinkTime') ? options.thinkTime : 100
 
   debug('action', action)
   debug('options', options)
