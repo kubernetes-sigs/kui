@@ -43,6 +43,9 @@ interface Theme {
   themes: { name: string; css: string; description?: string; style: string }[]
 }
 
+export const inBottomInputMode =
+  typeof document !== 'undefined' && document.body.classList.contains('kui--bottom-input')
+
 export const theme: Theme = t as Theme
 export const env = e
 export const config = Object.assign({}, c, devOverrides)

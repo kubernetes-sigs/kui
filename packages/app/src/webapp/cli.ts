@@ -20,6 +20,7 @@ debug('loading')
 
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
+import { inBottomInputMode } from '../core/settings'
 import UsageError from '../core/usage-error'
 import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
@@ -186,7 +187,7 @@ const getInitialBlock = (tab: Tab): HTMLElement => {
   return tab.querySelector('.repl .repl-block.repl-initial')
 }
 export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
-  return tab.querySelector('.repl-active')
+  return tab.querySelector('.repl .repl-active')
 }
 export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
   return tab.querySelector('.repl .repl-block.processing')
@@ -196,6 +197,9 @@ export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
 }
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return block && block.querySelector && block.querySelector('input')
+}
+const getBottomPrompt = (tab: Tab): HTMLInputElement => {
+  return getPrompt(tab.querySelector('.kui--input-stripe .repl-block'))
 }
 const getInitialPrompt = (tab: Tab): HTMLInputElement => {
   return getPrompt(getInitialBlock(tab))
@@ -365,6 +369,19 @@ export const setStatus = (block: HTMLElement, status: string) => {
       }
     } else if (status === 'repl-active') {
       getPrompt(block).value = ''
+    }
+
+    if (status !== 'repl-active' && inBottomInputMode) {
+      // for either processing or the final output, and if we are in
+      // bottom input model, then copy repl input from the bottom
+      // input
+      const prompt = getPrompt(block)
+      if (!prompt.value) {
+        // this guards pexecs, i.e. input filled programmatically via
+        // a click
+        const tab = getTabFromTarget(block)
+        prompt.value = getBottomPrompt(tab).value
+      }
     }
 
     // add timestamp to prompt
@@ -716,12 +733,18 @@ export const listen = (prompt: HTMLInputElement) => {
   debug('listen', prompt, document.activeElement)
   prompt.readOnly = false
 
+  const grandparent = prompt.parentNode.parentNode as Element
+  grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
+
+  if (inBottomInputMode) {
+    const tab = getTabFromTarget(prompt)
+    prompt = getBottomPrompt(tab)
+    prompt.value = ''
+  }
+
   if (!prompt.classList.contains('sidecar-header-input') && !document.activeElement.classList.contains('grab-focus')) {
     prompt.focus()
   }
-
-  const grandparent = prompt.parentNode.parentNode as Element
-  grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
 
   prompt.onkeypress = async (event: KeyboardEvent) => {
     const char = event.keyCode

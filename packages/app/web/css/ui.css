@@ -158,7 +158,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     border-color: transparent;
     box-shadow: none;
 }
-.repl, .repl input {
+.repl, .repl-input input {
     font-family: var(--font-monospace);
 }
 .result-as-table .result-table {
@@ -308,10 +308,10 @@ body[kui-theme-style="light"] .repl-prompt {
     display: flex;
     transition: border-color 150ms ease-in-out;
 }
-body.in-electron .repl-block:not(.using-custom-prompt) .repl-prompt-righty {
+body.in-electron .repl .repl-block:not(.using-custom-prompt) .repl-prompt-righty {
     border-color: transparent var(--color-prompt-background);
     border-style: solid;
-    border-width: 0.5em 0px 0.5em 0.5em; /* 50% of  height: for repl-context */
+    border-width: 0.5625em 0px 0.5625em 0.5625em; /* 50% of  height: for repl-context */
     height: 0px;
     width: 0px;
     font-size: 1rem;
@@ -326,7 +326,7 @@ body.in-electron .repl-block:not(.using-custom-prompt) .repl-prompt-righty {
     border-bottom-left-radius: 2px;
     padding-left: 5px;
     padding-right: 1px;
-    height: 1rem;
+    height: 1.125rem;
     display: flex;
     align-items: center;
     transition: background-color 150ms ease-in-out;
@@ -395,10 +395,10 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     opacity: 0 !important;
     margin: 0 !important;
 }
-.repl-result, .repl input, .repl-input-like {
+.repl-result, .repl-input input, .repl-input-like {
     font-size: 0.875em;
 }
-.repl input, .repl-input-like {
+.repl-input input, .repl-input-like {
     color: var(--color-text-01);
     background: transparent;
     border: none;
@@ -408,7 +408,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-.repl input:focus, .repl-input-like:focus {
+.repl-input input:focus, .repl-input-like:focus {
     outline: none;
 }
 .repl-block.valid-response .ok, .green-text, .dragover .ok-text-on-dragover {
@@ -3069,3 +3069,56 @@ body {
 @font-face { font-family: "SF Mono"; font-weight: 700; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-BoldItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
 @font-face { font-family: "SF Mono"; font-weight: 800; font-style: normal; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Heavy.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
 @font-face { font-family: "SF Mono"; font-weight: 800; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-HeavyItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+
+.kui--rows {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.kui--columns {
+    flex: 1;
+    display: flex;
+}
+.kui--input-stripe {
+    display: none;
+    /*position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2.75em;*/
+    flex-basis: 2.75em;
+    border-top: 1px inset var(--color-ui-03);
+    background-color: var(--color-ui-02);
+    transition: border-color 150ms ease-in-out, background-color 150ms ease-in-out;
+}
+body.kui--bottom-input .kui--input-stripe {
+    display: flex;
+}
+body.kui--bottom-input .repl-active .repl-input {
+    display: none;
+}
+body.kui--bottom-input tab > .kui--rows > .kui--columns {
+    height: calc
+}
+.kui--input-stripe .repl-block {
+    flex: 1; 
+    padding: 0;
+    padding-left: 0.375em;
+}
+.kui--input-stripe .repl-input {
+    flex: 1;
+}
+.kui--input-stripe input {
+    font-size: 1em;
+}
+.kui--input-stripe .repl-context {
+    display: none;
+    font-size: 1em;
+    padding: 0 0.1875em;
+    height: auto;
+    border: none;
+    background: none;
+}
+.kui--input-stripe .repl-prompt-righty {
+    font-size: 1.125em;
+}
