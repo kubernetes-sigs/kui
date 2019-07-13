@@ -67,7 +67,9 @@
       </div>
 
       <div class='tab-container'>
-      <tab data-tab-index="1" class='visible'>
+        <tab data-tab-index="1" class='visible'>
+          <div class='kui--rows'>
+          <div class='kui--columns'>
       <repl class="repl" id="main-repl">
 	<div class="repl-inner zoomable">
 	  <div class="repl-block repl-initial" data-base-class="repl-block" data-input-count="0">
@@ -265,6 +267,22 @@
         </div>
 
       </sidecar>
+      </div> <!-- kui--columns -->
+
+          <div class='kui--input-stripe'>
+            <div class='repl-block' data-base-class="repl-block">
+	    <div class="repl-input">
+	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context'></span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'><i class="fas fa-angle-right"></i></span></div>
+	      <input type="text"
+                     class="repl-input-element"
+                     autofocus
+                     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                     placeholder="enter your command">
+	    </div>
+            </div>
+          </div> <!-- kui--input-stripe -->
+       </div> <!-- kui--rows -->
+
       </tab>
       </div> <!-- tab-container -->
     </main>

@@ -15,6 +15,7 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { inBottomInputMode } from '@kui-shell/core/core/settings'
 import { getCurrentPrompt, getPromptFromTarget } from '@kui-shell/core/webapp/cli'
 
 /**
@@ -42,7 +43,7 @@ const noCurrentTextSelection = () =>
  *
  */
 export default () => {
-  if (isHeadless()) {
+  if (isHeadless() || inBottomInputMode) {
     // headless mode
     return
   }
