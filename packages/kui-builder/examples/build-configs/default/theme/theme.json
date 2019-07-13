@@ -41,7 +41,13 @@
     { "name": "Monokai", "css": "themes/monokai.css", "style": "dark" },
     { "name": "Nord", "css": "themes/nord.css", "style": "dark" },
     { "name": "Paraiso", "css": "themes/paraiso.css", "style": "dark" },
-    { "name": "Solarized", "css": "themes/solarized-dark.css", "style": "dark" }
+    { "name": "Solarized", "css": "themes/solarized-dark.css", "style": "dark" },
+    {
+      "name": "tomorrow-night",
+      "css": "themes/tomorrow-night.css",
+      "description": "Tomorrow Night",
+      "style": "dark"
+    }
   ],
   "css": ["_test.css"],
   "tabStripe": "top-tab-stripe.css",
