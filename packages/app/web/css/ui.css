@@ -763,19 +763,14 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
     min-width: 0;
 }
 
-/* sidecar bottom stripe */
-body[kui-theme-style="dark"] sidecar:not(.minimized) .sidecar-bottom-stripe {
-    /* dark themes need a bit of a top border to distinguish the sidecar
-   contents; but make sure not to add this border when the sidecar is
-   minimzed */
-    border-top: 1px solid var(--color-ui-03);
-}
 .sidecar-bottom-stripe {
     flex-basis: 2.25em;
     min-height: 2.25rem; /* important for screenshot, which tries to maximally squish the sidecar height */
     display: flex;
     z-index: 5;
     background-color: var(--color-stripe-02);
+    border-bottom: 1px inset var(--color-ui-02);
+    order: -1;
 }
 /* sidecar .sidecar-bottom-stripe {
     order: -1;
@@ -885,7 +880,7 @@ sidecar .custom-content {
 }
 sidecar .sidecar-header {
     display: flex;
-    background-color: var(--color-ui-01);
+    background-color: var(--color-sidecar-header);
     flex-basis: 9rem;
     min-height:  9rem; /* see shell issue #712 */
     transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
@@ -2125,6 +2120,10 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
     text-transform: none;
     transition-delay: 750ms;
 }
+.graphical-icon svg path {
+    fill: var(--color-text-against-dark-bg);
+    transition: fill 150ms ease-in-out;
+}
 
 /* pulse animation for repl.partial */
 input.repl-partial, .alert-pulse {
@@ -2720,13 +2719,23 @@ body[kui-theme-style="dark"] .sidecar-bottom-stripe {
     display: flex;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button {
-    padding: 0 0.375em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.875em;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button.screenshot-button {
+    /* this icon is narrower */
+    width: 2.5em;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button.sidecar-bottom-stripe-button-active {
     border-bottom-color: var(--color-brand-02);
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover, .sidecar-bottom-stripe .sidecar-bottom-stripe-button.hover, .sidecar-bottom-stripe-button-as-button.selected {
     color: var(--color-brand-02);
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover svg path {
+    fill: var(--color-brand-02);
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button:not(.sidecar-bottom-stripe-button-active):hover, .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button.selected {
     color: var(--color-support-03);
@@ -2884,6 +2893,8 @@ body {
 
     --color-text-01: var(--color-base06);
     --color-text-02: var(--color-base04);
+
+    --color-sidecar-header: var(--color-ui-01);
 
     --color-selection-background: var(--color-base04);
 
