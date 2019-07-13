@@ -29,7 +29,7 @@ exports.defaultModeForGet = 'summary'
  */
 exports.waitForGreen = async (app, selector) => {
   const badge = `${selector} badge.green-background`
-  await app.client.waitForExist(badge, 60000)
+  await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
   return badge
 }
 
@@ -39,7 +39,7 @@ exports.waitForGreen = async (app, selector) => {
  */
 exports.waitForRed = async (app, selector) => {
   const badge = `${selector} badge.red-background`
-  await app.client.waitForExist(badge, 60000)
+  await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
   return badge
 }
 
