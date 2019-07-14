@@ -7,7 +7,7 @@ body[kui-theme="Dark"] {
     --color-base01: #202529; /* Lighter Background (Used for status bars) */
     --color-base02: #373b41; /* Selection Background */
     --color-base03: #373D42; 
-    --color-base04: #9FA5AD; /* Dark Foreground (Used for status bars) */
+    --color-base04: #565656; /* Dark Foreground (Used for status bars) */
     --color-base05: #9FA5AD; /* Default Foreground, Caret, Delimiters, Operators */
     --color-base06: #FFFFFF; /* Light Foreground (Not often used) */
     --color-base07: #ffffff; /* Light Background (Not often used) */
@@ -27,6 +27,11 @@ body[kui-theme="Dark"] {
     --color-sidecar-header: var(--color-base03);
     --color-tag-beta-fill: #202529;
     --color-tag-beta-text: var(--color-text-01);
+
+    --color-text-02: #7C8188;
+
+    /* table header row */
+    --color-ui-06: #373D42;
 }
 
 /* tomorrow-night hightlightjs theme */

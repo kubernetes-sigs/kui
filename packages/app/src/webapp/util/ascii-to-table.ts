@@ -140,8 +140,6 @@ const isKubeLike = (command: string): boolean => kubelike.test(command)
 export const outerCSSForKey = {
   NAME: 'entity-name-group',
   READY: 'a-few-numbers-wide',
-  STATE: 'badge-width',
-  STATUS: 'badge-width',
   KIND: 'max-width-id-like entity-kind',
 
   NAMESPACE: 'entity-name-group entity-name-group-narrow',
