@@ -36,6 +36,7 @@ import {
 import { Entity as EditorEntity } from './fetchers'
 import strings from '../i18n/strings'
 import { language } from './file-types'
+
 const debug = Debug('plugins/editor/open')
 
 /**
@@ -82,8 +83,10 @@ let pre2 = false
  */
 const injectTheme = (editorWrapper?: Element, force = false) => {
   if (pre && !force) {
+    debug('skipping injectTheme', pre, force)
     return
   }
+  debug('injectTheme')
 
   const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
   const currentTheme = document.querySelector('body').getAttribute('kui-theme')
@@ -127,8 +130,10 @@ const injectTheme = (editorWrapper?: Element, force = false) => {
 }
 
 export const preload = () => {
-  setTimeout(injectTheme, 0)
-  pre = true
+  setTimeout(() => {
+    injectTheme()
+    pre = true
+  }, 0)
 }
 
 /**
