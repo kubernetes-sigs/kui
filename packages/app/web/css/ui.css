@@ -2097,10 +2097,8 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
 }
 .graphical-icon {
     /* font awesome icons in the bottom stripe */
-    font-size: 1.25em;
-    min-width: 1em;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
 
     /* these two rules are an attempt to push the tooltips just above the bottom stripe */
     height: 100%;
@@ -2722,9 +2720,15 @@ body[kui-theme-style="dark"] .sidecar-bottom-stripe {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button > span[role="tab"] {
+    /* not-graphical stripe buttons */
+    padding: 0 0.375em;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
     width: 1.875em;
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button.screenshot-button {
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button.screenshot-button .graphical-icon {
     /* this icon is narrower */
     width: 2.5em;
 }
