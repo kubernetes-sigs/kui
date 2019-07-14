@@ -467,7 +467,7 @@ const getOrCreateChannel = async (
       cmdline,
       rows: terminal.rows,
       cols: terminal.cols,
-      cwd: process.env.PWD || process.cwd(),
+      cwd: process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
       env: !inBrowser() && process.env // don't send an empty process.env from the browser!
     }
     debug('exec after open', msg)
