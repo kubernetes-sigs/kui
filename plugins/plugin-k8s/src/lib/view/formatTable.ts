@@ -32,7 +32,6 @@ const fillTo = (length, maxColumns) => {
 const outerCSSForKey = {
   NAME: 'entity-name-group',
   READY: 'a-few-numbers-wide',
-  STATUS: 'badge-width',
   KIND: 'max-width-id-like entity-kind',
 
   CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts

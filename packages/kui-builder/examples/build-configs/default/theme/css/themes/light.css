@@ -62,7 +62,7 @@ body[kui-theme="Light"] {
     --color-processing: var(--color-base02);
 }
 
-body[kui-theme="Light"] badge.gray-background {
+body[kui-theme="Light"] badge.gray-background, body[kui-theme="Light"] badge:not(.badge-as-image):not(.badge-as-fontawesome).gray-background:before {
     background-color: var(--color-scrollbar-thumb);
 }
 

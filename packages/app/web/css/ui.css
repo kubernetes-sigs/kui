@@ -233,8 +233,13 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
 .result-as-table .result-table .header-cell, .result-as-table.result-table .header-cell {
     font-weight: bold !important;
 }
-.log-lines .header-cell, .result-as-table .result-table .header-row .header-cell , .result-as-table.result-table .header-row .header-cell {
+.header-cell {
     background-color: var(--color-ui-06);
+}
+.header-cell:not(:first-child) {
+    border-left: 1px inset var(--color-base04);
+}
+.log-lines .header-cell, .result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell, .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
     border-bottom: 1px solid var(--color-content-divider);
 }
 .result-as-table-full-width .result-table {
@@ -546,11 +551,15 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .entity-attributes > span {
     display: table-cell;
     vertical-align: middle;
-    padding: 0.6875em 0.375em;
+    padding: 0.6875em;
     border-top: 1px solid var(--color-ui-04);
     transition: all 300ms ease-in-out;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+.result-table[kui-table-style="Light"] .entity-attributes > span {
+    padding-left: 0.375em;
+    padding-right: 0.375em;
 }
 .entity .entity-kind {
     width: 8em;
@@ -688,7 +697,7 @@ body[kui-theme-style="dark"] .repl-result:not(.result-table-with-custom-entity-c
     opacity: 0.6;
     margin-right: 1ex;
 }
-.repl-result-prefix, badge:not(.badge-as-image) {
+.repl-result-prefix, .sidecar-header badge:not(.badge-as-image) {
     font-weight: 500;
     transition: all 150ms ease-in-out;
     font-size: 0.825em;
@@ -2601,7 +2610,10 @@ body a:hover:not(.plain-anchor) {
     display: none;
 }
 .repl-block.valid-response .ok, .green-text, .dragover .ok-text-on-dragover {
-    color: var(--color-support-02);
+    color: var(--color-ok);
+}
+.green-text > svg path {
+    fill: var(--color-ok);
 }
 
 badge {
@@ -2609,6 +2621,8 @@ badge {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 600;
+    background-color: var(--color-tag-beta-fill);
+    color: var(--color-tag-beta-text);
 }
 badge.badge-as-image img {
     width: 5em;
@@ -2620,23 +2634,38 @@ badge.badge-as-fontawesome {
     color: var(--color-base0C);
 }
 .repl-result-prefix, badge:not(.badge-as-fontawesome):not(.badge-as-image) {
-    background-color: var(--color-tag-beta-fill);
-    color: var(--color-tag-beta-text);
     font-family: var(--font-sans-serif);
 }
-badge.green-background:not(.badge-as-image) {
-    background: var(--color-support-02);
+.result-table badge:not(.badge-as-image):not(.badge-as-fontawesome) {
+    color: var(--color-text-01);
+    background-color: transparent !important;
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    font-family: var(--font-monospace);
+    letter-spacing: 0.16px;
+}
+.result-table badge:not(.badge-as-image):not(.badge-as-fontawesome):before {
+    content: '';
+    margin-right: 1ex;
+    width: 0.75em;
+    height: 0.75em;
+    background-color: var(--color-ui-05);
+    border-radius: 50%;
+}
+.result-table badge.green-background:not(.badge-as-image):before {
+    background-color: var(--color-support-02);
     color: var(--color-ui-01);
 }
-badge.yellow-background:not(.badge-as-image), button.yellow-background {
+.result-table badge.yellow-background:not(.badge-as-image):before, button.yellow-background {
     background: var(--color-support-03-darker);
     color: var(--color-ui-01);
 }
-badge.red-background:not(.badge-as-image) {
+.result-table badge.red-background:not(.badge-as-image):before {
     background: var(--color-support-01);
     color: var(--color-ui-01);
 }
-badge.gray-background:not(.badge-as-image) {
+.result-table badge.gray-background:not(.badge-as-image):before {
     background: var(--color-ui-05);
     color: var(--color-ui-02);
 }
@@ -2648,14 +2677,23 @@ badge.is-title-like, badge.is-kind-like {
     color: unset !important;
 }
 .repl-block.valid-response .oops, sidecar.rule-enabled-false .sidecar-header-icon, .repl-block.error .oops, .clickable.oops, .oops .oops-text-on-oops, .red-text {
-    color: var(--color-support-01);
+    color: var(--color-error);
     font-weight: 500;
+}
+.red-text > svg path{
+    fill: var(--color-error);
 }
 .yellow-text {
     color: var(--color-support-03-darker);
 }
+.yellow-text > svg path {
+    fill: var(--color-support-03-darker);
+}
 .cyan-text {
     color: var(--color-cyan);
+}
+.cyan-text > svg path {
+    fill: var(--color-cyan);
 }
 
 sidecar.activation-success-false .sidecar-header-icon, span[data-extra-decoration="application error"] {
@@ -2912,7 +2950,7 @@ body {
     --color-scrollbar-track: transparent;
 
     --font-sans-serif: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-    --font-monospace: SFMono-Regular,"SF Mono",Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    --font-monospace: "SF Mono",Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 
     --color-hover-primary-text: var(--color-cyan);
     --color-content-divider: var(--color-cyan);
@@ -3040,12 +3078,10 @@ body {
     border: none;
     margin-top: 0;
 }
-.result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell, .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell,
-.result-as-table .result-table[kui-table-style="Medium"] .header-row .header-cell, .result-as-table.result-table[kui-table-style="Medium"] .header-row .header-cell{
+.result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell, .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
     background: none;
 }
-.result-as-table .log-lines[kui-table-style="Light"] .log-line .log-line-bar-field, .repl .log-lines[kui-table-style="Light"] .log-line .log-field,
-.result-as-table .log-lines[kui-table-style="Medium"] .log-line .log-line-bar-field, .repl .log-lines[kui-table-style="Medium"] .log-line .log-field{
+.result-as-table .log-lines[kui-table-style="Light"] .log-line .log-line-bar-field, .repl .log-lines[kui-table-style="Light"] .log-line .log-field {
     border: none;
 }
 .result-table[kui-table-style="Light"] .entity td, .result-table[kui-table-style="Medium"] .entity td {
@@ -3060,7 +3096,7 @@ body {
 .result-table[kui-table-style="Medium"] .entity .entity-attributes, .log-lines[kui-table-style="Medium"] .log-line {
     height: 2em;
 }
-[kui-table-style="Light"] .entity-attributes > span, [kui-table-style="Medium"] .entity-attributes > span {
+[kui-table-style="Light"] .entity-attributes > span {
     border: none;
 }
 [kui-table-style="Light"] badge {
@@ -3072,18 +3108,18 @@ body {
     padding-left: 0.75em;
 }
 
-@font-face { font-family: "SF Mono"; font-weight: 200; font-style: normal; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Light.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 200; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-LightItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 400; font-style: normal; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Regular.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 400; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-RegularItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 500; font-style: normal; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Medium.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 500; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-MediumItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 600; font-style: normal; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Semibold.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 600; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-SemiboldItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 700; font-style: normal; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Bold.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 700; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-BoldItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 800; font-style: normal; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Heavy.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
-@font-face { font-family: "SF Mono"; font-weight: 800; font-style: italic; src: local("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-HeavyItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 200; font-style: normal; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Light.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 200; font-style: italic; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-LightItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 400; font-style: normal; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Regular.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 400; font-style: italic; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-RegularItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 500; font-style: normal; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Medium.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 500; font-style: italic; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-MediumItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 600; font-style: normal; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Semibold.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 600; font-style: italic; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-SemiboldItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 700; font-style: normal; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Bold.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 700; font-style: italic; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-BoldItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 800; font-style: normal; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Heavy.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
+@font-face { font-family: "SF Mono"; font-weight: 800; font-style: italic; src: url("file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-HeavyItalic.otf"),local("Menlo"),local("Monaco"),local("Consolas"),local("Liberation Mono"),local("Courier New"),local("monospace"); }
 
 .kui--rows {
     flex: 1;
