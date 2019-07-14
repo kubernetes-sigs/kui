@@ -18,6 +18,8 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, sidecar } = ui
 
+import { tabButtonSelector } from '@kui-shell/plugin-core-support/lib/new-tab'
+
 // test that new tab does not copy any output over from the cloned tab
 common.localDescribe('new tab from pty active tab via click', function(this: common.ISuite) {
   before(common.before(this))
@@ -43,7 +45,7 @@ common.localDescribe('new tab from pty active tab via click', function(this: com
 
   it('click new tab button', () =>
     this.app.client
-      .click('.new-tab-button')
+      .click(tabButtonSelector)
       .then(() => this.app.client.waitForVisible(selectors.TAB_N(2)))
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
       .catch(common.oops(this)))
@@ -158,7 +160,7 @@ common.localDescribe('new tab from quiescent tab via button click', function(thi
 
   it('new tab via button click', () =>
     this.app.client
-      .click('.new-tab-button')
+      .click(tabButtonSelector)
       .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
       .catch(common.oops(this)))
@@ -195,7 +197,7 @@ common.localDescribe('new tab from active tab via button click', function(this: 
   it('start a sleep, then new tab via button click', () =>
     cli
       .do('sleep 10000', this.app)
-      .then(() => this.app.client.click('.new-tab-button'))
+      .then(() => this.app.client.click(tabButtonSelector))
       .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
       .catch(common.oops(this)))
@@ -216,7 +218,7 @@ common.localDescribe('new tab from pty active tab via button click', function(th
     cli
       .do('vi', this.app)
       .then(() => this.app.client.waitForExist('tab.visible.xterm-alt-buffer-mode'))
-      .then(() => this.app.client.click('.new-tab-button'))
+      .then(() => this.app.client.click(tabButtonSelector))
       .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
       .catch(common.oops(this)))
@@ -237,7 +239,7 @@ common.localDescribe('new tab from active tab that is emitting output via button
     cli
       .do('while true; do echo hi; sleep 1; done', this.app)
       .then(() => new Promise(resolve => setTimeout(resolve, 4000)))
-      .then(() => this.app.client.click('.new-tab-button'))
+      .then(() => this.app.client.click(tabButtonSelector))
       .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
       .then(() => cli.waitForRepl(this.app)) // should have an active repl
       .then(() => this.app.client.waitForExist(`${selectors.CURRENT_TAB} .xterm`, 5000, true)) // no xterm DOM in the new tab

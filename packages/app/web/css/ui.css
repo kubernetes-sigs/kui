@@ -830,7 +830,7 @@ sidecar .sidecar-header .limits {
     /* don't show limits in header for now */
     display: none;
 }
-sidecar .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover, sidecar .sidecar-bottom-stripe-button.hover {
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover, sidecar .sidecar-bottom-stripe-button.hover {
     cursor: pointer;
     opacity: 1;
 }
@@ -1917,7 +1917,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #theme-button,
 body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #help-button {
     display: none;
 }
-body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #new-tab-button i {
+body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe #new-tab-button svg {
     font-size: 6vw;
 }
 body.subwindow sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {

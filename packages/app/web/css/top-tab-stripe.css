@@ -63,23 +63,27 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     counter-increment: tab-index;
 }
 .left-tab-stripe-buttons .left-tab-stripe-button-closer {
-    content: '\d7'; /* unicode multiplication sign */
     position: absolute;
     top: 50%;
     right: 0.25em;
     transform: translateY(-50%);
-    color: transparent;
     font-size: 1em;
-    transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+    transition: background-color 150ms ease-in-out;
     padding: 1px;
+    display: flex;
+}
+.left-tab-stripe-buttons .left-tab-stripe-button-closer svg path {
+    fill: transparent;
+    transition: fill 150ms ease-in-out;
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer {
-    color: var(--color-text-02);
     cursor: pointer;
+}
+.left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer svg path {
+    fill: var(--color-text-02);
 }
 .left-tab-stripe-buttons .left-tab-stripe-button .left-tab-stripe-button-closer:hover {
     background: var(--color-ui-04);
-    color: var(--color-text-02);
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-closer:hover {
     /* modify the background hover effect for not-selected tabs */
@@ -100,9 +104,11 @@ body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i
 .left-tab-stripe-bottom-buttons i {
     filter: grayscale(0.5);
 }
-.left-tab-stripe-button:not([data-tab-button-index]):not(.left-tab-stripe-button-selected) > i:hover {
-    color: var(--color-base06) !important;
+.left-tab-stripe-button:not([data-tab-button-index]):not(.left-tab-stripe-button-selected) > svg:hover {
     cursor: pointer;
+}
+.left-tab-stripe-button:not([data-tab-button-index]):not(.left-tab-stripe-button-selected) > svg:hover path {
+    fill: var(--color-base06) !important;
 }
 .left-tab-stripe-button-selected .left-tab-stripe-button-label {
     /* reduce the visibility of the tab label, for the visible tab */
@@ -143,18 +149,21 @@ body.not-electron .repl-input {
     padding-right: 0.75rem;
 }
 
+.left-tab-stripe-button svg path {
+    fill: var(--color-base04);
+    transition: fill 150ms ease-in-out;
+}
+
 #help-button.left-tab-stripe-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0,0,0,0.075);
 }
 #help-button:hover {
-    background-color: rgba(255,255,255,0.075);
     cursor: pointer;
 }
-#help-button.left-tab-stripe-button:hover i {
-    color: var(--color-brand-02) !important;
+#help-button.left-tab-stripe-button:hover svg path {
+    fill: var(--color-brand-02) !important;
 }
 
 .main {
@@ -211,11 +220,6 @@ body[kui-theme-style="light"] .left-tab-stripe-button-selected {
     filter: opacity(0.975) grayscale(0.5) brightness(0.975);
 }
 
-.left-tab-stripe-button > i {
-    font-style: normal;
-    -webkit-app-region: no-drag;
-}
-
 .left-tab-stripe-buttons .left-tab-stripe-button > i {
     display: none;
 }
@@ -252,7 +256,6 @@ body[kui-theme-style="light"] .left-tab-stripe-button-selected {
     flex: 1;
     justify-content: flex-start;
     -webkit-font-smoothing: antialiased;
-    border-right: 1px inset rgba(128,128,128,0.5);
 }
 
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
