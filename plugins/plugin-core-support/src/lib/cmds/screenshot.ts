@@ -327,8 +327,8 @@ export default async (commandTree: CommandRegistrar) => {
               }
 
               // viewport width dimensions of the screenshot popup
-              const widthVw = `${(100 * widthPx) / windowSize.width}vw`
-              const heightVw = `${(100 * heightPx) / windowSize.width}vw`
+              const widthVw = `${(75 * widthPx) / windowSize.width}vw`
+              const heightVw = `${(75 * heightPx) / windowSize.width}vw`
 
               document.body.appendChild(snapDom)
               snapDom.appendChild(snapImg)
@@ -346,7 +346,7 @@ export default async (commandTree: CommandRegistrar) => {
 
               // save screenshot to disk
               const saveButton = document.createElement('div')
-              const saveButtonIcon = document.createElement('i')
+              const saveButtonIcon = document.createElement('div')
               const ts = new Date()
               const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`
               const location = join(app.getPath('desktop'), filename)
@@ -354,7 +354,9 @@ export default async (commandTree: CommandRegistrar) => {
               saveButton.setAttribute('data-balloon-pos', 'up')
               saveButton.className =
                 'sidecar-bottom-stripe-button sidecar-bottom-stripe-save graphical-icon screenshot-save-button'
-              saveButtonIcon.className = 'fas fa-save'
+              saveButtonIcon.classList.add('graphical-icon')
+              saveButtonIcon.innerHTML =
+                '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M17.8 5.5l-3.3-3.3c-.2-.1-.3-.2-.5-.2H3.3C2.6 2 2 2.6 2 3.3v13.3c0 .8.6 1.4 1.3 1.4h13.3c.7 0 1.4-.5 1.4-1.2V6.1c0-.4-.1-.4-.2-.6zM7.3 3.3h5.3v3.3H7.3V3.3zm5.4 13.4H7.3v-5.3h5.3l.1 5.3zm1.3 0v-5.3c0-.7-.6-1.3-1.3-1.3H7.3c-.7-.1-1.3.5-1.3 1.2v5.3H3.3V3.3H6v3.3C6 7.4 6.6 8 7.3 8h5.3c.8 0 1.4-.6 1.4-1.3v-3l2.7 2.7v10.4l-2.7-.1z"></path></svg>'
               saveButton.appendChild(saveButtonIcon)
               saveButton.onclick = () => {
                 saveButton.classList.add('yellow-text')
@@ -379,7 +381,8 @@ export default async (commandTree: CommandRegistrar) => {
 
               // close popup button
               const closeButton = document.createElement('div')
-              closeButton.innerText = 'Done'
+              closeButton.innerHTML =
+                '<div class="graphical-icon"><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z"></path></svg></div>'
               closeButton.className = 'sidecar-bottom-stripe-button sidecar-bottom-stripe-close'
               snapFooter.appendChild(closeButton)
 
@@ -399,8 +402,9 @@ export default async (commandTree: CommandRegistrar) => {
               message.innerText = 'Screenshot copied to clipboard'
 
               check.classList.add('screenshot-check-icon')
-              const checkIcon = document.createElement('i')
-              checkIcon.className = 'fas fa-clipboard-check'
+              const checkIcon = document.createElement('div')
+              checkIcon.innerHTML =
+                '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2C8.3 2 2 8.3 2 16s6.3 14 14 14 14-6.3 14-14S23.7 2 16 2zm-2 19.5l-5-5 1.6-1.5 3.4 3.4 7.4-7.4 1.6 1.6-9 8.9z"></path><path d="M14 21.5l-5-5 1.6-1.5 3.4 3.4 7.4-7.4 1.6 1.6-9 8.9z" data-icon-path="inner-path" opacity="0"></path></svg>'
               check.appendChild(checkIcon)
 
               // temporarily disable the repl

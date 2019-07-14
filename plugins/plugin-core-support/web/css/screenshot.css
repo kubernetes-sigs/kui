@@ -41,15 +41,9 @@ body.no-tooltips-anywhere [data-balloon]:before, body.no-tooltips-anywhere [data
 
 .screenshot-check-icon {
     position: absolute;
-    color: var(--color-ok);
-    font-size: 20vmin;
-    filter: brightness(1.375)  drop-shadow(0px 0px 1vmin var(--color-text-02));
 }
-body[kui-theme-style="dark"] .screenshot-check-icon {
-    filter: brightness(1.75)  drop-shadow(0px 0px 1vmin var(--color-text-02));
-}
-.screenshot-check-icon i {
-    text-shadow: 0 0 0.1ex var(--color-base02);
+.screenshot-check-icon svg path {
+    fill: var(--color-ok);
 }
 
 #screenshot-captured {
@@ -69,14 +63,17 @@ body[kui-theme-style="dark"] .screenshot-check-icon {
 #screenshot-captured .sidecar-bottom-stripe {
     justify-content: flex-end;
     align-items: center;
-    border-top-color: var(--color-base04);
-    padding: 0 1em;
+    padding: 0 0.375em 0 1em;
 }
 
 #screenshot-captured .screenshot-image {
     max-width: 100%;
     min-height: 300px; /* we need some min space to fit the green check and Screenshot copied to clipboard */
     max-height: 100%;
-    filter: grayscale(0.375) contrast(0.75) blur(1px);
+    filter: brightness(0.5) grayscale(0.55) contrast(0.85) blur(1px);
+}
+
+#screenshot-captured .sidecar-bottom-stripe .sidecar-bottom-stripe-button {
+    width: 1.375em;
 }
 

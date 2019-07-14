@@ -36,6 +36,8 @@ import { theme } from '@kui-shell/core/core/settings'
 
 const debug = Debug('plugins/core-support/new-tab')
 
+export const tabButtonSelector = '#new-tab-button > svg'
+
 const usage = {
   strict: 'switch',
   command: 'switch',
@@ -350,9 +352,9 @@ const oneTimeInit = (): void => {
   initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
 
   if (document.body.classList.contains('subwindow')) {
-    element('#new-tab-button > i').onclick = () => window.open(window.location.href, '_blank')
+    element(tabButtonSelector).onclick = () => window.open(window.location.href, '_blank')
   } else {
-    element('#new-tab-button > i').onclick = () => newTab()
+    element(tabButtonSelector).onclick = () => newTab()
   }
 
   addKeyboardListeners()
