@@ -2637,7 +2637,7 @@ badge.badge-as-fontawesome {
     font-family: var(--font-sans-serif);
 }
 .result-table badge:not(.badge-as-image):not(.badge-as-fontawesome) {
-    color: var(--color-text-01);
+    color: var(--color-text-02);
     background-color: transparent !important;
     display: flex;
     align-items: center;
