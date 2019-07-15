@@ -17,6 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import * as assert from 'assert'
 
 /** name of the pod */
 const podName = 'nginx'
@@ -43,24 +44,12 @@ const waitForStatus = async function(this: common.ISuite, status: Status, res) {
   }
 }
 
-/** create pod, and expect status eventually to be green */
-const createPod = async function(this: common.ISuite, kubectl: string, ns: string) {
-  it(`should create sample pod from URL via ${kubectl}`, async () => {
-    const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
-
-    try {
-      await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
-    } catch (err) {
-      common.oops(this)(err)
-    }
-  })
-}
-
 /** create, then delete; the create table status had better not change */
 const createAndDeletePod = function(this: common.ISuite, kubectl: string, ns: string) {
   it(`should create then delete sample pod from URL via ${kubectl}`, async () => {
     try {
       const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
+
       const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
       const selector1 = await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
@@ -81,22 +70,6 @@ const createAndDeletePod = function(this: common.ISuite, kubectl: string, ns: st
       await this.app.client.waitForExist(selector1)
       await this.app.client.waitForExist(selector2)
       await this.app.client.waitForExist(selector3)
-    } catch (err) {
-      common.oops(this)(err)
-    }
-  })
-}
-
-/** delete pod, and expect status eventually to be red */
-const deletePod = function(this: common.ISuite, kubectl: string, ns: string) {
-  it(`should delete the sample pod from URL via ${kubectl}`, async () => {
-    try {
-      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
-
-      const res = await cli.do(`${kubectl} delete -f ${url} -n ${ns}`, this.app)
-
-      await waitForOffline(res)
-      return
     } catch (err) {
       common.oops(this)(err)
     }
@@ -141,7 +114,48 @@ const watchPods = function(this: common.ISuite, kubectl: string, ns: string) {
   })
 }
 
-const synonyms = ['kubectl', 'k']
+const checkWatchableJobs = function(
+  this: common.ISuite,
+  kubectl: string,
+  ns: string,
+  jobCount: number,
+  createResource: boolean
+) {
+  if (createResource) {
+    it(`should create a watchable job via ${kubectl} get pods -w`, async () => {
+      try {
+        const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
+        await waitForOnline(await cli.do(`${kubectl} get pods -w -n ${ns}`, this.app))
+      } catch (err) {
+        common.oops(this)(err)
+      }
+    })
+  }
+
+  it(`should have ${jobCount} watchable jobs in the tab`, async () => {
+    try {
+      const watchableJobsRaw = await this.app.client.execute(() => {
+        return document.querySelector('tab.visible')['state'].jobs
+      })
+      const jobs = watchableJobsRaw.value
+
+      if (jobCount === undefined) {
+        // tab.state.jobs shouldn't be initialized
+        assert.ok(!jobs)
+      } else {
+        // tab.state.jobs should be an array of length jobCount and every job in the array has an id
+        console.log(jobs)
+        assert.ok(
+          Array.isArray(jobs) && jobs.length === jobCount && jobs.filter(job => job._id === undefined).length === 0
+        )
+      }
+    } catch (err) {
+      common.oops(this)(err)
+    }
+  })
+}
+
+const synonyms = ['k']
 
 describe('electron watch pod', function(this: common.ISuite) {
   before(common.before(this))
@@ -149,19 +163,58 @@ describe('electron watch pod', function(this: common.ISuite) {
 
   synonyms.forEach(kubectl => {
     const ns: string = createNS()
-    const createIt: () => Promise<void> = createPod.bind(this, kubectl, ns)
-    const deleteIt: () => void = deletePod.bind(this, kubectl, ns)
     const createAndDeleteIt: () => void = createAndDeletePod.bind(this, kubectl, ns)
     const watchIt: () => void = watchPods.bind(this, kubectl, ns)
+    const checkJob: (jobCount: number, createResource: boolean) => void = checkWatchableJobs.bind(this, kubectl, ns)
 
     //
     // here come the tests
     //
     allocateNS(this, ns)
-    createIt()
-    deleteIt()
     createAndDeleteIt()
+
+    // the current tab should have jobs = [] due to watcher being collected after reaching final-state
+    checkJob(0, false)
+
     watchIt()
+
+    // the current tab should only contain 1 watching job for `k get pods -w`
+    checkJob(1, false)
+
+    // create a new watchable job and expect 2 jobs in the tab
+    checkJob(2, true)
+
+    it('should add new tab via command', () =>
+      cli
+        .do('tab new', this.app)
+        .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
+        .then(() => cli.waitForRepl(this.app)) // should have an active repl
+        .catch(common.oops(this)))
+
+    // undefined means that the new tab shouldn't have jobs even initialized
+    checkJob(undefined, false)
+
+    it(`should switch back to first tab via command`, () => cli.do('tab switch 1', this.app).catch(common.oops(this)))
+
+    // the original tab should still have 2 jobs running
+    checkJob(2, false)
+
+    it('should close tab via "tab close" command', () =>
+      cli
+        .do('tab close', this.app)
+        .then(() =>
+          this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true)
+        )
+        .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
+        .then(() => cli.waitForRepl(this.app)) // should have an active repl
+        .catch(common.oops(this)))
+
+    // undefined means that the current tab shouldn't have jobs even initialized
+    checkJob(undefined, false)
+
+    // create a new watchable job and expect 1 jobs in the tab
+    checkJob(1, true)
+
     deleteNS(this, ns)
   })
 })
