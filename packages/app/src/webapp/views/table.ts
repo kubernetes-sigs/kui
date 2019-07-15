@@ -34,6 +34,7 @@ import { isWatchable } from '../models/basicModels'
 import { applyDiffTable } from '../views/diffTable'
 import { theme } from '@kui-shell/core/core/settings'
 import { _split as split, Split } from '@kui-shell/core/core/repl'
+import { WatchableJob } from '@kui-shell/core/core/job'
 import minimist = require('yargs-parser')
 
 const debug = Debug('webapp/views/table')
@@ -118,11 +119,10 @@ const registerWatcher = (
   tableViewInfo: TableViewInfo | TableViewInfo[]
 ) => {
   // the current watch interval; used for clear/reset/stop
-  let interval: NodeJS.Timeout // eslint-disable-line prefer-const
+  let job: WatchableJob // eslint-disable-line prefer-const
 
   const stopWatching = () => {
-    debug('stopWatching')
-    clearInterval(interval)
+    job.abort()
   }
 
   const processRefreshResponse = (response: Table | MultiTable) => {
@@ -208,7 +208,8 @@ const registerWatcher = (
   }
 
   // establish the initial watch interval
-  interval = setInterval(watchIt, tablePollingInterval + ~~(100 * Math.random()))
+  job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+  job.start()
 }
 
 /**
@@ -465,14 +466,13 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       let count = watchLimit
 
       // the current watch interval; used for clear/reset/stop
-      let interval
+      let job: WatchableJob
 
       // are we currently slowPolling?
       let slowPolling = false
 
       const stopWatching = () => {
-        debug('stopWatching')
-        clearInterval(interval)
+        job.abort()
         cell.classList.remove(pulse)
       }
 
@@ -564,7 +564,9 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
                   debug('entering slowPoll mode', slowPoll)
                   slowPolling = true
                   stopWatching() // this will remove the "pulse" effect, which is what we want
-                  interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
+                  job = new WatchableJob(tab, watchIt, slowPoll)
+                  job.start()
+                  // job = registerWatchableJob(tab, watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
                 }
               } else if (slowPolling) {
                 // we were told not to slowPoll, but we are currently
@@ -572,20 +574,22 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
                 debug('exiting slowPoll mode')
                 slowPolling = false
                 cell.classList.add(pulse)
-                clearInterval(interval)
-                interval = setInterval(watchIt, tablePollingInterval + ~~(100 * Math.random()))
+                stopWatching()
+                job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+                job.start()
               }
             }
           )
         } catch (err) {
           console.error('Error watching value', err)
-          clearInterval(interval)
+          stopWatching()
           cell.classList.remove(pulse)
         }
       }
 
       // establish the initial watch interval
-      interval = setInterval(watchIt, tablePollingInterval + ~~(100 * Math.random()))
+      job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+      job.start()
     }
 
     return cell
@@ -1045,14 +1049,13 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
       let count = watchLimit
 
       // the current watch interval; used for clear/reset/stop
-      let interval
+      let job: WatchableJob
 
       // are we currently slowPolling?
       let slowPolling = false
 
       const stopWatching = () => {
-        debug('stopWatching')
-        clearInterval(interval)
+        job.abort()
         cell.classList.remove(pulse)
       }
 
@@ -1144,7 +1147,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
                   debug('entering slowPoll mode', slowPoll)
                   slowPolling = true
                   stopWatching() // this will remove the "pulse" effect, which is what we want
-                  interval = setInterval(watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
+                  job = new WatchableJob(tab, watchIt, slowPoll)
+                  job.start()
                 }
               } else if (slowPolling) {
                 // we were told not to slowPoll, but we are currently
@@ -1152,20 +1156,22 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
                 debug('exiting slowPoll mode')
                 slowPolling = false
                 cell.classList.add(pulse)
-                clearInterval(interval)
-                interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+                stopWatching()
+                job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+                job.start()
               }
             }
           )
         } catch (err) {
           console.error('Error watching value', err)
-          clearInterval(interval)
+          stopWatching()
           cell.classList.remove(pulse)
         }
       }
 
       // establish the initial watch interval
-      interval = setInterval(watchIt, 1000 + ~~(1000 * Math.random()))
+      job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+      job.start()
     }
 
     return cell

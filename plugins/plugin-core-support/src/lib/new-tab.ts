@@ -34,6 +34,7 @@ import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { theme } from '@kui-shell/core/core/settings'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { WatchableJob } from '@kui-shell/core/core/job'
 
 const debug = Debug('plugins/core-support/new-tab')
 
@@ -61,27 +62,50 @@ const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-st
  */
 class TabState {
   /** environment variables */
-  readonly env: Record<string, string>
+  private _env: Record<string, string>
 
   /** current working directory */
-  readonly cwd: string
+  private _cwd: string
 
-  constructor() {
-    this.env = Object.assign({}, process.env)
-    this.cwd = process.cwd().slice(0) // just in case, copy the string
+  get env() {
+    return this._env
+  }
+
+  get cwd() {
+    return this._cwd
+  }
+
+  capture() {
+    this._env = Object.assign({}, process.env)
+    this._cwd = process.cwd().slice(0) // just in case, copy the string
 
     debug('captured tab state', this.cwd)
   }
 
+  /** current watchable jobs */
+  private _jobs: WatchableJob[]
+
+  get jobs() {
+    return this._jobs
+  }
+
+  captureJob(job: WatchableJob) {
+    this._jobs = !this._jobs ? [job] : this._jobs.concat([job])
+  }
+
+  removeJob(job: WatchableJob) {
+    this._jobs = this._jobs.filter(existingJob => existingJob.id !== job.id)
+  }
+
   restore() {
-    process.env = this.env
+    process.env = this._env
 
     if (inBrowser()) {
-      debug('changing cwd', process.env.PWD, this.cwd)
-      process.env.PWD = this.cwd
+      debug('changing cwd', process.env.PWD, this._cwd)
+      process.env.PWD = this._cwd
     } else {
-      debug('changing cwd', process.cwd(), this.cwd)
-      process.chdir(this.cwd)
+      debug('changing cwd', process.cwd(), this._cwd)
+      process.chdir(this._cwd)
     }
   }
 }
@@ -112,7 +136,7 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
     nextTabButton.classList.add('left-tab-stripe-button-selected')
 
     if (currentTab) {
-      currentTab['state'] = new TabState()
+      ;(currentTab['state'] as TabState).capture()
     }
     if (nextTab['state']) {
       ;(nextTab['state'] as TabState).restore()
@@ -218,6 +242,10 @@ const closeTab = (tab = getCurrentTab()) => {
   const tabButton = getTabButton(tab)
   const tabId = parseInt(tabButton.getAttribute('data-tab-button-index'), 10)
 
+  if (tab['state'].jobs) {
+    ;(tab['state'] as TabState).jobs.forEach(job => job.abort())
+  }
+
   tab.parentNode.removeChild(tab)
   tabButton.parentNode.removeChild(tabButton)
 
@@ -236,6 +264,8 @@ const closeTab = (tab = getCurrentTab()) => {
  *
  */
 const perTabInit = (tab: Tab, doListen = true) => {
+  tab['state'] = new TabState()
+
   if (doListen) {
     listen(getCurrentPrompt(tab))
   }
@@ -294,7 +324,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   }
 
   const currentVisibleTab = getCurrentTab()
-  currentVisibleTab['state'] = new TabState()
+  ;(currentVisibleTab['state'] as TabState).capture()
 
   const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
 

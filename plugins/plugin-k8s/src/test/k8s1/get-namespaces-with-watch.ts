@@ -119,7 +119,7 @@ const watchNS = function(this: common.ISuite, kubectl: string) {
   })
 }
 
-const synonyms = ['kubectl', 'k']
+const synonyms = ['kubectl']
 
 describe('electron watch namespace', function(this: common.ISuite) {
   before(common.before(this))
