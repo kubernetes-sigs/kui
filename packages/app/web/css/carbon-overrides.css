@@ -70,3 +70,6 @@ body[kui-theme-style] .bx--breadcrumb-item .bx--link {
     font-size: 1em;
     text-decoration: none;
 }
+.bx--breadcrumb-item::after {
+    color: var(--color-text-02);
+}
