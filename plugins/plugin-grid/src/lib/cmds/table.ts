@@ -46,6 +46,11 @@ const defaultTop = 75 // default range to show in summary
 
 const viewName = 'Summary'
 
+interface State {
+  eventBus: events.EventEmitter
+  showOutliers: boolean
+}
+
 /**
  * Mode switchers
  *
@@ -74,7 +79,7 @@ const choicesArray: any[] = choices.map((choice, idx) => {
     balloon: `Show the ${text || bottom + 'th to the ' + top + 'th percentile of'} latency`,
     actAsButton: true,
     selected: idx === 0,
-    direct: state => {
+    direct: (tab: Tab, state: State) => {
       state.eventBus.emit('/summary/range/change', choice)
     }
   }
@@ -90,7 +95,7 @@ const tableModes = choicesArray.concat([
     actAsButton: true,
     radioButton: true,
     selected: false,
-    direct: state => {
+    direct: (tab: Tab, state: State) => {
       const showOutliers = !state.showOutliers
       state.showOutliers = showOutliers
       state.eventBus.emit(`/summary/range/outliers/toggle`, { showOutliers })
