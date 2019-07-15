@@ -230,9 +230,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     flex: 1;
     text-transform: uppercase;
 }
-.result-as-table .result-table .header-cell, .result-as-table.result-table .header-cell {
-    font-weight: bold !important;
-}
 .header-cell {
     background-color: var(--color-ui-06);
 }
