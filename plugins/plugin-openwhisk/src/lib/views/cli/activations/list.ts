@@ -19,6 +19,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
+import { ParsedOptions } from '@kui-shell/core/models/command'
 
 import * as prettyPrintDuration from 'pretty-ms'
 const debug = Debug('plugins/openwhisk/views/cli/activations/list')
@@ -31,7 +32,7 @@ const viewName = 'Trace View'
  * Turn a key->value map into a '--key1 value1 --key2 value2' cli opt string
  *
  */
-const mapToOptions = (baseMap, overrides = {}) => {
+const mapToOptions = (baseMap: Record<string, any>, overrides = {}) => {
   const map = Object.assign({}, baseMap, overrides)
   return Object.keys(map).reduce((opts, key) => {
     if (key === '_' || typeof map[key] === 'object') {
@@ -503,13 +504,15 @@ const _render = args => {
         const buttons = [
           {
             command: 'summary',
-            icon: 'fas fa-list',
+            icon:
+              '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M29 5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2zm-2 0v4H5V5zm0 22H5v-4h22zm0-6H5v-4h22zm0-6H5v-4h22z"></path></svg>',
             balloon: 'Open a statistical summary view'
           },
           // 'timeline', // disabled for now shell issue #794
           {
             command: 'grid',
-            icon: 'fas fa-th',
+            icon:
+              '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 8H6V6h6zm14-8h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 8h-6V6h6zm-14 6H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2zm0 8H6v-6h6zm14-8h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2zm0 8h-6v-6h6z"></path></svg>',
             balloon: 'Open a grid view',
             balloonPos: 'up-left'
           }
@@ -525,7 +528,9 @@ const _render = args => {
           buttonContainer.setAttribute('data-balloon', balloon)
           buttonContainer.setAttribute('data-balloon-pos', balloonPos)
 
-          button.className = icon
+          const iconContainer = document.createElement('span')
+          iconContainer.innerHTML = icon
+          button.appendChild(iconContainer)
           button.classList.add('clickable')
 
           buttonContainer.setAttribute('data-button-command', command)
@@ -540,7 +545,17 @@ const _render = args => {
         rightButtons.appendChild(prev)
         rightButtons.appendChild(next)
         prev.className = 'list-paginator-button list-paginator-button-prev fas fa-chevron-left'
-        next.className = 'list-paginator-button list-paginator-button-next fas fa-chevron-right'
+        next.className = 'list-paginator-button list-paginator-button-next'
+
+        const nextSVG = document.createElement('span')
+        nextSVG.innerHTML =
+          '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>'
+        next.appendChild(nextSVG)
+
+        const prevSVG = document.createElement('span')
+        prevSVG.innerHTML =
+          '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path></svg>'
+        prev.appendChild(prevSVG)
       } else {
         const paginator = container.querySelector('.list-paginator')
         description = paginator.querySelector('.list-paginator-description')
@@ -635,7 +650,7 @@ export const renderActivationListView = (
   tab: Tab,
   activations: Object[], // eslint-disable-line @typescript-eslint/ban-types
   container: Element,
-  parsedOptions
+  parsedOptions: ParsedOptions
 ) => {
   debug('rendering activation list view', activations)
 
