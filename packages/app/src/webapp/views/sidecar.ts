@@ -340,6 +340,9 @@ type CustomContent =
   | HTMLElement
   | Promise<HTMLElement>
 export interface CustomSpec extends EntitySpec, MetadataBearing {
+  /** noZoom: set to true for custom content to control the zoom event handler */
+  noZoom?: boolean
+
   isREPL?: boolean
   presentation?: Presentation
   renderAs?: string
@@ -742,6 +745,16 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     })
   }
 
+  const customContent = sidecar.querySelector('.custom-content')
+
+  if (custom.noZoom) {
+    // custom content will control the zoom handler, e.g. monaco-editor
+    customContent.classList.remove('zoomable')
+  } else {
+    // revert the change if previous custom content controls the zoom handler
+    customContent.classList.add('zoomable')
+  }
+
   // which viewer is currently active?
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 
@@ -837,12 +850,14 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
           debug('successfully loaded editor', custom)
 
           const metadataBearer = isMetadataBearingByReference(custom) ? custom.resource : custom
+          customContent.classList.remove('zoomable')
 
           const entity /*: IEditorEntity */ = {
             type: custom.prettyType,
             name: custom.name,
             kind: metadataBearer.kind,
             metadata: metadataBearer.metadata,
+            noZoom: custom.noZoom,
             persister: () => true,
             annotations: [],
             exec: {
