@@ -53,12 +53,12 @@ localDescribe('shell commands', function(this: common.ISuite) {
       .then(cli.expectError(1))
       .catch(common.oops(this)))
 
-  // disabled for now. see https://github.com/IBM/kui/issues/1977
-  /* it('should give usage for ibmcloud', () =>
+  // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
+  it.skip('should give usage for ibmcloud', () =>
     cli
       .do(`ibmcloud`, this.app)
       .then(cli.expectError(500, header('ibmcloud')))
-      .catch(common.oops(this))) */
+      .catch(common.oops(this)))
 
   if (!process.env.LOCAL_OPENWHISK) {
     it('should give ok for known outer command: ibmcloud target', () =>
@@ -68,15 +68,16 @@ localDescribe('shell commands', function(this: common.ISuite) {
         .catch(common.oops(this)))
   }
 
-  // disabled for now. see https://github.com/IBM/kui/issues/1977
-  /* if (hasExe('ibmcloud')) {
-    it('should give usage for ibmcloud config', () =>
+  if (hasExe('ibmcloud')) {
+    // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
+    it.skip('should give usage for ibmcloud config', () =>
       cli
         .do(`ibmcloud config`, this.app)
         .then(cli.expectError(2, undefined))
         .catch(common.oops(this)))
 
-    it('should give usage for ibmcloud app', () =>
+    // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
+    it.skip('should give usage for ibmcloud app', () =>
       cli
         .do(`ibmcloud app`, this.app)
         .then(cli.expectErrorWithPassthrough(500))
@@ -92,7 +93,7 @@ localDescribe('shell commands', function(this: common.ISuite) {
           ])
         )
         .catch(common.oops(this)))
-  } */
+  }
 
   it('should answer which ls with /bin/ls', () =>
     cli
