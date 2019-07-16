@@ -20,6 +20,32 @@ const { cli, selectors, sidecar } = ui
 
 import { tabButtonSelector } from '@kui-shell/plugin-core-support/lib/new-tab'
 
+describe('switch tabs', function(this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
+
+  it('new tab via command', () =>
+    cli
+      .do('tab new', this.app)
+      .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
+
+  it(`switch back to first tab via command`, () => cli.do('tab switch 1', this.app).catch(common.oops(this)))
+
+  it(`switch back to second tab via command`, () => cli.do('tab switch 2', this.app).catch(common.oops(this)))
+
+  it('should close tab via "tab close" command', () =>
+    cli
+      .do('tab close', this.app)
+      .then(() =>
+        this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true)
+      )
+      .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
+      .then(() => cli.waitForRepl(this.app)) // should have an active repl
+      .catch(common.oops(this)))
+})
+
 // test that new tab does not copy any output over from the cloned tab
 common.localDescribe('new tab from pty active tab via click', function(this: common.ISuite) {
   before(common.before(this))
