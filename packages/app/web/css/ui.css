@@ -344,7 +344,7 @@ body.in-electron .repl .repl-block:not(.using-custom-prompt) .repl-prompt-righty
 .repl-block.processing .repl-context {
     border-left-color: var(--color-processing);
 }
-repl .repl-block.using-custom-prompt .repl-prompt-righty > i, repl .repl-block.using-custom-prompt .repl-context {
+repl .repl-block.using-custom-prompt .repl-prompt-righty > svg, repl .repl-block.using-custom-prompt .repl-context {
     display: none;
 }
 repl .repl-block.using-custom-prompt .repl-input input {
@@ -1327,10 +1327,10 @@ code.fancy-code, code.fancy-code.hljs {
     font-size: 1.5em;
 }
 .even-smaller-text {
-    font-size: 0.75em;
+    font-size: 0.6875em;
 }
 .smaller-text {
-    font-size: 0.875em;
+    font-size: 0.75em;
 }
 .somewhat-smaller-text {
     font-size: 0.925em;
