@@ -91,7 +91,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
       { mode: 'edit', direct: openAsForm },
       ...relevantModes('kubectl', { resource: yaml }),
       statusButton('kubectl', resource, FinalState.NotPendingLike),
-      { mode: 'raw', direct: openInEditor }
+      { mode: 'raw', label: 'YAML', direct: openInEditor }
     ])
 
     // adjust selected mode
