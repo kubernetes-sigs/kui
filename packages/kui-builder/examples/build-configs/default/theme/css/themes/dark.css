@@ -20,6 +20,8 @@ body[kui-theme="Dark"] {
     --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
     --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
+    --color-stripe-01: #4F565C;
+
     --color-selection-background: var(--color-base05);
 
     --color-light-red: hsla(357, 96%, 64%, 50%);
@@ -31,7 +33,7 @@ body[kui-theme="Dark"] {
     --color-tag-beta-fill: #202529;
     --color-tag-beta-text: var(--color-text-01);
 
-    --color-text-02: #A4A4A4;
+    --color-text-02: #B3BAC1;
 
     /* table header row */
     --color-ui-06: #373D42;
