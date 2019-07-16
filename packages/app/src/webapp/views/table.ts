@@ -250,10 +250,12 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     }
   }
 
-  // now add the clickable name
   const entityNameGroup = document.createElement('span')
   entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
-  if (entityNameGroup.classList.contains('header-cell')) {
+  const isHeaderCell = entityNameGroup.classList.contains('header-cell')
+
+  // now add the clickable name
+  if (isHeaderCell) {
     entityName.classList.add('header-row')
     ;(entityName.parentNode as HTMLElement).classList.add('header-row')
   }
@@ -265,7 +267,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   }
   const entityNameClickable = document.createElement('span')
   entityNameClickable.className = 'entity-name'
-  if (!entityNameGroup.classList.contains('header-cell')) {
+  if (!isHeaderCell) {
     entityNameClickable.classList.add('clickable')
   }
   if (entity.nameCss) {
@@ -298,7 +300,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     icon.classList.add('cell-inner')
   } else if (typeof name === 'string') {
     entityNameClickable.title = name
-    entityNameClickable.innerText = name
+    entityNameClickable.innerText = isHeaderCell ? name.toLowerCase() : name
   } else {
     entityNameClickable.appendChild(name)
   }
@@ -422,7 +424,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       // value could be an empty string
       Promise.resolve(value).then(value => {
         inner.title = value
-        inner.appendChild(document.createTextNode(value))
+        inner.appendChild(document.createTextNode(isHeaderCell ? value.toLowerCase() : value))
       })
     } else {
       console.error('Invalid cell model, no value field', theCell)
