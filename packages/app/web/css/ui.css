@@ -65,10 +65,10 @@ body .page > .header {
 .header-left-bits {
     flex: 1;
 }
-.header-top-bits {
+sidecar .header-top-bits {
     display: flex;
-    flex: 1;
     padding-left: 1em;
+    margin: 0.75em 0 0;
 }
 .header .clickable, .header .clickable:hover {
     text-decoration: none;
@@ -839,6 +839,11 @@ body:not(.subwindow) .sidecar-full-screen sidecar .sidecar-bottom-stripe-maximiz
 sidecar .sidecar-bottom-stripe-button {
     transition: all 150ms ease-in-out, border-color 300ms ease-in-out;
 }
+sidecar .sidecar-bottom-stripe .package-prefix {
+    /* kubectl namespace and openwhisk package name, etc. */
+    display: flex;
+    align-items: center;
+}
 sidecar .sidecar-header .limits {
     /* don't show limits in header for now */
     display: none;
@@ -894,16 +899,9 @@ sidecar .custom-content {
 sidecar .sidecar-header {
     display: flex;
     background-color: var(--color-sidecar-header);
-    flex-basis: 7rem;
-    min-height:  7rem; /* see shell issue #712 */
+    flex-basis: 8rem;
+    min-height: 8rem; /* see shell issue #712 */
     transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
-}
-sidecar ul.bx--tabs__nav.bx--tabs__nav--hidden:empty {
-    /* draw a bottom border for the sidecar header if we have no mode
-   bottoms; we need to do this on the ul.bx--tabs, because we don't
-   want to draw the bottom border if the sidecar is showing tabs;
-   hence the :empty qualifier */
-    border-bottom: 1px solid var(--color-content-divider);
 }
 sidecar .sidecar-header .header-main-content {
     flex: 1;
@@ -980,7 +978,6 @@ sidecar .sidecar-header-name {
     font-size: 1.75em;
     display: flex;
     align-items: center;
-    margin: 1rem 0 0;
 
     /* the bit of padding allows for space to initiate a drag-select of
    the header name text */
@@ -1056,10 +1053,13 @@ sidecar.entity-is-activations .sidecar-header-name  .sidecar-header-name-content
     white-space: nowrap;
 }
 sidecar .sidecar-header-secondary-content {
-    font-size: 0.875em;
+    padding-left: 1rem;
+    font-size: 0.75em;
     display: flex;
     align-items: center;
-    opacity: 0.875;
+    color: var(--color-text-02);
+    letter-spacing: 0.32px;
+    line-height: 1.25rem;
 }
 sidecar .sidecar-header-secondary-content .kind-content {
     overflow: hidden;
@@ -1241,7 +1241,7 @@ sidecar:not(.entity-is-sequence) .sequence-components {
 }
 
 /* sidecar cost */
-sidecar.no-limits-data .activation-estimated-cost-container {
+.activation-estimated-cost-container {
     display: none;
 }
 

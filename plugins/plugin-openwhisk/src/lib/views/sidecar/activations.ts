@@ -88,7 +88,8 @@ export default (tab: Tab, entity, options: ShowOptions) => {
   const entityPackageName = pathComponents ? (pathComponents.length === 2 ? '' : pathComponents[1]) : '' // either ns/package/action or ns/action
 
   // make the nameDom clickable, traversing to the action
-  element('.package-prefix', nameDom).innerText = entityPackageName
+  const footer = sidecar.querySelector('.sidecar-bottom-stripe')
+  element('.package-prefix', footer).innerText = entityPackageName
   const entityName = element('.entity-name', nameDom)
   entityName.innerText = entity.name
   entityName.className = `${entityName.className} clickable`
