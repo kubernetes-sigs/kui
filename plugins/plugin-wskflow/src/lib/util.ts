@@ -24,6 +24,11 @@ import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
 import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
 const debug = Debug('plugins/wskflow/util')
 
+const strings = {
+  '1:1': '1:1',
+  Fit: 'Fit'
+}
+
 /**
  * Return some line-oriented statistics about the given code.
  *
@@ -149,7 +154,7 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
     return [
       {
         mode: 'zoom-one-to-one',
-        label: '1:1',
+        label: strings['1:1'],
         actAsButton: true,
         flush: 'right',
         balloon: 'Use a fixed-size canvas',
@@ -162,7 +167,7 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
       },
       {
         mode: 'zoom-to-fit',
-        fontawesome: 'fas fa-expand',
+        label: strings['Fit'],
         actAsButton: true,
         flush: 'right',
         balloon: 'Use a zoom to fit canvas',
