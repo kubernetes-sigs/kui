@@ -33,6 +33,7 @@ import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { theme } from '@kui-shell/core/core/settings'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 
 const debug = Debug('plugins/core-support/new-tab')
 
@@ -73,9 +74,15 @@ class TabState {
   }
 
   restore() {
-    debug('changing cwd', process.cwd(), this.cwd)
-    process.chdir(this.cwd)
     process.env = this.env
+
+    if (inBrowser()) {
+      debug('changing cwd', process.env.PWD, this.cwd)
+      process.env.PWD = this.cwd
+    } else {
+      debug('changing cwd', process.cwd(), this.cwd)
+      process.chdir(this.cwd)
+    }
   }
 }
 
