@@ -239,7 +239,10 @@ const perTabInit = (tab: Tab, doListen = true) => {
   installReplFocusHandlers()
 
   // tab close button
-  getTabCloser(tab).onclick = () => closeTab(tab)
+  getTabCloser(tab).onclick = (event: MouseEvent) => {
+    event.stopPropagation()
+    return closeTab(tab)
+  }
 
   // maximize button
   sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
