@@ -126,8 +126,8 @@ export const initOW = () => {
   const owConfig = {
     apihost: apihost || 'unknown',
     api_key: authKey || 'unknown',
-    apigw_token: apigwToken,
-    apigw_space_guid: apigwSpaceGuid,
+    apigw_token: apigwToken, // eslint-disable-line @typescript-eslint/camelcase
+    apigw_space_guid: apigwSpaceGuid, // eslint-disable-line @typescript-eslint/camelcase
     ignore_certs: ignoreCerts(apihost)
   }
 

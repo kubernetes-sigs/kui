@@ -317,13 +317,13 @@ const extractKeyValuePairs = (
 const ignore = {
   constructor: true,
   activation: true,
-  get_activation: true,
-  action_body: true,
-  rule_body: true,
+  get_activation: true, // eslint-disable-line @typescript-eslint/camelcase
+  action_body: true, // eslint-disable-line @typescript-eslint/camelcase
+  rule_body: true, // eslint-disable-line @typescript-eslint/camelcase
   qs: true,
-  invoke_options: true,
-  invoke_params: true,
-  convert_to_fqn: true,
+  invoke_options: true, // eslint-disable-line @typescript-eslint/camelcase
+  invoke_params: true, // eslint-disable-line @typescript-eslint/camelcase
+  convert_to_fqn: true, // eslint-disable-line @typescript-eslint/camelcase
 
   packages: {
     invoke: true // the openwhisk npm has package.invoke, which just throws an error. oof

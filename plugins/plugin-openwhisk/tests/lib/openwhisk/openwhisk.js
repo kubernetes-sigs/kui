@@ -59,15 +59,15 @@ exports.apihostIsLocal = apihostIsLocal
 
 const cleanAll = (
   noDefault,
-  api_key = !noDefault && (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)
+  apiKey = !noDefault && (process.env.__OW_API_KEY || process.env.AUTH || localWskProps().AUTH)
 ) => {
-  if (!api_key) {
+  if (!apiKey) {
     return Promise.resolve(true)
   }
 
   const opts = {
     apihost,
-    api_key,
+    api_key: apiKey,
     ignore_certs: process.env.IGNORE_CERTS || process.env.INSECURE_SSL || localWskProps().INSECURE_SSL || apihostIsLocal
   }
 

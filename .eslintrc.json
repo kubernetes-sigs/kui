@@ -23,19 +23,10 @@
           "wrap_line_length",
           "indent_size",
           "api_key",
-          "apigw_token",
-          "apigw_space_guid",
           "ignore_certs",
           "__cloudshell_decorations",
           "follow_max",
-          "open_timeout",
-          "read_timeout",
-          "get_activation",
-          "action_body",
-          "rule_body",
-          "invoke_options",
-          "invoke_params",
-          "convert_to_fqn"
+          "open_timeout"
         ]
       }
     ],
