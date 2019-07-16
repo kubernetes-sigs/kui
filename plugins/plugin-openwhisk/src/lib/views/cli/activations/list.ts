@@ -544,7 +544,7 @@ const _render = args => {
         // forward and back buttons
         rightButtons.appendChild(prev)
         rightButtons.appendChild(next)
-        prev.className = 'list-paginator-button list-paginator-button-prev fas fa-chevron-left'
+        prev.className = 'list-paginator-button list-paginator-button-prev'
         next.className = 'list-paginator-button list-paginator-button-next'
 
         const nextSVG = document.createElement('span')
