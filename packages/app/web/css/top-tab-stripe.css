@@ -48,7 +48,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     content: ''
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) {
-    background: rgba(255,255,255,0.0875);
+    background: transparent;
 }
 .left-tab-stripe-button i {
     display: flex;
@@ -90,9 +90,6 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     background: var(--color-base02);
     color: var(--color-text-01);
     opacity: 0.8;
-}
-body[kui-theme-style="dark"] .left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-closer:hover {
-    background: var(--color-base01);
 }
 
 body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i {
@@ -206,13 +203,13 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
 .left-tab-stripe-button:not(.left-tab-stripe-button-selected) + .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label {
     border-left-color: rgba(255,255,255,0.35);
 }
+.left-tab-stripe-button:not(.left-tab-stripe-button-selected):last-child .left-tab-stripe-button-label {
+    border-right-color: rgba(255,255,255,0.35);
+}
 
 .left-tab-stripe-button-selected {
     background: var(--color-ui-01);
     border-color: var(--color-base03);
-    opacity: 0.95;
-    border-bottom: 1px inset var(--color-ui-02);
-    filter: opacity(0.975) grayscale(0.5) brightness(1.1);
     margin-top: 1px;
 }
 body[kui-theme-style="light"] .left-tab-stripe-button-selected {
@@ -226,7 +223,7 @@ body[kui-theme-style="light"] .left-tab-stripe-button-selected {
 
 .left-tab-stripe-button-label {
     flex: 1;
-    padding: 0.5em 1.25em 0.5em 1em;
+    padding: 0.25em 1.25em 0.25em 1em;
     font-weight: 500;
     direction: unset;
     max-width: 25em;
