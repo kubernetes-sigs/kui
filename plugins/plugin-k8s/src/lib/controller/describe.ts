@@ -159,6 +159,7 @@ const renderDescribe = async (
   }
   modes.push({
     mode: 'raw',
+    label: 'YAML',
     direct: `${getCmd} -o ${output}`,
     order: 999,
     leaveBottomStripeAlone: true
