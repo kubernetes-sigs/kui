@@ -311,7 +311,7 @@ const _addModeButton = (
 
   if (balloon) {
     button.setAttribute('data-balloon', balloon)
-    button.setAttribute('data-balloon-pos', 'up')
+    button.setAttribute('data-balloon-pos', 'down')
     if (balloonLength) {
       button.setAttribute('data-balloon-length', balloonLength)
     }
