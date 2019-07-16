@@ -37,6 +37,9 @@
       window['_kuiWebpackHash'] = "${hash}"
       window['_kuiWebpackResourceRoot'] = "${resourceRoot}"
     </script>
+
+    <!-- syntax highlighting -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js"></script>
   </head>
 
   <body class='still-loading ${bodyCss}'><div class="page">
@@ -76,7 +79,9 @@
 	<div class="repl-inner zoomable">
 	  <div class="repl-block repl-initial" data-base-class="repl-block" data-input-count="0">
 	    <div class="repl-input">
-	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context'></span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'><i class="fas fa-angle-right"></i></span></div>
+	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context'></span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'>
+                  <!-- ChevronRight20 -->
+                  <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>              </span></div>
 	      <input type="text"
                      class="repl-input-element"
                      autofocus
@@ -110,7 +115,10 @@
                         <span class='entity-name'></span>
 
 	                <div class="repl-input">
-                          <div class="repl-prompt hide-with-screenshot"><span class="repl-prompt-righty"><i class="fas fa-angle-right"></i></span></div>
+                          <div class="repl-prompt hide-with-screenshot"><span class="repl-prompt-righty">
+                              <!-- ChevronRight20 -->
+                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>
+                          </span></div>
                           <input type="text"
                                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                                  placeholder="enter your command"
@@ -278,7 +286,10 @@
           <div class='kui--input-stripe'>
             <div class='repl-block' data-base-class="repl-block">
 	    <div class="repl-input">
-	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context'></span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'><i class="fas fa-angle-right"></i></span></div>
+	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context'></span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'>
+                  <!-- ChevronRight20 -->
+                  <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>
+              </span></div>
 	      <input type="text"
                      class="repl-input-element"
                      autofocus
@@ -296,17 +307,12 @@
     <textarea id='invisible-global-input' class="not-tabbable" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 
     <div id='restart-needed-warning'>
-      <i class='fas fa-heart-broken'></i>
+      <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path d="M12 1C5.9 1 1 5.9 1 12s4.9 11 11 11 11-4.9 11-11S18.1 1 12 1zm4.3 16.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z"></path><path d="M16.3 17.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z" data-icon-path="inner-path" opacity="0"></path></svg>
       <div class='restart-needed-warning-content'>
         A severe error occurred during launch
       </div>
     </div>
     </body>
-
-    <!-- syntax highlighting -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/swift.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/yaml.min.js"></script>
 
     <script src="${jsHome}${main}"></script>
 </html>

@@ -63,16 +63,17 @@ body.subwindow #search-bar.visible {
     font-weight: 100;
     color: var(--color-brand-03);
 }
-#search-close-button {
-    color: var(--color-ui-05);
-    transition: all 300ms ease-in-out;
-    font-size: 1.5em;
+#search-close-button svg path {
+    fill: var(--color-text-02);
+    transition: fill 150ms ease-in-out;
 }
 #search-close-button:hover {
-    color: var(--color-base0D);
     cursor: pointer;
 }
-#search-found-text.no-search-yet {
+#search-close-button:hover svg path {
+    fill: var(--color-base0D);
+}
+#search-found-text.no-search-yet svg path {
     color: var(--color-text-02);
     font-size: 0.75rem;
 }
