@@ -34,7 +34,7 @@ export default options => ({
         .getPropertyValue('font-size')
         .replace(/px$/, ''),
       10
-    ) * (document.body.classList.contains('subwindow') ? 1 : 0.75),
+    ) * (document.body.classList.contains('subwindow') ? 1 : 0.875),
 
   // specifics for readOnly mode
   glyphMargin: !options.readOnly, // needed for error indicators
