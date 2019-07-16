@@ -103,6 +103,7 @@
       <sidecar id='sidecar'>
 	<header class='sidecar-header'>
           <div class='header-main-content'>
+            <div style='flex:1;display:flex;flex-direction:column;justify-content:center'>
             <div class='header-top-bits'>
 	      <div class='header-left-bits'>
 	        <div class='sidecar-header-text'>
@@ -110,7 +111,6 @@
 		    <!--<span class='activation-content'>of</span>-->
 		    <span class='sidecar-header-name-content' data-base-class='sidecar-header-name-content'>
 		      <span class='activation-content activation-id'></span>
-                      <span class='package-prefix'></span>
                       <span class='entity-name-line'>
                         <span class='entity-name'></span>
 
@@ -145,6 +145,47 @@
                 <div class='custom-header-content'></div>
 	      </div> <!-- header-right-bits -->
             </div> <!-- header-top-bits -->
+
+            <div class='sidecar-header-secondary-content'>
+	      <div class='action-content'>
+                <span class='kind'></span>
+	        <!--<div class='kind-content'>This is a <span class='kind'></span> action</div>-->
+                <!--<a class='entity-web-export-url' target='_blank'>View in Browser</a>-->
+                <!--<span id='version'></span>-->
+	      </div>
+	      <div class='activation-content'>
+	        <div class='kind-content'>
+		  This call started <strong class='activation-start'></strong>
+	        </div>
+	      </div>
+	      <div class='package-content'>
+	        <div class='kind-content'>This is a package
+		  <!-- binding signifier -->
+		  <span class='package-binding-signifier'>binding of
+		    <span class='package-binding-of'></span>
+		  </span>
+		  with
+		  <span class='count-with-label package-action-count'>
+		    <span class='package-content-count'></span>
+		    <span class='label-plural'>actions</span><span class='label-singular'>action</span>, and
+		  </span>
+		  <span class='count-with-label package-feed-count'>
+		    <span class='package-content-count'></span> 
+		    <span class='label-plural'>feeds</span><span class='label-singular'>feed</span>
+		  </span> 
+	        </div>
+	      </div>
+	      <div class='rule-content'>
+	        <div class='kind-content'>This is a rule</div>
+	      </div>
+	      <div class='trigger-content'>
+	        <div class='kind-content'><!--This is a trigger-->
+                  <span class='feed-content'></span>
+                </div>
+	      </div>
+              <div class='custom-header-content'></div>
+	    </div> <!-- secondary content -->
+            </div>
 
             <!-- sidecar tabs -->
             <div class='sidecar-top-stripe zoomable'>
@@ -200,45 +241,8 @@
 
             <div class='sidecar-header-icon-wrapper'><div class='sidecar-header-icon'></div></div>
 
-            <div class='sidecar-header-secondary-content'>
-	      <div class='action-content'>
-                <span class='kind'></span>
-	        <!--<div class='kind-content'>This is a <span class='kind'></span> action</div>-->
-                <!--<a class='entity-web-export-url' target='_blank'>View in Browser</a>-->
-                <!--<span id='version'></span>-->
-	      </div>
-	      <div class='activation-content'>
-	        <div class='kind-content'>
-		  This call started <strong class='activation-start'></strong>
-	        </div>
-	      </div>
-	      <div class='package-content'>
-	        <div class='kind-content'>This is a package
-		  <!-- binding signifier -->
-		  <span class='package-binding-signifier'>binding of
-		    <span class='package-binding-of'></span>
-		  </span>
-		  with
-		  <span class='count-with-label package-action-count'>
-		    <span class='package-content-count'></span>
-		    <span class='label-plural'>actions</span><span class='label-singular'>action</span>, and
-		  </span>
-		  <span class='count-with-label package-feed-count'>
-		    <span class='package-content-count'></span> 
-		    <span class='label-plural'>feeds</span><span class='label-singular'>feed</span>
-		  </span> 
-	        </div>
-	      </div>
-	      <div class='rule-content'>
-	        <div class='kind-content'>This is a rule</div>
-	      </div>
-	      <div class='trigger-content'>
-	        <div class='kind-content'><!--This is a trigger-->
-                  <span class='feed-content'></span>
-                </div>
-	      </div>
-              <div class='custom-header-content'></div>
-	    </div> <!-- secondary content -->
+            <!-- e.g. kubernetes namespace or openwhisk package name, and the like -->
+            <span class='package-prefix'></span>
 
             <!-- flush-right buttons go here -->
             <div class='sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container'></div>

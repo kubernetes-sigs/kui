@@ -625,14 +625,16 @@ export const addNameToSidecarHeader = async (
     }
   }
 
-  const nameDom = sidecar.querySelector('.sidecar-header-name-content')
+  const header = sidecar.querySelector('.sidecar-header')
+  const footer = sidecar.querySelector('.sidecar-bottom-stripe')
+  const nameDom = header.querySelector('.sidecar-header-name-content')
   nameDom.className = nameDom.getAttribute('data-base-class')
-  element('.package-prefix', nameDom).innerText = packageName
+  element('.package-prefix', footer).innerText = packageName
 
   if (isCustomSpec(entity) && entity.isREPL) {
-    sidecar.querySelector('.sidecar-header-text').classList.add('is-repl-like')
+    header.querySelector('.sidecar-header-text').classList.add('is-repl-like')
   } else {
-    sidecar.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
+    header.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
   }
 
   if (typeof name === 'string') {
