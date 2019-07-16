@@ -30,6 +30,7 @@
         ]
       }
     ],
+    "@typescript-eslint/no-parameter-properties": "off",
     "@typescript-eslint/explicit-function-return-type": "off"
   },
   "overrides": [
