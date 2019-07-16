@@ -72,7 +72,7 @@ const rp = (url: string) => {
 
     return needle(method, url, {
       open_timeout: timeout,
-      read_timeout: timeout,
+      read_timeout: timeout, // eslint-disable-line @typescript-eslint/camelcase
       follow_max: 5
     })
       .then(_ => _.body)
