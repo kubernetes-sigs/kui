@@ -56,25 +56,23 @@ interface State {
  *
  */
 const choices = [
-  { bottom: 25, top: 75, fontawesome: 'fas fa-thermometer-quarter' },
+  { bottom: 25, top: 75, label: '25-75%' },
   // { bottom: 25, top: 90 },
-  { bottom: 25, top: 95, fontawesome: 'fas fa-thermometer-half' },
+  { bottom: 25, top: 95, label: '25-95%' },
   // { bottom: 25, top: 99 },
   {
     bottom: 'min',
     top: 'max',
     label: 'Min-Max',
-    text: 'mininum to maximum',
-    fontawesome: 'fas fa-thermometer-full'
+    text: 'mininum to maximum'
   }
 ]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const choicesArray: any[] = choices.map((choice, idx) => {
-  const { bottom, top, label, text, fontawesome } = choice
+  const { bottom, top, label, text } = choice
   return {
     label: label || `${bottom}-${top}`,
     flush: 'right',
-    fontawesome,
     // labelBelow: true,
     balloon: `Show the ${text || bottom + 'th to the ' + top + 'th percentile of'} latency`,
     actAsButton: true,
