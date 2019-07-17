@@ -31,7 +31,8 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 }
 .left-tab-stripe {
     display: flex;
-    flex-basis: 32px;
+    flex-basis: 36px;
+    padding-left: 1ex;
     min-width: 0;
     background-color: var(--color-stripe-01);
     transition: background-color 150ms ease-in-out;
@@ -41,9 +42,6 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
     overflow: auto;
 }
 
-.left-tab-stripe-button:not([data-tab-button-index]) i {
-    color: rgba(255,255,255,0.5) !important;
-}
 .left-tab-stripe-button:not([data-tab-button-index]):not([data-balloon]):after {
     content: ''
 }
@@ -82,30 +80,18 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 .left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer svg path {
     fill: var(--color-text-02);
 }
-.left-tab-stripe-buttons .left-tab-stripe-button .left-tab-stripe-button-closer:hover {
-    background: var(--color-ui-04);
+.left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer:hover svg path {
+    fill: var(--color-base01);
 }
-.left-tab-stripe-buttons .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-closer:hover {
-    /* modify the background hover effect for not-selected tabs */
-    background: var(--color-base02);
-    color: var(--color-text-01);
-    opacity: 0.8;
+.left-tab-stripe-buttons .left-tab-stripe-button .left-tab-stripe-button-closer:hover {
+    background: var(--color-base05);
 }
 
-body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i {
-    filter: grayscale(0.5) opacity(0.5);
-}
-.left-tab-stripe-buttons .left-tab-stripe-button i {
-    filter: grayscale(0.5) opacity(0.25);
-}
-.left-tab-stripe-bottom-buttons i {
-    filter: grayscale(0.5);
-}
 .left-tab-stripe-button:not([data-tab-button-index]):not(.left-tab-stripe-button-selected) > svg:hover {
     cursor: pointer;
 }
 .left-tab-stripe-button:not([data-tab-button-index]):not(.left-tab-stripe-button-selected) > svg:hover path {
-    fill: var(--color-base06) !important;
+    fill: var(--color-base08) !important;
 }
 .left-tab-stripe-button-selected .left-tab-stripe-button-label {
     /* reduce the visibility of the tab label, for the visible tab */
@@ -113,7 +99,7 @@ body[kui-theme-style="light"] .left-tab-stripe-buttons .left-tab-stripe-button i
 }
 .left-tab-stripe-button-label {
     color: var(--color-text-01);
-    font-size: 0.6875em;
+    font-size: 0.75em;
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -147,7 +133,7 @@ body.not-electron .repl-input {
 }
 
 .left-tab-stripe-button svg path {
-    fill: var(--color-base04);
+    fill: var(--color-text-02);
     transition: fill 150ms ease-in-out;
 }
 
@@ -155,12 +141,6 @@ body.not-electron .repl-input {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-#help-button:hover {
-    cursor: pointer;
-}
-#help-button.left-tab-stripe-button:hover svg path {
-    fill: var(--color-brand-02) !important;
 }
 
 .main {
@@ -183,8 +163,8 @@ body.not-electron .repl-input {
     margin: 0;
     border: 1px solid transparent;
     border-bottom: none;
-    border-top-left-radius: 1px 2px;
-    border-top-right-radius: 1px 2px;
+    border-top-left-radius: 3px 6px;
+    border-top-right-radius: 3px 6px;
     transition: all 150ms ease-in-out;
 }
 
@@ -201,20 +181,16 @@ body[kui-theme-style="dark"] .left-tab-stripe-button:not(.left-tab-stripe-button
 }
 
 .left-tab-stripe-button:not(.left-tab-stripe-button-selected) + .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label {
-    border-left-color: rgba(255,255,255,0.35);
+    border-left-color: var(--color-table-border1);
 }
 .left-tab-stripe-button:not(.left-tab-stripe-button-selected):last-child .left-tab-stripe-button-label {
-    border-right-color: rgba(255,255,255,0.35);
+    border-right-color: var(--color-table-border1);
 }
 
 .left-tab-stripe-button-selected {
     background: var(--color-ui-01);
     border-color: var(--color-base03);
-    margin-top: 1px;
-}
-body[kui-theme-style="light"] .left-tab-stripe-button-selected {
-    border-bottom-color: var(--color-ui-04);
-    filter: opacity(0.975) grayscale(0.5) brightness(0.975);
+    margin-top: 3px;
 }
 
 .left-tab-stripe-buttons .left-tab-stripe-button > i {
@@ -223,7 +199,7 @@ body[kui-theme-style="light"] .left-tab-stripe-button-selected {
 
 .left-tab-stripe-button-label {
     flex: 1;
-    padding: 0.25em 1.25em 0.25em 1em;
+    padding: 0.125em 1.25em 0.125em 1em;
     font-weight: 500;
     direction: unset;
     max-width: 25em;

@@ -19,6 +19,8 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import * as events from 'events'
 
+import { editor } from 'monaco-editor'
+
 import { Tab } from '@kui-shell/core/webapp/cli'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
@@ -43,10 +45,16 @@ const debug = Debug('plugins/editor/open')
  * Update the code in the editor to use the given text
  *
  */
-const setText = (editor, options, execOptions?) => ({ code, kind }) => {
+const setText = (editor: editor.ICodeEditor, options, execOptions?) => ({
+  code,
+  kind
+}: {
+  code: string
+  kind: string
+}) => {
   // options is --language yaml command line
   // execOptions is side channel progmmatic information passed via repl.exec
-  const lang = (options && options.language) || (execOptions && execOptions.language) || language(kind)
+  const lang: string = (options && options.language) || (execOptions && execOptions.language) || language(kind)
   debug('setText language', kind, lang)
   debug('setText code', code.substring(0, 20))
 
@@ -88,7 +96,6 @@ const injectTheme = (editorWrapper?: Element, force = false) => {
   }
   debug('injectTheme')
 
-  const isDark = document.querySelector('body').getAttribute('kui-theme-style') === 'dark'
   const currentTheme = document.querySelector('body').getAttribute('kui-theme')
 
   const previousKey = editorWrapper && editorWrapper.getAttribute('kui-theme-key')
@@ -100,25 +107,14 @@ const injectTheme = (editorWrapper?: Element, force = false) => {
   // CSS content
   try {
     // try webpack style
-    if (isDark) {
-      injectCSS({
-        css: require('@kui-shell/plugin-editor/web/css/dark.css').toString(),
-        key
-      })
-    } else {
-      injectCSS({
-        css: require('@kui-shell/plugin-editor/web/css/mono-blue.css').toString(),
-        key
-      })
-    }
+    injectCSS({
+      css: require('@kui-shell/plugin-editor/web/css/theme-alignment.css').toString(),
+      key
+    })
   } catch (err) {
     // oh well, try filesystem style
     const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-    if (isDark) {
-      injectCSS({ key, path: path.join(ourRoot, 'web/css/dark.css') })
-    } else {
-      injectCSS({ key, path: path.join(ourRoot, 'web/css/mono-blue.css') })
-    }
+    injectCSS({ key, path: path.join(ourRoot, 'web/css/theme-alignment.css') })
   }
 
   // remove previous theme; for some reason, if we don't do this as an
@@ -212,17 +208,17 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
    * that instance to show a given entity.
    *
    */
-  const updater = editor => {
-    editor.updateText = entity => {
+  const updater = (editor: editor.ICodeEditor) => {
+    editor['updateText'] = entity => {
       // monaco let's us replace the full range of text, so we don't need
       // an explicit delete of the current text
       return setText(editor, options)(entity.exec)
     }
 
-    editor.clearDecorations = () => {
+    editor['clearDecorations'] = () => {
       // debug('clearing decorations', editor.__cloudshell_decorations)
       const none = [{ range: new global['monaco'].Range(1, 1, 1, 1), options: {} }]
-      editor.__cloudshell_decorations = editor.deltaDecorations(editor.__cloudshell_decorations || [], none)
+      editor['__cloudshell_decorations'] = editor.deltaDecorations(editor['__cloudshell_decorations'] || [], none)
     }
 
     editorWrapper['editor'] = editor
@@ -321,7 +317,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
       const editsInProgress = () => {
         // debug('editsInProgress')
         sidecar.classList.add('is-modified')
-        editor.clearDecorations() // for now, don't try to be clever; remove decorations on any edit
+        editor['clearDecorations']() // for now, don't try to be clever; remove decorations on any edit
         eventBus.emit('/editor/change', {})
       }
       const editsCommitted = entity => {
@@ -344,7 +340,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
       updateHeader()
 
       /** call editor.layout */
-      const relayout = (editor.relayout = () => {
+      const relayout = (editor['relayout'] = () => {
         const go = () => {
           const { width, height } = outerContent.getBoundingClientRect()
           debug('relayout', width, height)
@@ -368,12 +364,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
     }
   } /* end of updater */
 
-  let initEditor
-  if (inBrowser()) {
-    initEditor = (await import('./init/esm')).default
-  } else {
-    initEditor = (await import('./init/amd')).default
-  }
+  const initEditor = inBrowser() ? (await import('./init/esm')).default : (await import('./init/amd')).default
 
   // once the editor is ready, return a function that can populate it
   return initEditor(editorWrapper, options).then(updater)

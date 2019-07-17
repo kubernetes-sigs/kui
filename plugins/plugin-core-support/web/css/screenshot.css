@@ -56,7 +56,6 @@ body.no-tooltips-anywhere [data-balloon]:before, body.no-tooltips-anywhere [data
     justify-content: center;
     align-items: center;
     z-index: 5;
-    box-shadow: 0 0 2em var(--color-base01);
     border: 1px solid var(--color-base04);
 }
 
