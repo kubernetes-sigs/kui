@@ -61,7 +61,7 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 #tutorialPane .tutorial-header {
     display: flex;
     border-bottom: 1px solid var(--color-content-divider);
-    margin: 0 0 2em;
+    background-color: var(--color-sidecar-header);
     padding: 0 1.8125em;
 }
 #tutorialPane .tutorial-header .tutorial-header-names {
@@ -102,6 +102,8 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
     display: flex;
     flex-direction: column;
     overflow: hidden; /* needed for firefox inner scrolling; safari and chrome seem not to need this */
+    background-color: var(--color-sidecar-background);
+    padding-top: 2em;
 }
 
 #tutorialPane .tutorial-body .tutorial-top, #tutorialPane .tutorial-body .tutorial-bottom {
@@ -222,12 +224,12 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
     height: 2em;
     border: 4px solid var(--color-ui-05);
     margin: 0 1px;
-    background: var(--color-ui-04);
+    background-color: var(--color-ui-04);
     transition: all 500ms ease-in-out;
     filter: opacity(0.5) blur(1px);
 }
 #tutorialPane .tutorial-step-block.active, #tutorialPane .tutorial-step-block:hover {
-    background: var(--color-base09);
+    background-color: var(--color-base09);
     filter: opacity(1);
 }
 #tutorialPane .tutorial-step-block:hover {
@@ -349,9 +351,6 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
     background-color: var(--color-ui-03);
     box-shadow: none;
 }
-#tutorialPane[tutorial-is-fullscreen] .tutorial-header {
-    background-color: var(--color-ui-01);
-}
 
 /* minimized form */
 #tutorialPane:not(.minimized) .tutorial-minimized-message {
@@ -446,7 +445,7 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
     left: calc(-0.5ex);
     top: calc(-0.5ex);
     width: calc(100% + 0.5ex + 2px);
-    background: transparent;
+    background-color: transparent;
     display: block;
     z-index: 10;
     height: calc(100% + 0.5ex + 4px);
