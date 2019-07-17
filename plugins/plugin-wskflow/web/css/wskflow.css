@@ -224,7 +224,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf[data-status="success"] .atom
 }
 #wskflowSVG .node[data-deployed="not-deployed"] .atom {
     mask: url(#mask-stripe);
-    fill: var(--color-base04) !important;
+    fill: var(--color-base03) !important;
 }
 
 #wskflowSVG .node.leaf.let .atom, #wskflowSVG .node.leaf.literal .atom {

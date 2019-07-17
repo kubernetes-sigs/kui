@@ -1,69 +1,44 @@
 /* color variables */
 body[kui-theme="Light"] {
-    --color-base00: #152934;
-    --color-base01: #f5f7fa;
-    --color-base02: #8c9ba5;
-    --color-base03: #f0f3f6;
-    --color-base04: #dfe3e6;
-    --color-base05: var(--color-base00);
-    --color-base06: var(--color-base01);
+    --color-base00: #ffffff;
+    --color-base01: #ffffff;
+    --color-base02: #868d95;
+    --color-base03: #D7DCE4;
+    --color-base04: #F2F4F8;
+    --color-base05: #50565b;
+    --color-base06: #13171a;
     --color-base07: #fff;
     --color-base08: #e71d32;
     --color-base09: #bf5b17;
-    --color-base0A: hsl(48, 100%, 38%);
-    --color-base0B: #5aa700;
-    --color-base0C: #00b4a0;
-    --color-base0D: #3d70b2;
-    --color-base0E: #beaed4;
-    --color-base0F: hsla(265, 31%, 50%, 1);
-    
-    --color-text-01: var(--color-base00);
-    --color-text-02: #5a6872;
+    --color-base0A: #FECF2F;
+    --color-base0B: #1DBD5A;
+    --color-base0C: #399CD6;
+    --color-base0D: #0072c3;
+    --color-base0E: #d12764;
+    --color-base0F: #8a3ffc;
 
-    --color-light-red: rgba(231, 29, 50, 0.75);
-    --color-light-green: rgba(97, 164, 38, 0.75);
-    --color-light-yellow: #efc100;
+    --color-map-key: var(--color-base0D);
 
-    --color-hover-primary-text: #294c86;
-    --color-content-divider: #0062ff;
-    --color-tag-beta-fill: #dfe3e6;
-    --color-tag-beta-text: #394b54;
-    --color-tag-ibm-fill: #c0e6ff;
-    --color-tag-ibm-text: #325c80;
-    --color-stripe-01: #152935; /* 202 60 21 */
-    --color-stripe-02: #0f212e; /* 205 67 18 */
-    --color-text-against-dark-bg: var(--color-ui-02);
-    --color-support-01: var(--color-red);
-    --color-support-01-lighter: var(--color-light-red);
-    --color-support-02: var(--color-green);
-    --color-support-03: var(--color-light-yellow);
-    --color-support-03-darker: var(--color-yellow);  /* dialed down from 47% lightness */
-    --color-support-04: #5aaafa;
-    --color-brand-01-10: hsla(214, 49%, 47%, 0.1); /* 10% opacity */
-    --color-brand-02: #5596e6;
-    --color-ui-01: var(--color-base07);
-    --color-ui-04: var(--color-light-gray); /* 206 3 90 */
-    --color-ui-05: var(--color-dark-gray); /* 204 15 65 */
+    --color-table-border1: #9e9fa1;
+    --color-table-border2: #3D4144;
+    --color-table-border3: #A5ADB4;
 
-    --color-black: var(--color-base07);
-    --color-white: var(--color-base00);
+    --color-sidecar-header: var(--color-base04);
+    --color-sidecar-background: var(--color-base01);
+    --color-sidecar-border: #e4e4e4;
 
-    --color-scrollbar-thumb: #7A7B7D;
-    --color-scrollbar-thumb-border: #A8AAAC;
-    --color-scrollbar-thumb-outline: #FEFFFF;
-
-    --color-selection-background: rgba(140, 155, 165, 0.40); /* color-ui-05 at reduced alpha */
-
-    --color-carbon-components-h3: #3057d5;
-
-    --color-ui-06: #f4f7fb; /* nick made up this signifier, it's not from carbon-components */
-    --color-field-01: #f4f7fb;
+    --color-selection-background: #b3e6ff;
 
     --color-processing: var(--color-base02);
-}
+    --color-ui-02: var(--color-base03);
+    --color-ui-06: var(--color-base04);
+    --color-text-02: var(--color-base05);
+    --color-stripe-01: var(--color-base03);
+    --color-stripe-02: var(--color-base04);
 
-body[kui-theme="Light"] badge.gray-background, body[kui-theme="Light"] badge:not(.badge-as-image):not(.badge-as-fontawesome).gray-background:before {
-    background-color: var(--color-scrollbar-thumb);
+    --color-light-red: hsla(354, 81%, 51%, 50%);
+    --color-light-green: hsla(143, 73%, 43%, 50%);
+    --color-light-yellow: hsla(46, 99%, 59%, 50%);
 }
 
 /* mono-blue hightlightjs theme */

@@ -5,7 +5,7 @@
 body[kui-theme="Dark"] {
     --color-base00: #13171A; /* Default Background */
     --color-base01: #202529; /* Lighter Background (Used for status bars) */
-    --color-base02: #373b41; /* Selection Background */
+    --color-base02: #272C30; /* Selection Background */
     --color-base03: #373D42; 
     --color-base04: #565656; /* Dark Foreground (Used for status bars) */
     --color-base05: #9FA5AD; /* Default Foreground, Caret, Delimiters, Operators */
@@ -17,8 +17,15 @@ body[kui-theme="Dark"] {
     --color-base0B: #3DBB61; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
     --color-base0C: #6CCAFF; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
     --color-base0D: #1999b3; /* BLUE: Functions, Methods, Attribute IDs, Headings */
-    --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
-    --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+    --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+    --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
+    --color-table-border1: #616466;
+    --color-table-border2: #A5A9AD;
+    --color-table-border3: #383D40;
+
+    --color-sidecar-header: var(--color-base03);
+    --color-sidecar-border: #1A2024;
 
     --color-stripe-01: #4F565C;
 
@@ -29,7 +36,6 @@ body[kui-theme="Dark"] {
     --color-light-yellow: hsla(46, 98%, 61%, 50%);
 
     --color-content-divider: #418CFF;
-    --color-sidecar-header: var(--color-base03);
     --color-tag-beta-fill: #202529;
     --color-tag-beta-text: var(--color-text-01);
 
@@ -39,7 +45,7 @@ body[kui-theme="Dark"] {
     --color-ui-06: #373D42;
 }
 
-.header-cell {
+body[kui-theme="Dark"] .header-cell {
     color: #D8DCE3
 }
 

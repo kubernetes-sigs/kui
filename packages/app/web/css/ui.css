@@ -235,8 +235,9 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     text-transform: capitalize;
     letter-spacing: 0.32px;
 }
-.header-cell:not(:first-child) {
-    border-left: 1px inset var(--color-base04);
+.header-cell:not(:first-child) .cell-inner {
+    padding: 0 0.6875em;
+    border-left: 1px solid var(--color-table-border3);
 }
 .log-lines .header-cell, .result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell, .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
     border-bottom: 1px solid var(--color-content-divider);
@@ -288,18 +289,12 @@ body:not(.subwindow) repl.sidecar-visible .repl-block, .sidecar-full-screen repl
     display: flex;
     align-items: center;
     border-left: 1px solid var(--color-ui-04);
-    -webkit-font-smoothing: antialiased;
-    filter: saturate(2) brightness(1.1);
     --color-prompt-text: var(--color-text-01);
-    --color-prompt-background: rgba(255,255,255,0.125);
+    --color-prompt-background: var(--color-base03);
 }
 body.not-electron .repl-context {
     /* no context in webpack mode */
     display: none;
-}
-body[kui-theme-style="light"] .repl-prompt {
-    --color-prompt-background: var(--color-base02);
-    filter: saturate(1.1) brightness(1.2) contrast(1.1);
 }
 .repl-prompt .repl-selection {
     font-size: 80%;
@@ -315,22 +310,22 @@ body[kui-theme-style="light"] .repl-prompt {
 body.in-electron .repl .repl-block:not(.using-custom-prompt) .repl-prompt-righty {
     border-color: transparent var(--color-prompt-background);
     border-style: solid;
-    border-width: 0.5625em 0px 0.5625em 0.5625em; /* 50% of  height: for repl-context */
+    border-width: 0.625em 0px 0.625em 0.625em; /* 50% of  height: for repl-context */
     height: 0px;
     width: 0px;
     font-size: 1rem;
 }
 .repl-context {
-    font-size: 0.6875em;
+    font-size: 0.75em;
     font-weight: 500;
     color: var(--color-prompt-text);
     background-color: var(--color-prompt-background);
-    border-left: 1px solid var(--color-ui-03);
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
+    border-left: 1px solid var(--color-ui-05);
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
     padding-left: 5px;
     padding-right: 1px;
-    height: 1.125rem;
+    height: 1.25rem;
     display: flex;
     align-items: center;
     transition: background-color 150ms ease-in-out;
@@ -351,9 +346,8 @@ repl .repl-block.using-custom-prompt .repl-input input {
     opacity: 0;
     width: 0;
 }
-.repl-prompt-righty > i {
+.repl-prompt-righty svg path {
     color: var(--color-brand-01);
-    font-size: 1.125em;
 }
 
 /* repl right-hand decorations */
@@ -556,10 +550,16 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     display: table-cell;
     vertical-align: middle;
     padding: 0.6875em;
-    border-bottom: 1px solid var(--color-ui-04);
     transition: all 300ms ease-in-out;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+.entity-attributes > span.header-cell {
+    padding-left: 0;
+    padding-right: 0;
+}
+.entity-attributes > span:not(.header-cell) {
+    border-bottom: 1px solid var(--color-table-border3);
 }
 .result-table[kui-table-style="Light"] .entity-attributes > span {
     padding-left: 0.375em;
@@ -610,8 +610,8 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .entity-name-group:not(.header-cell) .entity-name[data-key="NAME"], .result-as-table .bold {
     font-weight: 500;
 }
-body[kui-theme-style="dark"] .repl-result:not(.result-table-with-custom-entity-colors) .entity-name-group:not(.header-cell) .entity-name[data-key="NAME"], .repl-result:not(.result-table-with-custom-entity-colors) .bold {
-    /* in dark mode, emphasize the entity name, unless
+.repl-result:not(.result-table-with-custom-entity-colors) .entity-name-group:not(.header-cell) .entity-name[data-key="NAME"], .repl-result:not(.result-table-with-custom-entity-colors) .bold {
+    /* emphasize the entity name, unless
    (.result-table-with-custom-entity-colors) the client has requested
    control over entity colors */
     color: var(--color-base0C);
@@ -758,15 +758,13 @@ sidecar {
     display: flex;
     flex-direction: column;
     overflow-y: hidden;
-    background: var(--color-ui-02);
+    background: var(--color-sidecar-background);
 }
 sidecar.visible {
     flex: 6;
     z-index: 1; /* float above the repl */
     transition-duration: 600ms; /* a bit slower coming out */
-    border-left: 1px solid var(--color-ui-04);
-    border-radius: 2px / 4px;
-    box-shadow: 0px 0px 3px var(--color-ui-04);
+    border-left: 1px solid var(--color-sidecar-border);
 }
 body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
     border-left-color: var(--color-ui-04);
@@ -843,6 +841,11 @@ sidecar .sidecar-bottom-stripe .package-prefix {
     /* kubectl namespace and openwhisk package name, etc. */
     display: flex;
     align-items: center;
+    font-weight: 400;
+}
+sidecar .sidecar-bottom-stripe .package-prefix:first-letter {
+    /* first-letter avoids README.md -> README.Md */
+   text-transform: capitalize;
 }
 sidecar .sidecar-header .limits {
     /* don't show limits in header for now */
@@ -956,19 +959,21 @@ sidecar .sidecar-header-icon {
     align-items: center;
     text-transform: uppercase;
 }
+sidecar .sidecar-header-icon-wrapper > span {
+    padding: 0 1em;
+}
+sidecar .sidecar-header-icon-wrapper + .sidecar-header-icon-wrapper > span:not(:empty) {
+    border-left: 1px solid var(--color-table-border2);
+}
 sidecar .sidecar-header-icon-wrapper {
     display: flex;
-    padding: 0 1em;
-    border-right: 1px inset rgba(128,128,128,0.5);
-    background-color: rgba(0,0,0,0.075);
-    margin-right: 1em;
+    align-items: center;
 }
 sidecar .header-left-bits {
     align-items: stretch;
 }
 sidecar .sidecar-header-icon {
-    font-size: 0.75em;
-    font-weight: 400;
+    font-weight: 600;
     letter-spacing: 1px;
     pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
 }
@@ -2755,7 +2760,7 @@ badge.clickable:not(.badge-as-fontawesome):hover {
 
 /* sidecar bottom stripe */
 .sidecar-bottom-stripe {
-    color: var(--color-ui-01);
+    color: var(--color-text-01);
     background: var(--color-stripe-02);
     transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
 }
@@ -2788,7 +2793,7 @@ body[kui-theme-style="dark"] .sidecar-bottom-stripe {
     color: var(--color-brand-02);
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover svg path {
-    fill: var(--color-brand-02);
+    fill: var(--color-base08);
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button:not(.sidecar-bottom-stripe-button-active):hover, .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button.selected {
     color: var(--color-support-03);
@@ -2927,6 +2932,10 @@ body {
     --color-ui-05: var(--color-base04);
     --color-ui-06: var(--color-base02);
 
+    --color-table-border1: rgba(255,255,255,0.35);
+    --color-table-border2: rgba(255,255,255,0.5);
+    --color-table-border3: var(--color-ui-04);
+
     --color-brand-01: var(--color-blue);
     --color-brand-02: var(--color-magenta);
     --color-brand-03: var(--color-cyan);
@@ -2937,7 +2946,7 @@ body {
     --color-support-01: var(--color-red);
     --color-support-01-lighter: var(--color-light-red);
     --color-support-02: var(--color-green);
-    --color-support-03: var(--color-light-yellow);
+    --color-support-03: var(--color-yellow);
     --color-support-03-darker: var(--color-yellow);
     --color-support-04: var(--color-base0C);
 
@@ -2947,6 +2956,8 @@ body {
     --color-text-01: var(--color-base06);
     --color-text-02: var(--color-base04);
 
+    --color-sidecar-background: var(--color-ui-02);
+    --color-sidecar-border: #e4e4e4;
     --color-sidecar-header: var(--color-ui-01);
 
     --color-selection-background: var(--color-base04);
@@ -3107,7 +3118,7 @@ body {
 .result-table[kui-table-style="Medium"] .entity .entity-attributes, .log-lines[kui-table-style="Medium"] .log-line {
     height: 2em;
 }
-[kui-table-style="Light"] .entity-attributes > span {
+[kui-table-style="Light"] .entity-attributes > span, [kui-table-style="Light"] .entity-attributes > span .cell-inner {
     border: none;
 }
 [kui-table-style="Light"] badge {
