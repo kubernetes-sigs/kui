@@ -1,324 +1,370 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>${productTitle}</title>
 
-    <link href="${cssHome}carbon-components.min.css" rel="stylesheet" type="text/css">
-    <link href="${cssHome}carbon-overrides.css" rel="stylesheet" type="text/css" >
+    <link href="${cssHome}carbon-components.min.css" rel="stylesheet" type="text/css" />
+    <link href="${cssHome}carbon-overrides.css" rel="stylesheet" type="text/css" />
 
-    <link href="${cssHome}not-electron.css" rel="stylesheet" type="text/css" >
-    <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" >
-    <link href="${cssHome}${tabStripe}" rel="stylesheet" type="text/css" >
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link href="${cssHome}not-electron.css" rel="stylesheet" type="text/css" />
+    <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" />
+    <link href="${cssHome}${tabStripe}" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
 
-    <link rel="shortcut icon" href="${imageHome}${favicon}">
+    <link rel="shortcut icon" href="${imageHome}${favicon}" />
 
     <!-- opengraph properties -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="${ogUrl}"/>
-    <meta property="og:site_name" content="${ogSiteName}"/>
-    <meta property="og:title" content="${ogTitle}"/>
-    <meta property="og:description" content="${ogDescription}"/>
-    <meta property="og:image" content="${ogImage}"/>
+    <meta property="og:url" content="${ogUrl}" />
+    <meta property="og:site_name" content="${ogSiteName}" />
+    <meta property="og:title" content="${ogTitle}" />
+    <meta property="og:description" content="${ogDescription}" />
+    <meta property="og:image" content="${ogImage}" />
 
     <!-- twitter card properties -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="${ogUrl}"/>
-    <meta name="twitter:description" content="${ogDescription}"/>
-    <meta name="twitter:image" content="${ogImage}"/>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="${ogUrl}" />
+    <meta name="twitter:description" content="${ogDescription}" />
+    <meta name="twitter:image" content="${ogImage}" />
     <meta name="twitter:label1" value="${ogLabel1}" />
     <meta name="twitter:data1" value="${ogData1}" />
     <meta name="twitter:label2" value="${ogLabel2}" />
     <meta name="twitter:data2" value="${ogData2}" />
 
     <script>
-      window['_kuiWebpackHash'] = "${hash}"
-      window['_kuiWebpackResourceRoot'] = "${resourceRoot}"
+      window['_kuiWebpackHash'] = '${hash}'
+      window['_kuiWebpackResourceRoot'] = '${resourceRoot}'
     </script>
 
     <!-- syntax highlighting -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js"></script>
   </head>
 
-  <body class='still-loading ${bodyCss}'><div class="page">
-    <main class="main">
-      <div class='left-tab-stripe'>
-        <div class="application-icon" id="about-button" style="background-image:url('${largeIcon}')"></div>
+  <body class="still-loading ${bodyCss}">
+    <div class="page">
+      <main class="main">
+        <div class="left-tab-stripe">
+          <div class="application-icon" id="about-button" style="background-image:url('${largeIcon}')"></div>
 
-        <div style='opacity: 0; height: 0; width: 0'>
-          <div class='clickable' id="openwhisk-api-host" title="Your API host. Click to change to another host." style="pointer-events:none"></div>
-          <div class='clickable' id="openwhisk-namespace" title="Your currently selected namespace. Click to list your other namespaces." style="pointer-events:none"></div>
-        </div>
+          <div style="opacity: 0; height: 0; width: 0">
+            <div class="clickable" id="openwhisk-api-host" title="Your API host. Click to change to another host." style="pointer-events:none"></div>
+            <div class="clickable" id="openwhisk-namespace" title="Your currently selected namespace. Click to list your other namespaces." style="pointer-events:none"></div>
+          </div>
 
-        <div class='left-tab-stripe-buttons'>
-          <div class='left-tab-stripe-button left-tab-stripe-button-selected' data-tab-button-index='1'>
-            <i class='fas fa-square repl-prompt-right-element-icon deemphasize'></i>
-            <div class='left-tab-stripe-button-label'>&nbsp;</div>
-            <div class='left-tab-stripe-button-closer'>
-              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path></svg>
+          <div class="left-tab-stripe-buttons">
+            <div class="left-tab-stripe-button left-tab-stripe-button-selected" data-tab-button-index="1">
+              <i class="fas fa-square repl-prompt-right-element-icon deemphasize"></i>
+              <div class="left-tab-stripe-button-label">&nbsp;</div>
+              <div class="left-tab-stripe-button-closer">
+                <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="left-tab-stripe-bottom-buttons">
+            <div class="left-tab-stripe-button smaller-button" id="new-tab-button" data-balloon-disabled="Open a new tab" data-balloon-pos="right" data-balloon-length="fit">
+              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M17 15V7h-2v8H7v2h8v8h2v-8h8v-2h-8z"></path>
+              </svg>
+            </div>
+            <div class="left-tab-stripe-button smaller-button" id="help-button">
+              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 23a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 16 25zm1.14-7.75v2.5h-2.25V15H17a2.38 2.38 0 0 0 0-4.75h-1.5a2.38 2.38 0 0 0-2.38 2.37v.64h-2.23v-.64A4.63 4.63 0 0 1 15.52 8H17a4.63 4.63 0 0 1 .12 9.25z"></path>
+              </svg>
             </div>
           </div>
         </div>
-        <div class='left-tab-stripe-bottom-buttons'>
-          <div class='left-tab-stripe-button smaller-button' id='new-tab-button' data-balloon-disabled='Open a new tab' data-balloon-pos='right' data-balloon-length='fit'>
-            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M17 15V7h-2v8H7v2h8v8h2v-8h8v-2h-8z"></path></svg>
-          </div>
-          <div class='left-tab-stripe-button smaller-button' id='help-button'>
-            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 23a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 16 25zm1.14-7.75v2.5h-2.25V15H17a2.38 2.38 0 0 0 0-4.75h-1.5a2.38 2.38 0 0 0-2.38 2.37v.64h-2.23v-.64A4.63 4.63 0 0 1 15.52 8H17a4.63 4.63 0 0 1 .12 9.25z"></path></svg>
-          </div>
-        </div>
-      </div>
 
-      <div class='tab-container'>
-        <tab data-tab-index="1" class='visible'>
-          <div class='kui--rows'>
-          <div class='kui--columns'>
-      <repl class="repl" id="main-repl">
-	<div class="repl-inner zoomable">
-	  <div class="repl-block repl-initial" data-base-class="repl-block" data-input-count="0">
-	    <div class="repl-input">
-	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context'></span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'>
-                  <!-- ChevronRight20 -->
-                  <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>              </span></div>
-	      <input type="text"
-                     class="repl-input-element"
-                     autofocus
-                     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                     xxx_no_placeholder="enter your command">
-              <span class='repl-prompt-right-elements'>
-                <span class='repl-prompt-timestamp deemphasize'></span>
-                <i class='fas fa-square repl-prompt-right-element-icon deemphasize'></i>
-              </span>
-	    </div>
-	    <div class="repl-output">
-	      <div class="repl-result"></div>
-              <div class="repl-result-spinner"><div class="repl-result-spinner-inner"></div></div>
-	    </div>
-	  </div>
-	</div>
-      </repl>
+        <div class="tab-container">
+          <tab data-tab-index="1" class="visible">
+            <div class="kui--rows">
+              <div class="kui--columns">
+                <repl class="repl" id="main-repl">
+                  <div class="repl-inner zoomable">
+                    <div class="repl-block repl-initial" data-base-class="repl-block" data-input-count="0">
+                      <div class="repl-input">
+                        <div class="repl-prompt">
+                          <span class="repl-prompt-lefty"></span>
+                          <span class="repl-context"></span>
+                          <span class="repl-selection clickable" title="The current selection"></span>
+                          <span class="repl-prompt-righty">
+                            <!-- ChevronRight20 -->
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                              <path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path>
+                            </svg>
+                          </span>
+                        </div>
+                        <input type="text" class="repl-input-element" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" xxx_no_placeholder="enter your command" />
+                        <span class="repl-prompt-right-elements">
+                          <span class="repl-prompt-timestamp deemphasize"></span>
+                          <i class="fas fa-square repl-prompt-right-element-icon deemphasize"></i>
+                        </span>
+                      </div>
+                      <div class="repl-output">
+                        <div class="repl-result"></div>
+                        <div class="repl-result-spinner">
+                          <div class="repl-result-spinner-inner"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </repl>
 
-      <sidecar id='sidecar'>
-	<header class='sidecar-header'>
-          <div class='header-main-content'>
-            <div style='flex:1;display:flex;flex-direction:column;justify-content:center'>
-            <div class='header-top-bits'>
-	      <div class='header-left-bits'>
-	        <div class='sidecar-header-text'>
-	          <div class='sidecar-header-name' data-base-class='sidecar-header-name'>
-		    <!--<span class='activation-content'>of</span>-->
-		    <span class='sidecar-header-name-content' data-base-class='sidecar-header-name-content'>
-		      <span class='activation-content activation-id'></span>
-                      <span class='entity-name-line'>
-                        <span class='entity-name'></span>
+                <sidecar id="sidecar">
+                  <header class="sidecar-header">
+                    <div class="header-main-content">
+                      <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+                        <div class="header-top-bits">
+                          <div class="header-left-bits">
+                            <div class="sidecar-header-text">
+                              <div class="sidecar-header-name" data-base-class="sidecar-header-name">
+                                <!--<span class="activation-content">of</span>-->
+                                <span class="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
+                                  <span class="activation-content activation-id"></span>
+                                  <span class="entity-name-line">
+                                    <span class="entity-name"></span>
 
-	                <div class="repl-input">
-                          <div class="repl-prompt hide-with-screenshot"><span class="repl-prompt-righty">
-                              <!-- ChevronRight20 -->
-                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>
-                          </span></div>
-                          <input type="text"
-                                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                 placeholder="enter your command"
-                                 class="repl-input-like sidecar-header-input">
+                                    <div class="repl-input">
+                                      <div class="repl-prompt hide-with-screenshot">
+                                        <span class="repl-prompt-righty">
+                                          <!-- ChevronRight20 -->
+                                          <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                                            <path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path>
+                                          </svg>
+                                        </span>
+                                      </div>
+                                      <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="enter your command" class="repl-input-like sidecar-header-input" />
+                                    </div>
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="header-right-bits">
+                            <!--<span class="activation-content activation-status" data-title-base="Activation status: {status}"></span>-->
+                            <div class="action-content">
+                              <span class="badges">
+                                <span id="version"></span>
+                              </span>
+                              <a class="entity-web-export-url" target="_blank">&#x1F310;</a>
+                            </div>
+                            <div class="activation-content">
+                              <strong class="activation-duration"></strong>
+                              <div class="activation-estimated-cost-container">~$<span class="activation-estimated-cost"></span> per million</div>
+                            </div>
+                            <div class="custom-header-content"></div>
+                          </div>
                         </div>
 
-                      </span>
-                    </span>
-	          </div>
-	        </div> <!-- sidecar-header-text -->
-	      </div> <!-- header-left-bits -->
-	      <div class='header-right-bits'>
-	        <!--<span class='activation-content activation-status' data-title-base='Activation status: {status}'></span>-->
-                <div class='action-content'>
-                  <span class='badges'>
-                    <span id='version'></span>
-                  </span>
-                  <a class='entity-web-export-url' target='_blank'>&#x1F310;</a>
-                </div>
-	        <div class='activation-content'>
-                  <strong class='activation-duration'></strong>
-	          <div class='activation-estimated-cost-container'>~$<span class='activation-estimated-cost'></span> per million</div>
-                </div>
-                <div class='custom-header-content'></div>
-	      </div> <!-- header-right-bits -->
-            </div> <!-- header-top-bits -->
+                        <div class="sidecar-header-secondary-content">
+                          <div class="action-content">
+                            <span class="kind"></span>
+                            <!--<div class="kind-content">This is a <span class="kind"></span> action</div>-->
+                            <!--<a class="entity-web-export-url" target="_blank">View in Browser</a>-->
+                            <!--<span id="version"></span>-->
+                          </div>
+                          <div class="activation-content">
+                            <div class="kind-content">This call started <strong class="activation-start"></strong></div>
+                          </div>
+                          <div class="package-content">
+                            <div class="kind-content">
+                              This is a package
+                              <!-- binding signifier -->
+                              <span class="package-binding-signifier">
+                                binding of
+                                <span class="package-binding-of"></span>
+                              </span>
+                              with
+                              <span class="count-with-label package-action-count">
+                                <span class="package-content-count"></span>
+                                <span class="label-plural">actions</span>
+                                <span class="label-singular">action</span>, and
+                              </span>
+                              <span class="count-with-label package-feed-count">
+                                <span class="package-content-count"></span>
+                                <span class="label-plural">feeds</span>
+                                <span class="label-singular">feed</span>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="rule-content">
+                            <div class="kind-content">This is a rule</div>
+                          </div>
+                          <div class="trigger-content">
+                            <div class="kind-content">
+                              <!--This is a trigger-->
+                              <span class="feed-content"></span>
+                            </div>
+                          </div>
+                          <div class="custom-header-content"></div>
+                        </div>
+                      </div>
 
-            <div class='sidecar-header-secondary-content'>
-	      <div class='action-content'>
-                <span class='kind'></span>
-	        <!--<div class='kind-content'>This is a <span class='kind'></span> action</div>-->
-                <!--<a class='entity-web-export-url' target='_blank'>View in Browser</a>-->
-                <!--<span id='version'></span>-->
-	      </div>
-	      <div class='activation-content'>
-	        <div class='kind-content'>
-		  This call started <strong class='activation-start'></strong>
-	        </div>
-	      </div>
-	      <div class='package-content'>
-	        <div class='kind-content'>This is a package
-		  <!-- binding signifier -->
-		  <span class='package-binding-signifier'>binding of
-		    <span class='package-binding-of'></span>
-		  </span>
-		  with
-		  <span class='count-with-label package-action-count'>
-		    <span class='package-content-count'></span>
-		    <span class='label-plural'>actions</span><span class='label-singular'>action</span>, and
-		  </span>
-		  <span class='count-with-label package-feed-count'>
-		    <span class='package-content-count'></span> 
-		    <span class='label-plural'>feeds</span><span class='label-singular'>feed</span>
-		  </span> 
-	        </div>
-	      </div>
-	      <div class='rule-content'>
-	        <div class='kind-content'>This is a rule</div>
-	      </div>
-	      <div class='trigger-content'>
-	        <div class='kind-content'><!--This is a trigger-->
-                  <span class='feed-content'></span>
-                </div>
-	      </div>
-              <div class='custom-header-content'></div>
-	    </div> <!-- secondary content -->
-            </div>
+                      <!-- sidecar tabs -->
+                      <div class="sidecar-top-stripe zoomable">
+                        <div class="sidecar-bottom-stripe-left-bits">
+                          <div class="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container">
+                            <div class="bx--tabs">
+                              <ul class="bx--tabs__nav bx--tabs__nav--hidden"></ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </header>
 
-            <!-- sidecar tabs -->
-            <div class='sidecar-top-stripe zoomable'>
-              <div class='sidecar-bottom-stripe-left-bits'>
-                <div class='sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container'>
-                  <div class='bx--tabs'>
-                    <ul class='bx--tabs__nav bx--tabs__nav--hidden'></ul>
+                  <div class="custom-content zoomable"></div>
+
+                  <div class="sidecar-content zoomable">
+                    <div class="hook-for-third-party-content no-content"></div>
+                    <div class="action-content">
+                      <pre>
+                        <code class="action-source"></code>
+                      </pre>
+                      <div class="sequence-components" data-base-class="sequence-components"></div>
+                    </div>
+                    <div class="activation-content">
+                      <pre>
+                        <code class="activation-result json"></code>
+                      </pre>
+                    </div>
+                    <div class="rule-content">
+                      <div class="rule-components small-node-count-canvas horizontal-canvas"></div>
+                    </div>
+                    <div class="package-content">
+                      <div class="result-as-table">
+                        <div class="package-action-list repl-result result-table"></div>
+                      </div>
+                      <div class="result-as-table">
+                        <div class="package-feed-list repl-result result-table"></div>
+                      </div>
+                      <pre>
+                        <code class="package-source"></code>
+                      </pre>
+                    </div>
+                    <div class="trigger-content">
+                      <pre>
+                        <code class="trigger-source"></code>
+                      </pre>
+                    </div>
                   </div>
-                </div> <!-- mode switch buttons -->
-              </div>
-            </div>
-          </div> <!-- main content -->
-	</header>
-        <div class='custom-content zoomable'></div>
-	<div class='sidecar-content zoomable'>
-          <div class='hook-for-third-party-content no-content'></div>
-	  <div class='action-content'>
-	    <pre><code class='action-source'></code></pre>
-	    <div class='sequence-components' data-base-class='sequence-components'></div>
-	  </div>
-	  <div class='activation-content'>
-	    <pre><code class='activation-result json'></code></pre>
-	  </div>
-	  <div class='rule-content'>
-	    <div class='rule-components small-node-count-canvas horizontal-canvas'></div>
-	  </div>
-	  <div class='package-content'>
-            <div class='result-as-table'>
-	      <div class='package-action-list repl-result result-table'></div>
-            </div>
-            <div class='result-as-table'>
-	      <div class='package-feed-list repl-result result-table'></div>
-            </div>
-	    <pre><code class='package-source'></code></pre>
-	  </div>
-	  <div class='trigger-content'>
-	    <pre><code class='trigger-source'></code></pre>
-          </div>
-	</div>
 
-        <!-- sidecar bottom stripe -->
-        <div class='sidecar-bottom-stripe zoomable'>
-          <div class='sidecar-bottom-stripe-left-bits'>
-            <div class='sidecar-bottom-stripe-back-bits sidecar-bottom-stripe-button-container'>
-              <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-back-button'
-                   data-balloon-pos='down-left'>
-                <div class='graphical-icon'>
-                  <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M13 26l1.41-1.41L6.83 17H29v-2H6.83l7.58-7.59L13 6 3 16l10 10z"></path></svg>
+                  <!-- sidecar bottom stripe -->
+                  <div class="sidecar-bottom-stripe zoomable">
+                    <div class="sidecar-bottom-stripe-left-bits">
+                      <div class="sidecar-bottom-stripe-back-bits sidecar-bottom-stripe-button-container">
+                        <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-back-button" data-balloon-pos="down-left">
+                          <div class="graphical-icon">
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                              <path d="M13 26l1.41-1.41L6.83 17H29v-2H6.83l7.58-7.59L13 6 3 16l10 10z"></path>
+                            </svg>
+                          </div>
+                          <div class="sidecar-bottom-stripe-back-inner-bits"></div>
+                        </div>
+                      </div>
+
+                      <div class="sidecar-header-icon-wrapper">
+                        <span class="sidecar-header-icon"></span>
+                      </div>
+
+                      <!-- e.g. kubernetes namespace or openwhisk package name, and the like -->
+                      <div class="sidecar-header-icon-wrapper">
+                        <span class="package-prefix"></span>
+                      </div>
+
+                      <!-- flush-right buttons go here -->
+                      <div class="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container"></div>
+                    </div>
+
+                    <div class="sidecar-bottom-stripe-right-bits">
+                      <!-- screenshot button -->
+                      <div class="sidecar-screenshot-button sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize screenshot-button" data-balloon="Capture Screenshot" data-balloon-length="medium" data-balloon-pos="down-right">
+                        <div class="graphical-icon">
+                          <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                            <path d="M29 26H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h6.46l1.71-2.55A1 1 0 0 1 12 4h8a1 1 0 0 1 .83.45L22.54 7H29a1 1 0 0 1 1 1v17a1 1 0 0 1-1 1zM4 24h24V9h-6a1 1 0 0 1-.83-.45L19.46 6h-6.92l-1.71 2.55A1 1 0 0 1 10 9H4z"></path>
+                            <path d="M16 22a6 6 0 1 1 6-6 6 6 0 0 1-6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0-4-4z"></path>
+                          </svg>
+                        </div>
+                      </div>
+
+                      <!-- maximize button -->
+                      <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize toggle-sidecar-maximization-button">
+                        <span class="maximize-button-label">
+                          <div class="graphical-icon" data-balloon="Expand to full width" data-balloon-length="medium" data-balloon-pos="down-right">
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                              <path d="M10 1v1h3.3L8.5 6.8l.7.7L14 2.7V6h1V1zM7.5 9.2l-.7-.7L2 13.3V10H1v5h5v-1H2.7z"></path>
+                            </svg>
+                          </div>
+                        </span>
+                        <span class="unmaximize-button-label">
+                          <div class="graphical-icon" data-balloon="Restore split screen" data-balloon-length="medium" data-balloon-pos="down-right">
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                              <path d="M3 9v1h2.3L1 14.3l.7.7L6 10.7V13h1V9zm10-2V6h-2.3L15 1.7l-.7-.7L10 5.3V3H9v4z"></path>
+                            </svg>
+                          </div>
+                        </span>
+                      </div>
+
+                      <!-- close button -->
+                      <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button" data-balloon="Minimize the sidecar" data-balloon-length="long" data-balloon-pos="down-right">
+                        <div class="graphical-icon">
+                          <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M11 8l-5 5-.7-.7L9.6 8 5.3 3.7 6 3z"></path>
+                          </svg>
+                        </div>
+                      </div>
+
+                      <!-- Quit/Done button -->
+                      <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-quit" data-balloon="Close this popup" data-balloon-length="medium" data-balloon-pos="down-right">
+                        <div class="graphical-icon">
+                          <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </sidecar>
+              </div>
+
+              <div class="kui--input-stripe">
+                <div class="repl-block" data-base-class="repl-block">
+                  <div class="repl-input">
+                    <div class="repl-prompt">
+                      <span class="repl-prompt-lefty"></span>
+                      <span class="repl-context"></span>
+                      <span class="repl-selection clickable" title="The current selection"></span>
+                      <span class="repl-prompt-righty">
+                        <!-- ChevronRight20 -->
+                        <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                          <path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path>
+                        </svg>
+                      </span>
+                    </div>
+                    <input type="text" class="repl-input-element" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="enter your command" />
+                  </div>
                 </div>
-                <div class='sidecar-bottom-stripe-back-inner-bits'></div>
-              </div>
-            </div> <!-- back button -->
-
-            <div class='sidecar-header-icon-wrapper'><span class='sidecar-header-icon'></span></div>
-
-            <!-- e.g. kubernetes namespace or openwhisk package name, and the like -->
-            <div class='sidecar-header-icon-wrapper'><span class='package-prefix'></span></div>
-
-            <!-- flush-right buttons go here -->
-            <div class='sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container'></div>
-          </div>
-          
-          <div class='sidecar-bottom-stripe-right-bits'>
-            <!-- screenshot button -->
-            <div class='sidecar-screenshot-button sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize screenshot-button'
-                 data-balloon='Capture Screenshot' data-balloon-length="medium" data-balloon-pos="down-right">
-              <div class='graphical-icon'>
-                <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M29 26H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h6.46l1.71-2.55A1 1 0 0 1 12 4h8a1 1 0 0 1 .83.45L22.54 7H29a1 1 0 0 1 1 1v17a1 1 0 0 1-1 1zM4 24h24V9h-6a1 1 0 0 1-.83-.45L19.46 6h-6.92l-1.71 2.55A1 1 0 0 1 10 9H4z"></path><path d="M16 22a6 6 0 1 1 6-6 6 6 0 0 1-6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0-4-4z"></path></svg>
               </div>
             </div>
-
-            <!-- maximize button -->
-            <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize toggle-sidecar-maximization-button'>
-              <span class='maximize-button-label'><div class='graphical-icon' data-balloon='Expand to full width' data-balloon-length="medium" data-balloon-pos="down-right">
-                  <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 1v1h3.3L8.5 6.8l.7.7L14 2.7V6h1V1zM7.5 9.2l-.7-.7L2 13.3V10H1v5h5v-1H2.7z"></path></svg>
-              </div></span>
-              <span class='unmaximize-button-label'><div class='graphical-icon' data-balloon='Restore split screen' data-balloon-length="medium" data-balloon-pos="down-right">
-                  <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9v1h2.3L1 14.3l.7.7L6 10.7V13h1V9zm10-2V6h-2.3L15 1.7l-.7-.7L10 5.3V3H9v4z"></path></svg>
-              </div></span>
-            </div>
-
-            <!-- close button -->
-            <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button'
-                 data-balloon="Minimize the sidecar" data-balloon-length="long" data-balloon-pos="down-right">
-              <div class='graphical-icon'>
-                <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 8l-5 5-.7-.7L9.6 8 5.3 3.7 6 3z"></path></svg>
-              </div>
-            </div>
-
-            <!-- Quit/Done button -->
-            <div class='sidecar-bottom-stripe-button sidecar-bottom-stripe-quit'
-                 data-balloon='Close this popup' data-balloon-length="medium" data-balloon-pos="down-right">
-              <div class="graphical-icon">
-                <i class="fas fa-sign-out-alt"></i>
-              </div>
-            </div>
-          </div> <!-- sidecar stripe right bits -->
-
+          </tab>
         </div>
+      </main>
 
-      </sidecar>
-      </div> <!-- kui--columns -->
+      <textarea id="invisible-global-input" class="not-tabbable" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 
-          <div class='kui--input-stripe'>
-            <div class='repl-block' data-base-class="repl-block">
-	    <div class="repl-input">
-	      <div class="repl-prompt"><span class='repl-prompt-lefty'></span><span class='repl-context'></span><span class='repl-selection clickable' title='The current selection'></span><span class='repl-prompt-righty'>
-                  <!-- ChevronRight20 -->
-                  <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>
-              </span></div>
-	      <input type="text"
-                     class="repl-input-element"
-                     autofocus
-                     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                     placeholder="enter your command">
-	    </div>
-            </div>
-          </div> <!-- kui--input-stripe -->
-       </div> <!-- kui--rows -->
-
-      </tab>
-      </div> <!-- tab-container -->
-    </main>
-
-    <textarea id='invisible-global-input' class="not-tabbable" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-
-    <div id='restart-needed-warning'>
-      <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path d="M12 1C5.9 1 1 5.9 1 12s4.9 11 11 11 11-4.9 11-11S18.1 1 12 1zm4.3 16.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z"></path><path d="M16.3 17.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z" data-icon-path="inner-path" opacity="0"></path></svg>
-      <div class='restart-needed-warning-content'>
-        A severe error occurred during launch
+      <div id="restart-needed-warning">
+        <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M12 1C5.9 1 1 5.9 1 12s4.9 11 11 11 11-4.9 11-11S18.1 1 12 1zm4.3 16.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z"></path>
+          <path d="M16.3 17.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z" data-icon-path="inner-path" opacity="0"></path>
+        </svg>
+        <div class="restart-needed-warning-content">
+          A severe error occurred during launch
+        </div>
       </div>
     </div>
-    </body>
+  </body>
 
-    <script src="${jsHome}${main}"></script>
+  <script src="${jsHome}${main}"></script>
 </html>

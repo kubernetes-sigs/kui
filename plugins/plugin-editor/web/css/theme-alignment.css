@@ -1,38 +1,38 @@
 /* these are the indentation indicators */
 .monaco-editor .lines-content .cigra {
-    /* this is the active indentation indicator */
-    box-shadow: 1px 0 0 0 var(--color-base0D) inset;
-    transition: box-shadow 300ms ease-in-out;
+  /* this is the active indentation indicator */
+  box-shadow: 1px 0 0 0 var(--color-base0D) inset;
+  transition: box-shadow 300ms ease-in-out;
 }
 .monaco-editor .lines-content .cigr {
-    /* this is the inactive indentation indicator */
-    box-shadow: 1px 0 0 0 var(--color-base04) inset;
-    transition: box-shadow 300ms ease-in-out;
+  /* this is the inactive indentation indicator */
+  box-shadow: 1px 0 0 0 var(--color-base04) inset;
+  transition: box-shadow 300ms ease-in-out;
 }
 
 .monaco-editor .selected-text {
-    opacity: 0.3; /* i don't know why the selection outside of monaco is different, despite using the same CSS styling */
+  opacity: 0.3; /* i don't know why the selection outside of monaco is different, despite using the same CSS styling */
 }
 
 .monaco-editor {
-    transition: color 300ms ease-in-out;
-    color: var(--color-text-01);
+  transition: color 300ms ease-in-out;
+  color: var(--color-text-01);
 }
 
 .monaco-editor .current-line ~ .line-numbers {
-    transition: color 300ms ease-in-out;
-    color: var(--color-brand-02);
+  transition: color 300ms ease-in-out;
+  color: var(--color-brand-02);
 }
 .monaco-editor .line-numbers {
-    transition: color 300ms ease-in-out;
-    color: var(--color-text-02);
-    font-weight: 300;
+  transition: color 300ms ease-in-out;
+  color: var(--color-text-02);
+  font-weight: 300;
 }
 
 .monaco-editor .mtk8,
 .monaco-editor .keyword {
-    transition: color 300ms ease-in-out;
-    color: var(--color-base0C);
+  transition: color 300ms ease-in-out;
+  color: var(--color-base0C);
 }
 
 .monaco-editor .mtk6,
@@ -42,41 +42,42 @@
 .monaco-editor .doctag,
 .monaco-editor .name,
 .monaco-editor .strong {
-    font-weight: bold;
-    color: inherit;
+  font-weight: bold;
+  color: inherit;
 }
 
-.monaco-editor .mtk22, .monaco-editor .mtk4 {
-    /* map keys */
-    /* notes:
+.monaco-editor .mtk22,
+.monaco-editor .mtk4 {
+  /* map keys */
+  /* notes:
        mtk22 is the CSS class for YAML keys
        mtk4 is the CSS class for JSON keys
    */
-    transition: color 300ms ease-in-out;
-    color: var(--color-map-key)
+  transition: color 300ms ease-in-out;
+  color: var(--color-map-key);
 }
 
 .monaco-editor .mtk1 {
-    /* map keys */
-    transition: color 300ms ease-in-out;
-    color: var(--color-map-value);
+  /* map keys */
+  transition: color 300ms ease-in-out;
+  color: var(--color-map-value);
 }
 .monaco-editor .mtk5 {
-    /* map values */
-    transition: color 300ms ease-in-out;
-    color: var(--color-text-01);
+  /* map values */
+  transition: color 300ms ease-in-out;
+  color: var(--color-text-01);
 }
 
 .monaco-editor .mti20,
 .monaco-editor .comment {
-    transition: color 300ms ease-in-out;
-    color: var(--color-base03);
+  transition: color 300ms ease-in-out;
+  color: var(--color-base03);
 }
 
 .monaco-editor .mtk7 {
-    /* comments */
-    transition: color 300ms ease-in-out;
-    color: var(--color-text-02);
+  /* comments */
+  transition: color 300ms ease-in-out;
+  color: var(--color-text-02);
 }
 
 .monaco-editor .mtk20,
@@ -92,8 +93,8 @@
 .monaco-editor .name,
 .monaco-editor .selector-id,
 .monaco-editor .selector-class {
-    transition: color 300ms ease-in-out;
-    color: var(--color-base0D);
+  transition: color 300ms ease-in-out;
+  color: var(--color-base0D);
 }
 
 .monaco-editor .meta,
@@ -106,8 +107,8 @@
 .monaco-editor .template-variable,
 .monaco-editor .link,
 .monaco-editor .bullet {
-    transition: color 300ms ease-in-out;
-    color: var(--color-base03);
+  transition: color 300ms ease-in-out;
+  color: var(--color-base03);
 }
 
 .monaco-editor .emphasis {
@@ -115,23 +116,23 @@
 }
 
 /* hover/tooltip */
-[kui-theme-style]  .monaco-editor-overlaymessage .message {
-    background-color: var(--color-base0C);
-    border-color: var(--color-base0C);
-    color: var(--color-base01);
+[kui-theme-style] .monaco-editor-overlaymessage .message {
+  background-color: var(--color-base0C);
+  border-color: var(--color-base0C);
+  color: var(--color-base01);
 }
 .monaco-editor-overlaymessage .anchor {
-    border-top-color: var(--color-base0C);
+  border-top-color: var(--color-base0C);
 }
 
 /* bracket matches */
 .cdr.bracket-match {
-    border-color: rgba(255,255,255,0.25);
-    background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.25);
+  background-color: transparent;
 }
 
 /* current line highlight */
 [kui-theme-style] .monaco-editor .margin-view-overlays .current-line-margin,
 [kui-theme-style] .monaco-editor .view-overlays .current-line {
-    border-color: var(--color-base03);
+  border-color: var(--color-base03);
 }

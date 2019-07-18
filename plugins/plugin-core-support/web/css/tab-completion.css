@@ -1,77 +1,100 @@
 .tab-completion-temporary {
-    margin-top: 0.375em;
-    font-size: 0.75em;
+  margin-top: 0.375em;
+  font-size: 0.75em;
 }
 
 .tab-completion-temporary .tab-completion-scroll-container {
-    display: flex;
-    flex-wrap: wrap;
- }
+  display: flex;
+  flex-wrap: wrap;
+}
 
 .tab-completion-temporary .tab-completion-scroll-container > div {
-    padding: 0.875em 1em;
-    text-decoration: none;
+  padding: 0.875em 1em;
+  text-decoration: none;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
-    border-left: 1ex solid transparent;
-    transition: all 300ms ease-in-out;
+  border-left: 1ex solid transparent;
+  transition: all 300ms ease-in-out;
 }
 
-.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(2):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(2):first-child ~ .tab-completion-option {
-    /* 5 entries in the tab completion list? */
-    max-width: 50%;
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(2):first-child,
+.tab-completion-temporary
+  .tab-completion-scroll-container
+  > .tab-completion-option:nth-last-child(2):first-child
+  ~ .tab-completion-option {
+  /* 5 entries in the tab completion list? */
+  max-width: 50%;
 }
-.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(3):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(3):first-child ~ .tab-completion-option {
-    /* 5 entries in the tab completion list? */
-    max-width: 33%;
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(3):first-child,
+.tab-completion-temporary
+  .tab-completion-scroll-container
+  > .tab-completion-option:nth-last-child(3):first-child
+  ~ .tab-completion-option {
+  /* 5 entries in the tab completion list? */
+  max-width: 33%;
 }
-.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(4):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(4):first-child ~ .tab-completion-option {
-    /* 4 entries in the tab completion list? */
-    max-width: 25%;
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(4):first-child,
+.tab-completion-temporary
+  .tab-completion-scroll-container
+  > .tab-completion-option:nth-last-child(4):first-child
+  ~ .tab-completion-option {
+  /* 4 entries in the tab completion list? */
+  max-width: 25%;
 }
-.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(5):first-child, .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(5):first-child ~ .tab-completion-option {
-    /* 5 entries in the tab completion list? */
-    max-width: 20%;
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(5):first-child,
+.tab-completion-temporary
+  .tab-completion-scroll-container
+  > .tab-completion-option:nth-last-child(5):first-child
+  ~ .tab-completion-option {
+  /* 5 entries in the tab completion list? */
+  max-width: 20%;
 }
-.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(n+6), .tab-completion-temporary .tab-completion-scroll-container > .tab-completion-option:nth-last-child(n+6) ~ .tab-completion-option {
-    /* more than 6 entries in the tab completion list? */
-    width: 20%;
+.tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(n + 6),
+.tab-completion-temporary
+  .tab-completion-scroll-container
+  > .tab-completion-option:nth-last-child(n + 6)
+  ~ .tab-completion-option {
+  /* more than 6 entries in the tab completion list? */
+  width: 20%;
 }
 
 .tab-completion-temporary .tab-completion-scroll-container > div > .tab-completion-temporary-fill {
-    /* the clickable should fill available horizontal space in a completion row */
-    flex: 1;
+  /* the clickable should fill available horizontal space in a completion row */
+  flex: 1;
 }
 
 .tab-completion-temporary .clickable {
-    text-decoration: none;
-    transition: 250ms;
+  text-decoration: none;
+  transition: 250ms;
 }
 
 /* selection */
-.tab-completion-temporary .tab-completion-scroll-container > div.selected, .tab-completion-temporary .tab-completion-scroll-container > div:hover {
-    background-color: rgba(128,128,128,0.2);
-    border-left-color: rgba(128,128,128,0.5);
+.tab-completion-temporary .tab-completion-scroll-container > div.selected,
+.tab-completion-temporary .tab-completion-scroll-container > div:hover {
+  background-color: rgba(128, 128, 128, 0.2);
+  border-left-color: rgba(128, 128, 128, 0.5);
 }
 .tab-completion-temporary:hover .tab-completion-scroll-container > div.selected:not(:hover) {
-    background-color: transparent;
+  background-color: transparent;
 }
 .tab-completion-temporary:hover .tab-completion-scroll-container > div.selected:not(:hover) .clickable {
-    color: inherit;
+  color: inherit;
 }
-.tab-completion-temporary .tab-completion-scroll-container > div.selected .clickable, .tab-completion-temporary .tab-completion-scroll-container > div:hover .clickable {
+.tab-completion-temporary .tab-completion-scroll-container > div.selected .clickable,
+.tab-completion-temporary .tab-completion-scroll-container > div:hover .clickable {
 }
-.tab-completion-temporary .tab-completion-scroll-container > div:hover .clickable, .tab-completion-temporary .tab-completion-scroll-container > div.selected .clickable {
+.tab-completion-temporary .tab-completion-scroll-container > div:hover .clickable,
+.tab-completion-temporary .tab-completion-scroll-container > div.selected .clickable {
 }
 
 /* prefix match of tab completion entries */
 .tab-completion-option-pre {
-    color: var(--color-base0C);
-    font-weight: 600;
+  color: var(--color-base0C);
+  font-weight: 600;
 }
 .selected .tab-completion-option-post {
-    font-weight: 600;
+  font-weight: 600;
 }

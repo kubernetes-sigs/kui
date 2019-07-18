@@ -3,40 +3,40 @@
  * author: "arcticicestudio"
  */
 body[kui-theme="Nord"] {
-    --color-base00: #2E3440;
-    --color-base01: #3B4252;
-    --color-base02: #434C5E;
-    --color-base03: #4C566A;
-    --color-base04: #D8DEE9;
-    --color-base05: #E5E9F0;
-    --color-base06: #ECEFF4;
-    --color-base07: #8FBCBB;
-    --color-base08: #88C0D0;
-    --color-base09: #81A1C1;
-    --color-base0A: hsl(213, 32%, 67%); /* dialed L from 54% #5E81AC */
-    --color-base0B: #BF616A;
-    --color-base0C: #D08770;
-    --color-base0D: #EBCB8B;
-    --color-base0E: #A3BE8C;
-    --color-base0F: #B48EAD;
+  --color-base00: #2e3440;
+  --color-base01: #3b4252;
+  --color-base02: #434c5e;
+  --color-base03: #4c566a;
+  --color-base04: #d8dee9;
+  --color-base05: #e5e9f0;
+  --color-base06: #eceff4;
+  --color-base07: #8fbcbb;
+  --color-base08: #88c0d0;
+  --color-base09: #81a1c1;
+  --color-base0A: hsl(213, 32%, 67%); /* dialed L from 54% #5E81AC */
+  --color-base0B: #bf616a;
+  --color-base0C: #d08770;
+  --color-base0D: #ebcb8b;
+  --color-base0E: #a3be8c;
+  --color-base0F: #b48ead;
 
-    --color-white: var(--color-base06);
-    --color-text-01: var(--color-base06);
-    --color-cyan: var(--color-base08);
-    --color-red: var(--color-base0B);
-    --color-green: var(--color-base0E);
-    --color-yellow: var(--color-base0D);
+  --color-white: var(--color-base06);
+  --color-text-01: var(--color-base06);
+  --color-cyan: var(--color-base08);
+  --color-red: var(--color-base0B);
+  --color-green: var(--color-base0E);
+  --color-yellow: var(--color-base0D);
 
-    --color-light-red: hsla(354, 42%, 56%, 0.75);
-    --color-light-green: hsla(92, 28%, 65%, 0.75);
-    --color-light-yellow: hsla(40, 71%, 73%, 0.75);
+  --color-light-red: hsla(354, 42%, 56%, 0.75);
+  --color-light-green: hsla(92, 28%, 65%, 0.75);
+  --color-light-yellow: hsla(40, 71%, 73%, 0.75);
 
-    --color-latency-0: #4575b4;
-    --color-latency-1: #91bfdb;
-    --color-latency-2: #e0f3f8;
-    --color-latency-3: #fee090;
-    --color-latency-4: #fc8d59;
-    --color-latency-5: #d73027;
+  --color-latency-0: #4575b4;
+  --color-latency-1: #91bfdb;
+  --color-latency-2: #e0f3f8;
+  --color-latency-3: #fee090;
+  --color-latency-4: #fc8d59;
+  --color-latency-5: #d73027;
 }
 
 /* nord hightlightjs theme */

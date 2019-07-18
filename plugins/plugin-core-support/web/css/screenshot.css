@@ -1,78 +1,79 @@
 body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish {
-    align-items: flex-start !important;
+  align-items: flex-start !important;
 }
 body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish .repl-output {
-    padding: 0 1em 1em;
+  padding: 0 1em 1em;
 }
 body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish .repl-block {
-    align-items: flex-start;
+  align-items: flex-start;
 }
 body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish sidecar {
-    height: initial;
+  height: initial;
 }
 body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish {
-    flex: initial;
+  flex: initial;
 }
-body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish sidecar .custom-content, body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish sidecar .sidecar-content {
-    flex: initial;
+body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish sidecar .custom-content,
+body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish sidecar .sidecar-content {
+  flex: initial;
 }
 
 .screenshot-squish .hide-with-screenshot {
-    display: none;
+  display: none;
 }
 
-body.no-tooltips-anywhere [data-balloon]:before, body.no-tooltips-anywhere [data-balloon]:after {
-    display: none !important;
+body.no-tooltips-anywhere [data-balloon]:before,
+body.no-tooltips-anywhere [data-balloon]:after {
+  display: none !important;
 }
 
 .screenshot-save-button.green-text:hover {
-    /* override hover effect, so that the icon is green even when hovered,
+  /* override hover effect, so that the icon is green even when hovered,
    which will be the case after the user clicks save! */
-    color: var(--color-green) !important;
+  color: var(--color-green) !important;
 }
 .screenshot-save-button.yellow-text:hover {
-    /* same for yellow */
-    color: var(--color-yellow) !important;
+  /* same for yellow */
+  color: var(--color-yellow) !important;
 }
 
 .screenshot-success-message {
-    flex: 1;
+  flex: 1;
 }
 
 .screenshot-check-icon {
-    position: absolute;
+  position: absolute;
 }
 .screenshot-check-icon svg path {
-    fill: var(--color-ok);
+  fill: var(--color-ok);
 }
 
 #screenshot-captured {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 5;
-    border: 1px solid var(--color-base04);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  border: 1px solid var(--color-base04);
 }
 
 #screenshot-captured .sidecar-bottom-stripe {
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0 0.375em 0 1em;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 0.375em 0 1em;
 }
 
 #screenshot-captured .screenshot-image {
-    max-width: 100%;
-    min-height: 300px; /* we need some min space to fit the green check and Screenshot copied to clipboard */
-    max-height: 100%;
-    filter: brightness(0.5) grayscale(0.55) contrast(0.85) blur(1px);
+  max-width: 100%;
+  min-height: 300px; /* we need some min space to fit the green check and Screenshot copied to clipboard */
+  max-height: 100%;
+  filter: brightness(0.5) grayscale(0.55) contrast(0.85) blur(1px);
 }
 
 #screenshot-captured .sidecar-bottom-stripe .sidecar-bottom-stripe-button {
-    width: 1.375em;
+  width: 1.375em;
 }
-

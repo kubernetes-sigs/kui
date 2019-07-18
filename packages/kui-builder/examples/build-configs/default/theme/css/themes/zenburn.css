@@ -3,33 +3,33 @@
  * author: "elnawe"
  */
 body[kui-theme="Zenburn"] {
-    --color-base00: #383838;
-    --color-base01: #404040;
-    --color-base02: #606060;
-    --color-base03: hsl(0, 0%, 29%); /* dialed L down from 44% #6f6f6f */
-    --color-base04: #808080;
-    --color-base05: #dcdccc;
-    --color-base06: #c0c0c0;
-    --color-base07: #ffffff;
-    --color-base08: hsl(0, 45%, 60%); /* dialed L down from 75% #dca3a3 */
-    --color-base09: #dfaf8f;
-    --color-base0A: #e0cf9f;
-    --color-base0B: hsl(120, 14%, 60%); /* dialed L up from 44% #5f7f5f */
-    --color-base0C: #93e0e3;
-    --color-base0D: #7cb8bb;
-    --color-base0E: #dc8cc3;
-    --color-base0F: #000000;
+  --color-base00: #383838;
+  --color-base01: #404040;
+  --color-base02: #606060;
+  --color-base03: hsl(0, 0%, 29%); /* dialed L down from 44% #6f6f6f */
+  --color-base04: #808080;
+  --color-base05: #dcdccc;
+  --color-base06: #c0c0c0;
+  --color-base07: #ffffff;
+  --color-base08: hsl(0, 45%, 60%); /* dialed L down from 75% #dca3a3 */
+  --color-base09: #dfaf8f;
+  --color-base0A: #e0cf9f;
+  --color-base0B: hsl(120, 14%, 60%); /* dialed L up from 44% #5f7f5f */
+  --color-base0C: #93e0e3;
+  --color-base0D: #7cb8bb;
+  --color-base0E: #dc8cc3;
+  --color-base0F: #000000;
 
-    --color-light-red: hsla(0, 45%, 60%, 0.75);
-    --color-light-green: hsla(120, 14%, 60%, 75%);
-    --color-light-yellow: hsl(40, 81%, 70%);
+  --color-light-red: hsla(0, 45%, 60%, 0.75);
+  --color-light-green: hsla(120, 14%, 60%, 75%);
+  --color-light-yellow: hsl(40, 81%, 70%);
 
-    --color-latency-0: #1a9850;
-    --color-latency-1: #91cf60;
-    --color-latency-2: #d9ef8b;
-    --color-latency-3: #fee08b;
-    --color-latency-4: #fc8d59;
-    --color-latency-5: #d73027;
+  --color-latency-0: #1a9850;
+  --color-latency-1: #91cf60;
+  --color-latency-2: #d9ef8b;
+  --color-latency-3: #fee08b;
+  --color-latency-4: #fc8d59;
+  --color-latency-5: #d73027;
 }
 
 /* zenburn hljs theme */

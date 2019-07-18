@@ -2,152 +2,165 @@
    see https://github.com/xtermjs/xterm.js/pull/2067
    see https://github.com/IBM/kui/issues/1518
 */
-.xterm-screen, .xterm-rows > div {
-    width: 100% !important;
+.xterm-screen,
+.xterm-rows > div {
+  width: 100% !important;
 }
 .xterm-terminated .xterm-rows > div {
-    width: auto !important; 
-    min-height: 1.14375em !important; /* a bit different; we need to support resize post-termination */
-    height: auto !important; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
-    line-height: normal !important; /* ibid */
+  width: auto !important;
+  min-height: 1.14375em !important; /* a bit different; we need to support resize post-termination */
+  height: auto !important; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
+  line-height: normal !important; /* ibid */
 }
 .xterm-container .xterm-rows > div > span {
-    width: auto !important;
-    white-space: pre;
+  width: auto !important;
+  white-space: pre;
 }
 
 .repl-result > div.xterm-container {
-    padding-right: 0;
+  padding-right: 0;
 }
 
-.xterm-screen, .xterm-container .xterm-rows > div {
-    transition: width 10ms ease-in-out, height 10ms ease-in-out;
+.xterm-screen,
+.xterm-container .xterm-rows > div {
+  transition: width 10ms ease-in-out, height 10ms ease-in-out;
 }
 
 tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
-    height: auto !important;
+  height: auto !important;
 }
 
 /* alt buffer mode */
 tab.xterm-alt-buffer-mode .repl-inner {
-    overflow: hidden;
-    display: flex;
-    align-items: flex-start;
-    -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
 }
 tab.xterm-alt-buffer-mode .repl-inner .repl-block.processing {
-    padding: 0;
-    -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
+  padding: 0;
+  -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
 }
 tab.xterm-alt-buffer-mode .repl-inner .repl-block {
-    flex: 1;
+  flex: 1;
 }
 tab.xterm-alt-buffer-mode .repl-inner .repl-block .repl-output {
-    align-items: unset;
+  align-items: unset;
 }
-tab.xterm-alt-buffer-mode .repl-block:not(.processing), tab.xterm-alt-buffer-mode .repl-input, tab.xterm-alt-buffer-mode .repl-result-spinner {
-    display: none;
+tab.xterm-alt-buffer-mode .repl-block:not(.processing),
+tab.xterm-alt-buffer-mode .repl-input,
+tab.xterm-alt-buffer-mode .repl-result-spinner {
+  display: none;
 }
 
 tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
-    display: none;
+  display: none;
 }
 
 .xterm .xterm-rows .xterm-hidden-row {
-    display: none;
+  display: none;
 }
 
 .xterm-container .xterm-fg-7.xterm-dim {
-    opacity: 1;
-    color: var(--color-text-02);
+  opacity: 1;
+  color: var(--color-text-02);
 }
 
 .xterm-container .xterm-rows .xterm-cursor.xterm-cursor-block {
-    background-color: transparent !important;
-    outline-color: transparent !important;
-    transition-property: background-color, outline-color;
-    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
+  background-color: transparent !important;
+  outline-color: transparent !important;
+  transition-property: background-color, outline-color;
+  transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
 }
 tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
-    background-color: var(--color-support-01) !important;
+  background-color: var(--color-support-01) !important;
 }
 .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
-    background-color: var(--color-processing) !important;
-    outline-color: transparent;
-    color: var(--color-base06) !important;
-    transition-property: background-color, outline-color;
-    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
+  background-color: var(--color-processing) !important;
+  outline-color: transparent;
+  color: var(--color-base06) !important;
+  transition-property: background-color, outline-color;
+  transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
 }
 .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
-    outline-color: transparent !important;
+  outline-color: transparent !important;
 }
 
 /* rules for terminated xterm */
 /* hide cursor block for terminated processes */
 .xterm-terminated .xterm-rows .xterm-cursor {
-    display: none;
+  display: none;
 }
 .xterm-terminated .xterm-screen {
-    width: auto !important;
+  width: auto !important;
 }
 /* try to disable xterm components for terminated processes */
 .xterm-terminated .xterm-helper-textarea {
-    display: none;
-    pointer-events: none;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;    
+  display: none;
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .xterm-terminated .xterm {
-    user-select: unset;
-    -webkit-user-select: unset;
+  user-select: unset;
+  -webkit-user-select: unset;
 }
 
 /* themes */
-.xterm-container .xterm-viewport, .xterm-rows {
-    background: var(--color-ui-01) !important;
+.xterm-container .xterm-viewport,
+.xterm-rows {
+  background: var(--color-ui-01) !important;
 }
 .xterm-rows {
-    font-size: 1em !important;
-    font-family: var(--font-monospace) !important;
-    color: var(--color-text-01) !important;
-    transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
+  font-size: 1em !important;
+  font-family: var(--font-monospace) !important;
+  color: var(--color-text-01) !important;
+  transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
 }
 .xterm-rows > div > span {
-    transition: color 300ms ease-in-out;
-    color: var(--color-text-01) !important;
+  transition: color 300ms ease-in-out;
+  color: var(--color-text-01) !important;
 }
-.xterm-rows .xterm-fg-0, .xterm-rows .xterm-fg-8 {
-    color: var(--color-black) !important;
+.xterm-rows .xterm-fg-0,
+.xterm-rows .xterm-fg-8 {
+  color: var(--color-black) !important;
 }
-.xterm-rows .xterm-fg-1, .xterm-rows .xterm-fg-9 {
-    color: var(--color-red) !important;
+.xterm-rows .xterm-fg-1,
+.xterm-rows .xterm-fg-9 {
+  color: var(--color-red) !important;
 }
-.xterm-rows .xterm-fg-2, .xterm-rows .xterm-fg-10 {
-    color: var(--color-green) !important;
+.xterm-rows .xterm-fg-2,
+.xterm-rows .xterm-fg-10 {
+  color: var(--color-green) !important;
 }
-.xterm-rows .xterm-fg-3, .xterm-rows .xterm-fg-11 {
-    color: var(--color-yellow) !important;
+.xterm-rows .xterm-fg-3,
+.xterm-rows .xterm-fg-11 {
+  color: var(--color-yellow) !important;
 }
-.xterm-rows .xterm-fg-4, .xterm-rows .xterm-fg-12 {
-    color: var(--color-blue) !important;
+.xterm-rows .xterm-fg-4,
+.xterm-rows .xterm-fg-12 {
+  color: var(--color-blue) !important;
 }
-.xterm-rows .xterm-fg-5, .xterm-rows .xterm-fg-13 {
-    color: var(--color-magenta) !important;
+.xterm-rows .xterm-fg-5,
+.xterm-rows .xterm-fg-13 {
+  color: var(--color-magenta) !important;
 }
-.xterm-rows .xterm-fg-6, .xterm-rows .xterm-fg-14 {
-    color: var(--color-cyan) !important;
+.xterm-rows .xterm-fg-6,
+.xterm-rows .xterm-fg-14 {
+  color: var(--color-cyan) !important;
 }
-.xterm-rows .xterm-fg-7, .xterm-rows .xterm-fg-15 {
-    color: var(--color-white) !important;
+.xterm-rows .xterm-fg-7,
+.xterm-rows .xterm-fg-15 {
+  color: var(--color-white) !important;
 }
 .xterm-rows .xterm-fg-257 {
-    /* inverted default color */
-    background-color: var(--color-text-01) !important;
-    color: var(--color-ui-01) !important;
+  /* inverted default color */
+  background-color: var(--color-text-01) !important;
+  color: var(--color-ui-01) !important;
 }
 
 /**
@@ -158,22 +171,22 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
  * 
  */
 .xterm-terminated .xterm-rows > div {
-    white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 .xterm-is-wrapped {
-    display: inline;
+  display: inline;
 }
 .xterm-is-wrapped-with-prefix-break:before {
-    /* see https://github.com/IBM/kui/issues/1605 */
-    display: block;
-    content: '';
+  /* see https://github.com/IBM/kui/issues/1605 */
+  display: block;
+  content: "";
 }
 
 /* in case we change our minds and want to hide it */
 .xterm-invisible {
-    display: none;
+  display: none;
 }
 
 .repl-block.processing .xterm-rows {
-    margin-bottom: 0.25em;
+  margin-bottom: 0.25em;
 }

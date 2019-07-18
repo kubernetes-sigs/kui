@@ -1,44 +1,44 @@
 /* color variables */
 body[kui-theme="Light"] {
-    --color-base00: #ffffff;
-    --color-base01: #ffffff;
-    --color-base02: #868d95;
-    --color-base03: #D7DCE4;
-    --color-base04: #F2F4F8;
-    --color-base05: #50565b;
-    --color-base06: #13171a;
-    --color-base07: #fff;
-    --color-base08: #e71d32;
-    --color-base09: #bf5b17;
-    --color-base0A: #FECF2F;
-    --color-base0B: #1DBD5A;
-    --color-base0C: #399CD6;
-    --color-base0D: #0072c3;
-    --color-base0E: #d12764;
-    --color-base0F: #8a3ffc;
+  --color-base00: #ffffff;
+  --color-base01: #ffffff;
+  --color-base02: #868d95;
+  --color-base03: #d7dce4;
+  --color-base04: #f2f4f8;
+  --color-base05: #50565b;
+  --color-base06: #13171a;
+  --color-base07: #fff;
+  --color-base08: #e71d32;
+  --color-base09: #bf5b17;
+  --color-base0A: #fecf2f;
+  --color-base0B: #1dbd5a;
+  --color-base0C: #399cd6;
+  --color-base0D: #0072c3;
+  --color-base0E: #d12764;
+  --color-base0F: #8a3ffc;
 
-    --color-map-key: var(--color-base0D);
+  --color-map-key: var(--color-base0D);
 
-    --color-table-border1: #9e9fa1;
-    --color-table-border2: #3D4144;
-    --color-table-border3: #A5ADB4;
+  --color-table-border1: #9e9fa1;
+  --color-table-border2: #3d4144;
+  --color-table-border3: #a5adb4;
 
-    --color-sidecar-header: var(--color-base04);
-    --color-sidecar-background: var(--color-base01);
-    --color-sidecar-border: #e4e4e4;
+  --color-sidecar-header: var(--color-base04);
+  --color-sidecar-background: var(--color-base01);
+  --color-sidecar-border: #e4e4e4;
 
-    --color-selection-background: #b3e6ff;
+  --color-selection-background: #b3e6ff;
 
-    --color-processing: var(--color-base02);
-    --color-ui-02: var(--color-base03);
-    --color-ui-06: var(--color-base04);
-    --color-text-02: var(--color-base05);
-    --color-stripe-01: var(--color-base03);
-    --color-stripe-02: var(--color-base04);
+  --color-processing: var(--color-base02);
+  --color-ui-02: var(--color-base03);
+  --color-ui-06: var(--color-base04);
+  --color-text-02: var(--color-base05);
+  --color-stripe-01: var(--color-base03);
+  --color-stripe-02: var(--color-base04);
 
-    --color-light-red: hsla(354, 81%, 51%, 50%);
-    --color-light-green: hsla(143, 73%, 43%, 50%);
-    --color-light-yellow: hsla(46, 99%, 59%, 50%);
+  --color-light-red: hsla(354, 81%, 51%, 50%);
+  --color-light-green: hsla(143, 73%, 43%, 50%);
+  --color-light-yellow: hsla(46, 99%, 59%, 50%);
 }
 
 /* mono-blue hightlightjs theme */
