@@ -353,8 +353,6 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     // what we want to display for the entity kind
     const entityTypeForDisplay = abbreviations[entityTypeWithoutTrailingSuffix] || entityTypeWithoutTrailingSuffix
 
-    const cmdlineForDisplay = argv.slice(1).join(' ')
-
     // replace @seed/yo.yaml with full path
     const argvWithFileReplacements: string[] = await Promise.all(
       rawArgv.slice(1).map(
@@ -670,7 +668,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           type: 'custom',
           isEntity: true,
           name: entity || verb,
-          packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || cmdlineForDisplay,
+          packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || '',
           namespace: options.namespace || options.n,
           duration,
           version,
