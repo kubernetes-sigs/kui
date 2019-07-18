@@ -456,7 +456,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     }
 
     const pulse = 'repeating-pulse'
-    if (key === 'STATUS' && (css.includes('yellow-background') || innerClassName.includes('yellow-background'))) {
+    if (
+      options.useRepeatingEffect &&
+      key === 'STATUS' &&
+      (css.includes('yellow-background') || innerClassName.includes('yellow-background'))
+    ) {
       cell.classList.add(pulse)
     }
 
@@ -779,7 +783,14 @@ export const formatTable = (
     container.classList.add('big-top-pad')
 
     const prepareRows = prepareTable(tab, table)
-    const rows = prepareRows.map(formatOneRowResult(tab, options))
+    const rows = prepareRows.map(
+      formatOneRowResult(
+        tab,
+        Object.assign(options, {
+          useRepeatingEffect: !hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault
+        })
+      )
+    )
     rows.map(row => tableDom.appendChild(row))
 
     setStyle(tableDom, table)
@@ -806,6 +817,7 @@ export const formatTable = (
 
 interface RowFormatOptions extends TableFormatOptions {
   excludePackageName?: boolean
+  useRepeatingEffect?: boolean
 }
 
 /**
