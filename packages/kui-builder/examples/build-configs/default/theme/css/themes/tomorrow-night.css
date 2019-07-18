@@ -3,31 +3,36 @@
  * author: "Chris Kempson (http://chriskempson.com)"
  */
 body[kui-theme="tomorrow-night"] {
-    --color-base00: #1d1f21; /* Default Background */
-    --color-base01: #282a2e; /* Lighter Background (Used for status bars) */
-    --color-base02: #373b41; /* Selection Background */
-    --color-base03: hsla(120, 1%, 59%, 0.15); /*dialed down opacity #969896*/; /* Comments, Invisibles, Line Highlighting */
-    --color-base04: #b4b7b4; /* Dark Foreground (Used for status bars) */
-    --color-base05: #c5c8c6; /* Default Foreground, Caret, Delimiters, Operators */
-    --color-base06: #e0e0e0; /* Light Foreground (Not often used) */
-    --color-base07: #ffffff; /* Light Background (Not often used) */
-    --color-base08: #cc6666; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
-    --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
-    --color-base0A: #f0c674; /* YELLOW: Classes, Markup Bold, Search Text Background */
-    --color-base0B: #b5bd68; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
-    --color-base0C: #8abeb7; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
-    --color-base0D: #81a2be; /* BLUE: Functions, Methods, Attribute IDs, Headings */
-    --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
-    --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+  --color-base00: #1d1f21; /* Default Background */
+  --color-base01: #282a2e; /* Lighter Background (Used for status bars) */
+  --color-base02: #373b41; /* Selection Background */
+  --color-base03: hsla(
+    120,
+    1%,
+    59%,
+    0.15
+  ); /*dialed down opacity #969896*/ /* Comments, Invisibles, Line Highlighting */
+  --color-base04: #b4b7b4; /* Dark Foreground (Used for status bars) */
+  --color-base05: #c5c8c6; /* Default Foreground, Caret, Delimiters, Operators */
+  --color-base06: #e0e0e0; /* Light Foreground (Not often used) */
+  --color-base07: #ffffff; /* Light Background (Not often used) */
+  --color-base08: #cc6666; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+  --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+  --color-base0A: #f0c674; /* YELLOW: Classes, Markup Bold, Search Text Background */
+  --color-base0B: #b5bd68; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+  --color-base0C: #8abeb7; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+  --color-base0D: #81a2be; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+  --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+  --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
-    --color-black: var(--color-base05); /* e.g. husky's "No partially staged files found" */
-    --color-light-red: hsla(0, 80%, 75%, 50%);
-    --color-light-green: hsla(66, 69%, 57%, 50%);
-    --color-light-yellow: hsl(40, 81%, 70%);
+  --color-black: var(--color-base05); /* e.g. husky's "No partially staged files found" */
+  --color-light-red: hsla(0, 80%, 75%, 50%);
+  --color-light-green: hsla(66, 69%, 57%, 50%);
+  --color-light-yellow: hsl(40, 81%, 70%);
 }
 
 body[kui-theme="tomorrow-night"] #screenshot-captured {
-    color: var(--color-ui-01);
+  color: var(--color-ui-01);
 }
 
 /* tomorrow-night hightlightjs theme */

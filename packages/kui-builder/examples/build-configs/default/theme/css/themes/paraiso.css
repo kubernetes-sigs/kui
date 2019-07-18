@@ -4,33 +4,33 @@
  * author: "Jan T. Sott"
  */
 body[kui-theme="Paraiso"] {
-    --color-base00: #2f1e2e;
-    --color-base01: hsl(308, 13%, 20%); /* #41323f; */
-    --color-base02: hsl(314, 9%, 24%); /* #4f424c; */
-    --color-base03: hsl(340, 4%, 23%); /* dialed down from L=45% to 23% from #776e71 */
-    --color-base04: #8d8687;
-    --color-base05: hsla(23, 4%, 73%, 1); /* dialed from L=62% to 70% from #a39e9b */
-    --color-base06: #b9b6b0;
-    --color-base07: #e7e9db;
-    --color-base08: #ef6155;
-    --color-base09: #f99b15;
-    --color-base0A: #fec418;
-    --color-base0B: #48b685;
-    --color-base0C: #5bc4bf;
-    --color-base0D: #06b6ef;
-    --color-base0E: hsl(271, 29%, 60%); /* from L=50% #815ba4 */
-    --color-base0F: #e96ba8;
+  --color-base00: #2f1e2e;
+  --color-base01: hsl(308, 13%, 20%); /* #41323f; */
+  --color-base02: hsl(314, 9%, 24%); /* #4f424c; */
+  --color-base03: hsl(340, 4%, 23%); /* dialed down from L=45% to 23% from #776e71 */
+  --color-base04: #8d8687;
+  --color-base05: hsla(23, 4%, 73%, 1); /* dialed from L=62% to 70% from #a39e9b */
+  --color-base06: #b9b6b0;
+  --color-base07: #e7e9db;
+  --color-base08: #ef6155;
+  --color-base09: #f99b15;
+  --color-base0A: #fec418;
+  --color-base0B: #48b685;
+  --color-base0C: #5bc4bf;
+  --color-base0D: #06b6ef;
+  --color-base0E: hsl(271, 29%, 60%); /* from L=50% #815ba4 */
+  --color-base0F: #e96ba8;
 
-    --color-light-red: hsla(5, 83%, 64%, 0.75);
-    --color-light-green: hsla(153, 43%, 50%, 0.75);
-    --color-light-yellow: hsla(45, 99%, 55%, 0.75);
+  --color-light-red: hsla(5, 83%, 64%, 0.75);
+  --color-light-green: hsla(153, 43%, 50%, 0.75);
+  --color-light-yellow: hsla(45, 99%, 55%, 0.75);
 
-    --color-latency-0: #542788;
-    --color-latency-1: #998ec3;
-    --color-latency-2: #d8daeb;
-    --color-latency-3: #fee0b6;
-    --color-latency-4: #f1a340;
-    --color-latency-5: #b35806;
+  --color-latency-0: #542788;
+  --color-latency-1: #998ec3;
+  --color-latency-2: #d8daeb;
+  --color-latency-3: #fee0b6;
+  --color-latency-4: #f1a340;
+  --color-latency-5: #b35806;
 }
 
 /* paraiso-dark highlightjs theme */

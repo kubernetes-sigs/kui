@@ -1,23 +1,24 @@
-body.not-electron #openwhisk-api-host, body.not-electron #openwhisk-namespace {
-    display: none;
+body.not-electron #openwhisk-api-host,
+body.not-electron #openwhisk-namespace {
+  display: none;
 }
 
 /* header mods */
 body.not-electron > .page > .header {
-    flex-basis: 3.125rem;
-    padding-right: 2rem;
+  flex-basis: 3.125rem;
+  padding-right: 2rem;
 }
 body.not-electron > .page > .header .header-nav-list li {
-    font-size: 0.875em;
+  font-size: 0.875em;
 }
 body.not-electron .header .application-icon {
-    display: none;
+  display: none;
 }
 body.not-electron > .page > .header .application-name {
-    font-size: 1em;
+  font-size: 1em;
 }
 
 /* disable screenshot button when running in a browser; see #328 */
 body.not-electron #sidecar-screenshot-button {
-    display: none !important;
+  display: none !important;
 }

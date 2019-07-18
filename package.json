@@ -5,7 +5,7 @@
   "main": "build/packages/app/src/main/main.js",
   "scripts": {
     "lint": "eslint '**/*.{js,ts}'",
-    "format": "prettier --write '**/*.{js,json,md,ts}'",
+    "format": "prettier --write '**/*.{css,html,js,json,md,ts}'",
     "test": "cd packages/tests && npm run test",
     "compile": "MONOREPO_MODE=true CLIENT_HOME=./clients/default ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
@@ -28,7 +28,7 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,json,md,ts}": [
+    "**/*.{css,html,js,json,md,ts}": [
       "prettier --write",
       "git add"
     ],
