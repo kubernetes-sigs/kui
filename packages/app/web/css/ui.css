@@ -2858,7 +2858,7 @@ button.yellow-background {
   color: var(--color-ui-01);
 }
 .result-table badge.gray-background:not(.badge-as-image):before {
-  background: var(--color-ui-05);
+  background: var(--color-processing);
   color: var(--color-ui-02);
 }
 badge.is-title-like,
