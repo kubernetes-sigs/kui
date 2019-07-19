@@ -29,10 +29,9 @@ body[kui-theme="tomorrow-night"] {
   --color-light-red: hsla(0, 80%, 75%, 50%);
   --color-light-green: hsla(66, 69%, 57%, 50%);
   --color-light-yellow: hsl(40, 81%, 70%);
-}
 
-body[kui-theme="tomorrow-night"] #screenshot-captured {
-  color: var(--color-ui-01);
+  --color-screenshot-text:#FFFFFF;
+  --color-screenshot-background:#6EA6FF;
 }
 
 /* tomorrow-night hightlightjs theme */

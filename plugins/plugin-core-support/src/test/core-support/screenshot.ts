@@ -35,10 +35,9 @@ const takeScreenshot = function(ctx, which = '') {
     .then(res =>
       ctx.app.client
         .waitForExist('#screenshot-captured')
-        .then(() => ctx.app.client.waitForEnabled('#screenshot-captured .screenshot-check-icon'))
-        .then(() => ctx.app.client.click('#screenshot-captured .sidecar-bottom-stripe-save'))
-        .then(() => ctx.app.client.click('#screenshot-captured .sidecar-bottom-stripe-close'))
-        .then(() => ctx.app.client.waitForExist('#screenshot-captured', 5000, true)) // false meaning better not be visible
+        .then(() => ctx.app.client.click('#screenshot-captured .screenshot-save-button'))
+        .then(() => ctx.app.client.click('#screenshot-captured .screenshot-close-botton'))
+        .then(() => ctx.app.client.waitForExist('#screenshot-captured', 10000, true)) // false meaning better not be visible
         .then(() => res)
         .then(
           cli.expectOKWithCustom({

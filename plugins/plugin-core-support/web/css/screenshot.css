@@ -17,6 +17,10 @@ body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish sidecar 
 body:not([data-presentation="FixedSize"]) tab.visible.screenshot-squish sidecar .sidecar-content {
   flex: initial;
 }
+body {
+  --color-screenshot-background: var(--color-screenshot-background);
+  --color-screenshot-foreground: var(--color-screenshot-text);
+}
 
 .screenshot-squish .hide-with-screenshot {
   display: none;
@@ -26,7 +30,15 @@ body.no-tooltips-anywhere [data-balloon]:before,
 body.no-tooltips-anywhere [data-balloon]:after {
   display: none !important;
 }
-
+.screenshot-close-botton svg path {
+  fill: var(--color-screenshot-foreground);
+  stroke: var(--color-screenshot-foreground);
+}
+.screenshot-save-button {
+  cursor: pointer;
+  font-size: 0.875em;
+  margin: 0.25em 0;
+}
 .screenshot-save-button.green-text:hover {
   /* override hover effect, so that the icon is green even when hovered,
    which will be the case after the user clicks save! */
@@ -39,26 +51,44 @@ body.no-tooltips-anywhere [data-balloon]:after {
 
 .screenshot-success-message {
   flex: 1;
+  font-size: 0.875em;
 }
-
-.screenshot-check-icon {
-  position: absolute;
+.screenshot-content {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  margin: 0.5em;
 }
-.screenshot-check-icon svg path {
-  fill: var(--color-ok);
+.screenshot-close {
+  flex-direction: column;
+  margin: 0.5em;
+  display: flex;
+}
+.screenshot-message {
+  flex: 1;
+}
+.screenshot-closing-message {
+  opacity: 0.6;
+  font-size: 0.75em;
+  margin-top: 0.25em;
 }
 
 #screenshot-captured {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  bottom: 1em;
+  right: 1em;
+  width: 25em;
+  height: 6.5em;
   z-index: 5;
-  border: 1px solid var(--color-base04);
+  box-shadow: 0 0 2em var(--color-base01);
+  border: 0.063em solid var(--color-base04);
+  background: var(--color-screenshot-background);
+  color: var(--color-screenshot-foreground);
+  padding-left: 0em;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 0.875em;
+  transition: all 150ms ease-in-out;
 }
 
 #screenshot-captured .sidecar-bottom-stripe {
@@ -68,10 +98,9 @@ body.no-tooltips-anywhere [data-balloon]:after {
 }
 
 #screenshot-captured .screenshot-image {
-  max-width: 100%;
-  min-height: 300px; /* we need some min space to fit the green check and Screenshot copied to clipboard */
-  max-height: 100%;
-  filter: brightness(0.5) grayscale(0.55) contrast(0.85) blur(1px);
+  width: 5.5em;
+  height: 5.5em;
+  margin: 0.5em;
 }
 
 #screenshot-captured .sidecar-bottom-stripe .sidecar-bottom-stripe-button {

@@ -38,6 +38,9 @@ body[kui-theme="Solarized"] {
   --color-latency-3: #fee090;
   --color-latency-4: #fc8d59;
   --color-latency-5: #d73027;
+
+  --color-screenshot-text:#FFFFFF;
+  --color-screenshot-background:#6EA6FF;
 }
 
 /* solarized-dark highglightjs theme */

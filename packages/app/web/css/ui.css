@@ -1727,6 +1727,7 @@ sidecar .result-as-table .big-top-pad:first-child {
   padding: 0 !important;
   margin: 0 !important;
   border: none !important;
+  position: absolute;
 }
 .not-displayed {
   display: none !important;

@@ -30,6 +30,9 @@ body[kui-theme="Gruvbox"] {
   --color-latency-3: #e7d4e8;
   --color-latency-4: #af8dc3;
   --color-latency-5: #762a83;
+
+  --color-screenshot-text:#FFFFFF;
+  --color-screenshot-background:#6EA6FF;
 }
 
 /* gruvox-dark highlightjs theme */

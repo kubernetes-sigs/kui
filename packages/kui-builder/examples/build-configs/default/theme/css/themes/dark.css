@@ -40,8 +40,10 @@ body[kui-theme="Dark"] {
   --color-brand-03: #418cff;
   --color-tag-beta-fill: #202529;
   --color-tag-beta-text: var(--color-text-01);
-
   --color-text-02: #b3bac1;
+
+  --color-screenshot-text:#FFFFFF;
+  --color-screenshot-background:#6EA6FF;
 
   /* table header row */
   --color-ui-06: #373d42;

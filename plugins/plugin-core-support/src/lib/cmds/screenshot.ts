@@ -169,6 +169,7 @@ const dateString = ts => `${ts.getUTCFullYear()}-${fill(1 + ts.getUTCMonth())}-$
 /** format the time; e.g. 11.36.54 AM */
 const timeString = ts => ts.toLocaleTimeString('en-us').replace(/:/g, '.')
 
+let downloadTimer
 /** this is the handler body */
 export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
@@ -251,6 +252,7 @@ export default async (commandTree: CommandRegistrar) => {
             // capture a screenshot
             const listener = (event, buf) => {
               document.body.classList.remove('no-tooltips-anywhere')
+              const page = document.querySelector('body > .page')
 
               if (!buf) {
                 // some sort of internal error in the main process
@@ -258,61 +260,31 @@ export default async (commandTree: CommandRegistrar) => {
                 return reject(new Error('Internal Error'))
               }
 
+              if (document.getElementById('screenshot-captured') !== null) {
+                // if a notification widget already exists, remove it
+                if (downloadTimer) clearInterval(downloadTimer)
+                document.getElementById('screenshot-captured').remove()
+              }
+
               const img = nativeImage.createFromBuffer(buf)
               const snapDom = document.createElement('div')
-              const snapFooter = document.createElement('div')
-              const snapImg = document.createElement('div')
+
+              const snapImg = document.createElement('img')
               const message = document.createElement('div')
-              const check = document.createElement('div')
+              const messageContent = document.createElement('div')
+              const snapContent = document.createElement('div')
+              const close = document.createElement('div')
+              page.appendChild(snapDom)
 
               // when we're done, re-enable the things we messed with and hide the snapDom
               const finish = () => {
-                cleanupMouseEvents() // eslint-disable-line @typescript-eslint/no-use-before-define
-
                 snapDom.classList.add('go-away')
                 setTimeout(() => {
-                  document.body.removeChild(snapDom)
+                  page.removeChild(snapDom)
                   getCurrentPrompt(tab).readOnly = false
                   getCurrentPrompt(tab).focus()
                 }, 1000) // match go-away-able transition-duration; see ui.css
               }
-
-              // the following bits handle mouse clicks on the underlying
-              // page; we want the screenshot popup to disappear onclick,
-              // but need to distinguish clicks from drags, sigh
-              let notAClick = false
-              let currentClickX
-              let currentClickY
-              const blurryClick = () => {
-                if (!notAClick) {
-                  finish()
-                }
-              }
-              const blurryMouseDown = (evt: MouseEvent) => {
-                currentClickX = evt.screenX
-                currentClickY = evt.screenY
-              }
-              const blurryMouseUp = (evt: MouseEvent) => {
-                // if the total pixel movement is small, then we're ok calling this a click
-                notAClick = Math.abs(evt.screenX - currentClickX) + Math.abs(evt.screenY - currentClickY) > 4
-              }
-              const cleanupMouseEvents = () => {
-                // remove the underlying page blurry bit
-                document.querySelector('.page').classList.remove('blurry')
-
-                document.querySelector('.page').removeEventListener('click', blurryClick)
-                document.querySelector('.page').removeEventListener('mousedown', blurryMouseDown)
-                document.querySelector('.page').removeEventListener('mouseup', finish)
-              }
-              const initMouseEvents = () => {
-                // make the underlying page blurry while we have the snapshot overlay up
-                document.querySelector('.page').classList.add('blurry')
-
-                document.querySelector('.page').addEventListener('click', blurryClick)
-                document.querySelector('.page').addEventListener('mousedown', blurryMouseDown)
-                document.querySelector('.page').addEventListener('mouseup', blurryMouseUp)
-              }
-              initMouseEvents()
 
               const windowSize = document.body.getBoundingClientRect()
               const imgSize = img.getSize()
@@ -327,37 +299,35 @@ export default async (commandTree: CommandRegistrar) => {
               }
 
               // viewport width dimensions of the screenshot popup
-              const widthVw = `${(75 * widthPx) / windowSize.width}vw`
-              const heightVw = `${(75 * heightPx) / windowSize.width}vw`
+              // const widthVw = `${(75 * widthPx) / windowSize.width}vw`
+              // const heightVw = `${(75 * heightPx) / windowSize.width}vw`
 
-              document.body.appendChild(snapDom)
               snapDom.appendChild(snapImg)
-              snapDom.appendChild(snapFooter)
-              snapDom.appendChild(check)
-              snapFooter.appendChild(message)
+              snapDom.appendChild(snapContent)
+              snapDom.appendChild(close)
+
+              snapDom.setAttribute('data-notification', '')
+              snapDom.setAttribute('role', 'polite')
+              snapDom.setAttribute('data-notification', '')
+              snapDom.classList.add('bx--toast-notification')
+              snapDom.classList.add('bx--toast-notification--warning')
+              snapDom.classList.add('zoomable')
 
               snapDom.id = 'screenshot-captured'
               snapDom.classList.add('go-away-able')
               snapDom.classList.add('go-away') // initially hidden
               setTimeout(() => snapDom.classList.remove('go-away'), 0)
 
-              snapFooter.classList.add('sidecar-bottom-stripe')
-              snapFooter.style.width = widthVw
-
               // save screenshot to disk
               const saveButton = document.createElement('div')
-              const saveButtonIcon = document.createElement('div')
+
               const ts = new Date()
               const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`
               const location = join(app.getPath('desktop'), filename)
-              saveButton.setAttribute('data-balloon', 'Save to Desktop')
-              saveButton.setAttribute('data-balloon-pos', 'up')
-              saveButton.className =
-                'sidecar-bottom-stripe-button sidecar-bottom-stripe-save graphical-icon screenshot-save-button'
-              saveButtonIcon.classList.add('graphical-icon')
-              saveButtonIcon.innerHTML =
-                '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M17.8 5.5l-3.3-3.3c-.2-.1-.3-.2-.5-.2H3.3C2.6 2 2 2.6 2 3.3v13.3c0 .8.6 1.4 1.3 1.4h13.3c.7 0 1.4-.5 1.4-1.2V6.1c0-.4-.1-.4-.2-.6zM7.3 3.3h5.3v3.3H7.3V3.3zm5.4 13.4H7.3v-5.3h5.3l.1 5.3zm1.3 0v-5.3c0-.7-.6-1.3-1.3-1.3H7.3c-.7-.1-1.3.5-1.3 1.2v5.3H3.3V3.3H6v3.3C6 7.4 6.6 8 7.3 8h5.3c.8 0 1.4-.6 1.4-1.3v-3l2.7 2.7v10.4l-2.7-.1z"></path></svg>'
-              saveButton.appendChild(saveButtonIcon)
+
+              saveButton.className = 'screenshot-save-button'
+              saveButton.innerHTML = 'Save to desktop'
+
               saveButton.onclick = () => {
                 saveButton.classList.add('yellow-text')
                 remote.require('fs').writeFile(location, img.toPNG(), async () => {
@@ -377,37 +347,49 @@ export default async (commandTree: CommandRegistrar) => {
                 })
               }
 
-              snapFooter.appendChild(saveButton)
-
-              // close popup button
-              const closeButton = document.createElement('div')
-              closeButton.innerHTML =
-                '<div class="graphical-icon"><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z"></path></svg></div>'
-              closeButton.className = 'sidecar-bottom-stripe-button sidecar-bottom-stripe-close'
-              snapFooter.appendChild(closeButton)
-
               // the image; chrome bug: if we use width and height,
               // there is a white border that is not defeatible; if
               // we trick chrome into thinking the image has no
               // width and height (but fake it with padding), the
               // border goes away: https://stackoverflow.com/a/14709695
-              snapImg.style.background = `url(${img
-                .resize({ width: widthPx, height: heightPx })
-                .toDataURL()}) no-repeat center bottom/contain`
-              snapImg.style.width = widthVw
-              snapImg.style.height = heightVw
+
+              snapImg.setAttribute('src', img.toDataURL())
               snapImg.classList.add('screenshot-image')
 
+              snapContent.classList.add('screenshot-content')
               message.classList.add('screenshot-success-message')
               message.innerText = 'Screenshot copied to clipboard'
+              messageContent.classList.add('screenshot-message')
+              messageContent.appendChild(message)
+              const closeMessage = document.createElement('div')
+              closeMessage.classList.add('screenshot-closing-message')
+              closeMessage.setAttribute('id', 'close-msg')
+              closeMessage.innerHTML = 'Closing in <span id="countdown">10</span>'
+              messageContent.appendChild(closeMessage)
+              snapContent.append(messageContent)
+              snapContent.appendChild(saveButton)
 
-              check.classList.add('screenshot-check-icon')
-              const checkIcon = document.createElement('div')
-              checkIcon.innerHTML =
-                '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2C8.3 2 2 8.3 2 16s6.3 14 14 14 14-6.3 14-14S23.7 2 16 2zm-2 19.5l-5-5 1.6-1.5 3.4 3.4 7.4-7.4 1.6 1.6-9 8.9z"></path><path d="M14 21.5l-5-5 1.6-1.5 3.4 3.4 7.4-7.4 1.6 1.6-9 8.9z" data-icon-path="inner-path" opacity="0"></path></svg>'
-              check.appendChild(checkIcon)
+              const closeButton = document.createElement('div')
 
-              // temporarily disable the repl
+              close.classList.add('screenshot-close')
+              close.appendChild(closeButton)
+
+              closeButton.innerHTML =
+                '<div style="display: flex;justify-content:flex-end;align-items:baseline"><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform; cursor:pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z" stroke="white" fill="white"></path></svg></div>'
+              closeButton.classList.add('screenshot-close-botton')
+
+              // go away after 10 seconds
+              let timeleft = 10
+              downloadTimer = setInterval(() => {
+                if (timeleft <= 0) {
+                  clearInterval(downloadTimer)
+                  finish()
+                }
+                document.getElementById('countdown').innerText = String(timeleft)
+                timeleft -= 1
+              }, 1000)
+
+              // temporarily disable the repls
               if (getCurrentPrompt(tab)) {
                 getCurrentPrompt(tab).readOnly = true
               }
