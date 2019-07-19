@@ -31,9 +31,5 @@ body[kui-theme="tomorrow-night"] {
   --color-light-yellow: hsl(40, 81%, 70%);
 }
 
-body[kui-theme="tomorrow-night"] #screenshot-captured {
-  color: var(--color-ui-01);
-}
-
 /* tomorrow-night hightlightjs theme */
 .hljs-comment,.hljs-quote{color:#969896}.hljs-variable,.hljs-template-variable,.hljs-tag,.hljs-name,.hljs-selector-id,.hljs-selector-class,.hljs-regexp,.hljs-deletion{color:#cc6666}.hljs-number,.hljs-built_in,.hljs-builtin-name,.hljs-literal,.hljs-type,.hljs-params,.hljs-meta,.hljs-link{color:#de935f}.hljs-attribute{color:var(--color-support-03)}.hljs-string,.hljs-symbol,.hljs-bullet,.hljs-addition{color:#b5bd68}.hljs-title,.hljs-section{color:#81a2be}.hljs-keyword,.hljs-selector-tag{color:#b294bb}.hljs{display:block;overflow-x:auto;background:transparent;color:#c5c8c6;padding:0.5em}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}

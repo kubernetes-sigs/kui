@@ -32,6 +32,8 @@ body[kui-theme="Light"] {
   --color-content-divider: #BFC0C2;
   --color-selection-background: #b3e6ff;
 
+  --color-screenshot-background: #0062FF;
+
   --color-processing: var(--color-base02);
   --color-ui-02: var(--color-base03);
   --color-ui-06: var(--color-base04);
