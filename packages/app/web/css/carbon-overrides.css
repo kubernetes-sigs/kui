@@ -8,7 +8,7 @@ body[kui-theme-style] {
 
 body[kui-theme-style] sidecar .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
   color: var(--color-text-01);
-  border-bottom-color: var(--color-content-divider);
+  border-bottom-color: var(--color-brand-03);
   opacity: 1;
 }
 body[kui-theme-style="dark"] sidecar .bx--tabs__nav-item a.bx--tabs__nav-link {
@@ -26,9 +26,6 @@ body[kui-theme-style="dark"]
   border-bottom-color: var(--color-base05);
   opacity: 1;
 }
-sidecar .bx--tabs {
-  flex: 1;
-}
 sidecar .bx--tabs,
 sidecar .bx--tabs .bx--tabs__nav,
 sidecar .bx--tabs .bx--tabs__nav li {
@@ -40,7 +37,7 @@ sidecar a.bx--tabs__nav-link,
 sidecar a.bx--tabs__nav-link:active {
   outline: none;
   width: unset;
-  min-width: 6em;
+  min-width: 8em;
 }
 li.bx--tabs__nav-item.sidecar-bottom-stripe-button,
 li.bx--tabs__nav-item.sidecar-bottom-stripe-button a {

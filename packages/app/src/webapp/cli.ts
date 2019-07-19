@@ -1115,10 +1115,10 @@ export const printResults = (
         // entity type
         const prettyType =
           isEntitySpec(response) &&
-          (response.type ||
-            response.kind ||
+          (response.kind ||
             response.prettyType ||
             response.prettyKind ||
+            response.type ||
             (response[0] && response[0].title) ||
             (response[0] && response[0][0] && response[0][0].title))
 

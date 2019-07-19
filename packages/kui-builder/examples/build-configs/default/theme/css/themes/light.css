@@ -28,6 +28,8 @@ body[kui-theme="Light"] {
   --color-sidecar-background: var(--color-base01);
   --color-sidecar-border: #e4e4e4;
 
+  --color-brand-03: #008FFF;
+  --color-content-divider: #BFC0C2;
   --color-selection-background: #b3e6ff;
 
   --color-processing: var(--color-base02);
@@ -36,6 +38,8 @@ body[kui-theme="Light"] {
   --color-text-02: var(--color-base05);
   --color-stripe-01: var(--color-base03);
   --color-stripe-02: var(--color-base04);
+  --color-sidecar-toolbar-background: #D7DCE3;
+  --color-sidecar-toolbar-foreground: var(--color-base05);
 
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);

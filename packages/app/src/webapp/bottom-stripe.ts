@@ -159,7 +159,7 @@ export const css = {
       '.sidecar-top-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits .bx--tabs__nav'
     ),
   bottomContainer: (tab: Tab) =>
-    sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
+    sidecarSelector(tab, '.sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits'),
   active: 'bx--tabs__nav-item--selected',
   selected: 'selected',
   hidden: 'hidden'
@@ -314,7 +314,7 @@ const _addModeButton = (
 
   if (balloon) {
     button.setAttribute('data-balloon', balloon)
-    button.setAttribute('data-balloon-pos', 'down')
+    button.setAttribute('data-balloon-pos', !isTab ? 'down-right' : 'down')
     if (balloonLength) {
       button.setAttribute('data-balloon-length', balloonLength)
     }
