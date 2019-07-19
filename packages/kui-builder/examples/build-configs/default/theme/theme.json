@@ -50,6 +50,7 @@
     }
   ],
   "css": ["_test.css"],
+  "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Medium",
   "appIcon": "icons/png/kui.png",

@@ -50,6 +50,40 @@ const readIndex = options =>
   })
 
 /**
+ * Unify the given settings of configurations
+ *
+ */
+const unify = (setting1, setting2) => {
+  const uniqe = arr => {
+    return arr.filter((element, index) => arr.indexOf(element) === index)
+  }
+
+  const unifiedSettings = setting1
+
+  for (const key in setting2) {
+    if (!unifiedSettings[key]) {
+      unifiedSettings[key] = setting2[key]
+    } else {
+      if (Array.isArray(unifiedSettings[key]) && Array.isArray(setting2[key])) {
+        // concatenate the arrays
+        unifiedSettings[key] = unifiedSettings[key].concat(setting2[key])
+        // remove the duplicated elements and join the array into a string
+        unifiedSettings[key] = uniqe(unifiedSettings[key]).join(' ')
+      } else if (!Array.isArray(unifiedSettings[key]) && Array.isArray(setting2[key])) {
+        // split the first string into an array and concatenate the arrays
+        unifiedSettings[key] = unifiedSettings[key].split(' ').concat(setting2[key])
+        // remove the duplicated elements and join the array into a string
+        unifiedSettings[key] = uniqe(unifiedSettings[key]).join(' ')
+      } else if (unifiedSettings[key] !== setting2[key]) {
+        throw new Error(`collision key ${key} ${setting1[key]} ${setting2[key]} in settings`)
+      }
+    }
+  }
+
+  return unifiedSettings
+}
+
+/**
  * Evaluate macros in the given string, using the given setting of configurations
  *
  */
@@ -170,8 +204,7 @@ const doBuild = settings => () =>
   Promise.all([
     writeConfig(settings),
     readIndex(settings)
-      .then(evaluateMacros(settings.env))
-      .then(evaluateMacros(settings.theme))
+      .then(evaluateMacros(unify(settings.env, settings.theme)))
       .then(injectCSS(settings.env, settings.theme))
       .then(writeIndex(settings))
   ])
