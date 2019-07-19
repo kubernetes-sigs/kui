@@ -1,6 +1,6 @@
 {
   "main": "electron.js",
-  "bodyCss": "in-electron",
+  "bodyCss": ["in-electron"],
   "cssHome": "css/",
   "imageHome": "icons/ico/",
   "jsHome": "../../../node_modules/@kui-shell/core/webapp/bootstrap/"

@@ -27,6 +27,8 @@ import {
   before as commonBefore,
   after as commonAfter,
   oops,
+  localIt,
+  remoteIt,
   localDescribe
 } from '@kui-shell/core/tests/lib/common'
 
@@ -67,4 +69,25 @@ localDescribe('Basic Functionality', function(this: ISuite) {
       common.oops(this)(err)
     }
   }) */
+})
+
+describe('bodyCss', function(this: ISuite) {
+  before(commonBefore(this))
+  after(commonAfter(this))
+
+  localIt('should have kui.in-electron in bodyCss', async () => {
+    try {
+      await this.app.client.waitForExist('body.kui.in-electron')
+    } catch (err) {
+      oops(this)(err)
+    }
+  })
+
+  remoteIt('should have kui.not-electron in bodyCss', async () => {
+    try {
+      await this.app.client.waitForExist('body.kui.not-electron')
+    } catch (err) {
+      oops(this)(err)
+    }
+  })
 })

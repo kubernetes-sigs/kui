@@ -1,7 +1,7 @@
 {
   "nameSuffix": "",
   "main": "main.bundle.js",
-  "bodyCss": "not-electron",
+  "bodyCss": ["not-electron"],
   "cssHome": "css/",
   "imageHome": "",
   "jsHome": ""
