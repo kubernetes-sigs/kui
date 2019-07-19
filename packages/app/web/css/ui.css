@@ -829,8 +829,8 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
 }
 
 .sidecar-bottom-stripe {
-  flex-basis: 2em;
-  min-height: 2rem; /* important for screenshot, which tries to maximally squish the sidecar height */
+  flex-basis: 2.5em;
+  min-height: 2.5rem; /* important for screenshot, which tries to maximally squish the sidecar height */
   display: flex;
   z-index: 5;
   background-color: var(--color-stripe-02);
@@ -957,6 +957,70 @@ body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-st
   font-size: 3vmin;
 }
 
+/* sidecar view-button "flush right" toolbar */
+sidecar .sidecar-bottom-stripe-toolbar {
+  display: flex;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
+  background-color: var(--color-sidecar-toolbar-background);
+  color: var(--color-sidecar-toolbar-foreground);
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  padding: 0 1em;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:empty,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
+  display: none;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
+  opacity: 0.875;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon {
+  margin-right: 0.5em;
+  margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon > svg {
+  display: none;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="info"] svg.kui--info-icon,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg.kui--warning-icon,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg.kui--error-icon {
+  display: block;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
+  font-size: 0.75em;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.32px;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
+  display: flex;
+  line-height: 1.5em;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
+  cursor: pointer;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"] {
+  font-size: 0.875em;
+  transition: color 150ms ease-in-out;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
+  color: var(--color-brand-01);
+}
+sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
+  fill: var(--color-sidecar-toolbar-foreground);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
+  display: flex;
+  flex: 1;
+}
+sidecar .sidecar-bottom-stripe-toolbar .fill-container.flush-right > * + * {
+  margin-left: 1.5em;
+}
+
 /* custom content */
 body.no-sidecar-header .sidecar-header,
 sidecar.no-sidecar-header .sidecar-header,
@@ -968,6 +1032,10 @@ sidecar.custom-content .sidecar-header-secondary-content .action-content {
   /* custom content rules */
   display: none;
 }
+sidecar .sidecar-content-container {
+  overflow: hidden;
+}
+sidecar .sidecar-content-container,
 sidecar .custom-content {
   display: flex;
   flex: 1;
@@ -976,6 +1044,7 @@ sidecar .custom-content {
 sidecar .sidecar-header {
   display: flex;
   background-color: var(--color-sidecar-header);
+  border-bottom: 1px solid var(--color-content-divider);
   flex-basis: 8rem;
   min-height: 8rem; /* see shell issue #712 */
   transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
@@ -2005,11 +2074,6 @@ body.subwindow .repl-block .ok-line,
 body.subwindow .repl-block .oops {
   font-size: 2.5vmin;
 }
-body:not(.subwindow) .sidecar-bottom-stripe-quit,
-body.subwindow[data-presentation="SidecarFullscreen"] .sidecar-bottom-stripe-quit {
-  /* no quit button if not in subwindow/popup mode */
-  display: none;
-}
 body.subwindow[data-presentation="SidecarFullscreenForPopups"] sidecar .sidecar-bottom-stripe-close,
 body.subwindow[data-presentation="FixedSize"] sidecar .sidecar-bottom-stripe-close {
   /* no close button if in subwindow/popup mode */
@@ -2032,7 +2096,6 @@ body.subwindow .repl-block {
   background-color: transparent;
 }
 body.subwindow sidecar {
-  background: var(--color-ui-02);
   border-left: none;
   box-shadow: none;
 }
@@ -2166,7 +2229,14 @@ body.subwindow .repl-input {
 body.subwindow .repl-output {
   padding: 0 1em 0 1em;
 }
+body.subwindow .repl-prompt {
+  border: none;
+}
+body.subwindow .repl-prompt svg {
+  transform: scale(2);
+}
 body.subwindow .repl .repl-input .repl-prompt,
+body.subwindow .repl-result-spinner,
 body.subwindow .repl .repl-input input,
 body.subwindow .repl .repl-prompt-timestamp,
 body.subwindow sidecar .repl-input,
@@ -2390,6 +2460,10 @@ body.oops-total-catastrophe #restart-needed-warning {
    "capture screenshot" button while capturing a screenshot! */
   display: none;
 }
+sidecar [data-balloon]:before,
+sidecar [data-balloon]:after {
+  transition-delay: 750ms;
+}
 [data-balloon]:hover {
   cursor: pointer;
   opacity: 1 !important;
@@ -2574,10 +2648,10 @@ sidecar.minimized .sidecar-bottom-stripe-left-bits .sidecar-header-icon-wrapper 
 sidecar.minimized header.sidecar-header .sidecar-header-secondary-content,
 sidecar.minimized header.sidecar-header .sidecar-header-right-bits,
 sidecar.minimized .sidecar-header-name,
-sidecar.minimized .custom-content,
+sidecar.minimized .sidecar-content-container,
 sidecar.minimized .sidecar-header-icon-wrapper-for-namespace,
-sidecar.minimized .sidecar-content,
 sidecar.minimized .sidecar-bottom-stripe-left-bits > div:not(.sidecar-header-icon-wrapper),
+sidecar.minimized .sidecar-bottom-stripe-toolbar,
 sidecar.minimized .header-right-bits {
   display: none;
   flex: 0;
@@ -2606,13 +2680,12 @@ sidecar.minimized .sidecar-bottom-stripe-button.sidecar-bottom-stripe-close {
   margin: 0;
   text-align: center;
 }
-.sidecar-bottom-stripe-button-as-button {
-  font-weight: bold;
-}
 sidecar.minimized .graphical-icon {
   justify-content: center;
   transform: scaleX(-1);
   mix-blend-mode: difference;
+  height: unset !important;
+  padding: 0 !important;
 }
 sidecar.minimized [data-balloon]:before,
 sidecar.minimized [data-balloon]:after {
@@ -2770,7 +2843,8 @@ sidecar .page-content pre > code {
   display: inline-block;
 }
 
-.icon-container {
+.icon-container,
+.icon-container > i {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2872,7 +2946,7 @@ button.yellow-background {
 }
 badge.is-title-like,
 badge.is-kind-like {
-  background: var(--color-base0F);
+  background: var(--color-base0D);
 }
 
 .oops.oops-as-html {
@@ -2962,7 +3036,11 @@ badge.clickable:not(.badge-as-fontawesome):hover {
 body[kui-theme-style="dark"] .sidecar-bottom-stripe {
   color: var(--color-text-01);
 }
-.sidecar-bottom-stripe-right-bits {
+.sidecar-window-buttons .sidecar-bottom-stripe-button:first-child > span:first-child {
+  border-left: 1px solid var(--color-table-border1);
+}
+.sidecar-bottom-stripe-right-bits,
+.sidecar-window-buttons {
   display: flex;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button {
@@ -2974,19 +3052,26 @@ body[kui-theme-style="dark"] .sidecar-bottom-stripe {
   /* not-graphical stripe buttons */
   padding: 0 0.375em;
 }
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
+  padding-left: 1em;
+}
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
-  width: 1.875em;
+  padding-right: 1em;
+  height: 1.5em;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button.sidecar-bottom-stripe-button-active {
-  border-bottom-color: var(--color-brand-02);
+  border-bottom-color: var(--color-base-03);
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover,
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button.hover,
 .sidecar-bottom-stripe-button-as-button.selected {
-  color: var(--color-brand-02);
+  color: var(--color-base0D);
+}
+.sidecar-bottom-stripe-button-as-button.selected svg path {
+  fill: var(--color-brand-02);
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover svg path {
-  fill: var(--color-base08);
+  fill: var(--color-support-04);
 }
 .sidecar-bottom-stripe
   .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button:not(.sidecar-bottom-stripe-button-active):hover,
@@ -3145,8 +3230,11 @@ body {
   --color-support-03-darker: var(--color-yellow);
   --color-support-04: var(--color-base0C);
 
+  /* stripes */
   --color-stripe-01: var(--color-base01);
   --color-stripe-02: var(--color-base03);
+  --color-sidecar-toolbar-background: var(--color-base03);
+  --color-sidecar-toolbar-foreground: var(--color-base02);
 
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);

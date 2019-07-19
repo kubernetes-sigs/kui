@@ -30,7 +30,7 @@ export const deleteResourceButton = (fn?) =>
   makeButton(
     {
       mode: 'delete',
-      fontawesome: 'fas fa-trash',
+      label: 'Delete',
       balloon: 'Delete this resource'
     },
     fn

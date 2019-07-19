@@ -25,8 +25,8 @@ import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
 const debug = Debug('plugins/wskflow/util')
 
 const strings = {
-  '1:1': '1:1',
-  Fit: 'Fit'
+  '1:1': 'Zoom 1:1',
+  Fit: 'Zoom to Fit'
 }
 
 /**

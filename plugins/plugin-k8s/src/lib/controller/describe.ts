@@ -199,6 +199,10 @@ const renderDescribe = async (
     contentType: output,
     prettyType: resource.kind,
     subtext: createdOn(resource),
+    toolbarText: {
+      type: 'info',
+      text: 'You are in read-only view mode'
+    },
     resource,
     modes,
     content: output === 'json' ? summary : safeDump(summary).trim()

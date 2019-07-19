@@ -28,7 +28,15 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { listen, getCurrentPrompt, getCurrentTab, getTabIndex, Tab, setStatus } from '@kui-shell/core/webapp/cli'
+import {
+  isPopup,
+  listen,
+  getCurrentPrompt,
+  getCurrentTab,
+  getTabIndex,
+  Tab,
+  setStatus
+} from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
@@ -298,9 +306,14 @@ const perTabInit = (tab: Tab, doListen = true) => {
 
   // quit button
   sidecarSelector(tab, '.sidecar-bottom-stripe-quit').onclick = () => {
-    debug('quit button')
     try {
-      window.close()
+      if (isPopup()) {
+        debug('quit button click')
+        window.close()
+      } else {
+        debug('close sidecar button click')
+        clearSelection(tab)
+      }
     } catch (err) {
       console.error('error handling quit button click', err)
     }

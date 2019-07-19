@@ -674,6 +674,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           version,
           prettyType: (yaml && yaml.kind) || entityTypeForDisplay || command,
           subtext,
+          toolbarText: {
+            type: 'info',
+            text: 'You are in read-only view mode'
+          },
           noCost: true, // don't display the cost in the UI
           modes,
           badges: badges.filter(x => x),

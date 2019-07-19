@@ -91,7 +91,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
   cursor: pointer;
 }
 .left-tab-stripe-button:not([data-tab-button-index]):not(.left-tab-stripe-button-selected) > svg:hover path {
-  fill: var(--color-base08) !important;
+  fill: var(--color-support-04) !important;
 }
 .left-tab-stripe-button-selected .left-tab-stripe-button-label {
   /* reduce the visibility of the tab label, for the visible tab */
