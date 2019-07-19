@@ -159,7 +159,7 @@ export const css = {
       '.sidecar-top-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits .bx--tabs__nav'
     ),
   bottomContainer: (tab: Tab) =>
-    sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits'),
+    sidecarSelector(tab, '.sidecar-header .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits'),
   active: 'bx--tabs__nav-item--selected',
   selected: 'selected',
   hidden: 'hidden'

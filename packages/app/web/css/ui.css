@@ -950,6 +950,17 @@ body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-st
   font-size: 3vmin;
 }
 
+.sidecar-bottom-stripe-toolbar {
+  background-color: #d8dce3;
+  color: #303131;
+  height: 24px;
+  display: flex;
+}
+.sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
+  display: flex;
+  flex: 1;
+}
+
 /* custom content */
 body.no-sidecar-header .sidecar-header,
 sidecar.no-sidecar-header .sidecar-header,
