@@ -267,7 +267,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     entityNameGroup.appendChild(packagePrefix)
   }
   const entityNameClickable = document.createElement('span')
-  entityNameClickable.className = 'entity-name'
+  entityNameClickable.className = 'entity-name cell-inner'
   if (!isHeaderCell) {
     entityNameClickable.classList.add('clickable')
   }
@@ -873,7 +873,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     entityNameGroup.appendChild(packagePrefix)
   }
   const entityNameClickable = document.createElement('span')
-  entityNameClickable.className = 'entity-name'
+  entityNameClickable.className = 'entity-name cell-inner'
   if (!entityNameGroup.classList.contains('header-cell')) {
     entityNameClickable.classList.add('clickable')
   }
