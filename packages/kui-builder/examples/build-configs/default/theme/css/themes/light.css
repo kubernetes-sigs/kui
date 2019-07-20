@@ -17,6 +17,7 @@ body[kui-theme="Light"] {
   --color-base0E: #d12764;
   --color-base0F: #8a3ffc;
 
+  --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);
 
   --color-table-border1: #9e9fa1;

@@ -57,7 +57,7 @@ export const format = (parameters: Parameters): Element => {
   const prefixText = resource.status && resource.status.startTime ? 'Started on ' : 'Created on '
 
   const message = document.createElement('div')
-  const datePart = document.createElement('strong')
+  const datePart = document.createElement('span')
 
   message.appendChild(document.createTextNode(prefixText))
   message.appendChild(datePart)

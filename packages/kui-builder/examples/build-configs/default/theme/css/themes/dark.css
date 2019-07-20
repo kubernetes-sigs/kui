@@ -29,7 +29,7 @@ body[kui-theme="Dark"] {
 
   --color-stripe-01: #4f565c;
 
-  --color-selection-background: var(--color-base05);
+  --color-selection-background: #0074C7;
 
   --color-light-red: hsla(357, 96%, 64%, 50%);
   --color-light-green: hsla(134, 43%, 52%, 50%);

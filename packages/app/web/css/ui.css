@@ -234,12 +234,11 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .result-table-title-outer {
   display: flex;
   align-items: flex-end;
-  color: var(--color-base0D);
+  color: var(--color-name);
   letter-spacing: 1px;
-  font-weight: 500;
-  padding: 1em 0.375rem 0.375em;
-  padding-top: 0;
-  padding-left: 0;
+  font-weight: 600;
+  padding: 0.6875em;
+  font-family: var(--font-sans-serif);
 }
 .result-as-multi-table .result-table-outer-wrapper:first-child .result-table-title-outer {
   padding-top: 0;
@@ -657,7 +656,7 @@ body.subwindow .repl .log-lines {
   /* emphasize the entity name, unless
    (.result-table-with-custom-entity-colors) the client has requested
    control over entity colors */
-  color: var(--color-base0C);
+  color: var(--color-name);
 }
 .log-field .entity-name {
   direction: rtl;
@@ -2678,7 +2677,7 @@ sidecar .usage-error-wrapper .hideable {
   margin: 1.33em 0 0.375em;
 }
 .usage-error-wrapper .example-command-text {
-  color: var(--color-base0C);
+  color: var(--color-name);
 }
 
 /* markdown */
@@ -2818,7 +2817,7 @@ badge.badge-as-image img {
 badge.badge-as-fontawesome {
   padding: 0;
   font-size: 1.5em;
-  color: var(--color-base0C);
+  color: var(--color-name);
 }
 .repl-result-prefix,
 badge:not(.badge-as-fontawesome):not(.badge-as-image) {
@@ -2897,7 +2896,7 @@ span[data-extra-decoration="application error"] {
 }
 
 .repl-block.processing .repl-input input {
-  color: var(--color-base0C);
+  color: var(--color-name);
 }
 
 .result-table .entity:nth-child(2n + 1) td,
@@ -2991,7 +2990,7 @@ sidecar .header-right-bits {
 }
 
 sidecar .sidecar-header-icon {
-  color: var(--color-base0C);
+  color: var(--color-name);
 }
 
 .package-prefix {
@@ -3091,7 +3090,7 @@ sidecar .custom-content .log-field pre > code {
 
 /* directory listing coloring */
 .dir-listing-is-directory {
-  color: var(--color-base0C);
+  color: var(--color-name);
 }
 .dir-listing-is-executable {
   color: var(--color-support-01);
@@ -3185,6 +3184,9 @@ body {
   /* map keys and values */
   --color-map-key: var(--color-base0C);
   --color-map-value: var(--color-text-01);
+
+  /* entity names and kinds */
+  --color-name: var(--color-base0C);
 
   /* "is processing" color */
   --color-processing: var(--color-ui-05);
