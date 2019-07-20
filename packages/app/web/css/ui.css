@@ -234,7 +234,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .result-table-title-outer {
   display: flex;
   align-items: flex-end;
-  color: var(--color-base0F);
+  color: var(--color-base0D);
   letter-spacing: 1px;
   font-weight: 500;
   padding: 1em 0.375rem 0.375em;
@@ -253,8 +253,10 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   text-transform: capitalize;
   letter-spacing: 0.32px;
 }
-.header-cell:not(:first-child) .cell-inner {
+.header-cell .cell-inner {
   padding: 0 0.6875em;
+}
+.header-cell:not(:first-child) .cell-inner {
   border-left: 1px solid var(--color-table-border3);
 }
 .log-lines .header-cell,
@@ -621,7 +623,6 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
   white-space: nowrap;
 }
 .result-table .entity-name-group {
-  padding-left: 0.75em;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -648,10 +649,6 @@ body.subwindow .repl .log-lines {
 }
 .header-cell {
   text-align: left; /* th defaults to text-align: center */
-}
-.entity-name-group:not(.header-cell) .entity-name[data-key="NAME"],
-.result-as-table .bold {
-  font-weight: 500;
 }
 .repl-result:not(.result-table-with-custom-entity-colors)
   .entity-name-group:not(.header-cell)
