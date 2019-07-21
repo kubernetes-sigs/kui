@@ -272,7 +272,7 @@
                       </div>
 
                       <!-- e.g. kubernetes namespace or openwhisk package name, and the like -->
-                      <div class="sidecar-header-icon-wrapper">
+                      <div class="sidecar-header-icon-wrapper sidecar-header-icon-wrapper-for-namespace">
                         <span class="package-prefix"></span>
                       </div>
 
@@ -321,7 +321,10 @@
                       <!-- Quit/Done button -->
                       <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-quit" data-balloon="Close this popup" data-balloon-length="medium" data-balloon-pos="down-right">
                         <div class="graphical-icon">
-                          <i class="fas fa-sign-out-alt"></i>
+                          <!-- sign out button -->
+                          <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                            <path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z"></path>
+                          </svg>
                         </div>
                       </div>
                     </div>
