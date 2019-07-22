@@ -50,6 +50,7 @@ const outerCSSForKey = {
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
   UPDATED: 'min-width-date-like', // helm ls
+  'REVISION UPDATED': 'hide-with-sidecar', // helm ls
   REVISION: 'hide-with-sidecar', // helm ls
   AGE: 'very-narrow', // e.g. helm status and kubectl get svc
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
@@ -200,7 +201,7 @@ export const formatTable = (
     (verb === 'get'
       ? 'get'
       : command === 'helm' && (verb === 'list' || verb === 'ls')
-      ? 'status'
+      ? 'get'
       : isHelmStatus
       ? 'get'
       : undefined) || undefined
@@ -211,10 +212,12 @@ export const formatTable = (
   const drilldownNamespace =
     options.n || options.namespace ? `-n ${repl.encodeComponent(options.n || options.namespace)}` : ''
 
-  const drilldownKind = nameSplit => {
+  const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')
+  const drilldownKind = (nameSplit: string[], row: Pair[]) => {
     debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
-      const kind = nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
+      const kind =
+        kindColumnIdx >= 0 ? row[kindColumnIdx].value : nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
       return kind ? ' ' + kind : ''
       /* } else if (drilldownVerb === 'config') {
         return ' use-context'; */
@@ -272,7 +275,7 @@ export const formatTable = (
         idx === 0
           ? false
           : drilldownVerb
-          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(
+          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit, rows)} ${repl.encodeComponent(
               nameForDrilldown
             )} ${drilldownFormat} ${ns}`
           : false
