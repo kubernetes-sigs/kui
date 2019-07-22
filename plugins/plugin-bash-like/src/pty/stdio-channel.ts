@@ -66,9 +66,19 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
     })
 
     // underlying pty has emitted data from the subprocess
+    let pending
     child.stdout.on('data', (data: Buffer) => {
-      debugW('forwarding child output upstream', data.toString())
-      this.send(data.toString())
+      const msg = data.toString()
+      if (!msg.endsWith(MARKER)) {
+        if (!pending) {
+          pending = msg
+        } else {
+          pending += msg
+        }
+      } else {
+        this.send(pending ? `${pending}${msg}` : msg)
+        pending = undefined
+      }
     })
   }
 
@@ -78,12 +88,17 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
 
     if (msg === `open${MARKER}`) {
       this.readyState = ReadyState.OPEN
+
+      // this signals exec.js that the websocket is ready; see channel.once('open', ...)
       this.emit('open')
     } else if (this.readyState === ReadyState.OPEN) {
       msg
         .split(MARKER)
         .filter(_ => _)
-        .forEach(_ => this.ws.send(_))
+        .forEach(_ => {
+          debugW('forwarding child output upstream', _)
+          this.ws.send(`${_}${MARKER}`)
+        })
     }
   }
 

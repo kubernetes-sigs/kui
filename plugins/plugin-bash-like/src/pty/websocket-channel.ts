@@ -51,22 +51,23 @@ class WebSocketChannel extends WebSocket implements Channel {
     switch (eventType) {
       case 'open':
         debug('WebSocketChannel: installing onopen handler')
-        this.onopen = handler
+        this.addEventListener(eventType, handler)
         break
 
       case 'message':
         debug('WebSocketChannel: installing onmessage handler')
-        this.onmessage = message => handler(message.data)
+        // this.onmessage = message => handler(message.data)
+        this.addEventListener(eventType, message => handler(message.data))
         break
 
       case 'error':
         debug('WebSocketChannel: installing onerror handler')
-        this.onerror = handler
+        this.addEventListener(eventType, handler)
         break
 
       case 'close':
         debug('WebSocketChannel: installing onclose handler')
-        this.onclose = handler
+        this.addEventListener(eventType, handler)
         break
     }
   }

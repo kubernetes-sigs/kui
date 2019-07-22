@@ -118,5 +118,5 @@ you would access that example configuration setting via:
 ```typescript
 import { config } from '@kui-shell/core/core/settings'
 
-if (config['disableProxy']) { ... }
+if (config['proxyServer']['enabled']) { ... }
 ```

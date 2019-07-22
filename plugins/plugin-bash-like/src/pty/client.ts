@@ -46,7 +46,9 @@ import { Table } from '@kui-shell/core/webapp/models/table'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
+import { getChannelForTab } from './session'
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
+
 const debug = Debug('plugins/bash-like/pty/client')
 
 /* eslint-disable no-control-regex */
@@ -301,7 +303,10 @@ class Resizer {
     debug('getSize', cols, rows, width, height)
 
     const newSize = { rows, cols }
-    setCachedSize(this.tab, newSize)
+    if (!isNaN(rows) && !isNaN(cols)) {
+      setCachedSize(this.tab, newSize)
+    }
+
     return newSize
   }
 
@@ -323,10 +328,12 @@ class Resizer {
     if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
       debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
       try {
-        this.terminal.resize(cols, rows)
+        if (!isNaN(rows) && !isNaN(cols)) {
+          this.terminal.resize(cols, rows)
 
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-          this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
+          if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
+          }
         }
       } catch (err) {
         debug(err.message)
@@ -454,12 +461,13 @@ const webviewChannelFactory: ChannelFactory = async () => {
  * websocket factory for remote/proxy connection
  *
  */
-const getOrCreateChannel = async (
-  cmdline: string,
-  channelFactory: ChannelFactory,
-  tab: Element,
-  terminal: xterm.Terminal
-): Promise<Channel> => {
+const getOrCreateChannel = async (cmdline: string, tab: Tab, terminal: xterm.Terminal): Promise<Channel> => {
+  const channelFactory = inBrowser()
+    ? window['webview-proxy'] !== undefined
+      ? webviewChannelFactory
+      : remoteChannelFactory
+    : electronChannelFactory
+
   // tell the server to start a subprocess
   const doExec = (ws: Channel) => {
     const msg = {
@@ -475,10 +483,10 @@ const getOrCreateChannel = async (
     ws.send(JSON.stringify(msg))
   }
 
-  const cachedws = tab['ws'] as Channel
+  const cachedws = getChannelForTab(tab)
 
   if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
-    debug('allocating new channel')
+    debug('allocating new channel', channelFactory)
     const ws = await channelFactory()
     debug('allocated new channel', ws)
     tab['ws'] = ws
@@ -568,6 +576,11 @@ export const doExec = (
         // xtermContainer.classList.add('zoomable')
         parent.appendChild(xtermContainer)
 
+        if (execOptions.replSilence) {
+          debug('repl silence')
+          xtermContainer.style.display = 'none'
+        }
+
         // xtermjs will handle the "block"
         setCustomCaret(block)
 
@@ -628,12 +641,7 @@ export const doExec = (
           xtermContainer.classList.add('xterm-terminated')
         }
 
-        const channelFactory = inBrowser()
-          ? window['webview-proxy'] !== undefined
-            ? webviewChannelFactory
-            : remoteChannelFactory
-          : electronChannelFactory
-        const ws: Channel = await getOrCreateChannel(cmdline, channelFactory, tab, terminal).catch((err: Error) => {
+        const ws: Channel = await getOrCreateChannel(cmdline, tab, terminal).catch((err: Error) => {
           console.error('error creating channel', err)
           cleanUpTerminal()
           throw err
@@ -820,6 +828,7 @@ export const doExec = (
               if (raw.length > 500) {
                 definitelyNotUsage = true
               }
+
               pendingWrites++
               terminal.write(msg.data)
             }

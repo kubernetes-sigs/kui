@@ -548,9 +548,14 @@ const makeResolver = (prescan: PrescanModel) => {
 /**
  * Load the prescan model, in preparation for loading the shell
  *
+ * @return truthy value if we indeed did the initialization
  */
 export const init = async () => {
   debug('init')
+
+  if (prescan) {
+    return false
+  }
 
   // global
   prescan = (await loadPrescan(pluginRoot)) as PrescanModel
@@ -568,6 +573,7 @@ export const init = async () => {
   commandTree.setPluginResolver(makeResolver(prescan))
 
   debug('init done')
+  return true
 }
 
 /**

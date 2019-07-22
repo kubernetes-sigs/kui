@@ -266,6 +266,8 @@ const closeTab = (tab = getCurrentTab()) => {
 const perTabInit = (tab: Tab, doListen = true) => {
   tab['state'] = new TabState()
 
+  eventBus.emit('/tab/new', tab)
+
   if (doListen) {
     listen(getCurrentPrompt(tab))
   }
@@ -333,9 +335,6 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   newTab.setAttribute('data-tab-index', newTabId)
   newTab.className = 'visible'
 
-  currentVisibleTab.classList.remove('visible')
-  currentVisibleTab.parentNode.appendChild(newTab)
-
   const currentTabButton = getCurrentTabButton()
   currentTabButton.classList.remove('left-tab-stripe-button-selected')
 
@@ -373,6 +372,11 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   newTabButton.scrollIntoView()
 
+  // make the new tab visible at the very end of the above init work!
+  currentVisibleTab.classList.remove('visible')
+  currentVisibleTab.parentNode.appendChild(newTab)
+  getCurrentPrompt(newTab).focus()
+
   return true
 }
 
@@ -382,11 +386,6 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
  *
  */
 const oneTimeInit = (): void => {
-  // focus the current prompt no matter where the user clicks in the left tab stripe
-  ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
-    getCurrentPrompt().focus()
-  }
-
   const initialTabButton = getCurrentTabButton()
   const initialTabId = initialTabButton.getAttribute('data-tab-button-index')
   initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
@@ -404,6 +403,11 @@ const oneTimeInit = (): void => {
   perTabInit(getCurrentTab(), false)
 
   getTabButtonLabel(getCurrentTab()).innerText = theme['productName']
+
+  // focus the current prompt no matter where the user clicks in the left tab stripe
+  ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
+    getCurrentPrompt().focus()
+  }
 }
 
 /**

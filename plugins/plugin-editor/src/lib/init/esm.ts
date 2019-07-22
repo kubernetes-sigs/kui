@@ -22,6 +22,7 @@ import * as monaco from 'monaco-editor'
 
 import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'
+
 const debug = Debug('plugins/editor/init/esm')
 
 /** this is part of the finagling, to make sure we finagle only once */
@@ -52,6 +53,8 @@ self['MonacoEnvironment'] = {
 }
 
 export default (editorWrapper: HTMLElement, options) => {
+  debug('init')
+
   //
   // wait till monaco's loader is ready, then resolve with an editor
   // widget

@@ -31,6 +31,7 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 let portRange = 8083
@@ -211,11 +212,47 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         cwd?: string
         rows?: number
         cols?: number
+
+        uuid?: string // for request-response
+        execOptions?: ExecOptions
       } = JSON.parse(data)
 
       switch (msg.type) {
         case 'exit':
           return exitNow(msg.exitCode)
+
+        case 'request':
+          const { exec } = await import('@kui-shell/core/core/repl')
+          if (msg.env) {
+            process.env = msg.env
+          }
+
+          const terminate = (str: string) => {
+            ws.send(str)
+            // ws.send(`___kui_exit___ ${msg.uuid}`)
+          }
+
+          try {
+            const response = await exec(msg.cmdline, Object.assign({}, msg.execOptions, { rethrowErrors: true }))
+            debug('got response', response)
+            terminate(
+              JSON.stringify({
+                type: 'object',
+                uuid: msg.uuid,
+                response
+              })
+            )
+          } catch (err) {
+            debug('got error', err)
+            terminate(
+              JSON.stringify({
+                type: 'object',
+                uuid: msg.uuid,
+                response: err
+              })
+            )
+          }
+          break
 
         case 'exec':
           const env = Object.assign({}, msg.env || process.env, { KUI: 'true' })
@@ -270,6 +307,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
               return shell.resize(msg.cols, msg.rows)
             }
           } catch (err) {
+            console.error(`error in resize ${msg.cols} ${msg.rows}`)
             console.error('could not resize pty', err)
           }
           break

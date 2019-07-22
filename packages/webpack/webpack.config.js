@@ -115,7 +115,7 @@ plugins.push({
 
         const overrides = {
           build: { writeConfig: false },
-          env: { main, hash }
+          env: { main, hash, resourceRoot: '.' }
         }
 
         if (isWatching) {

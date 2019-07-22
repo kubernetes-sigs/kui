@@ -315,8 +315,8 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       const parentChain = (usage.parents || []).map(breadcrumb => ({
         breadcrumb
       }))
-      const thisCommand = { breadcrumb, noSlash: true, preserveCase }
-      const breadcrumbs: CrumbOptions[] = [rootCrumb, ...parentChain, thisCommand]
+      const thisCommand: CrumbOptions[] = breadcrumb ? [{ breadcrumb, noSlash: true, preserveCase }] : []
+      const breadcrumbs: CrumbOptions[] = [rootCrumb, ...parentChain, ...thisCommand]
 
       // generate the breadcrumb Elements from the model
       const crumbs = await promiseEach(breadcrumbs, makeBreadcrumb)
@@ -913,8 +913,12 @@ export class UsageError extends Error implements CodedError {
     return (this.raw as MessageWithUsageModel).usage
   }
 
-  getFormattedMessage(): Promise<HTMLElement> {
-    return this.formattedMessage ? this.formattedMessage : Promise.resolve(span(this.message))
+  static getFormattedMessage(err: UsageError): Promise<HTMLElement> {
+    if (err.formattedMessage && !err.formattedMessage.then && Object.keys(err.formattedMessage).length === 0) {
+      err.formattedMessage = format(err.raw)
+    }
+
+    return err.formattedMessage ? err.formattedMessage : Promise.resolve(span(err.message))
   }
 
   static isUsageError(error: Entity): error is UsageError {
