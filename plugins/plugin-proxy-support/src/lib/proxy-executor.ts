@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
+import { v4 as uuidgen } from 'uuid'
 
 import UsageError from '@kui-shell/core/core/usage-error'
 import { ReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
@@ -25,6 +26,20 @@ import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
 import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
+
+// import { getChannelForTab } from '@kui-shell/plugin-bash-like/pty/session'
+// copied for now, until we can figure out typescript compiler issues
+import { Tab } from '@kui-shell/core/webapp/cli'
+interface Channel {
+  send: (msg: string) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  on: (eventType: string, handler: any) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  removeEventListener: (eventType: string, handler: any) => void
+}
+function getSessionForTab(tab: Tab): Promise<Channel> {
+  return tab['_kui_session'] as Promise<Channel>
+}
 
 const debug = Debug('plugins/proxy-support/executor')
 
@@ -37,7 +52,7 @@ interface DisabledProxyServerConfig {
   enabled: boolean
 }
 
-function isDisabled(_config: ProxyServerConfig): _config is DisabledProxyServerConfig {
+export function isDisabled(_config: ProxyServerConfig): _config is DisabledProxyServerConfig {
   const config = _config as DisabledProxyServerConfig
   return config && config.enabled === false
 }
@@ -77,17 +92,73 @@ class ProxyEvaluator implements ReplEval {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
-      debug('delegating to proxy evaluator', getValidCredentials())
+      const execOptionsForInvoke = Object.assign({}, execOptions, {
+        isProxied: true,
+        cwd: process.env.PWD,
+        env: process.env,
+        credentials: getValidCredentials(),
+        tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
+        rawResponse: true // we will post-process the response
+      })
+
+      if (command !== 'bash websocket open') {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+          const uuid = uuidgen()
+          debug('delegating to proxy websocket', command, uuid)
+
+          const channel = await getSessionForTab(args.tab)
+
+          const msg = {
+            type: 'request',
+            cmdline: command,
+            uuid,
+            cwd: process.env.PWD,
+            execOptions: execOptionsForInvoke
+          }
+          channel.send(JSON.stringify(msg))
+
+          const MARKER = '\n'
+          let raw = ''
+          const onMessage = (data: string) => {
+            debug('raw', uuid, data)
+            raw += data
+
+            if (data.endsWith(MARKER)) {
+              raw += data
+
+              try {
+                raw
+                  .split(MARKER)
+                  .filter(_ => _)
+                  .forEach(_ => {
+                    const response: { uuid: string; response: { code?: number } } = JSON.parse(_)
+                    if (response.uuid === uuid) {
+                      channel.removeEventListener('message', onMessage)
+                      if (response.response.code && response.response.code !== 200) {
+                        debug('rejecting', response.response)
+                        reject(response.response)
+                      } else {
+                        debug('response', response)
+                        resolve(response.response)
+                      }
+                    }
+                  })
+              } catch (err) {
+                console.error('error handling response', raw)
+                console.error(err)
+                reject(new Error('Internal Error'))
+              }
+            }
+          }
+          channel.on('message', onMessage)
+        })
+      }
+
+      debug('delegating to proxy exec', command)
       const body = {
         command,
-        execOptions: Object.assign({}, execOptions, {
-          isProxied: true,
-          cwd: process.env.PWD || process.cwd(),
-          env: process.env,
-          credentials: getValidCredentials(),
-          tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
-          rawResponse: true // we will post-process the response
-        })
+        execOptions: execOptionsForInvoke
       }
       debug('sending body', body)
 

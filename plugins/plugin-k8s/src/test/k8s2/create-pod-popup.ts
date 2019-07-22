@@ -118,14 +118,14 @@ const pod = 'nginx'
 //
 // from here on are the tests...
 //
-common.localDescribe(`popup create namespace ${ns1}`, function(this: common.ISuite) {
+common.localDescribe(`popup create pod creating namespace ${ns1}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'create', 'ns', ns1] }))
   after(common.after(this))
 
   waitForCreate.bind(this)({ name: ns1, kind: 'Namespace' })
 })
 
-common.localDescribe(`popup create pod in ${ns1}`, function(this: common.ISuite) {
+common.localDescribe(`popup create pod creating pod in ${ns1}`, function(this: common.ISuite) {
   before(
     common.before(this, {
       popup: [
@@ -143,14 +143,14 @@ common.localDescribe(`popup create pod in ${ns1}`, function(this: common.ISuite)
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1 })
 })
 
-common.localDescribe(`popup create namespace ${ns2}`, function(this: common.ISuite) {
+common.localDescribe(`popup create pod creating namespace ${ns2}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'create', 'ns', ns2] }))
   after(common.after(this))
 
   waitForCreate.bind(this)({ name: ns2, kind: 'Namespace' })
 })
 
-common.localDescribe(`popup create pod in ${ns2}`, function(this: common.ISuite) {
+common.localDescribe(`popup create pod creating pod in ${ns2}`, function(this: common.ISuite) {
   before(
     common.before(this, {
       popup: [
@@ -168,28 +168,28 @@ common.localDescribe(`popup create pod in ${ns2}`, function(this: common.ISuite)
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns2 })
 })
 
-common.localDescribe('popup delete pod', function(this: common.ISuite) {
+common.localDescribe(`popup create pod deleting pod in ${ns1}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns1] }))
   after(common.after(this))
 
   waitForDelete.bind(this)({ name: pod })
 })
 
-common.localDescribe(`popup delete pod in ${ns2}`, function(this: common.ISuite) {
+common.localDescribe(`popup create pod deleting pod in ${ns2}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns2] }))
   after(common.after(this))
 
   waitForDelete.bind(this)({ name: pod })
 })
 
-common.localDescribe(`popup delete namespace ${ns1}`, function(this: common.ISuite) {
+common.localDescribe(`popup create pod deleting namespace ${ns1}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'ns', ns1] }))
   after(common.after(this))
 
   waitForDelete.bind(this)({ name: ns1 })
 })
 
-common.localDescribe(`popup delete namespace ${ns2}`, function(this: common.ISuite) {
+common.localDescribe(`popup create pod deleting namespace ${ns2}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'delete', 'ns', ns2] }))
   after(common.after(this))
 

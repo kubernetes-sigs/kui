@@ -524,7 +524,7 @@ export const streamTo = (tab: Tab, block: Element) => {
     }
 
     if (UsageError.isUsageError(response)) {
-      previousLine = await response.getFormattedMessage()
+      previousLine = await UsageError.getFormattedMessage(response)
       pre.appendChild(previousLine)
       pre.classList.add('oops')
       pre.setAttribute('data-status-code', response.code.toString())
@@ -1256,7 +1256,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   if (err['hide']) {
     // we were instructed not to show any message
   } else if (UsageError.isUsageError(err)) {
-    oopsDom.appendChild(await err.getFormattedMessage())
+    oopsDom.appendChild(await UsageError.getFormattedMessage(err))
     /* } else if (isHTML(err.message)) {
     // err.message is a DOM
     oopsDom.appendChild(err.message) */

@@ -18,11 +18,18 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 import prefetchShellState from './pty/prefetch'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
+
+export const registerCapability: CapabilityRegistration = async () => {
+  if (inBrowser()) {
+    import('./pty/session').then(({ init }) => init())
+  }
+}
 
 /**
  * This is the module

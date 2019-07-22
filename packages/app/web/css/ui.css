@@ -252,7 +252,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   text-transform: capitalize;
   letter-spacing: 0.32px;
 }
-.header-cell .cell-inner {
+.result-table:not([kui-table-style="Light"]) .header-cell .cell-inner {
   padding: 0 0.6875em;
 }
 .header-cell:not(:first-child) .cell-inner {
@@ -315,6 +315,10 @@ body.sidecar-is-minimized .result-as-table .result-table {
   --color-prompt-text: var(--color-text-01);
   --color-prompt-background: var(--color-base03);
 }
+body.not-electron .repl-prompt {
+  border: none;
+  font-size: 0.875em;
+}
 body.not-electron .repl-context {
   /* no context in webpack mode */
   display: none;
@@ -370,8 +374,11 @@ repl .repl-block.using-custom-prompt .repl-input input {
   opacity: 0;
   width: 0;
 }
-.repl-prompt-righty svg path {
+.repl-prompt-righty {
   color: var(--color-brand-01);
+}
+.repl-prompt-righty svg path {
+  fill: var(--color-brand-01);
 }
 
 /* repl right-hand decorations */
@@ -3429,6 +3436,7 @@ body {
 .kui--columns {
   flex: 1;
   display: flex;
+  overflow: hidden; /* notes: chrome doesn't seem to need this; otherwise, repl scrolling will cause sidecar to overflow vertically */
 }
 .kui--input-stripe {
   display: none;

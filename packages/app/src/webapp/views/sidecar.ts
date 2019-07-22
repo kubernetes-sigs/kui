@@ -389,7 +389,7 @@ export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause =
   }
 
   tab.classList[op]('sidecar-full-screen')
-  setTimeout(() => eventBus.emit('/sidecar/maximize'), 600)
+  setTimeout(() => eventBus.emit('/sidecar/maximize'), 1000)
 
   if (tab.classList.contains('sidecar-full-screen')) {
     // if we entered full screen mode, remember if the user caused it,

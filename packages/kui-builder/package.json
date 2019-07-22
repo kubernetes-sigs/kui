@@ -41,6 +41,7 @@
     "@types/node": "12.0.10",
     "@types/swagger-schema-official": "2.0.17",
     "@types/tmp": "0.1.0",
+    "@types/uuid": "3.4.5",
     "@types/yargs-parser": "13.0.0",
     "@typescript-eslint/eslint-plugin": "1.13.0",
     "@typescript-eslint/parser": "1.13.0",

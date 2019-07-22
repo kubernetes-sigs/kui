@@ -113,7 +113,7 @@ const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => 
     } else {
       let msg
       if (UsageError.isUsageError(err)) {
-        msg = err.getFormattedMessage()
+        msg = UsageError.getFormattedMessage(err)
       } else {
         const { oopsMessage } = await import('../core/oops')
         msg = oopsMessage(err)
@@ -291,10 +291,12 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
   /** main work starts here */
   debug('bootstrap')
   return waitForPlugins
-    .then(async () => {
+    .then(async (initWasPerformed: boolean) => {
       debug('plugins initialized')
 
-      await initCommandContext(commandContext)
+      if (initWasPerformed) {
+        await initCommandContext(commandContext)
+      }
 
       const maybeRetry = (err: Error) => {
         // nothing, yet
@@ -304,9 +306,11 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
       // warning: this must occur before insufficientArgs as,
       // currently, the help command is registered as a preload
       // handler. i'm not sure why, but that's how it works right now.
-      debug('invoking plugin preloader')
-      await preload()
-      debug('invoking plugin preloader... done')
+      if (initWasPerformed) {
+        debug('invoking plugin preloader')
+        await preload()
+        debug('invoking plugin preloader... done')
+      }
 
       if (insufficientArgs(argv)) {
         debug('insufficient args, invoking help command')

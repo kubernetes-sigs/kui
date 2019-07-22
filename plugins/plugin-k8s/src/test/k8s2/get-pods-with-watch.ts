@@ -157,7 +157,7 @@ const checkWatchableJobs = function(
 
 const synonyms = ['k']
 
-describe('electron watch pod', function(this: common.ISuite) {
+describe(`electron watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
