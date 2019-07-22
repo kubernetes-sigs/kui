@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
 
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
@@ -67,6 +67,31 @@ describe('helm commands', function(this: common.ISuite) {
     return cli
       .do(`helm list ${inNamespace}`, this.app)
       .then(cli.expectOKWith(name))
+      .catch(common.oops(this))
+  })
+
+  it(`should show the release in sidecar via helm get`, () => {
+    return cli
+      .do(`helm get ${name}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing('mysql', undefined, true)) // true means substring match ok
+      .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
+      .then(() => this.app.client.waitForText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
+      .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
+      .then(titles => {
+        assert.ok(Array.isArray(titles))
+        if (Array.isArray(titles)) {
+          // to make typescript happy, we need the if check on top of
+          // the assert
+          assert.strictEqual(titles.length, 6)
+          assert.ok(titles.find(_ => _ === 'V1/PERSISTENTVOLUMECLAIM'))
+        }
+      })
+      .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('hooks')))
+      .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('manifest')))
+      .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('values')))
+      .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('notes')))
       .catch(common.oops(this))
   })
 

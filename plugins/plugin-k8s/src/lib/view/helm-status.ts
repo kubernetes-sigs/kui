@@ -16,7 +16,11 @@
 
 import * as Debug from 'debug'
 
+import { Streamable } from '@kui-shell/core/webapp/cli'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
+
 import { preprocessTable, formatTable } from './formatTable'
+
 const debug = Debug('k8s/view/helm-status')
 
 /**
@@ -34,7 +38,16 @@ const width = (table: any[]): number => {
  * Format the output of a helm status command
  *
  */
-export const format = async (command: string, verb: string, entityType: string, options, response: string, stdout) => {
+export const format = async (
+  command: string,
+  verb: string,
+  entityType: string,
+  options,
+  response: string,
+  stdout: (msg: Streamable) => void,
+  execOptions: ExecOptions
+) => {
+  debug('nested?', execOptions.nested)
   debug('command', command)
   debug('verb', verb)
   debug('entityType', entityType)
@@ -60,7 +73,7 @@ export const format = async (command: string, verb: string, entityType: string, 
       // "v1/pod(related)" => "pod"
       const entityType = kind.replace(/(v\w+\/)?([^()]*)(\s*\(.*\))?/, '$2')
 
-      if (!/^\s*NAME\s+/.test(A[1])) {
+      if (!/\s*NAME(\s+|$)/.test(A[1])) {
         // no header row? this seems to be a bug in helm
         const match = A[1].match(/(.+\s+)(.+)/)
         if (match && match[1]) {
@@ -84,6 +97,7 @@ export const format = async (command: string, verb: string, entityType: string, 
         )
       }
     })
+
   debug('resources', resources)
   const resourcesOut = resources
     .map(({ kind, table }) => {
@@ -101,11 +115,20 @@ export const format = async (command: string, verb: string, entityType: string, 
         return -diff1
       }
     })
-  if (headerString) await stdout(headerString)
 
-  await stdout(Array.isArray(resourcesOut) ? { tables: resourcesOut } : resourcesOut)
+  // helm status sometimes emits some text before the tables
+  if (headerString && !execOptions.nested) await stdout(headerString)
 
-  if (notesString) await stdout(notesString)
+  const tables = Array.isArray(resourcesOut) ? { tables: resourcesOut } : resourcesOut
+  if (!execOptions.nested) {
+    await stdout(tables)
+  } else {
+    debug('returning tables for nested call', tables)
+    return tables
+  }
+
+  // helm status sometimes emits a "Notes" section after the tables
+  if (notesString && !execOptions.nested) await stdout(notesString)
 
   return true
 }

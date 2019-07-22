@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
-import { isTable } from './models/table'
+import { isTable, isMultiTable } from './models/table'
 import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
@@ -378,9 +378,14 @@ const _addModeButton = (
       // execute the command
       if (direct) {
         try {
+          if (isDirectViewEntity(direct) || leaveBottomStripeAlone) {
+            // change the active button before we fetch the model
+            changeActiveButton()
+          }
+
           const view = await callDirect(tab, direct, entity, execOptions)
           if (view && !actAsButton) {
-            if (isTable(view) || isDirectViewEntity(direct) || leaveBottomStripeAlone) {
+            if (isTable(view)) {
               changeActiveButton()
             }
 
@@ -397,7 +402,7 @@ const _addModeButton = (
             } else if (isCustomSpec(view)) {
               // Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
               showCustom(tab, view, { leaveBottomStripeAlone })
-            } else if (isTable(view)) {
+            } else if (isTable(view) || isMultiTable(view)) {
               const dom1 = document.createElement('div')
               const dom2 = document.createElement('div')
               dom1.classList.add('padding-content', 'scrollable', 'scrollable-auto')

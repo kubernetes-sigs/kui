@@ -66,6 +66,9 @@ export interface MetadataBearing {
   metadata?: {
     name: string
     namespace?: string
+
+    generation?: string
+
     creationTimestamp?: string
   }
   spec?: {

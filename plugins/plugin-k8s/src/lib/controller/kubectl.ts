@@ -15,6 +15,8 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('k8s/controller/kubectl')
+debug('loading')
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
@@ -48,11 +50,9 @@ import { preprocessTable, formatTable } from '../view/formatTable'
 import { deleteResourceButton } from '../view/modes/crud'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
+import helmGet from './helm/get'
 
 import repl = require('@kui-shell/core/core/repl')
-
-const debug = Debug('k8s/controller/kubectl')
-debug('loading')
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends ExecOptions {
@@ -77,9 +77,10 @@ const kubelike = /kubectl|oc/
 const isKubeLike = (command: string): boolean => kubelike.test(command)
 
 /** lazily load js-yaml and invoke its yaml parser */
-const parseYAML = async (str: string): Promise<KubeResource> => {
-  const { safeLoad } = await import('js-yaml')
-  return safeLoad(str)
+const parseYAML = async (str: string): Promise<KubeResource | KubeResource[]> => {
+  const { safeLoadAll } = await import('js-yaml')
+  const yamls = safeLoadAll(str)
+  return yamls.length === 1 ? yamls[0] : yamls
 }
 
 /**
@@ -630,6 +631,17 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         }
 
         const yaml = verb === 'get' && (await parseYAML(out))
+
+        if (Array.isArray(yaml)) {
+          const { safeDump } = await import('js-yaml')
+          cleanupAndResolve({
+            type: 'custom',
+            content: safeDump(yaml),
+            contentType: 'yaml'
+          })
+          return
+        }
+
         const subtext = createdOn(yaml)
 
         // sidecar badges
@@ -666,7 +678,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
         const record = {
           type: 'custom',
-          isEntity: true,
+          isEntity: yaml && yaml.metadata !== undefined,
           name: entity || verb,
           packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || '',
           namespace: options.namespace || options.n,
@@ -708,7 +720,15 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       } else if (formatters[command] && formatters[command][verb]) {
         debug('using custom formatter')
         cleanupAndResolve(
-          formatters[command][verb].format(command, verb, entityType, options, out, opts.createOutputStream())
+          formatters[command][verb].format(
+            command,
+            verb,
+            entityType,
+            options,
+            out,
+            opts.createOutputStream(),
+            execOptions
+          )
         )
       } else if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
         //
@@ -751,7 +771,16 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
  *
  */
 const kubectl = executeLocally('kubectl')
-const helm = executeLocally('helm')
+export const _helm = executeLocally('helm')
+
+function helm(opts: EvaluatorArgs) {
+  const idx = opts.argvNoOptions.indexOf('helm')
+  if (opts.argvNoOptions[idx + 1] === 'get') {
+    return helmGet(opts)
+  } else {
+    return _helm(opts)
+  }
+}
 
 /**
  * Delegate 'k8s <verb>' to 'kubectl verb'

@@ -35,7 +35,7 @@ import { KubeResource, Resource } from '../model/resource'
 import { redactYAML } from '../view/redact'
 import { statusButton } from '../view/modes/status'
 import { formatEntity } from '../view/formatEntity'
-import { generateForm } from '../view/form'
+import generateForm from '../view/form'
 
 import repl = require('@kui-shell/core/core/repl')
 
@@ -217,7 +217,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
   } else if (yamls.length > 1 && !resource) {
     return showAsTable(yamls, filepathAsGiven, parsedOptions)
   } else {
-    const yamlIdx = !resource ? 0 : yamls.findIndex(({ metadata: { name } }) => name === resource)
+    const yamlIdx = !resource ? 0 : yamls.findIndex(({ metadata }) => metadata && metadata.name === resource)
     if (yamlIdx < 0) {
       throw new Error('Cannot find the specified resource')
     } else {

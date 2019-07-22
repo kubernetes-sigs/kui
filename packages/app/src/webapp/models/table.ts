@@ -172,7 +172,7 @@ export function isMultiTable(model: Entity): model is MultiTable {
     model !== undefined &&
     (model as MultiTable).tables !== undefined &&
     Array.isArray((model as MultiTable).tables) &&
-    (model as MultiTable).tables.length > 1 &&
+    (model as MultiTable).tables.length >= 1 &&
     (model as MultiTable).tables.filter(table => !isTable(table)).length === 0
   )
 }

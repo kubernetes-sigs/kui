@@ -374,6 +374,7 @@ export const generateForm = (tab: Tab) => (
   const modes: SidecarMode[] = [
     {
       mode: 'save',
+      label: 'Save',
       flush: 'right',
       actAsButton: true,
       direct: doSave(tab, form, yaml, filepath, onSave),
@@ -381,6 +382,7 @@ export const generateForm = (tab: Tab) => (
     },
     {
       mode: 'revert',
+      label: 'Revert',
       flush: 'right',
       actAsButton: true,
       direct: () => form.reset(),
@@ -406,3 +408,5 @@ export const generateForm = (tab: Tab) => (
     resource: yaml
   }
 }
+
+export default generateForm

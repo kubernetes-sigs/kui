@@ -50,6 +50,7 @@ const updatedResourceName = updatedContent.metadata.name
 
 const singleParagraphFilepath = join(ROOT, 'data', 'k8s', 'single-paragraph.yaml')
 const trailingEmptyFilepath = join(ROOT, 'data', 'k8s', 'trailing-dash-dash-dash.yaml')
+const noMetadataFilepath = join(ROOT, 'data', 'k8s', 'multi-no-metadata.yaml')
 
 /** get the monaco editor text */
 const getValue = async (app: Application): Promise<string> => {
@@ -204,6 +205,13 @@ describe('electron kedit', function(this: common.ISuite) {
     cli
       .do(`kedit "${trailingEmptyFilepath}"`, this.app)
       .then(cli.expectOKWith('details-v1'))
+      .catch(common.oops(this)))
+
+  // multi-paragraph yaml where one paragraph has no metadata
+  it('should kedit a multi-paragraph yaml with no metadata', () =>
+    cli
+      .do(`kedit "${noMetadataFilepath}"`, this.app)
+      .then(cli.expectOKWith('test-release-mysql-test'))
       .catch(common.oops(this)))
 
   // make sure editing without saving works

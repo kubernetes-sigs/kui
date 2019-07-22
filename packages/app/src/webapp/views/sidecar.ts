@@ -353,6 +353,7 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
   contentType?: string
   contentTypeProjection?: string
   resource?: MetadataBearing
+  createdOnString?: string
 }
 
 /**
@@ -498,10 +499,16 @@ export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, b
   if (clear) {
     clearBadges(tab)
   }
-  if (entity.version) {
-    addBadge(tab, /^v/.test(entity.version) ? entity.version : `v${entity.version}`, { badgesDom }).classList.add(
-      'version'
-    )
+
+  if (isMetadataBearing(entity)) {
+    const version = (entity as MetadataBearing).metadata.generation
+    addBadge(tab, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
+  }
+
+  const version = entity.version || (isMetadataBearingByReference(entity) && entity.resource.metadata.generation)
+
+  if (version) {
+    addBadge(tab, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
   }
 }
 
@@ -562,9 +569,10 @@ export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement)
 }
 
 /** format the creation time of a resource */
-const createdOn = (resource: MetadataBearing): HTMLElement => {
+const createdOn = (resource: MetadataBearing, entity: CustomSpec): HTMLElement => {
   const startTime = /* resource.status && resource.status.startTime || */ resource.metadata.creationTimestamp
-  const prefixText = /* resource.status && resource.status.startTime ? 'Started on ' : */ 'Created on '
+  const prefixText =
+    /* resource.status && resource.status.startTime ? 'Started on ' : */ entity.createdOnString || 'Created on '
 
   if (!startTime) {
     return
@@ -605,7 +613,7 @@ export const addNameToSidecarHeader = async (
   // mine for identifying characteristics
   const metadataBearer = isMetadataBearingByReference(entity) ? entity.resource : isMetadataBearing(entity) && entity
   if (metadataBearer) {
-    const maybeName = metadataBearer.spec && (metadataBearer.spec.displayName || metadataBearer.metadata.name)
+    const maybeName = (metadataBearer.spec && metadataBearer.spec.displayName) || metadataBearer.metadata.name
     if (maybeName) {
       name = maybeName
     }
@@ -619,7 +627,7 @@ export const addNameToSidecarHeader = async (
     if (!subtext) {
       // if we weren't given a "subtext", and we find legitimate
       // "created on" metadata, then show that as the subtext
-      const maybe = createdOn(metadataBearer)
+      const maybe = createdOn(metadataBearer, isCustomSpec(entity) && entity)
       if (maybe) {
         subtext = maybe
       }
@@ -647,7 +655,7 @@ export const addNameToSidecarHeader = async (
       const nameContainer = element('.entity-name', nameDom)
       nameContainer.innerText = name
     }
-  } else {
+  } else if (name) {
     const nameContainer = nameDom.querySelector('.entity-name')
     removeAllDomChildren(nameContainer)
     nameContainer.appendChild(name)

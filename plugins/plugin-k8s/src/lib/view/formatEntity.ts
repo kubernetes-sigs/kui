@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+
 import eventBus from '@kui-shell/core/core/events'
+import { ParsedOptions } from '@kui-shell/core/models/execOptions'
 
 import { toOpenWhiskFQN } from '../util/util'
-import { ParsedOptions } from '@kui-shell/core/models/execOptions'
 import { FinalState, watchStatus, rendering as stateRendering } from '../model/states'
 
-const debug = require('debug')('k8s/util/formatEntity')
+const debug = Debug('k8s/util/formatEntity')
 
 /**
  * Make a kube context attribute
@@ -43,6 +45,10 @@ export const formatContextAttr = (context: string, extraCSS?: string) => {
 export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => async kubeEntity => {
   debug('formatEntity', kubeEntity)
 
+  if (!kubeEntity.metadata) {
+    return kubeEntity
+  }
+
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
 
   const {
@@ -54,9 +60,9 @@ export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => 
   const { cssForState } = stateRendering
 
   // masquerade: allows the spec to override/pretty-print certain fields
-  const title = annotations['seed.ibm.com/title']
-  const targetNamespace = annotations['seed.ibm.com/targetNamespace']
-  const masqueradeKind = annotations['seed.ibm.com/category']
+  const title = annotations && annotations['kui.tools/title']
+  const targetNamespace = annotations && annotations['kui.tools/targetNamespace']
+  const masqueradeKind = annotations && annotations['kui.tools/category']
 
   const kindForDisplay = masqueradeKind || kind
 

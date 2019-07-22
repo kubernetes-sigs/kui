@@ -324,7 +324,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   } else if (typeof name === 'string') {
     entityNameClickable.title = name
     entityNameClickable.innerText = isHeaderCell ? name.toLowerCase() : name
-  } else {
+  } else if (name) {
     entityNameClickable.appendChild(name)
   }
 
