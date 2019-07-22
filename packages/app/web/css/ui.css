@@ -955,10 +955,14 @@ body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-st
   color: #303131;
   height: 24px;
   display: flex;
+  padding: 0 1em;
 }
 .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
   display: flex;
   flex: 1;
+}
+.sidecar-bottom-stripe-toolbar .fill-container.flush-right > * + * {
+  margin-left: 1em;
 }
 
 /* custom content */
@@ -2609,9 +2613,6 @@ sidecar.minimized .sidecar-bottom-stripe-button.sidecar-bottom-stripe-close {
   padding: 1ex 0;
   margin: 0;
   text-align: center;
-}
-.sidecar-bottom-stripe-button-as-button {
-  font-weight: bold;
 }
 sidecar.minimized .graphical-icon {
   justify-content: center;
