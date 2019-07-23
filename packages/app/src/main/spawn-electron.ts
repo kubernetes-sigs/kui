@@ -174,6 +174,7 @@ export function createWindow(
       // BrowserWindow opts doesn't stick; and... this has to be on
       // did-finish-load, for some reason... at least these are true
       // statements for electron 1.6.x
+      const isDarkMode = Electron.systemPreferences.isDarkMode()
       const productName = (await import('@kui-shell/settings/config.json')).theme.productName
 
       if (mainWindow) {
@@ -183,7 +184,7 @@ export function createWindow(
       if (mainWindow) {
         try {
           const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support/lib/cmds/theme')
-          switchToPersistedThemeChoice(mainWindow.webContents)
+          switchToPersistedThemeChoice(mainWindow.webContents, isDarkMode)
         } catch (err) {
           debug('theme support not found', err)
           const { theme, env } = await import('@kui-shell/core/core/settings')
@@ -279,7 +280,7 @@ export function createWindow(
     //
     // set up ipc from renderer
     //
-    const { ipcMain } = electron
+    const { ipcMain } = Electron
 
     //
     // take a screenshot; note that this has to be done in the main
@@ -293,8 +294,8 @@ export function createWindow(
     debug('ipc registration')
     ipcMain.on('capture-page-to-clipboard', (event, contentsId: string, rect) => {
       try {
-        const { clipboard, nativeImage, webContents } = electron
-        webContents.fromId(contentsId).capturePage(rect, image => {
+        const { clipboard, nativeImage, webContents } = Electron
+        webContents.fromId(parseInt(contentsId, 10)).capturePage(rect, image => {
           try {
             const buf = image.toPNG()
             clipboard.writeImage(nativeImage.createFromBuffer(buf))
