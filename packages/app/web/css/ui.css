@@ -953,7 +953,7 @@ body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-st
 .sidecar-bottom-stripe-toolbar {
   background-color: #d8dce3;
   color: #303131;
-  height: 24px;
+  height: 1.5em;
   display: flex;
   padding: 0 1em;
 }
