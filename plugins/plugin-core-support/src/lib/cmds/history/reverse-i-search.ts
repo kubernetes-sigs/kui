@@ -28,6 +28,7 @@ import {
 } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+
 const debug = Debug('core-support/history/reverse-i-search')
 
 interface KeyboardEventPlusPlus extends KeyboardEvent {
@@ -236,7 +237,9 @@ function registerListener() {
       // if we aren't focused on a repl input, don't bother
     } else if (
       evt.ctrlKey &&
-      (process.platform === 'darwin' || ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
+      (process.platform === 'darwin' ||
+        /Macintosh/.test(navigator.userAgent) ||
+        ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
     ) {
       const tab = getTabFromTarget(evt.srcElement)
       const activeSearch = tab['_kui_active_i_search']
