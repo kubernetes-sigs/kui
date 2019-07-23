@@ -26,8 +26,8 @@ import * as historyModel from '@kui-shell/core/models/history'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import * as repl from '@kui-shell/core/core/repl'
+
 const debug = Debug('plugins/core-support/history')
-debug('loading')
 
 const DEFAULT_HISTORY_N = 20
 
@@ -170,6 +170,7 @@ export default (commandTree: CommandRegistrar) => {
 
   commandTree.listen('/history', showHistory, {
     usage: usage.history,
+    inBrowserOk: true,
     noAuthOk: true
   })
 
@@ -184,10 +185,12 @@ export default (commandTree: CommandRegistrar) => {
   }
   const cmd = commandTree.listen('/!!', againCmd(), {
     usage: usage.again('!!'),
+    inBrowserOk: true,
     noAuthOk: true
   })
   commandTree.synonym('/again', againCmd(), cmd, {
     usage: usage.again('again'),
+    inBrowserOk: true,
     noAuthOk: true
   })
 }
