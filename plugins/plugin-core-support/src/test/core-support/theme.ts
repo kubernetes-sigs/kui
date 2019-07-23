@@ -28,7 +28,7 @@ const resetTheme = (ctx: ISuite) => {
     cli
       .do('theme current', ctx.app)
       .then(cli.expectOKWithString('default theme'))
-      .then(() => ctx.app.client.waitForExist('body[kui-theme="Light"]')) // Light being the default
+      .then(() => ctx.app.client.waitForExist('body[kui-theme="Dark"]')) // Dark being the default
       .catch(oops(ctx)))
 }
 
@@ -139,6 +139,7 @@ describe('theme switching', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
+  resetTheme(this)
   clickOnThemeButtonThenClickOnLight(this)
   clickOnThemeButtonThenClickOnDark(this)
   clickOnThemeButtonThenClickOnLight(this, 3) // click on Light 3 times in a row
@@ -165,16 +166,17 @@ describe('theme switching', function(this: ISuite) {
       .catch(oops(this)))
 
   resetTheme(this)
-  reloadAndThenLight(this)
+  reloadAndThenDark(this) // because Dark is default
 
-  goDark(this)
-  restartAndThenDark(this)
-
-  resetTheme(this)
-  reloadAndThenLight(this)
+  goLight(this)
   restartAndThenLight(this)
 
+  resetTheme(this)
+  reloadAndThenDark(this) // because Dark is default
+  restartAndThenDark(this) // because Dark is default
+
   // switch back and forth without restart
+  goLight(this)
   goDark(this)
   goLight(this)
   goDark(this)
