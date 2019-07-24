@@ -32,6 +32,7 @@ const viewName = 'Trace View'
  * Turn a key->value map into a '--key1 value1 --key2 value2' cli opt string
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapToOptions = (baseMap: Record<string, any>, overrides = {}) => {
   const map = Object.assign({}, baseMap, overrides)
   return Object.keys(map).reduce((opts, key) => {
