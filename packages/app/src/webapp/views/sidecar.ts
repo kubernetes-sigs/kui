@@ -674,7 +674,6 @@ export const addNameToSidecarHeader = async (
   }
 
   const toolbarTextContainer = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', sidecar)
-  const toolbarTextIcon = element('.sidecar-toolbar-text-icon', toolbarTextContainer)
   const toolbarTextContent = element('.sidecar-toolbar-text-content', toolbarTextContainer)
   if (isCustomSpec(entity) && entity.toolbarText) {
     toolbarTextContent.innerText = entity.toolbarText.text
