@@ -1,0 +1,21 @@
+{
+  "versionUsageTitle": "Version Information",
+  "versionUsageHeader": "Print the current version of the Shell",
+  "versionUsageOptionalDocs": "also check for updates",
+  "helpUsageTitle": "Getting Started",
+  "helpUsageHeader": "A summary of the top-level command structure",
+  "screenshotUsageTitle": "Capture screenshot",
+  "screenshotUsageHeader": "Capture a screenshot, optionally specifying which region of the window to capture.",
+  "screenshotSidecarUsageDocs": "capture the sidecar contents",
+  "screenshotReplUsageDocs": "capture the REPL contents",
+  "screenshotLastUsageDocs": "capture the REPL output of the last command",
+  "screenshotFullUsageDocs": "capture the entire page, including header",
+  "screenshotUsageDocs": "capture the entire page, except for header",
+  "screenshotWhichUsageDocs": "the region to capture",
+  "screenshotNUsageDocs": "the nth region to capture",
+  "currentTheme": "You are using the default theme",
+  "themesUsageDocs": "List available themes",
+  "themeResetUsageDocs": "Reset to default theme",
+  "themeSetUsageDocs": "Set the current theme",
+  "themeSetUsageRequiredDocs": "The name of a theme to use"
+}

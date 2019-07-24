@@ -1,0 +1,22 @@
+{
+  "startedOn": "Started on",
+  "createdOn": "Created on",
+  "sidecarToolbarText": "You are in read-only view mode",
+  "contextsTableTitle": "Kubernetes Contexts",
+  "deleteButtonBalloon": "Delete this resource",
+  "createButtonBalloon": "Create this resource",
+  "summarySidecarMode": "summary",
+  "lastAppliedSidecarMode": "last applied",
+  "previousSidecarMode": "previous",
+  "latestSidecarMode": "Latest",
+  "status": "status",
+  "saveSidecarMode": "save",
+  "revertSidecarMode": "revert",
+  "allTableTitle": "all",
+  "keditUsageRequiredDocs": "A kubernetes resource file or kind",
+  "keditUsageDocs": "Edit a resource definition file",
+  "keditUsageOptionalDocs": "a resource within the file to view",
+  "conditions": "conditions",
+  "logs": "logs",
+  "containers": "containers"
+}
