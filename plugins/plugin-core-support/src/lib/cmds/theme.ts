@@ -150,8 +150,7 @@ const list = async () => {
     type: 'theme',
     noSort: true,
     header,
-    body,
-    style: TableStyle.Light
+    body
   })
 }
 

@@ -585,12 +585,16 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
   animation: selected-pulse 300ms 3;
   transition: all 150ms ease-in-out;
 }
-.row-selection-context:not(.selected-row) .selected-entity {
-  opacity: 0.1;
-  transition: opacity 300ms ease-in-out;
+.row-selection-context .selected-entity svg path {
+  transition: fill 300ms ease-in-out;
 }
-.row-selection-context:not(.selected-row):hover .selected-entity {
-  opacity: 0.5;
+.row-selection-context:not(.selected-row) .selected-entity svg path {
+  fill: var(--color-text-02) !important;
+}
+.row-selection-context:not(.selected-row) .selected-entity:not(:hover) .kui--radio-checked svg,
+.row-selection-context:not(.selected-row) .selected-entity:hover .kui--radio-unchecked svg,
+.row-selection-context.selected-row .selected-entity .kui--radio-unchecked svg {
+  display: none;
 }
 
 .entity:first-child .entity-attributes > span {
@@ -665,6 +669,14 @@ body.subwindow .repl .log-lines {
    (.result-table-with-custom-entity-colors) the client has requested
    control over entity colors */
   color: var(--color-name);
+}
+.repl-result:not(.result-table-with-custom-entity-colors)
+  .entity-name-group:not(.header-cell)
+  .entity-name[data-key="NAME"]
+  svg
+  path {
+  /* same as the previous rule, but for svg icons */
+  fill: var(--color-name);
 }
 .log-field .entity-name {
   direction: rtl;
