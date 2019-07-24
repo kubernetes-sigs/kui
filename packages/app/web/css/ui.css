@@ -367,6 +367,7 @@ body.in-electron .repl .repl-block:not(.using-custom-prompt) .repl-prompt-righty
   border-left-color: var(--color-processing);
 }
 repl .repl-block.using-custom-prompt .repl-prompt-righty > svg,
+repl .repl-block.using-custom-prompt .repl-prompt-righty > i,
 repl .repl-block.using-custom-prompt .repl-context {
   display: none;
 }
