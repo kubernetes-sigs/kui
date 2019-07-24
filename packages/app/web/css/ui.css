@@ -252,6 +252,9 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   text-transform: capitalize;
   letter-spacing: 0.32px;
 }
+.header-cell svg path {
+  fill: var(--color-text-against-dark-bg);
+}
 .result-table:not([kui-table-style="Light"]) .header-cell .cell-inner {
   padding: 0 0.6875em;
 }
@@ -588,6 +591,9 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
 .row-selection-context .selected-entity svg path {
   transition: fill 300ms ease-in-out;
 }
+.row-selection-context.selected-row .selected-entity svg path {
+  fill: var(--color-name) !important;
+}
 .row-selection-context:not(.selected-row) .selected-entity svg path {
   fill: var(--color-text-02) !important;
 }
@@ -638,7 +644,9 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.repl.sidecar-visible .result-table .entity-name-group:first-child:not(.entity-name-group-narrow):not(.not-a-name) {
+.repl.sidecar-visible
+  .result-table
+  .entity-name-group:first-child:not(.entity-name-group-narrow):not(.entity-name-group-extra-narrow):not(.not-a-name) {
   /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
   width: 100%;
   max-width: 0; /* important! 0 not 0% */

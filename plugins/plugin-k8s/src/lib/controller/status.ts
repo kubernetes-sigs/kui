@@ -36,10 +36,6 @@ const debug = Debug('k8s/controller/status')
 debug('loading')
 import repl = require('@kui-shell/core/core/repl')
 
-/** icon to indicate "is a cluster" */
-const fontawesome = 'fas fa-network-wired'
-const fontawesomeCSS = 'selected-entity'
-
 const strings = {
   allContexts: 'Resources Across All Contexts',
   currentContext: 'This is your current context',
@@ -89,8 +85,6 @@ const usage = (command: string) => ({
 interface HeaderRow {
   title?: string
   context?: boolean
-  fontawesome?: string
-  fontawesomeCSS?: string
   balloon?: string
   tableCSS?: string
 }
@@ -127,7 +121,6 @@ const headerRow = (opts: HeaderRow, kind?: string): Row => {
     outerCSS: 'header-cell',
     // flexWrap: 10,
     title: opts.title && basename(opts.title).replace(/\.yaml$/, ''),
-    fontawesomeBalloon: opts.balloon,
     attributes
   })
 }
@@ -292,8 +285,6 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
               return [
                 headerRow({
                   title: name,
-                  fontawesome,
-                  fontawesomeCSS,
                   balloon,
                   tableCSS
                 })
@@ -317,8 +308,6 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
         title: parsedOptions.all ? strings.allContexts : await currentContext,
         context: true,
         tableCSS: 'selected-row',
-        fontawesome,
-        fontawesomeCSS,
         balloon: strings.currentContext
       })
       return [header].concat(resources)
@@ -610,18 +599,13 @@ const statusTable = entities => {
     const header: Row = {
       name: headerRow.name,
       attributes: headerRow.attributes,
-      outerCSS: headerRow.outerCSS,
-      fontawesome: headerRow.fontawesome,
-      fontawesomeCSS: headerRow.fontawesomeCSS
+      outerCSS: headerRow.outerCSS
     }
 
     return new Table({
       title: headerRow.title,
       noSort: headerRow.noSort,
       tableCSS: headerRow.tableCSS,
-      fontawesome,
-      fontawesomeCSS,
-      fontawesomeBalloon: headerRow.fontawesomeBalloon,
       header,
       body: entitiesRows
     })
