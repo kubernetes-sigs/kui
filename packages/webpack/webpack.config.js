@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,6 @@ if (isMonorepo) {
 } else {
   console.log('external client mode')
 }
-
-// const Visualizer = require('webpack-visualizer-plugin')
 
 /** point webpack to the root directory */
 const stageDir = process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd()
@@ -99,9 +97,6 @@ if (CompressionPlugin) {
 const optimization = {
   usedExports: true
 }
-
-// for debugging, webpack stats plugin
-/* plugins.push(new Visualizer({ filename: './webpack-stats.html' })) */
 
 // the Kui builder plugin
 plugins.push({
