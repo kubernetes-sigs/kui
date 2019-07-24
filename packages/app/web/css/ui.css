@@ -3049,10 +3049,11 @@ badge.clickable:not(.badge-as-fontawesome):hover {
 body[kui-theme-style="dark"] .sidecar-bottom-stripe {
   color: var(--color-text-01);
 }
-.sidecar-window-buttons .sidecar-bottom-stripe-button:first-child > span:first-child {
-  border-left: 1px solid var(--color-table-border1);
+.sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
+  border-right: 1px solid var(--color-table-border1);
 }
 .sidecar-bottom-stripe-right-bits,
+.sidecar-non-window-buttons,
 .sidecar-window-buttons {
   display: flex;
 }
