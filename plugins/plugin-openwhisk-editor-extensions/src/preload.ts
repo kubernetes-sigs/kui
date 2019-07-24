@@ -53,8 +53,9 @@ export default async () => {
     const unlock = lockIcon({
       getEntity,
       mode: 'unlock',
-      icon: 'fas fa-lock',
-      tooltip: 'You are in read-only mode.\u000aClick to edit.', // TODO externalize string
+      label: 'Edit',
+      // icon: 'fas fa-lock',
+      tooltip: 'Click to edit', // TODO externalize string
       direct: edit({
         getEntity,
         lock: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })

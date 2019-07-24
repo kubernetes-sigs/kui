@@ -29,12 +29,7 @@ export const respondToRepl = (extraModes = [], displayOptions = []) => ({ getEnt
   displayOptions: [`entity-is-${getEntity().type}`, 'edit-mode'].concat(displayOptions),
   badges: [{ title: language(getEntity().exec.kind), css: 'is-kind-like' }],
   noZoom: true,
-  modes: extraModes
-    .map(modeFn => modeFn({ getEntity, editor, eventBus }))
-    .concat([
-      save({ getEntity, editor, eventBus }),
-      revert({ getEntity, editor, eventBus })
-      // tidy({getEntity, editor, eventBus})
-      // readonly({getEntity, editor, eventBus})
-    ])
+  modes: [save({ getEntity, editor, eventBus }), revert({ getEntity, editor, eventBus })].concat(
+    extraModes.map(modeFn => modeFn({ getEntity, editor, eventBus }))
+  )
 })

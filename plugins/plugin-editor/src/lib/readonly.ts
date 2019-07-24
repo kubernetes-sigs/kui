@@ -52,18 +52,16 @@ export const edit = ({ getEntity, lock = undefined }) => async (tab: Tab) => {
 export const lockIcon = ({
   getEntity,
   mode = 'lock', // doesn't need to be translated, as we use an icon
-  icon = 'fas fa-unlock-alt',
-  tooltip = 'You are in edit mode.\u000aClick to return to view mode.', // TODO externalize string
+  label = 'Done Editing',
+  // icon = 'fas fa-unlock-alt',
+  tooltip = 'Return to read-only mode', // TODO externalize string
   direct = gotoReadonlyLocalFile({ getEntity })
 }) => ({
   mode,
+  label,
   flush: 'weak', // if we have only flush:right buttons, don't let this keep us from snapping them left
   actAsButton: true,
-  fontawesome: icon,
-  data: {
-    'data-balloon': tooltip,
-    'data-balloon-break': true,
-    'data-balloon-pos': 'up-left'
-  },
+  // fontawesome: icon,
+  balloon: tooltip,
   direct
 })

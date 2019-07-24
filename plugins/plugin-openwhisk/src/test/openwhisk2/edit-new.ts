@@ -81,7 +81,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
       .do('new foo2', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo2'))
+      .then(sidecar.expectShowing('foo2\n*'))
       .then(() => setValue(this.app.client, 'let main = x => x', 'new')) // edit the action content
       .then(deploy(this.app, 'foo2'))
       .catch(common.oops(this)))
@@ -171,7 +171,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
       .do('new foo3 --kind python', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo3'))
+      .then(sidecar.expectShowing('foo3\n*'))
       .then(deploy(this.app, 'foo3'))
       .catch(common.oops(this)))
   /* it('should invoke the new python action, with implicit entity', () => cli.do('invoke', this.app)
