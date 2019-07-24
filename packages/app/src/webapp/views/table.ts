@@ -295,10 +295,26 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
   // click handler for the list result
   if (entity.fontawesome) {
-    const icon = document.createElement('i')
-    entityNameClickable.appendChild(icon)
-    icon.className = entity.fontawesome
-    icon.classList.add('cell-inner')
+    if (/fa-check/.test(entity.fontawesome)) {
+      // the first svg is radio-checked; the second is
+      // radio-unchecked; we will use css to swap between the two,
+      // governed by either :hover or .selected-row
+      const icon1 = document.createElement('i')
+      const icon2 = document.createElement('i')
+      icon1.innerHTML =
+        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"></path><path d="M16 10a6 6 0 1 0 6 6 6 6 0 0 0-6-6z"></path></svg>'
+      icon2.innerHTML =
+        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"></path></svg>'
+      icon1.classList.add('kui--radio-checked')
+      icon2.classList.add('kui--radio-unchecked')
+      entityNameClickable.appendChild(icon1)
+      entityNameClickable.appendChild(icon2)
+    } else {
+      const icon = document.createElement('i')
+      entityNameClickable.appendChild(icon)
+      icon.classList.add('cell-inner')
+      icon.className = entity.fontawesome
+    }
   } else if (typeof name === 'string') {
     entityNameClickable.title = name
     entityNameClickable.innerText = isHeaderCell ? name.toLowerCase() : name
