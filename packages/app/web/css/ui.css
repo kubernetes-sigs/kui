@@ -989,11 +989,10 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   height: 1.5em;
   display: flex;
   align-items: center;
-  padding: 0 1em;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:empty,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
-  display: none;
+  display: none !important;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon,
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
@@ -1002,6 +1001,7 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon {
   margin-right: 0.5em;
   margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
+  padding-left: 1em;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon > svg {
   display: none;
@@ -1035,6 +1035,7 @@ sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
   fill: var(--color-sidecar-toolbar-foreground);
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
+  padding: 0 1em;
   display: flex;
   flex: 1;
 }

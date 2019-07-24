@@ -296,7 +296,8 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
           namePart.innerText = entity.name
           nameDiv.className = 'is-modified-wrapper'
           isModifiedPart.className = 'is-modified-indicator'
-          isModifiedIcon.className = 'fas fa-asterisk'
+          isModifiedIcon.className = 'fas fa-asterisk larger-text'
+          isModifiedIcon.innerText = '*'
           isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
           isModifiedPart.setAttribute('data-balloon-pos', 'left')
 
