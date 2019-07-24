@@ -282,7 +282,7 @@ export const formatTable = (
       return {
         key: rows[0].key,
         name: nameForDisplay,
-        fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-network-wired',
+        fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         css: firstColumnCSS,
         rowCSS,
