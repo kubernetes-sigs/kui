@@ -159,8 +159,6 @@ module.exports = {
     'chokidar',
     'fsevents',
     'shelljs',
-    'lodash',
-    'async',
     'module',
     'net',
     'webworker-threads', // wskflow
