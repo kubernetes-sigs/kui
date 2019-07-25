@@ -77,7 +77,7 @@ body.no-tooltips-anywhere [data-balloon]:after {
 #screenshot-captured {
   position: absolute;
   bottom: 1em;
-  right: 1em;
+  transition: right 500ms ease-out;
   width: 25em;
   height: 6.5em;
   z-index: 5;
@@ -89,7 +89,12 @@ body.no-tooltips-anywhere [data-balloon]:after {
   font-style: normal;
   font-weight: normal;
   line-height: 0.875em;
-  transition: all 150ms ease-in-out;
+}
+.screenshot-hide {
+  right: -100%;
+}
+.screenshot-active {
+  right: 1em;
 }
 
 #screenshot-captured .sidecar-bottom-stripe {
