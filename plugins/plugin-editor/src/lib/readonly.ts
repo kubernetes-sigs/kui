@@ -28,7 +28,7 @@ const debug = Debug('plugins/editor/readonly')
 export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: Tab) => {
   const entity = await getEntity(tab)
   debug('readonly', entity.name, entity)
-  return repl.pexec(`open ${repl.encodeComponent(entity.name)}`)
+  return repl.pexec(`open ${repl.encodeComponent(entity.filepath)}`)
 }
 
 /**
