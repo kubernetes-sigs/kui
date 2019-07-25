@@ -104,8 +104,7 @@ const editCmd = async ({
 
   // respond with a repl-compatible data model
   const custom = execOptions.custom
-  const lock =
-    (custom && custom.lock) || (entity.lock !== undefined ? entity.lock : entity.gotoReadonlyView || defaultLock)
+  const lock = (custom && custom.lock) || (entity.lock !== undefined ? entity.lock : entity.gotoReadonlyView)
   return respondToRepl(lock ? [lock] : [])(model)
 }
 
