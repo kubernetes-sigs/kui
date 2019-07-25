@@ -147,7 +147,7 @@ describe('electron describe', function(this: common.ISuite) {
           const newResourceSelector = await cli.expectOKWithCustom({
             selector: selectors.BY_NAME('nginx')
           })({ app: res.app, count: res.count + 1 })
-          const expectOffline = `${newResourceSelector} span:not(.repeating-pulse)`
+          const expectOffline = `${newResourceSelector} td:not(.repeating-pulse)`
           await waitForRed(this.app, expectOffline)
         })
         .catch(common.oops(this))

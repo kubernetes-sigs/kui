@@ -170,15 +170,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .repl-input input {
   font-family: var(--font-monospace);
 }
-.result-as-table .result-table {
-  display: table;
-  border-spacing: 0;
-  border-collapse: collapse;
-  border: 1px solid var(--color-ui-04);
-  margin-top: 0.75em;
-  /* this causes odd flickering on chrome: transition: border-color 300ms ease-in-out; */
-  background: transparent;
-}
 .result-as-fixed-tables .result-table,
 .result-as-fixed-tables.result-table {
   table-layout: fixed;
@@ -220,67 +211,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .scrollable-auto[data-table-max-rows="10"] {
   max-height: calc(10 * 3em + 2px);
 }
-.result-as-multi-table .result-table-outer {
-  display: table-cell;
-}
-.result-as-fixed-tables.result-as-table .result-table-outer {
-  /* if these are fixed tables, then they will occupy the full width of
-       the container, so we don't need a margin-right */
-  margin-right: 0;
-}
-.result-as-table .result-table-outer .result-table {
-  margin-top: 0;
-}
-.result-table-title-outer {
-  display: flex;
-  align-items: flex-end;
-  color: var(--color-name);
-  letter-spacing: 1px;
-  font-weight: 600;
-  padding: 0.6875em;
-  font-family: var(--font-sans-serif);
-}
-.result-as-multi-table .result-table-outer-wrapper:first-child .result-table-title-outer {
-  padding-top: 0;
-}
-.result-table-title {
-  flex: 1;
-  text-transform: uppercase;
-}
-.header-cell {
-  background-color: var(--color-ui-06);
-  text-transform: capitalize;
-  letter-spacing: 0.32px;
-}
-.header-cell svg path {
-  fill: var(--color-text-against-dark-bg);
-}
-.result-table:not([kui-table-style="Light"]) .header-cell .cell-inner {
-  padding: 0 0.6875em;
-}
-.header-cell:not(:first-child) .cell-inner {
-  border-left: 1px solid var(--color-table-border3);
-}
-.log-lines .header-cell,
-.result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell,
-.result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
-  border-bottom: 1px solid var(--color-content-divider);
-}
-.result-as-table-full-width .result-table {
-  border: none;
-}
-.result-as-table .repl-result {
-  /* repl table */
-  display: table;
-}
-.result-as-table.result-as-multi-table.result-as-multi-table-flex-wrap .repl-result {
-  display: flex;
-  align-items: flex-start;
-}
-.result-as-table-full-width .result-table,
-.result-as-table-full-width .log-lines {
-  width: 100%;
-}
 .repl-result {
   display: flex;
   flex-wrap: wrap;
@@ -294,19 +224,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 .repl.sidecar-visible p {
   white-space: normal;
-}
-.repl.sidecar-visible .result-as-table .repl-result {
-  /* repl multi-table when sidecar is visible */
-  width: 100%;
-}
-.repl.sidecar-visible .result-as-table .result-table,
-body.sidecar-is-minimized .result-as-table .result-table {
-  /* repl table when sidecar is visible */
-  width: 100%;
-}
-.repl .result-as-table .result-table {
-  /* repl table */
-  /* width: 100%; */
 }
 .repl-prompt {
   margin-right: 0.25em;
@@ -557,10 +474,6 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
   max-width: unset;
   margin-right: unset;
 }
-.sidecar-visible .result-table .entity {
-  /* in either one-column mode, or if the sidecar is visible, have list entries occupy a full row */
-  padding-right: 0;
-}
 .entity-rule-status {
   width: 7em;
 }
@@ -569,136 +482,6 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.result-table .entity {
-  display: table-row-group;
-}
-.entity-attributes {
-  display: table-row;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  height: 2.5em;
-}
-
-/* row selection */
-.row-selection-context.selected-row .selected-entity {
-  font-size: 1.25em;
-  color: var(--color-brand-03);
-  animation: selected-pulse 300ms 3;
-  transition: all 150ms ease-in-out;
-}
-.row-selection-context .selected-entity svg path {
-  transition: fill 300ms ease-in-out;
-}
-.row-selection-context.selected-row .selected-entity svg path {
-  fill: var(--color-name) !important;
-}
-.row-selection-context:not(.selected-row) .selected-entity svg path {
-  fill: var(--color-text-02) !important;
-}
-.row-selection-context:not(.selected-row) .selected-entity:not(:hover) .kui--radio-checked svg,
-.row-selection-context:not(.selected-row) .selected-entity:hover .kui--radio-unchecked svg,
-.row-selection-context.selected-row .selected-entity .kui--radio-unchecked svg {
-  display: none;
-}
-
-.entity:first-child .entity-attributes > span {
-  border-top: none;
-}
-.entity-attributes > span {
-  display: table-cell;
-  vertical-align: middle;
-  padding: 0.6875em;
-  transition: all 300ms ease-in-out;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.entity-attributes > span.header-cell {
-  padding-left: 0;
-  padding-right: 0;
-}
-.entity-attributes > span:not(.header-cell) {
-  border-bottom: 1px solid var(--color-table-border3);
-}
-.result-table[kui-table-style="Light"] .entity-attributes > span {
-  padding-left: 0.375em;
-  padding-right: 0.375em;
-}
-.entity .entity-kind {
-  width: 8em;
-}
-.entity .entity-narrow {
-  min-width: 5em;
-}
-.repl.sidecar-visible .entity .entity-narrow {
-  width: 5em;
-}
-.repl.sidecar-visible .repl-result .entity-name-group .entity-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.result-table .entity-name-group {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.repl.sidecar-visible
-  .result-table
-  .entity-name-group:first-child:not(.entity-name-group-narrow):not(.entity-name-group-extra-narrow):not(.not-a-name) {
-  /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
-  width: 100%;
-  max-width: 0; /* important! 0 not 0% */
-  min-width: 5em;
-}
-.result-table .entity-name-group-narrow {
-  max-width: 16em;
-}
-.result-table .entity-name-group-extra-narrow {
-  max-width: 10em;
-}
-.repl.sidecar-visible .log-lines,
-body.subwindow .repl .log-lines {
-  table-layout: fixed;
-}
-.repl.sidecar-visible .result-table .entity-name-group-extra-narrow {
-  width: 9em;
-  max-width: initial;
-}
-.header-cell {
-  text-align: left; /* th defaults to text-align: center */
-}
-.repl-result:not(.result-table-with-custom-entity-colors)
-  .entity-name-group:not(.header-cell)
-  .entity-name[data-key="NAME"],
-.repl-result:not(.result-table-with-custom-entity-colors) .bold {
-  /* emphasize the entity name, unless
-   (.result-table-with-custom-entity-colors) the client has requested
-   control over entity colors */
-  color: var(--color-name);
-}
-.repl-result:not(.result-table-with-custom-entity-colors)
-  .entity-name-group:not(.header-cell)
-  .entity-name[data-key="NAME"]
-  svg
-  path {
-  /* same as the previous rule, but for svg icons */
-  fill: var(--color-name);
-}
-.log-field .entity-name {
-  direction: rtl;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 15em;
-}
-.repl-result .entity.activations .entity-name {
-  margin-left: 2em;
-  order: 2;
-  font-size: 80%;
-  opacity: 0.6;
-  flex: 1;
 }
 .repl-result .activationId {
   font-weight: 500;
@@ -709,8 +492,6 @@ body.subwindow .repl .log-lines {
   padding-top: 0;
   padding-left: 1em;
   order: 5;
-}
-.repl-result .entity.session.activations .entity-name {
 }
 
 .repl-result .activation-duration {
@@ -3009,18 +2790,6 @@ span[data-extra-decoration="application error"] {
   color: var(--color-name);
 }
 
-.result-table .entity:nth-child(2n + 1) td,
-.result-table .entity:nth-child(2n + 1) .entity-attributes {
-  /* table row striping */
-  background-color: var(--color-ui-02);
-  transition: background-color 300ms ease-in-out;
-}
-body sidecar .result-table .entity:nth-child(2n + 1) td,
-body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
-  /* table row striping in sidecar (when not full screen) */
-  background: var(--color-ui-03);
-}
-
 sidecar .sidecar-header badge.version {
   /* badge for action version */
   background-color: var(--color-tag-ibm-fill);
@@ -3407,52 +3176,6 @@ body {
   }
 }
 
-.result-table[kui-table-style="Light"] .entity-attributes > span,
-.result-table[kui-table-style="Medium"] .entity-attributes > span {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.result-as-table .result-table[kui-table-style="Light"],
-.result-as-table .result-table[kui-table-style="Medium"] {
-  border: none;
-  margin-top: 0;
-}
-.result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell,
-.result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
-  background: none;
-}
-.result-as-table .log-lines[kui-table-style="Light"] .log-line .log-line-bar-field,
-.repl .log-lines[kui-table-style="Light"] .log-line .log-field {
-  border: none;
-}
-.result-table[kui-table-style="Light"] .entity td,
-.result-table[kui-table-style="Medium"] .entity td {
-  background: none;
-}
-.log-lines[kui-table-style="Medium"] .log-line {
-}
-.result-table[kui-table-style="Light"] .entity .entity-attributes,
-.result-table[kui-table-style="Medium"] .entity .entity-attributes {
-  background: none !important;
-  height: 1.5em;
-}
-.result-table[kui-table-style="Medium"] .entity .entity-attributes,
-.log-lines[kui-table-style="Medium"] .log-line {
-  height: 2em;
-}
-[kui-table-style="Light"] .entity-attributes > span,
-[kui-table-style="Light"] .entity-attributes > span .cell-inner {
-  border: none;
-}
-[kui-table-style="Light"] badge {
-  height: 1.75em;
-  line-height: 1.75em;
-}
-.result-as-table .result-table-outer[kui-table-style="Light"] .result-table-title,
-.result-as-table .result-table-outer[kui-table-style="Medium"] .result-table-title {
-  padding-left: 0.75em;
-}
-
 @font-face {
   font-family: "SF Mono";
   font-weight: 200;
@@ -3596,4 +3319,31 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
 }
 .kui--input-stripe .repl-prompt-righty {
   font-size: 1.125em;
+}
+
+/* row selection */
+.row-selection-context.selected-row .selected-entity {
+  font-size: 1.25em;
+  color: var(--color-brand-03);
+  animation: selected-pulse 300ms 3;
+  transition: all 150ms ease-in-out;
+}
+.row-selection-context .selected-entity svg path {
+  transition: fill 300ms ease-in-out;
+}
+.row-selection-context.selected-row .selected-entity svg path {
+  fill: var(--color-name) !important;
+}
+.row-selection-context:not(.selected-row) .selected-entity svg path {
+  fill: var(--color-text-02) !important;
+}
+.row-selection-context:not(.selected-row) .selected-entity:not(:hover) .kui--radio-checked svg,
+.row-selection-context:not(.selected-row) .selected-entity:hover .kui--radio-unchecked svg,
+.row-selection-context.selected-row .selected-entity .kui--radio-unchecked svg {
+  display: none;
+}
+
+/* hide table titles by default; themes can choose to show them by overriding this rule */
+.result-table-title-outer {
+  display: none;
 }

@@ -26,23 +26,6 @@ body[kui-theme-style="dark"]
   border-bottom-color: var(--color-base05);
   opacity: 1;
 }
-sidecar .bx--tabs,
-sidecar .bx--tabs .bx--tabs__nav,
-sidecar .bx--tabs .bx--tabs__nav li {
-  width: unset;
-  min-height: unset;
-  position: unset;
-}
-sidecar a.bx--tabs__nav-link,
-sidecar a.bx--tabs__nav-link:active {
-  outline: none;
-  width: unset;
-  min-width: 8em;
-}
-li.bx--tabs__nav-item.sidecar-bottom-stripe-button,
-li.bx--tabs__nav-item.sidecar-bottom-stripe-button a {
-  flex: 1;
-}
 
 body[kui-theme-style] .bx--structured-list-th,
 body[kui-theme-style] .bx--structured-list-td {
