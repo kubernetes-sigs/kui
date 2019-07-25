@@ -989,6 +989,7 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   height: 1.5em;
   display: flex;
   align-items: center;
+  flex: 1;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
