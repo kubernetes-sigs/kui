@@ -93,7 +93,7 @@ describe('auth tests', function(this: common.ISuite) {
   // wsk auth list should so both installed namespaces
   ui.aliases.list.forEach(cmd => {
     const checkMarkCell = (ns: string) => `.entity.namespaces[data-name="${ns}"] .entity-name.clickable`
-    const nameCell = (ns: string) => `.entity.namespaces[data-name="${ns}"] > div > .clickable`
+    const nameCell = (ns: string) => `.entity.namespaces[data-name="${ns}"] > tr > .clickable`
 
     const ok = (ns: string) => {
       it(`should list namespace ${ns} and find checkmark cell with "wsk auth ${cmd}"`, async () => {

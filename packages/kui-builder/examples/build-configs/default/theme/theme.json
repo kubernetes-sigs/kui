@@ -47,9 +47,10 @@
       "css": "themes/tomorrow-night.css",
       "description": "Tomorrow Night",
       "style": "dark"
-    }
+    },
+    { "name": "Carbon gray10", "css": "themes/carbon-gray10.css", "style": "light" }
   ],
-  "css": ["_test.css"],
+  "css": ["_test.css", "kui-tables.css", "carbon-overrides.css"],
   "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Medium",

@@ -96,7 +96,7 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nCl
       await ctx.app.client.click('#tutorialPane .tutorial-content-command[data-command="themes"]')
 
       const checkMarkCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
-      const nameCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] > div > .clickable`
+      const nameCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] > tr > .clickable`
 
       await ctx.app.client.waitForVisible(checkMarkCell)
       await ctx.app.client.waitForVisible(nameCell)

@@ -1,0 +1,3 @@
+table.result-table[kui-table-style] th.header-cell {
+  text-transform: capitalize;
+}

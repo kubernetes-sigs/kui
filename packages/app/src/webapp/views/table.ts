@@ -218,7 +218,9 @@ const registerWatcher = (
  */
 export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
-  const dom = document.createElement('div')
+  const isHeaderCell = /header-cell/.test(entity.outerCSS)
+
+  const dom = document.createElement(isHeaderCell ? 'thead' : 'tbody')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
   dom.setAttribute('data-name', entity.name)
 
@@ -239,7 +241,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     dom.setAttribute('data-package-name', entity.packageName)
   }
 
-  const entityName = document.createElement('div')
+  const entityName = document.createElement('tr')
   entityName.className = 'entity-attributes row-selection-context'
   dom.appendChild(entityName)
 
@@ -251,9 +253,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     }
   }
 
-  const entityNameGroup = document.createElement('span')
+  const entityNameGroup = document.createElement(isHeaderCell ? 'th' : 'td')
   entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
-  const isHeaderCell = entityNameGroup.classList.contains('header-cell')
 
   // now add the clickable name
   if (isHeaderCell) {
@@ -270,6 +271,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   entityNameClickable.className = 'entity-name cell-inner'
   if (!isHeaderCell) {
     entityNameClickable.classList.add('clickable')
+  } else {
+    entityNameClickable.classList.add('bx--table-header-label')
   }
   if (entity.nameCss) {
     if (Array.isArray(entity.nameCss)) {
@@ -374,13 +377,17 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       tagClass
     } = theCell
 
-    const cell = document.createElement('span')
+    const cell = document.createElement(isHeaderCell ? 'th' : 'td')
     const inner = document.createElement(tag)
 
     cell.className = className
 
     inner.className = innerClassName
     inner.classList.add('cell-inner')
+    if (isHeaderCell) {
+      inner.classList.add('bx--table-header-label')
+    }
+
     if (tagClass) {
       inner.classList.add(tagClass)
     }
@@ -708,6 +715,18 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 }
 
 /**
+ * Carbon Components has its own classes of table compactness
+ *
+ */
+function adoptCarbonTableStyle(tableDom: HTMLElement) {
+  if (tableDom.getAttribute('kui-table-style') === 'Light') {
+    tableDom.classList.add('bx--data-table--compact')
+  } else if (tableDom.getAttribute('kui-table-style') === 'Medium') {
+    tableDom.classList.add('bx--data-table--short')
+  }
+}
+
+/**
  * Set the table style attribute for the given table container
  *
  */
@@ -717,6 +736,8 @@ function setStyle(tableDom: HTMLElement, table: Table) {
   } else if (theme.tableStyle) {
     tableDom.setAttribute('kui-table-style', theme.tableStyle)
   }
+
+  adoptCarbonTableStyle(tableDom)
 }
 
 // This helps multi-table view handler to use the the processed data from single-table view handler
@@ -734,8 +755,9 @@ export const formatTable = (
   options: TableFormatOptions = {}
 ) => {
   const format = (table: Table) => {
-    const tableDom = document.createElement('div')
+    const tableDom = document.createElement('table')
     tableDom.classList.add('result-table')
+    tableDom.classList.add('bx--data-table')
 
     let container: HTMLElement
     if (table.title) {
@@ -848,7 +870,7 @@ interface RowFormatOptions extends TableFormatOptions {
  *
  */
 export const formatOneListResult = (tab: Tab, options?) => entity => {
-  const dom = document.createElement('div')
+  const dom = document.createElement('tbody')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
   dom.setAttribute('data-name', entity.name)
 
@@ -869,7 +891,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     dom.setAttribute('data-package-name', entity.packageName)
   }
 
-  const entityName = document.createElement('div')
+  const entityName = document.createElement('tr')
   entityName.className = 'entity-attributes row-selection-context'
   dom.appendChild(entityName)
 
@@ -882,7 +904,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   }
 
   // now add the clickable name
-  const entityNameGroup = document.createElement('span')
+  const entityNameGroup = document.createElement('td')
   entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
   if (entityNameGroup.classList.contains('header-cell')) {
     entityName.classList.add('header-row')
@@ -1329,6 +1351,7 @@ export const formatMultiListResult = async (tab: Tab, response, resultDom: Eleme
       .map(async (table, idx, tables) => {
         const tableDom = document.createElement('div')
         tableDom.classList.add('result-table')
+        tableDom.classList.add('bx--data-table')
 
         let container
         if (table[0].title) {
@@ -1344,6 +1367,7 @@ export const formatMultiListResult = async (tab: Tab, response, resultDom: Eleme
 
           if (table[0].style !== undefined) {
             tableOuter.setAttribute('kui-table-style', TableStyle[table[0].style].toString())
+            adoptCarbonTableStyle(tableDom)
           }
 
           tableOuter.appendChild(titleOuter)
