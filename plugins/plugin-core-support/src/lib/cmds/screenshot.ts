@@ -172,7 +172,10 @@ const dateString = (ts: Date) => `${ts.getUTCFullYear()}-${fill(1 + ts.getUTCMon
 /** format the time; e.g. 11.36.54 AM */
 const timeString = (ts: Date) => ts.toLocaleTimeString('en-us').replace(/:/g, '.')
 
-let downloadTimer
+interface SnapDom extends HTMLElement {
+  kuiSnapshotTimer?: NodeJS.Timer
+}
+
 /** this is the handler body */
 export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
@@ -267,23 +270,29 @@ export default async (commandTree: CommandRegistrar) => {
 
               if (document.getElementById('screenshot-captured') !== null) {
                 // if a notification widget already exists, remove it
-                if (downloadTimer) clearInterval(downloadTimer)
-                document.getElementById('screenshot-captured').remove()
+                const prevSnapDom = document.getElementById('screenshot-captured') as SnapDom
+                if (prevSnapDom.kuiSnapshotTimer) {
+                  clearInterval(prevSnapDom.kuiSnapshotTimer)
+                }
+                prevSnapDom.remove()
               }
 
               const img = nativeImage.createFromBuffer(buf)
-              const snapDom = document.createElement('div')
+              const snapDom: SnapDom = document.createElement('div')
 
               const snapImg = document.createElement('img')
               const message = document.createElement('div')
               const messageContent = document.createElement('div')
               const snapContent = document.createElement('div')
               const close = document.createElement('div')
+
               page.appendChild(snapDom)
 
               // when we're done, re-enable the things we messed with and hide the snapDom
               const finish = () => {
-                snapDom.classList.add('go-away')
+                snapDom.classList.add('screenshot-hide')
+                setTimeout(() => snapDom.classList.remove('screenshot-active'), 0)
+
                 setTimeout(() => {
                   page.removeChild(snapDom)
                   getCurrentPrompt(tab).readOnly = false
@@ -319,9 +328,9 @@ export default async (commandTree: CommandRegistrar) => {
               snapDom.classList.add('zoomable')
 
               snapDom.id = 'screenshot-captured'
-              snapDom.classList.add('go-away-able')
-              snapDom.classList.add('go-away') // initially hidden
-              setTimeout(() => snapDom.classList.remove('go-away'), 0)
+              snapDom.classList.add('screenshot-hide')
+              snapDom.classList.add('screenshot-active')
+              setTimeout(() => snapDom.classList.remove('screenshot-hide'), 0)
 
               // save screenshot to disk
               const saveButton = document.createElement('div')
@@ -362,7 +371,7 @@ export default async (commandTree: CommandRegistrar) => {
               const closeMessage = document.createElement('div')
               closeMessage.classList.add('screenshot-closing-message')
               closeMessage.setAttribute('id', 'close-msg')
-              closeMessage.innerHTML = `Closing in <span id="countdown">${SECONDS_TILL_AUTO_CLOSE}</span>`
+              closeMessage.innerHTML = `Closing in <span id="kui--screenshot-countdown">${SECONDS_TILL_AUTO_CLOSE}</span>`
               messageContent.appendChild(closeMessage)
               snapContent.append(messageContent)
               snapContent.appendChild(saveButton)
@@ -378,12 +387,15 @@ export default async (commandTree: CommandRegistrar) => {
 
               // go away after 10 seconds
               let timeleft = SECONDS_TILL_AUTO_CLOSE
-              downloadTimer = setInterval(() => {
+              snapDom.kuiSnapshotTimer = setInterval(() => {
                 if (timeleft <= 0) {
-                  clearInterval(downloadTimer)
+                  clearInterval(snapDom.kuiSnapshotTimer)
                   finish()
                 }
-                document.getElementById('countdown').innerText = String(timeleft)
+
+                ;(snapDom.querySelector(
+                  '.screenshot-closing-message'
+                ) as HTMLElement).innerText = `Closing in ${timeleft}`
                 timeleft -= 1
               }, 1000)
 
