@@ -2388,7 +2388,7 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
   fill: var(--color-text-against-dark-bg);
   transition: fill 150ms ease-in-out;
 }
-.graphical-icon:hover svg path {
+body:not(.no-tooltips-anywhere) .graphical-icon:hover svg path {
   fill: var(--color-brand-01);
 }
 
@@ -3094,7 +3094,11 @@ body[kui-theme-style="dark"] .sidecar-bottom-stripe {
 .sidecar-bottom-stripe-button-as-button.selected svg path {
   fill: var(--color-brand-02);
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover svg path {
+body:not(.no-tooltips-anywhere)
+  .sidecar-bottom-stripe
+  .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover
+  svg
+  path {
   fill: var(--color-support-04);
 }
 .sidecar-bottom-stripe
