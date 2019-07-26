@@ -114,18 +114,22 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
 
   /** re-extract the structure from raw yaml string */
   const extract = (rawText: string, entity?: ResourceSource): ResourceSource => {
-    const resource = (editorEntity.resource = safeLoad(rawText))
-    editorEntity.source = rawText
-    editorEntity.name = resource.metadata.name
-    editorEntity.kind = resource.kind
+    try {
+      const resource = (editorEntity.resource = safeLoad(rawText))
+      editorEntity.source = rawText
+      editorEntity.name = resource.metadata.name
+      editorEntity.kind = resource.kind
 
-    if (entity) {
-      entity.source = editorEntity.source
-      entity.name = editorEntity.name
-      entity.kind = editorEntity.kind
+      if (entity) {
+        entity.source = editorEntity.source
+        entity.name = editorEntity.name
+        entity.kind = editorEntity.kind
+      }
+
+      return entity
+    } catch (err) {
+      console.error('error parsing as yaml', err)
     }
-
-    return entity
   }
 
   const editorEntity = {
@@ -206,23 +210,29 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
 
   const { safeLoadAll: parseYAML } = await import('js-yaml')
   const { readFile } = await import('fs-extra') // 22ms or so to load fs-extra, so defer it
-  const yamls = parseYAML(await readFile(filepath)).filter(x => x)
-  debug('yamls', yamls)
 
-  if (yamls.length === 0) {
-    throw new Error('The specified file is empty')
-  } else if (yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0) {
-    debug('The specified file does not contain any Kubernetes resource definitions')
-    return repl.qexec(`edit "${filepathAsGiven}"`)
-  } else if (yamls.length > 1 && !resource) {
-    return showAsTable(yamls, filepathAsGiven, parsedOptions)
-  } else {
-    const yamlIdx = !resource ? 0 : yamls.findIndex(({ metadata }) => metadata && metadata.name === resource)
-    if (yamlIdx < 0) {
-      throw new Error('Cannot find the specified resource')
+  try {
+    const yamls = parseYAML(await readFile(filepath)).filter(x => x)
+    debug('yamls', yamls)
+
+    if (yamls.length === 0) {
+      throw new Error('The specified file is empty')
+    } else if (yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0) {
+      debug('The specified file does not contain any Kubernetes resource definitions')
+      return repl.qexec(`edit "${filepathAsGiven}"`)
+    } else if (yamls.length > 1 && !resource) {
+      return showAsTable(yamls, filepathAsGiven, parsedOptions)
     } else {
-      return showResource(yamls[yamlIdx], filepath, tab)
+      const yamlIdx = !resource ? 0 : yamls.findIndex(({ metadata }) => metadata && metadata.name === resource)
+      if (yamlIdx < 0) {
+        throw new Error('Cannot find the specified resource')
+      } else {
+        return showResource(yamls[yamlIdx], filepath, tab)
+      }
     }
+  } catch (err) {
+    console.error('error parsing yaml')
+    return repl.qexec(`edit "${filepathAsGiven}"`)
   }
 }
 

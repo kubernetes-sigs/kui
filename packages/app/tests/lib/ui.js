@@ -77,6 +77,7 @@ selectors.SIDECAR_MODE_BUTTON = mode => `${selectors.SIDECAR_MODE_BUTTONS}[data-
 selectors.SIDECAR_BACK_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
 selectors.SIDECAR_MAXIMIZE_BUTTON = `${selectors.SIDECAR} .toggle-sidecar-maximization-button` // maximize button in the bottom stripe
 selectors.SIDECAR_CLOSE_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-close` // close button in the bottom stripe
+selectors.SIDECAR_FULLY_CLOSE_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-quit` // fully close button in the bottom stripe
 selectors.PROCESSING_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`
 selectors.CURRENT_PROMPT_BLOCK = `${selectors.PROMPT_BLOCK}.repl-active`
 selectors.PROMPT_BLOCK_N = N => `${selectors.PROMPT_BLOCK}[data-input-count="${N}"]`
