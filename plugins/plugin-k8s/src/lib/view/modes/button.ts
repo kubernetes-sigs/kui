@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,43 @@
 
 import { Tab } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-const makeButton = (overrides, fn?) =>
+import { KubeResource } from '../../model/resource'
+
+/** makeButton is passed a subset of SidecarMode */
+interface BaseInfo {
+  mode: string
+  label?: string
+  fontawesome?: string
+  balloon?: string
+}
+
+type Renderer = (resource: KubeResource) => KubeResource
+
+interface Parameters {
+  overrides: BaseInfo
+  fn: Renderer
+}
+export const renderButton = async (tab: Tab, { overrides, fn }: Parameters, args): Promise<KubeResource> => {
+  const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
+
+  const response: KubeResource = await repl.pexec(
+    `kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
+    { noStatus: !!fn, tab }
+  )
+  return fn ? fn(response) : response
+}
+
+const makeButton = (overrides: BaseInfo, fn?: Renderer) =>
   Object.assign(
     {},
     {
-      direct: async (tab: Tab, args) => {
-        const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
-        const response = await repl.pexec(
-          `kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
-          { noStatus: !!fn, tab }
-        )
-        return fn ? fn(response) : response
+      direct: {
+        plugin: 'k8s',
+        module: 'lib/view/modes/button',
+        operation: 'renderButton',
+        parameters: { overrides, fn }
       },
       echo: true,
       noHistory: false,

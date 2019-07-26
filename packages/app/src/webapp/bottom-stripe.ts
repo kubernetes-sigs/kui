@@ -79,7 +79,7 @@ const callDirect = async (tab: Tab, makeView: DirectViewController, entity, exec
     return combined
   } else {
     const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
-    return provider[makeView.operation](tab, makeView.parameters)
+    return provider[makeView.operation](tab, makeView.parameters, entity)
   }
 }
 
