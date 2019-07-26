@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+
 import makeButton from './button'
 
-export const createResourceButton = (fn?) =>
+export const createResourceButton = (fn?): SidecarMode =>
   makeButton(
     {
       mode: 'create',
@@ -26,7 +28,7 @@ export const createResourceButton = (fn?) =>
     fn
   )
 
-export const deleteResourceButton = (fn?) =>
+export const deleteResourceButton = (fn?): SidecarMode =>
   makeButton(
     {
       mode: 'delete',
