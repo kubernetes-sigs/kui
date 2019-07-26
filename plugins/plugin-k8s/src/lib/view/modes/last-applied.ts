@@ -77,19 +77,23 @@ interface Parameters {
   resource: Resource
 }
 
-function toCustomSpec(raw: string): CustomSpec {
+/**
+ * Respond to REPL
+ *
+ * @param lastRaw the last applied configuration, unparsed
+ */
+function toCustomSpec(lastRaw: string): CustomSpec {
   // oof, it comes in as a JSON string, but we want a YAML string
-  const resource: KubeResource = JSON.parse(raw) // we will extract some parameters from this
+  const resource: KubeResource = JSON.parse(lastRaw) // we will extract some parameters from this
   const content = safeDump(resource) // this is what we want to show up in the UI
 
   return {
     type: 'custom',
     isEntity: true,
     name: resource.metadata.name,
-    packageName: resource.metadata.namespace,
-    namespace: resource.metadata.namespace,
     contentType: 'yaml',
-    content
+    content,
+    resource
   }
 }
 
