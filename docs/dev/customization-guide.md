@@ -12,7 +12,8 @@ You may customize the configuration of your clients in several ways:
 
 - choose a subset of previously published plugins to incorporate
 - implement new plugins
-- specify a custom theme
+- [specify a custom theme](#theming)
+- [custom top tabs](#custom-top-tabs)
 - inject build-time configuration parameters into the running clients
 
 The directory structure of a custom client will look something like this:
@@ -107,6 +108,25 @@ fetching the remote CSS file.
 
 If you wish to inject a CSS file only during test execution, preface
 the file name with `_test`, e.g. `_test.css`.
+
+## Custom Top Tabs
+
+You may choose an alternate to tab UI. The repository includes a
+sample alternate CSS,
+[top-tab-stripe-alt.css](../../packages/app/web/css/top-tab-stripe-alt.css). To
+enable this, or you own variant, modify your theme.json:
+
+```json
+{
+  "cssOverrides": ["top-tab-stripe-alt.css"]
+}
+```
+
+Any entries in this list will be injected after any default Kui CSS
+files. In this way, you can override any default UI choices. In
+contrast, any entries in the "css" theme.json array will be
+pre-injected, and thus will not conflict with base Kui stylings. You
+thus have the flexilibity to go either way with your custom design.
 
 ## Injecting Build-time Values
 

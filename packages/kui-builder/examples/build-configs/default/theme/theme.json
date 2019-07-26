@@ -51,6 +51,7 @@
     { "name": "Carbon gray10", "css": "themes/carbon-gray10.css", "style": "light" }
   ],
   "css": ["_test.css", "kui-tables.css", "carbon-overrides.css"],
+  "cssOverrides": ["top-tab-stripe-alt.css"],
   "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Medium",
