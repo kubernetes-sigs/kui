@@ -40,7 +40,7 @@ import {
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { theme } from '@kui-shell/core/core/settings'
+import { theme, config } from '@kui-shell/core/core/settings'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { WatchableJob } from '@kui-shell/core/core/job'
 
@@ -138,10 +138,12 @@ const switchTab = (tabIndex: number, activateOnly = false) => {
       const currentTabButton = getCurrentTabButton()
       currentVisibleTab.classList.remove('visible')
       currentTabButton.classList.remove('left-tab-stripe-button-selected')
+      currentTabButton.classList.remove('kui-tab--active')
     }
 
     nextTab.classList.add('visible')
     nextTabButton.classList.add('left-tab-stripe-button-selected')
+    nextTabButton.classList.add('kui-tab--active')
 
     if (currentTab) {
       ;(currentTab['state'] as TabState).capture()
@@ -201,10 +203,14 @@ const addCommandEvaluationListeners = (): void => {
           // need to find a way to capture that sidecar-producing
           // command
           if (!isSidecarVisible(tab)) {
-            getTabButtonLabel(tab).innerText = theme['productName']
+            if (!config || !config.tabs || !config.tabs.fixedName) {
+              getTabButtonLabel(tab).innerText = theme['productName']
+            }
           }
         } else {
-          getTabButtonLabel(tab).innerText = event.command
+          if (!config || !config.tabs || !config.tabs.fixedName) {
+            getTabButtonLabel(tab).innerText = event.command
+          }
           getTabButton(tab).classList.add('processing')
         }
       }
@@ -350,14 +356,16 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   const currentTabButton = getCurrentTabButton()
   currentTabButton.classList.remove('left-tab-stripe-button-selected')
+  currentTabButton.classList.remove('kui-tab--active')
 
   const newTabButton = currentTabButton.cloneNode(true) as HTMLElement
   newTabButton.classList.add('left-tab-stripe-button-selected')
+  newTabButton.classList.add('kui-tab--active')
   newTabButton.classList.remove('processing')
   newTabButton.setAttribute('data-tab-button-index', newTabId)
   currentTabButton.parentNode.appendChild(newTabButton)
 
-  getTabButtonLabel(newTab).innerText = 'New Tab'
+  getTabButtonLabel(newTab).innerText = config.tabs && config.tabs.fixedName ? `Tab ${getTabIndex(newTab)}` : 'New Tab'
 
   newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
 
@@ -415,7 +423,8 @@ const oneTimeInit = (): void => {
   // initialize the first tab
   perTabInit(getCurrentTab(), false)
 
-  getTabButtonLabel(getCurrentTab()).innerText = theme['productName']
+  getTabButtonLabel(getCurrentTab()).innerText =
+    config.tabs && config.tabs.fixedName ? `Tab ${getTabIndex(getCurrentTab())}` : theme['productName']
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {

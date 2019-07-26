@@ -11,6 +11,7 @@
     <link href="${cssHome}kui-tables-common.css" rel="stylesheet" type="text/css" />
     <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" />
     <link href="${cssHome}${tabStripe}" rel="stylesheet" type="text/css" />
+    <!-- css overrides go here -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css" rel="stylesheet" type="text/css" />
 
     <link rel="shortcut icon" href="${imageHome}${favicon}" />
@@ -45,7 +46,8 @@
   <body class="still-loading ${bodyCss}">
     <div class="page">
       <main class="main">
-        <div class="left-tab-stripe">
+        <div class="left-tab-stripe kui-header">
+          <div class="kui-header__title">${productName}</div>
           <div class="application-icon" id="about-button" style="background-image:url('${largeIcon}')"></div>
 
           <div style="opacity: 0; height: 0; width: 0">
@@ -54,9 +56,9 @@
           </div>
 
           <div class="left-tab-stripe-buttons">
-            <div class="left-tab-stripe-button left-tab-stripe-button-selected" data-tab-button-index="1">
+            <div class="kui-tab kui-tab--active left-tab-stripe-button left-tab-stripe-button-selected" data-tab-button-index="1">
               <i class="fas fa-square repl-prompt-right-element-icon deemphasize"></i>
-              <div class="left-tab-stripe-button-label">&nbsp;</div>
+              <div class="kui-tab--label left-tab-stripe-button-label">&nbsp;</div>
               <div class="left-tab-stripe-button-closer">
                 <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                   <path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path>
@@ -65,8 +67,8 @@
             </div>
           </div>
           <div class="left-tab-stripe-bottom-buttons">
-            <div class="left-tab-stripe-button smaller-button" id="new-tab-button" data-balloon-disabled="Open a new tab" data-balloon-pos="right" data-balloon-length="fit">
-              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+            <div class="left-tab-stripe-button smaller-button kui-new-tab" id="new-tab-button" data-balloon-disabled="Open a new tab" data-balloon-pos="right" data-balloon-length="fit">
+              <svg class="kui-new-tab__plus" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                 <path d="M17 15V7h-2v8H7v2h8v8h2v-8h8v-2h-8z"></path>
               </svg>
             </div>

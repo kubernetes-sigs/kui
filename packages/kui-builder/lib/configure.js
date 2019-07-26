@@ -102,11 +102,11 @@ const evaluateMacros = settings => str => {
  * Inject custom CSS
  *
  */
-const injectCSS = (env, settings) => str => {
+const injectCSS = (env, settings, marker = '<head>') => str => {
   debug('injectCSS', settings)
-  task(`injectCSS ${settings.css}`, str)
+  task(`injectCSS`, str)
 
-  if (settings.css) {
+  if (settings) {
     const format = css => {
       // only inject test css if we are running a test
       if (!/^_test/.test(css) || process.env.RUNNING_KUI_TEST !== undefined) {
@@ -117,13 +117,13 @@ const injectCSS = (env, settings) => str => {
       }
     }
 
-    const css = Array.isArray(settings.css)
-      ? settings.css.reduce((links, css) => {
+    const css = Array.isArray(settings)
+      ? settings.reduce((links, css) => {
           return `${links}\n${format(css)}`
         }, '')
-      : format(settings.css)
+      : format(settings)
 
-    return str.replace('<head>', `<head>${css}`)
+    return str.replace(marker, `${marker}${css}`)
   } else {
     return str
   }
@@ -205,7 +205,8 @@ const doBuild = settings => () =>
     writeConfig(settings),
     readIndex(settings)
       .then(evaluateMacros(unify(settings.env, settings.theme)))
-      .then(injectCSS(settings.env, settings.theme))
+      .then(injectCSS(settings.env, settings.theme.css))
+      .then(injectCSS(settings.env, settings.theme.cssOverrides, '<!-- css overrides go here -->'))
       .then(writeIndex(settings))
   ])
 

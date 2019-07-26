@@ -1,4 +1,7 @@
 {
+  "tabs": {
+    "fixedName": true
+  },
   "proxyServer": {
     "url": "http://localhost:8081/exec",
     "needleOptions": {
