@@ -17,10 +17,13 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { theme } from '@kui-shell/core/core/settings'
 import * as assert from 'assert'
 
 /** name of the pod */
 const podName = 'nginx'
+/** final polling rate (do not increase the interval beyond this!) */
+const finalPolling = (theme && theme.tablePollingInterval) || 5000
 
 /** source for the resource spec */
 const url = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'
@@ -35,12 +38,11 @@ const waitForStatus = async function(this: common.ISuite, status: Status, res) {
   const selector = await cli.expectOKWithCustom({
     selector: selectors.BY_NAME(podName)
   })(res)
-  const expectStatus = `${selector} td:not(.repeating-pulse)`
 
   if (status === Status.Offline) {
-    return waitForRed(this.app, expectStatus)
+    return waitForRed(this.app, selector)
   } else {
-    return waitForGreen(this.app, expectStatus)
+    return waitForGreen(this.app, selector)
   }
 }
 
@@ -144,10 +146,14 @@ const checkWatchableJobs = function(
         assert.ok(!jobs)
       } else {
         // tab.state.jobs should be an array of length jobCount and every job in the array has an id
-        console.log(jobs)
+        // console.log(jobs)
         assert.ok(
           Array.isArray(jobs) && jobs.length === jobCount && jobs.filter(job => job._id === undefined).length === 0
         )
+        // check the maximum watch timeout
+        if (jobs.some(job => job.timeout > finalPolling + 100)) {
+          throw Error(`timeout for the watchable job exceeds ${finalPolling}`)
+        }
       }
     } catch (err) {
       common.oops(this)(err)

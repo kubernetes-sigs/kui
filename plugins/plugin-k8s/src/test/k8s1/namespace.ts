@@ -143,9 +143,7 @@ describe('electron namespace', function(this: common.ISuite) {
               selector: selectors.BY_NAME(ns)
             })({ app: this.app, count: res.count + 1 })
 
-            const expectOffline = `${deletionEntitySelector} td:not(.repeating-pulse)`
-
-            return waitForRed(this.app, expectOffline)
+            return waitForRed(this.app, deletionEntitySelector)
           })
           .catch(common.oops(this))
       })
