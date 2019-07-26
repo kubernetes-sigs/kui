@@ -42,7 +42,7 @@ export class WatchableJob {
   public start() {
     this.startWatching(this.handler, this.timeout)
     this.tab['state'].captureJob(this)
-    debug('start watching', this)
+    debug(`start job ${this._id} with timeout ${this.timeout}`)
   }
 
   /**
@@ -58,6 +58,6 @@ export class WatchableJob {
   public abort() {
     this.stopWatching(this._id)
     this.tab['state'].removeJob(this)
-    debug('stop watching', this)
+    debug(`stop job ${this._id}`)
   }
 }

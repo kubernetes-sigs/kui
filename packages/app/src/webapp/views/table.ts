@@ -39,9 +39,6 @@ import minimist = require('yargs-parser')
 
 const debug = Debug('webapp/views/table')
 
-const tablePollingInterval = (theme && theme.tablePollingInterval) || 3000
-debug('tablePollingInterval', tablePollingInterval)
-
 interface TableFormatOptions {
   usePip?: boolean
 }
@@ -54,7 +51,16 @@ enum FinalState {
   OfflineLike
 }
 
-// sort the body of table
+const fastPolling = 500 // initial polling rate for watching OnlineLike or OfflineLike state
+const mediumPolling = 3000 // initial polling rate for watching a steady state
+const finalPolling = (theme && theme.tablePollingInterval) || 5000 // final polling rate (do not increase the interval beyond this!)
+
+debug('table polling intervals', fastPolling, mediumPolling, finalPolling)
+
+/**
+ * sort the body of table
+ *
+ */
 export const sortBody = (rows: Row[]): Row[] => {
   return rows.sort(
     (a, b) =>
@@ -68,7 +74,6 @@ export const sortBody = (rows: Row[]): Row[] => {
  * get an array of row models
  *
  */
-
 const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
   const { header, body, noSort } = response
 
@@ -86,7 +91,10 @@ const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
   return [header].concat(noSort ? body : sortBody(body)).filter(x => x)
 }
 
-// maybe the resources in table have all reach to the final state?
+/**
+ * maybe the resources in table have all reach to the final state?
+ *
+ */
 const hasReachedFinalState = (response: Table | MultiTable): boolean => {
   let reachedFinalState = false
 
@@ -111,20 +119,73 @@ const hasReachedFinalState = (response: Table | MultiTable): boolean => {
   return reachedFinalState
 }
 
+/**
+ * find the final state from refresh command
+ *
+ */
+const findFinalStateFromCommand = (command: string): string => {
+  // parse the refresh command
+  const { A: argv } = split(command, true, true) as Split
+  const options = minimist(argv)
+
+  return options['final-state'] ? FinalState[options['finalState']] : ''
+}
+
+/**
+ * calcuate the polling ladder
+ *
+ */
+const calculateLadder = (initial: number): number[] => {
+  const ladder = [initial]
+  let current = initial
+
+  // increment the polling interval
+  while (current < finalPolling) {
+    if (current < 1000) {
+      current = current + 250 < 1000 ? current + 250 : 1000
+      ladder.push(current)
+    } else {
+      ladder.push(current)
+      current = current + 2000 < finalPolling ? current + 2000 : finalPolling
+      ladder.push(current)
+    }
+  }
+
+  debug('ladder', ladder)
+  return ladder
+}
+
+/**
+ * register a watchable job
+ *
+ */
 const registerWatcher = (
   tab: Tab,
   watchLimit: number = 100000,
   command: string,
   resultDom: HTMLElement,
-  tableViewInfo: TableViewInfo | TableViewInfo[]
+  tableViewInfo: TableViewInfo | TableViewInfo[],
+  formatRowOption?: RowFormatOptions
 ) => {
-  // the current watch interval; used for clear/reset/stop
   let job: WatchableJob // eslint-disable-line prefer-const
 
-  const stopWatching = () => {
-    job.abort()
-  }
+  // the final state we want to reach to
+  const expectedFinalState = findFinalStateFromCommand(command)
 
+  // establish the initial watch interval,
+  // if we're on resource creation/deletion, do fast polling, otherwise we do steady polling
+  const initalPollingInterval =
+    expectedFinalState === 'OfflineLike' || expectedFinalState === 'OnlineLike' ? fastPolling : mediumPolling
+
+  // increase the table polling interval until it reaches the steady polling interval, store the ladder in an array
+  const ladder = calculateLadder(initalPollingInterval)
+
+  /**
+   * process the refreshed result
+   * @return processed Table info: { table: Row[], reachedFinalState: boolean }, or
+   *         processed MultiTable info: { tables: Row[][], reachedFinalState: boolean}
+   *
+   */
   const processRefreshResponse = (response: Table | MultiTable) => {
     if (!isTable(response) && !isMultiTable(response)) {
       console.error('refresh result is not a table', response)
@@ -143,6 +204,7 @@ const registerWatcher = (
         }
   }
 
+  // execute the refresh command and apply the result
   const refreshTable = async () => {
     debug(`refresh with ${command}`)
     let processedTableRow: Row[] = []
@@ -158,30 +220,44 @@ const registerWatcher = (
 
       // stop watching if all resources in the table reached to the finial state
       if (processedResponse.reachedFinalState) {
-        stopWatching()
+        job.abort()
+      } else {
+        // if the refreshed result doesn't reach the expected state,
+        // then we increment the table polling interval by ladder until it reaches the steady polling interval
+        const newTimer = ladder.shift()
+        if (newTimer) {
+          // reshedule the job using new polling interval
+          job.abort()
+          job = new WatchableJob(tab, watchIt, newTimer + ~~(100 * Math.random())) // eslint-disable-line @typescript-eslint/no-use-before-define
+          job.start()
+        }
       }
     } catch (err) {
       if (err.code === 404) {
-        // parse the refresh command
-        const { A: argv } = split(command, true, true) as Split
-        const options = minimist(argv)
-
-        if (options['final-state'] && FinalState[options['finalState']] === 'OfflineLike') {
+        if (expectedFinalState === 'OfflineLike') {
           debug('resource not found after status check, but that is ok because that is what we wanted')
-          stopWatching()
+          job.abort()
         }
       } else {
         while (resultDom.firstChild) {
           resultDom.removeChild(resultDom.firstChild)
         }
-        stopWatching()
+        job.abort()
         throw err
       }
     }
 
+    // diff the refreshed model from the existing one and apply the change
     const applyRefreshResult = (newRowModel: Row[], tableViewInfo: TableViewInfo) => {
       const diffs = diffTableRows(tableViewInfo.rowsModel, newRowModel)
-      applyDiffTable(diffs, tab, tableViewInfo.renderedTable, tableViewInfo.renderedRows, tableViewInfo.rowsModel)
+      applyDiffTable(
+        diffs,
+        tab,
+        tableViewInfo.renderedTable,
+        tableViewInfo.renderedRows,
+        tableViewInfo.rowsModel,
+        formatRowOption
+      )
     }
 
     if (Array.isArray(tableViewInfo)) {
@@ -193,22 +269,23 @@ const registerWatcher = (
     }
   }
 
+  // timer handler
   const watchIt = () => {
     if (--watchLimit < 0) {
       debug('watchLimit exceeded')
-      stopWatching()
+      job.abort()
     } else {
       try {
-        Promise.resolve(refreshTable()) // or refreshTables
+        Promise.resolve(refreshTable())
       } catch (err) {
         console.error('Error refreshing table', err)
-        stopWatching()
+        job.abort()
       }
     }
   }
 
-  // establish the initial watch interval
-  job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+  // establish the inital watchable job
+  job = new WatchableJob(tab, watchIt, ladder.shift() + ~~(100 * Math.random()))
   job.start()
 }
 
@@ -517,6 +594,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       } */
 
       /** the watch interval handler */
+      // NOTE: the cell watcher is only used by outdated sidecar table
       const watchIt = () => {
         if (--count < 0) {
           debug('watchLimit exceeded', value)
@@ -597,6 +675,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
                   debug('entering slowPoll mode', slowPoll)
                   slowPolling = true
                   stopWatching() // this will remove the "pulse" effect, which is what we want
+                  // NOTE: the cell watcher is only used by outdated sidecar table
                   job = new WatchableJob(tab, watchIt, slowPoll)
                   job.start()
                   // job = registerWatchableJob(tab, watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
@@ -608,7 +687,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
                 slowPolling = false
                 cell.classList.add(pulse)
                 stopWatching()
-                job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+                // NOTE: the cell watcher is only used by outdated sidecar table
+                job = new WatchableJob(tab, watchIt, mediumPolling + ~~(100 * Math.random()))
                 job.start()
               }
             }
@@ -621,7 +701,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       }
 
       // establish the initial watch interval
-      job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+      // NOTE: the cell watcher is only used by outdated sidecar table
+      job = new WatchableJob(tab, watchIt, mediumPolling + ~~(100 * Math.random()))
       job.start()
     }
 
@@ -748,12 +829,20 @@ interface TableViewInfo {
   tableModel: Table | WatchableTable
 }
 
+/**
+ * Format the table view
+ *
+ */
 export const formatTable = (
   tab: Tab,
   response: Table | MultiTable,
   resultDom: HTMLElement,
   options: TableFormatOptions = {}
 ) => {
+  const formatRowOption = Object.assign(options, {
+    useRepeatingEffect: !hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault
+  })
+
   const format = (table: Table) => {
     const tableDom = document.createElement('table')
     tableDom.classList.add('result-table')
@@ -827,14 +916,8 @@ export const formatTable = (
     container.classList.add('big-top-pad')
 
     const prepareRows = prepareTable(tab, table)
-    const rows = prepareRows.map(
-      formatOneRowResult(
-        tab,
-        Object.assign(options, {
-          useRepeatingEffect: !hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault
-        })
-      )
-    )
+
+    const rows = prepareRows.map(formatOneRowResult(tab, formatRowOption))
     rows.map(row => tableDom.appendChild(row))
 
     setStyle(tableDom, table)
@@ -855,11 +938,11 @@ export const formatTable = (
   const tableViewInfo = isMultiTable(response) ? response.tables.map(table => format(table)) : format(response)
 
   if (!hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault) {
-    registerWatcher(tab, response.watchLimit, response.refreshCommand, resultDom, tableViewInfo)
+    registerWatcher(tab, response.watchLimit, response.refreshCommand, resultDom, tableViewInfo, formatRowOption)
   }
 }
 
-interface RowFormatOptions extends TableFormatOptions {
+export interface RowFormatOptions extends TableFormatOptions {
   excludePackageName?: boolean
   useRepeatingEffect?: boolean
 }
@@ -1105,6 +1188,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
       }
     }
 
+    // NOTE: the cell watcher is only used by outdated sidecar table
     if (watch) {
       const pulse = 'repeating-pulse'
       cell.classList.add(pulse)
@@ -1211,6 +1295,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
                   debug('entering slowPoll mode', slowPoll)
                   slowPolling = true
                   stopWatching() // this will remove the "pulse" effect, which is what we want
+                  // NOTE: the cell watcher is only used by outdated sidecar table
                   job = new WatchableJob(tab, watchIt, slowPoll)
                   job.start()
                 }
@@ -1221,7 +1306,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
                 slowPolling = false
                 cell.classList.add(pulse)
                 stopWatching()
-                job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+                // NOTE: the cell watcher is only used by outdated sidecar table
+                job = new WatchableJob(tab, watchIt, mediumPolling + ~~(100 * Math.random()))
                 job.start()
               }
             }
@@ -1234,7 +1320,8 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
       }
 
       // establish the initial watch interval
-      job = new WatchableJob(tab, watchIt, tablePollingInterval + ~~(100 * Math.random()))
+      // NOTE: the cell watcher is only used by outdated sidecar table
+      job = new WatchableJob(tab, watchIt, mediumPolling + ~~(100 * Math.random()))
       job.start()
     }
 

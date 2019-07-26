@@ -30,12 +30,10 @@ const waitForStatus = async function(this: common.ISuite, status: Status, res): 
   const selector = await cli.expectOKWithCustom({
     selector: selectors.BY_NAME(nsName)
   })(res)
-  const expectStatus = `${selector} td:not(.repeating-pulse)`
-
   if (status === Status.Offline) {
-    return waitForRed(this.app, expectStatus)
+    return waitForRed(this.app, selector)
   } else {
-    return waitForGreen(this.app, expectStatus)
+    return waitForGreen(this.app, selector)
   }
 }
 

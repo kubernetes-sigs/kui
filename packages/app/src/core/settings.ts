@@ -40,6 +40,7 @@ interface Theme {
 
   userAgent?: string
 
+  /** final polling interval (default: 5s), watcher will stop increasing the interval beyond this. */
   tablePollingInterval?: number
 
   defaultTheme: string

@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { Tab } from '../cli'
 import { RowDiff, Row } from '../models/table'
-import { formatOneRowResult } from '../views/table'
+import { formatOneRowResult, RowFormatOptions } from '../views/table'
 const debug = Debug('webapp/views/diff')
 
 export const applyDiffTable = (
@@ -26,13 +26,14 @@ export const applyDiffTable = (
   tab: Tab,
   tableDom: HTMLElement,
   rows: HTMLElement[],
-  prepareRows: Row[]
+  prepareRows: Row[],
+  option?: RowFormatOptions
 ) => {
   if (diff.rowUpdate && diff.rowUpdate.length > 0) {
     debug('update rows', diff.rowUpdate)
     diff.rowUpdate.map(update => {
       // apply diff to the view
-      const newRowView = formatOneRowResult(tab)(update.model)
+      const newRowView = formatOneRowResult(tab, option)(update.model)
       tableDom.replaceChild(newRowView, rows[update.updateIndex])
       rows[update.updateIndex] = newRowView
       // apply diff to the model
@@ -69,7 +70,7 @@ export const applyDiffTable = (
     debug('insert rows', diff.rowInsertion)
     diff.rowInsertion.map(update => {
       // apply diff to the view
-      const newRowView = formatOneRowResult(tab)(update.model)
+      const newRowView = formatOneRowResult(tab, option)(update.model)
       tableDom.insertBefore(newRowView, rows[update.insertBeforeIndex])
       rows.splice(update.insertBeforeIndex, 0, newRowView)
       // apply diff to the model

@@ -28,7 +28,18 @@ exports.defaultModeForGet = 'summary'
  *
  */
 exports.waitForGreen = async (app, selector) => {
-  const badge = `${selector} badge.green-background`
+  const notRepeatingPulse = 'td:not(.repeating-pulse)'
+  const badge = `${selector} ${notRepeatingPulse} badge.green-background`
+  const yellowNotBlinkyBadge = `${selector} ${notRepeatingPulse} badge.yellow-background`
+  const yellowBadge = `${selector} badge.yellow-background`
+
+  // expecting a green badge or a blinky yellow badge
+  if (await app.client.isExisting(yellowNotBlinkyBadge)) {
+    throw Error(`caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
+  }
+
+  await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
+
   await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
   return badge
 }
@@ -38,7 +49,21 @@ exports.waitForGreen = async (app, selector) => {
  *
  */
 exports.waitForRed = async (app, selector) => {
-  const badge = `${selector} badge.red-background`
+  const notRepeatingPulse = 'td:not(.repeating-pulse)'
+  const badge = `${selector} ${notRepeatingPulse} badge.red-background`
+  const yellowNotBlinkyBadge = `${selector} ${notRepeatingPulse} badge.yellow-background`
+  const yellowBadge = `${selector} badge.yellow-background`
+
+  // the green badge should disapper, wait for 5 seconds at max
+  await app.client.waitForExist(badge.replace('red', 'green'), 5000, true)
+
+  // no green badge any more, expecting a red badge or a blinky yellow badge
+  if (await app.client.isExisting(yellowNotBlinkyBadge)) {
+    throw Error(`caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
+  }
+
+  await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
+
   await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
   return badge
 }
