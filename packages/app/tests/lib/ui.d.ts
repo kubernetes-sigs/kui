@@ -174,6 +174,7 @@ declare class Selectors {
   SIDECAR_BACK_BUTTON: string
   SIDECAR_MAXIMIZE_BUTTON: string
   SIDECAR_CLOSE_BUTTON: string
+  SIDECAR_FULLY_CLOSE_BUTTON: string
   PROCESSING_PROMPT_BLOCK: string
   CURRENT_PROMPT_BLOCK: string
   PROMPT_BLOCK_N: (N: number) => string
