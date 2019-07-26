@@ -2277,18 +2277,18 @@ sidecar [data-balloon]:after {
   white-space: normal !important;
   text-align: center;
 }
-body[kui-theme-style="dark"] .use-dark-tooltips [data-balloon]:after {
+[kui-theme-style] .use-dark-tooltips [data-balloon]:after {
   background-color: rgba(17, 17, 17, 0.9);
   color: var(--color-white) !important;
 }
-body[kui-theme-style="dark"] .use-dark-tooltips [data-balloon]:before {
+[kui-theme-style] .use-dark-tooltips [data-balloon]:before {
   background-color: var(--color-base00);
 }
-body[kui-theme-style="dark"] [data-balloon]:after {
+[kui-theme-style] [data-balloon]:after {
   background-color: var(--color-base05);
   color: var(--color-base01) !important;
 }
-body[kui-theme-style="dark"] [data-balloon]:before {
+[kui-theme-style] [data-balloon]:before {
   background-image: none;
   background-color: var(--color-base05);
   mask-repeat: no-repeat;
@@ -2298,21 +2298,21 @@ body[kui-theme-style="dark"] [data-balloon]:before {
   mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(0)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(0)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
 }
-body[kui-theme-style="dark"] [data-balloon][data-balloon-pos="left"]:before {
+[kui-theme-style] [data-balloon][data-balloon-pos="left"]:before {
   mask-position: 100% 50%;
   -webkit-mask-position: 100% 50%;
   mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(-90 18 18)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(-90 18 18)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
 }
-body[kui-theme-style="dark"] [data-balloon][data-balloon-pos="down"]:before,
-body[kui-theme-style="dark"] [data-balloon][data-balloon-pos="down-left"]:before,
-body[kui-theme-style="dark"] [data-balloon][data-balloon-pos="down-right"]:before {
+[kui-theme-style] [data-balloon][data-balloon-pos="down"]:before,
+[kui-theme-style] [data-balloon][data-balloon-pos="down-left"]:before,
+[kui-theme-style] [data-balloon][data-balloon-pos="down-right"]:before {
   mask-position: 50% 0%;
   -webkit-mask-position: 50% 0%;
   mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(180 18 6)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(180 18 6)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
 }
-body[kui-theme-style="dark"] [data-balloon][data-balloon-pos="right"]:before {
+[kui-theme-style] [data-balloon][data-balloon-pos="right"]:before {
   mask-position: 0% 50%;
   -webkit-mask-position: 0% 50%;
   mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba(17,17,17,0.9)%22%20transform%3D%22rotate(90 6 6)%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E");
