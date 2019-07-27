@@ -29,6 +29,7 @@ body[kui-theme="Dark"] {
 
   --color-stripe-01: #4f565c;
   --color-sidecar-toolbar-background: #D7DCE3;
+  --color-sidecar-toolbar-foreground: var(--color-base02);
 
   --color-content-divider: #3F4548;
   --color-selection-background: #0074C7;

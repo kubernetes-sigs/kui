@@ -226,14 +226,15 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   white-space: normal;
 }
 .repl-prompt {
-  margin-right: 0.25em;
+  margin-right: 0.375em;
   white-space: nowrap;
   overflow: hidden;
   display: flex;
-  align-items: center;
   border-left: 1px solid var(--color-ui-04);
-  --color-prompt-text: var(--color-text-01);
-  --color-prompt-background: var(--color-base03);
+  --color-prompt-text: var(--color-text-02);
+  --color-prompt-background: transparent;
+  --prompt-padding-left: 0;
+  --prompt-padding-right: 0;
 }
 body.not-electron .repl-prompt {
   border: none;
@@ -254,37 +255,19 @@ body.not-electron .repl-context {
   display: flex;
   transition: border-color 150ms ease-in-out;
 }
-body.in-electron .repl .repl-block:not(.using-custom-prompt) .repl-prompt-righty {
-  border-color: transparent var(--color-prompt-background);
-  border-style: solid;
-  border-width: 0.625em 0px 0.625em 0.625em; /* 50% of  height: for repl-context */
-  height: 0px;
-  width: 0px;
-  font-size: 1rem;
-}
 .repl-context {
-  font-size: 0.75em;
-  font-weight: 500;
+  font-size: 0.875em;
   color: var(--color-prompt-text);
   background-color: var(--color-prompt-background);
-  border-left: 1px solid var(--color-ui-05);
+  border-left: 2px solid transparent;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
-  padding-left: 5px;
-  padding-right: 1px;
-  height: 1.25rem;
+  padding-left: var(--prompt-padding-left);
+  padding-right: var(--prompt-padding-right);
   display: flex;
   align-items: center;
-  transition: background-color 150ms ease-in-out;
-}
-.repl-block.valid-response .repl-context {
-  border-left-color: var(--color-ok);
-}
-.repl-block.error .repl-context {
-  border-left-color: var(--color-error);
-}
-.repl-block.processing .repl-context {
-  border-left-color: var(--color-processing);
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+  letter-spacing: 0.32px;
 }
 repl .repl-block.using-custom-prompt .repl-prompt-righty > svg,
 repl .repl-block.using-custom-prompt .repl-prompt-righty > i,
@@ -771,6 +754,9 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   display: flex;
   align-items: center;
   flex: 1;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
+  fill: var(--color-sidecar-toolbar-foreground);
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
@@ -3031,7 +3017,7 @@ body {
   --color-stripe-01: var(--color-base01);
   --color-stripe-02: var(--color-base03);
   --color-sidecar-toolbar-background: var(--color-base03);
-  --color-sidecar-toolbar-foreground: var(--color-base02);
+  --color-sidecar-toolbar-foreground: var(--color-text-01);
 
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
