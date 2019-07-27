@@ -152,8 +152,8 @@ body.sidecar-is-minimized .result-as-table .result-table {
 [kui-theme-style] .bx--data-table tbody tr:hover td {
   color: unset;
 }
-.result-table[kui-table-style="Light"] .entity-attributes > td,
-.result-table[kui-table-style="Light"] .entity-attributes > th {
+.bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > td,
+.bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > th {
   padding-left: 0.375em;
   padding-right: 0.375em;
 }
