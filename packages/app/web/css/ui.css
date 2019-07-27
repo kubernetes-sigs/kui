@@ -3342,6 +3342,11 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
 .row-selection-context.selected-row .selected-entity .kui--radio-unchecked svg {
   display: none;
 }
+.kui--radio-checked svg,
+.kui--radio-unchecked svg {
+  width: 16px;
+  height: 16px;
+}
 
 /* hide table titles by default; themes can choose to show them by overriding this rule */
 .result-table-title-outer {
