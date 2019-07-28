@@ -111,9 +111,9 @@ the file name with `_test`, e.g. `_test.css`.
 
 ## Custom Top Tabs
 
-You may choose an alternate to tab UI. The repository includes a
-sample alternate CSS,
-[top-tab-stripe-alt.css](../../packages/app/web/css/top-tab-stripe-alt.css). To
+You may choose an alternate to tab UI. The [alternate
+client](../../clients/alternate) gives an example which defines
+[top-tab-stripe-alt.css](../../clients/alternate/theme/css/top-tab-stripe-alt.css). To
 enable this, or you own variant, modify your theme.json:
 
 ```json

@@ -1,0 +1,10 @@
+.npmrc
+.keys
+build
+dist
+npm-packs
+bak.json
+package-lock.json
+package-linked.json
+lerna.json
+tests

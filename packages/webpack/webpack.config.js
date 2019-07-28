@@ -42,7 +42,7 @@ console.log('stageDir', stageDir)
 /** point webpack to the output directory */
 const buildDir =
   process.env.KUI_BUILDDIR ||
-  (process.env.KUI_MONO_HOME && path.join(process.env.KUI_MONO_HOME, 'clients/default/dist/webpack')) ||
+  (process.env.KUI_MONO_HOME && path.join(process.env.KUI_MONO_HOME, 'clients', process.env.CLIENT, 'dist/webpack')) ||
   path.join(stageDir, 'dist/webpack')
 console.log('buildDir', buildDir)
 
@@ -55,7 +55,7 @@ console.log('builderHome', builderHome)
 
 if (!process.env.CLIENT_HOME) {
   if (process.env.KUI_MONO_HOME) {
-    process.env.CLIENT_HOME = path.join(process.env.KUI_MONO_HOME, 'clients/default')
+    process.env.CLIENT_HOME = path.join(process.env.KUI_MONO_HOME, 'clients', process.env.CLIENT)
   } else {
     process.env.CLIENT_HOME = stageDir
   }
