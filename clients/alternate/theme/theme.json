@@ -16,41 +16,13 @@
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
   "gettingStarted": "getting started",
-  "defaultTheme": "Dark",
-  "themes": [
-    {
-      "name": "Light",
-      "css": "themes/light.css",
-      "description": "Default Light",
-      "style": "light"
-    },
-    {
-      "name": "Dark",
-      "css": "themes/dark.css",
-      "description": "Default Dark",
-      "style": "dark"
-    },
-    { "name": "Atelier", "css": "themes/atelier-seaside.css", "style": "dark" },
-    { "name": "Dracula", "css": "themes/dracula.css", "style": "dark" },
-    {
-      "name": "Gruvbox",
-      "css": "themes/gruvbox-dark-medium.css",
-      "style": "dark"
-    },
-    { "name": "Lucario", "css": "themes/lucario.css", "style": "dark" },
-    { "name": "Monokai", "css": "themes/monokai.css", "style": "dark" },
-    { "name": "Nord", "css": "themes/nord.css", "style": "dark" },
-    { "name": "Paraiso", "css": "themes/paraiso.css", "style": "dark" },
-    { "name": "Solarized", "css": "themes/solarized-dark.css", "style": "dark" },
-    {
-      "name": "tomorrow-night",
-      "css": "themes/tomorrow-night.css",
-      "description": "Tomorrow Night",
-      "style": "dark"
-    }
+  "defaultTheme": "IBM Light",
+  "themes": [{ "name": "IBM Light", "css": "themes/carbon-gray10.css", "style": "light" }],
+  "css": [
+    "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,500,700&display=swap"
   ],
-  "css": ["_test.css", "kui-tables.css", "carbon-overrides.css"],
-  "bodyCss": ["kui"],
+  "cssOverrides": ["top-tab-stripe-alt.css", "ibm-plex.css"],
+  "bodyCss": ["kui", "kui-alternate"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Medium",
   "appIcon": "icons/png/kui.png",

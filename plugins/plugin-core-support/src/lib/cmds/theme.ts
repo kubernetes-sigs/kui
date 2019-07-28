@@ -25,6 +25,7 @@ import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
 import { theme as settings, env } from '@kui-shell/core/core/settings'
+
 const debug = Debug('plugins/core-support/theme')
 
 /**
@@ -111,6 +112,7 @@ const list = async () => {
 
   const currentTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
   debug('currentTheme', currentTheme)
+  debug('theme list', settings.themes)
 
   const body: Row[] = (settings.themes || []).map(
     (theme): Row => {

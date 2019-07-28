@@ -7,15 +7,15 @@
     "lint": "eslint '**/*.{js,ts}'",
     "format": "prettier --write '**/*.{css,html,js,json,md,ts}'",
     "test": "cd packages/tests && npm run test",
-    "compile": "MONOREPO_MODE=true CLIENT_HOME=./clients/default ./packages/kui-builder/bin/compile.sh",
+    "compile": "CLIENT=${CLIENT-default}; MONOREPO_MODE=true CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
     "preinstall": "cp packages/kui-builder/npmrc .npmrc",
-    "build:configure": "CLIENT_HOME=./clients/default node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/default ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/default ./packages/kui-builder/bin/seticon.js",
+    "build:configure": "CLIENT=${CLIENT-default}; CLIENT_HOME=./clients/$CLIENT node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/seticon.js",
     "build:electron-for-development": "npm run build:configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done",
     "build:hoist": "node ./packages/kui-builder/bin/hoist.js",
     "postinstall": "npm run build:hoist && npm run build:electron-for-development",
     "start": "node bin/kui shell",
-    "watch:webpack": "if [ ! -d node_modules/webpack ]; then echo \"$(tput setaf 1)!!! re-run WEBPACK=true npm install$(tput sgr0)\"; exit 1; fi && rm -rf clients/default/dist/webpack && mkdir -p clients/default/dist/webpack/css && (cd clients/default/dist/webpack && ln -s ../../theme/icons && ln -s ../../theme/images && cd css && for i in ../../../../../packages/app/web/css/*; do ln -s $i; done && for i in ../../../theme/css/*; do ln -s $i; done); (cd node_modules/@kui-shell/settings && rm -f config-dev.json; if [ -f ../../../clients/default/theme/config.json ]; then echo \"linking config-dev.json\"; cp ../../../clients/default/theme/config.json config-dev.json; fi) && export KUI_MONO_HOME=$(cd ./ && pwd); if [ -z \"$TRAVIS_JOB_ID\" ]; then PROGRESS=\"--progress\"; fi; webpack-dev-server --info-verbosity=verbose $PROGRESS --config packages/webpack/webpack.config.js"
+    "watch:webpack": "export CLIENT=${CLIENT-default}; npm run build:configure && if [ ! -d node_modules/webpack ]; then echo \"$(tput setaf 1)!!! re-run WEBPACK=true npm install$(tput sgr0)\"; exit 1; fi && rm -rf clients/$CLIENT/dist/webpack && mkdir -p clients/$CLIENT/dist/webpack/css && (cd clients/$CLIENT/dist/webpack && ln -s ../../theme/icons && ln -s ../../theme/images && cd css && for i in ../../../../../packages/app/web/css/*; do ln -s $i; done && for i in ../../../theme/css/*; do ln -s $i; done); (cd node_modules/@kui-shell/settings && rm -f config-dev.json; if [ -f ../../../clients/$CLIENT/theme/config.json ]; then echo \"linking config-dev.json\"; cp ../../../clients/$CLIENT/theme/config.json config-dev.json; fi) && export KUI_MONO_HOME=$(cd ./ && pwd); if [ -z \"$TRAVIS_JOB_ID\" ]; then PROGRESS=\"--progress\"; fi; webpack-dev-server $PROGRESS --config packages/webpack/webpack.config.js"
   },
   "dependencies": {},
   "devDependencies": {

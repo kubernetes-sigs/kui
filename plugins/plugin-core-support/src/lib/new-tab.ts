@@ -48,6 +48,11 @@ const debug = Debug('plugins/core-support/new-tab')
 
 export const tabButtonSelector = '#new-tab-button > svg'
 
+interface TabConfig {
+  topTabs?: { names: 'fixed' | 'command' }
+}
+const { topTabs = { names: 'command' } } = config as TabConfig
+
 const usage = {
   strict: 'switch',
   command: 'switch',
@@ -203,12 +208,12 @@ const addCommandEvaluationListeners = (): void => {
           // need to find a way to capture that sidecar-producing
           // command
           if (!isSidecarVisible(tab)) {
-            if (!config || !config.tabs || !config.tabs.fixedName) {
+            if (topTabs.names === 'command') {
               getTabButtonLabel(tab).innerText = theme['productName']
             }
           }
         } else {
-          if (!config || !config.tabs || !config.tabs.fixedName) {
+          if (topTabs.names === 'command') {
             getTabButtonLabel(tab).innerText = event.command
           }
           getTabButton(tab).classList.add('processing')
@@ -365,7 +370,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   newTabButton.setAttribute('data-tab-button-index', newTabId)
   currentTabButton.parentNode.appendChild(newTabButton)
 
-  getTabButtonLabel(newTab).innerText = config.tabs && config.tabs.fixedName ? `Tab ${getTabIndex(newTab)}` : 'New Tab'
+  getTabButtonLabel(newTab).innerText = topTabs.names === 'fixed' ? `Tab ${getTabIndex(newTab)}` : 'New Tab'
 
   newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
 
@@ -424,7 +429,7 @@ const oneTimeInit = (): void => {
   perTabInit(getCurrentTab(), false)
 
   getTabButtonLabel(getCurrentTab()).innerText =
-    config.tabs && config.tabs.fixedName ? `Tab ${getTabIndex(getCurrentTab())}` : theme['productName']
+    topTabs.names === 'fixed' ? `Tab ${getTabIndex(getCurrentTab())}` : theme['productName']
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
