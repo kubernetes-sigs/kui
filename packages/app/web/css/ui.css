@@ -226,15 +226,13 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   white-space: normal;
 }
 .repl-prompt {
-  margin-right: 0.375em;
+  margin-right: 0.5em;
   white-space: nowrap;
   overflow: hidden;
   display: flex;
-  border-left: 1px solid var(--color-ui-04);
-  --color-prompt-text: var(--color-text-02);
+  border-left: 0.125em solid var(--color-ui-02);
+  --color-prompt-text: var(--color-brand-01);
   --color-prompt-background: transparent;
-  --prompt-padding-left: 0;
-  --prompt-padding-right: 0;
 }
 body.not-electron .repl-prompt {
   border: none;
@@ -259,15 +257,11 @@ body.not-electron .repl-context {
   font-size: 0.875em;
   color: var(--color-prompt-text);
   background-color: var(--color-prompt-background);
-  border-left: 2px solid transparent;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  padding-left: var(--prompt-padding-left);
-  padding-right: var(--prompt-padding-right);
   display: flex;
   align-items: center;
   transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
   letter-spacing: 0.32px;
+  filter: opacity(87.5%) grayscale(50%);
 }
 repl .repl-block.using-custom-prompt .repl-prompt-righty > svg,
 repl .repl-block.using-custom-prompt .repl-prompt-righty > i,
