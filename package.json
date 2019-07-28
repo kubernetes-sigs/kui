@@ -10,7 +10,7 @@
     "compile": "CLIENT=${CLIENT-default}; MONOREPO_MODE=true CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
     "preinstall": "cp packages/kui-builder/npmrc .npmrc",
-    "build:configure": "CLIENT=${CLIENT-default}; CLIENT_HOME=./clients/$CLIENT node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/seticon.js",
+    "build:configure": "CLIENT=${CLIENT-default}; rm node_modules/@kui-shell/settings/config-dev.json; CLIENT_HOME=./clients/$CLIENT node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/seticon.js",
     "build:electron-for-development": "npm run build:configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done",
     "build:hoist": "node ./packages/kui-builder/bin/hoist.js",
     "postinstall": "npm run build:hoist && npm run build:electron-for-development",
