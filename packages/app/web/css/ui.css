@@ -871,6 +871,10 @@ sidecar .header-right-bits {
   align-items: flex-end;
   justify-content: space-evenly;
 }
+.sidecar-header .badges:not(:empty) + .activation-duration {
+  margin-top: 0.1em;
+  font-size: 1.5em;
+}
 .sidecar-header .activation-duration,
 .sidecar-header .kind {
   font-weight: bold;
