@@ -149,7 +149,7 @@ const registerWatcher = (
     let processedMultiTableRow: Row[][] = []
 
     try {
-      const response = await qexec(command)
+      const response: Table | MultiTable = await qexec(command)
 
       const processedResponse = processRefreshResponse(response)
 
@@ -870,7 +870,9 @@ interface RowFormatOptions extends TableFormatOptions {
  *
  */
 export const formatOneListResult = (tab: Tab, options?) => entity => {
-  const dom = document.createElement('tbody')
+  const isHeaderCell = /header-cell/.test(entity.outerCSS)
+
+  const dom = document.createElement(isHeaderCell ? 'thead' : 'tbody')
   dom.className = `entity ${entity.prettyType || ''} ${entity.type}`
   dom.setAttribute('data-name', entity.name)
 
@@ -904,7 +906,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   }
 
   // now add the clickable name
-  const entityNameGroup = document.createElement('td')
+  const entityNameGroup = document.createElement(isHeaderCell ? 'th' : 'td')
   entityNameGroup.className = `entity-name-group ${entity.outerCSS}`
   if (entityNameGroup.classList.contains('header-cell')) {
     entityName.classList.add('header-row')
@@ -999,7 +1001,7 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     tag = 'span',
     tagClass?: string
   ) => {
-    const cell = document.createElement('span')
+    const cell = document.createElement(isHeaderCell ? 'th' : 'td')
     const inner = document.createElement(tag)
 
     cell.className = className
@@ -1317,7 +1319,7 @@ export const formatTableResult = (tab: Tab, response: Table): HTMLElement[] => {
  * @deprecated in favor of new formatTableResult()
  *
  */
-export const formatListResult = (tab: Tab, response) => {
+export const formatListResult = (tab: Tab, response): HTMLElement[] => {
   debug('formatListResult', response)
 
   // sort the list, then format each element, then add the results to the resultDom
@@ -1353,7 +1355,9 @@ export const formatMultiListResult = async (tab: Tab, response, resultDom: Eleme
         tableDom.classList.add('result-table')
         tableDom.classList.add('bx--data-table')
 
-        let container
+        setStyle(tableDom, table)
+
+        let container: HTMLElement
         if (table[0].title) {
           const tableOuterWrapper = document.createElement('div')
           const tableOuter = document.createElement('div')
