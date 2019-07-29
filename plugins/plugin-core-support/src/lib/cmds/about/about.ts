@@ -117,38 +117,6 @@ const aboutWindow = async () => {
   bottomContent.classList.add('about-window-bottom-content')
   flexContent.appendChild(bottomContent)
 
-  type OnClickHandler = () => any // eslint-disable-line @typescript-eslint/no-explicit-any
-  const iconify = (fontawesome: string, title: string, href: string | OnClickHandler): Element => {
-    const wrapper = document.createElement('div')
-    wrapper.classList.add('about-window-icon-stack')
-
-    const anchor = document.createElement('a')
-    anchor.title = title
-    anchor.target = '_blank'
-    wrapper.appendChild(anchor)
-
-    const icon = document.createElement('i')
-    icon.className = fontawesome
-    icon.classList.add('clickable')
-    anchor.appendChild(icon)
-
-    if (typeof href === 'string') {
-      anchor.href = href
-    } else {
-      anchor.href = '#'
-      anchor.onclick = () => {
-        href()
-        return false
-      }
-    }
-
-    const label = document.createElement('div')
-    label.innerText = title
-    wrapper.appendChild(label)
-
-    return wrapper
-  }
-
   if (showVersionInfo) {
     const table = document.createElement('table')
     table.classList.add('log-lines')

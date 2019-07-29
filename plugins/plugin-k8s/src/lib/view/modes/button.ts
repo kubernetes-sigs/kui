@@ -16,7 +16,6 @@
 
 import { Tab } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { KubeResource } from '../../model/resource'
 

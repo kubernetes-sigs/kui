@@ -18,9 +18,6 @@ import { dirname, join } from 'path'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-
-const kubectl = 'k'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
