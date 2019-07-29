@@ -234,6 +234,9 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   --color-prompt-text: var(--color-brand-01);
   --color-prompt-background: transparent;
 }
+.repl-block:not(.using-custom-prompt) .repl-prompt {
+  font-family: var(--font-sans-serif);
+}
 body.not-electron .repl-prompt {
   border: none;
   font-size: 0.875em;
@@ -274,6 +277,7 @@ repl .repl-block.using-custom-prompt .repl-input input {
 }
 .repl-prompt-righty {
   color: var(--color-brand-01);
+  margin-top: 1px; /* roughly center a ">" on the centerline of lowercase .repl-context text */
 }
 .repl-prompt-righty svg path {
   fill: var(--color-brand-01);
