@@ -125,37 +125,73 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
   transition: color 300ms ease-in-out;
   color: var(--color-text-01) !important;
 }
+.xterm-rows .xterm-bg-0,
+.xterm-rows .xterm-bg-8 {
+  background-color: var(--color-black) !important;
+}
 .xterm-rows .xterm-fg-0,
 .xterm-rows .xterm-fg-8 {
   color: var(--color-black) !important;
+}
+.xterm-rows .xterm-bg-1,
+.xterm-rows .xterm-bg-9 {
+  background-color: var(--color-red) !important;
 }
 .xterm-rows .xterm-fg-1,
 .xterm-rows .xterm-fg-9 {
   color: var(--color-red) !important;
 }
+.xterm-rows .xterm-bg-2,
+.xterm-rows .xterm-bg-10 {
+  background-color: var(--color-green) !important;
+}
 .xterm-rows .xterm-fg-2,
 .xterm-rows .xterm-fg-10 {
   color: var(--color-green) !important;
+}
+.xterm-rows .xterm-bg-3,
+.xterm-rows .xterm-bg-11 {
+  background-color: var(--color-yellow) !important;
 }
 .xterm-rows .xterm-fg-3,
 .xterm-rows .xterm-fg-11 {
   color: var(--color-yellow) !important;
 }
+.xterm-rows .xterm-bg-4,
+.xterm-rows .xterm-bg-12 {
+  background-color: var(--color-blue) !important;
+}
 .xterm-rows .xterm-fg-4,
 .xterm-rows .xterm-fg-12 {
   color: var(--color-blue) !important;
+}
+.xterm-rows .xterm-bg-5,
+.xterm-rows .xterm-bg-13 {
+  background-color: var(--color-magenta) !important;
 }
 .xterm-rows .xterm-fg-5,
 .xterm-rows .xterm-fg-13 {
   color: var(--color-magenta) !important;
 }
+.xterm-rows .xterm-bg-6,
+.xterm-rows .xterm-bg-14 {
+  background-color: var(--color-cyan) !important;
+}
 .xterm-rows .xterm-fg-6,
 .xterm-rows .xterm-fg-14 {
   color: var(--color-cyan) !important;
 }
+.xterm-rows .xterm-bg-7,
+.xterm-rows .xterm-bg-15 {
+  background-color: var(--color-white) !important;
+}
 .xterm-rows .xterm-fg-7,
 .xterm-rows .xterm-fg-15 {
   color: var(--color-white) !important;
+}
+.xterm-rows .xterm-fg-7.xterm-bg-0,
+.xterm-rows .xterm-fg-15.xterm-bg-8 {
+  color: var(--color-text-01) !important;
 }
 .xterm-rows .xterm-fg-257 {
   /* inverted default color */

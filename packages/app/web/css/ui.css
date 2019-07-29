@@ -2975,7 +2975,7 @@ sidecar .custom-content .log-field pre > code {
 
 body {
   /* define theme bindings; mapping color names to the base16 scheme */
-  --color-black: var(--color-base01);
+  --color-black: var(--color-ui-01);
   --color-red: var(--color-base08);
   --color-green: var(--color-base0B);
   --color-yellow: var(--color-base0A);
