@@ -17,6 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import {
+  assertTableTitleMatches,
   waitForGreen,
   waitForRed,
   defaultModeForGet,
@@ -45,8 +46,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
       await this.app.client.waitForExist(table)
 
       if (!fast) {
-        const tableTitle = await this.app.client.getText(`${table} .result-table-title`)
-        assert.strictEqual(tableTitle.toLowerCase(), 'containers')
+        await assertTableTitleMatches(this, table, 'containers')
       }
 
       // check the conditions rows
@@ -187,8 +187,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         const table = `${selectors.SIDECAR} [k8s-table="Pod"]`
         await this.app.client.waitForExist(table)
 
-        const tableTitle = await this.app.client.getText(`${table} .result-table-title`)
-        assert.strictEqual(tableTitle.toLowerCase(), 'pod')
+        await assertTableTitleMatches(this, table, 'pod')
 
         // wait for the badge to become green
         await waitForGreen(this.app, `${table} .entity[data-name="nginx"]`) // [data-key="status"]
@@ -215,8 +214,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
       // the sidecar should still be full screen https://github.com/IBM/kui/issues/1794
       await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN)
 
-      const tableTitle = await this.app.client.getText(`${table} .result-table-title`)
-      assert.strictEqual(tableTitle.toLowerCase(), 'conditions')
+      await assertTableTitleMatches(this, table, 'conditions')
 
       // check the conditions rows
       await Promise.all([

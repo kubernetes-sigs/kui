@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, UsageModel } from '@kui-shell/core/core/usage-error'
 import {
@@ -174,7 +174,7 @@ const table = (
   options: ParsedOptions,
   execOptions: KubeExecOptions
 ): Table | MultiTable | HTMLElement | Delete => {
-  debug('displaying as table', verb, entityType)
+  debug('displaying as table', command, verb, entityType)
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
   // whitespace
@@ -277,6 +277,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     if (!isHeadless() && isKube && verb === 'edit') {
       debug('redirecting kubectl edit to shell')
+      execOptions.exec = 'qexec'
       repl
         .qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
         .then(resolve)
@@ -297,6 +298,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         (isKube && verb === 'get' && execOptions.raw && 'json'))
 
     if (
+      !execOptions.raw &&
       (!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
       isKube &&
@@ -305,6 +307,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     ) {
       debug('delegating to summary provider', execOptions.delegationOk, ExecType[execOptions.type].toString())
       const describeImpl = (await import('./describe')).default
+      opts.argvNoOptions[0] = 'kubectl'
+      opts.argv[0] = 'kubectl'
+      opts.command = opts.command.replace(/^_kubectl/, 'kubectl')
       return describeImpl(opts)
         .then(resolve)
         .catch(reject)
@@ -780,7 +785,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
  * Executor implementations
  *
  */
-const kubectl = executeLocally('kubectl')
+const _kubectl = executeLocally('kubectl')
 export const _helm = executeLocally('helm')
 
 function helm(opts: EvaluatorArgs) {
@@ -789,6 +794,29 @@ function helm(opts: EvaluatorArgs) {
     return helmGet(opts)
   } else {
     return _helm(opts)
+  }
+}
+
+const shouldSendToPTY = (argv: string[]): boolean => (argv.length > 1 && argv[1] === 'exec') || argv.includes('|')
+
+function kubectl(opts: EvaluatorArgs) {
+  if (!isHeadless() && shouldSendToPTY(opts.argvNoOptions)) {
+    // execOptions.exec = 'qexec'
+    debug('redirect exec command to PTY')
+    const commandToPTY = opts.command.replace(/^k(\s)/, 'kubectl$1')
+    return repl.qexec(`sendtopty ${commandToPTY}`, opts.block, undefined, opts.execOptions)
+  } else if (!inBrowser()) {
+    debug('invoking _kubectl directly')
+    return _kubectl(opts)
+  } else {
+    debug('invoking _kubectl via qexec')
+    const command = opts.command.replace(/^kubectl(\s)/, '_kubectl$1').replace(/^k(\s)/, '_kubectl$1')
+    return repl.qexec(command, opts.block, undefined, {
+      tab: opts.tab,
+      raw: opts.execOptions.raw,
+      noDelegation: opts.execOptions.noDelegation,
+      delegationOk: opts.execOptions.type !== ExecType.Nested
+    })
   }
 }
 
@@ -816,14 +844,19 @@ const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: EvaluatorAr
  *
  */
 export default async (commandTree: CommandRegistrar) => {
-  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, {
+  await commandTree.listen('/k8s/_kubectl', _kubectl, {
     usage: usage('kubectl'),
     requiresLocal: true,
     noAuthOk: ['openwhisk']
   })
+  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, {
+    usage: usage('kubectl'),
+    inBrowserOk: true,
+    noAuthOk: ['openwhisk']
+  })
   await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, {
     usage: usage('kubectl'),
-    requiresLocal: true,
+    inBrowserOk: true,
     noAuthOk: ['openwhisk']
   })
 
