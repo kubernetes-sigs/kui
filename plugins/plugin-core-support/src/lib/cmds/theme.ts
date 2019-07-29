@@ -101,7 +101,7 @@ const getDefaultTheme = (isDarkMode = false) => {
  *
  */
 const list = async () => {
-  const { Table, TableStyle } = await import('@kui-shell/core/webapp/models/table')
+  const { Table } = await import('@kui-shell/core/webapp/models/table')
 
   const header: Row = {
     type: 'theme',
