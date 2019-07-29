@@ -14,6 +14,10 @@
   background: transparent;
 }
 
+.result-as-table .result-table[kui-table-style="None"] {
+  border: none;
+}
+
 [kui-theme-style] .bx--data-table thead,
 [kui-theme-style] .bx--data-table tbody {
   background: transparent;
