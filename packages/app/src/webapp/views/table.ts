@@ -923,6 +923,9 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
   if (!entityNameGroup.classList.contains('header-cell')) {
     entityNameClickable.classList.add('clickable')
   }
+  if (isHeaderCell) {
+    entityNameClickable.classList.add('bx--table-header-label')
+  }
   if (entity.nameCss) {
     if (Array.isArray(entity.nameCss)) {
       entity.nameCss.forEach(_ => entityNameClickable.classList.add(_))
@@ -1010,6 +1013,9 @@ export const formatOneListResult = (tab: Tab, options?) => entity => {
     inner.classList.add('cell-inner')
     if (tagClass) {
       inner.classList.add(tagClass)
+    }
+    if (isHeaderCell) {
+      inner.classList.add('bx--table-header-label')
     }
 
     if (key) {
@@ -1351,7 +1357,7 @@ export const formatMultiListResult = async (tab: Tab, response, resultDom: Eleme
     response
       .filter(x => x.length > 0)
       .map(async (table, idx, tables) => {
-        const tableDom = document.createElement('div')
+        const tableDom = document.createElement('table')
         tableDom.classList.add('result-table')
         tableDom.classList.add('bx--data-table')
 
