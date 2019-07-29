@@ -77,8 +77,6 @@ case $OS in
  
     echo ""
     echo "|----- You can find \"Kui\" in your \"$BIN_DIR\" folder :) -----|"
- 
-    open -a Kui
     ;;
   *)
     echo "Not supported platform :("
