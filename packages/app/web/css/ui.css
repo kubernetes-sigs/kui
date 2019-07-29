@@ -1056,6 +1056,10 @@ sidecar pre {
   /* no margin for action source code */
   margin: 0;
 }
+sidecar .action-content > pre {
+  /* some odd issue here; pre > code will give us the pre-wrap */
+  white-space: normal;
+}
 sidecar:not(.entity-is-actions):not(.entity-is-apps):not(.entity-is-compositions) .action-content {
   display: none;
 }
