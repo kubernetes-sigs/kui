@@ -26,7 +26,7 @@ import { exec } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs, ExecType, ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { handleNonZeroExitCode } from '../util/exec'
@@ -229,6 +229,13 @@ const bcd = async ({ command, execOptions }: EvaluatorArgs) => {
   return pwd
 }
 
+const specialHandler = (args: EvaluatorArgs) => {
+  if (args.execOptions.type === ExecType.TopLevel) {
+    throw new Error('this command is intended for internal consumption only')
+  }
+  return dispatchToShell(args)
+}
+
 /**
  * Register command handlers
  *
@@ -238,6 +245,13 @@ export default (commandTree: CommandRegistrar) => {
     docs: 'Execute a UNIX shell command',
     noAuthOk: true,
     requiresLocal: true
+  })
+
+  commandTree.listen('/sendtopty', specialHandler, {
+    docs: 'Execute a UNIX shell command with a PTY',
+    noAuthOk: true,
+    inBrowserOk: true,
+    hidden: true
   })
 
   commandTree.listen('/kuicd', cd, {

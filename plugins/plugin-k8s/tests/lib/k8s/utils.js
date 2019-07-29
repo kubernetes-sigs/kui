@@ -15,6 +15,7 @@
  */
 
 const uuid = require('uuid/v4')
+const assert = require('assert')
 
 const common = require('@kui-shell/core/tests/lib/common')
 const ui = require('@kui-shell/core/tests/lib/ui')
@@ -137,3 +138,17 @@ exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace 
 
     iter()
   })
+
+/**
+ * Confirm that the table title matches
+ *
+ */
+exports.assertTableTitleMatches = async function(self, tableSelector, expectedTitle) {
+  // getHTML rather than getText, in case the title is not visible in this client
+  const tableTitle = (await self.app.client.getHTML(`${tableSelector} .result-table-title`)).replace(
+    /<div.*>(.*)<\/div>/,
+    '$1'
+  )
+
+  assert.strictEqual(tableTitle.toLowerCase(), expectedTitle)
+}

@@ -62,3 +62,9 @@ declare function waitForGreen (app: Application, selector: string): Promise<stri
  *
  */
 declare function waitForRed (app: Application, selector: string): Promise<string>
+
+/**
+ * Confirm that the table title matches
+ *
+ */
+declare function assertTableTitleMatches(self: ISuite, tableSelector: string, expectedTitle: string): Promise<never>

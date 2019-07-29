@@ -26,7 +26,7 @@ import {
 
 const synonyms = ['kubectl']
 
-describe('electron get all-namespaces', function(this: common.ISuite) {
+describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
