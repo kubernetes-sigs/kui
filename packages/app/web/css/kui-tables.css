@@ -152,6 +152,7 @@ body.sidecar-is-minimized .result-as-table .result-table {
 }
 .bx--data-table.result-table .entity-attributes > td {
   border-bottom: 1px solid var(--color-table-border3);
+  background: transparent;
 }
 [kui-theme-style] .bx--data-table tbody tr:hover td {
   color: unset;
