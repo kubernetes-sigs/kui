@@ -132,10 +132,11 @@ class ProxyEvaluator implements ReplEval {
                   .split(MARKER)
                   .filter(_ => _)
                   .forEach(_ => {
-                    const response: { uuid: string; response: { code?: number } } = JSON.parse(_)
+                    const response: { uuid: string; response: { code?: number; statusCode?: number } } = JSON.parse(_)
                     if (response.uuid === uuid) {
                       channel.removeEventListener('message', onMessage)
-                      if (response.response.code && response.response.code !== 200) {
+                      const code = response.response.code || response.response.statusCode
+                      if (code !== undefined && code !== 200) {
                         debug('rejecting', response.response)
                         reject(response.response)
                       } else {
