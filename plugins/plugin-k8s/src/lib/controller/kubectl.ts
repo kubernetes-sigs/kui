@@ -76,6 +76,8 @@ interface KubeExecOptions extends ExecOptions {
 const kubelike = /kubectl|oc/
 const isKubeLike = (command: string): boolean => kubelike.test(command)
 
+const shouldSendToPTY = (argv: string[]): boolean => (argv.length > 1 && argv[1] === 'exec') || argv.includes('|')
+
 /** lazily load js-yaml and invoke its yaml parser */
 const parseYAML = async (str: string): Promise<KubeResource | KubeResource[]> => {
   const { safeLoadAll } = await import('js-yaml')
@@ -277,8 +279,19 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     if (!isHeadless() && isKube && verb === 'edit') {
       debug('redirecting kubectl edit to shell')
+      execOptions.exec = 'qexec'
       repl
         .qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
+        .then(resolve)
+        .catch(reject)
+      return
+    }
+
+    if (shouldSendToPTY(argv)) {
+      execOptions.exec = 'qexec'
+      debug('redirect exec command to PTY')
+      repl
+        .qexec(`! ${rawCommand}`, block, undefined, execOptions)
         .then(resolve)
         .catch(reject)
       return

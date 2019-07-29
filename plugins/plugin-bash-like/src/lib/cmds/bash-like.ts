@@ -229,12 +229,19 @@ const bcd = async ({ command, execOptions }: EvaluatorArgs) => {
   return pwd
 }
 
+const specialHandler = (args: EvaluatorArgs) => {
+  if (!args.execOptions.exec) {
+    throw new Error('! rejects any direct-from-human-repl execution')
+  }
+  return dispatchToShell(args)
+}
+
 /**
  * Register command handlers
  *
  */
 export default (commandTree: CommandRegistrar) => {
-  commandTree.listen('/!', dispatchToShell, {
+  commandTree.listen('/!', specialHandler, {
     docs: 'Execute a UNIX shell command',
     noAuthOk: true,
     requiresLocal: true
