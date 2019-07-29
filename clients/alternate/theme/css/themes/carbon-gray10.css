@@ -12,15 +12,15 @@ body[kui-theme="IBM Light"] {
   --color-base09: #bf5b17;
   --color-base0A: #fdd13a;
   --color-base0B: #24a148;
-  --color-base0C: #399cd6;
+  --color-base0C: #1191e6;
   --color-base0D: #054ada;
-  --color-base0E: #d12764;
+  --color-base0E: #d12765;
   --color-base0F: #8a3ffc;
 
   --color-brand-01: #0062ff;
   --color-brand-02: #171717;
   --color-brand-03: #0062ff;
-                      
+
   --color-ui-05: #171717;
   --color-text-02: #565656;
 
@@ -37,13 +37,13 @@ body[kui-theme="IBM Light"] {
   --color-sidecar-background: var(--color-base01);
   --color-sidecar-border: #e4e4e4;
 
-  --color-brand-03: #008FFF;
-  --color-content-divider: #BFC0C2;
+  --color-brand-03: #008fff;
+  --color-content-divider: #bfc0c2;
   --color-selection-background: #b3e6ff;
 
-  --color-screenshot-background: #0062FF;
+  --color-screenshot-background: #0062ff;
 
-  --color-stripe-01: #F5F7FA;
+  --color-stripe-01: #f5f7fa;
 
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);
@@ -51,4 +51,54 @@ body[kui-theme="IBM Light"] {
 }
 
 /* mono-blue hightlightjs theme */
-.hljs{display:block;overflow-x:auto;padding:0.5em;background:#eaeef3}.hljs{color:#00193a}.hljs-keyword,.hljs-selector-tag,.hljs-title,.hljs-section,.hljs-doctag,.hljs-name,.hljs-strong{font-weight:bold}.hljs-comment{color:#738191}.hljs-string,.hljs-title,.hljs-section,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-type,.hljs-addition,.hljs-tag,.hljs-quote,.hljs-name,.hljs-selector-id,.hljs-selector-class{color:#0048ab}.hljs-meta,.hljs-subst,.hljs-symbol,.hljs-regexp,.hljs-attribute,.hljs-deletion,.hljs-variable,.hljs-template-variable,.hljs-link,.hljs-bullet{color:#4c81c9}.hljs-emphasis{font-style:italic}
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #eaeef3;
+}
+.hljs {
+  color: #00193a;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-title,
+.hljs-section,
+.hljs-doctag,
+.hljs-name,
+.hljs-strong {
+  font-weight: bold;
+}
+.hljs-comment {
+  color: #738191;
+}
+.hljs-string,
+.hljs-title,
+.hljs-section,
+.hljs-built_in,
+.hljs-literal,
+.hljs-params,
+.hljs-type,
+.hljs-addition,
+.hljs-tag,
+.hljs-quote,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #0048ab;
+}
+.hljs-meta,
+.hljs-subst,
+.hljs-symbol,
+.hljs-regexp,
+.hljs-attribute,
+.hljs-deletion,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-bullet {
+  color: #4c81c9;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
