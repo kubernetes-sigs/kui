@@ -677,6 +677,7 @@ export const renderActivationListView = (
   })
 
   if (activations.length > 0) {
+    container.setAttribute('kui-table-style', 'None')
     ;(container.parentNode as HTMLElement).classList.add('result-as-table')
     ;(container.parentNode as HTMLElement).classList.add('result-as-table-full-width')
   }
