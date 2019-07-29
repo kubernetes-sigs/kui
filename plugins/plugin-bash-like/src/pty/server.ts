@@ -261,6 +261,11 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         case 'exec':
           const env = Object.assign({}, msg.env || process.env, { KUI: 'true' })
 
+          if (process.env.DEBUG && (!msg.env || !msg.env.DEBUG)) {
+            // don't pass DEBUG unless the user asked for it!
+            delete env.DEBUG
+          }
+
           try {
             const end = msg.cmdline.indexOf(' ')
             const cmd = msg.cmdline.slice(0, end < 0 ? msg.cmdline.length : end) // FIXME quoted first arg

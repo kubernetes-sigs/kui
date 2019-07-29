@@ -80,6 +80,7 @@ const renderDescribe = async (
     mode: 'raw',
     label: 'YAML',
     direct: `${getCmd} -o ${output}`,
+    execOptions: { noDelegation: true },
     order: 999,
     leaveBottomStripeAlone: true
   })
@@ -137,7 +138,7 @@ function toMap(table: Table): Record<string, string> {
  *
  */
 const describe = async ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
-  const noDelegationPlease = Object.assign({}, execOptions)
+  const noDelegationPlease = Object.assign({}, execOptions, { noDelegation: true })
   delete noDelegationPlease.delegationOk
 
   const getCmd = command.replace(/summary/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')

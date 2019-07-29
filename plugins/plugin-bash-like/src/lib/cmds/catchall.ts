@@ -63,7 +63,7 @@ export const dispatchToShell = async ({
     return doExec(
       tab,
       block as HTMLElement,
-      command.replace(/^!\s+/, ''),
+      command.replace(/^(!|sendtopty)\s+/, ''),
       argvNoOptions,
       parsedOptions,
       eOptions
