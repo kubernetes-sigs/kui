@@ -109,7 +109,7 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
     )
     .replace(
       /(Untracked files:)/g,
-      `</table></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><table class='bx--data-table result-table'>`
+      `</table></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><table class='bx--data-table result-table''>`
     )
     .replace(
       /modified:/g,

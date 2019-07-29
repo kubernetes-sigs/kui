@@ -237,14 +237,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .repl-block:not(.using-custom-prompt) .repl-prompt {
   font-family: var(--font-sans-serif);
 }
-body.not-electron .repl-prompt {
-  border: none;
-  font-size: 0.875em;
-}
-body.not-electron .repl-context {
-  /* no context in webpack mode */
-  display: none;
-}
 .repl-prompt .repl-selection {
   font-size: 80%;
   opacity: 0.6;
@@ -600,7 +592,6 @@ sidecar {
 sidecar.visible {
   flex: 6;
   z-index: 1; /* float above the repl */
-  transition-duration: 600ms; /* a bit slower coming out */
   border-left: 1px solid var(--color-sidecar-border);
 }
 body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
