@@ -1,53 +1,53 @@
 /* these are the indentation indicators */
-.monaco-editor .lines-content .cigra {
+[kui-theme-style] .monaco-editor .lines-content .cigra {
   /* this is the active indentation indicator */
   box-shadow: 1px 0 0 0 var(--color-base0D) inset;
   transition: box-shadow 300ms ease-in-out;
 }
-.monaco-editor .lines-content .cigr {
+[kui-theme-style] .monaco-editor .lines-content .cigr {
   /* this is the inactive indentation indicator */
   box-shadow: 1px 0 0 0 var(--color-base04) inset;
   transition: box-shadow 300ms ease-in-out;
 }
 
-.monaco-editor .selected-text {
+[kui-theme-style] .monaco-editor .selected-text {
   opacity: 0.3; /* i don't know why the selection outside of monaco is different, despite using the same CSS styling */
 }
 
-.monaco-editor {
+[kui-theme-style] .monaco-editor {
   transition: color 300ms ease-in-out;
   color: var(--color-text-01);
 }
 
-.monaco-editor .current-line ~ .line-numbers {
+[kui-theme-style] .monaco-editor .current-line ~ .line-numbers {
   transition: color 300ms ease-in-out;
   color: var(--color-brand-02);
 }
-.monaco-editor .line-numbers {
+[kui-theme-style] .monaco-editor .line-numbers {
   transition: color 300ms ease-in-out;
   color: var(--color-text-02);
   font-weight: 300;
 }
 
-.monaco-editor .mtk8,
-.monaco-editor .keyword {
+[kui-theme-style] .monaco-editor .mtk8,
+[kui-theme-style] .monaco-editor .keyword {
   transition: color 300ms ease-in-out;
   color: var(--color-base0C);
 }
 
-.monaco-editor .mtk6,
-.monaco-editor .selector-tag,
-.monaco-editor .title,
-.monaco-editor .section,
-.monaco-editor .doctag,
-.monaco-editor .name,
-.monaco-editor .strong {
+[kui-theme-style] .monaco-editor .mtk6,
+[kui-theme-style] .monaco-editor .selector-tag,
+[kui-theme-style] .monaco-editor .title,
+[kui-theme-style] .monaco-editor .section,
+[kui-theme-style] .monaco-editor .doctag,
+[kui-theme-style] .monaco-editor .name,
+[kui-theme-style] .monaco-editor .strong {
   font-weight: bold;
   color: inherit;
 }
 
-.monaco-editor .mtk22,
-.monaco-editor .mtk4 {
+[kui-theme-style] .monaco-editor .mtk22,
+[kui-theme-style] .monaco-editor .mtk4 {
   /* map keys */
   /* notes:
        mtk22 is the CSS class for YAML keys
@@ -57,61 +57,61 @@
   color: var(--color-map-key);
 }
 
-.monaco-editor .mtk1 {
+[kui-theme-style] .monaco-editor .mtk1 {
   /* map keys */
   transition: color 300ms ease-in-out;
   color: var(--color-map-value);
 }
-.monaco-editor .mtk5 {
+[kui-theme-style] .monaco-editor .mtk5 {
   /* map values */
   transition: color 300ms ease-in-out;
   color: var(--color-text-01);
 }
 
-.monaco-editor .mti20,
-.monaco-editor .comment {
+[kui-theme-style] .monaco-editor .mti20,
+[kui-theme-style] .monaco-editor .comment {
   transition: color 300ms ease-in-out;
   color: var(--color-base03);
 }
 
-.monaco-editor .mtk7 {
+[kui-theme-style] .monaco-editor .mtk7 {
   /* comments */
   transition: color 300ms ease-in-out;
   color: var(--color-text-02);
 }
 
-.monaco-editor .mtk20,
-.monaco-editor .string,
-.monaco-editor .title,
-.monaco-editor .section,
-.monaco-editor .built_in,
-.monaco-editor .literal,
-.monaco-editor .type,
-.monaco-editor .addition,
-.monaco-editor .tag,
-.monaco-editor .quote,
-.monaco-editor .name,
-.monaco-editor .selector-id,
-.monaco-editor .selector-class {
+[kui-theme-style] .monaco-editor .mtk20,
+[kui-theme-style] .monaco-editor .string,
+[kui-theme-style] .monaco-editor .title,
+[kui-theme-style] .monaco-editor .section,
+[kui-theme-style] .monaco-editor .built_in,
+[kui-theme-style] .monaco-editor .literal,
+[kui-theme-style] .monaco-editor .type,
+[kui-theme-style] .monaco-editor .addition,
+[kui-theme-style] .monaco-editor .tag,
+[kui-theme-style] .monaco-editor .quote,
+[kui-theme-style] .monaco-editor .name,
+[kui-theme-style] .monaco-editor .selector-id,
+[kui-theme-style] .monaco-editor .selector-class {
   transition: color 300ms ease-in-out;
   color: var(--color-base0D);
 }
 
-.monaco-editor .meta,
-.monaco-editor .subst,
-.monaco-editor .symbol,
-.monaco-editor .regexp,
-.monaco-editor .attribute,
-.monaco-editor .deletion,
-.monaco-editor .variable,
-.monaco-editor .template-variable,
-.monaco-editor .link,
-.monaco-editor .bullet {
+[kui-theme-style] .monaco-editor .meta,
+[kui-theme-style] .monaco-editor .subst,
+[kui-theme-style] .monaco-editor .symbol,
+[kui-theme-style] .monaco-editor .regexp,
+[kui-theme-style] .monaco-editor .attribute,
+[kui-theme-style] .monaco-editor .deletion,
+[kui-theme-style] .monaco-editor .variable,
+[kui-theme-style] .monaco-editor .template-variable,
+[kui-theme-style] .monaco-editor .link,
+[kui-theme-style] .monaco-editor .bullet {
   transition: color 300ms ease-in-out;
   color: var(--color-base03);
 }
 
-.monaco-editor .emphasis {
+[kui-theme-style] .monaco-editor .emphasis {
   font-style: italic;
 }
 
