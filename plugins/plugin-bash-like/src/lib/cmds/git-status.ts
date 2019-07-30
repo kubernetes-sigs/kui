@@ -109,19 +109,19 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
     )
     .replace(
       /(Untracked files:)/g,
-      `</table></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><table class='bx--data-table result-table''>`
+      `</table></div></div><div class='result-table-outer top-pad'><div class='result-table-title-outer'><div class='repl-pexec-link clickable result-table-title' data-file='.'>$1</div></div><table class='bx--data-table result-table' kui-table-style="Light">`
     )
     .replace(
       /modified:/g,
-      `<td class='yellow-text larger-text icon-width'><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M13 21h13.17l-2.58 2.59L25 25l5-5-5-5-1.41 1.41L26.17 19H13v2z"></path><path d="M22 14v-4a1 1 0 0 0-.29-.71l-7-7A1 1 0 0 0 14 2H4a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2h-2v2H4V4h8v6a2 2 0 0 0 2 2h6v2zm-8-4V4.41L19.59 10z"></path></svg></td>`
+      `<td class='yellow-text larger-text icon-width'><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M13 21h13.17l-2.58 2.59L25 25l5-5-5-5-1.41 1.41L26.17 19H13v2z"></path><path d="M22 14v-4a1 1 0 0 0-.29-.71l-7-7A1 1 0 0 0 14 2H4a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2h-2v2H4V4h8v6a2 2 0 0 0 2 2h6v2zm-8-4V4.41L19.59 10z"></path></svg></td>`
     )
     .replace(
       /new file:/g,
-      `<td class='green-text larger-text icon-width'><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M25.7 9.3l-7-7A.91.91 0 0 0 18 2H8a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V10a.91.91 0 0 0-.3-.7zM18 4.4l5.6 5.6H18zM24 28H8V4h8v6a2 2 0 0 0 2 2h6z"></path><path d="M21 19h-4v-4h-2v4h-4v2h4v4h2v-4h4v-2z"></path></svg></td>`
+      `<td class='green-text larger-text icon-width'><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M25.7 9.3l-7-7A.91.91 0 0 0 18 2H8a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V10a.91.91 0 0 0-.3-.7zM18 4.4l5.6 5.6H18zM24 28H8V4h8v6a2 2 0 0 0 2 2h6z"></path><path d="M21 19h-4v-4h-2v4h-4v2h4v4h2v-4h4v-2z"></path></svg></td>`
     )
     .replace(
       /deleted:/g,
-      `<td class='red-text larger-text icon-width'><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M25.7 9.3l-7-7A.91.91 0 0 0 18 2H8a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V10a.91.91 0 0 0-.3-.7zM18 4.4l5.6 5.6H18zM24 28H8V4h8v6a2 2 0 0 0 2 2h6z"></path><path d="M11 19h10v2H11z"></path></svg></td>`
+      `<td class='red-text larger-text icon-width'><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M25.7 9.3l-7-7A.91.91 0 0 0 18 2H8a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V10a.91.91 0 0 0-.3-.7zM18 4.4l5.6 5.6H18zM24 28H8V4h8v6a2 2 0 0 0 2 2h6z"></path><path d="M11 19h10v2H11z"></path></svg></td>`
     )
     .replace(
       /\s*(nothing added to commit but untracked files present|no changes added to commit.*)/,
