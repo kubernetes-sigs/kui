@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { dirname, join } from 'path'
 
-import { readProject } from './util'
+import { readProject, TutorialDefinition, TutorialTable } from './util'
 import { wskflowCycle } from './wskflow'
 
 import { injectCSS, loadHTML } from '@kui-shell/core/webapp/util/inject'
@@ -31,7 +31,8 @@ import {
   show as showSidecar,
   toggleMaximization
 } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+
 const debug = Debug('plugins/tutorials/play')
 
 /** highlight.js global */
@@ -196,7 +197,8 @@ const close = (tab: cli.Tab, pane: Element, obj, delay = 500) => () =>
  * Is this tutorial a one-page full-screener?
  *
  */
-const isOnePageFullscreenTutorial = obj => obj.steps && obj.steps.length === 1 && obj.fullscreen
+const isOnePageFullscreenTutorial = obj =>
+  obj.steps !== undefined && obj.steps.length === 1 && obj.fullscreen !== undefined
 
 /**
  * If a tutorial step specifies to highlight a region, this method
@@ -291,7 +293,7 @@ const renderOneTable = (parent, pane) => table => {
     const headerRow = tableDom.querySelector('.bx--structured-list-row.bx--structured-list-row--header-row')
     // removeAllDomChildren(headerRow);
     table.columns.forEach(column => {
-      const headerDom = document.createElement('div')
+      const headerDom = document.createElement('th')
       headerDom.classList.add('bx--structured-list-th')
       headerDom.innerText = column
       headerRow.appendChild(headerDom)
@@ -303,7 +305,7 @@ const renderOneTable = (parent, pane) => table => {
     table.rows
       .filter(row => !row[0].when || rowFilters[row[0].when]())
       .forEach(row => {
-        const rowDom = document.createElement('div')
+        const rowDom = document.createElement('tr')
         rowDom.className = 'bx--structured-list-row'
         tableBody.appendChild(rowDom)
 
@@ -312,7 +314,7 @@ const renderOneTable = (parent, pane) => table => {
           const onclick = cell.onclick || (cell.command && commandFromFullscreen(pane, cell.command, cell.display))
 
           debug('cell', value)
-          const cellDom = document.createElement('div')
+          const cellDom = document.createElement('td')
           cellDom.classList.add('bx--structured-list-td')
 
           const cellDomClickable = document.createElement('div')
@@ -340,7 +342,7 @@ const renderOneTable = (parent, pane) => table => {
  * Handle transitions between steps
  *
  */
-const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
+const transitionSteps = (tab: cli.Tab, stepNum: number, obj: TutorialDefinition, pane: HTMLElement) => {
   debug('step', stepNum, obj)
 
   // cancel any background tasks
@@ -362,7 +364,8 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
   } = obj.steps[stepNum]
 
   // heading text
-  pane.querySelector('.tutorial-heading').innerText = heading
+  const headingDom = pane.querySelector('.tutorial-heading') as HTMLElement
+  headingDom.innerText = heading
 
   // render the description
   pane.querySelector('.tutorial-content .tutorial-paragraphs').innerHTML = marked(content)
@@ -389,7 +392,7 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
   // full-width sidecar?
   if (sidecar === 'fullscreen') {
     if (!isSidecarFullscreen(tab)) {
-      pane.setAttribute('remember-to-remove-sidecar-fullscreen', true)
+      pane.setAttribute('remember-to-remove-sidecar-fullscreen', true.toString())
     }
 
     sidecarManager.enterFullscreen(tab)
@@ -416,7 +419,7 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
     // learn more
     //
     if (extras.learnMore) {
-      const titleDom = learnMore.querySelector('.tutorial-content-extras-title')
+      const titleDom = learnMore.querySelector('.tutorial-content-extras-title') as HTMLElement
       titleDom.innerText = extras.learnMore.title || 'Notes'
       learnMore.classList.add('has-learn-more')
       learnMore.querySelector('.tutorial-learn-more-content').innerHTML = marked(extras.learnMore.doc)
@@ -437,7 +440,7 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj, pane) => {
       hljs.highlightBlock(codePart)
     }
 
-    let table = extras.table
+    let table = extras.table as TutorialTable
     const nextSteps = extras.nextSteps || extras.alternate
     if (nextSteps) {
       table = {
@@ -677,18 +680,13 @@ const focusOnBiggestScrollable = () => {
  * Launches the specified tutorial
  *
  */
-const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
+const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinition) => {
   debug('showTutorial', obj)
 
   // remove the sidecar, if it's open
   clearSelection(tab)
 
-  // clear the repl
-  if (!isOnePageFullscreenTutorial(obj)) {
-    setTimeout(() => repl.pexec('clear'), 1000)
-  }
-
-  const pane = document.querySelector('#tutorialPane')
+  const pane = document.querySelector('#tutorialPane') as HTMLElement
   pane.classList.remove('minimized')
   pane.removeAttribute('tutorial-has-showcase')
 
@@ -763,13 +761,18 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
     // From StackOverflow
     // https://stackoverflow.com/questions/31749625/make-a-link-from-electron-open-in-browser/34503175
     const shell = require('electron').shell
-    $(document).on('click', 'a[href^="http"]', function(event) {
+    $(document).on('click', 'a[href^="http"]', function(this: HTMLLinkElement, event: MouseEvent) {
       event.preventDefault()
       shell.openExternal(this.href)
     })
 
     // insert pane
     document.querySelector('body').classList.add('tutorial-in-progress')
+
+    // height?
+    if (obj.height) {
+      pane.setAttribute('data-height', obj.height)
+    }
 
     // skills badges
     const headerExtrasContainer = pane.querySelector('.tutorial-header-extras') as HTMLElement
@@ -793,7 +796,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
     // stepBlocksContainer.style.width = `calc(${dim} * 2em)`;
 
     // render the step "blocks", shown in the upper right with yellow/gray squares
-    pane.setAttribute('num-steps', obj.steps.length)
+    pane.setAttribute('num-steps', obj.steps.length.toString())
     if (obj.steps.length > 1) {
       for (let idx = 0; idx < obj.steps.length; idx++) {
         ;(function(idx) {
@@ -833,11 +836,11 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj) => {
  * Command handler for tutorial play
  *
  */
-const use = cmd => ({ argvNoOptions, tab }) => {
+const use = (cmd: string) => ({ argvNoOptions, tab }: EvaluatorArgs) => {
   injectOurCSS()
 
   // inject the HTML if needed
-  const ready = document.querySelector('#tutorialPane') ? Promise.resolve() : injectHTML()
+  const ready: Promise<void | boolean> = document.querySelector('#tutorialPane') ? Promise.resolve() : injectHTML()
 
   const filepath = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
 
@@ -863,7 +866,7 @@ const use = cmd => ({ argvNoOptions, tab }) => {
  * tutorial play usage model
  *
  */
-const usage = cmd => ({
+const usage = (cmd: string) => ({
   command: cmd,
   strict: cmd,
   title: 'Start tutorial',

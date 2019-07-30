@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
 import { join, basename, dirname } from 'path'
 
-const debug = require('debug')('tutorial.utils')
+const debug = Debug('plugins/tutorials/utils')
 
 /** enclosing directory for tutorials */
 const top = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
@@ -47,11 +48,76 @@ const readJSON = (projectHome: string, fileName: string): Promise<any> =>
     }
   })
 
+interface TutorialNextSteps {
+  command: string
+  display?: string
+  doc: string
+  when: string
+  hidden?: boolean
+}
+
+export interface TutorialTable {
+  title: string
+  columns: string[]
+  rows: [{ value: string; when: string; onclick: () => void }, string][]
+}
+
+interface TutorialStepExtras {
+  alternate?: TutorialNextSteps[]
+  nextSteps?: TutorialNextSteps[]
+  table?: TutorialTable
+  learnMore?: {
+    title: string
+    doc: string
+  }
+  code?: { language: string; body: string }
+  showcase?: {
+    title: string
+    command: string
+    display?: string
+    description: string
+    image: string
+    groupWith?: string
+  }[]
+}
+
+interface TutorialStep {
+  heading: string
+  content: string
+  transition: string
+  input: { selector: string; value: string }
+  extras?: TutorialStepExtras
+  renderingHints?: string
+  fontawesome?: string
+  highlight?: { selector: string }
+  autocomplete?: { selector: string; value: string }
+  execute?: string
+  preview?: { file: string }
+  sidecar?: string
+}
+
+export interface TutorialDefinition {
+  fullscreen: boolean
+  height?: string
+  skills?: string[]
+  steps: TutorialStep[]
+}
+
+interface Tutorial {
+  config: {
+    name: string
+    projectName: string
+    tutorial: TutorialDefinition
+  }
+
+  tutorial: TutorialDefinition
+}
+
 /**
  * Read the module metadata
  *
  */
-export const readProject = async (projectHome: string) => {
+export const readProject = async (projectHome: string): Promise<Tutorial> => {
   debug('readProject', projectHome)
 
   if (basename(projectHome) === 'package.json') {

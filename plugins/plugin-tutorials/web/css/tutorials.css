@@ -31,7 +31,9 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 }
 #tutorialPane.visible {
   flex-basis: 26em;
-  transition-duration: 600ms;
+}
+#tutorialPane.visible[data-height="tall"] {
+  flex-basis: 34em;
 }
 
 #tutorialPane .scrollable {
@@ -52,13 +54,6 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   display: flex;
   justify-content: flex-end;
 }
-#tutorialPane button {
-  filter: contrast(1.5);
-}
-#tutorialPane button.bx--btn[disabled] {
-  opacity: 0.6;
-  filter: grayscale(1);
-}
 
 #tutorialPane .tutorial-header {
   display: flex;
@@ -68,8 +63,8 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 }
 #tutorialPane .tutorial-header .tutorial-header-names {
   flex: 1;
-  font-size: 2.75em;
-  padding: calc(1em / 2.75) 0 calc(1em / 2.75);
+  font-size: 2em;
+  padding: calc(1em / 2) 0 calc(1em / 2);
 }
 #tutorialPane .tutorial-header .tutorial-header-tutorial-name-stripe {
   display: flex;
@@ -283,15 +278,9 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 #tutorialPane:not([tutorial-is-fullscreen]) .bx--structured-list-row:last-child .bx--structured-list-td {
   padding-bottom: 0;
 }
-#tutorialPane:not([tutorial-is-fullscreen]) .bx--structured-list-row:not(.bx--structured-list-row--header-row) {
-  border-bottom-color: rgba(255, 255, 255, 0.2);
-}
 #tutorialPane:not([tutorial-is-fullscreen])
   .bx--structured-list-row:last-child:not(.bx--structured-list-row--header-row) {
   border-bottom-color: transparent;
-}
-#tutorialPane:not([tutorial-is-fullscreen]) .bx--structured-list-row.bx--structured-list-row--header-row {
-  border-bottom-color: rgba(255, 255, 255, 0.4);
 }
 #tutorialPane[tutorial-has-showcase][tutorial-is-fullscreen] .tutorial-content-extras-title {
   display: block;

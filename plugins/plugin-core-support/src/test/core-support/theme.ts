@@ -93,6 +93,8 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nCl
     try {
       await ctx.app.client.click('#help-button')
       await ctx.app.client.waitForVisible('#tutorialPane .tutorial-content-command[data-command="themes"]')
+      await ctx.app.client.waitForVisible('#tutorialPane .tCloseButton')
+      await new Promise(resolve => setTimeout(resolve, 300))
       await ctx.app.client.click('#tutorialPane .tutorial-content-command[data-command="themes"]')
 
       const checkMarkCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
